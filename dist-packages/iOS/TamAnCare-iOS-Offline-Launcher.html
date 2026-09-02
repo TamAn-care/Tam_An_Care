@@ -10,26 +10,39 @@
     h1 { color: #166534; font-size: 1.3rem; margin-top: 0; }
     .step { background: #f0fdf4; border: 1px solid #86efac; border-radius: 0.5rem; padding: 0.85rem; margin-bottom: 1rem; }
     .step-title { font-weight: 700; color: #166534; margin-bottom: 0.25rem; }
-    .btn { display: inline-block; background: #166534; color: #fff; text-decoration: none; font-weight: 700; padding: 0.6rem 1.2rem; border-radius: 0.4rem; margin-top: 0.5rem; }
+    .btn { display: inline-block; background: #166534; color: #fff; text-decoration: none; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 0.4rem; margin-top: 0.5rem; font-size: 1rem; }
+    .ip-box { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; padding: 0.75rem; border-radius: 0.5rem; font-weight: 700; font-family: monospace; font-size: 1.1rem; text-align: center; margin: 1rem 0; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>🍏 Gói Cài Đặt iOS (iPhone / iPad Standalone App)</h1>
-    <p>Bản ứng dụng <b>Tâm An Care V7.5</b> đóng gói cài đặt trực tiếp trên iPhone và iPad:</p>
-    
+    <p>Để mở ứng dụng trên iPhone/iPad, điện thoại cần truy cập qua <b>Địa Chỉ IP Wi-Fi Nội Bộ của Máy Chủ/Mac</b> (không dùng 127.0.0.1 vì 127.0.0.1 chỉ dành cho chính máy tính):</p>
+
+    <div class="ip-box">
+      http://192.168.1.25:5173
+    </div>
+
     <div class="step">
-      <div class="step-title">1. Hướng dẫn 3 bước cài đặt trên iPhone / iPad:</div>
-      <div>1. Mở trang web ứng dụng trên trình duyệt <b>Safari</b>.<br>2. Bấm vào nút <b>Chia sẻ (Share ⎋)</b> ở dưới thanh công cụ Safari.<br>3. Chọn <b>"Thêm vào Màn hình chính" (Add to Home Screen ➕)</b> và bấm <b>Thêm</b>.</div>
+      <div class="step-title">1. Hướng dẫn cài đặt 3 bước trên iPhone / iPad (Safari):</div>
+      <div>
+        1. Kết nối iPhone/iPad vào cùng mạng Wi-Fi với máy Mac.<br>
+        2. Mở <b>Safari</b> trên iPhone và nhập địa chỉ: <b style="color:#166534;">http://192.168.1.25:5173</b><br>
+        3. Nhấn nút <b>Chia sẻ (Share ⎋)</b> ở dưới thanh công cụ Safari &rarr; Chọn <b>"Thêm vào Màn hình chính" (Add to Home Screen ➕)</b> và bấm <b>Thêm</b>.
+      </div>
     </div>
 
     <div class="step">
       <div class="step-title">2. Trải nghiệm dành cho Testers:</div>
-      <div>• Icon ứng dụng Tâm An Care sẽ xuất hiện ngoài Màn hình chính iOS.<br>• Chạy toàn màn hình không có thanh địa chỉ Safari.<br>• Tích hợp sẵn nút <b>🧪 Chế Độ Tester</b> chuyển đổi 14 vai trò làm việc.</div>
+      <div>
+        • Icon ứng dụng <b>Tâm An Care</b> màu xanh lá sẽ tự động xuất hiện ngoài Màn hình chính iPhone.<br>
+        • Khởi chạy full-screen độc lập không có thanh địa chỉ trình duyệt.<br>
+        • Tích hợp sẵn nút <b>🧪 Chế Độ Tester</b> để thử nghiệm 14 vai trò.
+      </div>
     </div>
 
     <div style="text-align: center; margin-top: 1.5rem;">
-      <a href="http://127.0.0.1:5173" class="btn">🚀 Khởi Chạy Ứng Dụng Trên Safari iOS</a>
+      <a href="http://192.168.1.25:5173" class="btn">🚀 Khởi Chạy Ứng Dụng Trên Safari iOS</a>
     </div>
   </div>
 </body>

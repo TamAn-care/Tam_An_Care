@@ -10,7 +10,8 @@
     h1 { color: #166534; font-size: 1.3rem; margin-top: 0; }
     .step { background: #f0fdf4; border: 1px solid #86efac; border-radius: 0.5rem; padding: 0.85rem; margin-bottom: 1rem; }
     .step-title { font-weight: 700; color: #166534; margin-bottom: 0.25rem; }
-    .btn { display: inline-block; background: #166534; color: #fff; text-decoration: none; font-weight: 700; padding: 0.6rem 1.2rem; border-radius: 0.4rem; margin-top: 0.5rem; }
+    .btn { display: inline-block; background: #166534; color: #fff; text-decoration: none; font-weight: 700; padding: 0.75rem 1.5rem; border-radius: 0.4rem; margin-top: 0.5rem; font-size: 1rem; }
+    .ip-box { background: #e0f2fe; border: 1px solid #7dd3fc; color: #0369a1; padding: 0.75rem; border-radius: 0.5rem; font-weight: 700; font-family: monospace; font-size: 1.1rem; text-align: center; margin: 1rem 0; }
   </style>
 </head>
 <body>
@@ -18,9 +19,17 @@
     <h1>🤖 Gói Cài Đặt Android (WebAPK & Offline PWA)</h1>
     <p>Bản ứng dụng <b>Tâm An Care V7.5</b> đóng gói cho thiết bị Android (Điện thoại & Máy tính bảng Samsung, Xiaomi, Oppo, Vivo...):</p>
     
+    <div class="ip-box">
+      http://192.168.1.25:5173
+    </div>
+
     <div class="step">
       <div class="step-title">1. Cài đặt 1-Click trên Android (WebAPK):</div>
-      <div>Mở Chrome trên điện thoại Android và chọn <b>"Thêm vào Màn hình chính"</b> hoặc nhấn nút <b>"📱 Cài Đặt App"</b> trên Topbar. Ứng dụng sẽ tự động đóng gói thành file WebAPK và xuất hiện ngoài màn hình ứng dụng Android.</div>
+      <div>
+        1. Kết nối Android vào cùng mạng Wi-Fi với máy tính.<br>
+        2. Mở Chrome trên Android và truy cập: <b style="color:#0369a1;">http://192.168.1.25:5173</b><br>
+        3. Nhấn nút <b>"📱 Cài Đặt App"</b> trên Topbar hoặc chọn <b>⋮ &rarr; "Cài đặt ứng dụng"</b>.
+      </div>
     </div>
 
     <div class="step">
@@ -29,7 +38,7 @@
     </div>
 
     <div style="text-align: center; margin-top: 1.5rem;">
-      <a href="http://127.0.0.1:5173" class="btn">🚀 Khởi Chạy Ứng Dụng Này Trên Android</a>
+      <a href="http://192.168.1.25:5173" class="btn">🚀 Khởi Chạy Ứng Dụng Trên Chrome Android</a>
     </div>
   </div>
 </body>
