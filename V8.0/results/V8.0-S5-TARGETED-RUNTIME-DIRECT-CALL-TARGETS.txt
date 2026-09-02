@@ -1,5 +1,0 @@
-TAM AN CARE V8.0 — S5 DIRECT CALL TARGETS
-STATIC_ONLY=YES
-
-LOCAL_CALL_TARGET|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|METHOD=authorizeSupervisor|STATUS=RESOLVED|BODY_LENGTH=703
-LOCAL_CALL_TARGET|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|METHOD=authorizeSupervisor|STATUS=RESOLVED|BODY_LENGTH=703

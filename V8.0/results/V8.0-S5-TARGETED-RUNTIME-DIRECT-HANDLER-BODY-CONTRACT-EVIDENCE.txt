@@ -1,7 +1,0 @@
-TAM AN CARE V8.0 — S5 DIRECT HANDLER BODY CONTRACT EVIDENCE
-STATIC_ONLY=YES
-
-DIRECT_HANDLER_BODY|INDEX=1|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|PARAMETERS=@Body() body: any,|BODY_LENGTH=61|BODY=return this.earlyWarningService .analyze(body);|CONTRACT_ANALYZED=NO|RUNTIME_AUTHORIZED=NO
-DIRECT_HANDLER_BODY|INDEX=2|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|PARAMETERS=@Param('residentId') residentId: string, @Body() body: any,|BODY_LENGTH=963|BODY=const context = await this.residentService .getById(residentId); const analysis = this.earlyWarningService .analyze({ ...body, residentId: context.resident.residentId, }); return { ...analysis, residentId: context.resident.residentId, residentContext: { residentId: context.resident.residentId, residentCode: context.resident.residentCode, displayName: context.resident.displayName, room: context.resident.room, bed: context.resident.bed, careLevel: context.resident.careLevel, activeStatus: context.resident.activeStatus, }, residentAssociation: { verified: true, source: 'POSTGRES_RESIDENT_CONTEXT', }, autonomousClinicalAction: false, };|CONTRACT_ANALYZED=NO|RUNTIME_AUTHORIZED=NO
-
-DIRECT_HANDLER_BODY_COUNT=2

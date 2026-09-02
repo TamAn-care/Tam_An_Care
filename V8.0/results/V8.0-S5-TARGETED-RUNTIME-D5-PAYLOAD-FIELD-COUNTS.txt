@@ -1,8 +1,0 @@
-TAM AN CARE V8.0 — S5 D5 PAYLOAD FIELD COUNTS
-ZERO_COUNT_SAFE=YES
-
-PAYLOAD_FIELD_COUNT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|COUNT=0
-PAYLOAD_FIELD_COUNT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|COUNT=0
-PAYLOAD_FIELD_COUNT|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|COUNT=0
-PAYLOAD_FIELD_COUNT|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|COUNT=0
-PAYLOAD_FIELD_COUNT|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|COUNT=0

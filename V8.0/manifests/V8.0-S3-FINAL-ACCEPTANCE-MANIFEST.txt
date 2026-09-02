@@ -1,7 +1,0 @@
-VERSION=V8.0
-SERIES=SERIES_08
-GATE=S3
-STATUS=PASSED
-RESULT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S3-FINAL-ACCEPTANCE-RESULT.txt
-STATE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/state/series08_s0_state.json
-NEXT_GATE=S4

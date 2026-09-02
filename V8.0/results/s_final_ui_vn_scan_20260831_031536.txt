@@ -1,1 +1,0 @@
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/features/care-view/CareViewPage.tsx:366:            <dt>Resident scope</dt>

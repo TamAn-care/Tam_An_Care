@@ -1,3 +1,0 @@
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/x3_post_b4_exact_binding_20260831_031056.txt:13:----- 1. EXACT X3-B4..B9 ARTIFACT INVENTORY -----
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_sia_r1_db_authority_discovery_20260830_162959.txt:141:76003 docker run -i --rm -v /tmp/tamancare-x3b5c7r1.spAvAb/api:/app -w /app node:22-bookworm bash -s
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt:654: -> DO NOT START X3-B5 FROM ASSUMPTION

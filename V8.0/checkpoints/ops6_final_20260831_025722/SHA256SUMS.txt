@@ -1,4 +1,0 @@
-9f6876eb57468db012e193018c32b9fdb764a6267ad37935908aa9fc0c8c326d  ./OPS6_ACCEPTANCE.txt
-fd018d3a41acef7ac9ceed509c1e9176a760067a959f93b012521db714861d87  ./api-health-reports/health-report.controller.ts
-6bec154b0ddbea8b3469652f577b53669831dd73e7ad26eee9f0c7ed86916f78  ./api-health-reports/health-report.module.ts
-3e92607de925b375b576d740f9de7385400694a12c38de4a396369886474ecf6  ./api-health-reports/health-report.service.ts

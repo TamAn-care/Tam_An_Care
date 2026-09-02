@@ -1,3 +1,0 @@
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_sia_r1_db_authority_discovery_20260830_162959.txt
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt
-/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/x3_post_b4_exact_binding_20260831_031056.txt

@@ -1,9 +1,0 @@
-TAM AN CARE V8.0 — S5 VARIABLE ALIAS O5 BRANCH OUTCOME EVIDENCE
-STATIC_ONLY=YES
-
-ERROR_BRANCH_GROUP|INDEX=1|LITERAL_COUNT=1|LITERALS=Resident context not found|HTTP_STATUS_COUNT=1|HTTP_STATUSES=NOT_FOUND|EXCEPTION_COUNT=1|EXCEPTIONS=HttpException|THROW_COUNT=1|THROWS=new HttpException( message, HttpStatus.NOT_FOUND, )|CONDITION=message.includes( 'Resident context not found', )|BRANCH=throw new HttpException( message, HttpStatus.NOT_FOUND, );
-ERROR_BRANCH_GROUP|INDEX=2|LITERAL_COUNT=3|LITERALS=required,Invalid,already been reviewed|HTTP_STATUS_COUNT=1|HTTP_STATUSES=BAD_REQUEST|EXCEPTION_COUNT=1|EXCEPTIONS=HttpException|THROW_COUNT=1|THROWS=new HttpException( message, HttpStatus.BAD_REQUEST, )|CONDITION=message.includes('required') <PIPE><PIPE> message.includes('Invalid') <PIPE><PIPE> message.includes( 'already been reviewed', )|BRANCH=throw new HttpException( message, HttpStatus.BAD_REQUEST, );
-
-ERROR_BRANCH_GROUP_COUNT=2
-ERROR_BRANCH_TOTAL_LITERAL_COUNT=4
-ERROR_BRANCH_LITERAL_SET_COMPLETE=YES
