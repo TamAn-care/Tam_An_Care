@@ -42,6 +42,7 @@ import {
 } from '../../api/staff-actors';
 
 import { NotificationBell } from '../notifications/NotificationBell';
+import { TesterPortalModal } from '../testing/TesterPortalModal';
 
 export function AppShell() {
   const {
@@ -60,6 +61,7 @@ export function AppShell() {
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
+  const [showTesterModal, setShowTesterModal] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -275,6 +277,28 @@ export function AppShell() {
 
               {actor && (
                 <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowTesterModal(true)}
+                    style={{
+                      background: '#fef3c7',
+                      border: '1px solid #fde047',
+                      color: '#854d0e',
+                      fontWeight: 800,
+                      fontSize: '0.78rem',
+                      padding: '0.35rem 0.65rem',
+                      borderRadius: '0.35rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                    }}
+                    title="Mở Bảng Điều Khiển Chạy Thử Nghiệm Multi-Role Dành Cho Testers"
+                  >
+                    <span>🧪</span> Chế Độ Tester
+                  </button>
+
                   <button
                     type="button"
                     onClick={handleInstallApp}
@@ -566,6 +590,12 @@ export function AppShell() {
           </div>
         </div>
       )}
+
+      {/* MODAL CHẾ ĐỘ THỬ NGHIỆM MULTI-ROLE CHO TESTERS */}
+      <TesterPortalModal
+        isOpen={showTesterModal}
+        onClose={() => setShowTesterModal(false)}
+      />
     </div>
   );
 }
