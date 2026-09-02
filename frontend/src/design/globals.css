@@ -1749,4 +1749,159 @@ transform: scale(1.28);
   }
 }
 
+/* ========================================================================== */
+/* MOBILE NATIVE UI & RESPONSIVE DESIGN ENHANCEMENTS (< 768px)               */
+/* ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Prevent horizontal page overflow & safe area padding */
+  html, body {
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
+
+  body {
+    padding-bottom: 72px; /* Space for Mobile Bottom Navigation Bar */
+  }
+
+  /* Safe Area for iOS notch & home bar */
+  .topbar {
+    min-height: auto !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    padding: 0.65rem 0.75rem !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .topbar-start {
+    gap: 0.4rem !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .topbar-title {
+    font-size: 1.05rem !important;
+  }
+
+  .topbar-subtitle {
+    display: none !important;
+  }
+
+  .topbar-end {
+    width: 100% !important;
+    justify-content: space-between !important;
+    gap: 0.35rem !important;
+    padding-top: 0.35rem !important;
+    border-top: 1px solid var(--border-default) !important;
+  }
+
+  .page-content {
+    padding: 0.75rem 0.65rem 5rem 0.65rem !important;
+  }
+
+  /* Touch Targets (44px Minimum height on Mobile) */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+    min-height: 44px;
+    padding: 0.6rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+  }
+
+  button,
+  .btn,
+  .button {
+    min-height: 42px;
+    padding: 0.55rem 0.75rem !important;
+    font-size: 0.85rem !important;
+    touch-action: manipulation;
+  }
+
+  /* Responsive Multi-column Grids to Single Column on Mobile */
+  .grid,
+  .form-row,
+  .stats-grid,
+  div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Card Spacing & Touch Borders */
+  .card {
+    padding: 0.85rem !important;
+    border-radius: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Touch-friendly Data Tables with Smooth Horizontal Scroll */
+  .table-responsive,
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    border-radius: 0.5rem;
+  }
+
+  table th,
+  table td {
+    padding: 0.6rem 0.65rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Modal Bottom Sheet Transformation on Mobile */
+  .modal-overlay,
+  .modal-backdrop {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  .modal-dialog,
+  .modal-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 94vh !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 1.25rem !important;
+    border-top-right-radius: 1.25rem !important;
+    padding: 1.15rem 1rem !important;
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .modal-header {
+    padding-bottom: 0.6rem !important;
+  }
+
+  .modal-body {
+    padding: 0.5rem 0 !important;
+    max-height: 74vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-footer {
+    padding-top: 0.75rem !important;
+    flex-direction: column-reverse !important;
+    gap: 0.5rem !important;
+  }
+
+  .modal-footer button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
 

@@ -43,6 +43,7 @@ import {
 
 import { NotificationBell } from '../notifications/NotificationBell';
 import { TesterPortalModal } from '../testing/TesterPortalModal';
+import { MobileBottomNav } from '../navigation/MobileBottomNav';
 
 export function AppShell() {
   const {
@@ -595,6 +596,12 @@ export function AppShell() {
       <TesterPortalModal
         isOpen={showTesterModal}
         onClose={() => setShowTesterModal(false)}
+      />
+
+      {/* FIXED MOBILE BOTTOM NAVIGATION BAR */}
+      <MobileBottomNav
+        onOpenMenu={() => setMenuOpen(true)}
+        onOpenTesterModal={() => setShowTesterModal(true)}
       />
     </div>
   );
