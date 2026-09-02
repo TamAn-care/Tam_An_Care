@@ -1,0 +1,64 @@
+TAM AN CARE V7.4.3
+STEP 7M AUTHORIZATION MATRIX
+
+==============================================================
+ACTION                  CARE_MANAGER SUPERVISOR CAREGIVER AI SYSTEM
+==============================================================
+
+CREATE ORDER DRAFT       ALLOW*       ALLOW*     DENY      DENY DENY
+VERIFY ORDER             ALLOW        ALLOW      DENY      DENY DENY
+ACTIVATE ORDER           ALLOW        ALLOW      DENY      DENY DENY
+SUSPEND ORDER            ALLOW        ALLOW      DENY      DENY DENY
+COMPLETE ORDER           ALLOW        ALLOW      DENY      DENY DENY
+CANCEL ORDER             ALLOW        ALLOW      DENY      DENY DENY
+
+CREATE SCHEDULE          ALLOW        ALLOW      DENY      DENY DENY
+
+ASSIGN ADMINISTRATION    ALLOW        ALLOW      DENY      DENY DENY
+
+ACCEPT ADMINISTRATION    OWNER        OWNER      OWNER     DENY DENY
+
+DOUBLE CHECK             ALLOW        ALLOW      DENY**    DENY DENY
+
+ADMINISTER               OWNER        OWNER      OWNER     DENY DENY
+
+MARK MISSED              ALLOW        ALLOW      OWNER***  DENY DENY
+MARK REFUSED             ALLOW        ALLOW      OWNER***  DENY DENY
+PLACE HOLD               ALLOW        ALLOW      DENY      DENY DENY
+REMOVE HOLD              ALLOW        ALLOW      DENY      DENY DENY
+CANCEL ADMINISTRATION    ALLOW        ALLOW      DENY      DENY DENY
+
+==============================================================
+
+* Creating an order only records a documented external
+  prescriber instruction. It is not prescribing.
+
+** Caregiver double-check eligibility may be enabled later
+   only if a formal qualified-role model exists.
+   Current 7M design restricts checker to
+   CARE_MANAGER / SUPERVISOR.
+
+*** Owner may record observed operational outcome only
+    where policy explicitly allows.
+
+HIGH-RISK RULE:
+
+Administrator and double-checker must be different humans.
+
+AI / SYSTEM cannot:
+
+create clinical order
+verify order
+activate order
+assign
+accept
+double-check
+administer
+miss
+refuse
+hold
+unhold
+cancel
+complete
+
+All mutation decisions remain attributable to a human actor.

@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-08-21T10:23:55.896639+00:00",
+  "stage": "E4_R1_RESIDENT_AI_METHOD_RECOVERY",
+  "status": "PASSED",
+  "root_cause": "E4_USED_GET_FOR_POST_ONLY_RESIDENT_AI_ROUTE",
+  "route": {
+    "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+    "method": "POST",
+    "get_is_authoritative_security_probe": false,
+    "post_is_authoritative_security_probe": true
+  },
+  "runtime_proof": {
+    "get_no_actor": "404",
+    "post_no_actor": "401",
+    "corrected_security_matrix": "401|401|401"
+  },
+  "e4_correction": {
+    "staff_probe_method": "GET",
+    "access_probe_method": "GET",
+    "resident_ai_probe_method": "POST",
+    "resident_ai_probe_body": {},
+    "expected_matrix": "401|401|401"
+  },
+  "production": {
+    "v76_api_matrix": "200|401|401",
+    "v76_ui_matrix": "200|401|401|200",
+    "db_table_count": 118,
+    "db_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "changed": false
+  },
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7"
+}

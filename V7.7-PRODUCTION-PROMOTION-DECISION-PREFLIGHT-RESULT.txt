@@ -1,0 +1,59 @@
+TAM AN CARE V7.7
+PRODUCTION PROMOTION DECISION PREFLIGHT
+
+STATUS=READY_FOR_DECISION
+
+IMPORTANT:
+
+THIS IS NOT PRODUCTION PROMOTION.
+
+V7.7 has completed the roadmap defined by the
+authoritative V7.7 roadmap evidence.
+
+V7.7 technical release readiness:
+READY_FOR_PROMOTION_DECISION
+
+ROADMAP_CLOSURE_RESULT_HASH=
+2bcd4303917331788cb528e4c46258a1f672055d553bf9c7fd2b15941b2d4363
+
+RELEASE_READINESS_MANIFEST_HASH=
+82323473276e4d9f46bae0790bfa9647699869de7035657fae5dda361310c145
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+CURRENT PRODUCTION:
+
+VERSION=V7.6
+API_MATRIX=200|401|401
+UI_MATRIX=200|401|401|200
+DATABASE_COUNTS=0|0|0
+
+CURRENT PRODUCTION MUST REMAIN UNCHANGED
+UNTIL AN EXPLICIT PROMOTION DECISION IS MADE.
+
+PROMOTION DECISION GATE MUST VERIFY:
+
+1. Exact V7.7 release source hash.
+2. Exact V7.7 closure manifest hash.
+3. Exact V7.6 rollback source/runtime availability.
+4. Production backup / rollback readiness.
+5. Database migration delta, if any.
+6. Backward compatibility.
+7. Production environment variables.
+8. API port / UI port promotion plan.
+9. Pre-promotion health matrix.
+10. Post-promotion health matrix.
+11. Security smoke tests.
+12. Operational Care UI smoke tests.
+13. Resident AI human-actor controls.
+14. autonomousClinicalAction=false.
+15. Rollback trigger conditions.
+16. Immediate rollback procedure.
+
+NO PRODUCTION CHANGE IS AUTHORIZED BY THIS PREFLIGHT.
+
+DO NOT STOP V7.6.
+DO NOT RECREATE V7.6.
+DO NOT MODIFY PRODUCTION DATABASE.
+DO NOT PROMOTE V7.7 WITHOUT EXPLICIT DECISION.

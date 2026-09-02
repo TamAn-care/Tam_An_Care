@@ -1,0 +1,179 @@
+{
+  "generated_at": "2026-08-21T08:42:55.092834+00:00",
+  "phase_4a_r2b": "CLOSED",
+  "b2_result_hash": "0b64613773ef100624a73327a3d776eb5e1bd01631a1f38c0dd0d54027445042",
+  "closure_hash": "70d4b97e6f1b42949caddb2e98bbe74279c6645c1ebabc3d844f9cc4396d8375",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "decision": "MULTIPLE_EXISTING_GATE_CANDIDATES",
+  "resolved_next_gate": null,
+  "candidates": [
+    {
+      "gate": "STEP 7L.4 CARE TASK REPOSITORY",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt"
+      ]
+    },
+    {
+      "gate": "7L.6B IMPLEMENTATION + RUNTIME",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt"
+      ]
+    },
+    {
+      "gate": "STEP 7L.3 CARE PLAN REPOSITORY",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt"
+      ]
+    },
+    {
+      "gate": "STEP 7L.6C",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt"
+      ]
+    },
+    {
+      "gate": "STEP 7L.2 DEVELOPMENT SCHEMA FOUNDATION",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt"
+      ]
+    },
+    {
+      "gate": "STEP 7L.6 CARE TASK ASSIGNMENT / EXECUTION DOMAIN",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt"
+      ]
+    },
+    {
+      "gate": "STEP 7L.5 CARE PLAN HUMAN AUTHORIZATION DOMAIN",
+      "score": 80,
+      "evidence": [
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt",
+        "V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt"
+      ]
+    },
+    {
+      "gate": "STEP 8E.C0",
+      "score": 20,
+      "evidence": [
+        "V7.4.3-STEP-8E-B-EXACT-ASSIGNMENT-ADMIN-CONTRACT.md"
+      ]
+    },
+    {
+      "gate": "Step 8D.C0",
+      "score": 20,
+      "evidence": [
+        "V7.4.3-STEP-8D-B-EXACT-RESIDENT-AUTHORIZATION-CONTRACT.md"
+      ]
+    },
+    {
+      "gate": "V7.5-STEP-9F-C1-PREFLIGHT-R1-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.5-STEP-9F-C1-PREFLIGHT-R1-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.5-PHASE-7-READINESS-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.5-PHASE-7-READINESS-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.5-PRODUCTION-PROMOTION-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.5-PRODUCTION-PROMOTION-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.6-PHASE-4C-FUNCTIONAL-ACCEPTANCE-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.6-PHASE-4C-FUNCTIONAL-ACCEPTANCE-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.6-PHASE-4C-C-R4-R2-R2-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.6-PHASE-4C-C-R4-R2-R2-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.6-PHASE-4C-C-TAIL-FUNCTIONAL-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.6-PHASE-4C-C-TAIL-FUNCTIONAL-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.6-PHASE-5-REGRESSION-RELEASE-READINESS-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.6-PHASE-5-REGRESSION-RELEASE-READINESS-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.7-ROADMAP-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.7-ROADMAP-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.7-PHASE-1-ARCHITECTURE-AUDIT-GAP-DISCOVERY-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.7-PHASE-1-ARCHITECTURE-AUDIT-GAP-DISCOVERY-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.7-PHASE-4-CONTROLLED-IMPLEMENTATION-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.7-PHASE-4-CONTROLLED-IMPLEMENTATION-PREFLIGHT-RESULT.txt"
+      ]
+    },
+    {
+      "gate": "V7.7-PHASE-4B-SECURITY-GAP-CLOSURE-PREFLIGHT-RESULT",
+      "score": 15,
+      "evidence": [
+        "V7.7-PHASE-4B-SECURITY-GAP-CLOSURE-PREFLIGHT-RESULT.txt"
+      ]
+    }
+  ],
+  "rules": {
+    "rerun_r3_r4": false,
+    "rerun_b2": false,
+    "rediscover_phase_4a_r2b": false,
+    "modify_v7_6": false,
+    "production_database_write": false
+  }
+}

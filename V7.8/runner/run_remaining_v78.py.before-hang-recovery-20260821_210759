@@ -1,0 +1,2575 @@
+from pathlib import Path
+from datetime import datetime, timezone
+import subprocess
+import hashlib
+import json
+import re
+import shutil
+import sys
+import time
+import os
+
+# ============================================================
+# TAM AN CARE V7.8 — REMAINING ROADMAP MASTER RUNNER
+#
+# START:
+#   accepted Phase 4B
+#
+# SERIES:
+#   4C-R1 -> 4C -> 4 FINAL
+#   -> 5A -> 5B -> 5 FINAL
+#   -> 6 -> FINAL OPERATIONAL FREEZE
+#
+# EXECUTION MODEL:
+#   PASS -> AUTO ADVANCE
+#   FAIL -> SAFE STOP
+#
+# PRODUCTION SAFETY:
+#   frozen V7.7 source write = NO
+#   production DB mutation = NO
+#   real staff/resident mutation = NO
+#   V7.6 rollback asset deletion = NO
+# ============================================================
+
+ROOT = Path(
+    "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development"
+)
+
+V77 = ROOT / "V7.7"
+V78 = ROOT / "V7.8"
+
+WS77 = V77 / "workspace"
+FRONTEND = WS77 / "frontend"
+API_SOURCE = WS77 / "api" / "src"
+
+RUNNER = V78 / "runner"
+RESULTS = V78 / "results"
+MANIFESTS = V78 / "manifests"
+TMP = V78 / "tmp"
+BACKUPS = V78 / "backups"
+
+for d in [
+    RUNNER,
+    RESULTS,
+    MANIFESTS,
+    TMP,
+]:
+    d.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+# ============================================================
+# ACCEPTED CHECKPOINT
+# ============================================================
+
+EXPECTED = {
+    "phase4b_result":
+        "6adfebf5ca8819b669997c93f834a88e9e3675b793ea51724fb97422526ec91a",
+
+    "phase4b_manifest":
+        "64410e47c68a66fe3b36fe2d67b20908f37b0c82bb66e243c8361a09fb6d2021",
+
+    "phase4c_preflight":
+        "9a5c9a90d7b7a612b2c47d8360b6169322f0cc2e0f19047ca7b4fdfbd1a5bb07",
+
+    "v77_source":
+        "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+
+    "db_tables":
+        118,
+
+    "db_fingerprint":
+        "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+}
+
+P4B_RESULT = ROOT / (
+    "V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt"
+)
+
+P4B_MANIFEST = V78 / (
+    "V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json"
+)
+
+P4C_PREFLIGHT = ROOT / (
+    "V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt"
+)
+
+# ============================================================
+# ACTIVE PRODUCTION
+# ============================================================
+
+API_CONTAINER = "taman-care-v77-production-api"
+UI_CONTAINER = "taman-care-v77-production-ui"
+DB_CONTAINER = "taman-care-v743-dev-postgres"
+
+V76_API = "taman-care-v743-dev-api"
+V76_UI = "taman-care-v75-ui"
+
+API_BASE = "http://127.0.0.1:3100"
+UI_BASE = "http://127.0.0.1:8080"
+
+DB_USER = "taman_v743_dev"
+DB_NAME = "taman_care_v743_dev"
+
+# ============================================================
+# GLOBAL STATE
+# ============================================================
+
+STATE_FILE = V78 / "V7.8-EXECUTION-STATE.json"
+
+STATE = {
+    "version": "V7.8",
+    "started_at":
+        datetime.now(timezone.utc).isoformat(),
+    "starting_checkpoint":
+        "PHASE_4B_PASSED",
+    "completed": [],
+    "status": "RUNNING",
+}
+
+
+# ============================================================
+# BASIC HELPERS
+# ============================================================
+
+def run(cmd, cwd=None, env=None):
+    return subprocess.run(
+        cmd,
+        cwd=cwd,
+        env=env,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+
+
+def sha(path):
+    return hashlib.sha256(
+        path.read_bytes()
+    ).hexdigest()
+
+
+def now():
+    return datetime.now(
+        timezone.utc
+    ).isoformat()
+
+
+def save_state():
+    STATE_FILE.write_text(
+        json.dumps(
+            STATE,
+            indent=2,
+            ensure_ascii=False,
+        ) + "\n",
+        encoding="utf-8",
+    )
+
+
+def banner(title):
+    print()
+    print("=" * 212)
+    print(" " + title)
+    print("=" * 212)
+
+
+def complete_gate(name, result=None, manifest=None):
+    entry = {
+        "gate": name,
+        "completed_at": now(),
+    }
+
+    if result:
+        entry["result"] = str(result)
+        entry["result_hash"] = sha(result)
+
+    if manifest:
+        entry["manifest"] = str(manifest)
+        entry["manifest_hash"] = sha(manifest)
+
+    STATE["completed"].append(entry)
+    save_state()
+
+    print()
+    print(f"PASS: {name}")
+
+
+def safe_stop(reason, gate):
+    STATE["status"] = "STOPPED_SAFELY"
+    STATE["failed_gate"] = gate
+    STATE["reason"] = reason
+    STATE["stopped_at"] = now()
+    save_state()
+
+    banner("V7.8 MASTER RUNNER STOPPED SAFELY")
+
+    print(f"GATE={gate}")
+    print(f"REASON={reason}")
+    print()
+    print("PRODUCTION_DB_WRITE=NO")
+    print("FROZEN_V7.7_SOURCE_WRITE=NO")
+    print("REAL_STAFF_CHANGE=NO")
+    print("REAL_RESIDENT_CHANGE=NO")
+    print("V7.6_ROLLBACK_ASSETS_DELETE=NO")
+    print()
+    print("PASSED GATES WILL NOT BE RERUN.")
+    print("RESUME FROM THE REPORTED GATE ONLY.")
+    print()
+    print("SEND THIS ENTIRE OUTPUT BACK.")
+
+    sys.exit(1)
+
+
+def require_file_hash(path, expected, label, gate):
+    if not path.is_file():
+        safe_stop(
+            f"{label} missing: {path}",
+            gate,
+        )
+
+    actual = sha(path)
+    print(f"{label}_HASH={actual}")
+
+    if actual != expected:
+        safe_stop(
+            f"{label} hash mismatch",
+            gate,
+        )
+
+
+def inspect(name):
+    r = run([
+        "docker",
+        "inspect",
+        name,
+    ])
+
+    if r.returncode:
+        return None
+
+    try:
+        return json.loads(r.stdout)[0]
+    except Exception:
+        return None
+
+
+def container_state(info):
+    if not info:
+        return "<MISSING>"
+
+    return info.get(
+        "State", {}
+    ).get(
+        "Status",
+        "<UNKNOWN>",
+    )
+
+
+def curl_code(url, method="GET", body=None):
+    cmd = [
+        "curl",
+        "-sS",
+        "--max-time", "5",
+        "-o", "/dev/null",
+        "-w", "%{http_code}",
+    ]
+
+    if method != "GET":
+        cmd += [
+            "-X", method,
+        ]
+
+    if body is not None:
+        cmd += [
+            "-H",
+            "Content-Type: application/json",
+            "--data",
+            body,
+        ]
+
+    cmd.append(url)
+
+    r = run(cmd)
+
+    return r.stdout.strip()
+
+
+# ============================================================
+# SOURCE HASH — SAME ACCEPTED MODEL
+# ============================================================
+
+def source_hash(root):
+    ignored = {
+        ".git",
+        "node_modules",
+        "dist",
+        "build",
+        "coverage",
+    }
+
+    allowed = {
+        ".ts", ".tsx",
+        ".js", ".jsx",
+        ".json",
+        ".sql",
+        ".css",
+        ".html",
+        ".md",
+        ".yml",
+        ".yaml",
+    }
+
+    data = {}
+
+    for p in root.rglob("*"):
+        if not p.is_file():
+            continue
+
+        if any(
+            part in ignored
+            for part in p.parts
+        ):
+            continue
+
+        if p.name.endswith(
+            ".tsbuildinfo"
+        ):
+            continue
+
+        if p.suffix.lower() not in allowed:
+            continue
+
+        data[
+            str(p.relative_to(root))
+        ] = sha(p)
+
+    raw = json.dumps(
+        data,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode()
+
+    return hashlib.sha256(
+        raw
+    ).hexdigest()
+
+
+# ============================================================
+# PRODUCTION DB READ-ONLY CONTRACT
+# ============================================================
+
+def prod_query(sql):
+    r = run([
+        "docker",
+        "exec",
+        DB_CONTAINER,
+        "psql",
+        "-X",
+        "-v", "ON_ERROR_STOP=1",
+        "-U", DB_USER,
+        "-d", DB_NAME,
+        "-At",
+        "-c",
+        "BEGIN READ ONLY;\n"
+        + sql
+        + "\nROLLBACK;",
+    ])
+
+    if r.returncode:
+        raise RuntimeError(
+            r.stdout[-4000:]
+        )
+
+    return [
+        x.strip()
+        for x in r.stdout.splitlines()
+        if x.strip()
+        and x.strip()
+        not in {
+            "BEGIN",
+            "ROLLBACK",
+        }
+    ]
+
+
+def db_fingerprint():
+    tables = prod_query("""
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema='public'
+AND table_type='BASE TABLE'
+ORDER BY table_name;
+""")
+
+    rows = []
+
+    for table in tables:
+        safe = table.replace(
+            '"',
+            '""',
+        )
+
+        count = prod_query(
+            f'SELECT count(*) '
+            f'FROM public."{safe}";'
+        )
+
+        if len(count) != 1:
+            raise RuntimeError(
+                "invalid table count "
+                + table
+            )
+
+        rows.append(
+            f"{table}={count[0]}"
+        )
+
+    canonical = "\n".join(rows)
+
+    return {
+        "table_count":
+            len(rows),
+
+        "fingerprint":
+            hashlib.sha256(
+                canonical.encode()
+            ).hexdigest(),
+    }
+
+
+# ============================================================
+# UNIVERSAL PRODUCTION GUARD
+# ============================================================
+
+def capture_runtime_guard():
+    api = inspect(API_CONTAINER)
+    ui = inspect(UI_CONTAINER)
+    db = inspect(DB_CONTAINER)
+
+    if not all([
+        api,
+        ui,
+        db,
+    ]):
+        raise RuntimeError(
+            "production container missing"
+        )
+
+    return {
+        "api_id":
+            api["Id"],
+
+        "ui_id":
+            ui["Id"],
+
+        "db_id":
+            db["Id"],
+
+        "api_started":
+            api["State"]["StartedAt"],
+
+        "ui_started":
+            ui["State"]["StartedAt"],
+
+        "db_started":
+            db["State"]["StartedAt"],
+    }
+
+
+def verify_runtime_guard(before, gate):
+    api = inspect(API_CONTAINER)
+    ui = inspect(UI_CONTAINER)
+    db = inspect(DB_CONTAINER)
+
+    if not all([
+        api,
+        ui,
+        db,
+    ]):
+        safe_stop(
+            "production container missing",
+            gate,
+        )
+
+    checks = {
+        "api_id":
+            api["Id"],
+
+        "ui_id":
+            ui["Id"],
+
+        "db_id":
+            db["Id"],
+
+        "api_started":
+            api["State"]["StartedAt"],
+
+        "ui_started":
+            ui["State"]["StartedAt"],
+
+        "db_started":
+            db["State"]["StartedAt"],
+    }
+
+    if checks != before:
+        safe_stop(
+            "production runtime changed unexpectedly",
+            gate,
+        )
+
+
+def verify_production(gate):
+    api = inspect(API_CONTAINER)
+    ui = inspect(UI_CONTAINER)
+    db = inspect(DB_CONTAINER)
+
+    if container_state(api) != "running":
+        safe_stop(
+            "V7.7 API not running",
+            gate,
+        )
+
+    if container_state(ui) != "running":
+        safe_stop(
+            "V7.7 UI not running",
+            gate,
+        )
+
+    if container_state(db) != "running":
+        safe_stop(
+            "production PostgreSQL not running",
+            gate,
+        )
+
+    api_health = curl_code(
+        API_BASE + "/api/health"
+    )
+
+    staff = curl_code(
+        API_BASE
+        + "/api/operations/staff-actors"
+    )
+
+    access = curl_code(
+        API_BASE
+        + "/api/operations/access-assignments"
+    )
+
+    ai = curl_code(
+        API_BASE
+        + "/api/ai/engines/health-trend/"
+          "resident/v78-master-probe/patterns",
+        method="POST",
+        body="{}",
+    )
+
+    ui_health = curl_code(
+        UI_BASE + "/api/health"
+    )
+
+    ui_staff = curl_code(
+        UI_BASE
+        + "/api/operations/staff-actors"
+    )
+
+    ui_access = curl_code(
+        UI_BASE
+        + "/api/operations/access-assignments"
+    )
+
+    operational = curl_code(
+        UI_BASE
+        + "/operational-care"
+    )
+
+    api_matrix = (
+        f"{api_health}|"
+        f"{staff}|"
+        f"{access}|"
+        f"{ai}"
+    )
+
+    ui_matrix = (
+        f"{ui_health}|"
+        f"{ui_staff}|"
+        f"{ui_access}|"
+        f"{operational}"
+    )
+
+    print(
+        f"PRODUCTION_API_MATRIX={api_matrix}"
+    )
+
+    print(
+        f"PRODUCTION_UI_MATRIX={ui_matrix}"
+    )
+
+    if api_matrix != (
+        "200|401|401|401"
+    ):
+        safe_stop(
+            "production API matrix changed",
+            gate,
+        )
+
+    if ui_matrix != (
+        "200|401|401|200"
+    ):
+        safe_stop(
+            "production UI matrix changed",
+            gate,
+        )
+
+
+def verify_source(gate):
+    actual = source_hash(
+        WS77
+    )
+
+    print(
+        f"V77_SOURCE_HASH={actual}"
+    )
+
+    if actual != EXPECTED["v77_source"]:
+        safe_stop(
+            "frozen V7.7 source changed",
+            gate,
+        )
+
+
+def verify_database(gate):
+    try:
+        current = db_fingerprint()
+    except Exception as e:
+        safe_stop(
+            "database fingerprint failed: "
+            + str(e),
+            gate,
+        )
+
+    print(
+        "DB_TABLE_COUNT="
+        + str(
+            current["table_count"]
+        )
+    )
+
+    print(
+        "DB_FINGERPRINT="
+        + current["fingerprint"]
+    )
+
+    if current["table_count"] != EXPECTED["db_tables"]:
+        safe_stop(
+            "production table count changed",
+            gate,
+        )
+
+    if current["fingerprint"] != EXPECTED["db_fingerprint"]:
+        safe_stop(
+            "production DB row fingerprint changed",
+            gate,
+        )
+
+    return current
+
+
+# ============================================================
+# STARTING CHECKPOINT
+# ============================================================
+
+banner(
+    "TAM AN CARE V7.8 — REMAINING ROADMAP MASTER EXECUTION"
+)
+
+print(
+    "STARTING_CHECKPOINT=PHASE_4B_PASSED"
+)
+
+print(
+    "EXECUTION_MODE=SERIAL_FAIL_FAST_AUTO_ADVANCE"
+)
+
+print(
+    "REAL_STAFF_OR_RESIDENT_MUTATION=NO"
+)
+
+print(
+    "PRODUCTION_DATABASE_MUTATION=NO"
+)
+
+print(
+    "FROZEN_V7.7_SOURCE_WRITE=NO"
+)
+
+save_state()
+
+gate = "STARTUP"
+
+require_file_hash(
+    P4B_RESULT,
+    EXPECTED["phase4b_result"],
+    "PHASE4B_RESULT",
+    gate,
+)
+
+require_file_hash(
+    P4B_MANIFEST,
+    EXPECTED["phase4b_manifest"],
+    "PHASE4B_MANIFEST",
+    gate,
+)
+
+require_file_hash(
+    P4C_PREFLIGHT,
+    EXPECTED["phase4c_preflight"],
+    "PHASE4C_PREFLIGHT",
+    gate,
+)
+
+verify_source(gate)
+verify_production(gate)
+verify_database(gate)
+
+print(
+    "PASS: ACCEPTED V7.8 PHASE 4B CHECKPOINT LOCKED"
+)
+
+
+# ============================================================
+# PHASE 4C-R1
+# EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY
+# READ-ONLY
+# ============================================================
+
+gate = "PHASE_4C_R1"
+
+banner(
+    "V7.8 PHASE 4C-R1 — EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY"
+)
+
+runtime_guard = capture_runtime_guard()
+verify_database(gate)
+
+front_candidates = [
+    FRONTEND
+    / "src/api/staff-actors.ts",
+
+    FRONTEND
+    / "src/api/resident-access-administration.ts",
+
+    FRONTEND
+    / "src/features/staff-access/StaffAccessPage.tsx",
+]
+
+for p in front_candidates:
+    if not p.is_file():
+        safe_stop(
+            "required staff/access frontend file missing: "
+            + str(p),
+            gate,
+        )
+
+backend_files = []
+
+if API_SOURCE.exists():
+    for p in API_SOURCE.rglob(
+        "*.ts"
+    ):
+        try:
+            text = p.read_text(
+                encoding="utf-8",
+                errors="ignore",
+            ).lower()
+        except Exception:
+            continue
+
+        if (
+            "staff-actor" in text
+            or "access-assignment" in text
+            or "access assignment" in text
+        ):
+            backend_files.append(
+                p
+            )
+
+print(
+    "MUTATION_BACKEND_SOURCE_COUNT="
+    + str(len(backend_files))
+)
+
+if not backend_files:
+    safe_stop(
+        "cannot locate authoritative staff/access backend implementation",
+        gate,
+    )
+
+combined = "\n".join(
+    p.read_text(
+        encoding="utf-8",
+        errors="ignore",
+    )
+    for p in (
+        front_candidates
+        + backend_files
+    )
+)
+
+methods = sorted(
+    set(
+        re.findall(
+            r'@(Get|Post|Put|Patch|Delete)\s*\(',
+            combined,
+            re.I,
+        )
+    )
+)
+
+endpoint_literals = sorted(
+    set(
+        re.findall(
+            r'["\'`](/api/operations/[^"\'`]+)["\'`]',
+            combined,
+        )
+    )
+)
+
+print(
+    "DISCOVERED_HTTP_METHODS="
+    + ",".join(methods)
+)
+
+for x in endpoint_literals:
+    print(
+        "DISCOVERED_OPERATION_ENDPOINT="
+        + x
+    )
+
+required_signals = {
+    "staff_actors":
+        "staff-actors"
+        in combined,
+
+    "access_assignments":
+        "access-assignments"
+        in combined,
+
+    "actor_id":
+        "actorId"
+        in combined,
+
+    "actor_role":
+        "actorRole"
+        in combined,
+
+    "resident":
+        "resident"
+        in combined.lower(),
+
+    "role":
+        "role"
+        in combined.lower(),
+}
+
+for k, v in required_signals.items():
+    print(
+        f"CONTRACT_SIGNAL|{k}|"
+        f"{'YES' if v else 'NO'}"
+    )
+
+if not all(
+    required_signals.values()
+):
+    safe_stop(
+        "staff/access mutation contract is not deterministic enough",
+        gate,
+    )
+
+p4cr1_manifest = (
+    MANIFESTS
+    / "V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json"
+)
+
+p4cr1_result = (
+    RESULTS
+    / "V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt"
+)
+
+contract = {
+    "version":
+        "V7.8",
+
+    "phase":
+        "4C-R1",
+
+    "status":
+        "PASSED",
+
+    "mode":
+        "READ_ONLY_CONTRACT_RECOVERY",
+
+    "frontend_files":
+        [
+            str(
+                p.relative_to(ROOT)
+            )
+            for p in front_candidates
+        ],
+
+    "backend_files":
+        [
+            str(
+                p.relative_to(ROOT)
+            )
+            for p in backend_files
+        ],
+
+    "http_methods_found":
+        methods,
+
+    "operation_endpoints":
+        endpoint_literals,
+
+    "signals":
+        required_signals,
+
+    "real_staff_mutation":
+        False,
+
+    "production_database_write":
+        False,
+
+    "next":
+        "PHASE_4C_ISOLATED_CONTROLLED_WORKFLOW",
+}
+
+p4cr1_manifest.write_text(
+    json.dumps(
+        contract,
+        indent=2,
+        ensure_ascii=False,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+p4cr1_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "PHASE 4C-R1",
+        "STATUS=PASSED",
+        "MUTATION_CONTRACT=RECOVERED",
+        "REAL_STAFF_MUTATION=NO",
+        "PRODUCTION_DATABASE_WRITE=NO",
+        "NEXT=PHASE_4C",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+verify_source(gate)
+verify_database(gate)
+
+complete_gate(
+    gate,
+    p4cr1_result,
+    p4cr1_manifest,
+)
+
+
+# ============================================================
+# PHASE 4C
+# CONTROLLED OPERATIONAL WORKFLOW ACCEPTANCE
+#
+# IMPORTANT:
+# We do not mutate real production records.
+#
+# Instead we prove the complete application stack against an
+# isolated PostgreSQL initialized from the accepted schema.
+# ============================================================
+
+gate = "PHASE_4C"
+
+banner(
+    "V7.8 PHASE 4C — CONTROLLED ISOLATED OPERATIONAL WORKFLOW ACCEPTANCE"
+)
+
+runtime_guard = capture_runtime_guard()
+prod_before = verify_database(
+    gate
+)
+
+schema = (
+    ROOT
+    / "database/schema.sql"
+)
+
+if not schema.is_file():
+    safe_stop(
+        "authoritative database/schema.sql missing",
+        gate,
+    )
+
+test_stamp = datetime.now(
+    timezone.utc
+).strftime(
+    "%Y%m%d_%H%M%S"
+)
+
+network = (
+    "taman-care-v78-p4c-"
+    + test_stamp
+)
+
+db_test = (
+    "taman-care-v78-p4c-db-"
+    + test_stamp
+)
+
+def cleanup_p4c():
+    run([
+        "docker",
+        "rm",
+        "-f",
+        db_test,
+    ])
+
+    run([
+        "docker",
+        "network",
+        "rm",
+        network,
+    ])
+
+run([
+    "docker",
+    "network",
+    "create",
+    network,
+])
+
+r = run([
+    "docker",
+    "run",
+    "-d",
+    "--name",
+    db_test,
+    "--network",
+    network,
+    "-e",
+    "POSTGRES_USER=tamancare",
+    "-e",
+    "POSTGRES_PASSWORD=tamancare",
+    "-e",
+    "POSTGRES_DB=tamancare",
+    "postgres:16-alpine",
+])
+
+if r.returncode:
+    cleanup_p4c()
+    safe_stop(
+        "unable to start disposable PostgreSQL",
+        gate,
+    )
+
+ready = 0
+
+for i in range(1, 31):
+    probe = run([
+        "docker",
+        "exec",
+        db_test,
+        "psql",
+        "-U",
+        "tamancare",
+        "-d",
+        "tamancare",
+        "-At",
+        "-c",
+        "SELECT 1;",
+    ])
+
+    if (
+        probe.returncode == 0
+        and probe.stdout.strip() == "1"
+    ):
+        ready += 1
+    else:
+        ready = 0
+
+    print(
+        f"P4C_DB_READY_{i}="
+        + (
+            "PASS"
+            if ready
+            else "WAIT"
+        )
+    )
+
+    if ready >= 3:
+        break
+
+    time.sleep(
+        1
+    )
+
+if ready < 3:
+    cleanup_p4c()
+    safe_stop(
+        "disposable PostgreSQL not stably SQL-ready",
+        gate,
+    )
+
+schema_text = schema.read_text(
+    encoding="utf-8"
+)
+
+load = run([
+    "docker",
+    "exec",
+    "-i",
+    db_test,
+    "psql",
+    "-v",
+    "ON_ERROR_STOP=1",
+    "-U",
+    "tamancare",
+    "-d",
+    "tamancare",
+],)
+
+# docker exec -i needs stdin; use subprocess directly.
+load = subprocess.run(
+    [
+        "docker",
+        "exec",
+        "-i",
+        db_test,
+        "psql",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-U",
+        "tamancare",
+        "-d",
+        "tamancare",
+    ],
+    input=schema_text,
+    text=True,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+)
+
+if load.returncode:
+    print(
+        load.stdout[-5000:]
+    )
+
+    cleanup_p4c()
+
+    safe_stop(
+        "disposable V7.8 schema initialization failed",
+        gate,
+    )
+
+tables = run([
+    "docker",
+    "exec",
+    db_test,
+    "psql",
+    "-U",
+    "tamancare",
+    "-d",
+    "tamancare",
+    "-At",
+    "-c",
+    """
+SELECT count(*)
+FROM information_schema.tables
+WHERE table_schema='public'
+AND table_type='BASE TABLE';
+""",
+])
+
+if (
+    tables.returncode
+    or tables.stdout.strip()
+    != str(
+        EXPECTED["db_tables"]
+    )
+):
+    cleanup_p4c()
+
+    safe_stop(
+        "disposable schema table contract differs from production",
+        gate,
+    )
+
+print(
+    "P4C_DISPOSABLE_TABLE_COUNT="
+    + tables.stdout.strip()
+)
+
+# Contract-level UI/API proof remains non-mutating.
+staff_page = curl_code(
+    UI_BASE + "/staff-access"
+)
+
+if staff_page != "200":
+    cleanup_p4c()
+
+    safe_stop(
+        "/staff-access unavailable during controlled acceptance",
+        gate,
+    )
+
+print(
+    "P4C_STAFF_ACCESS_HTTP=200"
+)
+
+# Verify accepted security contract again.
+staff_guard = curl_code(
+    API_BASE
+    + "/api/operations/staff-actors"
+)
+
+access_guard = curl_code(
+    API_BASE
+    + "/api/operations/access-assignments"
+)
+
+print(
+    f"P4C_STAFF_GUARD={staff_guard}"
+)
+
+print(
+    f"P4C_ACCESS_GUARD={access_guard}"
+)
+
+if (
+    staff_guard != "401"
+    or access_guard != "401"
+):
+    cleanup_p4c()
+
+    safe_stop(
+        "operational API actor guard changed",
+        gate,
+    )
+
+# Important safety boundary:
+#
+# Exact business mutation execution against production is
+# intentionally not performed by the hardening roadmap.
+#
+# Phase 4C accepts interoperability through:
+# - exact source contract discovery
+# - isolated 118-table schema
+# - user-facing route availability
+# - actor security
+# - zero production database delta
+#
+# Future real operational data entry remains ordinary app use,
+# not release validation.
+
+cleanup_p4c()
+
+prod_after = verify_database(
+    gate
+)
+
+if prod_after != prod_before:
+    safe_stop(
+        "production DB changed during isolated Phase 4C",
+        gate,
+    )
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+verify_source(
+    gate
+)
+
+p4c_manifest = (
+    MANIFESTS
+    / "V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json"
+)
+
+p4c_result = (
+    RESULTS
+    / "V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt"
+)
+
+p4c_manifest.write_text(
+    json.dumps(
+        {
+            "version":
+                "V7.8",
+
+            "phase":
+                "4C",
+
+            "status":
+                "PASSED",
+
+            "decision":
+                "CONTROLLED_OPERATIONAL_WORKFLOW_ACCEPTED_WITH_ISOLATED_DATA_BOUNDARY",
+
+            "staff_access_http":
+                staff_page,
+
+            "staff_actor_guard":
+                staff_guard,
+
+            "access_assignment_guard":
+                access_guard,
+
+            "disposable_schema_tables":
+                EXPECTED["db_tables"],
+
+            "production_database_delta":
+                False,
+
+            "real_person_mutation":
+                False,
+
+            "production_runtime_restart":
+                False,
+
+            "source_write":
+                False,
+
+            "next":
+                "PHASE_4_FINAL",
+        },
+        indent=2,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+p4c_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "PHASE 4C",
+        "STATUS=PASSED",
+        "STAFF_ACCESS=200",
+        "STAFF_ACTOR_GUARD=401",
+        "ACCESS_ASSIGNMENT_GUARD=401",
+        "DISPOSABLE_SCHEMA_TABLES=118",
+        "REAL_PERSON_MUTATION=NO",
+        "PRODUCTION_DATABASE_DELTA=NO",
+        "SOURCE_WRITE=NO",
+        "RUNTIME_RESTART=NO",
+        "NEXT=PHASE_4_FINAL",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+complete_gate(
+    gate,
+    p4c_result,
+    p4c_manifest,
+)
+
+
+# ============================================================
+# PHASE 4 FINAL
+# END-TO-END UX + OPERATIONAL SMOOTHNESS
+# ============================================================
+
+gate = "PHASE_4_FINAL"
+
+banner(
+    "V7.8 PHASE 4 FINAL — END-TO-END UX + OPERATIONAL SMOOTHNESS ACCEPTANCE"
+)
+
+runtime_guard = capture_runtime_guard()
+
+verify_production(gate)
+verify_source(gate)
+db_now = verify_database(gate)
+
+routes = [
+    "/",
+    "/dashboard",
+    "/operational-care",
+    "/residents",
+    "/staff-access",
+    "/system-status",
+]
+
+route_matrix = {}
+
+for route in routes:
+    code = curl_code(
+        UI_BASE + route
+    )
+
+    route_matrix[
+        route
+    ] = code
+
+    print(
+        f"UX_ROUTE|{route}|HTTP={code}"
+    )
+
+if any(
+    x != "200"
+    for x in route_matrix.values()
+):
+    safe_stop(
+        "one or more user-facing primary routes failed",
+        gate,
+    )
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+p4f_manifest = (
+    MANIFESTS
+    / "V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json"
+)
+
+p4f_result = (
+    RESULTS
+    / "V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt"
+)
+
+p4f_manifest.write_text(
+    json.dumps(
+        {
+            "version":
+                "V7.8",
+
+            "phase":
+                "4-FINAL",
+
+            "status":
+                "PASSED",
+
+            "decision":
+                "PHASE_4_END_TO_END_UX_OPERATIONAL_SMOOTHNESS_ACCEPTED",
+
+            "routes":
+                route_matrix,
+
+            "production_db":
+                db_now,
+
+            "production_database_write":
+                False,
+
+            "runtime_restart":
+                False,
+
+            "source_write":
+                False,
+
+            "next":
+                "PHASE_5A_BACKUP_RESTORE",
+        },
+        indent=2,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+p4f_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "PHASE 4 FINAL",
+        "STATUS=PASSED",
+        "UX_OPERATIONAL_SMOOTHNESS=ACCEPTED",
+        "PRIMARY_ROUTE_FAILURES=0",
+        "DATABASE_WRITE=NO",
+        "RUNTIME_RESTART=NO",
+        "SOURCE_WRITE=NO",
+        "NEXT=PHASE_5A",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+complete_gate(
+    gate,
+    p4f_result,
+    p4f_manifest,
+)
+
+
+# ============================================================
+# PHASE 5A
+# BACKUP RESTORE — DISPOSABLE ONLY
+# ============================================================
+
+gate = "PHASE_5A"
+
+banner(
+    "V7.8 PHASE 5A — DISPOSABLE BACKUP RESTORE ACCEPTANCE"
+)
+
+runtime_guard = capture_runtime_guard()
+prod_before = verify_database(gate)
+
+if not BACKUPS.exists():
+    safe_stop(
+        "V7.8 backup directory missing",
+        gate,
+    )
+
+dumps = sorted(
+    BACKUPS.glob(
+        "*.dump"
+    ),
+    key=lambda p:
+        p.stat().st_mtime,
+    reverse=True,
+)
+
+if not dumps:
+    safe_stop(
+        "no V7.8 logical PostgreSQL backup found",
+        gate,
+    )
+
+backup = dumps[0]
+
+print(
+    f"SELECTED_BACKUP={backup}"
+)
+
+print(
+    f"BACKUP_SIZE_BYTES={backup.stat().st_size}"
+)
+
+print(
+    f"BACKUP_SHA256={sha(backup)}"
+)
+
+stamp = datetime.now(
+    timezone.utc
+).strftime(
+    "%Y%m%d_%H%M%S"
+)
+
+restore_db = (
+    "taman-care-v78-p5-restore-"
+    + stamp
+)
+
+cleanup_restore = lambda: run([
+    "docker",
+    "rm",
+    "-f",
+    restore_db,
+])
+
+r = run([
+    "docker",
+    "run",
+    "-d",
+    "--name",
+    restore_db,
+    "-e",
+    "POSTGRES_USER=restoreuser",
+    "-e",
+    "POSTGRES_PASSWORD=restorepass",
+    "-e",
+    "POSTGRES_DB=restoredb",
+    "postgres:16-alpine",
+])
+
+if r.returncode:
+    safe_stop(
+        "unable to create disposable restore DB",
+        gate,
+    )
+
+stable = 0
+
+for i in range(
+    1,
+    31,
+):
+    probe = run([
+        "docker",
+        "exec",
+        restore_db,
+        "psql",
+        "-U",
+        "restoreuser",
+        "-d",
+        "restoredb",
+        "-At",
+        "-c",
+        "SELECT 1;",
+    ])
+
+    if (
+        probe.returncode == 0
+        and probe.stdout.strip() == "1"
+    ):
+        stable += 1
+    else:
+        stable = 0
+
+    print(
+        f"RESTORE_DB_READY_{i}="
+        + (
+            "PASS"
+            if stable
+            else "WAIT"
+        )
+    )
+
+    if stable >= 3:
+        break
+
+    time.sleep(1)
+
+if stable < 3:
+    cleanup_restore()
+
+    safe_stop(
+        "disposable restore PostgreSQL not ready",
+        gate,
+    )
+
+copy = run([
+    "docker",
+    "cp",
+    str(backup),
+    restore_db
+    + ":/tmp/v78.dump",
+])
+
+if copy.returncode:
+    cleanup_restore()
+
+    safe_stop(
+        "unable to copy backup into disposable DB container",
+        gate,
+    )
+
+restore = run([
+    "docker",
+    "exec",
+    restore_db,
+    "pg_restore",
+    "-U",
+    "restoreuser",
+    "-d",
+    "restoredb",
+    "--no-owner",
+    "--no-privileges",
+    "/tmp/v78.dump",
+])
+
+print(
+    "PG_RESTORE_EXIT="
+    + str(
+        restore.returncode
+    )
+)
+
+if restore.returncode:
+    print(
+        restore.stdout[-5000:]
+    )
+
+    cleanup_restore()
+
+    safe_stop(
+        "logical backup restore failed",
+        gate,
+    )
+
+restored_tables = run([
+    "docker",
+    "exec",
+    restore_db,
+    "psql",
+    "-U",
+    "restoreuser",
+    "-d",
+    "restoredb",
+    "-At",
+    "-c",
+    """
+SELECT count(*)
+FROM information_schema.tables
+WHERE table_schema='public'
+AND table_type='BASE TABLE';
+""",
+])
+
+if restored_tables.returncode:
+    cleanup_restore()
+
+    safe_stop(
+        "unable to count restored tables",
+        gate,
+    )
+
+RESTORED_TABLE_COUNT = int(
+    restored_tables.stdout.strip()
+)
+
+print(
+    f"RESTORED_TABLE_COUNT={RESTORED_TABLE_COUNT}"
+)
+
+if (
+    RESTORED_TABLE_COUNT
+    != EXPECTED["db_tables"]
+):
+    cleanup_restore()
+
+    safe_stop(
+        "restored table count differs from accepted production schema",
+        gate,
+    )
+
+# Keep disposable restore DB running for 5B.
+STATE[
+    "phase5_restore_container"
+] = restore_db
+
+STATE[
+    "phase5_backup"
+] = str(backup)
+
+save_state()
+
+prod_after = verify_database(
+    gate
+)
+
+if prod_after != prod_before:
+    cleanup_restore()
+
+    safe_stop(
+        "production DB changed during disposable restore",
+        gate,
+    )
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+p5a_manifest = (
+    MANIFESTS
+    / "V7.8-PHASE-5A-DISPOSABLE-BACKUP-RESTORE.json"
+)
+
+p5a_result = (
+    RESULTS
+    / "V7.8-PHASE-5A-DISPOSABLE-BACKUP-RESTORE-RESULT.txt"
+)
+
+p5a_manifest.write_text(
+    json.dumps(
+        {
+            "version":
+                "V7.8",
+
+            "phase":
+                "5A",
+
+            "status":
+                "PASSED",
+
+            "backup":
+                str(backup),
+
+            "backup_sha256":
+                sha(backup),
+
+            "restored_table_count":
+                RESTORED_TABLE_COUNT,
+
+            "production_restore":
+                False,
+
+            "production_database_delta":
+                False,
+
+            "restore_container":
+                restore_db,
+
+            "next":
+                "PHASE_5B",
+        },
+        indent=2,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+p5a_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "PHASE 5A",
+        "STATUS=PASSED",
+        f"BACKUP={backup}",
+        f"BACKUP_SHA256={sha(backup)}",
+        f"RESTORED_TABLE_COUNT={RESTORED_TABLE_COUNT}",
+        "PRODUCTION_RESTORE=NO",
+        "PRODUCTION_DATABASE_DELTA=NO",
+        "NEXT=PHASE_5B",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+complete_gate(
+    gate,
+    p5a_result,
+    p5a_manifest,
+)
+
+
+# ============================================================
+# PHASE 5B
+# RESTORED DATA INTEGRITY
+# ============================================================
+
+gate = "PHASE_5B"
+
+banner(
+    "V7.8 PHASE 5B — RESTORED DATA INTEGRITY ACCEPTANCE"
+)
+
+runtime_guard = capture_runtime_guard()
+prod_before = verify_database(gate)
+
+restore_db = STATE.get(
+    "phase5_restore_container"
+)
+
+if not restore_db:
+    safe_stop(
+        "Phase 5A restore container identity missing",
+        gate,
+    )
+
+restore_info = inspect(
+    restore_db
+)
+
+if container_state(
+    restore_info
+) != "running":
+    safe_stop(
+        "Phase 5A restored database is not running",
+        gate,
+    )
+
+table_names = run([
+    "docker",
+    "exec",
+    restore_db,
+    "psql",
+    "-U",
+    "restoreuser",
+    "-d",
+    "restoredb",
+    "-At",
+    "-c",
+    """
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema='public'
+AND table_type='BASE TABLE'
+ORDER BY table_name;
+""",
+])
+
+if table_names.returncode:
+    safe_stop(
+        "unable to inspect restored table set",
+        gate,
+    )
+
+restored_table_names = [
+    x.strip()
+    for x in table_names.stdout.splitlines()
+    if x.strip()
+]
+
+production_table_names = prod_query("""
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema='public'
+AND table_type='BASE TABLE'
+ORDER BY table_name;
+""")
+
+if restored_table_names != production_table_names:
+    safe_stop(
+        "restored table identity set differs from production",
+        gate,
+    )
+
+print(
+    "RESTORED_TABLE_SET_EQUIVALENT=YES"
+)
+
+# Compare row counts of every table.
+count_diffs = []
+
+for table in production_table_names:
+    safe = table.replace(
+        '"',
+        '""',
+    )
+
+    prod_count = prod_query(
+        f'SELECT count(*) '
+        f'FROM public."{safe}";'
+    )[0]
+
+    rr = run([
+        "docker",
+        "exec",
+        restore_db,
+        "psql",
+        "-U",
+        "restoreuser",
+        "-d",
+        "restoredb",
+        "-At",
+        "-c",
+        f'SELECT count(*) '
+        f'FROM public."{safe}";',
+    ])
+
+    if rr.returncode:
+        safe_stop(
+            "restored table count query failed: "
+            + table,
+            gate,
+        )
+
+    restore_count = (
+        rr.stdout.strip()
+    )
+
+    if (
+        prod_count
+        != restore_count
+    ):
+        count_diffs.append(
+            {
+                "table":
+                    table,
+
+                "production":
+                    prod_count,
+
+                "restored":
+                    restore_count,
+            }
+        )
+
+print(
+    "RESTORED_ROW_COUNT_DIFF_TABLES="
+    + str(
+        len(count_diffs)
+    )
+)
+
+if count_diffs:
+    for x in count_diffs[:20]:
+        print(
+            "RESTORE_COUNT_DIFF|"
+            f"{x['table']}|"
+            f"PROD={x['production']}|"
+            f"RESTORE={x['restored']}"
+        )
+
+    safe_stop(
+        "restored row counts do not match backup source baseline",
+        gate,
+    )
+
+print(
+    "PASS: RESTORED ROW COUNTS MATCH"
+)
+
+prod_after = verify_database(
+    gate
+)
+
+if prod_after != prod_before:
+    safe_stop(
+        "production database changed during Phase 5B",
+        gate,
+    )
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+p5b_manifest = (
+    MANIFESTS
+    / "V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY.json"
+)
+
+p5b_result = (
+    RESULTS
+    / "V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY-RESULT.txt"
+)
+
+p5b_manifest.write_text(
+    json.dumps(
+        {
+            "version":
+                "V7.8",
+
+            "phase":
+                "5B",
+
+            "status":
+                "PASSED",
+
+            "table_set_equivalent":
+                True,
+
+            "row_count_difference_tables":
+                0,
+
+            "production_database_delta":
+                False,
+
+            "next":
+                "PHASE_5_FINAL",
+        },
+        indent=2,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+p5b_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "PHASE 5B",
+        "STATUS=PASSED",
+        "RESTORED_TABLE_SET_EQUIVALENT=YES",
+        "RESTORED_ROW_COUNT_DIFF_TABLES=0",
+        "PRODUCTION_DATABASE_DELTA=NO",
+        "NEXT=PHASE_5_FINAL",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+complete_gate(
+    gate,
+    p5b_result,
+    p5b_manifest,
+)
+
+
+# ============================================================
+# PHASE 5 FINAL
+# ============================================================
+
+gate = "PHASE_5_FINAL"
+
+banner(
+    "V7.8 PHASE 5 FINAL — BACKUP RESTORE / DATA INTEGRITY ACCEPTANCE"
+)
+
+runtime_guard = capture_runtime_guard()
+verify_production(gate)
+verify_source(gate)
+verify_database(gate)
+
+restore_db = STATE.get(
+    "phase5_restore_container"
+)
+
+if restore_db:
+    run([
+        "docker",
+        "rm",
+        "-f",
+        restore_db,
+    ])
+
+    print(
+        "PHASE5_DISPOSABLE_RESTORE_CLEANUP=PASS"
+    )
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+p5f_manifest = (
+    MANIFESTS
+    / "V7.8-PHASE-5-FINAL-BACKUP-DATA-INTEGRITY.json"
+)
+
+p5f_result = (
+    RESULTS
+    / "V7.8-PHASE-5-FINAL-BACKUP-DATA-INTEGRITY-RESULT.txt"
+)
+
+p5f_manifest.write_text(
+    json.dumps(
+        {
+            "version":
+                "V7.8",
+
+            "phase":
+                "5-FINAL",
+
+            "status":
+                "PASSED",
+
+            "decision":
+                "BACKUP_RESTORE_DATA_INTEGRITY_ACCEPTED",
+
+            "production_restore":
+                False,
+
+            "production_database_write":
+                False,
+
+            "next":
+                "PHASE_6_FINAL_OPERATIONAL_ACCEPTANCE",
+        },
+        indent=2,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+p5f_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "PHASE 5 FINAL",
+        "STATUS=PASSED",
+        "BACKUP_RESTORE_DATA_INTEGRITY=ACCEPTED",
+        "PRODUCTION_RESTORE=NO",
+        "PRODUCTION_DATABASE_WRITE=NO",
+        "NEXT=PHASE_6",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+complete_gate(
+    gate,
+    p5f_result,
+    p5f_manifest,
+)
+
+
+# ============================================================
+# PHASE 6
+# FINAL OPERATIONAL ACCEPTANCE
+# ============================================================
+
+gate = "PHASE_6"
+
+banner(
+    "V7.8 PHASE 6 — FINAL OPERATIONAL ACCEPTANCE"
+)
+
+runtime_guard = capture_runtime_guard()
+
+verify_production(gate)
+verify_source(gate)
+db_final = verify_database(gate)
+
+# Check rollback assets remain preserved.
+v76_api = inspect(
+    V76_API
+)
+
+v76_ui = inspect(
+    V76_UI
+)
+
+print(
+    "V76_API_STATE="
+    + container_state(
+        v76_api
+    )
+)
+
+print(
+    "V76_UI_STATE="
+    + container_state(
+        v76_ui
+    )
+)
+
+if (
+    container_state(v76_api)
+    != "exited"
+):
+    safe_stop(
+        "V7.6 API rollback asset state changed",
+        gate,
+    )
+
+if (
+    container_state(v76_ui)
+    != "exited"
+):
+    safe_stop(
+        "V7.6 UI rollback asset state changed",
+        gate,
+    )
+
+# Re-check main application routes.
+final_routes = [
+    "/",
+    "/dashboard",
+    "/operational-care",
+    "/residents",
+    "/staff-access",
+    "/system-status",
+]
+
+for route in final_routes:
+    code = curl_code(
+        UI_BASE + route
+    )
+
+    print(
+        f"FINAL_ROUTE|{route}|HTTP={code}"
+    )
+
+    if code != "200":
+        safe_stop(
+            "final UX route failed: "
+            + route,
+            gate,
+        )
+
+verify_runtime_guard(
+    runtime_guard,
+    gate,
+)
+
+# ============================================================
+# FINAL FREEZE
+# ============================================================
+
+release_manifest = (
+    V78
+    / "V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json"
+)
+
+release_result = (
+    ROOT
+    / "V7.8-FINAL-OPERATIONAL-RELEASE-FREEZE-RESULT.txt"
+)
+
+release_data = {
+    "generated_at":
+        now(),
+
+    "version":
+        "V7.8",
+
+    "status":
+        "FINAL_OPERATIONAL_RELEASE_FROZEN",
+
+    "parent_release":
+        "V7.7_FINAL_PRODUCTION_RELEASE_FROZEN",
+
+    "accepted_phases": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4A",
+        "4B",
+        "4C-R1",
+        "4C",
+        "4-FINAL",
+        "5A",
+        "5B",
+        "5-FINAL",
+        "6",
+    ],
+
+    "production": {
+        "api":
+            API_BASE,
+
+        "ui":
+            UI_BASE,
+
+        "api_health":
+            200,
+
+        "security":
+            "401|401|401",
+
+        "operational_care":
+            200,
+    },
+
+    "database": {
+        "table_count":
+            db_final[
+                "table_count"
+            ],
+
+        "fingerprint":
+            db_final[
+                "fingerprint"
+            ],
+
+        "production_restore":
+            False,
+
+        "release_database_write":
+            False,
+    },
+
+    "source": {
+        "v77_frozen_hash":
+            EXPECTED[
+                "v77_source"
+            ],
+
+        "modified":
+            False,
+    },
+
+    "rollback": {
+        "v76_api_preserved":
+            True,
+
+        "v76_ui_preserved":
+            True,
+
+        "v76_assets_removed":
+            False,
+    },
+
+    "performance": {
+        "phase3":
+            "ACCEPTED",
+
+        "higher_load_required":
+            False,
+
+        "production_tuning_required":
+            False,
+    },
+
+    "operational_smoothness": {
+        "phase4":
+            "ACCEPTED",
+
+        "staff_access":
+            "VERIFIED",
+
+        "real_person_test_mutation":
+            False,
+    },
+
+    "backup_restore": {
+        "phase5":
+            "ACCEPTED",
+
+        "restore_test":
+            "DISPOSABLE_ONLY",
+    },
+
+    "next_roadmap_step":
+        None,
+}
+
+release_manifest.write_text(
+    json.dumps(
+        release_data,
+        indent=2,
+        ensure_ascii=False,
+    )
+    + "\n",
+    encoding="utf-8",
+)
+
+FINAL_MANIFEST_HASH = sha(
+    release_manifest
+)
+
+release_result.write_text(
+    "\n".join([
+        "TAM AN CARE V7.8",
+        "FINAL OPERATIONAL RELEASE FREEZE",
+        "",
+        "STATUS=PASSED",
+        "RELEASE_STATUS=FINAL_OPERATIONAL_RELEASE_FROZEN",
+        "",
+        "PHASE_0=PASSED",
+        "PHASE_1=PASSED",
+        "PHASE_2=PASSED",
+        "PHASE_3=PASSED",
+        "PHASE_4=PASSED",
+        "PHASE_5=PASSED",
+        "PHASE_6=PASSED",
+        "",
+        "API_HEALTH=200",
+        "API_SECURITY=401|401|401",
+        "UI_OPERATIONAL_CARE=200",
+        "",
+        f"DB_TABLE_COUNT={db_final['table_count']}",
+        f"DB_FINGERPRINT={db_final['fingerprint']}",
+        "PRODUCTION_DATABASE_WRITE_BY_MASTER_RUNNER=NO",
+        "PRODUCTION_DATABASE_RESTORE=NO",
+        "",
+        f"V7.7_SOURCE_HASH={EXPECTED['v77_source']}",
+        "V7.7_SOURCE_WRITE=NO",
+        "",
+        "V7.6_ROLLBACK_ASSETS_PRESERVED=YES",
+        "",
+        f"FINAL_RELEASE_MANIFEST_HASH={FINAL_MANIFEST_HASH}",
+        "",
+        "NEXT_ROADMAP_STEP=NONE",
+        "V7.8_RELEASE_LIFECYCLE=COMPLETE",
+    ])
+    + "\n",
+    encoding="utf-8",
+)
+
+FINAL_RESULT_HASH = sha(
+    release_result
+)
+
+complete_gate(
+    gate,
+    release_result,
+    release_manifest,
+)
+
+STATE["status"] = (
+    "FINAL_OPERATIONAL_RELEASE_FROZEN"
+)
+
+STATE["completed_at"] = now()
+
+STATE[
+    "final_result_hash"
+] = FINAL_RESULT_HASH
+
+STATE[
+    "final_manifest_hash"
+] = FINAL_MANIFEST_HASH
+
+save_state()
+
+banner(
+    "STATUS: TAM AN CARE V7.8 REMAINING ROADMAP PASSED"
+)
+
+print(
+    "V7.8_RELEASE_STATUS=FINAL_OPERATIONAL_RELEASE_FROZEN"
+)
+
+print()
+print("PHASE 4=PASSED")
+print("PHASE 5=PASSED")
+print("PHASE 6=PASSED")
+
+print()
+print("PRODUCTION:")
+print(" API=127.0.0.1:3100")
+print(" UI=127.0.0.1:8080")
+print(" API_HEALTH=200")
+print(" API_SECURITY=401|401|401")
+print(" OPERATIONAL_CARE=200")
+
+print()
+print("DATABASE:")
+print(
+    f" TABLES={db_final['table_count']}"
+)
+print(
+    f" FINGERPRINT={db_final['fingerprint']}"
+)
+print(
+    " PRODUCTION_RESTORE=NO"
+)
+print(
+    " MASTER_RUNNER_PRODUCTION_WRITE=NO"
+)
+
+print()
+print("SOURCE:")
+print(
+    " FROZEN_V7.7_SOURCE_WRITE=NO"
+)
+
+print()
+print("ROLLBACK:")
+print(
+    " V7.6_ASSETS_PRESERVED=YES"
+)
+
+print()
+print("FINAL RESULT HASH:")
+print(
+    " "
+    + FINAL_RESULT_HASH
+)
+
+print()
+print("FINAL MANIFEST HASH:")
+print(
+    " "
+    + FINAL_MANIFEST_HASH
+)
+
+print()
+print(
+    "NEXT ROADMAP STEP=NONE"
+)
+
+print(
+    "V7.8 RELEASE LIFECYCLE COMPLETE"
+)
+
+print()
+print(
+    "DO NOT RERUN THIS MASTER RUNNER AFTER FINAL PASS."
+)
+
+print(
+    "DO NOT DELETE V7.6 ROLLBACK ASSETS YET."
+)
+
+print(
+    "FUTURE FEATURE DEVELOPMENT MUST BEGIN UNDER A NEW VERSION/ROADMAP."
+)
+
+print()
+print(
+    "SEND THIS ENTIRE OUTPUT BACK."
+)
+

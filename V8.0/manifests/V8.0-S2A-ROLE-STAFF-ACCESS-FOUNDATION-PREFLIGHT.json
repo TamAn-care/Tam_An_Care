@@ -1,0 +1,30 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2A",
+  "status": "PASSED",
+  "decision": "ROLE_STAFF_ACCESS_FOUNDATION_CONTRACT_DISCOVERED",
+  "production": {
+    "database_mutation": false,
+    "staff_seed": false,
+    "runtime_restart": false
+  },
+  "fixture": {
+    "actor_id": "v79-phase1d-supervisor",
+    "staff_code": "V79-P1D-SUP-001",
+    "role": "SUPERVISOR",
+    "status": "ACTIVE",
+    "classification": "HISTORICAL_DISPOSABLE_TEST_ONLY",
+    "production_bootstrap_authority": false
+  },
+  "implementation": {
+    "source_write": false,
+    "authorized": false
+  },
+  "manual_gate": {
+    "gate": "S8",
+    "status": "DEFERRED_NOT_PASSED"
+  },
+  "next_authorized_action": "S2B_EXACT_STAFF_BOOTSTRAP_DESIGN",
+  "created_at": "2026-08-22T08:31:28.933340+00:00"
+}

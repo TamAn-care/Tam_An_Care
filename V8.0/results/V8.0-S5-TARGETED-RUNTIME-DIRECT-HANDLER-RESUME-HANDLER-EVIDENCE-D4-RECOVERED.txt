@@ -1,0 +1,12 @@
+TAM AN CARE V8.0 — S5 DIRECT-HANDLER D4 RECOVERED HANDLER EVIDENCE
+STATIC_ONLY=YES
+BALANCED_PARSER=YES
+
+DIRECT_HANDLER_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|FILE=ai/early-warning.controller.ts|SOURCE_RESOLVED=YES|HANDLER_DECLARATION_COUNT=1|PARAMETER_TEXT_LENGTH=26|BODY_LENGTH=100|BODY_SIGNAL=YES|PARAM_DECORATOR_SIGNAL=NO|HEADER_DECORATOR_SIGNAL=NO|RETURN_COUNT=1|AWAIT_COUNT=0|THROW_COUNT=0|SERVICE_CALL_COUNT=0|SERVICE_CALLS=NONE|LOCAL_CALL_COUNT=0|LOCAL_CALLS=NONE|DOWNSTREAM_TRACE_EXECUTED=NO|REQUEST_VALUES_ASSIGNED=NO|FIXTURE_VALUES_ASSIGNED=NO|ACTION_VALUES_ASSIGNED=NO|HTTP_EXPECTATIONS_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+DIRECT_HANDLER_PARAMETER_TEXT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|PARAMETERS=@Body() body: any,
+DIRECT_HANDLER_BODY|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|BODY=patterns( @Body() body: any, ) { return this.earlyWarningService .analyze(body); }
+DIRECT_HANDLER_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|FILE=ai/early-warning.controller.ts|SOURCE_RESOLVED=YES|HANDLER_DECLARATION_COUNT=1|PARAMETER_TEXT_LENGTH=80|BODY_LENGTH=1070|BODY_SIGNAL=YES|PARAM_DECORATOR_SIGNAL=YES|HEADER_DECORATOR_SIGNAL=NO|RETURN_COUNT=1|AWAIT_COUNT=1|THROW_COUNT=0|SERVICE_CALL_COUNT=0|SERVICE_CALLS=NONE|LOCAL_CALL_COUNT=0|LOCAL_CALLS=NONE|DOWNSTREAM_TRACE_EXECUTED=NO|REQUEST_VALUES_ASSIGNED=NO|FIXTURE_VALUES_ASSIGNED=NO|ACTION_VALUES_ASSIGNED=NO|HTTP_EXPECTATIONS_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+DIRECT_HANDLER_PARAMETER_TEXT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|PARAMETERS=@Param('residentId') residentId: string, @Body() body: any,
+DIRECT_HANDLER_BODY|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|BODY=async residentPatterns( @Param('residentId') residentId: string, @Body() body: any, ) { const context = await this.residentService .getById(residentId); const analysis = this.earlyWarningService .analyze({ ...body, residentId: context.resident.residentId, }); return { ...analysis, residentId: context.resident.residentId, residentContext: { residentId: context.resident.residentId, residentCode: context.resident.residentCode, displayName: context.resident.displayName, room: context.resident.room, bed: context.resident.bed, careLevel: context.resident.careLevel, activeStatus: context.resident.activeStatus, }, residentAssociation: { verified: true, source: 'POSTGRES_RESIDENT_CONTEXT', }, autonomousClinicalAction: false, }; }
+
+DIRECT_HANDLER_CONTRACT_COUNT=2

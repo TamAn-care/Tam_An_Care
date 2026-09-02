@@ -1,0 +1,197 @@
+======================================================================
+ TAMANCARE — CODEX PAC / CLIENT STACK DIAGNOSTIC
+ READ ONLY / NO LOGIN / NO NETWORK CHANGE
+======================================================================
+
+======================================================================
+ 1. CODEX LOCK
+======================================================================
+CODEX_EXECUTABLE=/Users/anhha/.local/bin/codex
+CODEX_VERSION=codex-cli 0.151.0
+
+======================================================================
+ 2. ACTIVE DEFAULT ROUTE
+======================================================================
+ACTIVE_DEFAULT_INTERFACE=en0
+
+======================================================================
+ 3. HARDWARE PORT -> INTERFACE MAPPING
+======================================================================
+ACTIVE_HARDWARE_PORT_PRESENT=YES
+ACTIVE_INTERFACE=en0
+ACTIVE_HARDWARE_PORT_CLASS=Wi-Fi
+
+======================================================================
+ 4. ALL NETWORK SERVICES — PROXY STATE
+======================================================================
+
+SERVICE_BEGIN
+SERVICE_PRESENT=YES
+WEB_PROXY_ENABLED=No
+HTTPS_PROXY_ENABLED=No
+SOCKS_PROXY_ENABLED=No
+AUTO_PROXY_URL_ENABLED=No
+AUTO_PROXY_DISCOVERY=On
+PROXY_SERVER_PRINTED=NO
+PROXY_PORT_PRINTED=NO
+PAC_URL_PRINTED=NO
+SERVICE_NAME_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_PRESENT=YES
+WEB_PROXY_ENABLED=No
+HTTPS_PROXY_ENABLED=No
+SOCKS_PROXY_ENABLED=No
+AUTO_PROXY_URL_ENABLED=No
+AUTO_PROXY_DISCOVERY=Off
+PROXY_SERVER_PRINTED=NO
+PROXY_PORT_PRINTED=NO
+PAC_URL_PRINTED=NO
+SERVICE_NAME_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_PRESENT=YES
+WEB_PROXY_ENABLED=No
+HTTPS_PROXY_ENABLED=No
+SOCKS_PROXY_ENABLED=No
+AUTO_PROXY_URL_ENABLED=No
+AUTO_PROXY_DISCOVERY=Off
+PROXY_SERVER_PRINTED=NO
+PROXY_PORT_PRINTED=NO
+PAC_URL_PRINTED=NO
+SERVICE_NAME_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_PRESENT=YES
+WEB_PROXY_ENABLED=No
+HTTPS_PROXY_ENABLED=No
+SOCKS_PROXY_ENABLED=No
+AUTO_PROXY_URL_ENABLED=No
+AUTO_PROXY_DISCOVERY=Off
+PROXY_SERVER_PRINTED=NO
+PROXY_PORT_PRINTED=NO
+PAC_URL_PRINTED=NO
+SERVICE_NAME_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_PRESENT=YES
+WEB_PROXY_ENABLED=No
+HTTPS_PROXY_ENABLED=No
+SOCKS_PROXY_ENABLED=No
+AUTO_PROXY_URL_ENABLED=No
+AUTO_PROXY_DISCOVERY=Off
+PROXY_SERVER_PRINTED=NO
+PROXY_PORT_PRINTED=NO
+PAC_URL_PRINTED=NO
+SERVICE_NAME_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_PRESENT=YES
+WEB_PROXY_ENABLED=No
+HTTPS_PROXY_ENABLED=No
+SOCKS_PROXY_ENABLED=No
+AUTO_PROXY_URL_ENABLED=No
+AUTO_PROXY_DISCOVERY=Off
+PROXY_SERVER_PRINTED=NO
+PROXY_PORT_PRINTED=NO
+PAC_URL_PRINTED=NO
+SERVICE_NAME_PRINTED=NO
+SERVICE_END
+
+======================================================================
+ 5. SCUTIL SYSTEM PROXY — KEY CLASSIFICATION ONLY
+======================================================================
+SCUTIL_HTTPEnable=UNSET
+SCUTIL_HTTPSEnable=UNSET
+SCUTIL_SOCKSEnable=UNSET
+SCUTIL_ProxyAutoConfigEnable=1
+SCUTIL_ProxyAutoDiscoveryEnable=1
+SCUTIL_PAC_URL_PRESENT=YES
+SCUTIL_PAC_URL_VALUE_PRINTED=NO
+
+======================================================================
+ 6. PROCESS ENVIRONMENT
+======================================================================
+HTTP_PROXY=NOT_SET
+HTTPS_PROXY=NOT_SET
+ALL_PROXY=NOT_SET
+NO_PROXY=NOT_SET
+http_proxy=NOT_SET
+https_proxy=NOT_SET
+all_proxy=NOT_SET
+no_proxy=NOT_SET
+SSL_CERT_FILE=NOT_SET
+SSL_CERT_DIR=NOT_SET
+NODE_EXTRA_CA_CERTS=NOT_SET
+ENV_VALUES_PRINTED=NO
+
+======================================================================
+ 7. CODEX CONFIG METADATA — NO CONTENT
+======================================================================
+CODEX_HOME_EXISTS=YES
+CODEX_CONFIG_LIKE_FILE_COUNT=3
+CODEX_FILES_WITH_NETWORK_KEY_SIGNAL=14
+CODEX_CONFIG_CONTENT_PRINTED=NO
+AUTH_CONTENT_PRINTED=NO
+SECRET_CONTENT_PRINTED=NO
+
+======================================================================
+ 8. RAW HTTPS CONTROL — IPV4 + IPV6 AGAIN
+======================================================================
+CURL_IPV4_RESULT=HTTP_CODE=400;SSL=0
+CURL_IPV6_RESULT=HTTP_CODE=400;SSL=0
+
+======================================================================
+ 9. CLASSIFICATION
+======================================================================
+SYSTEM_PAC_ENABLED=YES
+SYSTEM_AUTO_DISCOVERY_ENABLED=YES
+CLIENT_STACK_CLASSIFICATION=MACOS_PROXY_AUTOCONFIG_SIGNAL_PRESENT
+NEXT=CONTROLLED_PROXY_AUTOCONFIG_ISOLATION_TEST
+
+======================================================================
+ 10. TAMANCARE PRESERVATION
+======================================================================
+RUNTIME_3000=200
+RUNTIME_3108=200
+RUNTIME_4173=200
+
+======================================================================
+ 11. SAFETY ASSERTIONS
+======================================================================
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+NETWORK_CONFIGURATION_MUTATION=NO
+PROXY_CONFIGURATION_MUTATION=NO
+HOSTS_FILE_MUTATION=NO
+CODEX_CONFIG_MUTATION=NO
+CODEX_LOGIN_STARTED=NO
+CODEX_EXEC_STARTED=NO
+AUTOPILOT_STARTED=NO
+GIT_INIT=NO
+SECRET_PRINTED=NO
+
+FAIL_COUNT=0
+WARN_COUNT=0
+AUTONOMOUS_EXECUTION_AUTHORIZED=NO
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_codex_pac_client_stack_diagnostic_20260830_133204.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT LOGIN AGAIN YET
+ -> DO NOT CHANGE PROXY/PAC SETTINGS
+ -> DO NOT DISABLE IPV6
+ -> DO NOT MODIFY /etc/hosts
+ -> DO NOT DELETE ~/.codex
+ -> DO NOT RUN CODEX EXEC
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

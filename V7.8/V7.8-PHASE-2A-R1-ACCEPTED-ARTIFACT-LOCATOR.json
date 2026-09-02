@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-08-21T13:20:40.325567+00:00",
+  "version": "V7.8",
+  "purpose": "Phase 2 Final accepted-artifact path recovery",
+  "selection_rule": "SHA256_IDENTITY_NOT_FILENAME",
+  "phase_2a_r1": {
+    "result_path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2A-R1-API-UI-CONTROLLED-RESTART-RECOVERY-RESULT.txt",
+    "result_hash": "adc83e36c2aca567fd8abc35ac5cfe961f320dc26579b4df1646e8b6c9b6ad80",
+    "manifest_path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-PHASE-2A-R1-API-UI-CONTROLLED-RESTART-RECOVERY.json",
+    "manifest_hash": "59193c3b2477437bdfcb0bf1c4e84a805f3cd9b889f3bb096b23f2437564524f",
+    "functional_rerun": false
+  },
+  "downstream_results": {
+    "PHASE2B": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2B-DATABASE-RECOVERY-SAFETY-RESULT.txt",
+      "hash": "ccfc951af9f74f47ee304678d00c4d8825e86cf6afbf049b4e03930c1dec549a"
+    },
+    "PHASE2B_R1": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2B-R1-CONTROLLED-PRODUCTION-DB-RESTART-RESULT.txt",
+      "hash": "4a05ae1cf5af5eaa53552e2ccdc3854a6dd933b99c6b77accaca2541fbd01e44"
+    },
+    "PHASE2C": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2C-ROLLBACK-RECOVERY-ACCEPTANCE-RESULT.txt",
+      "hash": "c69b77d861397873cb546e29be97da7b367b05b6a187a4b904f1c43c90981f4c"
+    }
+  },
+  "original_phase2_final_preflight": {
+    "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2-FINAL-RECOVERY-ACCEPTANCE-PREFLIGHT-RESULT.txt",
+    "hash": "e10b5c92a90294ded57123523063a4f6244800c5001d96a3da92922d031092ef"
+  },
+  "runtime_change": false,
+  "database_write": false,
+  "next": "V7.8_PHASE_2_FINAL_R1"
+}

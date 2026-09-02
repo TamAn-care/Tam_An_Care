@@ -1,0 +1,23 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2_FINAL",
+  "status": "PASSED",
+  "accepted_gates": [
+    "PHASE_2A",
+    "PHASE_2B",
+    "PHASE_2C",
+    "PHASE_2D"
+  ],
+  "gate_result_hashes": {
+    "V7.9/results/V7.9-PHASE_2A-RESIDENT-ROUTE-DISCOVERY-RESULT.txt": "2eb60d3f9ada69ef00c20289b3ac060c1b7883465afc124c77d31ecfa2e98e7f",
+    "V7.9/results/V7.9-PHASE_2B-RESIDENT-SCHEMA-AUTH-CONTRACT-RESULT.txt": "02bb70d625e5f28b92e9eef7a79f308337e4afefdcdcc832d026a50a89541a9c",
+    "V7.9/results/V7.9-PHASE_2C-RESIDENT-LIFECYCLE-ACCEPTANCE-RESULT.txt": "ad6a4f3e78872e5b9e6def0fb728297a2d6ceae79a039dd496a659f1734859a3",
+    "V7.9/results/V7.9-PHASE_2D-RESIDENT-LIFECYCLE-INTEGRITY-RESULT.txt": "cc55d5c0512f0d8e81d552cd10b759ede8731f6f732060e34ebd26f79d568806"
+  },
+  "real_resident_mutation": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "v77_source_write": false,
+  "accepted_at": "2026-08-22T01:44:51.655293+00:00"
+}

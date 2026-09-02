@@ -1,0 +1,416 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-5 FAST-1R REMAINING AUTHORITY
+ RECOVERY ONLY FROM FAILED SECTION 8
+
+ NO REPLAY OF SECTIONS 1-7
+ NO SOURCE PATCH
+ NO SCHEMA CHANGE
+ NO DATABASE MUTATION
+======================================================================
+
+----- 1. MINIMAL PRESERVATION GUARD -----
+M4_TABLE=1
+M4_REGISTRY=1
+DATABASE_BASELINE=1|1|0|0|0|0|0
+PASS: OPS-4 CLOSED STATE STILL PRESERVED
+
+----- 2. OPS-4 / KITCHEN HANDOFF -----
+KITCHEN_SERVICE_SHA256=6562cdc16e3759a3136451d7b60e1c620a009d8a97849310ca35fa24d44dc73d
+INVENTORY_AUTHORITY_MARKER=YES
+NUTRITION_REUSE_MARKER=YES
+PASS: OPS-4 KITCHEN HANDOFF AUTHORITY
+
+----- 3. AUTH / HUMAN AUTHORITY -----
+AUTH_MIDDLEWARE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/production-auth.middleware.ts
+AUTH_BEARER_SIGNAL=3
+AUTH_ACTOR_HEADER_SIGNAL=1
+AUTH_ROLE_HEADER_SIGNAL=1
+AUTH_SESSION_SIGNAL=1
+ACCEPTED_RUNTIME_AUTH_MODE=BEARER_PLUS_ACTOR_HEADERS
+PASS: PRODUCTION AUTH CONTRACT PRESERVED
+
+----- 4. STAFF ROLE AUTHORITY -----
+          conname          |                                                     pg_get_constraintdef                                                     
+---------------------------+------------------------------------------------------------------------------------------------------------------------------
+ staff_actors_role_check   | CHECK ((primary_operational_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'SUPERVISOR'::text, 'CARE_MANAGER'::text])))
+ staff_actors_status_check | CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text, 'SUSPENDED'::text, 'ARCHIVED'::text])))
+(2 rows)
+
+
+ACTIVE_STAFF_AUTHORITY_BEGIN
+      actor_id      | primary_operational_role | status 
+--------------------+--------------------------+--------
+ hqa-supervisor-001 | SUPERVISOR               | ACTIVE
+(1 row)
+
+ACTIVE_STAFF_AUTHORITY_END
+PASS: STAFF ROLE AUTHORITY CAPTURED
+
+----- 5. PERIOD / RECONCILIATION / LOCK AUTHORITY -----
+PERIOD_LOCK_SCHEMA_SIGNALS_BEGIN
+           table_name            |            column_name            |        data_type         
+---------------------------------+-----------------------------------+--------------------------
+ abnormal_findings               | closed_at                         | timestamp with time zone
+ abnormal_findings               | closed_by                         | text
+ abnormal_findings               | closed_by_role                    | text
+ activity_programs               | approved_at                       | timestamp with time zone
+ activity_programs               | approved_by                       | text
+ activity_programs               | approved_by_role                  | text
+ admission_care_classifications  | approved_at                       | timestamp with time zone
+ admission_care_classifications  | approved_by                       | text
+ admission_care_classifications  | approved_by_role                  | text
+ admission_care_classifications  | approved_care_level               | text
+ auth_credentials                | locked_until                      | timestamp with time zone
+ behavioral_episodes             | closed_at                         | timestamp with time zone
+ behavioral_episodes             | closed_by                         | text
+ behavioral_episodes             | closed_by_role                    | text
+ care_plans                      | approved_at                       | timestamp with time zone
+ care_plans                      | approved_by                       | text
+ care_plans                      | approved_by_role                  | text
+ diet_orders                     | approved_at                       | timestamp with time zone
+ diet_orders                     | approved_by                       | text
+ diet_orders                     | approved_by_role                  | text
+ exposure_events                 | closed_at                         | timestamp with time zone
+ exposure_events                 | closed_by                         | text
+ exposure_events                 | closed_by_role                    | text
+ fall_events                     | closed_at                         | timestamp with time zone
+ fall_events                     | closed_by                         | text
+ fall_events                     | closed_by_role                    | text
+ health_reports                  | approved_at                       | timestamp with time zone
+ health_reports                  | approved_by                       | text
+ health_reports                  | approved_by_role                  | text
+ health_reports                  | period_end                        | timestamp with time zone
+ health_reports                  | period_start                      | timestamp with time zone
+ hygiene_care_plans              | approved_at                       | timestamp with time zone
+ hygiene_care_plans              | approved_by                       | text
+ hygiene_care_plans              | approved_by_role                  | text
+ incidents                       | closed_at                         | timestamp with time zone
+ infection_control_plans         | approved_precaution_guidance      | text
+ medication_reconciliation_items | medication_reconciliation_id      | text
+ medication_reconciliation_items | medication_reconciliation_item_id | text
+ medication_reconciliations      | medication_reconciliation_id      | text
+ medication_reconciliations      | reconciliation_context            | text
+ nutrition_plans                 | approved_at                       | timestamp with time zone
+ nutrition_plans                 | approved_by                       | text
+ nutrition_plans                 | approved_by_role                  | text
+ rehabilitation_plans            | approved_at                       | timestamp with time zone
+ rehabilitation_plans            | approved_by                       | text
+ rehabilitation_plans            | approved_by_role                  | text
+ safeguarding_post_reviews       | closed_at                         | timestamp with time zone
+ safeguarding_post_reviews       | closed_by                         | text
+ safeguarding_post_reviews       | closed_by_role                    | text
+ safeguarding_reports            | closed_at                         | timestamp with time zone
+ safeguarding_reports            | closed_by                         | text
+ safeguarding_reports            | closed_by_role                    | text
+ sleep_rest_events               | closed_at                         | timestamp with time zone
+ sleep_rest_events               | closed_by                         | text
+ sleep_rest_events               | closed_by_role                    | text
+ wound_care_plans                | approved_at                       | timestamp with time zone
+ wound_care_plans                | approved_by                       | text
+ wound_care_plans                | approved_by_role                  | text
+ wound_care_plans                | approved_dressing_instruction     | text
+ wound_care_plans                | approved_prevention_instruction   | text
+ wound_care_plans                | approved_treatment_instruction    | text
+ wound_records                   | closed_at                         | timestamp with time zone
+(62 rows)
+
+PERIOD_LOCK_SCHEMA_SIGNALS_END
+
+COST_PERIOD_SOURCE_SIGNALS_BEGIN
+COST_PERIOD_SOURCE_SIGNALS_END
+PASS: PERIOD / RECONCILIATION / LOCK AUTHORITY CAPTURED
+
+----- 6. MONETARY / CURRENCY AUTHORITY -----
+MONETARY_SCHEMA_SIGNALS_BEGIN
+           table_name            |         column_name         | data_type | numeric_precision | numeric_scale 
+---------------------------------+-----------------------------+-----------+-------------------+---------------
+ admission_nutrition_assessments | feeding_assistance_required | boolean   |                   |              
+ feeding_assistance              | feeding_assistance_id       | text      |                   |              
+ nutrition_intake_records        | fluid_amount_ml             | integer   |                32 |             0
+ nutrition_plans                 | feeding_assistance_required | boolean   |                   |              
+(4 rows)
+
+MONETARY_SCHEMA_SIGNALS_END
+
+MONETARY_SOURCE_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:36:      autonomousDiagnosis: false,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1067:        autonomousDiagnosis: false,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:39:      autonomousDisciplinaryAction: false,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:85:  private rejectAutonomousDecision(action: string) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:167:    this.rejectAutonomousDecision(action);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:1463:        autonomousDisciplinaryAction: false,
+MONETARY_SOURCE_SIGNALS_END
+PASS: MONETARY AUTHORITY CAPTURED
+
+----- 7. AUDIT AUTHORITY -----
+AUDIT_TABLES_BEGIN
+            table_name             
+-----------------------------------
+ admission_audit
+ ai_analysis_audit
+ behavioral_audit
+ care_action_audit
+ care_plan_audit
+ care_task_audit
+ clinical_audit
+ fall_audit
+ health_report_audit
+ incident_audit
+ infection_audit
+ medication_audit
+ medication_safety_audit
+ nutrition_audit
+ operational_work_event_audit
+ operational_work_event_type_audit
+ pain_audit
+ personal_care_audit
+ rehabilitation_audit
+ resident_audit
+ safeguarding_audit
+ sleep_audit
+ staff_actor_audit
+ wound_audit
+(24 rows)
+
+AUDIT_TABLES_END
+
+AUDIT_SOURCE_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:104:      auditTrail,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:113:          .listAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:121:      auditTrail,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:169:        await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:289:          await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:404:        await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:618:        await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:781:        await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:955:        await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1137:        await this.repository.insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:17:  CareActionAuditEvent,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:89:type AuditRow = {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:151:export type InsertAuditInput = {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:304:  private mapAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:305:    row: AuditRow,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:306:  ): CareActionAuditEvent {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:734:  async insertAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:735:    input: InsertAuditInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:742:        INSERT INTO care_action_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:814:  async listAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:817:  ): Promise<CareActionAuditEvent[]> {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:821:        .query<AuditRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:824:          FROM care_action_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:835:        this.mapAudit(row),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:87:export interface CareActionAuditEvent {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:169:  auditTrail:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:170:    CareActionAuditEvent[];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:118:          INSERT INTO staff_actor_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:121:            performed_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:122:            performed_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:123:            previous_value,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:124:            new_value
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:151:        audit_insert AS (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:152:          INSERT INTO staff_actor_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:155:            performed_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:156:            performed_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:157:            previous_value,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:158:            new_value
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-bootstrap.ts:168:          RETURNING audit_id
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:111:         * -> AUDIT
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:506:            FROM care_task_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:564:          INSERT INTO care_task_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:565:            audit_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:598:            decision.auditEvent,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:684:          auditEvent:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:685:            decision.auditEvent,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:51:  approved_by: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:52:  approved_by_role: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:378:    const audit =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:382:          FROM health_report_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:393:      audit: audit.rows,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:485:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:860:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:944:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1028:              approved_by=$2,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1029:              approved_by_role=$3,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1042:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1255:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:82:  private async audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:95:      FROM wound_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:104:      INSERT INTO wound_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:105:        audit_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:204:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:266:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:379:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:447:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:518:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:573:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:625:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:674:              approved_by=$2,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:675:              approved_by_role=$3,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:689:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:719:              performed_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:720:              performed_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:743:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:790:            before.performed_by === command.actorId
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:815:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:863:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:931:              performed_by=$3,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:932:              performed_by_role=$4,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:946:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:979:              recorded_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:980:              recorded_by_role
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1003:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1066:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1114:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1199:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1266:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1341:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1423:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:82:  private async audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:94:      FROM sleep_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:103:      INSERT INTO sleep_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:104:        audit_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:186:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:238:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:283:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:310:              recorded_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:311:              recorded_by_role
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:327:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:376:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:420:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:488:              performed_by=$7,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:489:              performed_by_role=$8,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:508:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:554:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:611:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:660:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:722:              performed_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:723:              performed_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:742:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:788:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:832:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:876:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:922:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:987:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1037:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1094:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1152:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1199:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:53:  async createWithAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:117:          INSERT INTO resident_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:120:            performed_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:121:            performed_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:122:            previous_value,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:123:            new_value
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:160:      await this.repository.createWithAudit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:83:  private async audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:95:      FROM pain_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:104:      INSERT INTO pain_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:105:        audit_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:181:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:228:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:273:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:326:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:375:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:461:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:489:              recorded_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:490:              recorded_by_role
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:509:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:558:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:594:              performed_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:595:              performed_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:615:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:663:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:712:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:760:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:804:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:851:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:897:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:964:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1016:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1075:          await this.audit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:141:          auditEvent: 'TASK_ASSIGNED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:172:          auditEvent: 'TASK_ACCEPTED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:203:          auditEvent: 'TASK_STARTED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:234:          auditEvent: 'TASK_COMPLETED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:271:          auditEvent: 'TASK_MISSED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:308:          auditEvent: 'TASK_SKIPPED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:345:          auditEvent: 'TASK_CANCELLED',
+AUDIT_SOURCE_SIGNALS_END
+PASS: AUDIT AUTHORITY CAPTURED
+
+----- 8. SCALABILITY -----
+HARD_RESIDENT_200_SIGNALS=0
+OBVIOUS_LOAD_ALL_RESIDENT_QUERY_SIGNALS=0
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+HARD_RESIDENT_MAX=NONE
+BOUNDED_PAGINATION_REQUIRED=YES
+PASS: NO HARD RESIDENT CAP
+PASS: NO OBVIOUS LOAD-ALL RESIDENT QUERY
+
+----- 9. OPS-5 ARCHITECTURAL BOUNDARIES -----
+OPS_5_NAME=COST_RESIDENT_USAGE_COST
+OPS_5_SOURCE_OF_USAGE=resident_consumption_events
+OPS_5_TARGET_EVENT_DOMAIN=resident_cost_events
+OPS_5_TARGET_PERIOD_DOMAIN=resident_cost_periods
+
+RESIDENT_CONSUMPTION_AUTHORITY=PRESERVE
+INVENTORY_LEDGER_AUTHORITY=PRESERVE
+OPS4_KITCHEN_AUTHORITY=PRESERVE
+
+USAGE_DERIVED_COST_MUST_REFERENCE_CONSUMPTION=YES
+COST_EVENT_MUST_REFERENCE_RESIDENT=YES
+RECONCILIATION=IN_SCOPE
+PERIOD_LOCK=IN_SCOPE
+
+HUMAN_ACTOR_REQUIRED=YES
+AI_COST_APPROVAL_AUTHORITY=FORBIDDEN
+AI_PERIOD_LOCK_AUTHORITY=FORBIDDEN
+
+SECOND_INVENTORY_LEDGER=FORBIDDEN
+SECOND_RESIDENT_CONSUMPTION_DOMAIN=FORBIDDEN
+RETROACTIVE_CONSUMPTION_MUTATION=FORBIDDEN
+EXISTING_DOMAIN_REPLACEMENT=FORBIDDEN
+
+MIGRATION_POLICY=ADDITIVE_ONLY_IF_REQUIRED
+LOAD_ALL_QUERY=FORBIDDEN
+LIST_DEFAULT_LIMIT=50
+LIST_MAX_LIMIT=100
+HARD_RESIDENT_MAX=NONE
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+
+UI_VN=VIETNAMESE_FIRST_STAFF_UX
+SEC_L3=READINESS_REQUIRED
+SEC_L3_FULL_COMPLIANCE=NOT_CLAIMED
+
+OPS6_W_INTEGRATION=OUT_OF_SCOPE
+
+======================================================================
+ TAMANCARE V8.0 — OPS-5 FAST-1R DECISION
+======================================================================
+
+PASS_COUNT=9
+WARN_COUNT=0
+FAIL_COUNT=0
+
+STATUS: V8.0 OPS-5 FAST-1 AUTHORITY PASSED
+
+OPS_5=CURRENT
+OPS_5_AUTHORITY_DISCOVERY=COMPLETE
+OPS_5_IMPLEMENTATION_STARTED=NO
+
+FAST1_SECTIONS_1_TO_7=ACCEPTED_FROM_PREVIOUS_RUN
+FAST1_REMAINING_SECTIONS=PASS
+
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+DATABASE_MUTATION=NO
+
+NEXT=RETURN_OUTPUT_FOR_CONTRACT_LOCK_AND_CONSOLIDATED_IMPLEMENTATION
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1r_remaining_authority_20260831_023051.txt
+
+IMPORTANT:
+ -> DO NOT START OPS-5 IMPLEMENTATION MANUALLY
+ -> DO NOT CREATE COST TABLES MANUALLY
+ -> DO NOT MODIFY INVENTORY OR RESIDENT CONSUMPTION
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

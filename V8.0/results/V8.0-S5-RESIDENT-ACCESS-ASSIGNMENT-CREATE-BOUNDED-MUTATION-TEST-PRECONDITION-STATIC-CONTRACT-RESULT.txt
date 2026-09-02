@@ -1,0 +1,410 @@
+TAM_AN_CARE_VERSION=V8.0
+SERIES=08
+GATE=S5_RESIDENT_ACCESS_ASSIGNMENT_CREATE_BOUNDED_MUTATION_TEST_PRECONDITION_STATIC_CONTRACT
+
+STATUS=PASSED
+CREATE_ASSIGNMENT_PRECONDITION_CONTRACT_STATE=S5_RESIDENT_ACCESS_ASSIGNMENT_CREATE_BOUNDED_MUTATION_TEST_PRECONDITION_STATIC_CONTRACT_PROVEN
+
+AUTH_RESULT_SHA256=281bbde94054e69117a2f33467c91236e9c0ed469fcddf19139b1432c26cefa8
+AUTH_MANIFEST_SHA256=66b4dbd01b7091d3153b684834f7a96eb0bd672f094e92f10144c89f2031bc6a
+CONTROLLER_SHA256=793d0825a603289eb3a295a261b440e29be301097704f40e5aeb7ee02e8cdf03
+SERVICE_SHA256=93eba2f674eeb40ce14b39541e87c43cf1a3b62542906ac3599aa3317ada415b
+STAFF_SERVICE_SHA256=6726717309492efd5e72867ae7a956a959baa519f640f9bef1cb9301c4100a46
+ROOT_SCHEMA_SHA256=4eabecd904217a72e2ab1f769f42ab82da0bf5881857c4a8f9804470c2e02640
+
+SELECTED_HANDLER=createAssignment
+SELECTED_METHOD=POST
+SELECTED_PATH=/api/operations/residents/:residentId/access-assignments
+
+AUTHORIZE_SUPERVISOR_METHOD_PROVEN=YES
+NORMALIZE_CREATE_METHOD_PROVEN=YES
+TARGET_ACTOR_RESOLVER_PROVEN=YES
+REVOKE_ASSIGNMENT_METHOD_PROVEN=YES
+CREATE_SINGLE_INSERT_PROVEN=YES
+ROLE_SCOPE_SCHEMA_CONTRACT_PROVEN=YES
+
+CREATE_EXPLICIT_TRANSACTION_PRESENT=NO
+CREATE_EXPLICIT_ROLLBACK_PRESENT=NO
+CREATE_AUDIT_SIGNAL_PRESENT=NO
+
+SOFT_REVOKE_CAPABILITY_PRESENT=YES
+HARD_DELETE_CAPABILITY_PRESENT=NO
+
+BOUNDED_TEST_FIXTURE_CLASSIFIABLE=YES
+MUTATION_ACCEPTANCE_CONTRACT_CLASSIFIABLE=YES
+
+HTTP_AUTHORIZED=NO
+BUSINESS_MUTATION_HTTP_AUTHORIZED=NO
+DATABASE_QUERY_AUTHORIZED=NO
+DATABASE_MUTATION_AUTHORIZED=NO
+DATABASE_DDL_AUTHORIZED=NO
+BOOTSTRAP_RERUN_AUTHORIZED=NO
+SECOND_BOOTSTRAP_EXECUTION_ALLOWED=NO
+S6_AUTHORIZED=NO
+
+AUTHORIZE_SUPERVISOR_SURFACE_BEGIN
+  private async authorizeSupervisor(
+    actor: HumanActor,
+  ): Promise<{
+    actorId: string;
+    actorRole: 'SUPERVISOR';
+  }> {
+    const actorId =
+      String(actor.actorId ?? '').trim();
+
+    const actorRole =
+      String(actor.actorRole ?? '')
+        .trim()
+        .toUpperCase();
+
+    if (!actorId || !actorRole) {
+      throw new UnauthorizedException(
+        'Human actor identity required.',
+      );
+    }
+
+    if (
+      actorRole === 'AI' ||
+      actorRole === 'SYSTEM'
+    ) {
+      throw new ForbiddenException(
+        'Human supervisor authority required.',
+      );
+    }
+
+    if (actorRole !== 'SUPERVISOR') {
+      throw new ForbiddenException(
+        'Supervisor authority required.',
+      );
+    }
+
+    const canonicalSupervisor =
+      await this.staffActors
+        .resolveActiveActorWithRole(
+          actorId,
+          'SUPERVISOR',
+        );
+
+    if (!canonicalSupervisor) {
+      throw new ForbiddenException(
+        'Canonical active supervisor authority required.',
+      );
+    }
+
+    return {
+      actorId:
+        canonicalSupervisor.actor_id,
+      actorRole: 'SUPERVISOR',
+    };
+  }
+AUTHORIZE_SUPERVISOR_SURFACE_END
+
+NORMALIZE_CREATE_SURFACE_BEGIN
+  private normalizeCreate(
+    input: CreateAssignmentDto,
+  ) {
+    const actorId =
+      String(input.actorId ?? '').trim();
+
+    const actorRole =
+      String(input.actorRole ?? '')
+        .trim()
+        .toUpperCase();
+
+    const accessScope =
+      String(input.accessScope ?? '')
+        .trim()
+        .toUpperCase();
+
+    if (!actorId) {
+      throw new BadRequestException(
+        'actorId is required.',
+      );
+    }
+
+    const validPair =
+      (
+        actorRole === 'CAREGIVER' &&
+        accessScope === 'DIRECT_CARE'
+      ) ||
+      (
+        actorRole === 'NURSE' &&
+        accessScope === 'CLINICAL_CARE'
+      );
+
+    if (!validPair) {
+      throw new BadRequestException(
+        'Invalid actorRole/accessScope combination.',
+      );
+    }
+
+    if (!input.effectiveFrom) {
+      throw new BadRequestException(
+        'effectiveFrom is required.',
+      );
+    }
+
+    const effectiveFrom =
+      this.parseTimestamp(
+        input.effectiveFrom,
+        'effectiveFrom',
+      );
+
+    let effectiveTo: Date | null = null;
+
+    if (
+      input.effectiveTo !== undefined &&
+      input.effectiveTo !== null &&
+      String(input.effectiveTo).trim() !== ''
+    ) {
+      effectiveTo =
+        this.parseTimestamp(
+          String(input.effectiveTo),
+          'effectiveTo',
+        );
+
+      if (
+        effectiveTo.getTime() <=
+        effectiveFrom.getTime()
+      ) {
+        throw new BadRequestException(
+          'effectiveTo must be after effectiveFrom.',
+        );
+      }
+    }
+
+    return {
+      actorId,
+      actorRole,
+      accessScope,
+      effectiveFrom,
+      effectiveTo,
+    };
+  }
+NORMALIZE_CREATE_SURFACE_END
+
+RESOLVE_ACTIVE_ACTOR_WITH_ROLE_SURFACE_BEGIN
+  async resolveActiveActorWithRole(
+    actorId: string,
+    claimedRole: string,
+  ): Promise<StaffActorRecord | null> {
+    const actor = await this.resolveActiveActor(actorId);
+
+    if (!actor) {
+      return null;
+    }
+
+    const role = String(claimedRole || '')
+      .trim()
+      .toUpperCase();
+
+    if (
+      actor.primary_operational_role
+      !== role
+    ) {
+      return null;
+    }
+
+    return actor;
+  }
+RESOLVE_ACTIVE_ACTOR_WITH_ROLE_SURFACE_END
+
+REVOKE_ASSIGNMENT_SURFACE_BEGIN
+  async revokeAssignment(
+    assignmentId: string,
+    actor: HumanActor,
+    input: RevokeAssignmentDto,
+  ) {
+    const authority =
+      await this.authorizeSupervisor(actor);
+
+    const normalizedAssignmentId =
+      String(
+        assignmentId ?? '',
+      ).trim();
+
+    if (!normalizedAssignmentId) {
+      throw new BadRequestException(
+        'assignmentId is required.',
+      );
+    }
+
+    const normalized =
+      this.normalizeRevoke(input);
+
+    const now =
+      new Date();
+
+    const updated =
+      await this.database.query<AssignmentRow>(
+        `
+        UPDATE resident_access_assignments
+        SET
+          status = 'REVOKED',
+          revoked_by = $2,
+          revoked_by_role = 'SUPERVISOR',
+          revoked_at = $3,
+          revocation_reason = $4,
+          updated_at = $3
+        WHERE
+          resident_access_assignment_id = $1
+          AND status = 'ACTIVE'
+        RETURNING
+          ${this.assignmentProjection()}
+        `,
+        [
+          normalizedAssignmentId,
+          authority.actorId,
+          now,
+          normalized.revocationReason,
+        ],
+      );
+
+    if (updated.rowCount) {
+      return {
+        status: 'OK',
+
+        data:
+          this.mapAssignment(
+            updated.rows[0],
+          ),
+
+        idempotentReplay:
+          false,
+
+        authority: {
+          serverAuthorized:
+            true,
+
+          mutationAuthority:
+            'SUPERVISOR_ONLY',
+        },
+      };
+    }
+
+    const existing =
+      await this.database.query<AssignmentRow>(
+        `
+        SELECT
+          ${this.assignmentProjection()}
+        FROM resident_access_assignments
+        WHERE
+          resident_access_assignment_id = $1
+        LIMIT 1
+        `,
+        [
+          normalizedAssignmentId,
+        ],
+      );
+
+    if (!existing.rowCount) {
+      throw new NotFoundException(
+        'Access assignment not found.',
+      );
+    }
+
+    const row =
+      existing.rows[0];
+
+    if (row.status === 'REVOKED') {
+      return {
+        status: 'OK',
+
+        data:
+          this.mapAssignment(row),
+
+        idempotentReplay:
+          true,
+
+        authority: {
+          serverAuthorized:
+            true,
+
+          mutationAuthority:
+            'SUPERVISOR_ONLY',
+        },
+      };
+    }
+
+    throw new ConflictException(
+      'Access assignment is not revocable.',
+    );
+  }
+REVOKE_ASSIGNMENT_SURFACE_END
+
+RESIDENT_ACCESS_ASSIGNMENTS_SCHEMA_BEGIN
+CREATE TABLE resident_access_assignments (
+  resident_access_assignment_id TEXT PRIMARY KEY,
+
+  resident_id TEXT NOT NULL
+    REFERENCES residents(resident_id),
+
+  actor_id TEXT NOT NULL,
+
+  actor_role TEXT NOT NULL
+    CHECK (
+      actor_role IN ('CAREGIVER','NURSE')
+    ),
+
+  access_scope TEXT NOT NULL
+    CHECK (
+      access_scope IN ('DIRECT_CARE','CLINICAL_CARE')
+    ),
+
+  status TEXT NOT NULL
+    CHECK (
+      status IN ('ACTIVE','REVOKED')
+    ),
+
+  effective_from TIMESTAMPTZ NOT NULL,
+  effective_to TIMESTAMPTZ,
+
+  assigned_by TEXT NOT NULL,
+  assigned_by_role TEXT NOT NULL,
+  assigned_at TIMESTAMPTZ NOT NULL,
+
+  revoked_by TEXT,
+  revoked_by_role TEXT,
+  revoked_at TIMESTAMPTZ,
+  revocation_reason TEXT,
+
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+
+  CONSTRAINT resident_access_role_scope_check
+    CHECK (
+      (
+        actor_role='CAREGIVER'
+        AND access_scope='DIRECT_CARE'
+      )
+      OR
+      (
+        actor_role='NURSE'
+        AND access_scope='CLINICAL_CARE'
+      )
+    ),
+
+  CONSTRAINT resident_access_effective_interval_check
+    CHECK (
+      effective_to IS NULL
+      OR effective_to > effective_from
+    ),
+
+  CONSTRAINT resident_access_revocation_check
+    CHECK (
+      (
+        status='ACTIVE'
+        AND revoked_at IS NULL
+      )
+      OR
+      (
+        status='REVOKED'
+        AND revoked_at IS NOT NULL
+      )
+    )
+);
+RESIDENT_ACCESS_ASSIGNMENTS_SCHEMA_END
+
+FAIL_REASON=
+NEXT_CLASS=S5_RESIDENT_ACCESS_ASSIGNMENT_CREATE_TEST_FIXTURE_AND_REVERSIBILITY_CONTRACT_REQUIRED
+NEXT_ACTION=S5_RESIDENT_ACCESS_ASSIGNMENT_CREATE_TEST_FIXTURE_AND_REVERSIBILITY_STATIC_CONTRACT_CLASSIFICATION

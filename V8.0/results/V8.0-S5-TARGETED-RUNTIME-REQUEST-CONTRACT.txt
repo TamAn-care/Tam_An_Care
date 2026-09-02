@@ -1,0 +1,73 @@
+TAM AN CARE V8.0 — S5 TARGETED RUNTIME REQUEST CONTRACT
+PREFLIGHT_ONLY=YES
+
+REQUEST|CONTROLLER=ai/early-warning.controller.ts|HTTP=POST|PATH=/api/ai/engines/health-trend/patterns|HANDLER=patterns|STATUS=RESOLVED|PARAM_COUNT=1
+PARAM|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|INDEX=1|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=any|RAW=@Body() body: any
+REQUEST|CONTROLLER=ai/early-warning.controller.ts|HTTP=POST|PATH=/api/ai/engines/health-trend/resident/:residentId/patterns|HANDLER=residentPatterns|STATUS=RESOLVED|PARAM_COUNT=2
+PARAM|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=residentId|NAME=residentId|TYPE=string|RAW=@Param('residentId') residentId: string
+PARAM|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|INDEX=2|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=any|RAW=@Body() body: any
+REQUEST|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HTTP=POST|PATH=/api/care-plan-governance/:carePlanId/:action|HANDLER=execute|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=carePlanId|NAME=carePlanId|TYPE=string|RAW=@Param('carePlanId') carePlanId: string
+PARAM|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|INDEX=2|DECORATOR=PARAM|DECORATOR_ARG=action|NAME=rawAction|TYPE=string|RAW=@Param('action') rawAction: string
+PARAM|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|INDEX=3|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=GovernanceBody|RAW=@Body() body: GovernanceBody
+REQUEST|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HTTP=POST|PATH=/api/care-task-execution/:careTaskId/:action|HANDLER=execute|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=careTaskId|NAME=careTaskId|TYPE=string|RAW=@Param('careTaskId') careTaskId: string
+PARAM|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|INDEX=2|DECORATOR=PARAM|DECORATOR_ARG=action|NAME=action|TYPE=string|RAW=@Param('action') action: string
+PARAM|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|INDEX=3|DECORATOR=BODY|DECORATOR_ARG=|NAME=input|TYPE=CareTaskExecutionInput|RAW=@Body() input: CareTaskExecutionInput
+REQUEST|CONTROLLER=incidents/incident.controller.ts|HTTP=POST|PATH=/api/incidents/report|HANDLER=report|STATUS=RESOLVED|PARAM_COUNT=1
+PARAM|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|INDEX=1|DECORATOR=BODY|DECORATOR_ARG=|NAME=input|TYPE=ReportIncidentInput|RAW=@Body() input: ReportIncidentInput
+REQUEST|CONTROLLER=incidents/incident.controller.ts|HTTP=POST|PATH=/api/incidents/:incidentId/:action|HANDLER=mutate|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=incidentId|NAME=incidentId|TYPE=string|RAW=@Param('incidentId') incidentId: string
+PARAM|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|INDEX=2|DECORATOR=PARAM|DECORATOR_ARG=action|NAME=action|TYPE=string|RAW=@Param('action') action: string
+PARAM|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|INDEX=3|DECORATOR=BODY|DECORATOR_ARG=|NAME=input|TYPE=IncidentMutationInput|RAW=@Body() input: IncidentMutationInput
+REQUEST|CONTROLLER=medication/medication.controller.ts|HTTP=POST|PATH=/api/medication-administrations/:administrationId/:action|HANDLER=mutate|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=administrationId|NAME=administrationId|TYPE=string|RAW=@Param('administrationId') administrationId: string
+PARAM|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|INDEX=2|DECORATOR=PARAM|DECORATOR_ARG=action|NAME=rawAction|TYPE=string|RAW=@Param('action') rawAction: string
+PARAM|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|INDEX=3|DECORATOR=BODY|DECORATOR_ARG=|NAME=input|TYPE=MedicationAdministrationInput|RAW=@Body() input: MedicationAdministrationInput
+REQUEST|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HTTP=POST|PATH=/api/operations/residents/:residentId/access-assignments|HANDLER=createAssignment|STATUS=RESOLVED|PARAM_COUNT=4
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=residentId|NAME=residentId|TYPE=string|RAW=@Param('residentId') residentId: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|INDEX=2|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-id|NAME=actorId|TYPE=string|RAW=@Headers('x-actor-id') actorId?: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|INDEX=3|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-role|NAME=actorRole|TYPE=string|RAW=@Headers('x-actor-role') actorRole?: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|INDEX=4|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE={ actorId?: string; actorRole?: string; accessScope?: string; effectiveFrom?: string; effectiveTo?: string | null; } = {}|RAW=@Body() body: { actorId?: string; actorRole?: string; accessScope?: string; effectiveFrom?: string; effectiveTo?: string | null; } = {}
+REQUEST|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HTTP=POST|PATH=/api/operations/access-assignments/:assignmentId/revoke|HANDLER=revokeAssignment|STATUS=RESOLVED|PARAM_COUNT=4
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=assignmentId|NAME=assignmentId|TYPE=string|RAW=@Param('assignmentId') assignmentId: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|INDEX=2|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-id|NAME=actorId|TYPE=string|RAW=@Headers('x-actor-id') actorId?: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|INDEX=3|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-role|NAME=actorRole|TYPE=string|RAW=@Headers('x-actor-role') actorRole?: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|INDEX=4|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE={ revocationReason?: string; } = {}|RAW=@Body() body: { revocationReason?: string; } = {}
+REQUEST|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HTTP=POST|PATH=/api/operations/access-assignments|HANDLER=createPublicAccessAssignment|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|INDEX=1|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-id|NAME=actorId|TYPE=string|RAW=@Headers('x-actor-id') actorId: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|INDEX=2|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-role|NAME=actorRole|TYPE=string|RAW=@Headers('x-actor-role') actorRole: string
+PARAM|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|INDEX=3|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=any|RAW=@Body() body: any
+REQUEST|CONTROLLER=residents/resident.controller.ts|HTTP=POST|PATH=/api/residents|HANDLER=createResident|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|INDEX=1|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-id|NAME=actorId|TYPE=string | undefined|RAW=@Headers('x-actor-id') actorId: string | undefined
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|INDEX=2|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-role|NAME=actorRole|TYPE=string | undefined|RAW=@Headers('x-actor-role') actorRole: string | undefined
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|INDEX=3|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=any|RAW=@Body() body: any
+REQUEST|CONTROLLER=residents/resident.controller.ts|HTTP=PATCH|PATH=/api/residents/:residentId|HANDLER=updateResident|STATUS=RESOLVED|PARAM_COUNT=4
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=residentId|NAME=residentId|TYPE=string|RAW=@Param('residentId') residentId: string
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|INDEX=2|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-id|NAME=actorId|TYPE=string | undefined|RAW=@Headers('x-actor-id') actorId: string | undefined
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|INDEX=3|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-role|NAME=actorRole|TYPE=string | undefined|RAW=@Headers('x-actor-role') actorRole: string | undefined
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|INDEX=4|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=any|RAW=@Body() body: any
+REQUEST|CONTROLLER=residents/resident.controller.ts|HTTP=POST|PATH=/api/residents/:residentId/deactivate|HANDLER=deactivateResident|STATUS=RESOLVED|PARAM_COUNT=3
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=deactivateResident|INDEX=1|DECORATOR=PARAM|DECORATOR_ARG=residentId|NAME=residentId|TYPE=string|RAW=@Param('residentId') residentId: string
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=deactivateResident|INDEX=2|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-id|NAME=actorId|TYPE=string | undefined|RAW=@Headers('x-actor-id') actorId: string | undefined
+PARAM|CONTROLLER=residents/resident.controller.ts|HANDLER=deactivateResident|INDEX=3|DECORATOR=HEADERS|DECORATOR_ARG=x-actor-role|NAME=actorRole|TYPE=string | undefined|RAW=@Headers('x-actor-role') actorRole: string | undefined
+REQUEST|CONTROLLER=warning-reviews/warning-review.controller.ts|HTTP=POST|PATH=/api/warning-reviews|HANDLER=review|STATUS=RESOLVED|PARAM_COUNT=1
+PARAM|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|INDEX=1|DECORATOR=BODY|DECORATOR_ARG=|NAME=body|TYPE=any|RAW=@Body() body: any
+
+REQUEST_ROUTE_COUNT=14
+HANDLER_SIGNATURE_UNRESOLVED_COUNT=0
+
+BODY TYPE RESOLUTION
+BODY_TYPE|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|TYPE=any|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|TYPE=any|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|TYPE=GovernanceBody|DEFINITION=care-plan-governance/care-plan-governance.controller.ts
+BODY_TYPE|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|TYPE=CareTaskExecutionInput|DEFINITION=care-task-execution/care-task-execution.types.ts
+BODY_TYPE|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|TYPE=IncidentMutationInput|DEFINITION=incidents/incident.types.ts
+BODY_TYPE|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|TYPE=ReportIncidentInput|DEFINITION=incidents/incident.types.ts
+BODY_TYPE|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|TYPE=MedicationAdministrationInput|DEFINITION=medication/medication.types.ts
+BODY_TYPE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|TYPE={ actorId?: string; actorRole?: string; accessScope?: string; effectiveFrom?: string; effectiveTo?: string|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|TYPE=any|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|TYPE={ revocationReason?: string; } = {}|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|TYPE=any|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|TYPE=any|DEFINITION=UNRESOLVED
+BODY_TYPE|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|TYPE=any|DEFINITION=UNRESOLVED

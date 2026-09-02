@@ -1,0 +1,12 @@
+TAM AN CARE V8.0
+SERIES=SERIES_08
+PHASE=S5_CONTROLLER_INJECTED_FIELD_TRANSFORMATION_DEEP_DISCOVERY
+
+CONTEXT_RESIDENT_ID_OCCURRENCE_COUNT=3
+CONTEXT_RESIDENT_ID_OCCURRENCE|INDEX=1|LINE=52|USAGE_CLASS=ANALYZE_ARGUMENT_PROJECTION|INSIDE_ANALYZE_CALL=YES|INSIDE_RETURN_OBJECT=NO|PROPERTY_ASSIGNMENT_RESIDENT_ID=YES|SNIPPET=it this.residentService .getById(residentId); const analysis = this.earlyWarningService .analyze({ ...body, residentId: context.resident.residentId, }); return { ...analysis, residentId: context.resident.residentId, residentContext: { residentId: context.resident.resi|REQUEST_VALUE_ASSIGNED=NO|FIXTURE_VALUE_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+CONTEXT_RESIDENT_ID_OCCURRENCE|INDEX=2|LINE=59|USAGE_CLASS=RETURN_RESPONSE_PROJECTION|INSIDE_ANALYZE_CALL=NO|INSIDE_RETURN_OBJECT=YES|PROPERTY_ASSIGNMENT_RESIDENT_ID=YES|SNIPPET=rvice .analyze({ ...body, residentId: context.resident.residentId, }); return { ...analysis, residentId: context.resident.residentId, residentContext: { residentId: context.resident.residentId, residentCode: context.resident.residentCode, displayName:|REQUEST_VALUE_ASSIGNED=NO|FIXTURE_VALUE_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+CONTEXT_RESIDENT_ID_OCCURRENCE|INDEX=3|LINE=63|USAGE_CLASS=RETURN_RESPONSE_PROJECTION|INSIDE_ANALYZE_CALL=NO|INSIDE_RETURN_OBJECT=YES|PROPERTY_ASSIGNMENT_RESIDENT_ID=YES|SNIPPET=t.resident.residentId, }); return { ...analysis, residentId: context.resident.residentId, residentContext: { residentId: context.resident.residentId, residentCode: context.resident.residentCode, displayName: context.resident.displayName, room: context.resident.room,|REQUEST_VALUE_ASSIGNED=NO|FIXTURE_VALUE_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+ANALYZE_ARGUMENT_PROJECTION_COUNT=1
+RETURN_RESPONSE_PROJECTION_COUNT=2
+NESTED_ANALYZE_WITHIN_RETURN_CONTEXT_COUNT=0
+OTHER_LOCAL_USAGE_COUNT=0

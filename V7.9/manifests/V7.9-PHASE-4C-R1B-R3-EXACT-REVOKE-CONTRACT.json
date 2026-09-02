@@ -1,0 +1,31 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4C_R1B_R3",
+  "status": "PASSED",
+  "decision": "EXACT_CREATE_REVOKE_HTTP_CONTRACT_LOCKED",
+  "root_cause": "PRIOR_MULTILINE_DECORATOR_REGEX_FAILED",
+  "create_contract": {
+    "method": "POST",
+    "path": "/api/operations/residents/:residentId/access-assignments",
+    "success_http": 201
+  },
+  "revoke_contract": {
+    "method": "POST",
+    "path": "/api/operations/access-assignments/:assignmentId/revoke",
+    "route_literal": "access-assignments/:assignmentId/revoke",
+    "handler": "revokeAssignment",
+    "success_http": 200
+  },
+  "controller_patch_required": false,
+  "service_patch_required": false,
+  "application_source_write": false,
+  "http_mutation_requests": 0,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "v77_source_write": false,
+  "controller_sha256": "d0f8d672119302608c00be70b26b1e172fe14f8606cc32da0c5542a67352a062",
+  "service_sha256": "93eba2f674eeb40ce14b39541e87c43cf1a3b62542906ac3599aa3317ada415b",
+  "next_gate": "PHASE_4C",
+  "created_at": "2026-08-22T05:50:10.397714+00:00"
+}

@@ -1,0 +1,748 @@
+{
+  "route_count": 59,
+  "resolved_route_count": 59,
+  "unresolved_route_count": 0,
+  "controllers": [
+    {
+      "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "base_expression": "'api/activity-rehabilitation'",
+      "base": "api/activity-rehabilitation",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/activity-rehabilitation/test/summary",
+          "controller_expression": "'api/activity-rehabilitation'",
+          "route_expression": "'test/summary'",
+          "handler": "summary",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/activity-rehabilitation/:residentId/execute",
+          "controller_expression": "'api/activity-rehabilitation'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/ai/ai-engine.controller.ts",
+      "base_expression": "'api/ai/engines'",
+      "base": "api/ai/engines",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/ai/engines",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "",
+          "handler": "list",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/ai/engines/demo-data/:engineId",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "'demo-data/:engineId'",
+          "handler": "demoData",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/:engineId/analyze",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "':engineId/analyze'",
+          "handler": "analyze",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/:engineId/demo",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "':engineId/demo'",
+          "handler": "demo",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/ai/ai-governance.controller.ts",
+      "base_expression": "'api/ai/governance'",
+      "base": "api/ai/governance",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/ai/governance/status",
+          "controller_expression": "'api/ai/governance'",
+          "route_expression": "'status'",
+          "handler": "status",
+          "source": "api/src/ai/ai-governance.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/ai/governance/risk-classes",
+          "controller_expression": "'api/ai/governance'",
+          "route_expression": "'risk-classes'",
+          "handler": "risk",
+          "source": "api/src/ai/ai-governance.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/ai/governance/policies",
+          "controller_expression": "'api/ai/governance'",
+          "route_expression": "'policies'",
+          "handler": "policies",
+          "source": "api/src/ai/ai-governance.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/ai/early-warning.controller.ts",
+      "base_expression": "'api/ai/engines/health-trend'",
+      "base": "api/ai/engines/health-trend",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/health-trend/patterns",
+          "controller_expression": "'api/ai/engines/health-trend'",
+          "route_expression": "'patterns'",
+          "handler": "patterns",
+          "source": "api/src/ai/early-warning.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+          "controller_expression": "'api/ai/engines/health-trend'",
+          "route_expression": "'resident/:residentId/patterns'",
+          "handler": "residentPatterns",
+          "source": "api/src/ai/early-warning.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+      "base_expression": "'api/behavioral-cognitive'",
+      "base": "api/behavioral-cognitive",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/behavioral-cognitive/summary",
+          "controller_expression": "'api/behavioral-cognitive'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/behavioral-cognitive/:residentId/execute",
+          "controller_expression": "'api/behavioral-cognitive'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+      "base_expression": "'api/care-action-bridge'",
+      "base": "api/care-action-bridge",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/care-action-bridge/:warningId/execute",
+          "controller_expression": "'api/care-action-bridge'",
+          "route_expression": "':warningId/execute'",
+          "handler": "execute",
+          "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "base_expression": "'api/care-actions'",
+      "base": "api/care-actions",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/care-actions/:residentId/:patternId",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId',",
+          "handler": "getDetails",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/assign",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/assign',",
+          "handler": "assign",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/transfer",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/transfer',",
+          "handler": "transfer",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/start-review",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/start-review',",
+          "handler": "startReview",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/resolve",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/resolve',",
+          "handler": "resolve",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/reopen",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/reopen',",
+          "handler": "reopen",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "base_expression": "'api/care-plan-governance',",
+      "base": "api/care-plan-governance",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/care-plan-governance/:carePlanId/:action",
+          "controller_expression": "'api/care-plan-governance',",
+          "route_expression": "':carePlanId/:action',",
+          "handler": "execute",
+          "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+      "base_expression": "'api/care-task-execution',",
+      "base": "api/care-task-execution",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/care-task-execution/:careTaskId/:action",
+          "controller_expression": "'api/care-task-execution',",
+          "route_expression": "':careTaskId/:action',",
+          "handler": "execute",
+          "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/clinical-observations/clinical.controller.ts",
+      "base_expression": "'api/clinical',",
+      "base": "api/clinical",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+          "controller_expression": "'api/clinical',",
+          "route_expression": "':aggregateType/:aggregateId/:action',",
+          "handler": "mutate",
+          "source": "api/src/clinical-observations/clinical.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+      "base_expression": "'api/integration'",
+      "base": "api/integration",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/integration/residents/:residentId/overview",
+          "controller_expression": "'api/integration'",
+          "route_expression": "'residents/:residentId/overview'",
+          "handler": "overview",
+          "source": "api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+      "base_expression": "'api/fall-mobility'",
+      "base": "api/fall-mobility",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/fall-mobility/summary",
+          "controller_expression": "'api/fall-mobility'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/fall-mobility/:residentId/execute",
+          "controller_expression": "'api/fall-mobility'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/health/health.controller.ts",
+      "base_expression": "'api/health'",
+      "base": "api/health",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/health",
+          "controller_expression": "'api/health'",
+          "route_expression": "",
+          "handler": "get",
+          "source": "api/src/health/health.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/incidents/incident.controller.ts",
+      "base_expression": "'api/incidents'",
+      "base": "api/incidents",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/incidents/report",
+          "controller_expression": "'api/incidents'",
+          "route_expression": "'report'",
+          "handler": "report",
+          "source": "api/src/incidents/incident.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/incidents/:incidentId/:action",
+          "controller_expression": "'api/incidents'",
+          "route_expression": "':incidentId/:action'",
+          "handler": "mutate",
+          "source": "api/src/incidents/incident.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/infection-control/infection-control.controller.ts",
+      "base_expression": "'api/infection-control'",
+      "base": "api/infection-control",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/infection-control/summary",
+          "controller_expression": "'api/infection-control'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/infection-control/:residentId/execute",
+          "controller_expression": "'api/infection-control'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/medication/medication.controller.ts",
+      "base_expression": "'api/medication-administrations',",
+      "base": "api/medication-administrations",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/medication-administrations/:administrationId/:action",
+          "controller_expression": "'api/medication-administrations',",
+          "route_expression": "':administrationId/:action'",
+          "handler": "mutate",
+          "source": "api/src/medication/medication.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/medication-safety/medication-safety.controller.ts",
+      "base_expression": "'api/medication-safety'",
+      "base": "api/medication-safety",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/medication-safety/summary",
+          "controller_expression": "'api/medication-safety'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/medication-safety/:residentId/execute",
+          "controller_expression": "'api/medication-safety'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+      "base_expression": "'api/nutrition-hydration'",
+      "base": "api/nutrition-hydration",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/nutrition-hydration/:residentId/execute",
+          "controller_expression": "'api/nutrition-hydration'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/nutrition-hydration/:residentId/summary",
+          "controller_expression": "'api/nutrition-hydration'",
+          "route_expression": "':residentId/summary'",
+          "handler": "summary",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/operational-care-view/operational-care-view.controller.ts",
+      "base_expression": "'api/operations'",
+      "base": "api/operations",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/operations/residents/:residentId/care-view",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/care-view'",
+          "handler": "residentCareView",
+          "source": "api/src/operational-care-view/operational-care-view.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/operational-care-view/operational-dashboard.controller.ts",
+      "base_expression": "'api/operations'",
+      "base": "api/operations",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/operations/dashboard",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'dashboard'",
+          "handler": "dashboard",
+          "source": "api/src/operational-care-view/operational-dashboard.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+      "base_expression": "'api/pain-comfort'",
+      "base": "api/pain-comfort",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/pain-comfort/summary",
+          "controller_expression": "'api/pain-comfort'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/pain-comfort/:residentId/execute",
+          "controller_expression": "'api/pain-comfort'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/personal-care/personal-care.controller.ts",
+      "base_expression": "'api/personal-care'",
+      "base": "api/personal-care",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/personal-care/summary",
+          "controller_expression": "'api/personal-care'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/personal-care/:residentId/execute",
+          "controller_expression": "'api/personal-care'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+      "base_expression": "'api/operations'",
+      "base": "api/operations",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/operations/access-assignments",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'access-assignments'",
+          "handler": "listAssignments",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/operations/residents/:residentId/access-assignments",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/access-assignments',",
+          "handler": "listResidentAssignments",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/operations/residents/:residentId/access-assignments",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/access-assignments',",
+          "handler": "createAssignment",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/operations/access-assignments/:assignmentId/revoke",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'access-assignments/:assignmentId/revoke',",
+          "handler": "revokeAssignment",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/residents/resident.controller.ts",
+      "base_expression": "'api/residents'",
+      "base": "api/residents",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/residents",
+          "controller_expression": "'api/residents'",
+          "route_expression": "",
+          "handler": "listResidents",
+          "source": "api/src/residents/resident.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/residents/:residentId",
+          "controller_expression": "'api/residents'",
+          "route_expression": "':residentId'",
+          "handler": "getResident",
+          "source": "api/src/residents/resident.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+      "base_expression": "'api/care-actions'",
+      "base": "api/care-actions",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/accept-responsibility',",
+          "handler": "accept",
+          "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/safeguarding/safeguarding.controller.ts",
+      "base_expression": "'api/safeguarding'",
+      "base": "api/safeguarding",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/safeguarding/summary",
+          "controller_expression": "'api/safeguarding'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/safeguarding/:residentId/execute",
+          "controller_expression": "'api/safeguarding'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/skin-wound/skin-wound.controller.ts",
+      "base_expression": "'api/skin-wound'",
+      "base": "api/skin-wound",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/skin-wound/summary",
+          "controller_expression": "'api/skin-wound'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/skin-wound/:residentId/execute",
+          "controller_expression": "'api/skin-wound'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+      "base_expression": "'api/sleep-rest'",
+      "base": "api/sleep-rest",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/sleep-rest/summary",
+          "controller_expression": "'api/sleep-rest'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/sleep-rest/:residentId/execute",
+          "controller_expression": "'api/sleep-rest'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/staff-actors/staff-actor.controller.ts",
+      "base_expression": "'api/operations/staff-actors'",
+      "base": "api/operations/staff-actors",
+      "routes": [
+        {
+          "method": "GET",
+          "path": "/api/operations/staff-actors",
+          "controller_expression": "'api/operations/staff-actors'",
+          "route_expression": "",
+          "handler": "list",
+          "source": "api/src/staff-actors/staff-actor.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/operations/staff-actors/:actorId",
+          "controller_expression": "'api/operations/staff-actors'",
+          "route_expression": "':actorId'",
+          "handler": "detail",
+          "source": "api/src/staff-actors/staff-actor.controller.ts",
+          "resolved": true
+        }
+      ]
+    },
+    {
+      "source": "api/src/warning-reviews/warning-review.controller.ts",
+      "base_expression": "'api/warning-reviews'",
+      "base": "api/warning-reviews",
+      "routes": [
+        {
+          "method": "POST",
+          "path": "/api/warning-reviews",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "",
+          "handler": "review",
+          "source": "api/src/warning-reviews/warning-review.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/warning-reviews/:warningId",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "':warningId'",
+          "handler": "get",
+          "source": "api/src/warning-reviews/warning-review.controller.ts",
+          "resolved": true
+        }
+      ]
+    }
+  ]
+}

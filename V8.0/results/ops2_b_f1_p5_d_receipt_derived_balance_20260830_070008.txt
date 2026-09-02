@@ -1,0 +1,124 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-D
+ RECEIPT + DERIVED BALANCE
+======================================================================
+
+AUTHORIZED:
+ -> exactly ONE authenticated RECEIPT transaction
+ -> quantity = 10
+ -> unit = canonical item base unit
+ -> exact P5 lot
+ -> item + lot derived balance reads
+
+NOT AUTHORIZED:
+ -> second transaction
+ -> outbound transaction
+ -> resident consumption
+ -> transaction PATCH/DELETE
+ -> source/schema/migration mutation
+ -> accepted runtime restart
+
+======================================================================
+ 1. LOAD ACCEPTED P5 CHECKPOINT
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_BASE_UNIT=UNIT
+P5_LOT_STATUS_AFTER_C2=ACTIVE
+P5_C2_STATUS=PASS
+P5_ACCEPTED_API_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+PASS: P5-C2 CHECKPOINT READY
+
+======================================================================
+ 2. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINE
+
+======================================================================
+ 3. ISOLATED RUNTIME + AUTH
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+AUTHENTICATED_LOT_PROBE=200
+TOKEN_VALUE_PRINTED=NO
+PASS: AUTHENTICATED RUNTIME READY
+
+======================================================================
+ 4. DATABASE PRE-TRANSACTION BASELINE
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|1|0|0
+ITEM_LOT_STATE=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|UNIT|t|t|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|ACTIVE
+PASS: ACTIVE LOT-TRACKED ITEM + ACTIVE LOT
+
+======================================================================
+ 5. SOURCE IDEMPOTENCY COLLISION CHECK
+======================================================================
+SOURCE_DOMAIN=OPS2B_FUNCTIONAL
+SOURCE_ENTITY_TYPE=P5_RECEIPT
+SOURCE_ENTITY_ID=OPS2B_P5_D_20260830_070008
+SOURCE_COLLISION_COUNT=0
+PASS: UNIQUE SOURCE-BACKED RECEIPT
+
+======================================================================
+ 6. CREATE AUTHENTICATED RECEIPT
+======================================================================
+RECEIPT_HTTP=201
+RECEIPT_RESPONSE:
+{"inventory_transaction_id":"inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf","inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","transaction_type":"RECEIPT","quantity":"10.0000","unit":"UNIT","occurred_at":"2026-08-30T00:00:09.600Z","performed_by":"hqa-supervisor-001","performed_by_role":"SUPERVISOR","source_domain":"OPS2B_FUNCTIONAL","source_entity_type":"P5_RECEIPT","source_entity_id":"OPS2B_P5_D_20260830_070008","reason_code":"FUNCTIONAL_ACCEPTANCE","note":"OPS-2-B P5-D receipt acceptance","created_at":"2026-08-30T00:00:09.592Z"}
+PASS: RECEIPT HTTP 201
+
+======================================================================
+ 7. EXACT LEDGER PERSISTENCE
+======================================================================
+TX_ROW=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|RECEIPT|10.0000|UNIT|hqa-supervisor-001|SUPERVISOR|OPS2B_FUNCTIONAL|P5_RECEIPT|OPS2B_P5_D_20260830_070008|FUNCTIONAL_ACCEPTANCE
+P5_RECEIPT_TX_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+LEDGER_QUANTITY_NORMALIZED=10.0000
+PASS: EXACT RECEIPT QUANTITY
+PASS: AUTHORITATIVE RECEIPT LEDGER ROW
+
+======================================================================
+ 8. AUTHENTICATED TRANSACTION READ
+======================================================================
+TRANSACTION_GET_HTTP=200
+TRANSACTION_GET_RESPONSE:
+{"inventory_transaction_id":"inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf","inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","transaction_type":"RECEIPT","quantity":"10.0000","unit":"UNIT","occurred_at":"2026-08-30T00:00:09.600Z","performed_by":"hqa-supervisor-001","performed_by_role":"SUPERVISOR","source_domain":"OPS2B_FUNCTIONAL","source_entity_type":"P5_RECEIPT","source_entity_id":"OPS2B_P5_D_20260830_070008","reason_code":"FUNCTIONAL_ACCEPTANCE","note":"OPS-2-B P5-D receipt acceptance","created_at":"2026-08-30T00:00:09.592Z"}
+PASS: RECEIPT TRANSACTION READABLE
+
+======================================================================
+ 9. ITEM-LEVEL DERIVED BALANCE
+======================================================================
+ITEM_BALANCE_HTTP=200
+ITEM_BALANCE_RESPONSE:
+{"inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":null,"unit":"UNIT","balance":"0.0000","as_of":"2026-08-30T00:00:09.900Z"}
+PARSED_ITEM_BALANCE_ITEM=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+PARSED_ITEM_BALANCE=0.0000
+PARSED_ITEM_BALANCE_UNIT=UNIT
+FAIL: expected item balance 10, got 0.0000
+
+======================================================================
+ STATUS: OPS-2-B-F1-P5-D CONTROLLED STOP
+======================================================================
+
+TRANSACTION_CREATED_DURING_GATE=1
+CREATED_TRANSACTION_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+IMPORTANT_LEDGER_STATE=PRESERVE_FOR_DIAGNOSIS
+ -> DO NOT DELETE OR MODIFY THIS TRANSACTION
+
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_d_receipt_derived_balance_20260830_070008.txt
+
+IMPORTANT:
+ -> DO NOT RERUN P5-D
+ -> DO NOT CREATE ANOTHER RECEIPT
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT DELETE OR PATCH inventory_transactions
+ -> KEEP P5 ITEM + LOT
+ -> KEEP AUTH FIXTURE
+ -> KEEP P5 state.env
+ -> DO NOT START P5-E
+ -> DO NOT START CODEX AUTOPILOT

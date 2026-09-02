@@ -1,0 +1,56 @@
+STEP 7Z — CONCURRENCY CONTRACT
+
+OFFICIAL MUTATION:
+
+BEGIN
+-> SELECT target FOR UPDATE
+-> reload
+-> verify human actor
+-> verify authority
+-> verify owner / reviewer
+-> revalidate state
+-> mutate
+-> same-transaction audit
+-> COMMIT
+
+
+INCOMPATIBLE RACE
+
+Exactly one winner.
+
+Loser business mutation = zero.
+Loser audit = zero.
+
+
+COMPATIBLE APPEND-ONLY HISTORY
+
+Independent valid factual amendments may coexist.
+
+No lost fall-event history.
+
+
+MANDATORY STEP 7Z.C TESTS
+
+1. double fall-risk verification
+2. double mobility-plan review
+3. double mobility-plan activation
+4. transfer-safety verification race
+5. fall-event assignment race
+6. wrong owner denial
+7. double event acknowledgement
+8. post-fall observation verification race
+9. concurrent post-fall amendments
+10. prevention-action authorization race
+11. prevention-action activation race
+12. review / end safe lifecycle
+13. escalation assignment race
+14. wrong reviewer denial
+15. double escalation acceptance
+16. double escalation resolution
+17. double fall-event resolution
+18. double fall-event closure
+
+OWNER PRESERVATION = REQUIRED
+REVIEWER PRESERVATION = REQUIRED
+SINGLE WINNER = REQUIRED
+APPEND-ONLY HISTORY = REQUIRED

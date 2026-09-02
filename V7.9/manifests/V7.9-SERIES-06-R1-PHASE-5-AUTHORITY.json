@@ -1,0 +1,46 @@
+{
+  "version": "V7.9",
+  "series": "06-R1",
+  "stage": "PHASE_5_AUTHORITY_RESOLUTION",
+  "status": "PASSED",
+  "decision": "V7.9_PHASE_5_BACKUP_RESTORE_DATA_INTEGRITY_AUTHORITY_LOCKED",
+  "authority": {
+    "phase_name": "BACKUP_RESTORE_DATA_INTEGRITY",
+    "gates": [
+      {
+        "gate": "PHASE_5A",
+        "name": "DISPOSABLE_BACKUP_RESTORE"
+      },
+      {
+        "gate": "PHASE_5B",
+        "name": "RESTORED_DATA_INTEGRITY"
+      },
+      {
+        "gate": "PHASE_5_FINAL",
+        "name": "BACKUP_DATA_INTEGRITY_ACCEPTANCE"
+      }
+    ],
+    "gate_sequence": "PHASE_5A->PHASE_5B->PHASE_5_FINAL",
+    "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+    "implementation_authorized": false,
+    "next_gate": "PHASE_5A",
+    "invented_phase": false
+  },
+  "manual_test_review": {
+    "manual_test_required": false,
+    "hits": [],
+    "scope": "EXACT_PHASE_5_AUTHORITY_ONLY"
+  },
+  "roadmap_sha256": "dde494e9bd27fbc20cd9cb97b0a5addd6afa8fe4efef2cc26653cd7ea07e1968",
+  "preflight_sha256": "e48861315a5119456161931cb4c28defc32989fe73d764de3905a36cdbf50e21",
+  "phase5_execution_authorized": false,
+  "next_authorized_action": "PHASE_5A_PREFLIGHT",
+  "runner_created": false,
+  "backup_executed": false,
+  "restore_executed": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "application_source_write": false,
+  "v77_source_write": false,
+  "created_at": "2026-08-22T05:59:32.674558+00:00"
+}

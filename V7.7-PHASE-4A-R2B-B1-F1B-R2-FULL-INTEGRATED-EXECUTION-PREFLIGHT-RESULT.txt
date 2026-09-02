@@ -1,0 +1,58 @@
+TAM AN CARE V7.7
+PHASE 4A-R2B-B1-F1B-R2
+FULL INTEGRATED EXECUTION RECOVERY PREFLIGHT
+
+STATUS=PASSED
+
+FIXTURE_RECOVERY_RESULT_HASH=e88c670a33926218257b48f49df183277bf11d6ac46e98cf7f12ce1d9de3eef1
+CARE_ACTION_FOUNDATION_CONTRACT_HASH=1f3edee9bdf3fa05d2f458925294f2ec226162c5147ccb579df2ac25af05631c
+
+SOURCE_HASH=bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+CORRECTED CARE ACTION FOUNDATION:
+
+INSERT ONLY:
+- resident_id
+- pattern_id
+- status=PENDING
+- priority=MODERATE
+
+DO NOT PREPOPULATE:
+- assigned_to
+- assigned_role
+- assigned_at
+
+THE /assign API MUST SET:
+- assigned_to
+- assigned_role
+- assigned_at
+
+MANDATORY R2 EXECUTION ORDER:
+
+1. Build exact V7.7 source.
+2. Create disposable PostgreSQL.
+3. Create common actors/resident.
+4. Create UNASSIGNED Care Action.
+5. Start isolated API.
+6. POST assign.
+7. Verify assignment triplet:
+   assigned_to != NULL
+   assigned_role != NULL
+   assigned_at != NULL.
+8. Continue transfer.
+9. Continue start-review.
+10. Continue resolve.
+11. Continue reopen.
+12. Continue remaining 11 route workflows.
+13. Verify persistence/audits.
+14. Run cross-domain read compatibility.
+15. Run S1 AI security regression.
+16. Verify V7.7 source unchanged.
+17. Destroy all disposable infrastructure.
+18. Verify V7.6 production unchanged.
+
+NO MANUAL DATABASE WRITE.
+NO V7.6 CHANGE.
+
+NEXT=
+V7.7_PHASE_4A_R2B_B1_F1B_R2_FULL_INTEGRATED_EXECUTION

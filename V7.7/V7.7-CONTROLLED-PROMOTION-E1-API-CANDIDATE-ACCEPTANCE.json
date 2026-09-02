@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-08-21T09:05:34.645874+00:00",
+  "stage": "CONTROLLED_PROMOTION_E1",
+  "status": "PASSED",
+  "purpose": "PARALLEL_API_CANDIDATE_ACCEPTANCE",
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "promotion_decision_r2_result_hash": "14815a4fd504bb537d58bec30db0e40d8c37fb657680ea33b04378c80e77239b",
+  "promotion_decision_r2_manifest_hash": "336b1474315c8e2986640a0294eb18517bfdcd47998bd1d78c52f8023ab5246b",
+  "candidate": {
+    "image_tag": "taman-care-v77-production-candidate:20260821_160454",
+    "image_id": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "container_id": "1bb86d2f01cdf86f7e33192c4d8eb10cc71a7c877e00937796339336b3eed94c",
+    "temporary_host_port": "54885",
+    "health_http": "200",
+    "staff_no_actor_http": "401",
+    "access_no_actor_http": "401",
+    "resident_ai_no_actor_http": "401",
+    "destroyed_after_test": true
+  },
+  "production_database": {
+    "table_count": 118,
+    "row_fingerprint_before": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "row_fingerprint_during": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "row_fingerprint_after": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "row_delta": false,
+    "schema_migration": false
+  },
+  "v76": {
+    "api_before": "200|401|401",
+    "api_during": "200|401|401",
+    "api_after": "200|401|401",
+    "ui_before": "200|401|401|200",
+    "ui_during": "200|401|401|200",
+    "ui_after": "200|401|401|200",
+    "stopped": false,
+    "port_change": false
+  },
+  "traffic_cutover": false,
+  "promotion_complete": false
+}

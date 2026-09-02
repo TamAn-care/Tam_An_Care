@@ -1,0 +1,40 @@
+{
+  "version": "V7.9",
+  "phase": "0A",
+  "status": "PASSED",
+  "parent_release": {
+    "result_path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-FINAL-OPERATIONAL-RELEASE-FREEZE-RESULT.txt",
+    "result_hash": "f1e9481851f8fc91fb0e249f174284a03befc1c7f4c56720a3cc7d803094b758",
+    "manifest_path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+    "manifest_hash": "0b5899596a6bae75eacf3fe7bf8a06c72dbf18fb6dbe536e168d8123b37bf14f"
+  },
+  "production": {
+    "api_container": "taman-care-v77-production-api",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_container": "taman-care-v77-production-ui",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "db_container": "taman-care-v743-dev-postgres",
+    "db_image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5"
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+  },
+  "frozen_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "rollback_assets": [
+    {
+      "container": "taman-care-v75-ui",
+      "image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+      "state": "exited"
+    },
+    {
+      "container": "taman-care-v743-dev-api",
+      "image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+      "state": "exited"
+    }
+  ],
+  "production_write": false,
+  "runtime_restart": false,
+  "source_write": false,
+  "next": "PHASE_0B"
+}

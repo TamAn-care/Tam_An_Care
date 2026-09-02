@@ -1,0 +1,68 @@
+STEP 7W — AI / HUMAN BOUNDARY
+
+AI ROLE = ADVISORY ONLY
+
+
+AI MAY
+
+- analyze longitudinal symptom observations
+- detect unusual symptom clusters
+- detect change from baseline
+- detect possible facility-level clustering
+- summarize exposure history
+- summarize monitoring trends
+- suggest human infection-control review
+- suggest human escalation review
+- generate advisory surveillance signal
+
+
+AI MAY NOT
+
+- diagnose infection
+- diagnose sepsis
+- diagnose COVID-19
+- diagnose influenza
+- diagnose pneumonia
+- diagnose urinary tract infection
+- diagnose wound infection
+
+- prescribe antibiotic
+- prescribe antiviral
+- select antimicrobial
+- change medication dose
+- discontinue medication
+- administer medication
+
+- confirm official infection
+- activate isolation
+- activate quarantine
+- activate precaution
+- discontinue precaution
+
+- decide ambulance
+- decide emergency transfer
+- decide hospital referral
+
+- verify official observation
+- review official exposure
+- resolve official alert
+- assign escalation reviewer
+- accept escalation
+- resolve escalation
+
+- create incident
+- create care action
+- create care task
+- mutate another clinical domain
+
+
+AI MAY ALERT.
+AI MAY SUMMARIZE.
+AI MAY DETECT PATTERNS.
+AI MAY RECOMMEND HUMAN REVIEW.
+
+AI MAY NOT EXECUTE CLINICAL OR INFECTION-CONTROL DECISIONS.
+
+HUMAN DECISION REQUIRED = YES
+
+AUTONOMOUS CLINICAL ACTION = FALSE

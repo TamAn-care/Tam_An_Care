@@ -1,0 +1,207 @@
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plans/care-plan.service.ts -----
+39:  async createDraft(
+47:        carePlanId:
+49:            input.carePlanId,
+50:            'carePlanId',
+53:        residentId:
+55:            input.residentId,
+56:            'residentId',
+71:        createdBy:
+73:            input.createdBy,
+74:            'createdBy',
+77:        createdByRole:
+79:            input.createdByRole,
+80:            'createdByRole',
+84:    return this.repository.create(
+91:    carePlanId: string,
+96:        carePlanId,
+97:        'carePlanId',
+104:    residentId: string,
+109:        residentId,
+110:        'residentId',
+116:  async audit(
+117:    carePlanId: string,
+122:        carePlanId,
+123:        'carePlanId',
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plans/care-plan.repository.ts -----
+23:    carePlanId:
+24:      row.care_plan_id,
+25:    residentId:
+26:      row.resident_id,
+33:    status:
+34:      row.status,
+43:    createdBy:
+44:      row.created_by,
+45:    createdByRole:
+46:      row.created_by_role,
+47:    approvedBy:
+48:      row.approved_by,
+49:    approvedByRole:
+50:      row.approved_by_role,
+51:    approvedAt:
+52:      row.approved_at
+53:        ? new Date(row.approved_at)
+55:    createdAt:
+56:      new Date(row.created_at),
+57:    updatedAt:
+58:      new Date(row.updated_at),
+69:  async create(
+79:            INSERT INTO care_plans (
+80:              care_plan_id,
+81:              resident_id,
+85:              status,
+88:              created_by,
+89:              created_by_role
+99:              input.carePlanId,
+100:              input.residentId,
+106:              input.createdBy,
+107:              input.createdByRole,
+118:          INSERT INTO care_plan_audit (
+119:            audit_id,
+121:            care_plan_id,
+122:            resident_id,
+139:            plan.carePlanId,
+140:            plan.residentId,
+141:            input.createdBy,
+142:            input.createdByRole,
+144:              carePlanId:
+145:                plan.carePlanId,
+146:              residentId:
+147:                plan.residentId,
+148:              status:
+149:                plan.status,
+163:    carePlanId: string,
+170:        FROM care_plans
+171:        WHERE care_plan_id = $1
+174:          carePlanId,
+189:    residentId: string,
+196:        FROM care_plans
+197:        WHERE resident_id = $1
+198:        ORDER BY created_at ASC
+201:          residentId,
+212:    carePlanId: string,
+219:        FROM care_plan_audit
+220:        WHERE care_plan_id = $1
+224:          carePlanId,
+230:        auditId:
+231:          row.audit_id,
+234:        carePlanId:
+235:          row.care_plan_id,
+236:        residentId:
+237:          row.resident_id,
+248:        createdAt:
+249:          new Date(row.created_at),
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plans/care-plan.types.ts -----
+13:  carePlanId: string;
+14:  residentId: string;
+18:  status: CarePlanStatus;
+21:  createdBy: string;
+22:  createdByRole: string;
+23:  approvedBy: string | null;
+24:  approvedByRole: string | null;
+25:  approvedAt: Date | null;
+26:  createdAt: Date;
+27:  updatedAt: Date;
+31:  carePlanId: string;
+32:  residentId: string;
+38:  createdBy: string;
+39:  createdByRole: string;
+43:  auditId: string;
+45:  carePlanId: string;
+46:  residentId: string;
+59:  createdAt: Date;
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.controller.ts -----
+40:    ':carePlanId/:action',
+43:    @Param('carePlanId')
+44:    carePlanId: string,
+78:            carePlanId,
+90:        status:
+149:          statusCode:
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.service.ts -----
+35:    carePlanId: string,
+44:        carePlanId ?? '',
+59:        'carePlanId is required.',
+83:              care_plan_id,
+84:              resident_id,
+88:              status,
+91:              created_by,
+92:              created_by_role,
+93:              approved_by,
+94:              approved_by_role,
+95:              approved_at,
+96:              created_at,
+97:              updated_at
+98:            FROM care_plans
+99:            WHERE care_plan_id = $1
+126:                plan.status,
+139:          status:
+140:            plan.status,
+142:          approvedBy:
+143:            plan.approved_by,
+145:          approvedByRole:
+146:            plan.approved_by_role,
+148:          approvedAt:
+149:            plan.approved_at,
+153:        let approvedBy =
+154:          plan.approved_by;
+156:        let approvedByRole =
+157:          plan.approved_by_role;
+159:        let approvedAt =
+160:          plan.approved_at;
+167:          approvedBy =
+170:          approvedByRole =
+173:          approvedAt =
+178:        const updatedResult =
+181:            UPDATE care_plans
+183:              status = $2,
+184:              approved_by = $3,
+185:              approved_by_role = $4,
+186:              approved_at = $5,
+187:              updated_at = NOW()
+188:            WHERE care_plan_id = $1
+190:              care_plan_id,
+191:              resident_id,
+194:              status,
+195:              approved_by,
+196:              approved_by_role,
+197:              approved_at,
+198:              created_at,
+199:              updated_at
+204:              approvedBy,
+205:              approvedByRole,
+206:              approvedAt,
+211:        const updated =
+212:          updatedResult.rows[0];
+224:            FROM care_plan_audit
+225:            WHERE care_plan_id = $1
+242:          status:
+243:            updated.status,
+245:          approvedBy:
+246:            updated.approved_by,
+248:          approvedByRole:
+249:            updated.approved_by_role,
+251:          approvedAt:
+252:            updated.approved_at,
+258:          INSERT INTO care_plan_audit (
+259:            audit_id,
+261:            care_plan_id,
+262:            resident_id,
+268:            created_at
+286:            updated.care_plan_id,
+287:            updated.resident_id,
+288:            decision.auditEvent,
+302:          carePlanId:
+303:            updated.care_plan_id,
+305:          residentId:
+306:            updated.resident_id,
+309:            updated.plan_code,
+311:          status:
+312:            updated.status,
+323:          auditEvent:
+324:            decision.auditEvent,
+326:          approvedBy:
+327:            updated.approved_by,
+329:          approvedByRole:
+330:            updated.approved_by_role,
+332:          approvedAt:
+333:            updated.approved_at,

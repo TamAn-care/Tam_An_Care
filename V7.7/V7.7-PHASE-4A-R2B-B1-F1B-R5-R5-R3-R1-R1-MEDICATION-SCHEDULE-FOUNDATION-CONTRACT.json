@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-08-21T07:54:47.806248+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R3-R1-R1",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "table": "medication_schedules",
+  "legal_status_values": [
+    "PLANNED",
+    "ACTIVE",
+    "SUSPENDED",
+    "COMPLETED",
+    "CANCELLED"
+  ],
+  "status_default": "<NONE>",
+  "selected_foundation_status": "PLANNED",
+  "selection_basis": "LEGAL_PRE_EXECUTION_STATE",
+  "rejected_prior_value": "SCHEDULED",
+  "important_distinction": {
+    "medication_schedules": "PLANNED",
+    "medication_administrations": "SCHEDULED"
+  },
+  "r3_r2_fixture": {
+    "medication_schedule_id": "v77-r3r2-med-schedule",
+    "status": "PLANNED"
+  },
+  "application_source_write": false,
+  "production_database_write": false,
+  "v7_6_change": false
+}

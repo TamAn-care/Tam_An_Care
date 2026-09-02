@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm/
+
+# Build outputs
+dist/
+build/
+*.out
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# System & IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+*.tmp

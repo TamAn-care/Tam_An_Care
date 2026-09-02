@@ -1,0 +1,141 @@
+TAM AN CARE V7.4.3
+STEP 7R HUMAN AUTHORIZATION MATRIX
+
+ROLES
+
+CAREGIVER
+NURSE
+SUPERVISOR
+CARE_MANAGER
+AI
+SYSTEM
+
+
+SKIN ASSESSMENT
+
+Create:
+NURSE
+SUPERVISOR
+CARE_MANAGER
+
+Verify:
+NURSE
+SUPERVISOR
+CARE_MANAGER
+
+Amend verified assessment:
+NURSE
+SUPERVISOR
+CARE_MANAGER
+
+
+WOUND RECORD
+
+Create:
+NURSE
+SUPERVISOR
+CARE_MANAGER
+
+Verify / official classification:
+NURSE
+SUPERVISOR
+CARE_MANAGER
+
+Resolve / close:
+authorized human reviewer only
+
+
+WOUND CARE PLAN
+
+Create:
+NURSE
+SUPERVISOR
+CARE_MANAGER
+
+Approve / activate:
+SUPERVISOR
+CARE_MANAGER
+or other explicitly authorized human clinical reviewer
+
+Treatment instructions must be human approved.
+
+
+WOUND TREATMENT / DRESSING
+
+Perform:
+assigned authorized human
+
+Verify when verification is required:
+independent authorized human checker
+
+The checker must not satisfy the same-person requirement
+when independent verification is required.
+
+
+REPOSITIONING / PREVENTION
+
+Perform / record:
+authorized human caregiver or clinical staff
+
+Verified records are append-only.
+
+
+PROGRESS RECORD
+
+Create:
+authorized human clinical staff
+
+Verify:
+authorized human clinical reviewer
+
+Amend:
+authorized human clinical reviewer
+
+
+ESCALATION
+
+Create:
+authorized human
+
+Assign:
+SUPERVISOR
+CARE_MANAGER
+
+Accept:
+assigned human reviewer
+
+Resolve:
+assigned human reviewer
+
+
+AI / SYSTEM
+
+Official skin assessment:
+DENIED
+
+Official wound record creation:
+DENIED
+
+Official wound classification:
+DENIED
+
+Wound care plan creation:
+DENIED
+
+Treatment / dressing:
+DENIED
+
+Verification:
+DENIED
+
+Escalation resolution:
+DENIED
+
+Wound resolution:
+DENIED
+
+Wound closure:
+DENIED
+
+Cross-domain mutation:
+DENIED

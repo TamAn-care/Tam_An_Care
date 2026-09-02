@@ -1,0 +1,19 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5A-R1",
+  "status": "PASSED",
+  "decision": "SINGLE_PG_DUMP_EXECUTION_CONTRACT_LOCKED",
+  "root_cause": "DUPLICATE_PG_DUMP_EXECUTION_PATH",
+  "patch_scope": "BACKUP_CAPTURE_ONLY",
+  "prepatch_runner_sha256": "9c3017842ef7fc939ed2ee96c5e69a3e58fb3ab3f3e550536f4606806b1a0721",
+  "corrected_runner_sha256": "18a02355aaec3a53ff98281a1c59bc63244752cdcc6dd11d1c7370c47f2a8182",
+  "runner_executed": false,
+  "backup_executed": false,
+  "restore_executed": false,
+  "restore_container_created": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "next_authorized_action": "PHASE_5A_EXECUTION",
+  "created_at": "2026-08-22T06:04:22.104996+00:00"
+}

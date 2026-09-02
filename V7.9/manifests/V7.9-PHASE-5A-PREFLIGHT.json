@@ -1,0 +1,123 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5A_PREFLIGHT",
+  "status": "PASSED",
+  "decision": "PHASE_5A_DISPOSABLE_BACKUP_RESTORE_PREFLIGHT_ACCEPTED",
+  "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+  "source_database": {
+    "host": "postgres",
+    "port": 5432,
+    "user": "taman_v743_dev",
+    "database": "taman_care_v743_dev",
+    "container": "taman-care-v743-dev-postgres",
+    "image": "postgres:16"
+  },
+  "source_table_count": 118,
+  "source_schema_signature": "dc4f962ec5e31d878a9f58819f7a7caf",
+  "contract": {
+    "backup_source": {
+      "container": "taman-care-v743-dev-postgres",
+      "database": "taman_care_v743_dev",
+      "user": "taman_v743_dev",
+      "mode": "READ_ONLY_BACKUP_SOURCE"
+    },
+    "backup_execution": {
+      "authorized": false,
+      "tool": "pg_dump",
+      "production_write": false
+    },
+    "restore_target": {
+      "type": "NEW_DISPOSABLE_POSTGRES_CONTAINER",
+      "reuse_production_container": false,
+      "reuse_production_database": false,
+      "network": "NEW_DISPOSABLE_NETWORK",
+      "database": "NEW_DISPOSABLE_DATABASE",
+      "user": "NEW_DISPOSABLE_USER"
+    },
+    "restore_execution": {
+      "authorized": false
+    },
+    "cleanup": {
+      "remove_restore_container": true,
+      "remove_disposable_network": true,
+      "remove_temporary_backup_artifact_after_evidence": true,
+      "production_container_delete": false
+    },
+    "source_safety": {
+      "production_database_mutation": false,
+      "production_runtime_restart": false,
+      "application_source_write": false,
+      "v77_source_write": false
+    },
+    "next_action": "PHASE_5A_EXECUTION_RUNNER_GENERATION_IF_PREFLIGHT_PASSES"
+  },
+  "v78_contract_inventory": {
+    "signals": {
+      "PG_DUMP": 0,
+      "PG_RESTORE": 0,
+      "PSQL": 0,
+      "BACKUP": 6,
+      "RESTORE": 6,
+      "DISPOSABLE": 0,
+      "POSTGRES": 0,
+      "DATABASE_URL": 0,
+      "CONTAINER": 1,
+      "DOCKER": 0,
+      "FINGERPRINT": 0,
+      "ROW_COUNT": 0,
+      "SCHEMA": 0,
+      "CLEANUP": 0,
+      "DROP": 0,
+      "DESTROY": 0
+    },
+    "interesting_lines": [
+      {
+        "line": 4,
+        "text": "BACKUP=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/backups/TamAnCare-V7.8-Phase1-20260821T103823Z.dump"
+      },
+      {
+        "line": 5,
+        "text": "BACKUP_SHA256=35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9"
+      },
+      {
+        "line": 6,
+        "text": "RESTORED_TABLE_COUNT=118"
+      },
+      {
+        "line": 7,
+        "text": "PRODUCTION_RESTORE=NO"
+      },
+      {
+        "line": 15,
+        "text": "\"backup\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/backups/TamAnCare-V7.8-Phase1-20260821T103823Z.dump\","
+      },
+      {
+        "line": 16,
+        "text": "\"backup_sha256\": \"35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9\","
+      },
+      {
+        "line": 17,
+        "text": "\"restored_table_count\": 118,"
+      },
+      {
+        "line": 18,
+        "text": "\"production_restore\": false,"
+      },
+      {
+        "line": 20,
+        "text": "\"restore_container\": \"taman-care-v78-p5-restore-20260821_140848\","
+      }
+    ]
+  },
+  "manual_test_required": false,
+  "backup_executed": false,
+  "restore_executed": false,
+  "restore_container_created": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "application_source_write": false,
+  "v77_source_write": false,
+  "next_authorized_action": "PHASE_5A_EXECUTION_RUNNER_GENERATION",
+  "created_at": "2026-08-22T06:01:13.422036+00:00"
+}

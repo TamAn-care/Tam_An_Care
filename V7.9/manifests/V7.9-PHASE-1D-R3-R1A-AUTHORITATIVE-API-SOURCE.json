@@ -1,0 +1,18 @@
+{
+  "version": "V7.9",
+  "phase": "1D-R3-R1A",
+  "status": "PASSED",
+  "decision": "STRONG_HISTORICAL_EVIDENCE_SELECTS_ROOT_API",
+  "candidate_a": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/api",
+  "candidate_b": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api",
+  "candidate_a_hash": "94275692946b194ea6c4c2a10dd6f6759d4a0a293208a2dffd8f03017c178418",
+  "candidate_b_hash": "7a11579a0bde1302ea58399e21672eb7153f89ebc60f7953ec757dab30bb1baf",
+  "source_trees_equivalent": false,
+  "selected_source": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api",
+  "selected_source_hash": "7a11579a0bde1302ea58399e21672eb7153f89ebc60f7953ec757dab30bb1baf",
+  "v79_workspace": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api",
+  "v79_workspace_hash": "7a11579a0bde1302ea58399e21672eb7153f89ebc60f7953ec757dab30bb1baf",
+  "production_change": false,
+  "v77_source_write": false,
+  "database_write": false
+}

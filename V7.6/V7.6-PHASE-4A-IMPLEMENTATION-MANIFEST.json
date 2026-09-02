@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-08-21T01:41:29.201300+00:00",
+  "phase": "V7.6 Phase 4A",
+  "recovery": "R5_ROUTE_COLLISION_RESOLUTION",
+  "preexisting_route": "/care-work",
+  "v76_route": "/operational-care",
+  "route_parent": "AppShell.children",
+  "authorization_wrapper": "RequireActor",
+  "api_hash": "367abb87192203ea088578c00b2c7be5865ec20c965d335be2e608a95e0591d9",
+  "page_hash": "9a3ea86b63a16d096334018f7037274e22017892b35692eb64189cf48e952384",
+  "router_hash": "d259ef24cb9e3cbeffae5145bcea06abcf200cee0d3497f1c3a417f25a560d67",
+  "source_triplet_hash": "9d8274f5c58e7b7fd4ce881204638604dbe3df9274c3071f51d0327fe3d2da07",
+  "frontend_build": "PASSED",
+  "production_change": "NO"
+}

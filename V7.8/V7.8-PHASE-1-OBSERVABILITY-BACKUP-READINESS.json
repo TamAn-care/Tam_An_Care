@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-08-21T10:38:32.257036+00:00",
+  "version": "V7.8",
+  "phase": "1",
+  "status": "PASSED",
+  "parent_v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "runtime": {
+    "api_state": "running",
+    "ui_state": "running",
+    "db_state": "running",
+    "api_restart_policy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "ui_restart_policy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "db_restart_policy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "api_networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "ui_networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "db_networks": [
+      "taman-care-v743-dev-network"
+    ]
+  },
+  "observability": {
+    "api_health": "200",
+    "ui_proxy_health": "200",
+    "operational_care": "200",
+    "api_logs_readable": true,
+    "ui_logs_readable": true,
+    "db_logs_readable": true
+  },
+  "disk": {
+    "total_gb": 228.27,
+    "used_gb": 217.23,
+    "free_gb": 11.04
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "backup_file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/backups/TamAnCare-V7.8-Phase1-20260821T103823Z.dump",
+    "backup_size_bytes": 413928,
+    "backup_sha256": "35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9",
+    "backup_toc_entries": 792,
+    "production_restore_performed": false,
+    "production_schema_change": false,
+    "production_row_delta": false
+  },
+  "rollback_assets_preserved": true,
+  "next_phase": "V7.8_PHASE_2_CONTROLLED_RESTART_RECOVERY_ROLLBACK"
+}

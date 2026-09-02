@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-08-21T03:59:57.115776+00:00",
+  "release": "V7.6",
+  "phase": "4C_FINAL_REACCEPTANCE_R2",
+  "candidate_image": "taman-care-v76-warning-auth-candidate:latest",
+  "candidate_image_id": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+  "fixture_contract": {
+    "care_plan_title": "P4C FINAL TEST PLAN",
+    "care_plan_created_by": "p4c-final-supervisor",
+    "care_plan_created_by_role": "SUPERVISOR",
+    "care_task_title": "P4C FINAL TEST TASK",
+    "task_category": "PHASE4CC_TEST",
+    "task_priority": "MODERATE"
+  },
+  "acceptance": {
+    "health": 200,
+    "staff_no_actor": 401,
+    "access_no_actor": 401,
+    "care_action_lifecycle": "PASSED",
+    "care_action_audit_count": 5,
+    "care_plan_status": "ACTIVE",
+    "care_plan_audit_count": 1,
+    "care_task_status": "ASSIGNED",
+    "care_task_audit_count": 1,
+    "warning_no_actor": 401,
+    "warning_supervisor": "AUTHORIZED",
+    "warning_caregiver": "AUTHORIZED",
+    "warning_impersonation": 403,
+    "warning_persisted_rows": 2,
+    "frontend_contract": "PASSED"
+  },
+  "production_change": "NO"
+}

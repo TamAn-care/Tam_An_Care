@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-08-21T05:51:08.928164+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R2-R2",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "constraint": "CHECK ((((verified_by IS NULL) AND (verified_by_role IS NULL) AND (verified_at IS NULL)) OR ((verified_by IS NOT NULL) AND (verified_by_role IS NOT NULL) AND (verified_at IS NOT NULL))))",
+  "verification_rule": {
+    "legal_state_1": {
+      "verified_by": null,
+      "verified_by_role": null,
+      "verified_at": null
+    },
+    "legal_state_2": {
+      "verified_by": "NON_NULL",
+      "verified_by_role": "NON_NULL",
+      "verified_at": "NON_NULL"
+    }
+  },
+  "previous_recovery_error": "verified_by_role was omitted while verified_by and verified_at were populated.",
+  "selected_r3_foundation": {
+    "medication_order_id": "v77-f1b-medication-order",
+    "resident_id": "v77-f1b-resident",
+    "order_code": "V77-F1BR3-MED-ORDER-001",
+    "medication_name": "V77 F1B R3 TEST MEDICATION",
+    "route": "ORAL",
+    "frequency": "DAILY",
+    "prescriber_name": "V77 TEST PRESCRIBER",
+    "prescribed_at": "NOW()",
+    "status": "ACTIVE",
+    "verified_by": "v77-f1b-supervisor",
+    "verified_by_role": "SUPERVISOR",
+    "verified_at": "NOW()"
+  },
+  "application_source_change": false,
+  "production_database_change": false
+}

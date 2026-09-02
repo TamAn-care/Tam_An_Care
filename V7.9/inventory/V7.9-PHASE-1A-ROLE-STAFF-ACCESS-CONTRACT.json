@@ -1,0 +1,148 @@
+{
+  "version": "V7.9",
+  "phase": "1A",
+  "staff_routes": [
+    {
+      "file": "staff-actors/staff-actor.controller.ts",
+      "method": "GET",
+      "controller": "api/operations/staff-actors",
+      "route": ""
+    },
+    {
+      "file": "staff-actors/staff-actor.controller.ts",
+      "method": "GET",
+      "controller": "api/operations/staff-actors",
+      "route": ":actorId"
+    }
+  ],
+  "access_routes": [
+    {
+      "file": "resident-access-administration/resident-access-administration.controller.ts",
+      "method": "GET",
+      "controller": "api/operations",
+      "route": "access-assignments"
+    }
+  ],
+  "staff_body_fields": [
+    "accessScope",
+    "actorId",
+    "actorRole",
+    "assignedRole",
+    "assignedTo",
+    "careActionId",
+    "careNote",
+    "dueAt",
+    "effectiveFrom",
+    "effectiveTo",
+    "eventType",
+    "fromAssignedRole",
+    "fromAssignedTo",
+    "newState",
+    "patternId",
+    "previousState",
+    "priority",
+    "reopenReason",
+    "residentId",
+    "resolutionReason",
+    "resolvedAt",
+    "revocationReason",
+    "status",
+    "toAssignedRole",
+    "toAssignedTo"
+  ],
+  "access_body_fields": [
+    "accessScope",
+    "actorId",
+    "actorRole",
+    "assignedRole",
+    "assignedTo",
+    "assigneeId",
+    "assigneeRole",
+    "careActionId",
+    "careNote",
+    "completionNote",
+    "dueAt",
+    "effectiveFrom",
+    "effectiveTo",
+    "eventType",
+    "exceptionReason",
+    "fromAssignedRole",
+    "fromAssignedTo",
+    "newState",
+    "patternId",
+    "previousState",
+    "priority",
+    "reopenReason",
+    "residentId",
+    "resolutionReason",
+    "revocationReason",
+    "toAssignedRole",
+    "toAssignedTo",
+    "warningId"
+  ],
+  "staff_tables": {
+    "staff_actors": [
+      "1|actor_id|text|NO|<NONE>",
+      "2|staff_code|text|NO|<NONE>",
+      "3|display_name|text|NO|<NONE>",
+      "4|primary_operational_role|text|NO|<NONE>",
+      "5|status|text|NO|<NONE>",
+      "6|employment_reference|text|YES|<NONE>",
+      "7|created_at|timestamp with time zone|NO|now()",
+      "8|updated_at|timestamp with time zone|NO|now()"
+    ]
+  },
+  "access_tables": {
+    "resident_access_assignments": [
+      "1|resident_access_assignment_id|text|NO|<NONE>",
+      "2|resident_id|text|NO|<NONE>",
+      "3|actor_id|text|NO|<NONE>",
+      "4|actor_role|text|NO|<NONE>",
+      "5|access_scope|text|NO|<NONE>",
+      "6|status|text|NO|<NONE>",
+      "7|effective_from|timestamp with time zone|NO|<NONE>",
+      "8|effective_to|timestamp with time zone|YES|<NONE>",
+      "9|assigned_by|text|NO|<NONE>",
+      "10|assigned_by_role|text|NO|<NONE>",
+      "11|assigned_at|timestamp with time zone|NO|<NONE>",
+      "12|revoked_by|text|YES|<NONE>",
+      "13|revoked_by_role|text|YES|<NONE>",
+      "14|revoked_at|timestamp with time zone|YES|<NONE>",
+      "15|revocation_reason|text|YES|<NONE>",
+      "16|created_at|timestamp with time zone|NO|now()",
+      "17|updated_at|timestamp with time zone|NO|now()"
+    ]
+  },
+  "actor_tables": {
+    "staff_actors": [
+      "1|actor_id|text|NO|<NONE>",
+      "2|staff_code|text|NO|<NONE>",
+      "3|display_name|text|NO|<NONE>",
+      "4|primary_operational_role|text|NO|<NONE>",
+      "5|status|text|NO|<NONE>",
+      "6|employment_reference|text|YES|<NONE>",
+      "7|created_at|timestamp with time zone|NO|now()",
+      "8|updated_at|timestamp with time zone|NO|now()"
+    ]
+  },
+  "staff_source_candidates": [
+    "staff-actors/staff-actor.controller.ts",
+    "resident-access-scope/resident-access-scope.service.ts",
+    "resident-access-administration/resident-access-administration.service.ts",
+    "care-actions/care-action.service.ts",
+    "care-actions/care-action.repository.ts",
+    "care-actions/care-action.types.ts",
+    "reopen-authorization/reopen-authorization.service.ts",
+    "reopen-authorization/reopen-authorization.types.ts"
+  ],
+  "access_source_candidates": [
+    "resident-access-administration/resident-access-administration.controller.ts",
+    "care-actions/care-action.service.ts",
+    "care-actions/care-action.repository.ts",
+    "care-actions/care-action.types.ts",
+    "care-action-bridge/care-action-bridge.types.ts",
+    "care-action-bridge/care-action-bridge.service.ts",
+    "care-task-execution/care-task-execution.service.ts",
+    "skin-wound/skin-wound.service.ts"
+  ]
+}

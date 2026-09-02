@@ -1,0 +1,70 @@
+TAM AN CARE V7.4.3
+STEP 7S AI / HUMAN BOUNDARY
+
+AI ALLOWED
+
+care schedule reminder
+missed-care alert
+repeated-refusal pattern alert
+frequent-toileting pattern alert
+continence trend alert
+documentation completeness alert
+possible deterioration alert
+workload / assistance demand trend
+human-review recommendation
+
+
+AI DENIED
+
+official personal-care completion
+official bathing completion
+official toileting record
+official continence observation
+resident consent confirmation
+resident refusal record
+privacy confirmation
+transfer-safety confirmation
+fall-safety confirmation
+continence diagnosis
+infection diagnosis
+bowel diagnosis
+skin diagnosis
+treatment decision
+medication order
+medication administration mutation
+nutrition plan mutation
+hydration plan mutation
+wound record creation
+incident creation
+care task creation
+care action creation
+clinical record creation
+escalation assignment
+escalation acceptance
+escalation resolution
+record verification
+human signature
+cross-domain mutation
+
+
+SYSTEM DENIED
+
+same official personal-care mutation boundary as AI.
+
+
+HUMAN DECISION REQUIRED
+
+care assignment
+care acceptance
+privacy confirmation
+consent / cooperation determination
+READY confirmation
+actual care performance
+completion / refusal / missed / held status
+toileting documentation
+continence documentation
+escalation
+cross-domain action
+
+
+autonomousClinicalAction = false

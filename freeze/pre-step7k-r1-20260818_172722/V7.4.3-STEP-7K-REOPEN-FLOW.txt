@@ -1,0 +1,58 @@
+TAM AN CARE V7.4.3
+STEP 7K — REOPEN FLOW
+
+RESOLVED CARE ACTION
+        |
+        v
+SELECT FOR UPDATE
+        |
+        v
+ACTION EXISTS?
+   | NO
+   +----> HTTP 404
+   |
+  YES
+        |
+        v
+STATUS == RESOLVED?
+   | NO
+   +----> HTTP 400
+   |
+  YES
+        |
+        v
+HUMAN ACTOR PRESENT?
+   | NO
+   +----> HTTP 400
+   |
+  YES
+        |
+        v
+ACTOR = SUPERVISOR
+OR CARE_MANAGER?
+   | NO
+   +----> HTTP 400
+   |
+  YES
+        |
+        v
+REOPEN REASON PRESENT?
+   | NO
+   +----> HTTP 400
+   |
+  YES
+        |
+        v
+RESOLVED -> PENDING
+        |
+        v
+OWNER UNCHANGED
+        |
+        v
+NO TRANSFER
+        |
+        v
+AUDIT = REOPENED
+        |
+        v
+COMMIT

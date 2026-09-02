@@ -1,0 +1,4 @@
+TAM AN CARE V8.0 — S5 LOCAL HELPER DOWNSTREAM CALL EVIDENCE
+STATIC_ONLY=YES
+
+LOCAL_HELPER_DOWNSTREAM_CALL|CONTROLLER=residents/resident.controller.ts|HELPER=authorizeSupervisor|PROPERTY=staffActors|TYPE=StaffActorService|METHOD=resolveActiveActorWithRole|IMPORT=../staff-actors/staff-actor.service|FILE=staff-actors/staff-actor.service.ts

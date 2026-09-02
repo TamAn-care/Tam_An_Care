@@ -1,0 +1,48 @@
+TAM AN CARE V7.4.3
+STEP 7R CONCURRENCY CONTRACT
+
+State-changing operations use:
+
+database transaction
+SELECT ... FOR UPDATE
+current-state revalidation
+authorization after lock where appropriate
+business mutation
+same-transaction audit
+
+
+REQUIRED SINGLE-WINNER CASES
+
+double skin-assessment verify
+double wound verify
+double wound-care-plan activation
+double treatment verification
+double progress verification
+escalation assignment race
+double escalation accept
+wound resolution race
+wound closure race
+
+
+APPEND-ONLY CONCURRENCY
+
+Multiple legitimate progress observations may coexist.
+
+Multiple legitimate treatment records may coexist
+when they represent distinct actual human-performed actions.
+
+Multiple legitimate repositioning records may coexist.
+
+No append history may be lost.
+
+
+TERMINAL RACE
+
+Exactly one incompatible terminal mutation may win.
+
+Winning mutation:
+exactly one corresponding audit event
+
+Losing mutation:
+zero business mutation
+zero audit

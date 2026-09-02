@@ -1,0 +1,183 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F4
+ CONTROLLED ISOLATED RUNTIME PROVISIONING
+ NEW IMAGE + NEW LOOPBACK API CONTAINER
+ NO TEST FIXTURE / NO FUNCTIONAL POST / NO DB MUTATION
+======================================================================
+
+======================================================================
+ 1. F3 AUTHORITY
+======================================================================
+PASS: F3 AUTHORITY
+F3_ARTIFACT=ops2_c_f3_isolated_runtime_fixture_plan_20260830_164105.txt
+
+======================================================================
+ 2. EXACT SOURCE HASH LOCK
+======================================================================
+INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: INVENTORY_CONTROLLER
+INVENTORY_MODULE=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: INVENTORY_MODULE
+RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: RESIDENT_CONSUMPTION_SERVICE
+INVENTORY_TRANSACTION_SERVICE=9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+PASS: INVENTORY_TRANSACTION_SERVICE
+INVENTORY_LEDGER_SERVICE=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: INVENTORY_LEDGER_SERVICE
+INVENTORY_LOT_SERVICE=5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087
+PASS: INVENTORY_LOT_SERVICE
+INVENTORY_AUTHORITY_SERVICE=0cfb56865d0eaaad65c2738ae7caea1bc229290f34e1b42217012917fa44fabe
+PASS: INVENTORY_AUTHORITY_SERVICE
+RESIDENT_ACCESS_SCOPE_SERVICE=166b4f1358d2a41df7f5f00b6c23977305af35663fec67eb67de44c4fb8a7790
+PASS: RESIDENT_ACCESS_SCOPE_SERVICE
+STAFF_ACTOR_SERVICE=0a95d17ab8c1bbcd95f6a966a4d8ce71f4dd8ca324b11bfd25750736e4cffbac
+PASS: STAFF_ACTOR_SERVICE
+
+======================================================================
+ 3. CANONICAL INFRASTRUCTURE PRESENCE
+======================================================================
+tamancare_v7_4_3_development-api-1.RUNNING=true
+PASS: tamancare_v7_4_3_development-api-1
+tamancare_v7_4_3_development-postgres-1.RUNNING=true
+PASS: tamancare_v7_4_3_development-postgres-1
+NETWORK=tamancare_v7_4_3_development_default
+PASS: CANONICAL NETWORK AVAILABLE
+
+======================================================================
+ 4. COLLISION / SAFETY CHECK
+======================================================================
+PASS: TEST CONTAINER NAME AVAILABLE
+PASS: LOOPBACK PORT 3111 AVAILABLE
+
+======================================================================
+ 5. PRE-PROVISION DATABASE BASELINE — READ ONLY
+======================================================================
+PRE_DB_BASELINE=1|1|0|0|0|0|0
+PASS: PRE-PROVISION DATABASE BASELINE
+
+======================================================================
+ 6. SECRET-SAFE ENVIRONMENT TRANSFER
+======================================================================
+DATABASE_URL_RESOLVED=YES
+JWT_SECRET_RESOLVED=YES
+DATABASE_CREDENTIAL_PRINTED=NO
+JWT_SECRET_PRINTED=NO
+
+======================================================================
+ 7. BUILD EXACT OPS-2-C IMAGE
+======================================================================
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 416B 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/node:20-bookworm-slim
+#2 DONE 2.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#5 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 0.0s done
+#5 DONE 0.1s
+
+#4 [internal] load build context
+#4 transferring context: 1.69MB 5.0s
+#4 transferring context: 1.95MB 5.9s done
+#4 DONE 6.2s
+
+#6 [build 2/6] WORKDIR /app
+#6 CACHED
+
+#7 [build 3/6] COPY package.json package-lock.json ./
+#7 CACHED
+
+#8 [build 4/6] RUN npm ci
+#8 CACHED
+
+#9 [build 5/6] COPY . .
+#9 DONE 39.4s
+
+#10 [build 6/6] RUN npm run build
+#10 2.777 
+#10 2.777 > taman-care-v7-health-trend@7.3.2 build
+#10 2.777 > nest build
+#10 2.777 
+#10 DONE 20.1s
+
+#11 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#11 CACHED
+
+#12 [runtime 5/5] COPY --from=build /app/dist ./dist
+#12 DONE 0.2s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.2s done
+#13 exporting manifest sha256:dc7c274f8453dc949b9f54785bd7273668361cd3522ed3fa07ba72aed14207c3 done
+#13 exporting config sha256:112a4aeeb97223e949567b0946e1a6b82d909b69f194ebdfc3f86aa89fa2f968 0.0s done
+#13 exporting attestation manifest sha256:6be772d2d3292da7dc33fd0bf302bfce75de36d74663ed840ceb1061a13f3d07 done
+#13 exporting manifest list sha256:d315f1a7640ae2151e2aea34e8790389c6d6d449b9f8f0251d84eb6343770077 done
+#13 naming to docker.io/library/tamancare_ops2c_source:20260830_164248 done
+#13 unpacking to docker.io/library/tamancare_ops2c_source:20260830_164248 0.1s done
+#13 DONE 0.4s
+DOCKER_BUILD_RC=0
+PASS: OPS-2-C IMAGE BUILT
+OPS2C_IMAGE=tamancare_ops2c_source:20260830_164248
+IMAGE_ID=sha256:d315f1a7640ae2151e2aea34e8790389c6d6d449b9f8f0251d84eb6343770077
+PASS: IMAGE SOURCE AUTHORITY LABEL
+
+======================================================================
+ 8. START ISOLATED OPS-2-C API
+======================================================================
+DOCKER_RUN_RC=0
+PASS: ISOLATED OPS-2-C CONTAINER CREATED
+OPS2C_CONTAINER=tamancare_ops2c_functional
+OPS2C_PORT=3111
+
+======================================================================
+ 9. CONTAINER STARTUP / HEALTH ACCEPTANCE
+======================================================================
+HEALTH_ATTEMPT_1=000
+HEALTH_ATTEMPT_2=000
+HEALTH_ATTEMPT_3=000
+HEALTH_ATTEMPT_4=000
+HEALTH_ATTEMPT_5=000
+HEALTH_ATTEMPT_6=000
+HEALTH_ATTEMPT_7=000
+HEALTH_ATTEMPT_8=000
+HEALTH_ATTEMPT_9=000
+HEALTH_ATTEMPT_10=000
+ISOLATED_CONTAINER_RUNNING=false
+ISOLATED_HEALTH_HTTP=000
+FAIL: ISOLATED OPS-2-C RUNTIME HEALTH
+--- SAFE CONTAINER LOG TAIL ---
+node:fs:448
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: EACCES: permission denied, open '/app/dist/inventory/resident-consumption.service.js'
+    at Object.readFileSync (node:fs:448:20)
+    at loadSource (node:internal/modules/cjs/loader:1548:17)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1617:44)
+    at Module.load (node:internal/modules/cjs/loader:1266:32)
+    at Module._load (node:internal/modules/cjs/loader:1091:12)
+    at Module.require (node:internal/modules/cjs/loader:1289:19)
+    at require (node:internal/modules/helpers:182:18)
+    at Object.<anonymous> (/app/dist/inventory/inventory.controller.js:20:40)
+    at Module._compile (node:internal/modules/cjs/loader:1521:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1623:10) {
+  errno: -13,
+  code: 'EACCES',
+  syscall: 'open',
+  path: '/app/dist/inventory/resident-consumption.service.js'
+}
+
+Node.js v20.20.2
+ROLLBACK: FAILED TEST CONTAINER REMOVED

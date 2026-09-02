@@ -1,0 +1,32 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D2
+ CONTROLLED POSITIVE FUNCTIONAL MATRIX
+ ISOLATED API 3111 ONLY
+ EXPECT EXACTLY FOUR SUCCESSFUL CONSUMPTIONS
+ FIXTURES PRESERVED AFTER TEST
+======================================================================
+
+======================================================================
+ 1. R1D AUTHORITY
+======================================================================
+R1D_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d1_r1d_bounded_f06_f07_f13_retry_20260830_180257.txt
+PASS: R1D SECURITY AUTHORITY
+
+======================================================================
+ 2. SOURCE + RUNTIME LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+ISOLATED_STATE=exited
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+ISOLATED_NODE_ENV=
+ISOLATED_HEALTH_HTTP=000
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+FAIL: ISOLATED RUNNING
+PASS: ACCEPTED IMAGE
+FAIL: PRODUCTION MODE
+FAIL: HEALTH

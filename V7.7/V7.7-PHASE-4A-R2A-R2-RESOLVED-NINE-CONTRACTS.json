@@ -1,0 +1,802 @@
+{
+  "generated_at": "2026-08-21T05:19:03.964775+00:00",
+  "release": "V7.7",
+  "phase": "4A-R2A-R2",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "resolved_route_count": 9,
+  "care_plan_governance": {
+    "route": "/api/care-plan-governance/:carePlanId/:action",
+    "actions": [
+      "ACTIVATE",
+      "REACTIVATE",
+      "SUSPEND",
+      "COMPLETE",
+      "CANCEL"
+    ],
+    "selected_test_action": "ACTIVATE",
+    "fixture_status": "DRAFT",
+    "actor_id": "v77-r2b-supervisor",
+    "actor_role": "SUPERVISOR",
+    "body": {
+      "actorId": "v77-r2b-supervisor",
+      "actorRole": "SUPERVISOR"
+    }
+  },
+  "opaque_execute_domains": [
+    {
+      "module": "behavioral-cognitive",
+      "route": "/api/behavioral-cognitive/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_ESCALATION",
+      "required_extra_fields": [],
+      "guard_methods": [],
+      "insert_tables": [
+        "behavioral_escalations"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_ESCALATION",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_ESCALATION"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_ESCALATION",
+          "required_extra_fields": [],
+          "guard_methods": [],
+          "insert_tables": [
+            "behavioral_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_POST_REVIEW",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireClinicalReviewer"
+          ],
+          "insert_tables": [
+            "behavioral_post_reviews"
+          ]
+        },
+        {
+          "action": "CREATE_RESPONSE",
+          "required_extra_fields": [],
+          "guard_methods": [],
+          "insert_tables": [
+            "behavioral_responses"
+          ]
+        },
+        {
+          "action": "CREATE_SUPPORT_PLAN",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireClinicalReviewer"
+          ],
+          "insert_tables": [
+            "behavioral_support_plans"
+          ]
+        },
+        {
+          "action": "CREATE_WANDERING_EVENT",
+          "required_extra_fields": [],
+          "guard_methods": [],
+          "insert_tables": [
+            "wandering_events"
+          ]
+        },
+        {
+          "action": "CREATE_COGNITIVE_OBSERVATION",
+          "required_extra_fields": [
+            "observableFacts"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "cognitive_observations"
+          ]
+        },
+        {
+          "action": "CREATE_EPISODE",
+          "required_extra_fields": [
+            "observableBehavior"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "behavioral_episodes"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "fall-mobility",
+      "route": "/api/fall-mobility/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_FALL_ESCALATION",
+      "required_extra_fields": [],
+      "guard_methods": [
+        "nurse"
+      ],
+      "insert_tables": [
+        "fall_escalations"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_FALL_ESCALATION",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_FALL_ESCALATION"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_FALL_ESCALATION",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "nurse"
+          ],
+          "insert_tables": [
+            "fall_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_FALL_EVENT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "human"
+          ],
+          "insert_tables": [
+            "fall_events"
+          ]
+        },
+        {
+          "action": "CREATE_FALL_RISK_ASSESSMENT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "nurse"
+          ],
+          "insert_tables": [
+            "fall_risk_assessments"
+          ]
+        },
+        {
+          "action": "CREATE_POST_FALL_OBSERVATION",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "human"
+          ],
+          "insert_tables": [
+            "post_fall_observations"
+          ]
+        },
+        {
+          "action": "CREATE_PREVENTION_ACTION",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "nurse"
+          ],
+          "insert_tables": [
+            "fall_prevention_actions"
+          ]
+        },
+        {
+          "action": "CREATE_TRANSFER_SAFETY_CHECK",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "human"
+          ],
+          "insert_tables": [
+            "transfer_safety_checks"
+          ]
+        },
+        {
+          "action": "CREATE_MOBILITY_PLAN",
+          "required_extra_fields": [
+            "transferAssistanceLevel"
+          ],
+          "guard_methods": [
+            "nurse"
+          ],
+          "insert_tables": [
+            "mobility_support_plans"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "infection-control",
+      "route": "/api/infection-control/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_INFECTION_ALERT",
+      "required_extra_fields": [],
+      "guard_methods": [
+        "requireReviewer"
+      ],
+      "insert_tables": [
+        "infection_alerts"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_INFECTION_ALERT",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_INFECTION_ALERT"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_INFECTION_ALERT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "infection_alerts"
+          ]
+        },
+        {
+          "action": "CREATE_INFECTION_PLAN",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "infection_control_plans"
+          ]
+        },
+        {
+          "action": "CREATE_PRECAUTION",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "infection_precautions"
+          ]
+        },
+        {
+          "action": "CREATE_EXPOSURE_EVENT",
+          "required_extra_fields": [
+            "exposureContext"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "exposure_events"
+          ]
+        },
+        {
+          "action": "CREATE_INFECTION_ESCALATION",
+          "required_extra_fields": [
+            "reason"
+          ],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "infection_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_INFECTION_OBSERVATION",
+          "required_extra_fields": [
+            "observableFacts"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "infection_observations"
+          ]
+        },
+        {
+          "action": "CREATE_MONITORING_RECORD",
+          "required_extra_fields": [
+            "observedFacts"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "infection_monitoring_records"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "medication-safety",
+      "route": "/api/medication-safety/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_ORDER_REVIEW",
+      "required_extra_fields": [],
+      "guard_methods": [
+        "requireReviewer"
+      ],
+      "insert_tables": [
+        "medication_order_reviews"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_ORDER_REVIEW",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_ORDER_REVIEW"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_ORDER_REVIEW",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "medication_order_reviews"
+          ]
+        },
+        {
+          "action": "CREATE_RECONCILIATION",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "medication_reconciliations"
+          ]
+        },
+        {
+          "action": "CREATE_SAFETY_CHECK",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "medication_safety_checks"
+          ]
+        },
+        {
+          "action": "CREATE_ADMINISTRATION_EXCEPTION",
+          "required_extra_fields": [
+            "exceptionType"
+          ],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "medication_administration_exceptions"
+          ]
+        },
+        {
+          "action": "CREATE_ADVERSE_REACTION_OBSERVATION",
+          "required_extra_fields": [
+            "observableFacts"
+          ],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "medication_adverse_reaction_observations"
+          ]
+        },
+        {
+          "action": "CREATE_HIGH_RISK_CHECK",
+          "required_extra_fields": [
+            "policyReference"
+          ],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "high_risk_medication_checks"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "pain-comfort",
+      "route": "/api/pain-comfort/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_COMFORT_INTERVENTION",
+      "required_extra_fields": [],
+      "guard_methods": [],
+      "insert_tables": [
+        "comfort_interventions"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_COMFORT_INTERVENTION",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_COMFORT_INTERVENTION"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_COMFORT_INTERVENTION",
+          "required_extra_fields": [],
+          "guard_methods": [],
+          "insert_tables": [
+            "comfort_interventions"
+          ]
+        },
+        {
+          "action": "CREATE_PAIN_ALERT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "pain_safety_alerts"
+          ]
+        },
+        {
+          "action": "CREATE_PAIN_ASSESSMENT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "pain_assessments"
+          ]
+        },
+        {
+          "action": "CREATE_PAIN_PLAN",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "pain_care_plans"
+          ]
+        },
+        {
+          "action": "CREATE_PAIN_REASSESSMENT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "pain_reassessments"
+          ]
+        },
+        {
+          "action": "CREATE_PAIN_ESCALATION",
+          "required_extra_fields": [
+            "reason"
+          ],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "pain_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_SYMPTOM_OBSERVATION",
+          "required_extra_fields": [
+            "observableFacts"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "symptom_observations"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "personal-care",
+      "route": "/api/personal-care/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_ASSISTANCE",
+      "required_extra_fields": [],
+      "guard_methods": [
+        "requireHuman"
+      ],
+      "insert_tables": [
+        "personal_care_assistance"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_ASSISTANCE",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_ASSISTANCE"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_ASSISTANCE",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "personal_care_assistance"
+          ]
+        },
+        {
+          "action": "CREATE_CARE_PLAN",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireClinicalHuman"
+          ],
+          "insert_tables": [
+            "hygiene_care_plans"
+          ]
+        },
+        {
+          "action": "CREATE_CARE_RECORD",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "hygiene_care_records"
+          ]
+        },
+        {
+          "action": "CREATE_CONTINENCE_OBSERVATION",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "continence_observations"
+          ]
+        },
+        {
+          "action": "CREATE_TOILETING_RECORD",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "toileting_records"
+          ]
+        },
+        {
+          "action": "CREATE_ESCALATION",
+          "required_extra_fields": [
+            "sourceType"
+          ],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "personal_care_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_SCHEDULE",
+          "required_extra_fields": [
+            "hygieneCarePlanId"
+          ],
+          "guard_methods": [
+            "requireHuman"
+          ],
+          "insert_tables": [
+            "hygiene_schedules"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "safeguarding",
+      "route": "/api/safeguarding/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_POST_REVIEW",
+      "required_extra_fields": [],
+      "guard_methods": [
+        "requireReviewer"
+      ],
+      "insert_tables": [
+        "safeguarding_post_reviews"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_POST_REVIEW",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_POST_REVIEW"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_POST_REVIEW",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "safeguarding_post_reviews"
+          ]
+        },
+        {
+          "action": "CREATE_SAFEGUARDING_ESCALATION",
+          "required_extra_fields": [
+            "reason"
+          ],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "safeguarding_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_SAFEGUARDING_REPORT",
+          "required_extra_fields": [
+            "concernCategory"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "safeguarding_reports"
+          ]
+        },
+        {
+          "action": "CREATE_SAFEGUARDING_REVIEW",
+          "required_extra_fields": [
+            "factualNotes"
+          ],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "safeguarding_reviews"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "sleep-rest",
+      "route": "/api/sleep-rest/:residentId/execute",
+      "body_type": "Cmd",
+      "base_required_fields": [
+        "action",
+        "actorId",
+        "actorRole"
+      ],
+      "human_guard_before_switch": true,
+      "selected_test_action": "CREATE_NIGHT_CHECK",
+      "required_extra_fields": [],
+      "guard_methods": [],
+      "insert_tables": [
+        "night_monitoring_checks"
+      ],
+      "authenticated_test_body": {
+        "action": "CREATE_NIGHT_CHECK",
+        "actorId": "v77-r2b-supervisor",
+        "actorRole": "SUPERVISOR"
+      },
+      "no_actor_test_body": {
+        "action": "CREATE_NIGHT_CHECK"
+      },
+      "all_create_candidates": [
+        {
+          "action": "CREATE_NIGHT_CHECK",
+          "required_extra_fields": [],
+          "guard_methods": [],
+          "insert_tables": [
+            "night_monitoring_checks"
+          ]
+        },
+        {
+          "action": "CREATE_NIGHT_RESPONSE",
+          "required_extra_fields": [],
+          "guard_methods": [],
+          "insert_tables": [
+            "night_support_responses"
+          ]
+        },
+        {
+          "action": "CREATE_SAFETY_ALERT",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "sleep_safety_alerts"
+          ]
+        },
+        {
+          "action": "CREATE_SLEEP_PLAN",
+          "required_extra_fields": [],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "sleep_care_plans"
+          ]
+        },
+        {
+          "action": "CREATE_SLEEP_ESCALATION",
+          "required_extra_fields": [
+            "reason"
+          ],
+          "guard_methods": [
+            "requireReviewer"
+          ],
+          "insert_tables": [
+            "sleep_escalations"
+          ]
+        },
+        {
+          "action": "CREATE_SLEEP_EVENT",
+          "required_extra_fields": [
+            "observableFacts"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "sleep_rest_events"
+          ]
+        },
+        {
+          "action": "CREATE_SLEEP_OBSERVATION",
+          "required_extra_fields": [
+            "observableFacts"
+          ],
+          "guard_methods": [],
+          "insert_tables": [
+            "sleep_observations"
+          ]
+        }
+      ]
+    }
+  ],
+  "security_model": {
+    "execute_routes_actor_location": "REQUEST_BODY",
+    "execute_routes_base_actor_fields": [
+      "actorId",
+      "actorRole"
+    ],
+    "execute_routes_guard_before_switch": true,
+    "governance_actor_location": "REQUEST_BODY",
+    "no_header_authentication_in_existing_execute_routes": true,
+    "runtime_proof_required_before_patch": true
+  },
+  "rules": [
+    "No application source change in R2A-R2",
+    "No production database writes",
+    "No guessed mutation action",
+    "No guessed mandatory fields",
+    "Use disposable database for R2B",
+    "Do not patch until actual security behavior is proven"
+  ]
+}

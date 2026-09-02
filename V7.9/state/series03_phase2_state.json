@@ -1,0 +1,24 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2_RESIDENT_MANAGEMENT",
+  "status": "PASSED",
+  "started_at": "2026-08-22T01:25:23.718795+00:00",
+  "completed": [
+    "PHASE_2A",
+    "PHASE_2B",
+    "PHASE_2C",
+    "PHASE_2D",
+    "PHASE_2_FINAL"
+  ],
+  "stopped_at": "2026-08-22T01:43:12.724213+00:00",
+  "last_completed": "PHASE_2_FINAL",
+  "updated_at": "2026-08-22T01:44:51.607165+00:00",
+  "phase2c_preflight": {
+    "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE_2C-RESIDENT-WRITE-CONTRACT-PREFLIGHT-RESULT.txt",
+    "result_hash": "c61e4f3a395b354a349b70ff5f169ab7ff3dcd75d365fa7d1465825b099763c1",
+    "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE_2C-RESIDENT-WRITE-CONTRACT-PREFLIGHT.json",
+    "manifest_hash": "707980531bfddd4ee9db48cdda0015b0c0bf710c10aec29119cdc707a9eeb438"
+  },
+  "completed_at": "2026-08-22T01:44:51.700449+00:00"
+}

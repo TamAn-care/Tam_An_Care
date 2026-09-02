@@ -1,0 +1,162 @@
+{
+  "generated_at": "2026-08-21T10:19:25.467500+00:00",
+  "stage": "CONTROLLED_PROMOTION_E3_R2",
+  "status": "PASSED",
+  "v77": {
+    "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "network": "taman-care-v743-dev-network",
+    "api_network_alias": "v77-e2-api",
+    "ui_proxy": "http://v77-e2-api:3000"
+  },
+  "v76": {
+    "api": {
+      "name": "taman-care-v743-dev-api",
+      "container_id": "1bc8db1747add437fa8dc52a9fb53ccf67e99550e7b896c68b7914d0e9689dd2",
+      "image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "3100"
+          }
+        ]
+      },
+      "networks": [
+        "taman-care-v743-dev-network"
+      ],
+      "restart_policy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "mounts": []
+    },
+    "ui": {
+      "name": "taman-care-v75-ui",
+      "container_id": "c68dcf29b83bd0660456812e91ea3436c03aa9a92b5675c23ca63c4b6f673ff0",
+      "image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+      "ports": {
+        "80/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8080"
+          }
+        ]
+      },
+      "networks": [
+        "bridge"
+      ],
+      "restart_policy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "mounts": [],
+      "proxy_model": "BRIDGE_UI_TO_HOST_PUBLISHED_API"
+    },
+    "db": {
+      "name": "taman-care-v743-dev-postgres",
+      "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+      "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+      "ports": {},
+      "networks": [
+        "taman-care-v743-dev-network"
+      ],
+      "restart_policy": {
+        "Name": "no",
+        "MaximumRetryCount": 0
+      },
+      "mounts": [
+        {
+          "type": "bind",
+          "name": null,
+          "source": "/host_mnt/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/schema.sql",
+          "destination": "/docker-entrypoint-initdb.d/001_schema.sql",
+          "rw": false
+        },
+        {
+          "type": "volume",
+          "name": "taman-care-v743-dev-postgres-data",
+          "source": "/var/lib/docker/volumes/taman-care-v743-dev-postgres-data/_data",
+          "destination": "/var/lib/postgresql/data",
+          "rw": true
+        }
+      ],
+      "must_remain_running": true
+    },
+    "api_matrix": "200|401|401",
+    "ui_matrix": "200|401|401|200"
+  },
+  "environment": {
+    "required": [
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "PORT"
+    ],
+    "source": "LIVE_V76_API_RUNTIME",
+    "secret_values_persisted": false
+  },
+  "production_database": {
+    "table_count": 118,
+    "row_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "migration_required": false,
+    "cutover_write": false
+  },
+  "rollback": {
+    "commands": [
+      "docker rm -f taman-care-v77-production-ui 2>/dev/null || true",
+      "docker rm -f taman-care-v77-production-api 2>/dev/null || true",
+      "docker start taman-care-v743-dev-api",
+      "docker start taman-care-v75-ui"
+    ],
+    "triggers": [
+      "V7.7 API health != 200",
+      "V7.7 staff no-actor != 401",
+      "V7.7 access no-actor != 401",
+      "V7.7 Resident AI no-actor != 401",
+      "V7.7 UI health != 200",
+      "V7.7 UI staff no-actor != 401",
+      "V7.7 UI access no-actor != 401",
+      "V7.7 operational-care != 200",
+      "V7.7 UI root does not reference /assets/",
+      "production database fingerprint changes",
+      "production database container not running"
+    ],
+    "database_action": "NONE"
+  },
+  "e4": {
+    "cutover_steps": [
+      "Verify E3-R2 result and manifest hashes",
+      "Verify accepted V7.7 API/UI image IDs",
+      "Verify exact V7.6 API/UI/DB identities",
+      "Verify V7.6 API matrix = 200|401|401",
+      "Verify V7.6 UI matrix = 200|401|401|200",
+      "Verify 118-table production DB fingerprint",
+      "Capture DATABASE_URL and JWT_SECRET from live V7.6 API",
+      "Verify V7.6 DB remains running",
+      "Stop V7.6 UI",
+      "Stop V7.6 API",
+      "Start V7.7 API on 127.0.0.1:3100 -> 3000",
+      "Attach V7.7 API to taman-care-v743-dev-network",
+      "Give V7.7 API alias v77-e2-api",
+      "Require V7.7 API health = 200",
+      "Require API security matrix 401|401|401",
+      "Start V7.7 UI on 127.0.0.1:8080 -> 80",
+      "Attach V7.7 UI to taman-care-v743-dev-network",
+      "Require UI matrix 200|401|401|200",
+      "Require UI root references /assets/",
+      "Require DB fingerprint unchanged",
+      "If any failure: automatic rollback immediately",
+      "If all pass: mark V7.7 production-active",
+      "Keep stopped V7.6 API/UI containers as rollback assets"
+    ],
+    "target_api_port": "127.0.0.1:3100",
+    "target_ui_port": "127.0.0.1:8080",
+    "database_migration": false,
+    "remove_v76_containers": false,
+    "automatic_rollback": true
+  },
+  "e3_r2_runtime_change": false,
+  "e3_r2_database_write": false,
+  "e3_r2_traffic_cutover": false
+}

@@ -1,0 +1,33 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2E_PREFLIGHT",
+  "status": "PASSED",
+  "decision": "ISOLATED_RUNTIME_FUNCTIONAL_TEST_READY",
+  "runtime": {
+    "postgres_container": "taman-care-v80-s2e-postgres",
+    "database": "taman_care_v80_s2e",
+    "api_port": 3200,
+    "disposable": true
+  },
+  "functional_scope": [
+    "CREATE_STAFF",
+    "UPDATE_STAFF",
+    "ROLE_CHANGE",
+    "STATUS_CHANGE",
+    "AUDIT",
+    "LAST_ACTIVE_SUPERVISOR_GUARD"
+  ],
+  "production": {
+    "api": 200,
+    "ui": 200,
+    "staff_no_actor": 401,
+    "access_no_actor": 401,
+    "table_count": 118,
+    "staff_actor_count": 0,
+    "mutation": false
+  },
+  "execution_authorized": true,
+  "next_authorized_action": "S2E_ISOLATED_FUNCTIONAL_EXECUTION",
+  "created_at": "2026-08-22T13:42:46.451936+00:00"
+}

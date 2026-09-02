@@ -1,0 +1,25 @@
+TAM AN CARE V8.0 — S5 EXPECTATION GAP BRANCH EVIDENCE
+STATIC_ONLY=YES
+
+EXPECTATION_BRANCH|ID=TC01|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=NONE|SIGNAL=NONE|CONDITION=NONE
+EXPECTATION_BRANCH|ID=TC02|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|CASE_TYPE=NO_LOCAL_AUTH_GUARD_OBSERVATION|SCOPE=NONE|SIGNAL=NONE|CONDITION=NONE
+EXPECTATION_BRANCH|ID=TC03|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=NONE|SIGNAL=NONE|CONDITION=NONE
+EXPECTATION_BRANCH|ID=TC04|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|CASE_TYPE=NO_LOCAL_AUTH_GUARD_OBSERVATION|SCOPE=NONE|SIGNAL=NONE|CONDITION=NONE
+EXPECTATION_BRANCH|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|CONDITION=!actorId <PIPE><PIPE> !actorRole
+EXPECTATION_BRANCH|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=actorRole !== 'SUPERVISOR'
+EXPECTATION_BRANCH|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=!canonical
+EXPECTATION_BRANCH|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|CONDITION=!actorId <PIPE><PIPE> !actorRole
+EXPECTATION_BRANCH|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=actorRole !== 'SUPERVISOR'
+EXPECTATION_BRANCH|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=!canonical
+EXPECTATION_BRANCH|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|CONDITION=!actorId <PIPE><PIPE> !actorRole
+EXPECTATION_BRANCH|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=actorRole !== 'SUPERVISOR'
+EXPECTATION_BRANCH|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=!canonical
+EXPECTATION_BRANCH|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|CONDITION=!actorId <PIPE><PIPE> !actorRole
+EXPECTATION_BRANCH|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=actorRole !== 'SUPERVISOR'
+EXPECTATION_BRANCH|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|CONDITION=!canonical
+EXPECTATION_BRANCH|ID=TC13|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HANDLER:review|SIGNAL=HttpStatus.NOT_FOUND|CONDITION=message.includes( 'Resident context not found',
+EXPECTATION_BRANCH|ID=TC13|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|SCOPE=HANDLER:review|SIGNAL=HttpStatus.BAD_REQUEST|CONDITION=message.includes('required'
+EXPECTATION_BRANCH|ID=TC14|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CASE_TYPE=NO_LOCAL_AUTH_GUARD_OBSERVATION|SCOPE=HANDLER:review|SIGNAL=HttpStatus.NOT_FOUND|CONDITION=message.includes( 'Resident context not found',
+EXPECTATION_BRANCH|ID=TC14|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CASE_TYPE=NO_LOCAL_AUTH_GUARD_OBSERVATION|SCOPE=HANDLER:review|SIGNAL=HttpStatus.BAD_REQUEST|CONDITION=message.includes('required'
+EXPECTATION_BRANCH|ID=TC15|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CASE_TYPE=SOURCE_STATUS_PATH|SCOPE=HANDLER:review|SIGNAL=HttpStatus.NOT_FOUND|CONDITION=message.includes( 'Resident context not found',
+EXPECTATION_BRANCH|ID=TC15|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CASE_TYPE=SOURCE_STATUS_PATH|SCOPE=HANDLER:review|SIGNAL=HttpStatus.BAD_REQUEST|CONDITION=message.includes('required'

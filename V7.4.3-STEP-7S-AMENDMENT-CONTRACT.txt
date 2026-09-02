@@ -1,0 +1,39 @@
+TAM AN CARE V7.4.3
+STEP 7S AMENDMENT / CORRECTION CONTRACT
+
+APPLIES TO
+
+hygiene care records
+toileting records
+continence observations
+and other verified factual Step 7S records
+
+
+RULES
+
+Verified record overwrite = NO
+
+Correction method:
+append-only amendment / replacement
+
+Original history:
+preserved
+
+Amendment must include:
+original record reference
+amendment reason
+human actor
+human role
+timestamp
+
+No amendment may erase:
+resident refusal
+missed care
+held care
+historical continence observation
+historical toileting record
+
+Concurrent valid append-only factual records may coexist.
+
+If business rule permits only one replacement:
+row lock + state revalidation determine one winner.

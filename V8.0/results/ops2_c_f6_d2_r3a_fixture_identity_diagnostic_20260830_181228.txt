@@ -1,0 +1,179 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D2-R3A
+ EXACT FIXTURE IDENTITY DIAGNOSTIC
+ STRICT READ ONLY
+ NO FUNCTIONAL POST
+======================================================================
+
+======================================================================
+ 1. FAILED R3 AUTHORITY
+======================================================================
+R3_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r3_positive_functional_matrix_20260830_181051.txt
+PASS: R3 FIXTURE LOOKUP FAILURE CAPTURED
+
+======================================================================
+ 2. SOURCE + RUNTIME LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+ISOLATED_STATE=running
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+CONFIG_NODE_ENV=production
+ISOLATED_HEALTH_HTTP=200
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+PASS: ISOLATED RUNNING
+PASS: ACCEPTED IMAGE
+PASS: PRODUCTION CONFIG
+PASS: HEALTH 200
+
+======================================================================
+ 3. DATABASE STATE — MUST STILL BE PRE-D2
+======================================================================
+DB_STATE=5|2|2|3|3|4|0
+TEST_AUTH_SESSION_TOTAL=5
+TEST_AUTH_SESSION_ACTIVE=5
+D2_SUCCESS_TX_COUNT=0
+D2_SUCCESS_EVENT_COUNT=0
+PASS: PRE-D2 DATABASE STATE PRESERVED
+PASS: AUTH SESSION TOTAL
+AUTH_ACTIVE_COUNT_INFORMATIONAL=5
+PASS: NO POSITIVE D2 MUTATION
+
+======================================================================
+ 4. EXACT INVENTORY ITEM FIXTURE INVENTORY
+ READ ONLY — NO ASSUMED CODE NAMES
+======================================================================
+ITEM_ROWS_BEGIN
+ops2c-f5-item-lot|OPS2C_F5_ITEM_LOT|OPS2C F5 Lot Item|MEDICAL_SUPPLY|UNIT|t|t
+ops2c-f5-item-nonlot|OPS2C_F5_ITEM_NONLOT|OPS2C F5 Nonlot Item|GENERAL|UNIT|t|f
+ops2c-f5-item-wrong|OPS2C_F5_ITEM_WRONG|OPS2C F5 Wrong Item|GENERAL|UNIT|t|f
+ITEM_ROWS_END
+ITEM_ROW_COUNT=3
+PASS: EXACT THREE TEST INVENTORY ITEMS PRESENT
+
+======================================================================
+ 5. EXACT LOT FIXTURE INVENTORY
+======================================================================
+LOT_ROWS_BEGIN
+ops2c-f5-lot-expired|ops2c-f5-item-lot|OPS2C_F5_ITEM_LOT|OPS2C-F5-LOT-EXPIRED|2026-07-31 10:43:03.243171+00|2026-08-29|ACTIVE
+ops2c-f5-lot-valid|ops2c-f5-item-lot|OPS2C_F5_ITEM_LOT|OPS2C-F5-LOT-VALID|2026-07-31 10:43:03.243171+00|2027-08-30|ACTIVE
+ops2c-f5-lot-wrong|ops2c-f5-item-wrong|OPS2C_F5_ITEM_WRONG|OPS2C-F5-LOT-WRONG|2026-07-31 10:43:03.243171+00|2027-08-30|ACTIVE
+LOT_ROWS_END
+LOT_ROW_COUNT=3
+PASS: EXACT THREE TEST LOTS PRESENT
+
+======================================================================
+ 6. DERIVE FIXTURE SEMANTICS FROM STORED DATA
+======================================================================
+NONLOT_ITEM_COUNT=2
+LOT_TRACKED_ITEM_COUNT=1
+ACTIVE_VALID_LOT_COUNT=2
+ACTIVE_EXPIRED_LOT_COUNT=1
+PASS: EXACT ONE LOT-TRACKED ITEM
+PASS: EXPIRED LOT FIXTURE PRESENT
+
+======================================================================
+ 7. SEED RECEIPT MAP — AUTHORITATIVE ITEM/LOT IDENTIFICATION
+======================================================================
+SEED_TRANSACTION_ROWS_BEGIN
+ops2c-f5-seed-expired-lot|ops2c-f5-item-lot|OPS2C_F5_ITEM_LOT|ops2c-f5-lot-expired|OPS2C-F5-LOT-EXPIRED|RECEIPT|20.0000|UNIT|OPS2C_TEST_FIXTURE|SEED|ops2c-f5-seed-expired-lot
+ops2c-f5-seed-nonlot|ops2c-f5-item-nonlot|OPS2C_F5_ITEM_NONLOT|NULL|NULL|RECEIPT|20.0000|UNIT|OPS2C_TEST_FIXTURE|SEED|ops2c-f5-seed-nonlot
+ops2c-f5-seed-valid-lot|ops2c-f5-item-lot|OPS2C_F5_ITEM_LOT|ops2c-f5-lot-valid|OPS2C-F5-LOT-VALID|RECEIPT|20.0000|UNIT|OPS2C_TEST_FIXTURE|SEED|ops2c-f5-seed-valid-lot
+ops2c-f5-seed-wrong-lot|ops2c-f5-item-wrong|OPS2C_F5_ITEM_WRONG|ops2c-f5-lot-wrong|OPS2C-F5-LOT-WRONG|RECEIPT|20.0000|UNIT|OPS2C_TEST_FIXTURE|SEED|ops2c-f5-seed-wrong-lot
+SEED_TRANSACTION_ROWS_END
+SEED_TRANSACTION_ROW_COUNT=4
+PASS: EXACT FOUR SEED TRANSACTIONS PRESENT
+
+======================================================================
+ 8. RESIDENT + ACCESS MAP
+======================================================================
+RESIDENT_ROWS_BEGIN
+ops2c-f5-resident|OPS2C_F5_RESIDENT|OPS2C F5 Test Resident|t
+resident-vw9ec-20260828-153826|VW9EC-20260828-153826|Cụ Nguyễn Thị An|t
+RESIDENT_ROWS_END
+ACCESS_ROWS_BEGIN
+ops2c-f5-resident|ops2c-f5-caregiver|CAREGIVER|DIRECT_CARE|ACTIVE
+ops2c-f5-resident|ops2c-f5-nurse|NURSE|CLINICAL_CARE|ACTIVE
+ACCESS_ROWS_END
+
+======================================================================
+ 9. RUNTIME STABILITY RECHECK
+======================================================================
+FINAL_ISOLATED_STATE=running
+FINAL_ISOLATED_HEALTH_HTTP=200
+PASS: ISOLATED STILL RUNNING
+PASS: FINAL HEALTH 200
+
+======================================================================
+ 10. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 11. R3A BOUNDARY
+======================================================================
+FIXTURE_DIAGNOSTIC_ONLY=YES
+FIXTURE_IDS_ASSUMED=NO
+HTTP_POST_EXECUTED=NO
+FUNCTIONAL_D2_EXECUTED=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+CONTAINER_START_EXECUTED=NO
+CONTAINER_STOP_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+FIXTURE_MUTATION=NO
+AUTH_SESSION_MUTATION=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D2-R3A DECISION
+======================================================================
+PASS_COUNT=21
+FAIL_COUNT=0
+STATUS: OPS-2-C F6-D2-R3A FIXTURE IDENTITY DIAGNOSTIC PASSED
+R3_FAILURE_CLASS=TEST_RUNNER_FIXTURE_CODE_ASSUMPTION
+APPLICATION_DEFECT_EVIDENCE=NO
+SOURCE_REPAIR_REQUIRED=NO
+FUNCTIONAL_RETRY_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_EXACT_ID_POSITIVE_MATRIX
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r3a_fixture_identity_diagnostic_20260830_181228.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING IF HEALTHY
+ -> PRESERVE CURRENT EPHEMERAL JWT SECRET
+ -> KEEP F5/F6 FIXTURES + AUTH SESSIONS
+ -> DO NOT RUN FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT REPROVISION CONTAINER
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT DELETE FIXTURES
+ -> DO NOT CHANGE CANONICAL JWT_SECRET
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

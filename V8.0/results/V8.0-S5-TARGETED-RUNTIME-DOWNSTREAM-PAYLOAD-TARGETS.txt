@@ -1,0 +1,8 @@
+TAM AN CARE V8.0 — S5 DOWNSTREAM PAYLOAD TARGETS
+STATIC_ONLY=YES
+
+DOWNSTREAM_TARGET|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|PROPERTY=earlyWarningService|TYPE=EarlyWarningService|METHOD=analyze|IMPORT=./early-warning.service|STATUS=FILE_UNRESOLVED
+DOWNSTREAM_TARGET|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|STATUS=NO_RETURN_OBJECT_METHOD
+DOWNSTREAM_TARGET|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|PROPERTY=residentService|TYPE=ResidentService|METHOD=createResident|IMPORT=./resident.service|STATUS=FILE_UNRESOLVED
+DOWNSTREAM_TARGET|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|PROPERTY=residentService|TYPE=ResidentService|METHOD=updateResident|IMPORT=./resident.service|STATUS=FILE_UNRESOLVED
+DOWNSTREAM_TARGET|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|PROPERTY=service|TYPE=WarningReviewService|METHOD=review|IMPORT=./warning-review.service|STATUS=FILE_UNRESOLVED

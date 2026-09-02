@@ -1,0 +1,22 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5B",
+  "status": "PASSED",
+  "decision": "RESTORED_DATA_INTEGRITY_ACCEPTED",
+  "compatibility_runtime_reconstruction": true,
+  "phase5a_rerun": false,
+  "snapshot_mode": "READ_ONLY",
+  "snapshot_sha256": "561829728b5d0f429584d2d1dd1b74d84f3dd8419ac973b865467b9b56061b37",
+  "snapshot_size": 413928,
+  "snapshot_removed": true,
+  "table_set_equivalent": true,
+  "row_count_difference_tables": 0,
+  "production_database_delta": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "restore_container": "taman-care-v79-p5b-edb2b576dd-postgres",
+  "restore_network": "taman-care-v79-p5b-edb2b576dd-net",
+  "restore_container_kept_for": "PHASE_5_FINAL",
+  "next": "PHASE_5_FINAL"
+}

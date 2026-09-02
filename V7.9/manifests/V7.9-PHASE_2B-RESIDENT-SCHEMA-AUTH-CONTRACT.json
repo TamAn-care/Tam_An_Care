@@ -1,0 +1,21 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2_RESIDENT_MANAGEMENT",
+  "gate": "PHASE_2B",
+  "status": "PASSED",
+  "created_at": "2026-08-22T01:27:01.594936+00:00",
+  "schema_required_fields": [
+    "resident_id",
+    "resident_code",
+    "display_name",
+    "date_of_birth",
+    "gender",
+    "care_level",
+    "active_status"
+  ],
+  "schema_missing_fields": [],
+  "resident_actor_aware_route_count": 3,
+  "production_mutation": "NO",
+  "runtime_restart": "NO"
+}

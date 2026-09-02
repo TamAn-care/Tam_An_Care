@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-08-21T10:31:02.719647+00:00",
+  "release": "TAM_AN_CARE_V7.7",
+  "release_status": "FINAL_PRODUCTION_RELEASE_FROZEN",
+  "production_status": "V7.7_ACTIVE_STABLE",
+  "source": {
+    "hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "immutable": true
+  },
+  "api": {
+    "container": "taman-care-v77-production-api",
+    "container_id": "9c5685f6d7c34b1f95029a15263a59dbaf6006253fa24d3c39a962125a31c2d9",
+    "image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "state": "running",
+    "restart_count": 0,
+    "host": "127.0.0.1",
+    "port": 3100,
+    "health": "200",
+    "security": "401|401|401",
+    "resident_ai_security_method": "POST"
+  },
+  "ui": {
+    "container": "taman-care-v77-production-ui",
+    "container_id": "3b8ce413e4e6f8edea10959cf9e3453217f041132f5155b6268d415b63069bd3",
+    "image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "state": "running",
+    "restart_count": 0,
+    "host": "127.0.0.1",
+    "port": 8080,
+    "matrix": "200|401|401|200",
+    "vite_assets": true,
+    "operational_care": "200"
+  },
+  "database": {
+    "container": "taman-care-v743-dev-postgres",
+    "table_count": 118,
+    "row_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "migration_required": false,
+    "migration_performed": false,
+    "release_freeze_write": false
+  },
+  "promotion": {
+    "cutover": "PASSED",
+    "post_cutover_stabilization": "PASSED",
+    "rollback_assets_preserved": true
+  },
+  "rollback_contract_hash": "6fd346e4967f4577625e4ed9a3238bc21bc17d7fc4e3000af4fb115b3b74a7cf",
+  "roadmap": {
+    "phase_0": "CLOSED",
+    "phase_1": "CLOSED",
+    "phase_2": "CLOSED",
+    "phase_3": "CLOSED",
+    "phase_4a": "CLOSED",
+    "phase_4a_r2b": "CLOSED",
+    "phase_4b": "CLOSED",
+    "development_roadmap": "CLOSED",
+    "controlled_promotion": "CLOSED",
+    "release_freeze": "CLOSED"
+  }
+}

@@ -1,0 +1,21 @@
+STEP 7V — AUDIT CONTRACT
+
+Successful official mutations require audit.
+
+Audit must be:
+
+- append-only
+- attributable
+- ordered
+- uniquely sequenced per entity
+- committed in the same transaction as business mutation
+
+Failed mutation = zero audit.
+
+Unauthorized mutation = zero audit.
+
+Losing concurrent mutation = zero audit.
+
+AI advisory output cannot be recorded as if authored by a human.
+
+AI cannot impersonate human clinical accountability.

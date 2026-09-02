@@ -1,0 +1,34 @@
+STEP 7Z — AMENDMENT / CORRECTION CONTRACT
+
+Verified record overwrite = NO.
+
+Correction requires append-only amendment.
+
+Original record remains preserved.
+
+Applicable to:
+- verified fall-risk assessment
+- verified transfer safety check
+- verified post-fall observation
+
+Required:
+- original record reference
+- attributable human actor
+- actor role
+- amendment reason
+- timestamp
+- corrected factual content
+
+Concurrent compatible amendments may coexist.
+
+Lost fall / mobility history = NO.
+
+Invalid amendment:
+zero business mutation
+zero audit
+
+Failed amendment:
+zero business mutation
+zero audit
+
+Original history preserved = YES

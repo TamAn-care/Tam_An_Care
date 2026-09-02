@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-08-21T10:35:43.494461+00:00",
+  "version": "V7.8",
+  "phase": "0",
+  "status": "PASSED",
+  "parent_v77": {
+    "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "api_restart_count": 0,
+    "ui_restart_count": 0
+  },
+  "production": {
+    "api_health": "200",
+    "api_security": "401|401|401",
+    "ui_matrix": "200|401|401|200"
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "write": false
+  },
+  "resource_baseline": {
+    "api": {
+      "BlockIO": "0B / 4.1kB",
+      "CPUPerc": "0.03%",
+      "Container": "taman-care-v77-production-api",
+      "ID": "9c5685f6d7c3",
+      "MemPerc": "0.96%",
+      "MemUsage": "37.52MiB / 3.826GiB",
+      "Name": "taman-care-v77-production-api",
+      "NetIO": "33.1kB / 37.5kB",
+      "PIDs": "18"
+    },
+    "ui": {
+      "BlockIO": "0B / 8.19kB",
+      "CPUPerc": "0.00%",
+      "Container": "taman-care-v77-production-ui",
+      "ID": "3b8ce413e4e6",
+      "MemPerc": "0.20%",
+      "MemUsage": "7.695MiB / 3.826GiB",
+      "Name": "taman-care-v77-production-ui",
+      "NetIO": "40.3kB / 50.2kB",
+      "PIDs": "9"
+    },
+    "database": {
+      "BlockIO": "56.9MB / 885kB",
+      "CPUPerc": "0.00%",
+      "Container": "taman-care-v743-dev-postgres",
+      "ID": "92b707d3886f",
+      "MemPerc": "1.68%",
+      "MemUsage": "66MiB / 3.826GiB",
+      "Name": "taman-care-v743-dev-postgres",
+      "NetIO": "8.92kB / 3.33kB",
+      "PIDs": "6"
+    }
+  },
+  "critical_logs": {
+    "api": [],
+    "ui": []
+  },
+  "rollback_assets_preserved": true,
+  "roadmap_hash": "9ed7322812e109941c1db36cc7b3a438fb244f3cbb717d1b82f96b01a72da490",
+  "next_phase": "V7.8_PHASE_1_OBSERVABILITY_LOGGING_BACKUP_READINESS"
+}

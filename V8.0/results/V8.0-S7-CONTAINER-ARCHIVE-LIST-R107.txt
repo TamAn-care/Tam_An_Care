@@ -1,0 +1,816 @@
+;
+; Archive created at 2026-08-26 16:06:55 UTC
+;     dbname: taman_care
+;     TOC Entries: 805
+;     Compression: gzip
+;     Dump Version: 1.15-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 16.15 (Debian 16.15-1.pgdg13+2)
+;     Dumped by pg_dump version: 16.15 (Debian 16.15-1.pgdg13+2)
+;
+;
+; Selected TOC Entries:
+;
+2; 3079 16385 EXTENSION - pgcrypto 
+5250; 0 0 COMMENT - EXTENSION pgcrypto 
+236; 1259 16832 TABLE public abnormal_findings taman
+257; 1259 17359 TABLE public activity_participation taman
+254; 1259 17300 TABLE public activity_programs taman
+256; 1259 17331 TABLE public activity_sessions taman
+216; 1259 16422 TABLE public ai_analysis_audit taman
+285; 1259 17992 TABLE public behavioral_audit taman
+280; 1259 17891 TABLE public behavioral_episodes taman
+283; 1259 17951 TABLE public behavioral_escalations taman
+284; 1259 17972 TABLE public behavioral_post_reviews taman
+282; 1259 17930 TABLE public behavioral_responses taman
+279; 1259 17875 TABLE public behavioral_support_plans taman
+221; 1259 16474 TABLE public care_action_audit taman
+220; 1259 16473 SEQUENCE public care_action_audit_event_sequence_seq taman
+219; 1259 16453 TABLE public care_action_transfers taman
+218; 1259 16452 SEQUENCE public care_action_transfers_event_sequence_seq taman
+217; 1259 16431 TABLE public care_actions taman
+226; 1259 16570 TABLE public care_plan_audit taman
+224; 1259 16527 TABLE public care_plans taman
+227; 1259 16591 TABLE public care_task_audit taman
+225; 1259 16545 TABLE public care_tasks taman
+238; 1259 16879 TABLE public clinical_audit taman
+237; 1259 16855 TABLE public clinical_escalations taman
+234; 1259 16789 TABLE public clinical_observation_amendments taman
+233; 1259 16768 TABLE public clinical_observations taman
+278; 1259 17852 TABLE public cognitive_observations taman
+297; 1259 18236 TABLE public comfort_interventions taman
+274; 1259 17767 TABLE public continence_observations taman
+247; 1259 17122 TABLE public diet_orders taman
+304; 1259 18383 TABLE public exposure_events taman
+333; 1259 18973 TABLE public fall_audit taman
+332; 1259 18952 TABLE public fall_escalations taman
+329; 1259 18889 TABLE public fall_events taman
+331; 1259 18931 TABLE public fall_prevention_actions taman
+326; 1259 18827 TABLE public fall_risk_assessments taman
+250; 1259 17208 TABLE public feeding_assistance taman
+258; 1259 17385 TABLE public functional_assessments taman
+259; 1259 17410 TABLE public functional_support_actions taman
+314; 1259 18570 TABLE public high_risk_medication_checks taman
+270; 1259 17671 TABLE public hygiene_care_plans taman
+272; 1259 17715 TABLE public hygiene_care_records taman
+271; 1259 17689 TABLE public hygiene_schedules taman
+241; 1259 16994 TABLE public incident_assignments taman
+245; 1259 17063 TABLE public incident_audit taman
+243; 1259 17029 TABLE public incident_escalations taman
+244; 1259 17047 TABLE public incident_post_reviews taman
+242; 1259 17009 TABLE public incident_responses taman
+240; 1259 16968 TABLE public incident_triage taman
+239; 1259 16928 TABLE public incidents taman
+307; 1259 18436 TABLE public infection_alerts taman
+309; 1259 18468 TABLE public infection_audit taman
+302; 1259 18344 TABLE public infection_control_plans taman
+308; 1259 18452 TABLE public infection_escalations taman
+306; 1259 18415 TABLE public infection_monitoring_records taman
+303; 1259 18360 TABLE public infection_observations taman
+305; 1259 18399 TABLE public infection_precautions taman
+248; 1259 17149 TABLE public meal_schedules taman
+315; 1259 18587 TABLE public medication_administration_exceptions taman
+230; 1259 16671 TABLE public medication_administrations taman
+316; 1259 18602 TABLE public medication_adverse_reaction_observations taman
+232; 1259 16725 TABLE public medication_audit taman
+231; 1259 16699 TABLE public medication_double_checks taman
+312; 1259 18534 TABLE public medication_order_reviews taman
+228; 1259 16627 TABLE public medication_orders taman
+311; 1259 18508 TABLE public medication_reconciliation_items taman
+310; 1259 18492 TABLE public medication_reconciliations taman
+317; 1259 18624 TABLE public medication_safety_audit taman
+313; 1259 18550 TABLE public medication_safety_checks taman
+229; 1259 16648 TABLE public medication_schedules taman
+327; 1259 18848 TABLE public mobility_support_plans taman
+288; 1259 18056 TABLE public night_monitoring_checks taman
+290; 1259 18095 TABLE public night_support_responses taman
+235; 1259 16808 TABLE public nursing_notes taman
+251; 1259 17229 TABLE public nutrition_alerts taman
+253; 1259 17274 TABLE public nutrition_audit taman
+252; 1259 17252 TABLE public nutrition_escalations taman
+249; 1259 17179 TABLE public nutrition_intake_records taman
+246; 1259 17101 TABLE public nutrition_plans taman
+295; 1259 18190 TABLE public pain_assessments taman
+301; 1259 18320 TABLE public pain_audit taman
+294; 1259 18174 TABLE public pain_care_plans taman
+300; 1259 18304 TABLE public pain_escalations taman
+298; 1259 18262 TABLE public pain_reassessments taman
+299; 1259 18288 TABLE public pain_safety_alerts taman
+275; 1259 17789 TABLE public personal_care_assistance taman
+277; 1259 17827 TABLE public personal_care_audit taman
+276; 1259 17810 TABLE public personal_care_escalations taman
+330; 1259 18906 TABLE public post_fall_observations taman
+320; 1259 18687 TABLE public protective_actions taman
+261; 1259 17458 TABLE public rehabilitation_audit taman
+260; 1259 17431 TABLE public rehabilitation_escalations taman
+255; 1259 17313 TABLE public rehabilitation_plans taman
+266; 1259 17573 TABLE public repositioning_records taman
+334; 1259 18997 TABLE public resident_access_assignments taman
+337; 1259 19056 TABLE public resident_audit taman
+222; 1259 16492 TABLE public residents taman
+321; 1259 18708 TABLE public safeguarding_assignments taman
+325; 1259 18803 TABLE public safeguarding_audit taman
+323; 1259 18761 TABLE public safeguarding_escalations taman
+324; 1259 18782 TABLE public safeguarding_post_reviews taman
+318; 1259 18649 TABLE public safeguarding_reports taman
+322; 1259 18730 TABLE public safeguarding_reviews taman
+319; 1259 18666 TABLE public safeguarding_triage taman
+262; 1259 17479 TABLE public skin_assessments taman
+293; 1259 18148 TABLE public sleep_audit taman
+286; 1259 18017 TABLE public sleep_care_plans taman
+292; 1259 18132 TABLE public sleep_escalations taman
+287; 1259 18033 TABLE public sleep_observations taman
+289; 1259 18078 TABLE public sleep_rest_events taman
+291; 1259 18116 TABLE public sleep_safety_alerts taman
+336; 1259 19041 TABLE public staff_actor_audit taman
+335; 1259 19020 TABLE public staff_actors taman
+296; 1259 18213 TABLE public symptom_observations taman
+273; 1259 17741 TABLE public toileting_records taman
+328; 1259 18864 TABLE public transfer_safety_checks taman
+281; 1259 17908 TABLE public wandering_events taman
+223; 1259 16508 TABLE public warning_reviews taman
+269; 1259 17646 TABLE public wound_audit taman
+264; 1259 17520 TABLE public wound_care_plans taman
+268; 1259 17624 TABLE public wound_escalations taman
+267; 1259 17598 TABLE public wound_progress_records taman
+263; 1259 17499 TABLE public wound_records taman
+265; 1259 17541 TABLE public wound_treatment_records taman
+5142; 0 16832 TABLE DATA public abnormal_findings taman
+5163; 0 17359 TABLE DATA public activity_participation taman
+5160; 0 17300 TABLE DATA public activity_programs taman
+5162; 0 17331 TABLE DATA public activity_sessions taman
+5122; 0 16422 TABLE DATA public ai_analysis_audit taman
+5191; 0 17992 TABLE DATA public behavioral_audit taman
+5186; 0 17891 TABLE DATA public behavioral_episodes taman
+5189; 0 17951 TABLE DATA public behavioral_escalations taman
+5190; 0 17972 TABLE DATA public behavioral_post_reviews taman
+5188; 0 17930 TABLE DATA public behavioral_responses taman
+5185; 0 17875 TABLE DATA public behavioral_support_plans taman
+5127; 0 16474 TABLE DATA public care_action_audit taman
+5125; 0 16453 TABLE DATA public care_action_transfers taman
+5123; 0 16431 TABLE DATA public care_actions taman
+5132; 0 16570 TABLE DATA public care_plan_audit taman
+5130; 0 16527 TABLE DATA public care_plans taman
+5133; 0 16591 TABLE DATA public care_task_audit taman
+5131; 0 16545 TABLE DATA public care_tasks taman
+5144; 0 16879 TABLE DATA public clinical_audit taman
+5143; 0 16855 TABLE DATA public clinical_escalations taman
+5140; 0 16789 TABLE DATA public clinical_observation_amendments taman
+5139; 0 16768 TABLE DATA public clinical_observations taman
+5184; 0 17852 TABLE DATA public cognitive_observations taman
+5203; 0 18236 TABLE DATA public comfort_interventions taman
+5180; 0 17767 TABLE DATA public continence_observations taman
+5153; 0 17122 TABLE DATA public diet_orders taman
+5210; 0 18383 TABLE DATA public exposure_events taman
+5239; 0 18973 TABLE DATA public fall_audit taman
+5238; 0 18952 TABLE DATA public fall_escalations taman
+5235; 0 18889 TABLE DATA public fall_events taman
+5237; 0 18931 TABLE DATA public fall_prevention_actions taman
+5232; 0 18827 TABLE DATA public fall_risk_assessments taman
+5156; 0 17208 TABLE DATA public feeding_assistance taman
+5164; 0 17385 TABLE DATA public functional_assessments taman
+5165; 0 17410 TABLE DATA public functional_support_actions taman
+5220; 0 18570 TABLE DATA public high_risk_medication_checks taman
+5176; 0 17671 TABLE DATA public hygiene_care_plans taman
+5178; 0 17715 TABLE DATA public hygiene_care_records taman
+5177; 0 17689 TABLE DATA public hygiene_schedules taman
+5147; 0 16994 TABLE DATA public incident_assignments taman
+5151; 0 17063 TABLE DATA public incident_audit taman
+5149; 0 17029 TABLE DATA public incident_escalations taman
+5150; 0 17047 TABLE DATA public incident_post_reviews taman
+5148; 0 17009 TABLE DATA public incident_responses taman
+5146; 0 16968 TABLE DATA public incident_triage taman
+5145; 0 16928 TABLE DATA public incidents taman
+5213; 0 18436 TABLE DATA public infection_alerts taman
+5215; 0 18468 TABLE DATA public infection_audit taman
+5208; 0 18344 TABLE DATA public infection_control_plans taman
+5214; 0 18452 TABLE DATA public infection_escalations taman
+5212; 0 18415 TABLE DATA public infection_monitoring_records taman
+5209; 0 18360 TABLE DATA public infection_observations taman
+5211; 0 18399 TABLE DATA public infection_precautions taman
+5154; 0 17149 TABLE DATA public meal_schedules taman
+5221; 0 18587 TABLE DATA public medication_administration_exceptions taman
+5136; 0 16671 TABLE DATA public medication_administrations taman
+5222; 0 18602 TABLE DATA public medication_adverse_reaction_observations taman
+5138; 0 16725 TABLE DATA public medication_audit taman
+5137; 0 16699 TABLE DATA public medication_double_checks taman
+5218; 0 18534 TABLE DATA public medication_order_reviews taman
+5134; 0 16627 TABLE DATA public medication_orders taman
+5217; 0 18508 TABLE DATA public medication_reconciliation_items taman
+5216; 0 18492 TABLE DATA public medication_reconciliations taman
+5223; 0 18624 TABLE DATA public medication_safety_audit taman
+5219; 0 18550 TABLE DATA public medication_safety_checks taman
+5135; 0 16648 TABLE DATA public medication_schedules taman
+5233; 0 18848 TABLE DATA public mobility_support_plans taman
+5194; 0 18056 TABLE DATA public night_monitoring_checks taman
+5196; 0 18095 TABLE DATA public night_support_responses taman
+5141; 0 16808 TABLE DATA public nursing_notes taman
+5157; 0 17229 TABLE DATA public nutrition_alerts taman
+5159; 0 17274 TABLE DATA public nutrition_audit taman
+5158; 0 17252 TABLE DATA public nutrition_escalations taman
+5155; 0 17179 TABLE DATA public nutrition_intake_records taman
+5152; 0 17101 TABLE DATA public nutrition_plans taman
+5201; 0 18190 TABLE DATA public pain_assessments taman
+5207; 0 18320 TABLE DATA public pain_audit taman
+5200; 0 18174 TABLE DATA public pain_care_plans taman
+5206; 0 18304 TABLE DATA public pain_escalations taman
+5204; 0 18262 TABLE DATA public pain_reassessments taman
+5205; 0 18288 TABLE DATA public pain_safety_alerts taman
+5181; 0 17789 TABLE DATA public personal_care_assistance taman
+5183; 0 17827 TABLE DATA public personal_care_audit taman
+5182; 0 17810 TABLE DATA public personal_care_escalations taman
+5236; 0 18906 TABLE DATA public post_fall_observations taman
+5226; 0 18687 TABLE DATA public protective_actions taman
+5167; 0 17458 TABLE DATA public rehabilitation_audit taman
+5166; 0 17431 TABLE DATA public rehabilitation_escalations taman
+5161; 0 17313 TABLE DATA public rehabilitation_plans taman
+5172; 0 17573 TABLE DATA public repositioning_records taman
+5240; 0 18997 TABLE DATA public resident_access_assignments taman
+5243; 0 19056 TABLE DATA public resident_audit taman
+5128; 0 16492 TABLE DATA public residents taman
+5227; 0 18708 TABLE DATA public safeguarding_assignments taman
+5231; 0 18803 TABLE DATA public safeguarding_audit taman
+5229; 0 18761 TABLE DATA public safeguarding_escalations taman
+5230; 0 18782 TABLE DATA public safeguarding_post_reviews taman
+5224; 0 18649 TABLE DATA public safeguarding_reports taman
+5228; 0 18730 TABLE DATA public safeguarding_reviews taman
+5225; 0 18666 TABLE DATA public safeguarding_triage taman
+5168; 0 17479 TABLE DATA public skin_assessments taman
+5199; 0 18148 TABLE DATA public sleep_audit taman
+5192; 0 18017 TABLE DATA public sleep_care_plans taman
+5198; 0 18132 TABLE DATA public sleep_escalations taman
+5193; 0 18033 TABLE DATA public sleep_observations taman
+5195; 0 18078 TABLE DATA public sleep_rest_events taman
+5197; 0 18116 TABLE DATA public sleep_safety_alerts taman
+5242; 0 19041 TABLE DATA public staff_actor_audit taman
+5241; 0 19020 TABLE DATA public staff_actors taman
+5202; 0 18213 TABLE DATA public symptom_observations taman
+5179; 0 17741 TABLE DATA public toileting_records taman
+5234; 0 18864 TABLE DATA public transfer_safety_checks taman
+5187; 0 17908 TABLE DATA public wandering_events taman
+5129; 0 16508 TABLE DATA public warning_reviews taman
+5175; 0 17646 TABLE DATA public wound_audit taman
+5170; 0 17520 TABLE DATA public wound_care_plans taman
+5174; 0 17624 TABLE DATA public wound_escalations taman
+5173; 0 17598 TABLE DATA public wound_progress_records taman
+5169; 0 17499 TABLE DATA public wound_records taman
+5171; 0 17541 TABLE DATA public wound_treatment_records taman
+5251; 0 0 SEQUENCE SET public care_action_audit_event_sequence_seq taman
+5252; 0 0 SEQUENCE SET public care_action_transfers_event_sequence_seq taman
+4370; 2606 16844 CONSTRAINT public abnormal_findings abnormal_findings_finding_code_key taman
+4372; 2606 16842 CONSTRAINT public abnormal_findings abnormal_findings_pkey taman
+4485; 2606 17369 CONSTRAINT public activity_participation activity_participation_pkey taman
+4469; 2606 17310 CONSTRAINT public activity_programs activity_programs_pkey taman
+4471; 2606 17312 CONSTRAINT public activity_programs activity_programs_program_code_key taman
+4478; 2606 17341 CONSTRAINT public activity_sessions activity_sessions_pkey taman
+4480; 2606 17343 CONSTRAINT public activity_sessions activity_sessions_session_code_key taman
+4262; 2606 16430 CONSTRAINT public ai_analysis_audit ai_analysis_audit_pkey taman
+4582; 2606 18001 CONSTRAINT public behavioral_audit behavioral_audit_entity_type_entity_id_sequence_no_key taman
+4584; 2606 17999 CONSTRAINT public behavioral_audit behavioral_audit_pkey taman
+4566; 2606 17902 CONSTRAINT public behavioral_episodes behavioral_episodes_pkey taman
+4576; 2606 17961 CONSTRAINT public behavioral_escalations behavioral_escalations_pkey taman
+4579; 2606 17981 CONSTRAINT public behavioral_post_reviews behavioral_post_reviews_pkey taman
+4573; 2606 17940 CONSTRAINT public behavioral_responses behavioral_responses_pkey taman
+4563; 2606 17885 CONSTRAINT public behavioral_support_plans behavioral_support_plans_pkey taman
+4277; 2606 16484 CONSTRAINT public care_action_audit care_action_audit_event_sequence_key taman
+4279; 2606 16482 CONSTRAINT public care_action_audit care_action_audit_pkey taman
+4272; 2606 16466 CONSTRAINT public care_action_transfers care_action_transfers_event_sequence_key taman
+4274; 2606 16464 CONSTRAINT public care_action_transfers care_action_transfers_pkey taman
+4264; 2606 16445 CONSTRAINT public care_actions care_actions_pkey taman
+4266; 2606 16447 CONSTRAINT public care_actions care_actions_resident_pattern_unique taman
+4311; 2606 16580 CONSTRAINT public care_plan_audit care_plan_audit_care_plan_id_event_sequence_key taman
+4313; 2606 16578 CONSTRAINT public care_plan_audit care_plan_audit_pkey taman
+4295; 2606 16537 CONSTRAINT public care_plans care_plans_pkey taman
+4297; 2606 16539 CONSTRAINT public care_plans care_plans_plan_code_key taman
+4316; 2606 16601 CONSTRAINT public care_task_audit care_task_audit_care_task_id_event_sequence_key taman
+4318; 2606 16599 CONSTRAINT public care_task_audit care_task_audit_pkey taman
+4301; 2606 16557 CONSTRAINT public care_tasks care_tasks_pkey taman
+4303; 2606 16559 CONSTRAINT public care_tasks care_tasks_task_code_key taman
+4382; 2606 16887 CONSTRAINT public clinical_audit clinical_audit_pkey taman
+4376; 2606 16868 CONSTRAINT public clinical_escalations clinical_escalations_escalation_code_key taman
+4378; 2606 16866 CONSTRAINT public clinical_escalations clinical_escalations_pkey taman
+4361; 2606 16797 CONSTRAINT public clinical_observation_amendments clinical_observation_amendments_pkey taman
+4353; 2606 16783 CONSTRAINT public clinical_observations clinical_observations_observation_code_key taman
+4355; 2606 16781 CONSTRAINT public clinical_observations clinical_observations_pkey taman
+4560; 2606 17864 CONSTRAINT public cognitive_observations cognitive_observations_pkey taman
+4626; 2606 18246 CONSTRAINT public comfort_interventions comfort_interventions_pkey taman
+4545; 2606 17778 CONSTRAINT public continence_observations continence_observations_pkey taman
+4440; 2606 17138 CONSTRAINT public diet_orders diet_orders_diet_code_key taman
+4442; 2606 17136 CONSTRAINT public diet_orders diet_orders_pkey taman
+4650; 2606 18393 CONSTRAINT public exposure_events exposure_events_pkey taman
+4747; 2606 18982 CONSTRAINT public fall_audit fall_audit_entity_type_entity_id_sequence_no_key taman
+4749; 2606 18980 CONSTRAINT public fall_audit fall_audit_pkey taman
+4744; 2606 18962 CONSTRAINT public fall_escalations fall_escalations_pkey taman
+4735; 2606 18900 CONSTRAINT public fall_events fall_events_pkey taman
+4741; 2606 18941 CONSTRAINT public fall_prevention_actions fall_prevention_actions_pkey taman
+4726; 2606 18837 CONSTRAINT public fall_risk_assessments fall_risk_assessments_pkey taman
+4455; 2606 17218 CONSTRAINT public feeding_assistance feeding_assistance_pkey taman
+4489; 2606 17394 CONSTRAINT public functional_assessments functional_assessments_pkey taman
+4492; 2606 17420 CONSTRAINT public functional_support_actions functional_support_actions_pkey taman
+4684; 2606 18581 CONSTRAINT public high_risk_medication_checks high_risk_medication_checks_pkey taman
+4532; 2606 17683 CONSTRAINT public hygiene_care_plans hygiene_care_plans_pkey taman
+4539; 2606 17725 CONSTRAINT public hygiene_care_records hygiene_care_records_pkey taman
+4535; 2606 17704 CONSTRAINT public hygiene_schedules hygiene_schedules_pkey taman
+4406; 2606 17003 CONSTRAINT public incident_assignments incident_assignments_incident_id_assignment_sequence_key taman
+4408; 2606 17001 CONSTRAINT public incident_assignments incident_assignments_pkey taman
+4430; 2606 17072 CONSTRAINT public incident_audit incident_audit_incident_id_aggregate_type_aggregate_id_even_key taman
+4432; 2606 17070 CONSTRAINT public incident_audit incident_audit_pkey taman
+4419; 2606 17041 CONSTRAINT public incident_escalations incident_escalations_incident_id_escalation_sequence_key taman
+4421; 2606 17039 CONSTRAINT public incident_escalations incident_escalations_pkey taman
+4424; 2606 17057 CONSTRAINT public incident_post_reviews incident_post_reviews_incident_id_review_sequence_key taman
+4426; 2606 17055 CONSTRAINT public incident_post_reviews incident_post_reviews_pkey taman
+4412; 2606 17018 CONSTRAINT public incident_responses incident_responses_incident_id_response_sequence_key taman
+4414; 2606 17016 CONSTRAINT public incident_responses incident_responses_pkey taman
+4400; 2606 16978 CONSTRAINT public incident_triage incident_triage_incident_id_triage_sequence_key taman
+4402; 2606 16976 CONSTRAINT public incident_triage incident_triage_pkey taman
+4395; 2606 16942 CONSTRAINT public incidents incidents_incident_code_key taman
+4397; 2606 16940 CONSTRAINT public incidents incidents_pkey taman
+4660; 2606 18446 CONSTRAINT public infection_alerts infection_alerts_pkey taman
+4667; 2606 18477 CONSTRAINT public infection_audit infection_audit_entity_type_entity_id_sequence_no_key taman
+4669; 2606 18475 CONSTRAINT public infection_audit infection_audit_pkey taman
+4645; 2606 18354 CONSTRAINT public infection_control_plans infection_control_plans_pkey taman
+4663; 2606 18462 CONSTRAINT public infection_escalations infection_escalations_pkey taman
+4657; 2606 18425 CONSTRAINT public infection_monitoring_records infection_monitoring_records_pkey taman
+4648; 2606 18372 CONSTRAINT public infection_observations infection_observations_pkey taman
+4654; 2606 18409 CONSTRAINT public infection_precautions infection_precautions_pkey taman
+4447; 2606 17161 CONSTRAINT public meal_schedules meal_schedules_pkey taman
+4449; 2606 17163 CONSTRAINT public meal_schedules meal_schedules_schedule_code_key taman
+4688; 2606 18596 CONSTRAINT public medication_administration_exceptions medication_administration_exceptions_pkey taman
+4337; 2606 16683 CONSTRAINT public medication_administrations medication_administrations_administration_code_key taman
+4339; 2606 16681 CONSTRAINT public medication_administrations medication_administrations_pkey taman
+4691; 2606 18613 CONSTRAINT public medication_adverse_reaction_observations medication_adverse_reaction_observations_pkey taman
+4349; 2606 16735 CONSTRAINT public medication_audit medication_audit_medication_administration_id_event_sequenc_key taman
+4351; 2606 16733 CONSTRAINT public medication_audit medication_audit_pkey taman
+4342; 2606 16709 CONSTRAINT public medication_double_checks medication_double_checks_medication_administration_id_check_key taman
+4344; 2606 16707 CONSTRAINT public medication_double_checks medication_double_checks_pkey taman
+4679; 2606 18544 CONSTRAINT public medication_order_reviews medication_order_reviews_pkey taman
+4323; 2606 16642 CONSTRAINT public medication_orders medication_orders_order_code_key taman
+4325; 2606 16640 CONSTRAINT public medication_orders medication_orders_pkey taman
+4676; 2606 18518 CONSTRAINT public medication_reconciliation_items medication_reconciliation_items_pkey taman
+4672; 2606 18502 CONSTRAINT public medication_reconciliations medication_reconciliations_pkey taman
+4695; 2606 18633 CONSTRAINT public medication_safety_audit medication_safety_audit_entity_type_entity_id_sequence_no_key taman
+4697; 2606 18631 CONSTRAINT public medication_safety_audit medication_safety_audit_pkey taman
+4682; 2606 18564 CONSTRAINT public medication_safety_checks medication_safety_checks_pkey taman
+4329; 2606 16658 CONSTRAINT public medication_schedules medication_schedules_pkey taman
+4331; 2606 16660 CONSTRAINT public medication_schedules medication_schedules_schedule_code_key taman
+4730; 2606 18858 CONSTRAINT public mobility_support_plans mobility_support_plans_pkey taman
+4596; 2606 18067 CONSTRAINT public night_monitoring_checks night_monitoring_checks_pkey taman
+4603; 2606 18105 CONSTRAINT public night_support_responses night_support_responses_pkey taman
+4366; 2606 16821 CONSTRAINT public nursing_notes nursing_notes_note_code_key taman
+4368; 2606 16819 CONSTRAINT public nursing_notes nursing_notes_pkey taman
+4459; 2606 17241 CONSTRAINT public nutrition_alerts nutrition_alerts_pkey taman
+4465; 2606 17283 CONSTRAINT public nutrition_audit nutrition_audit_aggregate_type_aggregate_id_event_sequence_key taman
+4467; 2606 17281 CONSTRAINT public nutrition_audit nutrition_audit_pkey taman
+4462; 2606 17263 CONSTRAINT public nutrition_escalations nutrition_escalations_pkey taman
+4453; 2606 17192 CONSTRAINT public nutrition_intake_records nutrition_intake_records_pkey taman
+4436; 2606 17114 CONSTRAINT public nutrition_plans nutrition_plans_pkey taman
+4438; 2606 17116 CONSTRAINT public nutrition_plans nutrition_plans_plan_code_key taman
+4621; 2606 18202 CONSTRAINT public pain_assessments pain_assessments_pkey taman
+4640; 2606 18329 CONSTRAINT public pain_audit pain_audit_entity_type_entity_id_sequence_no_key taman
+4642; 2606 18327 CONSTRAINT public pain_audit pain_audit_pkey taman
+4618; 2606 18184 CONSTRAINT public pain_care_plans pain_care_plans_pkey taman
+4636; 2606 18314 CONSTRAINT public pain_escalations pain_escalations_pkey taman
+4630; 2606 18272 CONSTRAINT public pain_reassessments pain_reassessments_pkey taman
+4633; 2606 18298 CONSTRAINT public pain_safety_alerts pain_safety_alerts_pkey taman
+4549; 2606 17799 CONSTRAINT public personal_care_assistance personal_care_assistance_pkey taman
+4556; 2606 17836 CONSTRAINT public personal_care_audit personal_care_audit_aggregate_type_aggregate_id_event_seque_key taman
+4558; 2606 17834 CONSTRAINT public personal_care_audit personal_care_audit_pkey taman
+4552; 2606 17821 CONSTRAINT public personal_care_escalations personal_care_escalations_pkey taman
+4739; 2606 18915 CONSTRAINT public post_fall_observations post_fall_observations_pkey taman
+4706; 2606 18697 CONSTRAINT public protective_actions protective_actions_pkey taman
+4500; 2606 17467 CONSTRAINT public rehabilitation_audit rehabilitation_audit_aggregate_type_aggregate_id_event_sequ_key taman
+4502; 2606 17465 CONSTRAINT public rehabilitation_audit rehabilitation_audit_pkey taman
+4497; 2606 17442 CONSTRAINT public rehabilitation_escalations rehabilitation_escalations_pkey taman
+4474; 2606 17323 CONSTRAINT public rehabilitation_plans rehabilitation_plans_pkey taman
+4476; 2606 17325 CONSTRAINT public rehabilitation_plans rehabilitation_plans_plan_code_key taman
+4518; 2606 17582 CONSTRAINT public repositioning_records repositioning_records_pkey taman
+4755; 2606 19011 CONSTRAINT public resident_access_assignments resident_access_assignments_pkey taman
+4767; 2606 19065 CONSTRAINT public resident_audit resident_audit_pkey taman
+4285; 2606 16503 CONSTRAINT public residents residents_pkey taman
+4287; 2606 16505 CONSTRAINT public residents residents_resident_code_key taman
+4709; 2606 18719 CONSTRAINT public safeguarding_assignments safeguarding_assignments_pkey taman
+4722; 2606 18812 CONSTRAINT public safeguarding_audit safeguarding_audit_entity_type_entity_id_sequence_no_key taman
+4724; 2606 18810 CONSTRAINT public safeguarding_audit safeguarding_audit_pkey taman
+4715; 2606 18771 CONSTRAINT public safeguarding_escalations safeguarding_escalations_pkey taman
+4718; 2606 18792 CONSTRAINT public safeguarding_post_reviews safeguarding_post_reviews_pkey taman
+4700; 2606 18660 CONSTRAINT public safeguarding_reports safeguarding_reports_pkey taman
+4712; 2606 18740 CONSTRAINT public safeguarding_reviews safeguarding_reviews_pkey taman
+4703; 2606 18676 CONSTRAINT public safeguarding_triage safeguarding_triage_pkey taman
+4505; 2606 17488 CONSTRAINT public skin_assessments skin_assessments_pkey taman
+4613; 2606 18157 CONSTRAINT public sleep_audit sleep_audit_entity_type_entity_id_sequence_no_key taman
+4615; 2606 18155 CONSTRAINT public sleep_audit sleep_audit_pkey taman
+4589; 2606 18027 CONSTRAINT public sleep_care_plans sleep_care_plans_pkey taman
+4609; 2606 18142 CONSTRAINT public sleep_escalations sleep_escalations_pkey taman
+4592; 2606 18045 CONSTRAINT public sleep_observations sleep_observations_pkey taman
+4600; 2606 18089 CONSTRAINT public sleep_rest_events sleep_rest_events_pkey taman
+4606; 2606 18126 CONSTRAINT public sleep_safety_alerts sleep_safety_alerts_pkey taman
+4764; 2606 19050 CONSTRAINT public staff_actor_audit staff_actor_audit_pkey taman
+4760; 2606 19030 CONSTRAINT public staff_actors staff_actors_pkey taman
+4762; 2606 19032 CONSTRAINT public staff_actors staff_actors_staff_code_key taman
+4624; 2606 18225 CONSTRAINT public symptom_observations symptom_observations_pkey taman
+4543; 2606 17751 CONSTRAINT public toileting_records toileting_records_pkey taman
+4733; 2606 18873 CONSTRAINT public transfer_safety_checks transfer_safety_checks_pkey taman
+4571; 2606 17919 CONSTRAINT public wandering_events wandering_events_pkey taman
+4291; 2606 16517 CONSTRAINT public warning_reviews warning_reviews_pkey taman
+4293; 2606 16519 CONSTRAINT public warning_reviews warning_reviews_warning_id_key taman
+4528; 2606 17655 CONSTRAINT public wound_audit wound_audit_aggregate_type_aggregate_id_event_sequence_key taman
+4530; 2606 17653 CONSTRAINT public wound_audit wound_audit_pkey taman
+4512; 2606 17530 CONSTRAINT public wound_care_plans wound_care_plans_pkey taman
+4524; 2606 17635 CONSTRAINT public wound_escalations wound_escalations_pkey taman
+4521; 2606 17608 CONSTRAINT public wound_progress_records wound_progress_records_pkey taman
+4509; 2606 17509 CONSTRAINT public wound_records wound_records_pkey taman
+4515; 2606 17552 CONSTRAINT public wound_treatment_records wound_treatment_records_pkey taman
+4373; 1259 16921 INDEX public idx_abnormal_finding_observation taman
+4374; 1259 16920 INDEX public idx_abnormal_finding_resident_status taman
+4486; 1259 17473 INDEX public idx_activity_participation_resident taman
+4487; 1259 17472 INDEX public idx_activity_participation_session taman
+4481; 1259 17469 INDEX public idx_activity_session_resident taman
+4482; 1259 17471 INDEX public idx_activity_session_schedule taman
+4483; 1259 17470 INDEX public idx_activity_session_status taman
+4547; 1259 17848 INDEX public idx_assistance_resident taman
+4585; 1259 18015 INDEX public idx_behavioral_audit_entity taman
+4586; 1259 18016 INDEX public idx_behavioral_audit_resident taman
+4567; 1259 18009 INDEX public idx_behavioral_episodes_resident taman
+4568; 1259 18010 INDEX public idx_behavioral_episodes_state taman
+4577; 1259 18013 INDEX public idx_behavioral_escalations_episode taman
+4580; 1259 18014 INDEX public idx_behavioral_post_reviews_episode taman
+4574; 1259 18012 INDEX public idx_behavioral_responses_episode taman
+4564; 1259 18008 INDEX public idx_behavioral_support_plans_resident taman
+4280; 1259 16490 INDEX public idx_care_action_audit_action taman
+4281; 1259 16491 INDEX public idx_care_action_audit_resident taman
+4275; 1259 16472 INDEX public idx_care_action_transfers_action taman
+4267; 1259 16451 INDEX public idx_care_actions_due_at taman
+4268; 1259 16450 INDEX public idx_care_actions_priority taman
+4269; 1259 16448 INDEX public idx_care_actions_resident taman
+4270; 1259 16449 INDEX public idx_care_actions_status taman
+4314; 1259 16625 INDEX public idx_care_plan_audit_plan_sequence taman
+4298; 1259 16617 INDEX public idx_care_plans_resident taman
+4299; 1259 16618 INDEX public idx_care_plans_resident_status taman
+4319; 1259 16626 INDEX public idx_care_task_audit_task_sequence taman
+4304; 1259 16622 INDEX public idx_care_tasks_assigned_to_status taman
+4305; 1259 16623 INDEX public idx_care_tasks_due_at taman
+4306; 1259 16619 INDEX public idx_care_tasks_plan taman
+4307; 1259 16620 INDEX public idx_care_tasks_resident taman
+4308; 1259 16624 INDEX public idx_care_tasks_resident_status_due taman
+4309; 1259 16621 INDEX public idx_care_tasks_status taman
+4362; 1259 16917 INDEX public idx_clinical_amendment_observation taman
+4383; 1259 16926 INDEX public idx_clinical_audit_escalation taman
+4384; 1259 16925 INDEX public idx_clinical_audit_finding taman
+4385; 1259 16924 INDEX public idx_clinical_audit_observation taman
+4386; 1259 16927 INDEX public idx_clinical_audit_resident taman
+4379; 1259 16922 INDEX public idx_clinical_escalation_finding taman
+4380; 1259 16923 INDEX public idx_clinical_escalation_status taman
+4356; 1259 16916 INDEX public idx_clinical_observation_abnormal taman
+4357; 1259 16913 INDEX public idx_clinical_observation_resident taman
+4358; 1259 16914 INDEX public idx_clinical_observation_resident_type_time taman
+4359; 1259 16915 INDEX public idx_clinical_observation_status taman
+4561; 1259 18007 INDEX public idx_cognitive_observations_resident taman
+4627; 1259 18338 INDEX public idx_comfort_interventions_resident taman
+4546; 1259 17847 INDEX public idx_continence_resident taman
+4443; 1259 17291 INDEX public idx_diet_orders_resident_status taman
+4651; 1259 18485 INDEX public idx_exposure_event_resident taman
+4750; 1259 18995 INDEX public idx_fall_audit_entity taman
+4751; 1259 18996 INDEX public idx_fall_audit_resident taman
+4745; 1259 18994 INDEX public idx_fall_escalation_event taman
+4736; 1259 18991 INDEX public idx_fall_event_resident taman
+4727; 1259 18988 INDEX public idx_fall_risk_resident taman
+4456; 1259 17296 INDEX public idx_feeding_assistance_meal taman
+4490; 1259 17474 INDEX public idx_functional_assessment_resident taman
+4493; 1259 17475 INDEX public idx_functional_support_session taman
+4685; 1259 18644 INDEX public idx_high_risk_check_resident taman
+4533; 1259 17842 INDEX public idx_hygiene_plans_resident taman
+4540; 1259 17845 INDEX public idx_hygiene_records_schedule taman
+4536; 1259 17843 INDEX public idx_hygiene_schedules_resident taman
+4537; 1259 17844 INDEX public idx_hygiene_schedules_status taman
+4403; 1259 17091 INDEX public idx_incident_assignments_incident_sequence taman
+4404; 1259 17092 INDEX public idx_incident_assignments_owner taman
+4427; 1259 17100 INDEX public idx_incident_audit_aggregate_sequence taman
+4428; 1259 17099 INDEX public idx_incident_audit_incident_created taman
+4415; 1259 17095 INDEX public idx_incident_escalations_incident taman
+4416; 1259 17097 INDEX public idx_incident_escalations_reviewer_status taman
+4417; 1259 17096 INDEX public idx_incident_escalations_status taman
+4422; 1259 17098 INDEX public idx_incident_post_reviews_incident_sequence taman
+4409; 1259 17093 INDEX public idx_incident_responses_incident_sequence taman
+4410; 1259 17094 INDEX public idx_incident_responses_performed taman
+4398; 1259 17090 INDEX public idx_incident_triage_incident_sequence taman
+4387; 1259 17089 INDEX public idx_incidents_discovered taman
+4388; 1259 17088 INDEX public idx_incidents_occurred taman
+4389; 1259 17087 INDEX public idx_incidents_owner_status taman
+4390; 1259 17083 INDEX public idx_incidents_resident taman
+4391; 1259 17086 INDEX public idx_incidents_severity taman
+4392; 1259 17084 INDEX public idx_incidents_status taman
+4393; 1259 17085 INDEX public idx_incidents_type taman
+4658; 1259 18488 INDEX public idx_infection_alert_resident taman
+4664; 1259 18490 INDEX public idx_infection_audit_entity taman
+4665; 1259 18491 INDEX public idx_infection_audit_resident taman
+4643; 1259 18483 INDEX public idx_infection_control_plan_resident taman
+4661; 1259 18489 INDEX public idx_infection_escalation_resident taman
+4655; 1259 18487 INDEX public idx_infection_monitoring_resident taman
+4646; 1259 18484 INDEX public idx_infection_observation_resident taman
+4652; 1259 18486 INDEX public idx_infection_precaution_resident taman
+4444; 1259 17293 INDEX public idx_meal_schedules_assigned taman
+4445; 1259 17292 INDEX public idx_meal_schedules_resident_status taman
+4332; 1259 16762 INDEX public idx_med_admin_assigned_status taman
+4686; 1259 18645 INDEX public idx_med_admin_exception_resident taman
+4333; 1259 16761 INDEX public idx_med_admin_resident_status taman
+4334; 1259 16760 INDEX public idx_med_admin_schedule taman
+4335; 1259 16763 INDEX public idx_med_admin_scheduled taman
+4689; 1259 18646 INDEX public idx_med_adverse_obs_resident taman
+4345; 1259 16765 INDEX public idx_med_audit_admin_sequence taman
+4346; 1259 16766 INDEX public idx_med_audit_order taman
+4347; 1259 16767 INDEX public idx_med_audit_resident taman
+4340; 1259 16764 INDEX public idx_med_double_admin taman
+4677; 1259 18642 INDEX public idx_med_order_review_resident taman
+4320; 1259 16756 INDEX public idx_med_orders_resident taman
+4321; 1259 16757 INDEX public idx_med_orders_resident_status taman
+4673; 1259 18640 INDEX public idx_med_recon_item_recon taman
+4674; 1259 18641 INDEX public idx_med_recon_item_resident taman
+4670; 1259 18639 INDEX public idx_med_recon_resident taman
+4692; 1259 18647 INDEX public idx_med_safety_audit_entity taman
+4693; 1259 18648 INDEX public idx_med_safety_audit_resident taman
+4680; 1259 18643 INDEX public idx_med_safety_check_resident taman
+4326; 1259 16758 INDEX public idx_med_schedules_order taman
+4327; 1259 16759 INDEX public idx_med_schedules_resident_time taman
+4728; 1259 18989 INDEX public idx_mobility_plan_resident taman
+4593; 1259 18165 INDEX public idx_night_monitoring_resident taman
+4594; 1259 18166 INDEX public idx_night_monitoring_state taman
+4601; 1259 18169 INDEX public idx_night_support_event taman
+4363; 1259 16918 INDEX public idx_nursing_note_resident taman
+4364; 1259 16919 INDEX public idx_nursing_note_resident_status taman
+4457; 1259 17297 INDEX public idx_nutrition_alerts_resident_status taman
+4463; 1259 17299 INDEX public idx_nutrition_audit_aggregate taman
+4460; 1259 17298 INDEX public idx_nutrition_escalations_alert taman
+4450; 1259 17294 INDEX public idx_nutrition_intake_meal taman
+4451; 1259 17295 INDEX public idx_nutrition_intake_resident taman
+4433; 1259 17289 INDEX public idx_nutrition_plans_resident taman
+4434; 1259 17290 INDEX public idx_nutrition_plans_status taman
+4631; 1259 18340 INDEX public idx_pain_alerts_resident taman
+4619; 1259 18336 INDEX public idx_pain_assessments_resident taman
+4637; 1259 18342 INDEX public idx_pain_audit_entity taman
+4638; 1259 18343 INDEX public idx_pain_audit_resident taman
+4634; 1259 18341 INDEX public idx_pain_escalations_resident taman
+4616; 1259 18335 INDEX public idx_pain_plans_resident taman
+4628; 1259 18339 INDEX public idx_pain_reassessments_resident taman
+4553; 1259 17850 INDEX public idx_personal_care_audit_aggregate taman
+4554; 1259 17851 INDEX public idx_personal_care_audit_resident taman
+4550; 1259 17849 INDEX public idx_personal_care_escalations_resident taman
+4737; 1259 18992 INDEX public idx_post_fall_event taman
+4742; 1259 18993 INDEX public idx_prevention_event taman
+4704; 1259 18820 INDEX public idx_protective_action_report taman
+4498; 1259 17478 INDEX public idx_rehab_audit_aggregate taman
+4494; 1259 17476 INDEX public idx_rehab_escalation_resident taman
+4495; 1259 17477 INDEX public idx_rehab_escalation_status taman
+4472; 1259 17468 INDEX public idx_rehab_plan_resident taman
+4516; 1259 17666 INDEX public idx_repositioning_resident taman
+4752; 1259 19018 INDEX public idx_resident_access_authorization taman
+4753; 1259 19019 INDEX public idx_resident_access_resident_admin taman
+4765; 1259 19071 INDEX public idx_resident_audit_target_created taman
+4282; 1259 16506 INDEX public idx_residents_active_status taman
+4283; 1259 16507 INDEX public idx_residents_room_bed taman
+4707; 1259 18821 INDEX public idx_safeguarding_assignment_report taman
+4719; 1259 18825 INDEX public idx_safeguarding_audit_entity taman
+4720; 1259 18826 INDEX public idx_safeguarding_audit_resident taman
+4713; 1259 18823 INDEX public idx_safeguarding_escalation_report taman
+4716; 1259 18824 INDEX public idx_safeguarding_post_review_report taman
+4698; 1259 18818 INDEX public idx_safeguarding_report_resident taman
+4710; 1259 18822 INDEX public idx_safeguarding_review_report taman
+4701; 1259 18819 INDEX public idx_safeguarding_triage_report taman
+4503; 1259 17661 INDEX public idx_skin_assessments_resident taman
+4604; 1259 18170 INDEX public idx_sleep_alerts_resident taman
+4610; 1259 18172 INDEX public idx_sleep_audit_entity taman
+4611; 1259 18173 INDEX public idx_sleep_audit_resident taman
+4587; 1259 18163 INDEX public idx_sleep_care_plans_resident taman
+4607; 1259 18171 INDEX public idx_sleep_escalations_resident taman
+4590; 1259 18164 INDEX public idx_sleep_observations_resident taman
+4597; 1259 18167 INDEX public idx_sleep_rest_events_resident taman
+4598; 1259 18168 INDEX public idx_sleep_rest_events_state taman
+4757; 1259 19033 INDEX public idx_staff_actors_role_status taman
+4758; 1259 19034 INDEX public idx_staff_actors_status taman
+4622; 1259 18337 INDEX public idx_symptom_observations_resident taman
+4541; 1259 17846 INDEX public idx_toileting_resident taman
+4731; 1259 18990 INDEX public idx_transfer_check_resident taman
+4569; 1259 18011 INDEX public idx_wandering_events_resident taman
+4288; 1259 16526 INDEX public idx_warning_reviews_decision taman
+4289; 1259 16525 INDEX public idx_warning_reviews_resident taman
+4525; 1259 17669 INDEX public idx_wound_audit_aggregate taman
+4526; 1259 17670 INDEX public idx_wound_audit_resident taman
+4510; 1259 17664 INDEX public idx_wound_care_plans_wound taman
+4522; 1259 17668 INDEX public idx_wound_escalations_wound taman
+4519; 1259 17667 INDEX public idx_wound_progress_wound taman
+4506; 1259 17662 INDEX public idx_wound_records_resident taman
+4507; 1259 17663 INDEX public idx_wound_records_status taman
+4513; 1259 17665 INDEX public idx_wound_treatment_wound taman
+4756; 1259 19017 INDEX public uq_resident_access_active_grant taman
+4797; 2606 16850 FK CONSTRAINT public abnormal_findings abnormal_findings_clinical_observation_id_fkey taman
+4798; 2606 16845 FK CONSTRAINT public abnormal_findings abnormal_findings_resident_id_fkey taman
+4841; 2606 17370 FK CONSTRAINT public activity_participation activity_participation_activity_session_id_fkey taman
+4842; 2606 17380 FK CONSTRAINT public activity_participation activity_participation_amends_participation_id_fkey taman
+4843; 2606 17375 FK CONSTRAINT public activity_participation activity_participation_resident_id_fkey taman
+4838; 2606 17349 FK CONSTRAINT public activity_sessions activity_sessions_activity_program_id_fkey taman
+4839; 2606 17354 FK CONSTRAINT public activity_sessions activity_sessions_rehabilitation_plan_id_fkey taman
+4840; 2606 17344 FK CONSTRAINT public activity_sessions activity_sessions_resident_id_fkey taman
+4898; 2606 18002 FK CONSTRAINT public behavioral_audit behavioral_audit_resident_id_fkey taman
+4889; 2606 17903 FK CONSTRAINT public behavioral_episodes behavioral_episodes_resident_id_fkey taman
+4894; 2606 17967 FK CONSTRAINT public behavioral_escalations behavioral_escalations_episode_id_fkey taman
+4895; 2606 17962 FK CONSTRAINT public behavioral_escalations behavioral_escalations_resident_id_fkey taman
+4896; 2606 17987 FK CONSTRAINT public behavioral_post_reviews behavioral_post_reviews_episode_id_fkey taman
+4897; 2606 17982 FK CONSTRAINT public behavioral_post_reviews behavioral_post_reviews_resident_id_fkey taman
+4892; 2606 17946 FK CONSTRAINT public behavioral_responses behavioral_responses_episode_id_fkey taman
+4893; 2606 17941 FK CONSTRAINT public behavioral_responses behavioral_responses_resident_id_fkey taman
+4888; 2606 17886 FK CONSTRAINT public behavioral_support_plans behavioral_support_plans_resident_id_fkey taman
+4769; 2606 16485 FK CONSTRAINT public care_action_audit care_action_audit_care_action_id_fkey taman
+4768; 2606 16467 FK CONSTRAINT public care_action_transfers care_action_transfers_care_action_id_fkey taman
+4774; 2606 16581 FK CONSTRAINT public care_plan_audit care_plan_audit_care_plan_id_fkey taman
+4775; 2606 16586 FK CONSTRAINT public care_plan_audit care_plan_audit_resident_id_fkey taman
+4771; 2606 16540 FK CONSTRAINT public care_plans care_plans_resident_id_fkey taman
+4776; 2606 16607 FK CONSTRAINT public care_task_audit care_task_audit_care_plan_id_fkey taman
+4777; 2606 16602 FK CONSTRAINT public care_task_audit care_task_audit_care_task_id_fkey taman
+4778; 2606 16612 FK CONSTRAINT public care_task_audit care_task_audit_resident_id_fkey taman
+4772; 2606 16560 FK CONSTRAINT public care_tasks care_tasks_care_plan_id_fkey taman
+4773; 2606 16565 FK CONSTRAINT public care_tasks care_tasks_resident_id_fkey taman
+4801; 2606 16903 FK CONSTRAINT public clinical_audit clinical_audit_abnormal_finding_id_fkey taman
+4802; 2606 16908 FK CONSTRAINT public clinical_audit clinical_audit_clinical_escalation_id_fkey taman
+4803; 2606 16893 FK CONSTRAINT public clinical_audit clinical_audit_clinical_observation_id_fkey taman
+4804; 2606 16898 FK CONSTRAINT public clinical_audit clinical_audit_nursing_note_id_fkey taman
+4805; 2606 16888 FK CONSTRAINT public clinical_audit clinical_audit_resident_id_fkey taman
+4799; 2606 16874 FK CONSTRAINT public clinical_escalations clinical_escalations_abnormal_finding_id_fkey taman
+4800; 2606 16869 FK CONSTRAINT public clinical_escalations clinical_escalations_resident_id_fkey taman
+4793; 2606 16798 FK CONSTRAINT public clinical_observation_amendments clinical_observation_amendments_clinical_observation_id_fkey taman
+4794; 2606 16803 FK CONSTRAINT public clinical_observation_amendments clinical_observation_amendments_resident_id_fkey taman
+4792; 2606 16784 FK CONSTRAINT public clinical_observations clinical_observations_resident_id_fkey taman
+4886; 2606 17870 FK CONSTRAINT public cognitive_observations cognitive_observations_amendment_of_fkey taman
+4887; 2606 17865 FK CONSTRAINT public cognitive_observations cognitive_observations_resident_id_fkey taman
+4915; 2606 18252 FK CONSTRAINT public comfort_interventions comfort_interventions_pain_assessment_id_fkey taman
+4916; 2606 18247 FK CONSTRAINT public comfort_interventions comfort_interventions_resident_id_fkey taman
+4917; 2606 18257 FK CONSTRAINT public comfort_interventions comfort_interventions_symptom_observation_id_fkey taman
+4880; 2606 17784 FK CONSTRAINT public continence_observations continence_observations_amends_observation_id_fkey taman
+4881; 2606 17779 FK CONSTRAINT public continence_observations continence_observations_resident_id_fkey taman
+4822; 2606 17139 FK CONSTRAINT public diet_orders diet_orders_nutrition_plan_id_fkey taman
+4823; 2606 17144 FK CONSTRAINT public diet_orders diet_orders_resident_id_fkey taman
+4927; 2606 18394 FK CONSTRAINT public exposure_events exposure_events_resident_id_fkey taman
+4975; 2606 18983 FK CONSTRAINT public fall_audit fall_audit_resident_id_fkey taman
+4973; 2606 18963 FK CONSTRAINT public fall_escalations fall_escalations_fall_event_id_fkey taman
+4974; 2606 18968 FK CONSTRAINT public fall_escalations fall_escalations_resident_id_fkey taman
+4967; 2606 18901 FK CONSTRAINT public fall_events fall_events_resident_id_fkey taman
+4971; 2606 18947 FK CONSTRAINT public fall_prevention_actions fall_prevention_actions_fall_event_id_fkey taman
+4972; 2606 18942 FK CONSTRAINT public fall_prevention_actions fall_prevention_actions_resident_id_fkey taman
+4961; 2606 18843 FK CONSTRAINT public fall_risk_assessments fall_risk_assessments_amendment_of_fkey taman
+4962; 2606 18838 FK CONSTRAINT public fall_risk_assessments fall_risk_assessments_resident_id_fkey taman
+4830; 2606 17219 FK CONSTRAINT public feeding_assistance feeding_assistance_meal_schedule_id_fkey taman
+4831; 2606 17224 FK CONSTRAINT public feeding_assistance feeding_assistance_resident_id_fkey taman
+4844; 2606 17400 FK CONSTRAINT public functional_assessments functional_assessments_activity_session_id_fkey taman
+4845; 2606 17405 FK CONSTRAINT public functional_assessments functional_assessments_amends_assessment_id_fkey taman
+4846; 2606 17395 FK CONSTRAINT public functional_assessments functional_assessments_resident_id_fkey taman
+4847; 2606 17421 FK CONSTRAINT public functional_support_actions functional_support_actions_activity_session_id_fkey taman
+4848; 2606 17426 FK CONSTRAINT public functional_support_actions functional_support_actions_resident_id_fkey taman
+4940; 2606 18582 FK CONSTRAINT public high_risk_medication_checks high_risk_medication_checks_resident_id_fkey taman
+4871; 2606 17684 FK CONSTRAINT public hygiene_care_plans hygiene_care_plans_resident_id_fkey taman
+4874; 2606 17736 FK CONSTRAINT public hygiene_care_records hygiene_care_records_amends_care_record_id_fkey taman
+4875; 2606 17726 FK CONSTRAINT public hygiene_care_records hygiene_care_records_hygiene_schedule_id_fkey taman
+4876; 2606 17731 FK CONSTRAINT public hygiene_care_records hygiene_care_records_resident_id_fkey taman
+4872; 2606 17710 FK CONSTRAINT public hygiene_schedules hygiene_schedules_hygiene_care_plan_id_fkey taman
+4873; 2606 17705 FK CONSTRAINT public hygiene_schedules hygiene_schedules_resident_id_fkey taman
+4814; 2606 17004 FK CONSTRAINT public incident_assignments incident_assignments_incident_id_fkey taman
+4819; 2606 17073 FK CONSTRAINT public incident_audit incident_audit_incident_id_fkey taman
+4820; 2606 17078 FK CONSTRAINT public incident_audit incident_audit_resident_id_fkey taman
+4817; 2606 17042 FK CONSTRAINT public incident_escalations incident_escalations_incident_id_fkey taman
+4818; 2606 17058 FK CONSTRAINT public incident_post_reviews incident_post_reviews_incident_id_fkey taman
+4815; 2606 17019 FK CONSTRAINT public incident_responses incident_responses_incident_id_fkey taman
+4816; 2606 17024 FK CONSTRAINT public incident_responses incident_responses_resident_id_fkey taman
+4811; 2606 16979 FK CONSTRAINT public incident_triage incident_triage_incident_id_fkey taman
+4812; 2606 16989 FK CONSTRAINT public incident_triage incident_triage_previous_triage_id_fkey taman
+4813; 2606 16984 FK CONSTRAINT public incident_triage incident_triage_resident_id_fkey taman
+4806; 2606 16948 FK CONSTRAINT public incidents incidents_linked_care_action_id_fkey taman
+4807; 2606 16953 FK CONSTRAINT public incidents incidents_linked_care_task_id_fkey taman
+4808; 2606 16958 FK CONSTRAINT public incidents incidents_linked_clinical_observation_id_fkey taman
+4809; 2606 16963 FK CONSTRAINT public incidents incidents_linked_medication_administration_id_fkey taman
+4810; 2606 16943 FK CONSTRAINT public incidents incidents_resident_id_fkey taman
+4931; 2606 18447 FK CONSTRAINT public infection_alerts infection_alerts_resident_id_fkey taman
+4933; 2606 18478 FK CONSTRAINT public infection_audit infection_audit_resident_id_fkey taman
+4924; 2606 18355 FK CONSTRAINT public infection_control_plans infection_control_plans_resident_id_fkey taman
+4932; 2606 18463 FK CONSTRAINT public infection_escalations infection_escalations_resident_id_fkey taman
+4929; 2606 18431 FK CONSTRAINT public infection_monitoring_records infection_monitoring_records_amendment_of_fkey taman
+4930; 2606 18426 FK CONSTRAINT public infection_monitoring_records infection_monitoring_records_resident_id_fkey taman
+4925; 2606 18378 FK CONSTRAINT public infection_observations infection_observations_amendment_of_fkey taman
+4926; 2606 18373 FK CONSTRAINT public infection_observations infection_observations_resident_id_fkey taman
+4928; 2606 18410 FK CONSTRAINT public infection_precautions infection_precautions_resident_id_fkey taman
+4824; 2606 17169 FK CONSTRAINT public meal_schedules meal_schedules_diet_order_id_fkey taman
+4825; 2606 17164 FK CONSTRAINT public meal_schedules meal_schedules_nutrition_plan_id_fkey taman
+4826; 2606 17174 FK CONSTRAINT public meal_schedules meal_schedules_resident_id_fkey taman
+4941; 2606 18597 FK CONSTRAINT public medication_administration_exceptions medication_administration_exceptions_resident_id_fkey taman
+4782; 2606 16689 FK CONSTRAINT public medication_administrations medication_administrations_medication_order_id_fkey taman
+4783; 2606 16684 FK CONSTRAINT public medication_administrations medication_administrations_medication_schedule_id_fkey taman
+4784; 2606 16694 FK CONSTRAINT public medication_administrations medication_administrations_resident_id_fkey taman
+4942; 2606 18619 FK CONSTRAINT public medication_adverse_reaction_observations medication_adverse_reaction_observations_amendment_of_fkey taman
+4943; 2606 18614 FK CONSTRAINT public medication_adverse_reaction_observations medication_adverse_reaction_observations_resident_id_fkey taman
+4788; 2606 16751 FK CONSTRAINT public medication_audit medication_audit_medication_administration_id_fkey taman
+4789; 2606 16741 FK CONSTRAINT public medication_audit medication_audit_medication_order_id_fkey taman
+4790; 2606 16746 FK CONSTRAINT public medication_audit medication_audit_medication_schedule_id_fkey taman
+4791; 2606 16736 FK CONSTRAINT public medication_audit medication_audit_resident_id_fkey taman
+4785; 2606 16710 FK CONSTRAINT public medication_double_checks medication_double_checks_medication_administration_id_fkey taman
+4786; 2606 16715 FK CONSTRAINT public medication_double_checks medication_double_checks_medication_order_id_fkey taman
+4787; 2606 16720 FK CONSTRAINT public medication_double_checks medication_double_checks_resident_id_fkey taman
+4938; 2606 18545 FK CONSTRAINT public medication_order_reviews medication_order_reviews_resident_id_fkey taman
+4779; 2606 16643 FK CONSTRAINT public medication_orders medication_orders_resident_id_fkey taman
+4935; 2606 18519 FK CONSTRAINT public medication_reconciliation_items medication_reconciliation_ite_medication_reconciliation_id_fkey taman
+4936; 2606 18529 FK CONSTRAINT public medication_reconciliation_items medication_reconciliation_items_amendment_of_fkey taman
+4937; 2606 18524 FK CONSTRAINT public medication_reconciliation_items medication_reconciliation_items_resident_id_fkey taman
+4934; 2606 18503 FK CONSTRAINT public medication_reconciliations medication_reconciliations_resident_id_fkey taman
+4944; 2606 18634 FK CONSTRAINT public medication_safety_audit medication_safety_audit_resident_id_fkey taman
+4939; 2606 18565 FK CONSTRAINT public medication_safety_checks medication_safety_checks_resident_id_fkey taman
+4780; 2606 16661 FK CONSTRAINT public medication_schedules medication_schedules_medication_order_id_fkey taman
+4781; 2606 16666 FK CONSTRAINT public medication_schedules medication_schedules_resident_id_fkey taman
+4963; 2606 18859 FK CONSTRAINT public mobility_support_plans mobility_support_plans_resident_id_fkey taman
+4902; 2606 18068 FK CONSTRAINT public night_monitoring_checks night_monitoring_checks_resident_id_fkey taman
+4903; 2606 18073 FK CONSTRAINT public night_monitoring_checks night_monitoring_checks_sleep_care_plan_id_fkey taman
+4905; 2606 18106 FK CONSTRAINT public night_support_responses night_support_responses_resident_id_fkey taman
+4906; 2606 18111 FK CONSTRAINT public night_support_responses night_support_responses_sleep_rest_event_id_fkey taman
+4795; 2606 16822 FK CONSTRAINT public nursing_notes nursing_notes_resident_id_fkey taman
+4796; 2606 16827 FK CONSTRAINT public nursing_notes nursing_notes_supersedes_note_id_fkey taman
+4832; 2606 17247 FK CONSTRAINT public nutrition_alerts nutrition_alerts_meal_schedule_id_fkey taman
+4833; 2606 17242 FK CONSTRAINT public nutrition_alerts nutrition_alerts_resident_id_fkey taman
+4836; 2606 17284 FK CONSTRAINT public nutrition_audit nutrition_audit_resident_id_fkey taman
+4834; 2606 17269 FK CONSTRAINT public nutrition_escalations nutrition_escalations_nutrition_alert_id_fkey taman
+4835; 2606 17264 FK CONSTRAINT public nutrition_escalations nutrition_escalations_resident_id_fkey taman
+4827; 2606 17203 FK CONSTRAINT public nutrition_intake_records nutrition_intake_records_amends_record_id_fkey taman
+4828; 2606 17193 FK CONSTRAINT public nutrition_intake_records nutrition_intake_records_meal_schedule_id_fkey taman
+4829; 2606 17198 FK CONSTRAINT public nutrition_intake_records nutrition_intake_records_resident_id_fkey taman
+4821; 2606 17117 FK CONSTRAINT public nutrition_plans nutrition_plans_resident_id_fkey taman
+4911; 2606 18208 FK CONSTRAINT public pain_assessments pain_assessments_amendment_of_fkey taman
+4912; 2606 18203 FK CONSTRAINT public pain_assessments pain_assessments_resident_id_fkey taman
+4923; 2606 18330 FK CONSTRAINT public pain_audit pain_audit_resident_id_fkey taman
+4910; 2606 18185 FK CONSTRAINT public pain_care_plans pain_care_plans_resident_id_fkey taman
+4922; 2606 18315 FK CONSTRAINT public pain_escalations pain_escalations_resident_id_fkey taman
+4918; 2606 18283 FK CONSTRAINT public pain_reassessments pain_reassessments_comfort_intervention_id_fkey taman
+4919; 2606 18278 FK CONSTRAINT public pain_reassessments pain_reassessments_pain_assessment_id_fkey taman
+4920; 2606 18273 FK CONSTRAINT public pain_reassessments pain_reassessments_resident_id_fkey taman
+4921; 2606 18299 FK CONSTRAINT public pain_safety_alerts pain_safety_alerts_resident_id_fkey taman
+4882; 2606 17805 FK CONSTRAINT public personal_care_assistance personal_care_assistance_hygiene_schedule_id_fkey taman
+4883; 2606 17800 FK CONSTRAINT public personal_care_assistance personal_care_assistance_resident_id_fkey taman
+4885; 2606 17837 FK CONSTRAINT public personal_care_audit personal_care_audit_resident_id_fkey taman
+4884; 2606 17822 FK CONSTRAINT public personal_care_escalations personal_care_escalations_resident_id_fkey taman
+4968; 2606 18926 FK CONSTRAINT public post_fall_observations post_fall_observations_amendment_of_fkey taman
+4969; 2606 18916 FK CONSTRAINT public post_fall_observations post_fall_observations_fall_event_id_fkey taman
+4970; 2606 18921 FK CONSTRAINT public post_fall_observations post_fall_observations_resident_id_fkey taman
+4948; 2606 18703 FK CONSTRAINT public protective_actions protective_actions_resident_id_fkey taman
+4949; 2606 18698 FK CONSTRAINT public protective_actions protective_actions_safeguarding_report_id_fkey taman
+4849; 2606 17448 FK CONSTRAINT public rehabilitation_escalations rehabilitation_escalations_activity_session_id_fkey taman
+4850; 2606 17453 FK CONSTRAINT public rehabilitation_escalations rehabilitation_escalations_functional_assessment_id_fkey taman
+4851; 2606 17443 FK CONSTRAINT public rehabilitation_escalations rehabilitation_escalations_resident_id_fkey taman
+4837; 2606 17326 FK CONSTRAINT public rehabilitation_plans rehabilitation_plans_resident_id_fkey taman
+4862; 2606 17593 FK CONSTRAINT public repositioning_records repositioning_records_amends_repositioning_record_id_fkey taman
+4863; 2606 17583 FK CONSTRAINT public repositioning_records repositioning_records_resident_id_fkey taman
+4864; 2606 17588 FK CONSTRAINT public repositioning_records repositioning_records_wound_record_id_fkey taman
+4976; 2606 19012 FK CONSTRAINT public resident_access_assignments resident_access_assignments_resident_id_fkey taman
+4978; 2606 19066 FK CONSTRAINT public resident_audit resident_audit_target_resident_id_fkey taman
+4950; 2606 18725 FK CONSTRAINT public safeguarding_assignments safeguarding_assignments_resident_id_fkey taman
+4951; 2606 18720 FK CONSTRAINT public safeguarding_assignments safeguarding_assignments_safeguarding_report_id_fkey taman
+4960; 2606 18813 FK CONSTRAINT public safeguarding_audit safeguarding_audit_resident_id_fkey taman
+4956; 2606 18777 FK CONSTRAINT public safeguarding_escalations safeguarding_escalations_resident_id_fkey taman
+4957; 2606 18772 FK CONSTRAINT public safeguarding_escalations safeguarding_escalations_safeguarding_report_id_fkey taman
+4958; 2606 18798 FK CONSTRAINT public safeguarding_post_reviews safeguarding_post_reviews_resident_id_fkey taman
+4959; 2606 18793 FK CONSTRAINT public safeguarding_post_reviews safeguarding_post_reviews_safeguarding_report_id_fkey taman
+4945; 2606 18661 FK CONSTRAINT public safeguarding_reports safeguarding_reports_resident_id_fkey taman
+4952; 2606 18756 FK CONSTRAINT public safeguarding_reviews safeguarding_reviews_amendment_of_fkey taman
+4953; 2606 18746 FK CONSTRAINT public safeguarding_reviews safeguarding_reviews_resident_id_fkey taman
+4954; 2606 18751 FK CONSTRAINT public safeguarding_reviews safeguarding_reviews_safeguarding_assignment_id_fkey taman
+4955; 2606 18741 FK CONSTRAINT public safeguarding_reviews safeguarding_reviews_safeguarding_report_id_fkey taman
+4946; 2606 18682 FK CONSTRAINT public safeguarding_triage safeguarding_triage_resident_id_fkey taman
+4947; 2606 18677 FK CONSTRAINT public safeguarding_triage safeguarding_triage_safeguarding_report_id_fkey taman
+4852; 2606 17494 FK CONSTRAINT public skin_assessments skin_assessments_amends_assessment_id_fkey taman
+4853; 2606 17489 FK CONSTRAINT public skin_assessments skin_assessments_resident_id_fkey taman
+4909; 2606 18158 FK CONSTRAINT public sleep_audit sleep_audit_resident_id_fkey taman
+4899; 2606 18028 FK CONSTRAINT public sleep_care_plans sleep_care_plans_resident_id_fkey taman
+4908; 2606 18143 FK CONSTRAINT public sleep_escalations sleep_escalations_resident_id_fkey taman
+4900; 2606 18051 FK CONSTRAINT public sleep_observations sleep_observations_amendment_of_fkey taman
+4901; 2606 18046 FK CONSTRAINT public sleep_observations sleep_observations_resident_id_fkey taman
+4904; 2606 18090 FK CONSTRAINT public sleep_rest_events sleep_rest_events_resident_id_fkey taman
+4907; 2606 18127 FK CONSTRAINT public sleep_safety_alerts sleep_safety_alerts_resident_id_fkey taman
+4977; 2606 19051 FK CONSTRAINT public staff_actor_audit staff_actor_audit_target_actor_id_fkey taman
+4913; 2606 18231 FK CONSTRAINT public symptom_observations symptom_observations_amendment_of_fkey taman
+4914; 2606 18226 FK CONSTRAINT public symptom_observations symptom_observations_resident_id_fkey taman
+4877; 2606 17762 FK CONSTRAINT public toileting_records toileting_records_amends_toileting_record_id_fkey taman
+4878; 2606 17757 FK CONSTRAINT public toileting_records toileting_records_hygiene_schedule_id_fkey taman
+4879; 2606 17752 FK CONSTRAINT public toileting_records toileting_records_resident_id_fkey taman
+4964; 2606 18884 FK CONSTRAINT public transfer_safety_checks transfer_safety_checks_amendment_of_fkey taman
+4965; 2606 18879 FK CONSTRAINT public transfer_safety_checks transfer_safety_checks_mobility_support_plan_id_fkey taman
+4966; 2606 18874 FK CONSTRAINT public transfer_safety_checks transfer_safety_checks_resident_id_fkey taman
+4890; 2606 17925 FK CONSTRAINT public wandering_events wandering_events_episode_id_fkey taman
+4891; 2606 17920 FK CONSTRAINT public wandering_events wandering_events_resident_id_fkey taman
+4770; 2606 16520 FK CONSTRAINT public warning_reviews warning_reviews_resident_id_fkey taman
+4870; 2606 17656 FK CONSTRAINT public wound_audit wound_audit_resident_id_fkey taman
+4856; 2606 17536 FK CONSTRAINT public wound_care_plans wound_care_plans_resident_id_fkey taman
+4857; 2606 17531 FK CONSTRAINT public wound_care_plans wound_care_plans_wound_record_id_fkey taman
+4868; 2606 17641 FK CONSTRAINT public wound_escalations wound_escalations_resident_id_fkey taman
+4869; 2606 17636 FK CONSTRAINT public wound_escalations wound_escalations_wound_record_id_fkey taman
+4865; 2606 17619 FK CONSTRAINT public wound_progress_records wound_progress_records_amends_progress_record_id_fkey taman
+4866; 2606 17614 FK CONSTRAINT public wound_progress_records wound_progress_records_resident_id_fkey taman
+4867; 2606 17609 FK CONSTRAINT public wound_progress_records wound_progress_records_wound_record_id_fkey taman
+4854; 2606 17510 FK CONSTRAINT public wound_records wound_records_resident_id_fkey taman
+4855; 2606 17515 FK CONSTRAINT public wound_records wound_records_source_skin_assessment_id_fkey taman
+4858; 2606 17568 FK CONSTRAINT public wound_treatment_records wound_treatment_records_amends_treatment_record_id_fkey taman
+4859; 2606 17563 FK CONSTRAINT public wound_treatment_records wound_treatment_records_resident_id_fkey taman
+4860; 2606 17558 FK CONSTRAINT public wound_treatment_records wound_treatment_records_wound_care_plan_id_fkey taman
+4861; 2606 17553 FK CONSTRAINT public wound_treatment_records wound_treatment_records_wound_record_id_fkey taman

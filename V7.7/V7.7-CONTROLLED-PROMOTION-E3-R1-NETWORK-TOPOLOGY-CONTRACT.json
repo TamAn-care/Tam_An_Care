@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-21T10:02:22.204733+00:00",
+  "stage": "CONTROLLED_PROMOTION_E3_R1",
+  "status": "PASSED",
+  "root_cause": "INVALID_REQUIREMENT_FOR_ALL_V76_CONTAINERS_TO_SHARE_ONE_NETWORK",
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "current_v76_topology": {
+    "api_networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "ui_networks": [
+      "bridge"
+    ],
+    "db_networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "api_db_shared_networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "all_three_shared_networks": [],
+    "all_three_shared_required": false,
+    "ui_routing_model": "BRIDGE_UI_TO_HOST_PUBLISHED_API",
+    "ui_proxy_pass": [
+      "proxy_pass http://host.docker.internal:3100/api/;"
+    ],
+    "api_matrix": "200|401|401",
+    "ui_matrix": "200|401|401|200"
+  },
+  "target_v77_topology": {
+    "production_network": "taman-care-v743-dev-network",
+    "api_network": "taman-care-v743-dev-network",
+    "ui_network": "taman-care-v743-dev-network",
+    "db_network": "taman-care-v743-dev-network",
+    "api_network_alias": "v77-e2-api",
+    "ui_proxy_target": "http://v77-e2-api:3000",
+    "e2_functionally_proven": true,
+    "api_matrix_proven": "200|401|401|401",
+    "ui_matrix_proven": "200|401|401|200"
+  },
+  "production_database": {
+    "table_count": 118,
+    "row_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "write": false
+  },
+  "runtime_change": false,
+  "network_change": false,
+  "traffic_cutover": false
+}

@@ -1,0 +1,89 @@
+STEP 7U — NIGHT-TIME SAFETY CONTRACT
+
+SLEEP / REST PRINCIPLE
+
+Sleep and rest are resident needs and preferences.
+
+The system must not force:
+- sleep
+- wake-up
+- unnecessary night disturbance
+
+Night monitoring must be proportionate to the approved
+human care plan and safety requirement.
+
+
+OBSERVATION != DIAGNOSIS
+
+Factual observations do not constitute diagnosis.
+
+The domain does not diagnose:
+- insomnia
+- sleep apnea
+- circadian rhythm disorder
+- delirium
+- dementia
+- psychiatric illness
+
+
+NIGHT-TIME FALL SAFETY
+
+Increased night mobility may trigger human safety review.
+
+It MUST NOT automatically trigger:
+- restraint
+- sedation
+- confinement
+- medication
+- forced bed rest
+
+
+MEDICATION SAFETY
+
+This domain cannot:
+- prescribe sleep medicine
+- change medication
+- administer PRN sedative
+- recommend a medication as an executable order
+
+Medication action requires the medication domain
+and an authorized HUMAN workflow.
+
+
+RESTRAINT / CONFINEMENT
+
+No automatic:
+- physical restraint
+- chemical restraint
+- bed restraint
+- room confinement
+- seclusion
+- isolation
+
+
+ACUTE CHANGE
+
+Significant sudden sleep/rest pattern change may generate
+a HUMAN review recommendation.
+
+Potential causes remain for human clinical evaluation.
+
+The software does not diagnose the cause.
+
+
+FAIL-CLOSED
+
+Unauthorized mutation:
+zero business mutation
+zero audit
+
+Invalid state:
+zero business mutation
+zero audit
+
+Failed safety prerequisite:
+zero business mutation
+zero audit
+
+
+AUTONOMOUS CLINICAL ACTION = FALSE

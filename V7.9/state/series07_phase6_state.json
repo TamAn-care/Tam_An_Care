@@ -1,0 +1,14 @@
+{
+  "version": "V7.9",
+  "series": "07",
+  "phase": "PHASE_6_FINAL_OPERATIONAL_ACCEPTANCE",
+  "status": "PASSED",
+  "completed": [
+    "PHASE_6"
+  ],
+  "failed_gate": null,
+  "reason": null,
+  "next_gate": null,
+  "manual_test_required": false,
+  "execution_authorized": false
+}

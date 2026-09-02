@@ -1,0 +1,210 @@
+TAM AN CARE V8.0
+SERIES 08
+S8 — MANUAL_APPEARANCE_FUNCTION_UX_UAT
+USER MANUAL ACCEPTANCE CHECKLIST
+
+OWNER=USER
+SKIPPABLE=NO
+FINAL_RELEASE_BLOCKING=YES
+
+RESULT_VALUES:
+PASS
+FAIL
+BLOCKED
+
+IMPORTANT:
+- This checklist does not invent SLA, latency, accessibility score,
+  pixel-perfect threshold, or business requirement not already proven.
+- Historical automated acceptance is supporting evidence only.
+- Final S8 acceptance must be explicitly made by USER.
+
+======================================================================
+A. APPEARANCE
+======================================================================
+
+A01
+CHECK=Primary product screens render without visibly broken layout.
+SOURCE=S8 APPEARANCE CATEGORY
+RESULT=[UNSET]
+USER_NOTE=
+
+A02
+CHECK=Navigation, headers, cards, forms, tables and action controls are visually coherent across the product.
+SOURCE=S8 APPEARANCE CATEGORY
+RESULT=[UNSET]
+USER_NOTE=
+
+A03
+CHECK=Text, labels and controls are readable and not visibly clipped or overlapping in the user-tested viewport.
+SOURCE=S8 APPEARANCE CATEGORY
+RESULT=[UNSET]
+USER_NOTE=
+
+A04
+CHECK=Historical route/screen surfaces remain visually recognizable and usable after V8 changes.
+SOURCE=V7.9 UX ROUTE/SCREEN BASELINE + CURRENT S8
+RESULT=[UNSET]
+USER_NOTE=
+
+======================================================================
+B. FUNCTION
+======================================================================
+
+B01
+CHECK=Dashboard can be opened and inspected by the user.
+SOURCE=HISTORICAL ROUTE BASELINE
+RESULT=[UNSET]
+USER_NOTE=
+
+B02
+CHECK=Residents surface can be opened and inspected by the user.
+SOURCE=HISTORICAL ROUTE BASELINE
+RESULT=[UNSET]
+USER_NOTE=
+
+B03
+CHECK=Staff Access surface can be opened and inspected by the user.
+SOURCE=HISTORICAL ROUTE BASELINE
+RESULT=[UNSET]
+USER_NOTE=
+
+B04
+CHECK=System Status surface can be opened and inspected by the user.
+SOURCE=HISTORICAL ROUTE BASELINE
+RESULT=[UNSET]
+USER_NOTE=
+
+B05
+CHECK=Operational Care surface can be opened and inspected by the user.
+SOURCE=HISTORICAL ROUTE BASELINE
+RESULT=[UNSET]
+USER_NOTE=
+
+B06
+CHECK=User-visible actions exercised during UAT behave consistently with their visible purpose and do not present an obvious broken state.
+SOURCE=S8 FUNCTION + UAT CATEGORY
+RESULT=[UNSET]
+USER_NOTE=
+
+======================================================================
+C. UX
+======================================================================
+
+C01
+CHECK=User can understand how to move among primary product areas without requiring developer intervention.
+SOURCE=S8 UX CATEGORY
+RESULT=[UNSET]
+USER_NOTE=
+
+C02
+CHECK=Primary navigation flow is operationally understandable to the user.
+SOURCE=V7.9 END_TO_END_UX_OPERATIONAL_SMOOTHNESS + CURRENT S8
+RESULT=[UNSET]
+USER_NOTE=
+
+C03
+CHECK=Mobile/responsive navigation behavior, where exposed by the current product, is understandable and usable.
+SOURCE=V7.9 MobileNavigationButton historical evidence + CURRENT S8
+RESULT=[UNSET]
+USER_NOTE=
+
+C04
+CHECK=No observed UX issue prevents the user from completing the manual UAT scenario.
+SOURCE=S8 UX + UAT CATEGORY
+RESULT=[UNSET]
+USER_NOTE=
+
+======================================================================
+D. UAT
+======================================================================
+
+D01
+CHECK=User has personally inspected the V8 product rather than relying only on automated evidence.
+SOURCE=S8 owner=USER / manual_acceptance required=true
+RESULT=[UNSET]
+USER_NOTE=
+
+D02
+CHECK=User has exercised the primary navigation surfaces included in the current product.
+SOURCE=S8 UAT + HISTORICAL ROUTE BASELINE
+RESULT=[UNSET]
+USER_NOTE=
+
+D03
+CHECK=User has reviewed appearance, function and UX together as an end-to-end product experience.
+SOURCE=S8 MANUAL_APPEARANCE_FUNCTION_UX_UAT
+RESULT=[UNSET]
+USER_NOTE=
+
+D04
+CHECK=Any user-observed blocking issue has been recorded before final acceptance.
+SOURCE=S8 MANUAL ACCEPTANCE
+RESULT=[UNSET]
+USER_NOTE=
+
+======================================================================
+E. TAM AN BRAND / PRODUCT ICON
+======================================================================
+
+E01
+CHECK=Official Tâm An logo supplied by USER is the designated product brand asset.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[UNSET]
+USER_NOTE=
+
+E02
+CHECK=Logo background is removed / transparent for product asset usage.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[UNSET]
+USER_NOTE=
+
+E03
+CHECK=Logo artwork is preserved without redesign.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[UNSET]
+USER_NOTE=
+
+E04
+CHECK=Web product icon/logo uses the approved Tâm An asset.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[BLOCKED_PENDING_IMPLEMENTATION]
+USER_NOTE=
+
+E05
+CHECK=Android product icon uses the approved Tâm An asset.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[BLOCKED_PENDING_IMPLEMENTATION]
+USER_NOTE=
+
+E06
+CHECK=iOS/iPadOS product icon uses the approved Tâm An asset.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[BLOCKED_PENDING_IMPLEMENTATION]
+USER_NOTE=
+
+E07
+CHECK=macOS product icon uses the approved Tâm An asset.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[BLOCKED_PENDING_IMPLEMENTATION]
+USER_NOTE=
+
+E08
+CHECK=Windows product icon uses the approved Tâm An asset.
+SOURCE=USER EXPLICIT REQUIREMENT
+RESULT=[BLOCKED_PENDING_IMPLEMENTATION]
+USER_NOTE=
+
+======================================================================
+FINAL USER DECISION
+======================================================================
+
+APPEARANCE_FINAL=[UNSET]
+FUNCTION_FINAL=[UNSET]
+UX_FINAL=[UNSET]
+UAT_FINAL=[UNSET]
+BRANDING_FINAL=[UNSET]
+
+FINAL_S8_USER_ACCEPTANCE=[UNSET]
+
+USER_ACCEPTANCE_NOTE=
+

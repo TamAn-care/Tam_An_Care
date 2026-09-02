@@ -1,0 +1,23 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-6 FINAL MICRO-CLOSEOUT
+
+ DISCOVERY REPLAY = NO
+ SOURCE PATCH REPLAY = NO
+ FIXTURE PROBE REPLAY = NO
+ SCHEMA CHANGE = NO
+ M6 = NO
+======================================================================
+
+----- 1. PRESERVED CONTRACT -----
+PASS: OPS-6 INTEGRATION CONTRACT PRESERVED
+
+----- 2. DB FUNCTIONAL — ROLLBACK ONLY -----
+BEGIN
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  OPS6_SOURCE_ACCEPTANCE_PASS consumption=1 reconciled=1 open_excluded=1
+DO
+ROLLBACK

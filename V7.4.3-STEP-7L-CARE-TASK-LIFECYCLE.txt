@@ -1,0 +1,77 @@
+TAM AN CARE V7.4.3
+STEP 7L — CARE TASK LIFECYCLE
+DESIGN BASELINE
+
+================================================
+NORMAL LIFECYCLE
+================================================
+
+PLANNED
+  |
+  v
+ASSIGNED
+  |
+  v
+IN_PROGRESS
+  |
+  v
+COMPLETED
+
+
+================================================
+EXCEPTION STATES
+================================================
+
+PLANNED
+  -> CANCELLED
+
+ASSIGNED
+  -> MISSED
+  -> SKIPPED
+  -> CANCELLED
+
+IN_PROGRESS
+  -> COMPLETED
+
+
+================================================
+DESIGN PRINCIPLES
+================================================
+
+1. PLANNED does not mean a human has accepted responsibility.
+
+2. ASSIGNED means a human assignment exists.
+
+3. IN_PROGRESS requires explicit authorized human execution.
+
+4. COMPLETED requires explicit authorized human completion.
+
+5. System time passing alone must not falsely certify care completion.
+
+6. MISSED semantics require separate design validation.
+
+7. SKIPPED requires accountable human reason.
+
+8. CANCELLED requires authorized human policy.
+
+9. AI cannot perform state-changing transitions.
+
+10. Concurrency-sensitive transitions require row-level locking
+    or equivalent single-winner control.
+
+================================================
+NOT YET FINALIZED
+================================================
+
+The exact use of MISSED vs OVERDUE is intentionally not finalized.
+
+The exact rules for:
+- recurring task generation
+- reassign after missed task
+- restart after skipped task
+- evidence requirements
+- high-risk clinical tasks
+
+must be designed before implementation.
+
+NO DATABASE IMPLEMENTATION IN STEP 7L.

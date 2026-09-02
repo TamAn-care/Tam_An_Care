@@ -1,0 +1,39 @@
+{
+  "generated_at": "2026-08-21T10:52:55.310050+00:00",
+  "version": "V7.8",
+  "phase": "2C",
+  "status": "PASSED",
+  "decision": "ROLLBACK_RECOVERY_READY_WITHOUT_PRODUCTION_EXECUTION",
+  "production_rollback_performed": false,
+  "v77": {
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "api_health": "200",
+    "api_security": "401|401|401",
+    "ui_matrix": "200|401|401|200"
+  },
+  "v76_rollback": {
+    "api_container_id": "1bc8db1747add437fa8dc52a9fb53ccf67e99550e7b896c68b7914d0e9689dd2",
+    "api_image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+    "api_state": "exited",
+    "ui_container_id": "c68dcf29b83bd0660456812e91ea3436c03aa9a92b5675c23ca63c4b6f673ff0",
+    "ui_image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+    "ui_state": "exited",
+    "api_image_execution_test": "PASSED",
+    "ui_image_execution_test": "PASSED",
+    "production_ports_used": false,
+    "production_db_used": false
+  },
+  "database": {
+    "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+    "volume": "taman-care-v743-dev-postgres-data",
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "write": false,
+    "restore": false,
+    "migration": false
+  },
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_2_FINAL_RECOVERY_ACCEPTANCE"
+}

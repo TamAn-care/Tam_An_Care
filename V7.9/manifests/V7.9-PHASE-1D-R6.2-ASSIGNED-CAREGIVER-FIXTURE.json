@@ -1,0 +1,22 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R6.2",
+  "status": "PATCHED",
+  "prior_http": 404,
+  "prior_error": "Staff actor not found or inactive.",
+  "fixture": {
+    "actor_id_source": "staff_id",
+    "staff_code": "V79-P1D-CG-001",
+    "display_name": "V7.9 Phase 1D Caregiver",
+    "primary_operational_role": "CAREGIVER",
+    "status": "ACTIVE",
+    "scope": "PHASE_1D_DISPOSABLE_DB_ONLY"
+  },
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "v77_source_write": false,
+  "runner_sha256": "fd8952fac04b08a7c9523384c903fd2b92504d90d86bd3d200399bd130807690",
+  "next": "RESUME_PHASE_1D"
+}

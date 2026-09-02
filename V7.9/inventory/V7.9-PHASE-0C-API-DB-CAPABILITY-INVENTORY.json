@@ -1,0 +1,517 @@
+{
+  "api_source_root": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/api/src",
+  "backend_ts_file_count": 138,
+  "controller_file_count": 31,
+  "endpoint_count": 50,
+  "endpoints": [
+    {
+      "file": "activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "method": "GET",
+      "controller": "api/activity-rehabilitation",
+      "route": "test/summary"
+    },
+    {
+      "file": "activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "method": "POST",
+      "controller": "api/activity-rehabilitation",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "ai/ai-engine.controller.ts",
+      "method": "GET",
+      "controller": "api/ai/engines",
+      "route": ""
+    },
+    {
+      "file": "ai/ai-engine.controller.ts",
+      "method": "GET",
+      "controller": "api/ai/engines",
+      "route": "demo-data/:engineId"
+    },
+    {
+      "file": "ai/ai-engine.controller.ts",
+      "method": "POST",
+      "controller": "api/ai/engines",
+      "route": ":engineId/analyze"
+    },
+    {
+      "file": "ai/ai-engine.controller.ts",
+      "method": "POST",
+      "controller": "api/ai/engines",
+      "route": ":engineId/demo"
+    },
+    {
+      "file": "ai/ai-engine.controller.v7.3.3.backup.ts",
+      "method": "GET",
+      "controller": "api/ai/engines",
+      "route": ""
+    },
+    {
+      "file": "ai/ai-engine.controller.v7.3.3.backup.ts",
+      "method": "GET",
+      "controller": "api/ai/engines",
+      "route": "demo-data/:engineId"
+    },
+    {
+      "file": "ai/ai-engine.controller.v7.3.3.backup.ts",
+      "method": "POST",
+      "controller": "api/ai/engines",
+      "route": ":engineId/analyze"
+    },
+    {
+      "file": "ai/ai-engine.controller.v7.3.3.backup.ts",
+      "method": "POST",
+      "controller": "api/ai/engines",
+      "route": ":engineId/demo"
+    },
+    {
+      "file": "ai/ai-governance.controller.ts",
+      "method": "GET",
+      "controller": "api/ai/governance",
+      "route": "status"
+    },
+    {
+      "file": "ai/ai-governance.controller.ts",
+      "method": "GET",
+      "controller": "api/ai/governance",
+      "route": "risk-classes"
+    },
+    {
+      "file": "ai/ai-governance.controller.ts",
+      "method": "GET",
+      "controller": "api/ai/governance",
+      "route": "policies"
+    },
+    {
+      "file": "ai/early-warning.controller.ts",
+      "method": "POST",
+      "controller": "api/ai/engines/health-trend",
+      "route": "patterns"
+    },
+    {
+      "file": "ai/early-warning.controller.ts",
+      "method": "POST",
+      "controller": "api/ai/engines/health-trend",
+      "route": "resident/:residentId/patterns"
+    },
+    {
+      "file": "behavioral-cognitive/behavioral-cognitive.controller.ts",
+      "method": "GET",
+      "controller": "api/behavioral-cognitive",
+      "route": "summary"
+    },
+    {
+      "file": "behavioral-cognitive/behavioral-cognitive.controller.ts",
+      "method": "POST",
+      "controller": "api/behavioral-cognitive",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "care-action-bridge/care-action-bridge.controller.ts",
+      "method": "POST",
+      "controller": "api/care-action-bridge",
+      "route": ":warningId/execute"
+    },
+    {
+      "file": "cross-domain-integration/cross-domain-integration.controller.ts",
+      "method": "GET",
+      "controller": "api/integration",
+      "route": "residents/:residentId/overview"
+    },
+    {
+      "file": "fall-mobility/fall-mobility.controller.ts",
+      "method": "GET",
+      "controller": "api/fall-mobility",
+      "route": "summary"
+    },
+    {
+      "file": "fall-mobility/fall-mobility.controller.ts",
+      "method": "POST",
+      "controller": "api/fall-mobility",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "health/health.controller.ts",
+      "method": "GET",
+      "controller": "api/health",
+      "route": ""
+    },
+    {
+      "file": "incidents/incident.controller.ts",
+      "method": "POST",
+      "controller": "api/incidents",
+      "route": "report"
+    },
+    {
+      "file": "incidents/incident.controller.ts",
+      "method": "POST",
+      "controller": "api/incidents",
+      "route": ":incidentId/:action"
+    },
+    {
+      "file": "infection-control/infection-control.controller.ts",
+      "method": "GET",
+      "controller": "api/infection-control",
+      "route": "summary"
+    },
+    {
+      "file": "infection-control/infection-control.controller.ts",
+      "method": "POST",
+      "controller": "api/infection-control",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "medication/medication.controller.ts",
+      "method": "POST",
+      "controller": "",
+      "route": ":administrationId/:action"
+    },
+    {
+      "file": "medication-safety/medication-safety.controller.ts",
+      "method": "GET",
+      "controller": "api/medication-safety",
+      "route": "summary"
+    },
+    {
+      "file": "medication-safety/medication-safety.controller.ts",
+      "method": "POST",
+      "controller": "api/medication-safety",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "nutrition-hydration/nutrition-hydration.controller.ts",
+      "method": "POST",
+      "controller": "api/nutrition-hydration",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "nutrition-hydration/nutrition-hydration.controller.ts",
+      "method": "GET",
+      "controller": "api/nutrition-hydration",
+      "route": ":residentId/summary"
+    },
+    {
+      "file": "operational-care-view/operational-care-view.controller.ts",
+      "method": "GET",
+      "controller": "api/operations",
+      "route": "residents/:residentId/care-view"
+    },
+    {
+      "file": "operational-care-view/operational-dashboard.controller.ts",
+      "method": "GET",
+      "controller": "api/operations",
+      "route": "dashboard"
+    },
+    {
+      "file": "pain-comfort/pain-comfort.controller.ts",
+      "method": "GET",
+      "controller": "api/pain-comfort",
+      "route": "summary"
+    },
+    {
+      "file": "pain-comfort/pain-comfort.controller.ts",
+      "method": "POST",
+      "controller": "api/pain-comfort",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "personal-care/personal-care.controller.ts",
+      "method": "GET",
+      "controller": "api/personal-care",
+      "route": "summary"
+    },
+    {
+      "file": "personal-care/personal-care.controller.ts",
+      "method": "POST",
+      "controller": "api/personal-care",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "resident-access-administration/resident-access-administration.controller.ts",
+      "method": "GET",
+      "controller": "api/operations",
+      "route": "access-assignments"
+    },
+    {
+      "file": "residents/resident.controller.ts",
+      "method": "GET",
+      "controller": "api/residents",
+      "route": ""
+    },
+    {
+      "file": "residents/resident.controller.ts",
+      "method": "GET",
+      "controller": "api/residents",
+      "route": ":residentId"
+    },
+    {
+      "file": "safeguarding/safeguarding.controller.ts",
+      "method": "GET",
+      "controller": "api/safeguarding",
+      "route": "summary"
+    },
+    {
+      "file": "safeguarding/safeguarding.controller.ts",
+      "method": "POST",
+      "controller": "api/safeguarding",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "skin-wound/skin-wound.controller.ts",
+      "method": "GET",
+      "controller": "api/skin-wound",
+      "route": "summary"
+    },
+    {
+      "file": "skin-wound/skin-wound.controller.ts",
+      "method": "POST",
+      "controller": "api/skin-wound",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "sleep-rest/sleep-rest.controller.ts",
+      "method": "GET",
+      "controller": "api/sleep-rest",
+      "route": "summary"
+    },
+    {
+      "file": "sleep-rest/sleep-rest.controller.ts",
+      "method": "POST",
+      "controller": "api/sleep-rest",
+      "route": ":residentId/execute"
+    },
+    {
+      "file": "staff-actors/staff-actor.controller.ts",
+      "method": "GET",
+      "controller": "api/operations/staff-actors",
+      "route": ""
+    },
+    {
+      "file": "staff-actors/staff-actor.controller.ts",
+      "method": "GET",
+      "controller": "api/operations/staff-actors",
+      "route": ":actorId"
+    },
+    {
+      "file": "warning-reviews/warning-review.controller.ts",
+      "method": "POST",
+      "controller": "api/warning-reviews",
+      "route": ""
+    },
+    {
+      "file": "warning-reviews/warning-review.controller.ts",
+      "method": "GET",
+      "controller": "api/warning-reviews",
+      "route": ":warningId"
+    }
+  ],
+  "db_table_count": 118,
+  "db_column_count": 1971,
+  "db_tables": [
+    "abnormal_findings",
+    "activity_participation",
+    "activity_programs",
+    "activity_sessions",
+    "ai_analysis_audit",
+    "behavioral_audit",
+    "behavioral_episodes",
+    "behavioral_escalations",
+    "behavioral_post_reviews",
+    "behavioral_responses",
+    "behavioral_support_plans",
+    "care_action_audit",
+    "care_action_transfers",
+    "care_actions",
+    "care_plan_audit",
+    "care_plans",
+    "care_task_audit",
+    "care_tasks",
+    "clinical_audit",
+    "clinical_escalations",
+    "clinical_observation_amendments",
+    "clinical_observations",
+    "cognitive_observations",
+    "comfort_interventions",
+    "continence_observations",
+    "diet_orders",
+    "exposure_events",
+    "fall_audit",
+    "fall_escalations",
+    "fall_events",
+    "fall_prevention_actions",
+    "fall_risk_assessments",
+    "feeding_assistance",
+    "functional_assessments",
+    "functional_support_actions",
+    "high_risk_medication_checks",
+    "hygiene_care_plans",
+    "hygiene_care_records",
+    "hygiene_schedules",
+    "incident_assignments",
+    "incident_audit",
+    "incident_escalations",
+    "incident_post_reviews",
+    "incident_responses",
+    "incident_triage",
+    "incidents",
+    "infection_alerts",
+    "infection_audit",
+    "infection_control_plans",
+    "infection_escalations",
+    "infection_monitoring_records",
+    "infection_observations",
+    "infection_precautions",
+    "meal_schedules",
+    "medication_administration_exceptions",
+    "medication_administrations",
+    "medication_adverse_reaction_observations",
+    "medication_audit",
+    "medication_double_checks",
+    "medication_order_reviews",
+    "medication_orders",
+    "medication_reconciliation_items",
+    "medication_reconciliations",
+    "medication_safety_audit",
+    "medication_safety_checks",
+    "medication_schedules",
+    "mobility_support_plans",
+    "night_monitoring_checks",
+    "night_support_responses",
+    "nursing_notes",
+    "nutrition_alerts",
+    "nutrition_audit",
+    "nutrition_escalations",
+    "nutrition_intake_records",
+    "nutrition_plans",
+    "pain_assessments",
+    "pain_audit",
+    "pain_care_plans",
+    "pain_escalations",
+    "pain_reassessments",
+    "pain_safety_alerts",
+    "personal_care_assistance",
+    "personal_care_audit",
+    "personal_care_escalations",
+    "post_fall_observations",
+    "protective_actions",
+    "rehabilitation_audit",
+    "rehabilitation_escalations",
+    "rehabilitation_plans",
+    "repositioning_records",
+    "resident_access_assignments",
+    "residents",
+    "safeguarding_assignments",
+    "safeguarding_audit",
+    "safeguarding_escalations",
+    "safeguarding_post_reviews",
+    "safeguarding_reports",
+    "safeguarding_reviews",
+    "safeguarding_triage",
+    "skin_assessments",
+    "sleep_audit",
+    "sleep_care_plans",
+    "sleep_escalations",
+    "sleep_observations",
+    "sleep_rest_events",
+    "sleep_safety_alerts",
+    "staff_actors",
+    "symptom_observations",
+    "toileting_records",
+    "transfer_safety_checks",
+    "wandering_events",
+    "warning_reviews",
+    "wound_audit",
+    "wound_care_plans",
+    "wound_escalations",
+    "wound_progress_records",
+    "wound_records",
+    "wound_treatment_records"
+  ],
+  "domain_table_map": {
+    "staff": [
+      "incident_assignments",
+      "resident_access_assignments",
+      "safeguarding_assignments",
+      "staff_actors"
+    ],
+    "resident": [
+      "resident_access_assignments",
+      "residents"
+    ],
+    "care": [
+      "behavioral_support_plans",
+      "care_action_audit",
+      "care_action_transfers",
+      "care_actions",
+      "care_plan_audit",
+      "care_plans",
+      "care_task_audit",
+      "care_tasks",
+      "fall_prevention_actions",
+      "functional_support_actions",
+      "hygiene_care_plans",
+      "hygiene_care_records",
+      "infection_control_plans",
+      "medication_adverse_reaction_observations",
+      "mobility_support_plans",
+      "nutrition_plans",
+      "pain_care_plans",
+      "personal_care_assistance",
+      "personal_care_audit",
+      "personal_care_escalations",
+      "protective_actions",
+      "rehabilitation_plans",
+      "sleep_care_plans",
+      "wound_care_plans"
+    ],
+    "medication": [
+      "high_risk_medication_checks",
+      "medication_administration_exceptions",
+      "medication_administrations",
+      "medication_adverse_reaction_observations",
+      "medication_audit",
+      "medication_double_checks",
+      "medication_order_reviews",
+      "medication_orders",
+      "medication_reconciliation_items",
+      "medication_reconciliations",
+      "medication_safety_audit",
+      "medication_safety_checks",
+      "medication_schedules"
+    ],
+    "nutrition": [
+      "nutrition_alerts",
+      "nutrition_audit",
+      "nutrition_escalations",
+      "nutrition_intake_records",
+      "nutrition_plans"
+    ],
+    "skin_wound": [
+      "skin_assessments",
+      "wound_audit",
+      "wound_care_plans",
+      "wound_escalations",
+      "wound_progress_records",
+      "wound_records",
+      "wound_treatment_records"
+    ],
+    "rehabilitation": [
+      "activity_participation",
+      "activity_programs",
+      "activity_sessions",
+      "rehabilitation_audit",
+      "rehabilitation_escalations",
+      "rehabilitation_plans"
+    ],
+    "ai": [
+      "ai_analysis_audit",
+      "pain_assessments",
+      "pain_audit",
+      "pain_care_plans",
+      "pain_escalations",
+      "pain_reassessments",
+      "pain_safety_alerts",
+      "warning_reviews"
+    ]
+  }
+}

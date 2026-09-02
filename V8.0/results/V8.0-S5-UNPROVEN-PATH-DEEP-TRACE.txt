@@ -1,0 +1,23 @@
+TAM AN CARE V8.0 — S5 UNPROVEN PATH DEEP TRACE
+STATIC_ONLY=YES
+MAX_DELEGATION_DEPTH=4
+
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=1|FILE=care-action-bridge/care-action-bridge.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=2|FILE=care-actions/care-action.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=3|FILE=database/database.service.ts|SECURITY=NO|DB_WRITE=NO|AUDIT_SIGNAL=NO
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=3|FILE=care-actions/care-action.repository.ts|SECURITY=YES|DB_WRITE=YES|AUDIT_SIGNAL=YES
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=3|FILE=start-review-authorization/start-review-authorization.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=3|FILE=resolution-authorization/resolution-authorization.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|care-action-bridge/care-action-bridge.controller.ts|DEPTH=3|FILE=reopen-authorization/reopen-authorization.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|resident-access-administration/resident-access-administration.controller.ts|DEPTH=1|FILE=resident-access-administration/resident-access-administration.service.ts|SECURITY=YES|DB_WRITE=YES|AUDIT_SIGNAL=YES
+TRACE|resident-access-administration/resident-access-administration.controller.ts|DEPTH=2|FILE=database/database.service.ts|SECURITY=NO|DB_WRITE=NO|AUDIT_SIGNAL=NO
+TRACE|residents/resident.controller.ts|DEPTH=1|FILE=residents/resident.service.ts|SECURITY=NO|DB_WRITE=NO|AUDIT_SIGNAL=NO
+TRACE|residents/resident.controller.ts|DEPTH=2|FILE=residents/resident.repository.ts|SECURITY=NO|DB_WRITE=YES|AUDIT_SIGNAL=NO
+TRACE|residents/resident.controller.ts|DEPTH=3|FILE=database/database.service.ts|SECURITY=NO|DB_WRITE=NO|AUDIT_SIGNAL=NO
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=1|FILE=responsibility-acceptance/responsibility-acceptance.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=2|FILE=care-actions/care-action.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=3|FILE=database/database.service.ts|SECURITY=NO|DB_WRITE=NO|AUDIT_SIGNAL=NO
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=3|FILE=care-actions/care-action.repository.ts|SECURITY=YES|DB_WRITE=YES|AUDIT_SIGNAL=YES
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=3|FILE=start-review-authorization/start-review-authorization.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=3|FILE=resolution-authorization/resolution-authorization.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES
+TRACE|responsibility-acceptance/responsibility-acceptance.controller.ts|DEPTH=3|FILE=reopen-authorization/reopen-authorization.service.ts|SECURITY=YES|DB_WRITE=NO|AUDIT_SIGNAL=YES

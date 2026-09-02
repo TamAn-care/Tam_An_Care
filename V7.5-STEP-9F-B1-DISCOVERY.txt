@@ -1,0 +1,30 @@
+TAM AN CARE V7.5 — STEP 9F.B1
+STAFF ACTOR SERVICE DISCOVERY
+
+9: export type StaffActorRole =
+15: export type StaffActorStatus =
+21: export interface StaffActorRecord {
+25:   primary_operational_role: StaffActorRole;
+26:   status: StaffActorStatus;
+37:   canonicalRole: StaffActorRole | null;
+38:   status: StaffActorStatus | null;
+43: export class StaffActorService {
+52:   async findByActorId(
+54:   ): Promise<StaffActorRecord | null> {
+61:     const result = await this.database.query<StaffActorRecord>(
+67:         primary_operational_role,
+85:     const actor = await this.findByActorId(actorId);
+104:       canonicalRole: actor.primary_operational_role,
+112:   ): Promise<StaffActorRecord | null> {
+113:     const actor = await this.findByActorId(actorId);
+125:   ): Promise<StaffActorRecord | null> {
+137:       actor.primary_operational_role
+146:   async listStaffActors(
+148:   ): Promise<StaffActorRecord[]> {
+151:     const result = await this.database.query<StaffActorRecord>(
+157:         primary_operational_role,
+174:   async listActiveStaffActors(
+176:   ): Promise<StaffActorRecord[]> {
+179:     const result = await this.database.query<StaffActorRecord>(
+185:         primary_operational_role,
+193:         primary_operational_role ASC,

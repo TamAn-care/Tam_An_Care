@@ -1,0 +1,96 @@
+ROADMAP_DOCUMENTS_IDENTICAL=YES
+ROADMAP_ROOT_KEY_COUNT=14
+ROADMAP_ROOT_KEYS=created_at|decision|gate_sequence|gates|known_must_items|manual_acceptance|next_authorized_action|next_gate|parent|roadmap|s0_execution_authorized|safety|status|successor
+NON_GATE_ROOT_METADATA_KEY_COUNT=13
+NON_GATE_ROOT_METADATA_BEGIN
+{
+  "created_at": "2026-08-22T08:21:42.194747+00:00",
+  "decision": "APPROVED_POST_V79_PRODUCT_ROADMAP",
+  "gate_sequence": "S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL",
+  "known_must_items": [
+    {
+      "gate": "S2",
+      "id": "V80-STAFF-001",
+      "production_direct_seed": false,
+      "title": "Staff and operational role bootstrap foundation"
+    }
+  ],
+  "manual_acceptance": {
+    "currently_passed": false,
+    "deferred_from_rd3": true,
+    "gate": "S8",
+    "owner": "USER",
+    "required": true,
+    "required_before_final_release": true
+  },
+  "next_authorized_action": "V8_0_INITIALIZATION_PREFLIGHT",
+  "next_gate": "S0_PREFLIGHT",
+  "parent": {
+    "modifiable": false,
+    "status": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+    "version": "V7.9"
+  },
+  "roadmap": "TAM_AN_CARE_V8_0",
+  "s0_execution_authorized": false,
+  "safety": {
+    "fail_fast": true,
+    "gate_to_gate": true,
+    "modify_v79": false,
+    "production_direct_development": false,
+    "production_test_data": false,
+    "real_resident_test_mutation": false,
+    "real_staff_test_mutation": false,
+    "resumable": true,
+    "rollback_required": true,
+    "sha256_acceptance": true
+  },
+  "status": "APPROVED",
+  "successor": {
+    "implementation_started": false,
+    "initial_series": "SERIES_08",
+    "series_created": false,
+    "version": "V8.0",
+    "version_created": false
+  }
+}
+NON_GATE_ROOT_METADATA_END
+GATE_COUNT=10
+GATE_0_ID=S0
+GATE_0_NAME=FROZEN_PARENT_BASELINE
+GATE_1_ID=S1
+GATE_1_NAME=SOURCE_SCHEMA_AND_RUNTIME_BASELINE
+GATE_2_ID=S2
+GATE_2_NAME=ROLE_STAFF_ACCESS_FOUNDATION
+GATE_3_ID=S3
+GATE_3_NAME=RESIDENT_AND_CARE_WORKFLOWS
+GATE_4_ID=S4
+GATE_4_NAME=DASHBOARD_REPORTING_AND_MANAGEMENT_INFORMATION
+GATE_5_ID=S5
+GATE_5_NAME=SECURITY_AUTHORIZATION_AND_AUDIT
+GATE_6_ID=S6
+GATE_6_NAME=PERFORMANCE_AND_RELIABILITY
+GATE_7_ID=S7
+GATE_7_NAME=BACKUP_RESTORE_DATA_INTEGRITY
+GATE_8_ID=S8
+GATE_8_NAME=MANUAL_APPEARANCE_FUNCTION_UX_UAT
+GATE_9_ID=S_FINAL
+GATE_9_NAME=FINAL_OPERATIONAL_RELEASE
+GATE_SEQUENCE=S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL
+S6_INDEX=6
+S6_GATE=S6
+S6_NAME=PERFORMANCE_AND_RELIABILITY
+S6_OBJECT_KEY_COUNT=2
+S6_OBJECT_KEYS=gate|name
+S6_CANONICAL_JSON={"gate":"S6","name":"PERFORMANCE_AND_RELIABILITY"}
+S6_PREVIOUS_GATE=S5
+S6_PREVIOUS_GATE_NAME=SECURITY_AUTHORIZATION_AND_AUDIT
+S6_NEXT_GATE=S7
+S6_NEXT_GATE_NAME=BACKUP_RESTORE_DATA_INTEGRITY
+ROADMAP_SCOPE_CONTEXT_SIGNAL_COUNT=2
+SCOPE_CONTEXT_1_JSON_PATH=$.manual_acceptance
+SCOPE_CONTEXT_1_VALUE={"currently_passed":false,"deferred_from_rd3":true,"gate":"S8","owner":"USER","required":true,"required_before_final_release":true}
+SCOPE_CONTEXT_2_JSON_PATH=$.safety.sha256_acceptance
+SCOPE_CONTEXT_2_VALUE=true
+S6_GATE_IDENTITY_CONFIRMED=YES
+S6_DETAILED_SCOPE_CONFIRMED_FROM_APPROVED_ROADMAP=YES
+S6_CONTEXT_EVIDENCE_CLASS=S6_PERFORMANCE_AND_RELIABILITY_DETAILED_SCOPE_METADATA_DISCOVERED_IN_APPROVED_ROADMAP

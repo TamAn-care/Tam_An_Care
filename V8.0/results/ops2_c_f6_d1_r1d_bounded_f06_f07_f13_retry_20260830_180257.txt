@@ -1,0 +1,174 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D1-R1D
+ BOUNDED F06 / F07 / F13 FUNCTIONAL RETRY
+ PRODUCTION AUTH MODE — ISOLATED API 3111 ONLY
+ EXPECT ZERO DATABASE MUTATION
+======================================================================
+
+======================================================================
+ 1. R1C AUTHORITY
+======================================================================
+R1C_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d1_r1c_production_mode_runtime_recovery_20260830_180108.txt
+PASS: R1C PRODUCTION AUTHORITY
+
+======================================================================
+ 2. SOURCE + RUNTIME LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+ISOLATED_STATE=running
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+ISOLATED_NODE_ENV=production
+ISOLATED_HEALTH_HTTP=200
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+PASS: ISOLATED RUNNING
+PASS: ACCEPTED IMAGE
+PASS: PRODUCTION MODE
+PASS: HEALTH 200
+
+======================================================================
+ 3. FIXTURE + AUTH PRECONDITION
+======================================================================
+PRE_DB_STATE=5|2|2|3|3|4|0
+TEST_AUTH_SESSION_TOTAL=5
+TEST_AUTH_SESSION_ACTIVE=5
+PASS: FIXTURE STATE
+PASS: AUTH SESSION TOTAL
+
+======================================================================
+ 4. GENERATE ONLY REQUIRED JWTs INSIDE ISOLATED CONTAINER
+ SECRET + TOKEN VALUES NEVER PRINTED
+======================================================================
+PASS: THREE JWT TOKENS GENERATED
+JWT_TOKEN_COUNT=3
+JWT_TOKEN_VALUES_PRINTED=NO
+JWT_SECRET_VALUE_PRINTED=NO
+
+======================================================================
+ 5. BASELINE MUTATION COUNTS
+======================================================================
+R1D_TX_BEFORE=0
+R1D_EVENT_BEFORE=0
+R1D_GENERIC_BEFORE=0
+PASS: R1D NAMESPACE CLEAN
+
+======================================================================
+ 6. F06 — CARE_MANAGER MUST BE 403
+======================================================================
+F06_CARE_MANAGER_DENIED=403
+PASS: F06 CARE_MANAGER DENIED 403
+
+======================================================================
+ 7. F07 — UNAUTHORIZED CAREGIVER MUST BE 403
+======================================================================
+F07_UNAUTHORIZED_CAREGIVER=403
+PASS: F07 UNAUTHORIZED CAREGIVER DENIED 403
+
+======================================================================
+ 8. F13 — GENERIC TRANSACTION POST
+ CAREGIVER MUST BE AUTHENTICATED BUT AUTHORIZATION-FORBIDDEN
+ EXPECT 403 AND ZERO MUTATION
+======================================================================
+F13_GENERIC_CAREGIVER_TRANSACTION_FORBIDDEN=403
+PASS: F13 GENERIC CAREGIVER TRANSACTION DENIED 403
+
+======================================================================
+ 9. ZERO-MUTATION PROOF
+======================================================================
+R1D_TX_AFTER=0
+R1D_EVENT_AFTER=0
+R1D_GENERIC_AFTER=0
+PASS: F06/F07/F13 ZERO DATABASE MUTATION
+
+======================================================================
+ 10. FIXTURE + AUTH PRESERVATION
+======================================================================
+POST_DB_STATE=5|2|2|3|3|4|0
+POST_TEST_AUTH_SESSION_TOTAL=5
+PASS: FIXTURES PRESERVED
+PASS: AUTH SESSIONS PRESERVED
+
+======================================================================
+ 11. RUNTIME + SOURCE REGRESSION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_3111=200
+PASS: RUNTIME 3111
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 12. R1D BOUNDARY
+======================================================================
+BOUNDED_FUNCTIONAL_RETRY_EXECUTED=YES
+RETRIED_TESTS=F06,F07,F13
+OTHER_FUNCTIONAL_TESTS_REEXECUTED=NO
+EXPECTED_SUCCESSFUL_CONSUMPTION=NO
+DATABASE_PRODUCTION_MUTATION=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+SCHEMA_MUTATION=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CANONICAL_JWT_SECRET_CHANGED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D1-R1D DECISION
+======================================================================
+PASS_COUNT=25
+FAIL_COUNT=0
+STATUS: OPS-2-C F6-D1-R1D BOUNDED SECURITY RETRY PASSED
+F06_ACCEPTED=YES
+F07_ACCEPTED=YES
+F13_ACCEPTED=YES
+PRIOR_F06_F07_FAILURE_CLASS=INVALID_NON_PRODUCTION_TEST_RUNTIME
+PRIOR_F13_FAILURE_CLASS=INVALID_NON_PRODUCTION_TEST_RUNTIME
+APPLICATION_SECURITY_DEFECT_EVIDENCE=NO
+SOURCE_REPAIR_REQUIRED=NO
+FIXTURES_READY_FOR_POSITIVE_MATRIX=YES
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_CONTROLLED_POSITIVE_FUNCTIONAL_MATRIX
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d1_r1d_bounded_f06_f07_f13_retry_20260830_180257.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING
+ -> PRESERVE CURRENT EPHEMERAL JWT SECRET
+ -> KEEP F5/F6 FIXTURES + AUTH SESSIONS
+ -> DO NOT REPROVISION FIXTURES
+ -> DO NOT DELETE FIXTURES
+ -> DO NOT RUN ANOTHER FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT REPROVISION CONTAINER
+ -> DO NOT CHANGE CANONICAL JWT_SECRET
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

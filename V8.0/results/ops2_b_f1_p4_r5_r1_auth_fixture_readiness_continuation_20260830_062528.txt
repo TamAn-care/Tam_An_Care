@@ -1,0 +1,100 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P4-R5-R1
+ AUTH FIXTURE READINESS — SQL PORTABILITY CONTINUATION
+ MODE: READ ONLY
+======================================================================
+
+PRIOR_R5_CLASSIFICATION=TEST_WRAPPER_SQL_VARIABLE_DEFECT
+PRIOR_CONFIRMED_ISOLATED_JWT_SECRET_LENGTH=30
+PRIOR_CONFIRMED_ACCEPTED_JWT_SECRET_LENGTH=30
+PRIOR_CONFIRMED_JWT_SECRET_CONTRACT=FAIL
+SOURCE_DEFECT=NO
+
+======================================================================
+ 1. ISOLATED RUNTIME BASELINE
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME PRESERVED
+
+======================================================================
+ 2. DATABASE CONNECTION METADATA
+======================================================================
+DATABASE_NAME=taman_care
+DATABASE_USER=taman
+
+======================================================================
+ 3. CANONICAL ACTOR
+======================================================================
+CANONICAL_ACTOR=hqa-supervisor-001|SUPERVISOR|ACTIVE
+PASS: CANONICAL SUPERVISOR ACTIVE
+
+======================================================================
+ 4. AUTH CREDENTIAL PRESENCE — NO HASH/SALT OUTPUT
+======================================================================
+AUTH_CREDENTIAL_ROW_PRESENT=NO
+
+======================================================================
+ 5. ACTIVE AUTH SESSION METADATA — IDS NOT PRINTED
+======================================================================
+ACTIVE_SESSION_COUNT_AND_MAX_EXPIRY=0|NONE
+
+======================================================================
+ 6. LOGIN ROUTE — EMPTY INVALID REQUEST ONLY
+======================================================================
+EMPTY_LOGIN_HTTP=401
+EMPTY_LOGIN_BODY:
+{"message":"Invalid credentials","error":"Unauthorized","statusCode":401}
+PASS: LOGIN ROUTE PRESENT AND VALIDATING
+
+======================================================================
+ 7. CANONICAL CREDENTIAL STATE AFTER EMPTY LOGIN
+======================================================================
+CANONICAL_CREDENTIAL_STATE=
+PASS: EMPTY LOGIN DID NOT TARGET CANONICAL ACTOR
+
+======================================================================
+ 8. INVENTORY DATABASE CLEANLINESS
+======================================================================
+INVENTORY_COUNTS=0|0|0|0
+PASS: INVENTORY DATABASE CLEAN
+
+======================================================================
+ 9. ACCEPTED RUNTIMES PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+======================================================================
+ 10. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P4-R5-R1 AUTH FIXTURE READINESS CAPTURED
+
+JWT_SECRET_CONTRACT=FAIL_LENGTH_30
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+INVENTORY_MUTATION=NO
+PASSWORD_ATTEMPT=NO
+JWT_CREATED=NO
+AUTH_SESSION_CREATED=NO
+
+NEXT=DESIGN MINIMAL ISOLATED AUTH RUNTIME CONFIG REMEDIATION
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r5_r1_auth_fixture_readiness_continuation_20260830_062528.txt
+
+======================================================================
+ IMPORTANT:
+ -> KEEP tamancare_ops2b_functional RUNNING
+ -> DO NOT TRY A PASSWORD
+ -> DO NOT RESET CREDENTIALS
+ -> DO NOT CREATE JWT
+ -> DO NOT INSERT AUTH SESSION
+ -> DO NOT CHANGE NODE_ENV
+ -> DO NOT CREATE INVENTORY TEST DATA
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

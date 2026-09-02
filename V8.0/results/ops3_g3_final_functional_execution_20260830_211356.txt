@@ -1,0 +1,41 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G3
+ FINAL FUNCTIONAL EXECUTION
+ COMPLETE R4 FIXTURE CONTRACT
+======================================================================
+PASS: G3-R4 AUTHORITY
+PASS: KPI SOURCE AUTHORITY
+PASS: CONTROLLER AUTHORITY
+PASS: MODULE AUTHORITY
+INITIAL_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: INITIAL DATABASE BASELINE
+
+----- CREATE CONTRACT-CORRECT FIXTURE -----
+PASS: CONTRACT-CORRECT FIXTURE CREATED
+FIXTURE_COUNTS=3|2|6|2
+PASS: FIXTURE COUNTS
+PASS: POSTGRES NETWORK DISCOVERED
+PASS: TEMPORARY DB PROXY
+TEMP_DB_PORT=60100
+PASS: TEMP DB PORT DISCOVERED
+/bin/bash: line 531: ./node_modules/.bin/ts-node: No such file or directory
+FAIL: KPI HARNESS EXECUTION
+
+FINAL_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: FINAL DATABASE CLEAN
+
+======================================================================
+ OPS-3 G3 FINAL DECISION
+======================================================================
+PASS_COUNT=11
+FAIL_COUNT=1
+STATUS: OPS-3 G3 FINAL FUNCTIONAL EXECUTION FAILED
+G3=OPEN
+NEXT=STOP_AND_RETURN_OUTPUT
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_final_functional_execution_20260830_211356.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

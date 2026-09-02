@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-08-21T02:23:58.507183+00:00",
+  "release": "V7.6",
+  "phase": "4C-C-R4-R2-R1",
+  "care_action_priority": {
+    "type_name": "CareActionPriority",
+    "allowed_values": [
+      "HIGH",
+      "MODERATE",
+      "LOW"
+    ],
+    "test_value": "MODERATE",
+    "structural_evidence": [
+      {
+        "mode": "DERIVED_CONST_ARRAY",
+        "alias_file": "api/src/care-actions/care-action.types.ts",
+        "const_file": "api/src/care-actions/care-action.types.ts",
+        "const_name": "CARE_ACTION_PRIORITIES",
+        "values": [
+          "HIGH",
+          "MODERATE",
+          "LOW"
+        ]
+      }
+    ],
+    "supplemental_validation_values": [
+      "HIGH",
+      "MODERATE",
+      "LOW",
+      "CREATED",
+      "ASSIGNED",
+      "TRANSFERRED",
+      "REVIEW_STARTED",
+      "RESOLVED",
+      "REOPENED"
+    ]
+  },
+  "transfer_due_at": {
+    "type": "Date | null",
+    "test_value": null
+  },
+  "resolve_care_note": {
+    "type": "string",
+    "test_value": "PHASE4CC_R4_TEST_CARE_NOTE"
+  },
+  "fixture_write": "NO",
+  "test_database_created": "NO",
+  "production_database_write": "NO",
+  "production_runtime_change": "NO"
+}

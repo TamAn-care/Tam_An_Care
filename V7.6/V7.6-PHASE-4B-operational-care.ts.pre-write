@@ -1,0 +1,116 @@
+export type HumanActor = {
+  actorId: string
+  actorRole: string
+}
+
+async function requestJson<T>(
+  url: string,
+  actor?: HumanActor,
+): Promise<T> {
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+  }
+
+  if (actor?.actorId) {
+    headers['x-actor-id'] = actor.actorId
+  }
+
+  if (actor?.actorRole) {
+    headers['x-actor-role'] = actor.actorRole
+  }
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers,
+  })
+
+  const text = await response.text()
+
+  let body: unknown = null
+
+  if (text) {
+    try {
+      body = JSON.parse(text)
+    } catch {
+      body = text
+    }
+  }
+
+  if (!response.ok) {
+    const error = new Error(
+      `HTTP ${response.status}: ${response.statusText}`,
+    )
+
+    ;(error as Error & {
+      status?: number
+      body?: unknown
+    }).status = response.status
+
+    ;(error as Error & {
+      status?: number
+      body?: unknown
+    }).body = body
+
+    throw error
+  }
+
+  return body as T
+}
+
+export function getOperationalDashboard<T = unknown>(
+  actor?: HumanActor,
+): Promise<T> {
+  return requestJson<T>(
+    '/api/operations/dashboard',
+    actor,
+  )
+}
+
+export function getResidentCareView<T = unknown>(
+  residentId: string,
+  actor?: HumanActor,
+): Promise<T> {
+  return requestJson<T>(
+    `/api/operations/residents/${encodeURIComponent(
+      residentId,
+    )}/care-view`,
+    actor,
+  )
+}
+
+export function getResidentIntegrationOverview<T = unknown>(
+  residentId: string,
+  actor?: HumanActor,
+): Promise<T> {
+  return requestJson<T>(
+    `/api/integration/residents/${encodeURIComponent(
+      residentId,
+    )}/overview`,
+    actor,
+  )
+}
+
+export function getCareAction<T = unknown>(
+  residentId: string,
+  patternId: string,
+  actor?: HumanActor,
+): Promise<T> {
+  return requestJson<T>(
+    `/api/care-actions/${encodeURIComponent(
+      residentId,
+    )}/${encodeURIComponent(patternId)}`,
+    actor,
+  )
+}
+
+export function getWarningReview<T = unknown>(
+  warningId: string,
+  actor?: HumanActor,
+): Promise<T> {
+  return requestJson<T>(
+    `/api/warning-reviews/${encodeURIComponent(
+      warningId,
+    )}`,
+    actor,
+  )
+}

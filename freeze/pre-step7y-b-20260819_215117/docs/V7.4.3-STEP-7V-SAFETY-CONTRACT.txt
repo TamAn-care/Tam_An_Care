@@ -1,0 +1,73 @@
+STEP 7V — PAIN / COMFORT / SYMPTOM SAFETY CONTRACT
+
+OBSERVATION != DIAGNOSIS
+
+Pain or symptom documentation does not independently establish
+a medical diagnosis.
+
+
+PAIN SCORE SAFETY
+
+A numeric pain score, when used, is descriptive information.
+
+No hardcoded pain score automatically triggers:
+- medication
+- opioid
+- dose increase
+- hospital transfer
+- emergency service
+- restraint
+
+
+NON-VERBAL RESIDENT SAFETY
+
+Observed behavior may support human assessment.
+
+The system must not autonomously infer:
+- diagnosis
+- cause of pain
+- medication requirement
+
+
+MEDICATION BOUNDARY
+
+Step 7V cannot:
+
+- prescribe analgesic
+- select PRN medication
+- prescribe opioid
+- change dose
+- administer medication
+- discontinue medication
+
+Medication execution requires authorized human workflow
+inside the medication domain.
+
+
+ACUTE / EMERGENCY BOUNDARY
+
+Potentially concerning symptom patterns may produce an advisory
+or human-confirmed alert.
+
+The software does not autonomously diagnose or determine emergency
+treatment.
+
+Human escalation is required.
+
+
+FAIL-CLOSED
+
+Unauthorized mutation:
+zero business mutation
+zero audit
+
+Invalid lifecycle transition:
+zero business mutation
+zero audit
+
+Failed ownership / reviewer validation:
+zero business mutation
+zero audit
+
+
+AUTONOMOUS CLINICAL ACTION = FALSE

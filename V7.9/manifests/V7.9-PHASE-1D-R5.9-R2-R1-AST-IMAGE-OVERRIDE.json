@@ -1,0 +1,20 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R5.9-R2-R1",
+  "status": "PASSED",
+  "root_cause": "Phase block substring was not valid standalone Python AST input",
+  "recovery": "whole-file AST call-site resolution",
+  "helper": "create_disposable_environment(gate, api_image=None)",
+  "helper_default": "EXPECTED['api_image']",
+  "phase1d_override_tag": "taman-care-v79-series02-phase1d-r59:accepted",
+  "phase1d_override_image_id": "sha256:1eebddbc8bf9c0d78e3bd88fee96e403b5c71ba6bef9f36567e1029ee289f12f",
+  "override_count": 1,
+  "runner_sha256": "afdd3a9982d1c84934397244a38961a7a7dfb6b3df4be2f28c00d7c258a2cd85",
+  "production_image_change": false,
+  "production_database_mutation": false,
+  "production_restart": false,
+  "v77_source_write": false,
+  "accepted_gate_rerun": false,
+  "next": "RESUME_PHASE_1D"
+}

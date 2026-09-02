@@ -1,0 +1,66 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-4 EXACT AUTH + FINAL HTTP CLOSEOUT
+ NO IMPLEMENTATION REPLAY
+ NO MIGRATION REPLAY
+ NO DB FUNCTIONAL REPLAY
+======================================================================
+
+----- 1. PRESERVED OPS-4 AUTHORITY -----
+M4_TABLE=1
+M4_REGISTRY=1
+M4_SHA256=637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3
+DATABASE=1|1|0|0|0|0|0
+PASS: OPS-4 IMPLEMENTATION + M4 PRESERVED
+
+----- 2. EXACT AUTH HASH CONTRACT -----
+PBKDF_DIGEST=sha256
+PBKDF_KEYLEN=32
+HASH_ENCODING=hex
+SALT_ENCODING=text
+ITERATIONS_SOURCE=DATABASE
+PASS: CANONICAL AUTH HASH CONTRACT RECOVERED
+
+----- 3. PRE-RUNTIME CLEAN -----
+PRE_RUNTIME_STATE=0|0|0|0
+PASS: PRE-RUNTIME CLEAN
+
+----- 4. CANONICAL LOGIN FIXTURE -----
+PASSWORD_VALUE=REDACTED
+PASSWORD_HASH=REDACTED
+PASSWORD_SALT=REDACTED
+PASS: CANONICAL CREDENTIAL READY
+
+----- 5. HTTP KITCHEN FIXTURE -----
+BEGIN
+INSERT 0 1
+INSERT 0 1
+COMMIT
+PASS: HTTP KITCHEN FIXTURE
+
+----- 6. ISOLATED RUNTIME -----
+SELECTED_PORT=3112
+API_PID=43892
+ACTUAL_LISTEN_SOCKET=*:3112
+HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME
+
+----- 7. REAL LOGIN -----
+REAL_LOGIN_HTTP=500
+LOGIN_RESPONSE=REDACTED
+
+----- SAFE AUTH FAILURE LOG -----
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:03 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCareTaskAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:03 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCarePlanAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:03 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mResolutionAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:03 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStartReviewAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:03 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReopenAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:03 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:04 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:04 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 43892  - [39m08/31/2026, 2:05:04 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/logout, POST} route[39m[38;5;3m +0ms[39m
+[31m[Nest] 43892  - [39m08/31/2026, 2:05:05 AM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39mError: getaddrinfo ENOTFOUND postgres
+    at async AuthService.login [90m(/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/[39mdist/auth/auth.service.js:24:24[90m)[39m
+{"type":"http_request","timestamp":"2026-08-30T19:05:05.167Z","requestId":"6b5ee342-f5c3-40d1-b033-e2e21128dd51","method":"POST","path":"/api/auth/login","statusCode":500,"durationMs":130.074,"actorId":null}
+----- END SAFE AUTH FAILURE LOG -----
+FAIL: REAL LOGIN FAILED
+/bin/bash: line 56: 43892 Terminated: 15          PORT="$PORT" NODE_ENV=test node dist/main.js > "$RUN/api.log" 2>&1  (wd: ~/Downloads/TamAnCare_V7_4_3_Development/api)

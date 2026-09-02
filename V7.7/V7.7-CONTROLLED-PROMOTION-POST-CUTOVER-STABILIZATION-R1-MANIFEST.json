@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-08-21T10:29:02.092040+00:00",
+  "stage": "POST_CUTOVER_STABILIZATION_R1",
+  "status": "PASSED",
+  "production_status": "V7.7_ACTIVE_STABLE",
+  "round_count": 3,
+  "rounds": [
+    {
+      "round": 1,
+      "api_health": "200",
+      "security": "401|401|401",
+      "ui_matrix": "200|401|401|200",
+      "root_http": "200",
+      "vite_assets": true,
+      "api_state": "running",
+      "ui_state": "running",
+      "api_restart_count": 0,
+      "ui_restart_count": 0,
+      "db_table_count": 118,
+      "db_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+    },
+    {
+      "round": 2,
+      "api_health": "200",
+      "security": "401|401|401",
+      "ui_matrix": "200|401|401|200",
+      "root_http": "200",
+      "vite_assets": true,
+      "api_state": "running",
+      "ui_state": "running",
+      "api_restart_count": 0,
+      "ui_restart_count": 0,
+      "db_table_count": 118,
+      "db_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+    },
+    {
+      "round": 3,
+      "api_health": "200",
+      "security": "401|401|401",
+      "ui_matrix": "200|401|401|200",
+      "root_http": "200",
+      "vite_assets": true,
+      "api_state": "running",
+      "ui_state": "running",
+      "api_restart_count": 0,
+      "ui_restart_count": 0,
+      "db_table_count": 118,
+      "db_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+    }
+  ],
+  "v77": {
+    "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "api_state": "running",
+    "ui_state": "running",
+    "api_restart_count_before": 0,
+    "api_restart_count_after": 0,
+    "ui_restart_count_before": 0,
+    "ui_restart_count_after": 0,
+    "restart_delta": 0,
+    "api_health": "200",
+    "api_security": "401|401|401",
+    "resident_ai_method": "POST",
+    "ui_matrix": "200|401|401|200",
+    "vite_assets": true
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "write": false,
+    "migration": false
+  },
+  "rollback": {
+    "v76_api_state": "exited",
+    "v76_ui_state": "exited",
+    "v76_db_state": "running",
+    "assets_preserved": true
+  },
+  "release_freeze_eligible": true
+}

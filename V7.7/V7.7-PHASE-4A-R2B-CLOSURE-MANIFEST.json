@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-08-21T08:41:04.352456+00:00",
+  "status": "CLOSED",
+  "phase": "V7.7 PHASE 4A-R2B",
+  "r3_r4_result_hash": "4ed8e5bd03f1186ab85d38e1ace9b6a071e6bc855def2587cb9811c5f50b3406",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "accepted_groups": [
+    "activity_rehabilitation",
+    "care_action",
+    "care_task",
+    "medication",
+    "nutrition",
+    "resident_ai",
+    "skin_wound"
+  ],
+  "security": {
+    "care_action_no_actor": "REJECTED_AT_ACTOR_GUARD",
+    "care_task_no_actor": "REJECTED",
+    "resident_ai_no_actor": 401,
+    "autonomousClinicalAction": false
+  },
+  "contracts": {
+    "care_action": {
+      "assignedTo": true,
+      "assignedRole": true,
+      "priority": "MODERATE"
+    },
+    "care_task": {
+      "assigneeId": true,
+      "assigneeRole": true
+    },
+    "medication": {
+      "order": "ACTIVE",
+      "schedule": "PLANNED",
+      "administration": "SCHEDULED -> ASSIGNED"
+    },
+    "skin_wound": {
+      "wound_type": "FREE_TEXT",
+      "CREATE_WOUND_is_wound_type": false
+    }
+  },
+  "production": {
+    "api_matrix": "200|401|401",
+    "ui_matrix": "200|401|401|200",
+    "db_user": "taman_v743_dev",
+    "db_name": "taman_care_v743_dev",
+    "db_counts": "0|0|0",
+    "runtime_change": false,
+    "database_write": false
+  },
+  "source_write": false
+}

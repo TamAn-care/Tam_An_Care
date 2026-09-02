@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-08-21T06:46:05.659692+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R4-R2",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "field_declarations": [],
+  "required": true,
+  "contract_mode": "RUNTIME_FREE_TEXT",
+  "authoritative_values": [],
+  "previous_invalid_test_value": "CREATE_WOUND",
+  "previous_value_reason": "ACTION_TOKEN_NOT_WOUND_CLASSIFICATION",
+  "selected_test_wound_type": "PHASE4A_R2B_WOUND_TYPE_TEST",
+  "synthetic_test_value": true,
+  "wound_record_row": "v77-woundtype-r2-record|v77-woundtype-r2-resident|PHASE4A_R2B_WOUND_TYPE_TEST|LEFT_FOREARM|OPEN|v77-woundtype-r2-supervisor|SUPERVISOR",
+  "no_actor_http": "400",
+  "authorized_http": "201",
+  "wound_care_plan_row": "v77-woundtype-r2-record|v77-woundtype-r2-resident|DRAFT|v77-woundtype-r2-supervisor|SUPERVISOR",
+  "wound_audit_count": 1,
+  "autonomousClinicalAction": false,
+  "source_changed": false,
+  "production_changed": false
+}

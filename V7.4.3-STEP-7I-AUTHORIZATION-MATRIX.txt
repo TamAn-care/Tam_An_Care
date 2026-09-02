@@ -1,0 +1,67 @@
+TAM AN CARE V7.4.3
+STEP 7I — START REVIEW AUTHORIZATION MATRIX
+
+==========================================================
+ACTOR / CONDITION                  START REVIEW
+==========================================================
+
+Assigned owner                     ALLOW
+
+Different caregiver               DENY
+
+Unassigned Care Action            DENY
+
+SUPERVISOR                         ALLOW OVERRIDE
+                                  NO OWNERSHIP CHANGE
+
+CARE_MANAGER                       ALLOW OVERRIDE
+                                  NO OWNERSHIP CHANGE
+
+Unknown role                       DENY
+
+Missing actorId                    DENY
+
+Missing actorRole                  DENY
+
+AI actor                           DENY
+
+SYSTEM actor                       DENY
+
+Care Action = PENDING              REQUIRED
+
+Care Action = IN_REVIEW            DENY
+
+Care Action = RESOLVED             DENY
+
+----------------------------------------------------------
+
+SUCCESS EFFECT:
+
+status:
+PENDING -> IN_REVIEW
+
+owner:
+UNCHANGED
+
+transfer:
+NONE
+
+audit:
++ REVIEW_STARTED
+
+autonomousClinicalAction:
+FALSE
+
+----------------------------------------------------------
+
+CONCURRENCY:
+
+Two simultaneous valid requests:
+
+EXACTLY ONE SUCCESS
+EXACTLY ONE REVIEW_STARTED
+FINAL STATUS = IN_REVIEW
+OWNER UNCHANGED
+NO TRANSFER
+
+==========================================================

@@ -1,0 +1,59 @@
+TAM AN CARE V7.4.3
+STEP 7P CONCURRENCY CONTRACT
+
+All state-changing aggregate mutations:
+SELECT ... FOR UPDATE
+inside database transaction.
+
+Required single-winner races:
+
+1. Double plan activation
+   -> exactly one applicable transition.
+
+2. Concurrent meal assignment
+   -> exactly one winning owner.
+
+3. Double assignment acceptance
+   -> exactly one accepted transition.
+
+4. Double READY transition
+   -> exactly one committed transition.
+
+5. COMPLETED vs MISSED
+   -> exactly one terminal winner.
+
+6. COMPLETED vs REFUSED
+   -> exactly one terminal winner.
+
+7. HELD vs COMPLETED
+   -> exactly one terminal winner.
+
+8. Double intake verification
+   -> exactly one verification event.
+
+9. Double alert acknowledgement
+   -> exactly one acknowledgement.
+
+10. Escalation assignment race
+    -> exactly one reviewer assignment.
+
+11. Double escalation acceptance
+    -> exactly one acceptance.
+
+Append-only concurrency:
+
+Concurrent independent intake records:
+both may persist.
+
+Concurrent valid amendments:
+both may persist if each is independently attributable.
+
+No lost history.
+
+Ownership:
+winning assigned owner remains unchanged
+unless explicit authorized reassignment is implemented.
+
+Failure atomicity:
+loser produces zero mutation
+and zero audit.

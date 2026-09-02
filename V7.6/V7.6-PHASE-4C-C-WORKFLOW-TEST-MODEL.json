@@ -1,0 +1,34 @@
+{
+  "release": "V7.6",
+  "phase": "4C-C",
+  "execution_environment": "fully disposable",
+  "production_database": "must remain untouched",
+  "workflow_order": [
+    "bootstrap staff actors",
+    "bootstrap resident",
+    "bootstrap care action",
+    "bootstrap care plan",
+    "bootstrap care task",
+    "verify authorization matrix",
+    "care action assign",
+    "care action transfer",
+    "care action start-review",
+    "care action resolve",
+    "care action reopen",
+    "warning review create/read",
+    "care plan governance action",
+    "care task execution action",
+    "verify audit trails",
+    "same-origin API verification",
+    "destroy disposable environment"
+  ],
+  "hard_stop_rules": [
+    "No guessed non-null fixture column.",
+    "No guessed enum/status value.",
+    "No production DB connection.",
+    "No production container replacement.",
+    "Stop if DTO payload cannot be constructed deterministically.",
+    "Stop if requested workflow action is not proven by source."
+  ],
+  "fixture_contract_hash": "b04fd39553bfe5bf9c120280221aa8e074f30bf6804334148fcf510529834f75"
+}

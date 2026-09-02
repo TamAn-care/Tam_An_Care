@@ -1,0 +1,58 @@
+{
+  "phase": "RD4",
+  "status": "PASSED",
+  "decision": "SUCCESSOR_VERSION_AND_RELEASE_PLAN_DEFINED",
+  "v79_release": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+  "rd3_manual_test": {
+    "required": true,
+    "executed": false,
+    "status": "DEFERRED_BY_USER",
+    "accepted": false,
+    "must_complete_before_successor_release": true
+  },
+  "successor": {
+    "version": null,
+    "series": null,
+    "implementation_authorized": false,
+    "version_creation_authorized": false,
+    "series_creation_authorized": false
+  },
+  "known_review_items": [
+    {
+      "id": "POST79-STAFF-BOOTSTRAP",
+      "type": "OPERATIONAL_PRECONDITION",
+      "current_state": "PRODUCTION_STAFF_ACTOR_DATASET_EMPTY",
+      "production_seed_authority": "NOT_ESTABLISHED",
+      "decision": "DEFER_TO_RD_FINAL"
+    }
+  ],
+  "release_gates": [
+    "S0_FROZEN_PARENT_BASELINE",
+    "S1_SOURCE_AND_SCHEMA_BASELINE",
+    "S2_ROLE_STAFF_ACCESS_FOUNDATION",
+    "S3_RESIDENT_AND_CARE_WORKFLOWS",
+    "S4_REPORTING_MANAGEMENT_INFORMATION",
+    "S5_SECURITY_AUDIT_AUTHORIZATION",
+    "S6_PERFORMANCE_RELIABILITY",
+    "S7_BACKUP_RESTORE_DATA_INTEGRITY",
+    "S8_MANUAL_APPEARANCE_FUNCTION_UX_UAT",
+    "S_FINAL_FINAL_OPERATIONAL_RELEASE"
+  ],
+  "manual_gate": {
+    "gate": "S8",
+    "owner": "USER",
+    "skippable_for_final_release": false
+  },
+  "safety": {
+    "modify_frozen_v79": false,
+    "production_db_direct_development": false,
+    "production_test_data": false,
+    "real_staff_test_mutation": false,
+    "real_resident_test_mutation": false,
+    "gate_to_gate": true,
+    "rollback_required": true
+  },
+  "next_gate": "RD_FINAL",
+  "next_gate_name": "APPROVED_POST_V79_PRODUCT_ROADMAP",
+  "created_at": "2026-08-22T08:20:24.827248+00:00"
+}

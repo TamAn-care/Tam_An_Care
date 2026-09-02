@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-08-21T08:26:33.003676+00:00",
+  "container": "taman-care-v743-dev-postgres",
+  "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+  "image_id": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+  "postgres_user": "taman_v743_dev",
+  "application_database": "taman_care_v743_dev",
+  "baseline_counts": {
+    "care_actions": 0,
+    "care_plans": 0,
+    "care_tasks": 0
+  },
+  "baseline_string": "0|0|0",
+  "storage": [
+    {
+      "type": "bind",
+      "name": "",
+      "source": "/host_mnt/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/schema.sql",
+      "destination": "/docker-entrypoint-initdb.d/001_schema.sql"
+    },
+    {
+      "type": "volume",
+      "name": "taman-care-v743-dev-postgres-data",
+      "source": "/var/lib/docker/volumes/taman-care-v743-dev-postgres-data/_data",
+      "destination": "/var/lib/postgresql/data"
+    }
+  ],
+  "read_only_contract": true,
+  "database_write": false,
+  "database_restart": false,
+  "database_recreate": false,
+  "v7_6_runtime_change": false
+}

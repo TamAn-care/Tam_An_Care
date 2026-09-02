@@ -1,0 +1,10 @@
+{
+  "version": "V7.9",
+  "phase": "1D",
+  "status": "PASSED",
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-1D-RESIDENT-ACCESS-DISPOSABLE-WORKFLOW.json",
+  "inventory_hash": "616205a9672d15dbad3e9c1034a9437854fac65c7c1f914470fd61ae29665eef",
+  "real_resident_mutation": false,
+  "production_database_mutation": false,
+  "next": "PHASE_1_FINAL"
+}

@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-08-21T08:46:13.914565+00:00",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "roadmap_file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-ROADMAP-PREFLIGHT-RESULT.txt",
+  "roadmap_hash": "e16c6c743d60e3c92eb68c7d7c321a3129ffe4ab093f3d9a31696d8abe7d5fab",
+  "phase_4a_r2b": "CLOSED",
+  "top_level_phases": [],
+  "phase4_children": {},
+  "known_closed": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4A",
+    "4B"
+  ],
+  "decision": "AUTHORITATIVE_ROADMAP_HAS_NO_POST_4_GATE",
+  "resolved_next_gate": null,
+  "resolved_description": null,
+  "resolution_line": null,
+  "resolution_basis": null,
+  "historical_versions_used": false,
+  "safety": {
+    "rerun_r3_r4": false,
+    "rerun_b2": false,
+    "rediscover_4a_r2b": false,
+    "modify_v7_6": false,
+    "production_database_write": false
+  }
+}

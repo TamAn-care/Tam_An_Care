@@ -1,0 +1,12 @@
+{
+  "version": "V7.9",
+  "phase": "1D-R2",
+  "status": "NO_PUBLIC_ACCESS_MUTATION_ROUTE",
+  "decision": "PHASE_1D_FUNCTIONAL_BLOCKER",
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-1D-R2-ACCESS-MUTATION-CALLCHAIN.json",
+  "inventory_hash": "eb060dfb53305da71769c7992e8daf41d212d74ab9eeeddeef117ed1c4f59734",
+  "public_write_candidate_count": 0,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "frozen_v77_source_write": false
+}

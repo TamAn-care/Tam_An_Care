@@ -1,0 +1,74 @@
+STEP 7Z — HUMAN AUTHORIZATION MATRIX
+
+GENERAL
+
+Official Step 7Z mutation requires attributable HUMAN actor.
+
+
+CAREGIVER
+
+ALLOWED:
+- report fall
+- report near fall
+- document observable facts
+- request human review
+- document transfer check where authorized by policy
+
+DENIED:
+- diagnose injury
+- prescribe medication
+- prescribe restraint
+- decide hospital transfer
+
+
+NURSE
+
+ALLOWED:
+- fall-risk assessment
+- verify factual observation
+- mobility support review within authorized scope
+- post-fall factual assessment
+- initiate human escalation
+
+DENIED:
+- autonomous medication mutation through Step 7Z
+- autonomous restraint through Step 7Z
+
+
+SUPERVISOR / CARE MANAGER
+
+ALLOWED:
+- review mobility support plan
+- assign accountable fall-event owner
+- authorize non-pharmacological prevention support
+- governance escalation
+- post-event review
+
+
+AUTHORIZED CLINICAL PROFESSIONAL
+
+Clinical diagnosis / treatment decisions follow the relevant clinical domain
+and applicable professional scope.
+
+Step 7Z does not duplicate those authorities.
+
+
+AI / SYSTEM
+
+AI = ADVISORY ONLY.
+SYSTEM = INFRASTRUCTURE ONLY.
+
+DENIED:
+- official fall-risk verification
+- injury diagnosis
+- fracture determination
+- head-injury determination
+- restraint decision
+- medication action
+- hospital-transfer decision
+- mobility restriction change
+- assistive-device prescription change
+- event resolution
+- escalation resolution
+
+HUMAN ACCOUNTABILITY = REQUIRED

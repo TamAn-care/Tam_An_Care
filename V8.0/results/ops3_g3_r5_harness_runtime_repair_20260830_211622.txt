@@ -1,0 +1,42 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G3-R5
+ HARNESS RUNTIME REPAIR
+ EXISTING TSC + NODE ONLY
+======================================================================
+PASS: G3 HARNESS FAILURE AUTHORITY
+PASS: KPI SOURCE AUTHORITY
+PASS: CONTROLLER AUTHORITY
+PASS: MODULE AUTHORITY
+TSC_VERSION=Version 6.0.2
+PASS: LOCAL TYPESCRIPT COMPILER
+NODE_VERSION=v24.19.0
+PASS: LOCAL NODE RUNTIME
+INITIAL_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: INITIAL DATABASE BASELINE
+PASS: CONTRACT-CORRECT FIXTURE
+PASS: TEMPORARY DB PROXY
+TEMP_DB_PORT=60118
+PASS: TEMP DB PORT
+error TS5112: tsconfig.json is present but will not be loaded if files are specified on commandline. Use '--ignoreConfig' to skip this error.
+FAIL: HARNESS COMPILE
+
+FINAL_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: FINAL DATABASE CLEAN
+
+======================================================================
+ OPS-3 G3-R5 DECISION
+======================================================================
+PASS_COUNT=11
+FAIL_COUNT=1
+STATUS: OPS-3 G3-R5 FAILED
+G3=OPEN
+NEXT=STOP_AND_RETURN_OUTPUT
+
+APPLICATION_SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+DEPENDENCY_MUTATION=NO
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r5_harness_runtime_repair_20260830_211622.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

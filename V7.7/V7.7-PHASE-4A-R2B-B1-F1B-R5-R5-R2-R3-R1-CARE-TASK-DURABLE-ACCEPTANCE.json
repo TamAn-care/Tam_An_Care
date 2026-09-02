@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-08-21T07:29:29.486231+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R3-R1",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "root_cause": "previous regenerated payload used assignedTo/assignedRole instead of assigneeId/assigneeRole",
+  "request_contract": {
+    "actorId": "required",
+    "actorRole": "required",
+    "assigneeId": "required",
+    "assigneeRole": "required"
+  },
+  "route": "/api/care-task-execution/:careTaskId/ASSIGN",
+  "negative_security": {
+    "no_actor_http": 400
+  },
+  "functional": {
+    "assign_http": 201,
+    "before": "PLANNED|<NULL>|<NULL>|<NULL>",
+    "after": "ASSIGNED|v77-caretask-r1-caregiver|CAREGIVER|<NON_NULL>",
+    "transition": "PLANNED -> ASSIGNED",
+    "assignee_id": "v77-caretask-r1-caregiver",
+    "assignee_role": "CAREGIVER"
+  },
+  "audit": {
+    "table": "care_task_audit",
+    "count": 1
+  },
+  "source_changed": false,
+  "v7_6_changed": false,
+  "production_database_write": false,
+  "production_runtime_change": false
+}

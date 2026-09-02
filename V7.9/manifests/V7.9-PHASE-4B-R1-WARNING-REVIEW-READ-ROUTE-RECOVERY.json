@@ -1,0 +1,98 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4B_R1",
+  "status": "DISCOVERY_COMPLETE",
+  "decision": "FRONTEND_WARNING_REFERENCE_STALE_OR_MISMATCHED",
+  "warning_route_source": [
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/patterns",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/ai/early-warning.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/ai/early-warning.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/governance/policies",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/ai/ai-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/governance/risk-classes",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/ai/ai-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/governance/status",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/ai/ai-governance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/care-action-bridge/care-action-bridge.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/incidents/incident.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/incidents/incident.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/residents/:residentId/care-view",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/operational-care-view/operational-care-view.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/warning-reviews",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/warning-reviews/warning-review.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/warning-reviews/:warningId",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/warning-reviews/warning-review.controller.ts"
+    }
+  ],
+  "live_read_observation": [
+    {
+      "path": "/api/warning-reviews",
+      "http": "404"
+    },
+    {
+      "path": "/api/ai/governance/policies",
+      "http": "200"
+    },
+    {
+      "path": "/api/ai/governance/risk-classes",
+      "http": "200"
+    },
+    {
+      "path": "/api/ai/governance/status",
+      "http": "200"
+    },
+    {
+      "path": "/api/operations/residents/:residentId/care-view",
+      "http": "401"
+    },
+    {
+      "path": "/api/warning-reviews/:warningId",
+      "http": "404"
+    }
+  ],
+  "frontend_path": "/api/warning-reviews",
+  "frontend_live_http": "404",
+  "mutation_requests": false,
+  "application_source_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "next": "RESUME_PHASE_4B_FROM_READ_PROBE_CLASSIFICATION",
+  "created_at": "2026-08-22T04:52:41.003462+00:00"
+}

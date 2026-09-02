@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-08-21T09:02:29.523222+00:00",
+  "release": "V7.7",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "decision": "PROMOTION_APPROVED_FOR_CONTROLLED_EXECUTION",
+  "blockers": [],
+  "development_roadmap": "CLOSED",
+  "technical_release_readiness": "PASS",
+  "environment_contract": {
+    "required_application_env": [
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "PORT"
+    ],
+    "status": "PASS"
+  },
+  "database_contract": {
+    "schema_decision": "SEMANTICALLY_EQUIVALENT_NO_MIGRATION_REQUIRED",
+    "migration_required": false,
+    "status": "PASS"
+  },
+  "production_baseline": {
+    "version": "V7.6",
+    "api_matrix": "200|401|401",
+    "ui_matrix": "200|401|401|200",
+    "database_counts": "0|0|0",
+    "containers": {
+      "API": {
+        "container": "taman-care-v743-dev-api",
+        "image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+        "state": "running"
+      },
+      "UI": {
+        "container": "taman-care-v75-ui",
+        "image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+        "state": "running"
+      },
+      "DB": {
+        "container": "taman-care-v743-dev-postgres",
+        "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+        "state": "running"
+      }
+    }
+  },
+  "rollback": {
+    "release_freeze": true,
+    "final_rollback_acceptance": true,
+    "artifact_count": 3
+  },
+  "final_build": true,
+  "production_change": false,
+  "production_database_write": false,
+  "promotion_executed": false
+}

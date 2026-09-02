@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-08-21T09:57:26.670096+00:00",
+  "stage": "CONTROLLED_PROMOTION_E2_R2_R1",
+  "status": "PASSED",
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "accepted_images": {
+    "api": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147"
+  },
+  "candidate_runtime": {
+    "api_container_id": "3e0a93ae2e63c5d08af17f00472fa1344ea1108eec8b45018c81b84bf806192a",
+    "ui_container_id": "7b3e84d139d66ea7e0a309fb474939b0106bb913aa29064a33807d1161b7ac19",
+    "api_temporary_port": "55241",
+    "ui_temporary_port": "55245",
+    "api_network_alias": "v77-e2-api",
+    "ui_proxy_target": "http://v77-e2-api:3000",
+    "destroyed_after_test": true
+  },
+  "candidate_acceptance": {
+    "api_matrix": "200|401|401|401",
+    "ui_matrix": "200|401|401|200",
+    "vite_assets_served": true,
+    "operational_care_http": "200"
+  },
+  "production_database": {
+    "table_count": 118,
+    "fingerprint_before": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "fingerprint_during": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "fingerprint_after": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "row_delta": false,
+    "migration": false
+  },
+  "v76": {
+    "api_before": "200|401|401",
+    "api_during": "200|401|401",
+    "api_after": "200|401|401",
+    "ui_before": "200|401|401|200",
+    "ui_during": "200|401|401|200",
+    "ui_after": "200|401|401|200",
+    "stopped": false
+  },
+  "production_port_change": false,
+  "traffic_cutover": false,
+  "promotion_complete": false
+}

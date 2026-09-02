@@ -1,0 +1,6 @@
+TAM AN CARE V8.0 — S5 RECOVERED STORAGE CONTRACT
+READ_ONLY_DISCOVERY=YES
+
+STORAGE_METHOD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|METHOD=createAssignment|FILE=resident-access-administration/resident-access-administration.service.ts|STATUS=RESOLVED|WRITE_TABLES=resident_access_assignments|SECURITY_SIGNALS=ACTOR_ID,ACTOR_ROLE,SUPERVISOR|AUDIT_SIGNALS=NONE
+STORAGE_METHOD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|METHOD=revokeAssignment|FILE=resident-access-administration/resident-access-administration.service.ts|STATUS=RESOLVED|WRITE_TABLES=resident_access_assignments|SECURITY_SIGNALS=ACTOR_ID,SUPERVISOR|AUDIT_SIGNALS=NONE
+STORAGE_METHOD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|METHOD=createAssignment|FILE=resident-access-administration/resident-access-administration.service.ts|STATUS=RESOLVED|WRITE_TABLES=resident_access_assignments|SECURITY_SIGNALS=ACTOR_ID,ACTOR_ROLE,SUPERVISOR|AUDIT_SIGNALS=NONE

@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-08-21T13:38:53.834793+00:00",
+  "version": "V7.8",
+  "phase": "4A",
+  "status": "PASSED",
+  "decision": "UX_ROUTE_SCREEN_BASELINE_ACCEPTED",
+  "mode": {
+    "read_only": true,
+    "business_mutation": false,
+    "database_write": false,
+    "source_write": false,
+    "runtime_restart": false
+  },
+  "production": {
+    "api_health": "200",
+    "ui_proxy_health": "200",
+    "ui_root": "200",
+    "operational_care": "200"
+  },
+  "routes": {
+    "count": 8,
+    "items": [
+      "/",
+      "/dashboard",
+      "/operational-care",
+      "/residents",
+      "/residents/:residentId",
+      "/residents/:residentId/care",
+      "/staff-access",
+      "/system-status"
+    ],
+    "matrix": {
+      "/": "200",
+      "/dashboard": "200",
+      "/operational-care": "200",
+      "/residents": "200",
+      "/residents/:residentId": "SKIPPED_DYNAMIC",
+      "/residents/:residentId/care": "SKIPPED_DYNAMIC",
+      "/staff-access": "200",
+      "/system-status": "200"
+    },
+    "failures": []
+  },
+  "api_dependencies": {
+    "count": 5,
+    "items": [
+      "/api/health",
+      "/api/operations/access-assignments",
+      "/api/operations/dashboard",
+      "/api/residents",
+      "/api/warning-reviews"
+    ]
+  },
+  "operational_ui": {
+    "signal_count": 35,
+    "candidate_files": [
+      "src/api/client.ts",
+      "src/api/operational-care.ts",
+      "src/api/resident-access-administration.ts",
+      "src/api/residents.ts",
+      "src/api/staff-actors.ts",
+      "src/app/page-meta.ts",
+      "src/app/router.tsx",
+      "src/auth/DevelopmentActorPanel.tsx",
+      "src/auth/RequireSupervisor.tsx",
+      "src/auth/role-policy.ts",
+      "src/auth/session.ts",
+      "src/components/feedback/ConnectivityStatus.tsx",
+      "src/components/feedback/FeedbackStates.tsx",
+      "src/components/layout/AppShell.tsx",
+      "src/components/navigation/AppNavigation.tsx",
+      "src/features/care-view/CareViewPage.tsx",
+      "src/features/care-work/CareWorkPage.tsx",
+      "src/features/dashboard/DashboardPage.tsx",
+      "src/features/residents/ResidentsPage.tsx",
+      "src/features/staff-access/StaffAccessPage.tsx",
+      "src/types/actor.ts"
+    ]
+  },
+  "read_only_api_security": {
+    "staff_no_actor": "401",
+    "access_no_actor": "401"
+  },
+  "live_assets": [
+    "/assets/index-BMb-tSCV.js",
+    "/assets/index-DlvS4Sti.css"
+  ],
+  "observations": [],
+  "blockers": [],
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "delta": false
+  },
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_4B_READ_ONLY_OPERATIONAL_WORKFLOW_VISIBILITY"
+}

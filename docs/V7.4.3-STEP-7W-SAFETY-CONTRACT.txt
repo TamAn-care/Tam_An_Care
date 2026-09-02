@@ -1,0 +1,84 @@
+STEP 7W — INFECTION SAFETY CONTRACT
+
+OBSERVATION != DIAGNOSIS
+
+No symptom observation, vital-sign observation, exposure,
+or cluster signal independently establishes infection.
+
+
+NO AUTONOMOUS DIAGNOSIS
+
+The system must not autonomously diagnose:
+
+- infection
+- sepsis
+- COVID-19
+- influenza
+- pneumonia
+- urinary tract infection
+- gastroenteritis
+- wound infection
+
+
+NO HARDCODED TREATMENT THRESHOLD
+
+No temperature, pulse, respiratory rate, oxygen saturation,
+symptom count, or duration automatically triggers:
+
+- antibiotic
+- antiviral
+- medication
+- isolation
+- quarantine
+- transfer
+- emergency service
+
+
+PRECAUTION SAFETY
+
+Precautions require authorized human confirmation.
+
+AI may suggest review.
+
+AI cannot:
+- activate precaution
+- discontinue precaution
+- impose isolation
+- impose quarantine
+
+
+MEDICATION BOUNDARY
+
+Step 7W cannot:
+
+- prescribe antibiotic
+- prescribe antiviral
+- select antimicrobial
+- change dose
+- discontinue medication
+- administer medication
+
+
+EMERGENCY BOUNDARY
+
+Potentially serious patterns may generate an advisory signal.
+
+Emergency treatment, transfer, ambulance activation,
+or hospital referral remains a human-authorized decision.
+
+
+FAIL-CLOSED
+
+Unauthorized mutation:
+zero business mutation
+zero audit
+
+Invalid lifecycle mutation:
+zero business mutation
+zero audit
+
+Wrong reviewer:
+zero business mutation
+zero audit
+
+AUTONOMOUS CLINICAL ACTION = FALSE

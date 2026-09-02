@@ -1,0 +1,55 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G3-R1
+ RUNNER REPAIR + FUNCTIONAL ACCEPTANCE
+ NO APPLICATION SOURCE MUTATION
+======================================================================
+PASS: G3 FAILURE AUTHORITY
+KPI_SERVICE=8a7dd336bafb20f061ba5d4ce2cdde1a265ddc23871f8cf204c482b3d650e699
+CONTROLLER=fa611fe5d47fccab7b19f5faa02d9adc2459c2ba8985dd27f962329a9fc4a651
+MODULE=eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66
+PASS: KPI SERVICE AUTHORITY
+PASS: CONTROLLER AUTHORITY
+PASS: MODULE AUTHORITY
+PASS: CANONICAL POSTGRES RUNNING
+
+----- RESIDENT REQUIRED COLUMNS -----
+resident_id|text|NO|
+resident_code|text|NO|
+display_name|text|NO|
+date_of_birth|date|NO|
+gender|text|NO|
+room|text|YES|
+bed|text|YES|
+care_level|text|NO|
+active_status|boolean|NO|true
+created_at|timestamp with time zone|NO|now()
+updated_at|timestamp with time zone|NO|now()
+DATE_OF_BIRTH_NULLABLE=NO
+PASS: G3 ORIGINAL FIXTURE DEFECT CONFIRMED
+INITIAL_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: INITIAL DATABASE BASELINE
+
+----- CREATE CORRECTED ISOLATED FIXTURE -----
+ERROR:  null value in column "gender" of relation "residents" violates not-null constraint
+DETAIL:  Failing row contains (ops3-g3-r1, OPS3R1, OPS3 Resident 1, 1940-01-01, null, null, null, null, t, 2026-08-30 14:07:09.885133+00, 2026-08-30 14:07:09.885133+00).
+FAIL: CORRECTED ISOLATED FIXTURE CREATED
+
+FINAL_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: DATABASE CLEAN AFTER G3-R1
+
+======================================================================
+ OPS-3 G3-R1 DECISION
+======================================================================
+PASS_COUNT=8
+FAIL_COUNT=1
+STATUS: OPS-3 G3-R1 FAILED
+G3=NOT_CLOSED
+NEXT=STOP_AND_RETURN_OUTPUT
+
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r1_runner_repair_functional_acceptance_20260830_210708.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

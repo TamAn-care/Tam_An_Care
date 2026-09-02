@@ -1,0 +1,95 @@
+{
+  "roadmap": "TAM_AN_CARE_V8_0",
+  "status": "APPROVED",
+  "parent": {
+    "version": "V7.9",
+    "status": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+    "modifiable": false
+  },
+  "successor": {
+    "version": "V8.0",
+    "initial_series": "SERIES_08",
+    "version_created": false,
+    "series_created": false,
+    "implementation_started": false
+  },
+  "decision": "APPROVED_POST_V79_PRODUCT_ROADMAP",
+  "known_must_items": [
+    {
+      "id": "V80-STAFF-001",
+      "title": "Staff and operational role bootstrap foundation",
+      "gate": "S2",
+      "production_direct_seed": false
+    }
+  ],
+  "gates": [
+    {
+      "gate": "S0",
+      "name": "FROZEN_PARENT_BASELINE"
+    },
+    {
+      "gate": "S1",
+      "name": "SOURCE_SCHEMA_AND_RUNTIME_BASELINE"
+    },
+    {
+      "gate": "S2",
+      "name": "ROLE_STAFF_ACCESS_FOUNDATION"
+    },
+    {
+      "gate": "S3",
+      "name": "RESIDENT_AND_CARE_WORKFLOWS"
+    },
+    {
+      "gate": "S4",
+      "name": "DASHBOARD_REPORTING_AND_MANAGEMENT_INFORMATION"
+    },
+    {
+      "gate": "S5",
+      "name": "SECURITY_AUTHORIZATION_AND_AUDIT"
+    },
+    {
+      "gate": "S6",
+      "name": "PERFORMANCE_AND_RELIABILITY"
+    },
+    {
+      "gate": "S7",
+      "name": "BACKUP_RESTORE_DATA_INTEGRITY"
+    },
+    {
+      "gate": "S8",
+      "name": "MANUAL_APPEARANCE_FUNCTION_UX_UAT",
+      "owner": "USER",
+      "skippable": false,
+      "current_status": "DEFERRED_NOT_PASSED"
+    },
+    {
+      "gate": "S_FINAL",
+      "name": "FINAL_OPERATIONAL_RELEASE"
+    }
+  ],
+  "gate_sequence": "S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL",
+  "safety": {
+    "modify_v79": false,
+    "production_direct_development": false,
+    "production_test_data": false,
+    "real_staff_test_mutation": false,
+    "real_resident_test_mutation": false,
+    "gate_to_gate": true,
+    "fail_fast": true,
+    "resumable": true,
+    "sha256_acceptance": true,
+    "rollback_required": true
+  },
+  "manual_acceptance": {
+    "required": true,
+    "gate": "S8",
+    "owner": "USER",
+    "deferred_from_rd3": true,
+    "currently_passed": false,
+    "required_before_final_release": true
+  },
+  "next_authorized_action": "V8_0_INITIALIZATION_PREFLIGHT",
+  "next_gate": "S0_PREFLIGHT",
+  "s0_execution_authorized": false,
+  "created_at": "2026-08-22T08:21:42.194747+00:00"
+}

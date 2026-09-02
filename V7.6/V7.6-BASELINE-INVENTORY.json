@@ -1,0 +1,2433 @@
+{
+  "api_routes": [
+    {
+      "method": "GET",
+      "path": "/api/care-actions/:residentId/:patternId",
+      "source": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/assign",
+      "source": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/transfer",
+      "source": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/start-review",
+      "source": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/resolve",
+      "source": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/reopen",
+      "source": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/staff-actors",
+      "source": "api/src/staff-actors/staff-actor.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/staff-actors/:actorId",
+      "source": "api/src/staff-actors/staff-actor.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "source": "api/src/care-action-bridge/care-action-bridge.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-task-execution/:careTaskId/:action",
+      "source": "api/src/care-task-execution/care-task-execution.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/skin-wound/summary",
+      "source": "api/src/skin-wound/skin-wound.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/skin-wound/:residentId/execute",
+      "source": "api/src/skin-wound/skin-wound.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/sleep-rest/summary",
+      "source": "api/src/sleep-rest/sleep-rest.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/sleep-rest/:residentId/execute",
+      "source": "api/src/sleep-rest/sleep-rest.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/residents",
+      "source": "api/src/residents/resident.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/residents/:residentId",
+      "source": "api/src/residents/resident.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/pain-comfort/summary",
+      "source": "api/src/pain-comfort/pain-comfort.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/pain-comfort/:residentId/execute",
+      "source": "api/src/pain-comfort/pain-comfort.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/health",
+      "source": "api/src/health/health.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/infection-control/summary",
+      "source": "api/src/infection-control/infection-control.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/infection-control/:residentId/execute",
+      "source": "api/src/infection-control/infection-control.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/personal-care/summary",
+      "source": "api/src/personal-care/personal-care.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/personal-care/:residentId/execute",
+      "source": "api/src/personal-care/personal-care.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/integration/residents/:residentId/overview",
+      "source": "api/src/cross-domain-integration/cross-domain-integration.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-plan-governance/:carePlanId/:action",
+      "source": "api/src/care-plan-governance/care-plan-governance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/warning-reviews",
+      "source": "api/src/warning-reviews/warning-review.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/warning-reviews/:warningId",
+      "source": "api/src/warning-reviews/warning-review.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/patterns",
+      "source": "api/src/ai/early-warning.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "source": "api/src/ai/early-warning.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/governance/status",
+      "source": "api/src/ai/ai-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/governance/risk-classes",
+      "source": "api/src/ai/ai-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/governance/policies",
+      "source": "api/src/ai/ai-governance.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/engines",
+      "source": "api/src/ai/ai-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/engines/demo-data/:engineId",
+      "source": "api/src/ai/ai-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/analyze",
+      "source": "api/src/ai/ai-engine.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/demo",
+      "source": "api/src/ai/ai-engine.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/activity-rehabilitation/test/summary",
+      "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/activity-rehabilitation/:residentId/execute",
+      "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/safeguarding/summary",
+      "source": "api/src/safeguarding/safeguarding.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/safeguarding/:residentId/execute",
+      "source": "api/src/safeguarding/safeguarding.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/fall-mobility/summary",
+      "source": "api/src/fall-mobility/fall-mobility.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/fall-mobility/:residentId/execute",
+      "source": "api/src/fall-mobility/fall-mobility.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/medication-safety/summary",
+      "source": "api/src/medication-safety/medication-safety.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-safety/:residentId/execute",
+      "source": "api/src/medication-safety/medication-safety.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+      "source": "api/src/clinical-observations/clinical.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/access-assignments",
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/residents/:residentId/access-assignments",
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/operations/residents/:residentId/access-assignments",
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/operations/access-assignments/:assignmentId/revoke",
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+      "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-administrations/:administrationId/:action",
+      "source": "api/src/medication/medication.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/behavioral-cognitive/summary",
+      "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/behavioral-cognitive/:residentId/execute",
+      "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/nutrition-hydration/:residentId/execute",
+      "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/nutrition-hydration/:residentId/summary",
+      "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/residents/:residentId/care-view",
+      "source": "api/src/operational-care-view/operational-care-view.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/dashboard",
+      "source": "api/src/operational-care-view/operational-dashboard.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "source": "api/src/incidents/incident.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "source": "api/src/incidents/incident.controller.ts"
+    }
+  ],
+  "backend_modules": [
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "activity-rehabilitation",
+      "services": 2,
+      "typescript_files": 5
+    },
+    {
+      "controllers": 4,
+      "modules": 0,
+      "name": "ai",
+      "services": 4,
+      "typescript_files": 8
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "behavioral-cognitive",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "care-action-bridge",
+      "services": 1,
+      "typescript_files": 4
+    },
+    {
+      "controllers": 1,
+      "modules": 0,
+      "name": "care-actions",
+      "services": 1,
+      "typescript_files": 6
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "care-plan-authorization",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "care-plan-governance",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "care-plans",
+      "services": 1,
+      "typescript_files": 4
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "care-task-authorization",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "care-task-execution",
+      "services": 1,
+      "typescript_files": 4
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "care-tasks",
+      "services": 1,
+      "typescript_files": 4
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "clinical-observations",
+      "services": 2,
+      "typescript_files": 6
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "cross-domain-integration",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "database",
+      "services": 1,
+      "typescript_files": 2
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "fall-mobility",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 0,
+      "name": "health",
+      "services": 0,
+      "typescript_files": 1
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "incidents",
+      "services": 2,
+      "typescript_files": 5
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "infection-control",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "medication",
+      "services": 2,
+      "typescript_files": 6
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "medication-safety",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "nutrition-hydration",
+      "services": 2,
+      "typescript_files": 5
+    },
+    {
+      "controllers": 2,
+      "modules": 1,
+      "name": "operational-care-view",
+      "services": 2,
+      "typescript_files": 5
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "pain-comfort",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "personal-care",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "reopen-authorization",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "resident-access-administration",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "resident-access-scope",
+      "services": 1,
+      "typescript_files": 2
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "residents",
+      "services": 1,
+      "typescript_files": 5
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "resolution-authorization",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "responsibility-acceptance",
+      "services": 1,
+      "typescript_files": 4
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "safeguarding",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "skin-wound",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "sleep-rest",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "staff-actors",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 0,
+      "modules": 1,
+      "name": "start-review-authorization",
+      "services": 1,
+      "typescript_files": 3
+    },
+    {
+      "controllers": 1,
+      "modules": 1,
+      "name": "warning-reviews",
+      "services": 1,
+      "typescript_files": 6
+    }
+  ],
+  "database_tables": [
+    "abnormal_findings",
+    "activity_participation",
+    "activity_programs",
+    "activity_sessions",
+    "ai_analysis_audit",
+    "behavioral_audit",
+    "behavioral_episodes",
+    "behavioral_escalations",
+    "behavioral_post_reviews",
+    "behavioral_responses",
+    "behavioral_support_plans",
+    "care_action_audit",
+    "care_action_transfers",
+    "care_actions",
+    "care_plan_audit",
+    "care_plans",
+    "care_task_audit",
+    "care_tasks",
+    "clinical_audit",
+    "clinical_escalations",
+    "clinical_observation_amendments",
+    "clinical_observations",
+    "cognitive_observations",
+    "comfort_interventions",
+    "continence_observations",
+    "diet_orders",
+    "exposure_events",
+    "fall_audit",
+    "fall_escalations",
+    "fall_events",
+    "fall_prevention_actions",
+    "fall_risk_assessments",
+    "feeding_assistance",
+    "functional_assessments",
+    "functional_support_actions",
+    "high_risk_medication_checks",
+    "hygiene_care_plans",
+    "hygiene_care_records",
+    "hygiene_schedules",
+    "incident_assignments",
+    "incident_audit",
+    "incident_escalations",
+    "incident_post_reviews",
+    "incident_responses",
+    "incident_triage",
+    "incidents",
+    "infection_alerts",
+    "infection_audit",
+    "infection_control_plans",
+    "infection_escalations",
+    "infection_monitoring_records",
+    "infection_observations",
+    "infection_precautions",
+    "meal_schedules",
+    "medication_administration_exceptions",
+    "medication_administrations",
+    "medication_adverse_reaction_observations",
+    "medication_audit",
+    "medication_double_checks",
+    "medication_order_reviews",
+    "medication_orders",
+    "medication_reconciliation_items",
+    "medication_reconciliations",
+    "medication_safety_audit",
+    "medication_safety_checks",
+    "medication_schedules",
+    "mobility_support_plans",
+    "night_monitoring_checks",
+    "night_support_responses",
+    "nursing_notes",
+    "nutrition_alerts",
+    "nutrition_audit",
+    "nutrition_escalations",
+    "nutrition_intake_records",
+    "nutrition_plans",
+    "pain_assessments",
+    "pain_audit",
+    "pain_care_plans",
+    "pain_escalations",
+    "pain_reassessments",
+    "pain_safety_alerts",
+    "personal_care_assistance",
+    "personal_care_audit",
+    "personal_care_escalations",
+    "post_fall_observations",
+    "protective_actions",
+    "rehabilitation_audit",
+    "rehabilitation_escalations",
+    "rehabilitation_plans",
+    "repositioning_records",
+    "resident_access_assignments",
+    "residents",
+    "safeguarding_assignments",
+    "safeguarding_audit",
+    "safeguarding_escalations",
+    "safeguarding_post_reviews",
+    "safeguarding_reports",
+    "safeguarding_reviews",
+    "safeguarding_triage",
+    "skin_assessments",
+    "sleep_audit",
+    "sleep_care_plans",
+    "sleep_escalations",
+    "sleep_observations",
+    "sleep_rest_events",
+    "sleep_safety_alerts",
+    "staff_actors",
+    "symptom_observations",
+    "toileting_records",
+    "transfer_safety_checks",
+    "wandering_events",
+    "warning_reviews",
+    "wound_audit",
+    "wound_care_plans",
+    "wound_escalations",
+    "wound_progress_records",
+    "wound_records",
+    "wound_treatment_records"
+  ],
+  "derived_priorities": [
+    {
+      "domain": "activity-rehabilitation",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "ai",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "2 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "api",
+      "priority": "HIGH",
+      "reasons": [
+        "2 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "auth",
+      "priority": "HIGH",
+      "reasons": [
+        "2 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "behavioral-cognitive",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "care-action-bridge",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "7 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-actions",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "14 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-plan-authorization",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "10 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-plan-governance",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "4 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-plans",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "1 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-task-authorization",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "25 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-task-execution",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "5 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "care-tasks",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "6 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "clinical-observations",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "46 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "cross-domain-integration",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "design",
+      "priority": "HIGH",
+      "reasons": [
+        "1 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "fall-mobility",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "features",
+      "priority": "HIGH",
+      "reasons": [
+        "9 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "incidents",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "37 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "infection-control",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "medication",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "31 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "medication-safety",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "nutrition-hydration",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "44 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "operational-care-view",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "pain-comfort",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "personal-care",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "reopen-authorization",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "7 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "resident-access-administration",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "resident-access-scope",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "1 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "resolution-authorization",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "9 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "responsibility-acceptance",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "7 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "safeguarding",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "skin-wound",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "sleep-rest",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "staff-actors",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature"
+      ]
+    },
+    {
+      "domain": "start-review-authorization",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "6 unfinished-source marker(s)"
+      ]
+    },
+    {
+      "domain": "warning-reviews",
+      "priority": "HIGH",
+      "reasons": [
+        "backend capability exists without matching frontend feature",
+        "3 unfinished-source marker(s)"
+      ]
+    }
+  ],
+  "domain_alignment": {
+    "backend_only": [
+      "activity-rehabilitation",
+      "ai",
+      "behavioral-cognitive",
+      "care-action-bridge",
+      "care-actions",
+      "care-plan-authorization",
+      "care-plan-governance",
+      "care-plans",
+      "care-task-authorization",
+      "care-task-execution",
+      "care-tasks",
+      "clinical-observations",
+      "cross-domain-integration",
+      "database",
+      "fall-mobility",
+      "health",
+      "incidents",
+      "infection-control",
+      "medication",
+      "medication-safety",
+      "nutrition-hydration",
+      "operational-care-view",
+      "pain-comfort",
+      "personal-care",
+      "reopen-authorization",
+      "resident-access-administration",
+      "resident-access-scope",
+      "resolution-authorization",
+      "responsibility-acceptance",
+      "safeguarding",
+      "skin-wound",
+      "sleep-rest",
+      "staff-actors",
+      "start-review-authorization",
+      "warning-reviews"
+    ],
+    "frontend_only": [
+      "care-view",
+      "dashboard",
+      "staff-access",
+      "system-status"
+    ],
+    "matched": [
+      "residents"
+    ]
+  },
+  "frontend_features": [
+    {
+      "files": 1,
+      "name": "care-view",
+      "tsx": 1
+    },
+    {
+      "files": 1,
+      "name": "dashboard",
+      "tsx": 1
+    },
+    {
+      "files": 2,
+      "name": "residents",
+      "tsx": 1
+    },
+    {
+      "files": 1,
+      "name": "staff-access",
+      "tsx": 1
+    },
+    {
+      "files": 1,
+      "name": "system-status",
+      "tsx": 1
+    }
+  ],
+  "generated_at_utc": "2026-08-21T00:03:12.446911+00:00",
+  "unfinished_markers": [
+    {
+      "file": "api/src/care-actions/care-action.policy.ts",
+      "line": 51,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 323,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 522,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 531,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 540,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 715,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 739,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 884,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.service.ts",
+      "line": 1062,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.repository.ts",
+      "line": 635,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.repository.ts",
+      "line": 668,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.validation.ts",
+      "line": 46,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.validation.ts",
+      "line": 74,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-actions/care-action.validation.ts",
+      "line": 89,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 41,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 49,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 55,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 61,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 67,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 79,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/reopen-authorization/reopen-authorization.service.ts",
+      "line": 116,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 48,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 54,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 60,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 70,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 79,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 127,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-action-bridge/care-action-bridge.service.ts",
+      "line": 143,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-execution/care-task-execution.service.ts",
+      "line": 41,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-execution/care-task-execution.service.ts",
+      "line": 151,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-execution/care-task-execution.service.ts",
+      "line": 194,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-execution/care-task-execution.service.ts",
+      "line": 470,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-execution/care-task-execution.service.ts",
+      "line": 486,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 55,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 64,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 72,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 78,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 84,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 90,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 96,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 108,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resolution-authorization/resolution-authorization.service.ts",
+      "line": 157,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 79,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 85,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 95,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 115,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 121,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 130,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 149,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 155,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 161,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 180,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 186,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 192,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 211,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 217,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 223,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 245,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 254,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 260,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 285,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 291,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 297,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 322,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 328,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 334,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-task-authorization/care-task-authorization.service.ts",
+      "line": 351,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plans/care-plan.service.ts",
+      "line": 23,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-tasks/care-task.repository.ts",
+      "line": 189,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-tasks/care-task.repository.ts",
+      "line": 198,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-tasks/care-task.service.ts",
+      "line": 28,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-tasks/care-task.service.ts",
+      "line": 53,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-tasks/care-task.service.ts",
+      "line": 86,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-tasks/care-task.service.ts",
+      "line": 126,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/resident-access-scope/resident-access-scope.service.ts",
+      "line": 157,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/start-review-authorization/start-review-authorization.service.ts",
+      "line": 31,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/start-review-authorization/start-review-authorization.service.ts",
+      "line": 60,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/start-review-authorization/start-review-authorization.service.ts",
+      "line": 80,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/start-review-authorization/start-review-authorization.service.ts",
+      "line": 89,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/start-review-authorization/start-review-authorization.service.ts",
+      "line": 98,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/start-review-authorization/start-review-authorization.service.ts",
+      "line": 117,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-governance/care-plan-governance.service.ts",
+      "line": 58,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-governance/care-plan-governance.service.ts",
+      "line": 64,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-governance/care-plan-governance.service.ts",
+      "line": 70,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-governance/care-plan-governance.service.ts",
+      "line": 112,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 41,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 47,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 56,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 65,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 74,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 100,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 126,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 152,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 179,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/care-plan-authorization/care-plan-authorization.service.ts",
+      "line": 198,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/warning-reviews/warning-review.validation.ts",
+      "line": 14,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/warning-reviews/warning-review.validation.ts",
+      "line": 39,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/warning-reviews/warning-review.service.ts",
+      "line": 82,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/ai/ai-engine.service.ts",
+      "line": 24,
+      "text": "return {engine:id,trend:'NOT_IMPLEMENTED_IN_7.3.2',confidence:null,evidence:[],recommendation:'Engine retained as V7.3.1 rules foundation.'};"
+    },
+    {
+      "file": "api/src/ai/ai-engine.service.v7.3.3.backup.ts",
+      "line": 24,
+      "text": "return {engine:id,trend:'NOT_IMPLEMENTED_IN_7.3.2',confidence:null,evidence:[],recommendation:'Engine retained as V7.3.1 rules foundation.'};"
+    },
+    {
+      "file": "api/src/clinical-observations/clinical.repository.ts",
+      "line": 114,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical.repository.ts",
+      "line": 173,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical.service.ts",
+      "line": 67,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical.service.ts",
+      "line": 153,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical.service.ts",
+      "line": 628,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 32,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 38,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 47,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 65,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 71,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 91,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 97,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 107,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 116,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 136,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 142,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 152,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 170,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 176,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 194,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 200,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 218,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 224,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 242,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 248,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 258,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 278,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 284,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 294,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 312,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 318,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 329,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 340,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 358,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 367,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 385,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 394,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 405,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 425,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 431,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 441,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 461,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 467,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 478,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical-authorization.service.ts",
+      "line": 487,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/clinical-observations/clinical.controller.ts",
+      "line": 81,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 36,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 68,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 92,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 147,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 156,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 165,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/responsibility-acceptance/responsibility-acceptance.service.ts",
+      "line": 204,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 28,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 34,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 43,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 54,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 65,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 83,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 89,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 98,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 112,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 121,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 135,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 144,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 158,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 169,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 178,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 189,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 203,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 212,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 223,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 243,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 259,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 270,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 291,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 302,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 313,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication-authorization.service.ts",
+      "line": 321,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication.service.ts",
+      "line": 58,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication.service.ts",
+      "line": 86,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication.service.ts",
+      "line": 263,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication.service.ts",
+      "line": 281,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/medication/medication.controller.ts",
+      "line": 67,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 23,
+      "text": "throw new Error(`${name} is required.`);"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 43,
+      "text": "throw new Error('Resident not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 123,
+      "text": "throw new Error('Nutrition Plan not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 147,
+      "text": "throw new Error('Diet Order not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 171,
+      "text": "throw new Error('Meal Schedule not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 186,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 264,
+      "text": "throw new Error('Unsupported nutrition action.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 349,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 405,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 480,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 499,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 575,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 646,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 664,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 724,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 784,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 873,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1006,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1037,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1098,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1159,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1240,
+      "text": "throw new Error('Intake Record not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1246,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1304,
+      "text": "throw new Error('Intake Record not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1310,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1492,
+      "text": "throw new Error('Nutrition Alert not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1498,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1556,
+      "text": "throw new Error('Nutrition Alert not found.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1560,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1638,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1664,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1686,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1743,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1752,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1804,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration.service.ts",
+      "line": 1818,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 16,
+      "text": "throw new Error('actorId is required.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 20,
+      "text": "throw new Error('actorRole is required.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 33,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 46,
+      "text": "throw new Error('Actor is not authorized.');"
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 62,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 79,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 91,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+      "line": 101,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 47,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 201,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 358,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 401,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 515,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 536,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 551,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 655,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 668,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 721,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 734,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 791,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 898,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1038,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1055,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1081,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1146,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1159,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1212,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1240,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1313,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1374,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1482,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1515,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1601,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1633,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1665,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1697,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident.service.ts",
+      "line": 1750,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 41,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 47,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 56,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 69,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 110,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 130,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 150,
+      "text": "throw new Error("
+    },
+    {
+      "file": "api/src/incidents/incident-authorization.service.ts",
+      "line": 168,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/design/globals.css",
+      "line": 191,
+      "text": ".placeholder {"
+    },
+    {
+      "file": "frontend/src/auth/DevelopmentActorPanel.tsx",
+      "line": 61,
+      "text": "placeholder=\"actor-id\""
+    },
+    {
+      "file": "frontend/src/auth/ActorContext.tsx",
+      "line": 67,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/features/residents/ResidentsPage.tsx",
+      "line": 176,
+      "text": "placeholder=\"T\u00ean, m\u00e3 h\u1ed3 s\u01a1, ph\u00f2ng ho\u1eb7c gi\u01b0\u1eddng\""
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 126,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 195,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 206,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 212,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 252,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 380,
+      "text": "placeholder=\"T\u00ean, m\u00e3 nh\u00e2n s\u1ef1 ho\u1eb7c Actor ID\""
+    },
+    {
+      "file": "frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "line": 553,
+      "text": "placeholder=\"resident-id\""
+    },
+    {
+      "file": "frontend/src/features/care-view/CareViewPage.tsx",
+      "line": 70,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/api/client.ts",
+      "line": 122,
+      "text": "throw new Error("
+    },
+    {
+      "file": "frontend/src/api/client.ts",
+      "line": 127,
+      "text": "throw new Error("
+    }
+  ],
+  "v75": {
+    "api_image_id": "sha256:7aab2a9359481b2057225d968a26217461472e397ddb14c036052273787ac069",
+    "database_counts": "0|0|0",
+    "freeze_manifest_hash": "8258ee8d383673ae0fb7d199c727983f8609786997a5d9704b422d22a18e415d",
+    "freeze_result_hash": "83496732a45c6179d3c296b8f161be9e9bf9733da4501fa7c28677c96901cdf8",
+    "ui_image_id": "sha256:3fd532b88ff6739165822bc5a5e04b56bf4c307c810fe7e0e30fa60281191151"
+  }
+}

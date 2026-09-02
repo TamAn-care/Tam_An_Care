@@ -1,0 +1,49 @@
+{
+  "frontend": [
+    {
+      "scope_id": "V77-FE-01",
+      "title": "Operational Care specialized-domain integration",
+      "status": "CONTRACT_DISCOVERY_REQUIRED_BEFORE_WRITE",
+      "target": "existing /operational-care workspace",
+      "rule": "Use only source-proven read/execute contracts. No separate screen per domain."
+    },
+    {
+      "scope_id": "V77-FE-02",
+      "title": "Supervisor audit/history visibility",
+      "status": "RESPONSE_CONTRACT_DISCOVERY_REQUIRED",
+      "target": "existing Operational Care / resident context",
+      "rule": "Expose only audit/history already available through proven backend responses/routes."
+    }
+  ],
+  "backend": [
+    {
+      "scope_id": "V77-BE-01",
+      "title": "Security closure for mutation endpoints",
+      "status": "RUNTIME_PROOF_REQUIRED",
+      "rule": "Patch only endpoints that actually fail closed/anti-impersonation requirements in isolated runtime acceptance."
+    }
+  ],
+  "audit_tooling": [
+    {
+      "scope_id": "V77-AUDIT-01",
+      "title": "Exact NestJS route parser",
+      "status": "COMPLETE",
+      "evidence": "59 of 59 routes resolved"
+    }
+  ],
+  "database": {
+    "schema_change": false,
+    "migration": false,
+    "production_write": false
+  },
+  "explicitly_excluded": [
+    "architecture rewrite",
+    "V7.6 modification",
+    "production DB changes",
+    "new role invention",
+    "new clinical authority",
+    "AI autonomous mutation expansion",
+    "one new page per backend domain",
+    "security patch without runtime proof"
+  ]
+}

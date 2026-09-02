@@ -1,0 +1,75 @@
+STEP 7Z — LIFECYCLE CONTRACT
+
+FALL RISK ASSESSMENT
+
+DRAFT
+-> VERIFIED
+-> AMENDED
+
+
+MOBILITY SUPPORT PLAN
+
+DRAFT
+-> REVIEWED
+-> ACTIVE
+-> INACTIVE
+
+
+TRANSFER SAFETY CHECK
+
+RECORDED
+-> VERIFIED
+
+
+FALL / NEAR-FALL EVENT
+
+OPEN
+-> ASSIGNED
+-> ACKNOWLEDGED
+-> RESOLVED
+-> CLOSED
+
+
+POST-FALL OBSERVATION
+
+RECORDED
+-> VERIFIED
+-> AMENDED
+
+
+FALL PREVENTION ACTION
+
+PROPOSED
+-> AUTHORIZED
+-> ACTIVE
+-> REVIEWED
+-> ENDED
+
+
+ESCALATION
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+
+OFFICIAL MUTATION CONTRACT
+
+BEGIN TRANSACTION
+-> SELECT target FOR UPDATE
+-> reload state
+-> verify human actor
+-> verify authorization
+-> verify owner / reviewer
+-> revalidate lifecycle
+-> mutate
+-> same-transaction audit
+-> COMMIT
+
+Incompatible concurrent mutation = exactly one winner.
+
+Loser business mutation = zero.
+Loser audit = zero.
+
+Compatible append-only factual history may coexist.

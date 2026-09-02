@@ -1,0 +1,84 @@
+TAM AN CARE V7.4.3
+STEP 7R LIFECYCLE CONTRACT
+
+SKIN ASSESSMENT
+
+DRAFT
+-> VERIFIED
+-> optional AMENDED via append-only replacement
+
+Verified assessment is never silently overwritten.
+
+
+WOUND RECORD
+
+OPEN
+-> VERIFIED
+-> ACTIVE
+-> IMPROVING / STABLE / DETERIORATING as human-observed progress context
+-> RESOLVED
+-> CLOSED
+
+Closure requires human accountability.
+
+A CLOSED wound cannot be silently reopened.
+Any future reopen workflow must be explicit and audited.
+
+
+WOUND CARE PLAN
+
+DRAFT
+-> ACTIVE
+-> SUSPENDED
+-> COMPLETED
+or
+-> CANCELLED
+
+Activation requires human approval.
+
+
+WOUND TREATMENT RECORD
+
+RECORDED
+-> VERIFIED when verification required
+
+or
+
+RECORDED
+-> AMENDED by append-only correction
+
+No verified treatment record overwrite.
+
+
+REPOSITIONING RECORD
+
+SCHEDULED / INDICATED
+-> COMPLETED
+
+or
+-> MISSED
+-> REFUSED
+-> HELD
+-> CANCELLED
+
+Terminal result must be attributable to a human.
+
+
+WOUND PROGRESS RECORD
+
+RECORDED
+-> VERIFIED
+-> optional AMENDED using append-only replacement
+
+
+WOUND ESCALATION
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+Optional cancellation, if implemented later,
+must be explicit, authorized and audited.
+
+No AI or SYSTEM state transition is permitted.

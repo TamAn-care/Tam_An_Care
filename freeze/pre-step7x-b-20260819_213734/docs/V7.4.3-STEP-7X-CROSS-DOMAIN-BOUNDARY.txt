@@ -1,0 +1,69 @@
+STEP 7X — CROSS-DOMAIN BOUNDARY
+
+Step 7X may reference existing medication-domain records:
+
+- medication_orders
+- medication_schedules
+- medication_administrations
+- medication_double_checks
+- medication_audit
+
+References do not grant permission to mutate them autonomously.
+
+
+Step 7X MUST NOT autonomously mutate:
+
+- medication_orders
+- medication_schedules
+- medication_administrations
+- medication_double_checks
+
+- care_actions
+- care_action_transfers
+- care_tasks
+
+- clinical_observations
+- clinical_escalations
+
+- incidents
+
+- nutrition domain
+
+- rehabilitation domain
+
+- wound domain
+
+- hygiene domain
+
+- behavioral / cognitive domain
+
+- sleep / rest domain
+
+- pain / comfort domain
+
+- infection domain
+
+
+Examples:
+
+Medication discrepancy
+-> human review required
+-> no automatic medication-order change.
+
+Possible drug interaction signal
+-> advisory only
+-> no automatic discontinuation.
+
+Possible adverse reaction
+-> human review / escalation may be requested
+-> no automatic medication hold.
+
+Pain score or symptom pattern
+-> may inform human review
+-> cannot trigger PRN medication autonomously.
+
+Hospital-return medication list differs
+-> reconciliation discrepancy recorded
+-> authorized human decides whether an order change is needed.
+
+ZERO CROSS-DOMAIN AUTONOMY = REQUIRED

@@ -1,0 +1,178 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-C1-R3
+ LOT CREATION FUNCTIONAL RETEST
+======================================================================
+
+PURPOSE:
+ -> retest exact failed P5-C1 behavior after authorized minimal repair
+ -> promote repaired API hash ONLY if complete functional acceptance passes
+
+AUTHORIZED:
+ -> exactly ONE lot creation through authenticated REST API
+
+NOT AUTHORIZED:
+ -> lot PATCH
+ -> inventory transaction
+ -> resident consumption
+ -> further source patch
+ -> schema change
+ -> migration change
+ -> accepted runtime restart
+
+======================================================================
+ 1. LOAD R2/P5 CHECKPOINT
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_TEST_CODE=OPS2B_F1_20260830_064735
+P5_R2_API_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+P5_R2_REPAIR_IMAGE=tamancare_ops2b_lotfix:20260830_065509
+PASS: R2 CHECKPOINT AUTHORITY LOADED
+
+======================================================================
+ 2. REPAIRED SOURCE CANDIDATE LOCK
+======================================================================
+API_SOURCE_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: EXACT REPAIRED SOURCE CANDIDATE PRESENT
+
+======================================================================
+ 3. ISOLATED RUNTIME IMAGE + HEALTH
+======================================================================
+CONTAINER_STATE=running
+CONTAINER_IMAGE=tamancare_ops2b_lotfix:20260830_065509
+EXPECTED_R2_IMAGE=tamancare_ops2b_lotfix:20260830_065509
+HEALTH_HTTP=200
+PASS: EXACT REPAIRED ISOLATED RUNTIME ACTIVE
+
+======================================================================
+ 4. AUTH CONTINUITY
+======================================================================
+AUTHENTICATED_ITEM_HTTP=200
+TOKEN_VALUE_PRINTED=NO
+PASS: REAL AUTHENTICATED SESSION ACTIVE
+
+======================================================================
+ 5. DATABASE BASELINE
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|0|0|0
+AUTH_STATE_BEFORE=1|1
+PASS: CLEAN R3 START
+
+======================================================================
+ 6. LOT IDENTIFIER COLLISION CHECK
+======================================================================
+R3_LOT_CODE=LOT_R3_20260830_065705
+PREEXISTING_LOT_COUNT=0
+PASS: UNIQUE LOT IDENTIFIER
+
+======================================================================
+ 7. RETEST LOT CREATION THROUGH REAL REST API
+======================================================================
+CREATE_LOT_HTTP=201
+CREATE_LOT_RESPONSE:
+{"inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","lot_code":"LOT_R3_20260830_065705","received_at":"2026-08-30T00:00:00.000Z","expiry_date":"2027-08-30T00:00:00.000Z","supplier_reference":"OPS2B-P5-C1-R3","note":null,"status":"ACTIVE","created_at":"2026-08-29T23:57:06.480Z"}
+PASS: REPAIRED LOT CREATE HTTP 201
+
+======================================================================
+ 8. DATABASE PERSISTENCE + CANONICAL COLUMN VERIFICATION
+======================================================================
+LOT_DB=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|LOT_R3_20260830_065705|OPS2B-P5-C1-R3|2026-08-30|2027-08-30|ACTIVE
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+PASS: LOT PERSISTED TO EXACT ITEM
+PASS: receivedDate MAPPED TO canonical received_at
+PASS: EXPIRY + SUPPLIER + STATUS PERSISTED
+
+======================================================================
+ 9. AUTHENTICATED LOT READ
+======================================================================
+GET_LOT_HTTP=200
+GET_LOT_RESPONSE:
+{"inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","lot_code":"LOT_R3_20260830_065705","received_at":"2026-08-30T00:00:00.000Z","expiry_date":"2027-08-30T00:00:00.000Z","supplier_reference":"OPS2B-P5-C1-R3","note":null,"status":"ACTIVE","created_at":"2026-08-29T23:57:06.480Z"}
+PASS: CREATED LOT READABLE THROUGH API
+
+======================================================================
+ 10. EXACT INVENTORY SCOPE
+======================================================================
+INVENTORY_COUNTS_AFTER=1|1|0|0
+PASS: EXACTLY ONE P5 ITEM
+PASS: EXACTLY ONE P5 LOT
+PASS: NO TRANSACTION
+PASS: NO RESIDENT CONSUMPTION
+
+======================================================================
+ 11. SOURCE PRESERVATION DURING FUNCTIONAL RETEST
+======================================================================
+API_SOURCE_HASH_AFTER=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: REPAIRED SOURCE UNCHANGED DURING R3
+
+======================================================================
+ 12. ACCEPTED RUNTIMES PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 13. ISOLATED + AUTH FINAL HEALTH
+======================================================================
+FINAL_ISOLATED_HEALTH=200
+FINAL_AUTH_STATE=1|1
+PASS: RUNTIME + AUTH PRESERVED
+
+======================================================================
+ 14. PROMOTE REPAIRED API BASELINE
+======================================================================
+P5_STATE_UPDATED=YES
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_LOT_CODE=LOT_R3_20260830_065705
+P5_ACCEPTED_API_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+PASS: REPAIRED API HASH PROMOTED AFTER FUNCTIONAL ACCEPTANCE
+
+======================================================================
+ 15. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P5-C1-R3 LOT CREATION RETEST PASSED
+
+ORIGINAL_RUNTIME_DEFECT=CONFIRMED_AND_REPAIRED
+RECEIVED_DATE_TO_RECEIVED_AT_ALIGNMENT=PASS
+LOT_CREATE_API=PASS
+LOT_DATABASE_PERSISTENCE=PASS
+LOT_ITEM_RELATION=PASS
+LOT_AUTHENTICATED_READ=PASS
+CANONICAL_RECEIVED_AT_MAPPING=PASS
+
+REPAIRED_API_BASELINE_ACCEPTED=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_BASELINE=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+
+INVENTORY_DATABASE=1|1|0|0
+AUTH_FIXTURE=1|1
+SCHEMA_CHANGE=NO
+MIGRATION_CHANGE=NO
+ADDITIONAL_SOURCE_PATCH=NO
+ACCEPTED_RUNTIME_REGRESSION=NO
+
+P5_C1_STATUS=PASS
+NEXT=OPS-2-B-F1-P5-C2 LOT MUTATION + ITEM RELATION IMMUTABILITY
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r3_lot_creation_retest_20260830_065705.txt
+
+======================================================================
+ IMPORTANT:
+ -> KEEP REPAIRED SOURCE
+ -> NEW API BASELINE IS NOW ACCEPTED FOR CONTINUING P5
+ -> KEEP THE P5 ITEM
+ -> KEEP THE P5 LOT
+ -> KEEP P5 state.env
+ -> KEEP AUTH FIXTURE + token
+ -> KEEP PRE-R2 BACKUP AS RECOVERY EVIDENCE
+ -> DO NOT CREATE INVENTORY TRANSACTION YET
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT RERUN P5-C1/R1/R1A/R2/R3
+ -> DO NOT START P5-C2 MANUALLY
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

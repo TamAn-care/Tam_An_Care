@@ -1,0 +1,59 @@
+STEP 7W — CROSS-DOMAIN BOUNDARY
+
+Step 7W may READ or REFERENCE information from other domains
+for authorized human review.
+
+Step 7W MUST NOT autonomously mutate:
+
+- care_actions
+- care_action_transfers
+- care_tasks
+
+- medication_orders
+- medication_schedules
+- medication_administrations
+- medication_double_checks
+
+- clinical_observations
+- clinical_escalations
+
+- incidents
+- incident_triage
+- incident_assignments
+- incident_responses
+
+- nutrition domain
+
+- rehabilitation domain
+
+- wound domain
+
+- hygiene domain
+
+- behavioral / cognitive domain
+
+- sleep / rest domain
+
+- pain / comfort / symptom domain
+
+
+Examples:
+
+Fever + cough + reduced intake
+-> may generate advisory pattern
+-> must not diagnose infection
+-> must not automatically create medication or care task.
+
+Possible wound infection signal
+-> may notify human reviewer
+-> cannot modify wound care plan automatically.
+
+Possible medication-related symptom
+-> may notify human reviewer
+-> cannot change medication.
+
+Possible communicable-disease cluster
+-> may generate surveillance alert
+-> cannot impose isolation or quarantine automatically.
+
+ZERO CROSS-DOMAIN AUTONOMY = REQUIRED

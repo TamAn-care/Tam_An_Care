@@ -1,0 +1,19 @@
+{
+  "version": "V7.9",
+  "series": "04",
+  "phase": "3",
+  "status": "ROADMAP_DISCOVERY_COMPLETE",
+  "authority_decision": "EXISTING_PHASE3_ROADMAP_EVIDENCE_FOUND",
+  "phase2_final_result_sha256": "900c88efc62bbee865a5492fbc58e8b27b950bb36df910c29b20e711d97788c3",
+  "phase2_final_manifest_sha256": "08518e460bc925cfbed7848e02352a7d21f314fa31e0cb9ec01e08c68aae221a",
+  "phase3_stub_sha256": "8032d564ffc4b600a733f7c979d09fa8d348f0d9a2530172ca504783eaabe700",
+  "reference_inventory_sha256": "a6ed532382557a418f5557cbade310c14995b2194b4179d1816b87d0e905d83b",
+  "candidate_inventory_sha256": "cf4270b4d5f7dc15ece32dea0ca3f721adf2e78bd8b0927bf5bc835e4a54827d",
+  "source_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "real_resident_mutation": false,
+  "v77_source_write": false,
+  "implementation_generated": false,
+  "generated_at": "2026-08-22T01:46:24.828123+00:00"
+}

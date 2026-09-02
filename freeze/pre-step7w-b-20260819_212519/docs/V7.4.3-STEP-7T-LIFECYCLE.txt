@@ -1,0 +1,63 @@
+STEP 7T — LIFECYCLE CONTRACT
+
+COGNITIVE OBSERVATION
+DRAFT
+-> RECORDED
+-> VERIFIED
+
+Verified record overwrite = NO.
+Correction is append-only amendment/history.
+
+BEHAVIORAL SUPPORT PLAN
+DRAFT
+-> REVIEWED
+-> ACTIVE
+-> RETIRED
+
+Only authorized human actors may transition the plan.
+
+BEHAVIORAL EPISODE
+OPEN
+-> ASSIGNED
+-> ACKNOWLEDGED
+-> RESPONDING
+-> RESOLVED
+-> REVIEWED
+-> CLOSED
+
+Permitted policy branches may include:
+OPEN -> RESOLVED
+when an authorized human resolves a low-complexity event under policy.
+
+WANDERING EVENT
+OPEN
+-> ACKNOWLEDGED
+-> RESPONDING
+-> RESOLVED
+-> CLOSED
+
+No state transition authorizes restraint, sedation,
+medication mutation or involuntary transfer.
+
+BEHAVIORAL RESPONSE
+RECORDED
+-> VERIFIED
+
+ESCALATION
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+POST-EVENT REVIEW
+DRAFT
+-> COMPLETED
+-> VERIFIED
+
+GENERAL
+- row lock before state transition
+- revalidate state after lock
+- database transaction required
+- incompatible terminal transitions are single-winner
+- loser mutation = zero
+- loser audit = zero

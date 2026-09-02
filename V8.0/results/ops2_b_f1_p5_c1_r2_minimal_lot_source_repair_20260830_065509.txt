@@ -1,0 +1,255 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-C1-R2
+ MINIMAL LOT SOURCE REPAIR
+======================================================================
+
+AUTHORIZED REPAIR:
+ -> received_date SQL column => received_at
+ -> previous.received_date => previous.received_at
+ -> remove unsupported inventory_lots updated_at assignment
+ -> preserve request field receivedDate
+ -> rebuild/recreate ONLY isolated runtime :3110
+
+FORBIDDEN:
+ -> database schema change
+ -> migration change
+ -> accepted runtime restart
+ -> inventory mutation
+ -> auth mutation
+ -> broad application redesign
+
+======================================================================
+ 1. PRE-REPAIR BASELINE
+======================================================================
+API_SOURCE_HASH_BEFORE=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH_BEFORE=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: EXACT PRE-REPAIR SOURCE BASELINE
+
+======================================================================
+ 2. DATABASE / AUTH BASELINE
+======================================================================
+INVENTORY_BEFORE=1|0|0|0
+AUTH_BEFORE=1|1
+PASS: P5 FIXTURES PRESERVED
+
+======================================================================
+ 3. CAPTURE ISOLATED RUNTIME ROLLBACK CONTRACT
+======================================================================
+CURRENT_CONTAINER_STATE=running
+CURRENT_IMAGE=tamancare_ops2b_functional:20260830_061518
+NETWORK_COUNT=1
+NETWORK=tamancare_v7_4_3_development_default
+CURRENT_HEALTH=200
+ENV_CAPTURED=YES
+ENV_VALUES_PRINTED=NO
+PASS: ROLLBACK CONTRACT CAPTURED
+
+======================================================================
+ 4. VERIFY EXACT PRE-PATCH DEFECT SHAPE
+======================================================================
+INSERT_received_date_COUNT=1
+UPDATE_received_date_COUNT=1
+previous_received_date_COUNT=1
+status_plus_updated_at_COUNT=1
+PASS: EXACT PRE-PATCH DEFECT SHAPE
+
+======================================================================
+ 5. IMMUTABLE PRE-REPAIR BACKUP
+======================================================================
+SOURCE_FILE_HASH_BEFORE=580c4ed70aca98299a57857b0b9a163dcf781421825049ae22bfafaa938c8358
+BACKUP_FILE_HASH=580c4ed70aca98299a57857b0b9a163dcf781421825049ae22bfafaa938c8358
+BACKUP_PATH=/tmp/tamancare_ops2b_p5/inventory-lot.service.pre-r2.ts
+PASS: EXACT SOURCE BACKUP CREATED
+
+======================================================================
+ 6. APPLY MINIMAL SOURCE ALIGNMENT
+======================================================================
+PASS: MINIMAL PATCH APPLIED
+
+======================================================================
+ 7. POST-PATCH STATIC CONTRACT
+======================================================================
+SOURCE_received_date_COUNT=0
+SOURCE_received_at_COUNT=3
+SOURCE_updated_at_COUNT=0
+REQUEST_receivedDate_COUNT=3
+PASS: SOURCE ALIGNED TO CANONICAL LOT SCHEMA
+PASS: receivedDate REST FIELD PRESERVED
+
+--- POST-PATCH LOT COLUMN SIGNALS ---
+140:          received_at,
+152:          optionalText(body?.receivedDate),
+233:            received_at = $4,
+245:            body?.receivedDate === undefined
+246:              ? previous.received_at
+247:              : optionalText(body.receivedDate),
+
+======================================================================
+ 8. APPLICATION BUILD
+======================================================================
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: CURRENT SOURCE BUILD
+
+======================================================================
+ 9. BUILD NEW ISOLATED IMAGE
+======================================================================
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 416B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:20-bookworm-slim
+#2 DONE 5.5s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/6] FROM docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#4 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 1.92MB 0.8s done
+#5 DONE 0.8s
+
+#6 [build 3/6] COPY package.json package-lock.json ./
+#6 CACHED
+
+#7 [build 2/6] WORKDIR /app
+#7 CACHED
+
+#8 [build 4/6] RUN npm ci
+#8 CACHED
+
+#9 [build 5/6] COPY . .
+#9 DONE 13.9s
+
+#10 [build 6/6] RUN npm run build
+#10 0.826 
+#10 0.826 > taman-care-v7-health-trend@7.3.2 build
+#10 0.826 > nest build
+#10 0.826 
+#10 DONE 9.5s
+
+#11 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#11 CACHED
+
+#12 [runtime 5/5] COPY --from=build /app/dist ./dist
+#12 DONE 0.2s
+
+#13 exporting to image
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:49778ff86d9400c08b01d7ab820802a18880120e99656ea438a5bf97a520f47f done
+#13 exporting config sha256:2f4160d19c379b924b8d40566c50cde4c31612703f00d16b6d73e1fee0d8adb4 done
+#13 exporting attestation manifest sha256:b84035b578c316687559ffc50fd65e247723865a792e270afcd68262252b0806 done
+#13 exporting manifest list sha256:9453d58efb8a2b63dcd9fc6dd3fcd267b8f02dbf1021e7e6c8e58a57342c43a0 done
+#13 naming to docker.io/library/tamancare_ops2b_lotfix:20260830_065509 done
+#13 unpacking to docker.io/library/tamancare_ops2b_lotfix:20260830_065509 0.1s done
+#13 DONE 0.3s
+NEW_IMAGE=tamancare_ops2b_lotfix:20260830_065509
+PASS: NEW CURRENT-SOURCE IMAGE BUILT
+
+======================================================================
+ 10. SWITCH ONLY ISOLATED RUNTIME
+======================================================================
+HEALTH_ATTEMPT_1=000
+HEALTH_ATTEMPT_2=200
+PASS: REPAIRED ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 11. AUTHENTICATION CONTINUITY
+======================================================================
+AUTHENTICATED_INVENTORY_READ_HTTP=200
+TOKEN_VALUE_PRINTED=NO
+PASS: EXISTING REAL LOGIN TOKEN SURVIVED ISOLATED REBUILD
+
+======================================================================
+ 12. DATABASE MUST REMAIN UNCHANGED
+======================================================================
+INVENTORY_AFTER=1|0|0|0
+AUTH_AFTER=1|1
+PASS: DATABASE UNCHANGED BY SOURCE REPAIR
+
+======================================================================
+ 13. ACCEPTED RUNTIMES MUST REMAIN UNTOUCHED
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 14. NEW SOURCE CANDIDATE HASH
+======================================================================
+API_SOURCE_HASH_AFTER_REPAIR=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH_AFTER_REPAIR=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: API CHANGED BY AUTHORIZED MINIMAL REPAIR
+PASS: FRONTEND UNCHANGED
+
+======================================================================
+ 15. SAVE R2 REPAIR CHECKPOINT
+======================================================================
+P5_R2_CHECKPOINT_SAVED=YES
+P5_R2_API_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+P5_R2_REPAIR_IMAGE=tamancare_ops2b_lotfix:20260830_065509
+ROLLBACK_BACKUP_RETAINED=YES
+
+======================================================================
+ 16. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P5-C1-R2 MINIMAL LOT SOURCE REPAIR PASSED
+
+DEFECT_CLASS=APPLICATION_SOURCE_SCHEMA_ALIGNMENT
+REPAIR_SCOPE=ONE_SOURCE_FILE
+REPAIR_FILE=api/src/inventory/inventory-lot.service.ts
+
+INSERT_received_at=PASS
+UPDATE_received_at=PASS
+previous_received_at=PASS
+unsupported_updated_at_REMOVED=PASS
+REQUEST_receivedDate_PRESERVED=PASS
+
+BUILD=PASS
+ISOLATED_REBUILD=PASS
+ISOLATED_HEALTH=200
+AUTHENTICATED_READ=PASS
+
+DATABASE_SCHEMA_CHANGE=NO
+MIGRATION_CHANGE=NO
+INVENTORY_MUTATION=NO
+INVENTORY_DATABASE=1|0|0|0
+AUTH_FIXTURE=1|1
+FRONTEND_CHANGE=NO
+ACCEPTED_RUNTIME_REGRESSION=NO
+
+OLD_API_BASELINE=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+REPAIRED_API_CANDIDATE=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+CANDIDATE_NOT_YET_FUNCTIONALLY_ACCEPTED=YES
+
+NEXT=OPS-2-B-F1-P5-C1-R3 RE-RUN LOT CREATION ACCEPTANCE
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r2_minimal_lot_source_repair_20260830_065509.txt
+
+======================================================================
+ IMPORTANT:
+ -> KEEP REPAIRED SOURCE
+ -> KEEP tamancare_ops2b_functional RUNNING
+ -> KEEP P5 ITEM
+ -> KEEP AUTH FIXTURE + token
+ -> KEEP P5 state.env
+ -> KEEP PRE-R2 SOURCE BACKUP
+ -> DO NOT CREATE LOT MANUALLY
+ -> DO NOT PATCH ANY OTHER SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT RESTART ACCEPTED RUNTIMES
+ -> DO NOT PROMOTE NEW API HASH YET
+ -> DO NOT START P5-C2
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

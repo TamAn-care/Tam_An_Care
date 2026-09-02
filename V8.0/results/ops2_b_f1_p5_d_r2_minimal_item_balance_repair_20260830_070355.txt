@@ -1,0 +1,349 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-D-R2
+ MINIMAL ITEM-BALANCE SOURCE REPAIR
+======================================================================
+
+AUTHORIZED REPAIR:
+ -> one SQL predicate in InventoryLedgerService.balance()
+
+OLD SEMANTICS:
+ -> NULL lot => only transactions whose inventory_lot_id IS NULL
+
+NEW SEMANTICS:
+ -> NULL lot => ALL transactions for item
+ -> supplied lot => ONLY transactions for that lot
+
+NO:
+ -> new transaction
+ -> transaction edit/delete
+ -> schema/migration change
+ -> controller/API contract change
+ -> advisory-lock change
+ -> signed quantity change
+ -> accepted runtime restart
+
+======================================================================
+ 1. LOAD P5 STATE
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_BASE_UNIT=UNIT
+P5_ACCEPTED_API_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+PASS: P5 STATE LOADED
+
+======================================================================
+ 2. EXACT PRE-REPAIR SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH_BEFORE=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH_BEFORE=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: EXACT PRE-REPAIR SOURCE BASELINE
+
+======================================================================
+ 3. DATABASE MUST CONTAIN EXACT EXISTING RECEIPT
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|1|1|0
+EXISTING_LEDGER_ROW=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|RECEIPT|10.0000|UNIT
+PASS: EXISTING RECEIPT = 10 UNIT
+PASS: IMMUTABLE RECEIPT PRESERVED
+
+======================================================================
+ 4. CAPTURE ISOLATED RUNTIME ROLLBACK CONTRACT
+======================================================================
+CURRENT_CONTAINER_STATE=running
+CURRENT_IMAGE=tamancare_ops2b_lotfix:20260830_065509
+NETWORK_COUNT=1
+NETWORK=tamancare_v7_4_3_development_default
+CURRENT_HEALTH=200
+ENV_CAPTURED=YES
+ENV_VALUES_PRINTED=NO
+PASS: RUNTIME ROLLBACK CONTRACT CAPTURED
+
+======================================================================
+ 5. VERIFY EXACT DEFECT SHAPE
+======================================================================
+OLD_PREDICATE_COUNT=1
+NEW_PREDICATE_COUNT=0
+PASS: EXACT REPAIR SURFACE LOCKED
+
+======================================================================
+ 6. IMMUTABLE PRE-REPAIR BACKUP
+======================================================================
+SOURCE_FILE_HASH_BEFORE=96ec7816464d594d562ad785cef69a24c52c85c17117fa955bfcb9a8668ebdf6
+BACKUP_FILE_HASH=96ec7816464d594d562ad785cef69a24c52c85c17117fa955bfcb9a8668ebdf6
+BACKUP_PATH=/tmp/tamancare_ops2b_p5/inventory-ledger.service.pre-p5d-r2.ts
+PASS: EXACT LEDGER SOURCE BACKUP CREATED
+
+======================================================================
+ 7. APPLY ONE-PREDICATE MINIMAL REPAIR
+======================================================================
+PASS: MINIMAL BALANCE PREDICATE PATCH APPLIED
+
+======================================================================
+ 8. STATIC POST-REPAIR CONTRACT
+======================================================================
+OLD_PREDICATE_COUNT=0
+NEW_PREDICATE_COUNT=1
+PASS: ITEM AGGREGATE SEMANTICS ALIGNED
+PASS: LOT-SPECIFIC FILTER PRESERVED
+PASS: SIGNED QUANTITY SEMANTICS PRESERVED
+PASS: ADVISORY LOCK ARCHITECTURE PRESERVED
+
+--- POST-REPAIR balance() WINDOW ---
+30-        ),
+31-      ],
+32-    );
+33-  }
+34-
+35:  async balance(
+36-    client: PoolClient,
+37-    inventoryItemId: string,
+38-    inventoryLotId: string | null,
+39-  ): Promise<number> {
+40-    const result = await client.query(
+41-      `
+42-      SELECT COALESCE(
+43-        SUM(
+44-          CASE
+45-            WHEN transaction_type IN (
+46-              'RECEIPT',
+47-              'ADJUSTMENT_IN',
+48-              'RETURN_IN'
+49-            )
+50-              THEN quantity
+51-            WHEN transaction_type IN (
+52-              'ISSUE',
+53-              'ADJUSTMENT_OUT',
+54-              'RETURN_OUT'
+55-            )
+56-              THEN -quantity
+57-            ELSE 0
+58-          END
+59-        ),
+60-        0
+61-      ) AS balance
+62-      FROM inventory_transactions
+63-      WHERE inventory_item_id = $1
+64-        AND (
+65-          $2::text IS NULL
+66-          OR inventory_lot_id = $2
+67-        )
+68-      `,
+69-      [
+70-        inventoryItemId,
+71-        inventoryLotId,
+72-      ],
+73-    );
+74-
+75-    return Number(result.rows[0]?.balance || 0);
+76-  }
+77-
+78-  signedQuantity(
+79-    transactionType: string,
+80-    quantity: number,
+81-  ): number {
+82-    if (
+83-      [
+84-        'RECEIPT',
+85-        'ADJUSTMENT_IN',
+86-        'RETURN_IN',
+87-      ].includes(transactionType)
+88-    ) {
+89-      return quantity;
+90-    }
+
+======================================================================
+ 9. BUILD CURRENT SOURCE
+======================================================================
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: APPLICATION BUILD
+
+======================================================================
+ 10. BUILD REPAIRED ISOLATED IMAGE
+======================================================================
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 416B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:20-bookworm-slim
+#2 DONE 5.1s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/6] FROM docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#4 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 1.90MB 0.7s done
+#5 DONE 0.7s
+
+#6 [build 2/6] WORKDIR /app
+#6 CACHED
+
+#7 [build 3/6] COPY package.json package-lock.json ./
+#7 CACHED
+
+#8 [build 4/6] RUN npm ci
+#8 CACHED
+
+#9 [build 5/6] COPY . .
+#9 DONE 7.9s
+
+#10 [build 6/6] RUN npm run build
+#10 0.517 
+#10 0.517 > taman-care-v7-health-trend@7.3.2 build
+#10 0.517 > nest build
+#10 0.517 
+#10 DONE 5.6s
+
+#11 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#11 CACHED
+
+#12 [runtime 5/5] COPY --from=build /app/dist ./dist
+#12 DONE 0.1s
+
+#13 exporting to image
+#13 exporting layers 0.1s done
+#13 exporting manifest sha256:ee6787fc0a11da6c20e4dcaead0d150166a38c631cd21d6fbd8b7b917029b3b4 done
+#13 exporting config sha256:d7260b54f47b09d35d37a24b1ddeb2094c58c4465c015e376826b13ae1d27f2b done
+#13 exporting attestation manifest sha256:7d6c1d721e103eabc78e8936cea30a33ebf991e50c97bb40a5864f85b1d7374c done
+#13 exporting manifest list sha256:b23651a35a4c11347dd1d81878deb3faf1d310f1bedeaf3e900e7b8c6ad443ba done
+#13 naming to docker.io/library/tamancare_ops2b_balancefix:20260830_070355 done
+#13 unpacking to docker.io/library/tamancare_ops2b_balancefix:20260830_070355 0.1s done
+#13 DONE 0.3s
+NEW_IMAGE=tamancare_ops2b_balancefix:20260830_070355
+PASS: REPAIRED IMAGE BUILT
+
+======================================================================
+ 11. RECREATE ONLY ISOLATED RUNTIME
+======================================================================
+HEALTH_ATTEMPT_1=000
+HEALTH_ATTEMPT_2=200
+PASS: REPAIRED ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 12. AUTH CONTINUITY
+======================================================================
+AUTHENTICATED_TRANSACTION_READ_HTTP=200
+TOKEN_VALUE_PRINTED=NO
+PASS: AUTHENTICATED SESSION CONTINUITY
+
+======================================================================
+ 13. ITEM-LEVEL BALANCE FUNCTIONAL RETEST
+======================================================================
+ITEM_BALANCE_HTTP=200
+ITEM_BALANCE_RESPONSE:
+{"inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":null,"unit":"UNIT","balance":"10.0000","as_of":"2026-08-30T00:04:25.142Z"}
+PARSED_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+PARSED_ITEM_LOT=None
+PARSED_ITEM_UNIT=UNIT
+PARSED_ITEM_BALANCE=10.0000
+PASS: ITEM-LEVEL BALANCE = 10 UNIT
+
+======================================================================
+ 14. LOT-LEVEL BALANCE REGRESSION RETEST
+======================================================================
+LOT_BALANCE_HTTP=200
+LOT_BALANCE_RESPONSE:
+{"inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","unit":"UNIT","balance":"10.0000","as_of":"2026-08-30T00:04:25.251Z"}
+PARSED_LOT_ITEM=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+PARSED_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+PARSED_LOT_UNIT=UNIT
+PARSED_LOT_BALANCE=10.0000
+PASS: LOT-LEVEL BALANCE REMAINS 10 UNIT
+
+======================================================================
+ 15. DATABASE LEDGER MUST REMAIN IMMUTABLE
+======================================================================
+INVENTORY_COUNTS_AFTER=1|1|1|0
+LEDGER_ROW_AFTER=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|RECEIPT|10.0000|UNIT
+PASS: NO TRANSACTION CREATED
+PASS: EXISTING RECEIPT UNCHANGED
+
+======================================================================
+ 16. SOURCE + FRONTEND HASH
+======================================================================
+API_SOURCE_HASH_AFTER_REPAIR=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: API CHANGED ONLY THROUGH AUTHORIZED REPAIR
+PASS: FRONTEND UNCHANGED
+
+======================================================================
+ 17. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 18. AUTH FIXTURE PRESERVATION
+======================================================================
+FINAL_AUTH_STATE=1|1
+PASS: AUTH FIXTURE PRESERVED
+
+======================================================================
+ 19. PROMOTE REPAIRED API BASELINE
+======================================================================
+P5_ACCEPTED_API_HASH_NEW=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+P5_D_R2_REPAIR_IMAGE=tamancare_ops2b_balancefix:20260830_070355
+PASS: FUNCTIONALLY VERIFIED BALANCE REPAIR PROMOTED
+
+======================================================================
+ 20. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P5-D-R2 MINIMAL ITEM-BALANCE REPAIR PASSED
+
+ORIGINAL_RECEIPT_PRESERVED=YES
+NEW_TRANSACTION_CREATED=NO
+TRANSACTION_MUTATION=NO
+
+ITEM_BALANCE_SEMANTICS=PASS
+ITEM_DERIVED_BALANCE=10
+LOT_BALANCE_REGRESSION=PASS
+LOT_DERIVED_BALANCE=10
+
+SIGNED_QUANTITY_LOGIC_CHANGED=NO
+ADVISORY_LOCK_CHANGED=NO
+API_CONTRACT_CHANGED=NO
+SCHEMA_CHANGE=NO
+MIGRATION_CHANGE=NO
+FRONTEND_CHANGE=NO
+
+INVENTORY_DATABASE=1|1|1|0
+AUTH_FIXTURE=1|1
+ACCEPTED_RUNTIME_REGRESSION=NO
+
+OLD_API_BASELINE=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+NEW_ACCEPTED_API_BASELINE=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+
+P5_D_BALANCE_REPAIR_STATUS=PASS
+NEXT=OPS-2-B-F1-P5-D-R3 RECEIPT ACCEPTANCE COMPLETION
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_d_r2_minimal_item_balance_repair_20260830_070355.txt
+
+======================================================================
+ IMPORTANT:
+ -> KEEP EXISTING RECEIPT
+ -> KEEP BALANCE = 10
+ -> KEEP P5 ITEM + LOT ACTIVE
+ -> KEEP P5 state.env
+ -> KEEP AUTH FIXTURE + token
+ -> KEEP PRE-R2 LEDGER SOURCE BACKUP
+ -> DO NOT CREATE ANOTHER RECEIPT
+ -> DO NOT PATCH/DELETE inventory_transactions
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT RERUN P5-D OR P5-D-R1/R2
+ -> DO NOT START P5-E YET
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

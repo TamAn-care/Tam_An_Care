@@ -1,0 +1,1 @@
+{"status":"ok","version":"7.3.3","component":"health-trend-ai","aiEnabled":true,"killSwitch":false,"timestamp":"2026-08-25T00:19:44.561Z"}

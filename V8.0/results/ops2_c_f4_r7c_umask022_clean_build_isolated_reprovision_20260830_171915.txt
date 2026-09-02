@@ -1,0 +1,250 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F4-R7C
+ UMASK-022 CLEAN BUILD + ISOLATED RUNTIME REPROVISION
+ NO SOURCE CHANGE / NO DB MUTATION / NO FUNCTIONAL POST
+======================================================================
+
+======================================================================
+ 1. F4-R7B AUTHORITY
+======================================================================
+PASS: F4-R7B AUTHORITY
+F4_R7B_ARTIFACT=ops2_c_f4_r7b_generated_dist_metadata_repair_clean_20260830_171710.txt
+
+======================================================================
+ 2. ACCEPTED SOURCE HASH LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SOURCE HASH AUTHORITY
+
+======================================================================
+ 3. CLEAN DIST PRECONDITION
+======================================================================
+DIST_PRESENT_BEFORE_BUILD=NO
+PASS: CLEAN BUILD PRECONDITION
+
+======================================================================
+ 4. COLLISION SAFETY
+======================================================================
+PASS: TEST CONTAINER NAME AVAILABLE
+PASS: PORT 3111 AVAILABLE
+
+======================================================================
+ 5. DATABASE PRE-BASELINE — READ ONLY
+======================================================================
+PRE_DB_BASELINE=1|1|0|0|0|0|0
+PASS: DATABASE PRE-BASELINE
+
+======================================================================
+ 6. CLEAN HOST BUILD — EXPLICIT UMASK 022
+======================================================================
+BUILD_PROCESS_UMASK=0022
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+HOST_BUILD_RC=0
+PASS: CLEAN HOST BUILD
+
+======================================================================
+ 7. COMPLETE DIST PERMISSION ACCEPTANCE
+======================================================================
+DIST_FILE_COUNT=514
+DIST_DIRECTORY_COUNT=44
+DIST_NON_WORLD_READABLE_FILE_COUNT=0
+DIST_NON_WORLD_TRAVERSABLE_DIRECTORY_COUNT=0
+TARGET_MODE=644
+CONTROL_MODE=644
+PASS: COMPLETE DIST PERMISSION ACCEPTANCE
+
+======================================================================
+ 8. BUILD ISOLATED IMAGE
+======================================================================
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 416B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:20-bookworm-slim
+#2 DONE 1.4s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [build 1/6] FROM docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#4 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 0.0s done
+#4 DONE 0.0s
+
+#5 [build 2/6] WORKDIR /app
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 17.82MB 5.2s
+#6 transferring context: 145.25MB 10.2s done
+#6 DONE 10.5s
+
+#7 [build 3/6] COPY package.json package-lock.json ./
+#7 DONE 0.6s
+
+#8 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#8 ...
+
+#9 [build 4/6] RUN npm ci
+#9 9.217 npm warn deprecated glob@10.4.5: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+#9 ...
+
+#8 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#8 14.16 
+#8 14.16 added 145 packages, and audited 146 packages in 12s
+#8 14.16 
+#8 14.16 29 packages are looking for funding
+#8 14.16   run `npm fund` for details
+#8 14.20 
+#8 14.20 11 vulnerabilities (7 moderate, 4 high)
+#8 14.20 
+#8 14.20 To address issues that do not require attention, run:
+#8 14.20   npm audit fix
+#8 14.20 
+#8 14.20 To address all issues (including breaking changes), run:
+#8 14.20   npm audit fix --force
+#8 14.20 
+#8 14.20 Run `npm audit` for details.
+#8 14.20 npm notice
+#8 14.20 npm notice New major version of npm available! 10.8.2 -> 12.0.2
+#8 14.20 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#8 14.20 npm notice To update run: npm install -g npm@12.0.2
+#8 14.20 npm notice
+#8 14.38 npm warn using --force Recommended protections disabled.
+#8 DONE 15.1s
+
+#9 [build 4/6] RUN npm ci
+#9 17.14 
+#9 17.14 added 371 packages, and audited 372 packages in 15s
+#9 17.14 
+#9 17.14 76 packages are looking for funding
+#9 17.14   run `npm fund` for details
+#9 17.21 
+#9 17.21 24 vulnerabilities (3 low, 13 moderate, 8 high)
+#9 17.21 
+#9 17.21 To address issues that do not require attention, run:
+#9 17.21   npm audit fix
+#9 17.21 
+#9 17.21 To address all issues (including breaking changes), run:
+#9 17.21   npm audit fix --force
+#9 17.21 
+#9 17.21 Run `npm audit` for details.
+#9 17.21 npm notice
+#9 17.21 npm notice New major version of npm available! 10.8.2 -> 12.0.2
+#9 17.21 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+#9 17.21 npm notice To update run: npm install -g npm@12.0.2
+#9 17.21 npm notice
+#9 DONE 17.5s
+
+#10 [build 5/6] COPY . .
+#10 DONE 8.1s
+
+#11 [build 6/6] RUN npm run build
+#11 0.593 
+#11 0.593 > taman-care-v7-health-trend@7.3.2 build
+#11 0.593 > nest build
+#11 0.593 
+#11 DONE 5.1s
+
+#12 [runtime 5/5] COPY --from=build /app/dist ./dist
+#12 DONE 0.4s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 4.8s done
+#13 exporting manifest sha256:3a3c6da0e19a351334c1e39790fd018eac443611800e5703ae4d609bc5561462 0.0s done
+#13 exporting config sha256:363cfbe10f483a521b8f181e8cc78c9c016dd965a03f978b5113e3f2f0660f85 0.0s done
+#13 exporting attestation manifest sha256:4b153d389ba039b7bc69523d38c6cdcd4d3e6bd87ce0f9f49e69cd27f166994f 0.0s done
+#13 exporting manifest list sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296 0.0s done
+#13 naming to docker.io/library/tamancare_ops2c_umask022:20260830_171915 done
+#13 unpacking to docker.io/library/tamancare_ops2c_umask022:20260830_171915
+#13 unpacking to docker.io/library/tamancare_ops2c_umask022:20260830_171915 1.5s done
+#13 DONE 6.5s
+IMAGE_BUILD_RC=0
+OPS2C_IMAGE=tamancare_ops2c_umask022:20260830_171915
+PASS: ISOLATED IMAGE BUILT
+
+======================================================================
+ 9. IMAGE DIST PERMISSION ACCEPTANCE
+======================================================================
+IMAGE_TARGET=-rw-r--r-- 1 0 0 9904 Aug 30 10:19 /app/dist/inventory/resident-consumption.service.js
+IMAGE_CONTROL=-rw-r--r-- 1 0 0 9967 Aug 30 10:19 /app/dist/inventory/inventory.controller.js
+IMAGE_RUNTIME_USER_READ_RC=0
+PASS: IMAGE DIST READABLE BY RUNTIME USER
+
+======================================================================
+ 10. CANONICAL NETWORK + ENV AUTHORITY
+======================================================================
+CANONICAL_NETWORK=tamancare_v7_4_3_development_default
+PASS: REQUIRED RUNTIME ENV RESOLVED WITHOUT PRINTING VALUES
+
+======================================================================
+ 11. PROVISION ISOLATED OPS2C RUNTIME
+======================================================================
+ISOLATED_CONTAINER_RUN_RC=0
+PASS: ISOLATED CONTAINER CREATED
+
+======================================================================
+ 12. ISOLATED HEALTH ACCEPTANCE
+======================================================================
+ISOLATED_HEALTH_HTTP=000
+FAIL: ISOLATED HEALTH
+ISOLATED_CONTAINER_STATE=exited|1
+ISOLATED_LOG_TAIL_BEGIN
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDatabaseModule dependencies initialized[39m[38;5;3m +21ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSecurityModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCareTaskAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCarePlanAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mResolutionAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStartReviewAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReopenAuthorizationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mObservabilityModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mFallMobilityModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSafeguardingModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMedicationSafetyModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInfectionControlModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPainComfortModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSleepRestModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBehavioralCognitiveModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSkinWoundModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mStaffActorModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mHealthReportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAdmissionModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCrossDomainIntegrationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mIncidentModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mClinicalModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mMedicationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mNutritionHydrationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mActivityRehabilitationModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOperationalWorkModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPersonalCareModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCareTaskExecutionModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCarePlanGovernanceModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mResidentAccessScopeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mResidentModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mResidentAccessAdministrationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mResponsibilityAcceptanceModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mWarningReviewModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mOperationalCareViewModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInventoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCareActionBridgeModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 10:20:20 AM [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +0ms[39m
+/app/dist/main.js:27
+        throw new Error('CORS_ALLOWED_ORIGINS is required in production');
+              ^
+
+Error: CORS_ALLOWED_ORIGINS is required in production
+    at bootstrap (/app/dist/main.js:27:15)
+
+Node.js v20.20.2
+ISOLATED_LOG_TAIL_END

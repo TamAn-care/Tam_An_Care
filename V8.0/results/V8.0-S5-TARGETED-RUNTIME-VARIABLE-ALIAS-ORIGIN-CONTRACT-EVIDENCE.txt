@@ -1,0 +1,14 @@
+TAM AN CARE V8.0 — S5 VARIABLE ALIAS ORIGIN CONTRACT EVIDENCE
+STATIC_ONLY=YES
+
+CATCH_CONTRACT|INDEX=1|ERROR_VARIABLE=error|MESSAGE_ASSIGNMENT_COUNT=1|MESSAGE_ASSIGNMENTS=error instanceof Error ? error.message : 'Warning review failed.'|MESSAGE_INCLUDES_COUNT=2|MESSAGE_INCLUDES_LITERALS=Resident context not found',
+        )
+      ) {
+        throw new HttpException(
+          message,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (
+        message.includes('required,Invalid|ERROR_MESSAGE_SIGNAL=YES|INSTANCEOF_ERROR_SIGNAL=YES|THROW_EXPRESSION_COUNT=3|THROW_EXPRESSIONS=new HttpException( message, HttpStatus.NOT_FOUND, ) <THROW> new HttpException( message, HttpStatus.BAD_REQUEST, ) <THROW> error|HTTP_STATUS_SYMBOL_COUNT=2|HTTP_STATUS_SYMBOLS=BAD_REQUEST,NOT_FOUND|EXCEPTION_SYMBOL_COUNT=1|EXCEPTION_SYMBOLS=HttpException|CATCH_BODY=const message = error instanceof Error ? error.message : 'Warning review failed.'; if ( message.includes( 'Resident context not found', ) ) { throw new HttpException( message, HttpStatus.NOT_FOUND, ); } if ( message.includes('required') <PIPE><PIPE> message.includes('Invalid') <PIPE><PIPE> message.includes( 'already been reviewed', ) ) { throw new HttpException( message, HttpStatus.BAD_REQUEST, ); } throw error;

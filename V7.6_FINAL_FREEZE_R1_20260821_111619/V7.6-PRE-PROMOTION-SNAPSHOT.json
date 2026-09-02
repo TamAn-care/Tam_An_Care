@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-08-21T04:08:39.413272+00:00",
+  "release": "V7.6",
+  "mode": "CONTROLLED_PROMOTION_DRY_RUN",
+  "production_status": [
+    "200",
+    "200",
+    "401",
+    "401"
+  ],
+  "current_api": {
+    "container_name": "taman-care-v743-dev-api",
+    "container_id": "209f996391a74b325d06d158739990a184face3c43eca28db957473428529c96",
+    "image": "taman-care-v75-step9f-phase45-candidate:latest",
+    "image_id": "sha256:7aab2a9359481b2057225d968a26217461472e397ddb14c036052273787ac069",
+    "networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "ports": {
+      "3000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "3100"
+        }
+      ]
+    }
+  },
+  "current_ui": {
+    "container_name": "taman-care-v75-ui",
+    "container_id": "6958c7f0b86d3d1ced7f84d9e3938c7a8c92a34fdb0502d740b49fe5ba9b5429",
+    "image": "taman-care-v75-ui:release",
+    "image_id": "sha256:3fd532b88ff6739165822bc5a5e04b56bf4c307c810fe7e0e30fa60281191151",
+    "networks": [
+      "bridge"
+    ],
+    "ports": {
+      "80/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "8080"
+        }
+      ]
+    }
+  },
+  "current_database": {
+    "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "image": "postgres:16",
+    "image_id": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+    "state": "running",
+    "counts": "0|0|0",
+    "mounts": [
+      {
+        "type": "bind",
+        "name": null,
+        "source": "/host_mnt/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/schema.sql",
+        "destination": "/docker-entrypoint-initdb.d/001_schema.sql",
+        "rw": false
+      },
+      {
+        "type": "volume",
+        "name": "taman-care-v743-dev-postgres-data",
+        "source": "/var/lib/docker/volumes/taman-care-v743-dev-postgres-data/_data",
+        "destination": "/var/lib/postgresql/data",
+        "rw": true
+      }
+    ]
+  },
+  "v76_candidate": {
+    "api_image": "taman-care-v76-warning-auth-candidate:latest",
+    "api_image_id": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+    "frontend_index_hash": "f7e495c1b63d0bad4407641a3c95191505c03b17a827f294b7bb52ce121cdbd0",
+    "frontend_js": {
+      "index-BMb-tSCV.js": "027d92e6aa6e44de11999c521eaec1b2c6a15419ea76e740b5edefb7ede27f62"
+    },
+    "frontend_css": {
+      "index-DlvS4Sti.css": "2f3e27ebdf2e2e9a2df4a0883cd84e8474162aff1ca6c85c64944dd77e5c96fb"
+    }
+  },
+  "rollback": {
+    "api": [
+      "taman-care-v743-dev-api-pre-phase45-20260820_220421|taman-care-v75-step9f-b2-candidate:latest|Exited (1) 13 hours ago",
+      "taman-care-v743-dev-api-pre-9fb3-20260820_173948|taman-care-v743-step8f-c4-candidate:latest|Exited (1) 17 hours ago"
+    ],
+    "ui": [
+      "taman-care-v7411-ui-pre-v75-20260821_065947|taman-care-v7419-ui|Exited (0) 17 hours ago"
+    ]
+  },
+  "promotion_executed": false
+}

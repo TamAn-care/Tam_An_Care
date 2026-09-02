@@ -1,0 +1,84 @@
+{
+  "generated_at": "2026-08-21T08:50:40.987202+00:00",
+  "release": "V7.7",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "roadmap_status": "CLOSED",
+  "technical_release_readiness": "READY_FOR_PROMOTION_DECISION",
+  "promotion_decision": "PROMOTION_BLOCKED",
+  "blockers": [
+    "MISSING_PRODUCTION_ENVIRONMENT_VARIABLES",
+    "PRODUCTION_SCHEMA_DELTA_UNRESOLVED"
+  ],
+  "current_production": {
+    "version": "V7.6",
+    "api_matrix": "200|401|401",
+    "ui_matrix": "200|401|401|200",
+    "database_counts": "0|0|0",
+    "containers": {
+      "API": {
+        "name": "taman-care-v743-dev-api",
+        "image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+        "state": "running"
+      },
+      "UI": {
+        "name": "taman-care-v75-ui",
+        "image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+        "state": "running"
+      },
+      "DB": {
+        "name": "taman-care-v743-dev-postgres",
+        "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+        "state": "running"
+      }
+    }
+  },
+  "rollback": {
+    "artifact_count": 3,
+    "v75_api_present": false,
+    "v75_ui_present": false
+  },
+  "database": {
+    "v76_schema_hash": null,
+    "v77_schema_hash": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+    "schema_delta": "UNRESOLVED",
+    "migration_files": []
+  },
+  "environment": {
+    "v77_required_env": [
+      "DATABASE_URL",
+      "DB_HOST",
+      "DB_NAME",
+      "DB_PASSWORD",
+      "DB_PORT",
+      "DB_USER",
+      "PORT",
+      "POSTGRES_DB",
+      "POSTGRES_PASSWORD",
+      "POSTGRES_USER"
+    ],
+    "v76_env_names": [
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "NODE_VERSION",
+      "PATH",
+      "PORT",
+      "YARN_VERSION"
+    ],
+    "missing": [
+      "DB_HOST",
+      "DB_NAME",
+      "DB_PASSWORD",
+      "DB_PORT",
+      "DB_USER",
+      "POSTGRES_DB",
+      "POSTGRES_PASSWORD",
+      "POSTGRES_USER"
+    ],
+    "compatible": false
+  },
+  "release_build": true,
+  "production_change": false,
+  "production_database_write": false,
+  "v76_stopped": false,
+  "v77_promoted": false
+}

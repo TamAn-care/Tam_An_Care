@@ -1,0 +1,147 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F4-R6
+ UMASK ROOT-CAUSE CLASSIFICATION
+ STRICT READ ONLY
+ NO BUILD / NO CHMOD / NO SOURCE CHANGE / NO DB MUTATION
+======================================================================
+
+======================================================================
+ 1. F4-R5 FAILURE AUTHORITY
+======================================================================
+PASS: F4-R5 FAILURE AUTHORITY
+F4_R5_ARTIFACT=ops2_c_f4_r5_bounded_dist_clean_rebuild_20260830_170909.txt
+
+======================================================================
+ 2. ACCEPTED SOURCE AUTHORITY
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+SERVICE_MODE=644
+PASS: ACCEPTED SOURCE CONTENT PRESERVED
+
+======================================================================
+ 3. CURRENT SHELL UMASK
+======================================================================
+CURRENT_BLOCK_UMASK=0022
+CURRENT_BLOCK_UMASK_SYMBOLIC=u=rwx,g=rx,o=rx
+
+======================================================================
+ 4. F4-R5 RUNNER UMASK EVIDENCE
+======================================================================
+F4_R5_DECLARED_UMASK=077
+EXPECTED_NEW_REGULAR_FILE_MODE_FROM_0666=600
+PASS: UMASK 077 MATHEMATICALLY PRODUCES MODE 600
+
+======================================================================
+ 5. F4-R5 OBSERVED BUILD OUTPUT MODE
+======================================================================
+F4_R5_TARGET_MODE=600
+F4_R5_CONTROL_MODE=600
+F4_R5_NON_WORLD_READABLE_COUNT=514
+PASS: OBSERVED BUILD OUTPUT MATCHES UMASK 077 EFFECT
+
+======================================================================
+ 6. RESTORED HOST DIST STATE — READ ONLY
+======================================================================
+CURRENT_DIST_FILE_COUNT=514
+CURRENT_DIST_MODE_600_COUNT=0
+CURRENT_DIST_MODE_644_COUNT=0
+PASS: RESTORED DIST INSPECTED
+
+======================================================================
+ 7. BUILD TOOL CONFIGURATION — READ ONLY
+======================================================================
+PACKAGE_BUILD_SCRIPT=nest build
+TSCONFIG_OUTDIR=./dist
+TSCONFIG_INCREMENTAL=true
+
+======================================================================
+ 8. DATABASE PRESERVATION — READ ONLY
+======================================================================
+DB_BASELINE=1|1|0|0|0|0|0
+PASS: DATABASE BASELINE PRESERVED
+
+======================================================================
+ 9. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 10. ROOT-CAUSE CLASSIFICATION
+======================================================================
+UMASK_077_CAUSAL_MATCH=YES
+GLOBAL_BUILD_ARTIFACT_PATTERN=YES
+SINGLE_SOURCE_FILE_PERMISSION_DEFECT=NO
+STALE_DIST_AS_COMPLETE_ROOT_CAUSE=NO
+TYPESCRIPT_APPLICATION_LOGIC_DEFECT_EVIDENCE=NO
+BUILD_TOOL_DEFECT_EVIDENCE=NO
+RUNNER_PROCESS_UMASK_ROOT_CAUSE=CONFIRMED
+MINIMAL_NEXT_REPAIR=RUN_CLEAN_BUILD_WITH_UMASK_022
+
+======================================================================
+ 11. F4-R6 BOUNDARY
+======================================================================
+APPLICATION_SOURCE_CONTENT_MUTATION=NO
+SOURCE_PERMISSION_MUTATION=NO
+HOST_DIST_MUTATION=NO
+HOST_DIST_DELETE=NO
+HOST_BUILD_EXECUTED=NO
+IMAGE_BUILD_EXECUTED=NO
+DOCKERFILE_MUTATION=NO
+DOCKERIGNORE_MUTATION=NO
+CONTAINER_CREATED=NO
+CONTAINER_REMOVED=NO
+DATABASE_QUERY_MODE=READ_ONLY
+DATABASE_DATA_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+FUNCTIONAL_POST_EXECUTED=NO
+TEST_FIXTURE_CREATED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F4-R6 DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+STATUS: OPS-2-C F4-R6 UMASK ROOT CAUSE CONFIRMED
+APPLICATION_LOGIC_DEFECT_EVIDENCE=NO
+SOURCE_CONTENT_REPAIR_REQUIRED=NO
+DOCKERFILE_REPAIR_REQUIRED=NO
+DATABASE_REPAIR_REQUIRED=NO
+RUNNER_PROCESS_UMASK_ROOT_CAUSE=CONFIRMED
+NEXT_REPAIR_DOMAIN=BUILD_PROCESS_ONLY
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_SINGLE UMASK-022 CLEAN REBUILD
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f4_r6_umask_root_cause_classification_20260830_171142.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT RUN npm build
+ -> DO NOT DELETE OR CHMOD api/dist
+ -> DO NOT MODIFY SOURCE
+ -> DO NOT MODIFY DOCKERFILE OR .dockerignore
+ -> DO NOT BUILD AN IMAGE
+ -> DO NOT CREATE OR REMOVE CONTAINERS
+ -> DO NOT CREATE TEST FIXTURES
+ -> DO NOT RUN FUNCTIONAL API TEST
+ -> DO NOT MODIFY DATABASE
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

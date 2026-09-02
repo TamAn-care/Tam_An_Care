@@ -1,0 +1,69 @@
+======================================================================
+ TAMANCARE — CODEX CLI DISCOVERY CONTINUATION
+ MODE: READ ONLY / FIXED PIPEFAIL WRAPPER
+======================================================================
+
+======================================================================
+ 1. CONFIRM PREVIOUS DIRECT DISCOVERY
+======================================================================
+PATH_CODEX=NOT_FOUND
+PASS: DIRECT CHECK COMPLETE
+
+======================================================================
+ 2. NPM GLOBAL CHECK
+======================================================================
+NPM_GLOBAL_PREFIX=/usr/local
+NPM_GLOBAL_ROOT=/usr/local/lib/node_modules
+NPM_GLOBAL_CODEX=NOT_FOUND
+NPM_GLOBAL_PACKAGE_SIGNALS=NONE
+PASS: NPM CHECK COMPLETE
+
+======================================================================
+ 3. HOMEBREW CHECK
+======================================================================
+BREW_PATH=NOT_FOUND
+PASS: HOMEBREW CHECK COMPLETE
+
+======================================================================
+ 4. BOUNDED USER-SCOPE SEARCH
+======================================================================
+USER_SCOPE_CODEX_RESULTS=NONE
+PASS: BOUNDED USER SEARCH COMPLETE
+
+======================================================================
+ 5. APPLICATION DIRECTORY SIGNALS
+======================================================================
+APPLICATION_SIGNALS=NONE
+
+======================================================================
+ 6. FINAL EXECUTABLE CLASSIFICATION
+======================================================================
+CODEX_DISCOVERY_STATUS=NOT_FOUND
+CODEX_EXECUTABLE=NONE
+
+STATUS: CODEX CLI NOT INSTALLED
+INSTALLATION_REQUIRED=YES
+NEXT=CONTROLLED CODEX CLI INSTALLATION
+
+======================================================================
+ 7. SAFETY ASSERTIONS
+======================================================================
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+RUNTIME_RESTART=NO
+GIT_INIT=NO
+PACKAGE_INSTALLATION=NO
+CODEX_EXEC_STARTED=NO
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_codex_cli_discovery_continuation_20260830_100415.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT INSTALL ANYTHING YET
+ -> DO NOT RUN CODEX EXEC
+ -> DO NOT START AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

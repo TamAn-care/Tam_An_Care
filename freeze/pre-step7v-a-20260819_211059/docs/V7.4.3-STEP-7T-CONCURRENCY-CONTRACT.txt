@@ -1,0 +1,45 @@
+STEP 7T — CONCURRENCY CONTRACT
+
+STATE-CHANGING MUTATION
+BEGIN
+-> SELECT target row FOR UPDATE
+-> re-read/revalidate current state
+-> validate human actor
+-> validate owner/reviewer where applicable
+-> perform mutation
+-> append audit
+-> COMMIT
+
+INCOMPATIBLE MUTATIONS
+Exactly one winner.
+
+LOSER CONTRACT
+- zero business mutation
+- zero audit
+- no owner overwrite
+- no reviewer overwrite
+
+APPEND-ONLY HISTORY
+Compatible independent observations/responses/amendments may coexist
+without lost history.
+
+MANDATORY STEP 7T.C RACES
+
+1. double cognitive observation verification
+2. double support-plan activation
+3. double episode assignment
+4. double episode acknowledgement
+5. response verification race
+6. wandering acknowledgement race
+7. episode resolve vs escalation
+8. escalation assignment race
+9. wrong reviewer acceptance denial
+10. double escalation acceptance
+11. double escalation resolution
+12. episode resolution race
+13. post-review verification race
+14. episode closure race
+
+OWNER PRESERVATION = REQUIRED
+REVIEWER PRESERVATION = REQUIRED
+TERMINAL SINGLE-WINNER = REQUIRED

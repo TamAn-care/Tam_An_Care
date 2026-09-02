@@ -1,0 +1,32 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2C",
+  "status": "PASSED",
+  "decision": "ROLE_STAFF_ACCESS_SOURCE_SCHEMA_PATCH_ACCEPTED",
+  "patch_scope": "V8_ONLY",
+  "staff_audit": "staff_actor_audit",
+  "bootstrap": "ONE_TIME_ADMIN_CLI",
+  "public_bootstrap_http": false,
+  "staff_create_api": true,
+  "staff_update_api": true,
+  "hard_delete": false,
+  "last_active_supervisor_guard": true,
+  "frontend_staff_management": true,
+  "production_staff_seed": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "prepatch_backup": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/backups/S2C-prepatch-20260822T133639Z",
+  "postpatch_hashes": {
+    "staff_service": "0b3aa751231e40046e8b0854828b6f326f6e139458385c75155aac22ebd44fb3",
+    "staff_controller": "691e5c6630707feba59d99d8788172c4fe1c86f1acec0cc3ac7b3a3c911875e0",
+    "staff_module": "a7e1600526a6d77ebb830406a73372be937ce7f59b45baad03386697c286a8f6",
+    "app_module": "203c35899b69e09856efb0ed3a310fee440d76c2388d0ad62041e6853dcfabe2",
+    "frontend_staff_api": "d49b91abc5873df8d6084d650e9d12e871dcd19895f8eb7bb3ab30c2cf940dc3",
+    "frontend_staff_page": "6660513fee0a2d6db5abf28713a337aaa68f7236ad45a268bda70516a5244514",
+    "schema": "422df01cafb68b915e5fa457acdfc23b1bded80c45038e438bbc4694db817ca8",
+    "bootstrap": "2a0bfb957d421942cbba534c79959e255d519d4658f862a926cd28da843af6bb"
+  },
+  "next_authorized_action": "S2D_BUILD_STATIC_ACCEPTANCE_PREFLIGHT",
+  "created_at": "2026-08-22T13:36:53.792054+00:00"
+}

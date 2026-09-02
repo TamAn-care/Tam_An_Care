@@ -1,0 +1,71 @@
+TAM AN CARE — RELEASE FREEZE
+================================================
+
+RELEASE:
+V7.4.1.9
+
+STATUS:
+FINAL ACCEPTED
+FROZEN
+KNOWN-GOOD RECOVERY BASELINE
+
+FREEZE DATE:
+2026-08-18 11:44:53 +0700
+
+UI SOURCE SHA256:
+55940383219cbdee3fe82617ebd0beb55583f03c16f0ab8f9f7a3a2f2bb95664
+
+UI CONTAINER SHA256:
+55940383219cbdee3fe82617ebd0beb55583f03c16f0ab8f9f7a3a2f2bb95664
+
+BACKEND api/src BASELINE SHA256:
+e8196421b1d104d7d713f9aaf9c6857713e5a8051ad45b13481541ab2530635c
+
+DEPLOYED UI IMAGE:
+taman-care-v7419-ui:latest
+
+RUNNING UI CONTAINER:
+taman-care-v7411-ui
+
+UI ENDPOINT:
+http://localhost:8080
+
+FINAL ACCEPTANCE:
+
+- Health Trend Early Warning
+- Resident Context
+- Human Review Governance
+- Care-Team Action Queue
+- Review lifecycle
+- Resolve / Reopen workflow
+- Human Care Action Assignment
+- Human Responsibility Transfer
+- Priority HIGH / MODERATE / LOW
+- Due Time accountability
+- NO DUE TIME
+- ON TIME
+- OVERDUE
+- Assignment & Transfer History
+- Persistence
+- Safari Due-Time Compatibility
+- API through UI proxy
+- Source / container integrity
+- Backend protection
+
+GOVERNANCE:
+
+Human-in-the-loop retained.
+Assignment records responsibility only.
+Transfer records responsibility only.
+No autonomous clinical authorization.
+
+FREEZE POLICY:
+
+V7.4.1.9 is frozen.
+
+DO NOT PATCH THIS RELEASE.
+
+All future development must begin from a new
+version/baseline.
+
+================================================

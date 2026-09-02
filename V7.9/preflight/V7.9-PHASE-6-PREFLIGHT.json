@@ -1,0 +1,73 @@
+{
+  "version": "V7.9",
+  "phase": "6",
+  "status": "ROADMAP_DISCOVERY_ONLY",
+  "depends_on": "V7.9_PHASE_5_FINAL_ACCEPTED",
+  "phase5_final_manifest_sha256": "75e034d20e33f16bf68fc09f271ee01df5f610e341bcb2fb8146d86e2611f2b5",
+  "discovery": {
+    "decision": "V7.8_PHASE6_FINAL_OPERATIONAL_ACCEPTANCE_AUTHORITY_PRESENT",
+    "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+    "implementation_authorized": false,
+    "runner_creation_authorized": false,
+    "execution_authorized": false,
+    "phase6_candidate_name": "FINAL_OPERATIONAL_ACCEPTANCE",
+    "manual_test_signal_count": 4,
+    "manual_test_review_required": true,
+    "manual_signal_sources": [
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-ROADMAP.json",
+        "has_phase6": false,
+        "final_operational_acceptance": true,
+        "release": true,
+        "manual": false,
+        "uat": false,
+        "ux": true,
+        "appearance": false,
+        "screen": false,
+        "function": false
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-EXECUTION-STATE.json",
+        "has_phase6": true,
+        "final_operational_acceptance": false,
+        "release": true,
+        "manual": false,
+        "uat": false,
+        "ux": true,
+        "appearance": false,
+        "screen": false,
+        "function": false
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/runner/run_remaining_v78.py",
+        "has_phase6": true,
+        "final_operational_acceptance": true,
+        "release": true,
+        "manual": false,
+        "uat": false,
+        "ux": true,
+        "appearance": false,
+        "screen": false,
+        "function": false
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+        "has_phase6": true,
+        "final_operational_acceptance": true,
+        "release": true,
+        "manual": false,
+        "uat": false,
+        "ux": true,
+        "appearance": false,
+        "screen": false,
+        "function": false
+      }
+    ],
+    "source_count": 6,
+    "next_authorized_action": "STOP_FOR_MANUAL_TEST_REQUIREMENT_BINDING"
+  },
+  "implementation_authorized": false,
+  "runner_creation_authorized": false,
+  "execution_authorized": false,
+  "created_at": "2026-08-22T06:42:52.283244+00:00"
+}

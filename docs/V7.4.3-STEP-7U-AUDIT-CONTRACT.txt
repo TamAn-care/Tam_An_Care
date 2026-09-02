@@ -1,0 +1,24 @@
+STEP 7U — AUDIT CONTRACT
+
+Every successful official mutation requires audit.
+
+AUDIT REQUIREMENTS
+
+1. Same database transaction as business mutation.
+2. Append-only.
+3. Attributable actor.
+4. Actor role recorded.
+5. Entity identity recorded.
+6. Event type recorded.
+7. Unique sequence per entity.
+8. Audit order preserved.
+
+FAILURE CONTRACT
+
+Failed mutation = zero audit.
+Unauthorized mutation = zero audit.
+Losing concurrent mutation = zero audit.
+
+AI advisory analysis is not a human-attributed official mutation.
+
+AI cannot generate an audit record pretending to be a human actor.

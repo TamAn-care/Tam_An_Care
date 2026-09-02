@@ -1,0 +1,234 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-G
+ APPEND-ONLY + IDEMPOTENCY + BASE-UNIT LOCK
+======================================================================
+
+AUTHORIZED:
+ -> replay existing source-backed RECEIPT as duplicate
+ -> attempt PATCH on existing inventory transaction
+ -> attempt DELETE on existing inventory transaction
+ -> attempt item baseUnit mutation after ledger history
+
+EXPECTED:
+ -> duplicate source = 409
+ -> transaction PATCH = 404 or 405
+ -> transaction DELETE = 404 or 405
+ -> baseUnit mutation = 409
+ -> ledger remains exactly two rows
+ -> balance remains 7 UNIT
+
+NOT AUTHORIZED:
+ -> successful new inventory movement
+ -> actual transaction modification/deletion
+ -> source/schema/migration change
+ -> accepted runtime restart
+
+======================================================================
+ 1. LOAD P5-F CHECKPOINT
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_BASE_UNIT=UNIT
+P5_RECEIPT_TX_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+P5_RECEIPT_SOURCE_DOMAIN=OPS2B_FUNCTIONAL
+P5_RECEIPT_SOURCE_ENTITY_TYPE=P5_RECEIPT
+P5_RECEIPT_SOURCE_ENTITY_ID=OPS2B_P5_D_20260830_070008
+P5_OUTBOUND_TX_ID=inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917
+P5_BALANCE_AFTER_OUTBOUND=7
+P5_F_STATUS=PASS
+P5_ACCEPTED_API_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+PASS: P5-F ACCEPTANCE CHECKPOINT LOADED
+
+======================================================================
+ 2. P5-G MUST NOT ALREADY BE COMPLETE
+======================================================================
+EXISTING_P5_G_STATUS_COUNT=0
+PASS: P5-G NOT PREVIOUSLY COMPLETED
+
+======================================================================
+ 3. ACCEPTED SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES
+
+======================================================================
+ 4. ISOLATED RUNTIME + AUTH
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+AUTHENTICATED_TRANSACTION_PROBE=200
+TOKEN_VALUE_PRINTED=NO
+PASS: AUTHENTICATED RUNTIME READY
+
+======================================================================
+ 5. DATABASE BASELINE
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|1|2|0
+ITEM_BEFORE=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|OPS2B_F1_20260830_064735|UNIT|t|t
+LEDGER_BEFORE:
+inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|RECEIPT|10.0000|UNIT|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|OPS2B_FUNCTIONAL|P5_RECEIPT|OPS2B_P5_D_20260830_070008
+inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917|ADJUSTMENT_OUT|3.0000|UNIT|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|OPS2B_FUNCTIONAL|P5_F_ADJUSTMENT_OUT|OPS2B_P5_F_OUT_20260830_071450
+PASS: EXACT TWO-ROW LEDGER BASELINE
+PASS: ITEM BASE UNIT = UNIT
+
+======================================================================
+ 6. DUPLICATE SOURCE-BACKED RECEIPT MUST RETURN 409
+======================================================================
+DUPLICATE_SOURCE_HTTP=409
+DUPLICATE_SOURCE_RESPONSE:
+{"message":"Inventory source transaction already exists","error":"Conflict","statusCode":409}
+DUPLICATE_SOURCE_MATCHING_ROWS=1
+PASS: SOURCE IDEMPOTENCY RETURNS 409
+PASS: DUPLICATE SOURCE DID NOT APPEND SECOND ROW
+
+======================================================================
+ 7. TRANSACTION PATCH ROUTE MUST NOT EXIST
+======================================================================
+TRANSACTION_PATCH_HTTP=404
+TRANSACTION_PATCH_RESPONSE:
+{"message":"Cannot PATCH /api/inventory/transactions/inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf","error":"Not Found","statusCode":404}
+PASS: TRANSACTION PATCH ROUTE ABSENT
+
+======================================================================
+ 8. TRANSACTION DELETE ROUTE MUST NOT EXIST
+======================================================================
+TRANSACTION_DELETE_HTTP=404
+TRANSACTION_DELETE_RESPONSE:
+{"message":"Cannot DELETE /api/inventory/transactions/inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf","error":"Not Found","statusCode":404}
+PASS: TRANSACTION DELETE ROUTE ABSENT
+
+======================================================================
+ 9. VERIFY LEDGER STILL EXACTLY UNCHANGED
+======================================================================
+INVENTORY_COUNTS_AFTER_ROUTE_TEST=1|1|2|0
+PASS: APPEND-ONLY LEDGER UNCHANGED
+
+======================================================================
+ 10. BASE UNIT CHANGE AFTER LEDGER HISTORY MUST RETURN 409
+======================================================================
+BASE_UNIT_MUTATION_HTTP=409
+BASE_UNIT_MUTATION_RESPONSE:
+{"message":"baseUnit cannot change after ledger history exists","error":"Conflict","statusCode":409}
+ITEM_AFTER_BASE_UNIT_TEST=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|OPS2B_F1_20260830_064735|UNIT|t|t
+PASS: BASE UNIT MUTATION REJECTED
+PASS: CANONICAL BASE UNIT REMAINS UNIT
+
+======================================================================
+ 11. FINAL ITEM + LOT BALANCE MUST REMAIN 7
+======================================================================
+FINAL_ITEM_BALANCE_HTTP=200
+FINAL_LOT_BALANCE_HTTP=200
+FINAL_ITEM_BALANCE=7.0000
+FINAL_LOT_BALANCE=7.0000
+PASS: ITEM BALANCE REMAINS 7 UNIT
+PASS: LOT BALANCE REMAINS 7 UNIT
+
+======================================================================
+ 12. DIRECT DATABASE LEDGER BALANCE
+======================================================================
+DB_ITEM_LEDGER_BALANCE=7.0000
+DB_LOT_LEDGER_BALANCE=7.0000
+PASS: DATABASE LEDGER BALANCE REMAINS 7
+
+======================================================================
+ 13. FINAL LEDGER + OPS-2-C BOUNDARY
+======================================================================
+INVENTORY_COUNTS_FINAL=1|1|2|0
+FINAL_LEDGER:
+inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|RECEIPT|10.0000|UNIT|P5_RECEIPT|OPS2B_P5_D_20260830_070008
+inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917|ADJUSTMENT_OUT|3.0000|UNIT|P5_F_ADJUSTMENT_OUT|OPS2B_P5_F_OUT_20260830_071450
+PASS: LEDGER REMAINS EXACTLY TWO ROWS
+PASS: RESIDENT CONSUMPTION REMAINS ZERO
+PASS: OPS-2-C RESIDENT-CONSUMPTION WRITE BOUNDARY PRESERVED
+
+======================================================================
+ 14. SOURCE PRESERVATION
+======================================================================
+API_SOURCE_HASH_AFTER=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE BASELINES UNCHANGED
+
+======================================================================
+ 15. AUTH FIXTURE PRESERVATION
+======================================================================
+FINAL_AUTH_STATE=1|1
+PASS: AUTH FIXTURE PRESERVED
+
+======================================================================
+ 16. ACCEPTED RUNTIMES PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 17. ISOLATED RUNTIME FINAL HEALTH
+======================================================================
+FINAL_ISOLATED_HEALTH=200
+PASS: ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 18. WRITE P5-G CHECKPOINT
+======================================================================
+P5_STATE_UPDATED=YES
+P5_G_STATUS=PASS
+
+======================================================================
+ 19. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P5-G APPEND-ONLY + IDEMPOTENCY + BASE-UNIT LOCK PASSED
+
+SOURCE_IDEMPOTENCY_HTTP=409
+SOURCE_IDEMPOTENCY_LEDGER_APPEND=NO
+
+TRANSACTION_PATCH_ROUTE=ABSENT
+TRANSACTION_DELETE_ROUTE=ABSENT
+IMMUTABLE_LEDGER=PASS
+
+BASE_UNIT_CHANGE_HTTP=409
+BASE_UNIT_AFTER=UNIT
+BASE_UNIT_LOCK=PASS
+
+ITEM_DERIVED_BALANCE=7
+LOT_DERIVED_BALANCE=7
+DATABASE_LEDGER_BALANCE=7
+
+LEDGER_ROWS=2
+RESIDENT_CONSUMPTION_ROWS=0
+OPS2C_BOUNDARY=PASS
+
+INVENTORY_DATABASE=1|1|2|0
+AUTH_FIXTURE=1|1
+
+API_BASELINE=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_BASELINE=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+MIGRATION_CHANGE=NO
+ACCEPTED_RUNTIME_REGRESSION=NO
+
+P5_G_STATUS=PASS
+NEXT=OPS-2-B-F1-P5-H FINAL LEDGER VERIFICATION
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_g_append_only_idempotency_base_unit_lock_20260830_071629.txt
+
+======================================================================
+ IMPORTANT:
+ -> P5-G IS CLOSED
+ -> DO NOT RERUN P5-G
+ -> KEEP BOTH LEDGER TRANSACTIONS
+ -> AUTHORITATIVE BALANCE = 7 UNIT
+ -> KEEP P5 ITEM + LOT ACTIVE
+ -> KEEP P5 state.env
+ -> KEEP AUTH FIXTURE + token
+ -> DO NOT CREATE TRANSACTION MANUALLY
+ -> DO NOT PATCH/DELETE inventory_transactions
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START P5-H MANUALLY
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

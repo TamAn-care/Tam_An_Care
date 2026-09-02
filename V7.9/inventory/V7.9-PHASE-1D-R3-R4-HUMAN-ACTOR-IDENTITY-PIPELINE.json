@@ -1,0 +1,450 @@
+{
+  "version": "V7.9",
+  "phase": "1D-R3-R4",
+  "status": "DISCOVERY",
+  "human_actor_files": [
+    "src/resident-access-administration/resident-access-administration.service.ts"
+  ],
+  "definitions": [
+    {
+      "path": "src/resident-access-administration/resident-access-administration.service.ts",
+      "snippet": "import {\n  BadRequestException,\n  ConflictException,\n  ForbiddenException,\n  Injectable,\n  NotFoundException,\n  UnauthorizedException,\n} from '@nestjs/common';\n\nimport {\n  randomUUID,\n} from 'crypto';\n\nimport {\n  DatabaseService,\n} from '../database/database.service';\n\nimport {\n  StaffActorService,\n} from '../staff-actors/staff-actor.service';\n\ntype HumanActor = {\n  actorId?: string;\n  actorRole?: string;\n};\n\ntype CreateAssignmentDto = {\n  actorId?: string;\n  actorRole?: string;\n  accessScope?: string;\n  effectiveFrom?: string;\n  effectiveTo?: string | null;\n};\n\ntype RevokeAssignmentDto = {\n  revocationReason?: string;\n};\n\ntype AssignmentRow = {\n  resident_access_assignment_id: string;\n  resident_id: string;\n  actor_id: string;\n  actor_role: string;\n  access_scope: string;\n  status: 'ACTIVE' | 'REVOKED';\n  effective_from: Date | string;\n  effective_to: Date | string | null;\n  assigned_by: string;\n  assigned_by_role: string;\n  assigned_at: Date | string;\n  revoked_by: string | null;\n  revoked_by_role: string | null;\n  revoked_at: Date | string | null;\n  revocation_reason: string | null;\n  created_at: Date | string;\n  updated_at: Date | string;\n};\n\ntype ListFilters = {\n  status?: string;\n  actorRole?: string;\n  actorId?: string;\n  limit?: string;\n};\n\n@Injectable()\nexport class ResidentAccessAdministrationService {\n  constructor(\n    private readonly database: DatabaseService,\n    private readonly staffActors: StaffActorService,\n  ) {}\n\n  private async authorizeSupervisor(\n    actor: HumanActor,\n  ): Promise<{\n    actorId: string;\n    actorRole: 'SUPERVISOR';\n  }> {\n    const actorId =\n      String(actor.actorId ?? '').trim();\n\n    const actorRole =\n      String(actor.actorRole ?? '')\n        .trim()\n        .toUpperCase();\n\n    if (!actorId || !actorRole) {\n      throw new UnauthorizedException(\n        'Human actor identity required.',\n      );\n    }\n\n    if (\n      actorRole === 'AI' ||\n      actorRole === 'SYSTEM'\n    ) {\n      throw new ForbiddenException(\n        'Human supervisor authority required.',\n      );\n    }\n\n    if (actorRole !== 'SUPERVISOR') {\n      throw new ForbiddenException(\n        'Supervi"
+    }
+  ],
+  "imports": [],
+  "pipeline_files": {
+    "src/care-actions/care-action.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-actions/care-action.repository.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-actions/care-action.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/reopen-authorization/reopen-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/reopen-authorization/reopen-authorization.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/staff-actors/staff-actor.controller.ts": [
+      "x-actor-id",
+      "x-actor-role",
+      "actorId",
+      "actorRole",
+      "authorizeSupervisor",
+      "UnauthorizedException",
+      "ForbiddenException"
+    ],
+    "src/staff-actors/staff-actor.service.ts": [
+      "actorId",
+      ".actor"
+    ],
+    "src/care-action-bridge/care-action-bridge.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/care-action-bridge/care-action-bridge.controller.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-action-bridge/care-action-bridge.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-task-execution/care-task-execution.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/care-task-execution/care-task-execution.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/skin-wound/skin-wound.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/sleep-rest/sleep-rest.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/pain-comfort/pain-comfort.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/resolution-authorization/resolution-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/resolution-authorization/resolution-authorization.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/care-task-authorization/care-task-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-task-authorization/care-task-authorization.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/care-plans/care-plan.repository.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-plans/care-plan.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/infection-control/infection-control.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/personal-care/personal-care.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-tasks/care-task.repository.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-tasks/care-task.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-tasks/care-task.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/resident-access-scope/resident-access-scope.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/start-review-authorization/start-review-authorization.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/start-review-authorization/start-review-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-plan-governance/care-plan-governance.controller.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-plan-governance/care-plan-governance.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/care-plan-authorization/care-plan-authorization.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/care-plan-authorization/care-plan-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/ai/ai-gateway.service.ts": [
+      "ForbiddenException"
+    ],
+    "src/activity-rehabilitation/activity-rehabilitation-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/activity-rehabilitation/activity-rehabilitation.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/activity-rehabilitation/activity-rehabilitation.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/safeguarding/safeguarding.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/fall-mobility/fall-mobility.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/medication-safety/medication-safety.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/clinical-observations/clinical.repository.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/clinical-observations/clinical.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/clinical-observations/clinical-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/clinical-observations/clinical.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/resident-access-administration/resident-access-administration.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor",
+      "HumanActor",
+      "authorizeSupervisor",
+      "UnauthorizedException",
+      "ForbiddenException"
+    ],
+    "src/resident-access-administration/resident-access-administration.controller.ts": [
+      "x-actor-id",
+      "x-actor-role",
+      "actorId",
+      "actorRole"
+    ],
+    "src/responsibility-acceptance/responsibility-acceptance.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/responsibility-acceptance/responsibility-acceptance.controller.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/responsibility-acceptance/responsibility-acceptance.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/medication/medication.repository.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/medication/medication-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/medication/medication.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/medication/medication.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/behavioral-cognitive/behavioral-cognitive.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/nutrition-hydration/nutrition-hydration.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/nutrition-hydration/nutrition-hydration.types.ts": [
+      "actorId",
+      "actorRole"
+    ],
+    "src/nutrition-hydration/nutrition-hydration-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/operational-care-view/operational-care-view.controller.ts": [
+      "x-actor-id",
+      "x-actor-role",
+      "actorId",
+      "actorRole"
+    ],
+    "src/operational-care-view/operational-care-view.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor",
+      "UnauthorizedException",
+      "ForbiddenException"
+    ],
+    "src/operational-care-view/operational-dashboard.controller.ts": [
+      "x-actor-id",
+      "x-actor-role",
+      "actorId",
+      "actorRole"
+    ],
+    "src/operational-care-view/operational-dashboard.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor",
+      "UnauthorizedException",
+      "ForbiddenException"
+    ],
+    "src/incidents/incident.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/incidents/incident-authorization.service.ts": [
+      "actorId",
+      "actorRole",
+      ".actor"
+    ],
+    "src/incidents/incident.types.ts": [
+      "actorId",
+      "actorRole"
+    ]
+  },
+  "authorize_supervisor": [
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "signature": "actorId?: string, actorRole?: string,"
+    },
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "signature": "actorId, actorRole, ); const limit = this.parseLimit(rawLimit); const role = this.parseRole(rawRole); const status = this.parseStatus(rawStatus); const rows = await this.staffActors.listStaffActors( limit, ); const items = rows .map((row) => this.toDto(row), ) .filter((row) => role ? row.primaryOperationalRole === role : true, ) .filter((row) => status ? row.status === status : true, ); return { items, count: items.length, limit, }; } @Get(':actorId') async detail( @Headers('x-actor-id') requesterId: string | undefined, @Headers('x-actor-role') requesterRole: string | undefined, @Param('actorId') targetActorId: string,"
+    },
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "signature": "requesterId, requesterRole, ); const actor = await this.staffActors.findByActorId( targetActorId, ); if (!actor"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.service.ts",
+      "signature": "actor: HumanActor,"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.service.ts",
+      "signature": "actor); const limit = this.normalizeLimit( filters.limit, ); const status = String( filters.status ?? 'ALL', ) .trim() .toUpperCase(); const actorRole = String( filters.actorRole ?? '', ) .trim() .toUpperCase(); const actorId = String( filters.actorId ?? '', ).trim(); if ( ![ 'ALL', 'ACTIVE', 'REVOKED', ].includes(status)"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.service.ts",
+      "signature": "actor); const normalizedResidentId = String( residentId ?? '', ).trim(); if (!normalizedResidentId"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.service.ts",
+      "signature": "actor); const normalizedResidentId = String( residentId ?? '', ).trim(); if (!normalizedResidentId"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.service.ts",
+      "signature": "actor); const normalizedAssignmentId = String( assignmentId ?? '', ).trim(); if (!normalizedAssignmentId"
+    }
+  ],
+  "decorator_usage": [
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "line": 254,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "line": 257,
+      "text": "@Headers('x-actor-role')"
+    },
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "line": 317,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/staff-actors/staff-actor.controller.ts",
+      "line": 320,
+      "text": "@Headers('x-actor-role')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 26,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 29,
+      "text": "@Headers('x-actor-role')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 67,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 70,
+      "text": "@Headers('x-actor-role')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 100,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 103,
+      "text": "@Headers('x-actor-role')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 133,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/resident-access-administration/resident-access-administration.controller.ts",
+      "line": 136,
+      "text": "@Headers('x-actor-role')"
+    },
+    {
+      "file": "src/operational-care-view/operational-care-view.controller.ts",
+      "line": 22,
+      "text": "@Headers('x-actor-id') actorId?: string,"
+    },
+    {
+      "file": "src/operational-care-view/operational-care-view.controller.ts",
+      "line": 23,
+      "text": "@Headers('x-actor-role') actorRole?: string,"
+    },
+    {
+      "file": "src/operational-care-view/operational-dashboard.controller.ts",
+      "line": 20,
+      "text": "@Headers('x-actor-id')"
+    },
+    {
+      "file": "src/operational-care-view/operational-dashboard.controller.ts",
+      "line": 23,
+      "text": "@Headers('x-actor-role')"
+    }
+  ],
+  "classification": "HEADER_TO_ACTOR_PIPELINE"
+}

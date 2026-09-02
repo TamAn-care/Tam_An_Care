@@ -1,0 +1,136 @@
+TAM AN CARE V7.4.3
+STEP 7Q LIFECYCLE CONTRACT
+
+
+ACTIVITY PROGRAM
+
+DRAFT
+-> ACTIVE
+
+ACTIVE
+-> SUSPENDED
+-> COMPLETED
+-> CANCELLED
+
+No AI activation.
+
+
+REHABILITATION / FUNCTIONAL SUPPORT PLAN
+
+DRAFT
+-> ACTIVE
+
+ACTIVE
+-> SUSPENDED
+-> COMPLETED
+-> CANCELLED
+
+Plan activation requires accountable human approval.
+
+AI cannot prescribe or activate plan.
+
+
+SESSION
+
+SCHEDULED
+-> ASSIGNED
+-> ACCEPTED
+-> READY
+-> IN_PROGRESS
+-> COMPLETED
+
+Alternative terminal states:
+
+MISSED
+REFUSED
+HELD
+CANCELLED
+
+Rules:
+
+ASSIGNED:
+must contain human assigned_to + assigned_role.
+
+ACCEPTED:
+assigned human owner accepts responsibility.
+
+READY:
+documented safety / restriction check has occurred.
+
+IN_PROGRESS:
+only after READY.
+
+COMPLETED:
+human owner records completion.
+
+MISSED:
+human records factual non-occurrence.
+
+REFUSED:
+human records resident refusal.
+
+HELD:
+human records explicit hold;
+hold does not itself define treatment.
+
+CANCELLED:
+authorized human cancellation.
+
+Exactly one terminal outcome may win.
+
+
+PARTICIPATION
+
+RECORDED
+-> VERIFIED
+
+VERIFIED
+-> AMENDED
+
+Correction produces a new append-only record.
+
+Original verified record remains preserved.
+
+
+FUNCTIONAL ASSESSMENT
+
+DRAFT
+-> VERIFIED
+
+VERIFIED
+-> AMENDED
+
+Correction creates linked replacement history.
+
+Original assessment remains preserved.
+
+
+FUNCTIONAL SUPPORT ACTION
+
+PLANNED
+-> ASSIGNED
+-> ACCEPTED
+-> IN_PROGRESS
+-> COMPLETED
+
+Alternative:
+
+SKIPPED
+CANCELLED
+
+Human owner required.
+
+
+REHABILITATION ESCALATION
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+Alternative terminal:
+
+CANCELLED
+
+No escalation automatically creates
+a clinical action or medication change.

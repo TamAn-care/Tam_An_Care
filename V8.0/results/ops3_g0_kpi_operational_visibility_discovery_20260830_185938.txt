@@ -1,0 +1,674 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G0
+ KPI / OPERATIONAL VISIBILITY
+ CURRENT-STATE DISCOVERY + SCOPE CLASSIFICATION
+ STRICT READ ONLY
+======================================================================
+
+1. OPS-2-C ACCEPTED CHECKPOINT AUTHORITY
+PASS: OPS-2-C FINAL CHECKPOINT EXISTS
+CHECKPOINT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops2_c_final_20260830_185706
+./api/src/inventory/inventory-ledger.service.ts: OK
+./api/src/inventory/inventory-lot.service.ts: OK
+./api/src/inventory/inventory.controller.ts: OK
+./api/src/inventory/inventory.module.ts: OK
+./api/src/inventory/resident-consumption.service.ts: OK
+PASS: OPS-2-C CHECKPOINT MANIFEST VERIFIED
+
+2. OPS-3 / KPI EXISTING SOURCE DISCOVERY
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.module.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.module.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work.module.ts
+
+3. KPI / METRIC / DASHBOARD SOURCE SIGNALS
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:41:  summary: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:87:  summary?: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:461:                summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:477:              input.summary ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1532:      report.summary ??
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:122:      summary?: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:40:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:169:              skin_condition_summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:191:              command.skinConditionSummary ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:334:              skin_condition_summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:359:              command.skinConditionSummary ??
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:360:                before.skin_condition_summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1328:              resolution_summary=$4,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1337:              command.resolutionSummary ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.controller.ts:16:  @Get('summary')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.controller.ts:17:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.controller.ts:18:    return this.service.summary();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.controller.ts:8:  @Get('summary')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.controller.ts:9:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.controller.ts:10:    return this.service.summary();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:31:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/enterprise-operations.middleware.ts:1:import { processMetrics } from '../observability/metrics.registry';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/enterprise-operations.middleware.ts:59:      processMetrics.recordHttp(429, 0);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/enterprise-operations.middleware.ts:90:      processMetrics.recordHttp(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/production-auth.middleware.ts:165:      'Authentication token expired',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:31:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.controller.ts:8:  @Get('summary')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.controller.ts:9:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.controller.ts:10:    return this.service.summary();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.controller.ts:8:  @Get('summary')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.controller.ts:9:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.controller.ts:10:    return this.service.summary();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:31:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:31:  inventory_link_allowed: boolean;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:262:          inventory_link_allowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:318:          inventory_link_allowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:391:    const inventoryLinkAllowed =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:393:        input.inventoryLinkAllowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:395:        'inventoryLinkAllowed',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:419:                inventory_link_allowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:436:                inventoryLinkAllowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:528:      'inventoryLinkAllowed',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:624:        const inventoryLinkAllowed =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:627:            'inventoryLinkAllowed',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:630:                input.inventoryLinkAllowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:631:                previous.inventory_link_allowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:632:                'inventoryLinkAllowed',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:634:            : previous.inventory_link_allowed;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:658:              inventory_link_allowed=$7,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:671:              inventoryLinkAllowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:707:              'inventoryLinkAllowed', $10::boolean,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:718:              'inventoryLinkAllowed', $17::boolean,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:734:            previous.inventory_link_allowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:742:            row.inventory_link_allowed,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:487:            if (!residentResult.rowCount) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:34:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1279:              resolution_summary=$4,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1288:              c.resolutionSummary ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.controller.ts:16:  @Get('summary')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.controller.ts:17:  summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.controller.ts:18:    return this.service.summary();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts:7:  processMetrics,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts:8:} from './metrics.registry';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts:10:@Controller('api/metrics')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts:11:export class MetricsController {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts:13:  getMetrics() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.controller.ts:14:    return processMetrics.snapshot();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/observability.module.ts:6:  MetricsController,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/observability.module.ts:7:} from './metrics.controller';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/observability.module.ts:11:    MetricsController,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:7:class ProcessMetricsRegistry {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:120:export const processMetrics =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:121:  new ProcessMetricsRegistry();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/app.module.ts:65:import { InventoryModule } from './inventory/inventory.module';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/app.module.ts:69:    InventoryModule,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:16:  metrics: string[];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:69:      metrics: string[],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:77:        metrics,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:86:    const declineMetric = (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:87:      metric: keyof Observation,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:92:        .map(o => n(o[metric]))
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:111:            `${String(metric)}-persistent`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:114:            [String(metric)],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:126:            `${String(metric)}-persistent`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:129:            [String(metric)],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:143:    declineMetric('weightKg', 'Weight');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:144:    declineMetric('foodFluidIntakePercent', 'Food/fluid intake');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:145:    declineMetric('sleepHours', 'Sleep duration');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:146:    declineMetric('spo2', 'SpO2');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:151:    const accelerationMetric = (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:152:      metric: keyof Observation,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:157:        .map(o => n(o[metric]))
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:185:          `${String(metric)}-acceleration`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:188:          [String(metric)],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:198:    accelerationMetric('weightKg', 'Weight');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:199:    accelerationMetric('foodFluidIntakePercent', 'Food/fluid intake');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:200:    accelerationMetric('sleepHours', 'Sleep duration');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:201:    accelerationMetric('spo2', 'SpO2');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:238:    const uniqueMetrics = new Set<string>();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:241:      for (const metric of pattern.metrics) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:242:        uniqueMetrics.add(metric);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:246:    if (uniqueMetrics.size >= 3) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:251:        uniqueMetrics.size >= 4 ? 'HIGH' : 'MODERATE',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:252:        Array.from(uniqueMetrics),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:255:          signalCount: uniqueMetrics.size,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:256:          metrics: Array.from(uniqueMetrics)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:293:      metricsAffected: Array.from(uniqueMetrics),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:8: {engineId:'kpi',name:'KPI AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:43:        evaluatedMetrics:[
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:81:    const metricLabels:Record<string,string>={
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:100:    const addReviewArea=(metric:string)=>{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:101:      const area=reviewAreas[metric];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:107:    const addPrioritySignal=(metric:string, direction:string)=>{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:108:      const label=metricLabels[metric] || metric;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:112:      if(metric==='mobility'){
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:126:      addReviewArea(metric);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:130:      metric:string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:147:        metric,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:156:        addPrioritySignal(metric,direction);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:249:        metric:'mobility',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:290:    let summary:string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:293:      summary='Multiple monitored health indicators show deterioration over the observation period.';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:295:      summary='Multiple monitored health indicators show improvement over the observation period.';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:297:      summary='Monitored health indicators remain broadly stable over the observation period.';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:308:      metricsEvaluated:[
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:336:      summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:8: {engineId:'kpi',name:'KPI AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:43:        evaluatedMetrics:[
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:81:    const metricLabels:Record<string,string>={
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:100:    const addReviewArea=(metric:string)=>{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:101:      const area=reviewAreas[metric];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:107:    const addPrioritySignal=(metric:string, direction:string)=>{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:108:      const label=metricLabels[metric] || metric;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:112:      if(metric==='mobility'){
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:126:      addReviewArea(metric);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:130:      metric:string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:147:        metric,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:156:        addPrioritySignal(metric,direction);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:249:        metric:'mobility',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:290:    let summary:string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:293:      summary='Multiple monitored health indicators show deterioration over the observation period.';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:295:      summary='Multiple monitored health indicators show improvement over the observation period.';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:297:      summary='Monitored health indicators remain broadly stable over the observation period.';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:308:      metricsEvaluated:[
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:336:      summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.controller.ts:24:  @Get('test/summary')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.controller.ts:25:  async summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.controller.ts:26:    return this.service.summary();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.types.ts:29:  goalSummary?: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.types.ts:76:  resolutionSummary?: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:79:  async summary() {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:236:              goal_summary,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:256:              command.goalSummary ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1677:              resolution_summary=$4,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1686:              command.resolutionSummary ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:5:export class InventoryLedgerService {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:7:    inventoryItemId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:8:    inventoryLotId: string | null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:10:    return inventoryLotId
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:11:      ? `INVENTORY_ITEM_LOT:${inventoryItemId}:${inventoryLotId}`
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:12:      : `INVENTORY_ITEM:${inventoryItemId}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:17:    inventoryItemId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:18:    inventoryLotId: string | null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:28:          inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:29:          inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:37:    inventoryItemId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:38:    inventoryLotId: string | null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:62:      FROM inventory_transactions
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:63:      WHERE inventory_item_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:66:          OR inventory_lot_id = $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:70:        inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:71:        inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:9:import { InventoryAuthorityService } from './inventory-authority.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:11:  inventoryLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:14:} from './inventory-common';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:17:export class InventoryLotService {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:20:    private readonly authority: InventoryAuthorityService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:26:    const limit = inventoryLimit(query?.limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:30:    if (query?.inventoryItemId) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:31:      values.push(String(query.inventoryItemId).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:32:      conditions.push(`inventory_item_id = $${values.length}`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:40:    if (query?.expiryBefore) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:41:      values.push(String(query.expiryBefore).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:42:      conditions.push(`expiry_date <= $${values.length}::date`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:55:      FROM inventory_lots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:57:      ORDER BY expiry_date ASC NULLS LAST, inventory_lot_id ASC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:76:      FROM inventory_lots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:77:      WHERE inventory_lot_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:84:      throw new NotFoundException('Inventory lot not found');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:94:    const inventoryItemId = requiredText(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:95:      body?.inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:96:      'inventoryItemId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:118:      SELECT inventory_item_id
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:119:      FROM inventory_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:120:      WHERE inventory_item_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:123:      [inventoryItemId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:127:      throw new BadRequestException('Inventory item not found');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:130:    const id = `inventory-lot-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:135:        INSERT INTO inventory_lots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:136:          inventory_lot_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:137:          inventory_item_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:141:          expiry_date,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:149:          inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:153:          optionalText(body?.expiryDate),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:162:          'Inventory lot already exists',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:179:      body?.inventoryItemId !== undefined ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:180:      body?.inventory_item_id !== undefined
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:183:        'inventoryItemId is immutable',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:191:        FROM inventory_lots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:192:        WHERE inventory_lot_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:200:        throw new NotFoundException('Inventory lot not found');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:229:          UPDATE inventory_lots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:234:            expiry_date = $5,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:236:          WHERE inventory_lot_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:248:            body?.expiryDate === undefined
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:249:              ? previous.expiry_date
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:250:              : optionalText(body.expiryDate),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:259:            'Inventory lot already exists',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:3:import { InventoryAuthorityService } from './inventory-authority.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:4:import { InventoryController } from './inventory.controller';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:5:import { InventoryItemService } from './inventory-item.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:6:import { InventoryLedgerService } from './inventory-ledger.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:7:import { InventoryLotService } from './inventory-lot.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:8:import { InventoryTransactionService } from './inventory-transaction.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:11:import { ResidentConsumptionService } from './resident-consumption.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:19:    InventoryController,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:22:    ResidentConsumptionService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:23:    InventoryAuthorityService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:24:    InventoryItemService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:25:    InventoryLotService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:26:    InventoryLedgerService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:27:    InventoryTransactionService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:30:    InventoryAuthorityService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:31:    InventoryItemService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:32:    InventoryLotService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:33:    InventoryLedgerService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:34:    InventoryTransactionService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts:37:export class InventoryModule {}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:3:export function inventoryLimit(value: any): number {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:9:import { InventoryAuthorityService } from './inventory-authority.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:10:import { InventoryLedgerService } from './inventory-ledger.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:12:  inventoryLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:16:} from './inventory-common';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:19:export class InventoryTransactionService {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:34:    private readonly authority: InventoryAuthorityService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:35:    private readonly ledger: InventoryLedgerService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:41:    const limit = inventoryLimit(query?.limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:56:    add('inventory_item_id', query?.inventoryItemId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:57:    add('inventory_lot_id', query?.inventoryLotId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:82:      FROM inventory_transactions
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:84:      ORDER BY occurred_at DESC, inventory_transaction_id DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:103:      FROM inventory_transactions
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:104:      WHERE inventory_transaction_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:112:        'Inventory transaction not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:122:    inventoryItemId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:127:    const inventoryLotId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:128:      optionalText(query?.inventoryLotId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:135:          FROM inventory_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:136:          WHERE inventory_item_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:139:          [inventoryItemId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:144:            'Inventory item not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:148:        if (inventoryLotId !== null) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:151:            SELECT inventory_lot_id
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:152:            FROM inventory_lots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:153:            WHERE inventory_lot_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:154:              AND inventory_item_id = $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:158:              inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:159:              inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:165:              'Inventory lot not found for item',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:172:          inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:173:          inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:177:          inventory_item_id: inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:178:          inventory_lot_id: inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:188:    const inventoryItemId = requiredText(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:189:      body?.inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:190:      'inventoryItemId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:193:    const inventoryLotId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:194:      optionalText(body?.inventoryLotId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:235:      `inventory-transaction-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:248:           * OPS-2-B generic stock mutation is deliberately restricted.
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:256:            FROM inventory_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:257:            WHERE inventory_item_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:261:            [inventoryItemId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:266:              'Active inventory item not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:280:            inventoryLotId === null
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:283:              'inventoryLotId is required for lot-tracked item',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:289:          if (inventoryLotId !== null) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:293:              FROM inventory_lots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:294:              WHERE inventory_lot_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:295:                AND inventory_item_id = $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:299:                inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:300:                inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:306:                'Inventory lot does not belong to item',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:325:              lot.expiry_date !== null &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:326:              new Date(lot.expiry_date).getTime() <
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:330:                'Expired lot cannot be issued',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:342:            inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:343:            inventoryLotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:349:              inventoryItemId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:350:              inventoryLotId,
+
+4. INVENTORY API SURFACE
+23:    private readonly items: InventoryItemService,
+24:    private readonly lots: InventoryLotService,
+25:    private readonly transactions: InventoryTransactionService,
+29:  @Get('items')
+35:    return this.items.list(actorId, actorRole, query);
+38:  @Get('items/:inventoryItemId/balance')
+39:  balance(
+45:    return this.transactions.readBalance(
+53:  @Get('items/:inventoryItemId')
+59:    return this.items.detail(
+66:  @Post('items')
+72:    return this.items.create(actorId, actorRole, body);
+75:  @Patch('items/:inventoryItemId')
+82:    return this.items.update(
+90:  @Get('lots')
+96:    return this.lots.list(actorId, actorRole, query);
+99:  @Get('lots/:inventoryLotId')
+105:    return this.lots.detail(
+112:  @Post('lots')
+118:    return this.lots.create(actorId, actorRole, body);
+121:  @Patch('lots/:inventoryLotId')
+128:    return this.lots.update(
+136:  @Get('transactions')
+142:    return this.transactions.list(
+149:  @Get('transactions/:inventoryTransactionId')
+156:    return this.transactions.detail(
+163:  @Post('transactions')
+169:    return this.transactions.create(
+176:  @Post('resident-consumptions')
+
+5. RESIDENT CONSUMPTION SERVICE — KPI SOURCE DATA SIGNALS
+26:  quantity: number;
+78:    const quantity = Number(input?.quantity);
+96:    if (!Number.isFinite(quantity) || quantity <= 0) {
+239:            FROM inventory_transactions
+241:              source_domain = 'RESIDENT_CONSUMPTION'
+242:              AND source_entity_type = $1
+243:              AND source_entity_id = $2
+270:      if (balance < quantity) {
+282:          INSERT INTO inventory_transactions (
+287:            quantity,
+289:            occurred_at,
+292:            source_domain,
+293:            source_entity_type,
+294:            source_entity_id,
+317:          quantity,
+330:          INSERT INTO resident_consumption_events (
+337:            quantity,
+339:            occurred_at,
+340:            recorded_by,
+341:            recorded_by_role,
+342:            source_domain,
+343:            source_entity_type,
+344:            source_entity_id,
+371:          quantity,
+391:        quantity,
+
+6. DATABASE KPI-RELEVANT TABLES
+POSTGRES_CONTAINER=tamancare-demo-postgres
+Error response from daemon: container f8753fe088b32376a2cd04b075b1b3faed6ecd0a3551dc99c5a88cd979e8b8df is not running
+FAIL: DATABASE TABLE DISCOVERY
+
+7. EXISTING KPI/METRIC DATABASE OBJECTS
+Error response from daemon: container f8753fe088b32376a2cd04b075b1b3faed6ecd0a3551dc99c5a88cd979e8b8df is not running
+
+8. CURRENT DATABASE BASELINE
+Error response from daemon: container f8753fe088b32376a2cd04b075b1b3faed6ecd0a3551dc99c5a88cd979e8b8df is not running
+FAIL: DATABASE BASELINE
+
+EXPECTED_POST_OPS2C_BASELINE=1|1|0|0|0|0
+
+9. HARD RESIDENT LIMIT FORENSIC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:38:  private readonly residentLimit = 50;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:340:          this.residentLimit + 1,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:585:          this.residentLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:1261:          this.residentLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:1271:          > this.residentLimit,
+WARN: POSSIBLE HARD RESIDENT LIMIT SIGNAL — CLASSIFY BEFORE MUTATION
+
+10. PAGINATION / SCALABILITY SIGNALS
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:358:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:388:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:420:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:44:  private readonly defaultLimit = 50;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:45:  private readonly maxLimit = 100;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:80:  private parseLimit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:87:      return this.defaultLimit;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:92:        'limit must be an integer',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:96:    const limit = Number(raw);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:99:      !Number.isInteger(limit) ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:100:      limit < 1 ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:101:      limit > this.maxLimit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:104:        `limit must be between 1 and ${this.maxLimit}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:108:    return limit;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:352:    @Query('limit')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:353:    rawLimit?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:363:    limit: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:370:    const limit =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:371:      this.parseLimit(rawLimit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:381:        limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:403:      limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:55:  private readonly defaultLimit = 50;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:57:  private readonly maxLimit = 100;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:180:      LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:253:    limit?: number,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:255:    const boundedLimit = this.boundLimit(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:272:      LIMIT $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:274:      [boundedLimit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:281:    limit?: number,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:283:    const boundedLimit = this.boundLimit(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:302:      LIMIT $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:304:      [boundedLimit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:310:  private boundLimit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:318:      return this.defaultLimit;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:324:      return this.defaultLimit;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:329:      this.maxLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:134:              skipped_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:262:          skippedAt:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:263:            task.skipped_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:413:          case 'SKIP': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:424:                status = 'SKIPPED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:425:                skipped_at = $2,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:548:          skippedAt:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:549:            updated.skipped_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:669:          skippedAt:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:670:            updated.skipped_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:134:        key: 'nutritionIntakeRecords',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:135:        table: 'nutrition_intake_records',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:243:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:284:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:332:              LIMIT 100
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:434:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1009:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1142:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1340:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1572:        nutritionIntakeRecords:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:51:    @Query('limit')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:52:    limitRaw?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:54:    @Query('offset')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:55:    offsetRaw?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:58:      limitRaw === undefined &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:59:      offsetRaw === undefined
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:64:    const parsedLimit =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:65:      Number(limitRaw ?? 50);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:67:    const parsedOffset =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:68:      Number(offsetRaw ?? 0);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:70:    const limit =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:71:      Number.isInteger(parsedLimit)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:74:              parsedLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:81:    const offset =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:82:      Number.isInteger(parsedOffset)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:84:            parsedOffset,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:91:        limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:92:        offset,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:43:            LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:199:    limit: number,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:200:    offset: number,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:204:    limit: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:205:    offset: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:237:            LIMIT $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:238:            OFFSET $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:241:              limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:242:              offset,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:258:          limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:259:          offset,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts:287:            LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:193:    limit: number,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:194:    offset: number,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:198:        limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:199:        offset,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/enterprise-operations.middleware.ts:22:        .RATE_LIMIT_PER_MINUTE ??
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/enterprise-operations.middleware.ts:26:  const limit =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/enterprise-operations.middleware.ts:57:    if (current.count > limit) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/production-auth.middleware.ts:319:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:61:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:276:      case 'SKIP':
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:286:            'Only a non-terminal Care Task can be skipped.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:292:            'Actor is not authorized to skip this Care Task.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:304:          action: 'SKIP',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:307:          targetStatus: 'SKIPPED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.service.ts:308:          auditEvent: 'TASK_SKIPPED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-authorization/care-task-authorization.types.ts:7:  | 'SKIP'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:52:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:83:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:31:    @Query('limit')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:32:    limit?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:40:      limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:39:  private readonly defaultLimit = 50;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:40:  private readonly maxLimit = 100;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:87:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:181:  boundLimit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:188:      return this.defaultLimit;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:193:        'limit must be an integer',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:197:    const limit = Number(raw);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:200:      !Number.isInteger(limit) ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:201:      limit < 1 ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:202:      limit > this.maxLimit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:205:        `limit must be between 1 and ${this.maxLimit}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:209:    return limit;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:215:    rawLimit?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:229:    const limit = this.boundLimit(rawLimit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:276:        LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:280:          limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:287:      limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:324:        LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:94:      LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:133:  private normalizeLimit(value: any): number {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:150:        'limit must be an integer between 1 and 100',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:240:    const limit = this.normalizeLimit(query?.limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:270:    values.push(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:283:      LIMIT $${values.length}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:291:      limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:307:      LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:445:            LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:482:                LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:678:            LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:14:  private rateLimited429 = 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:47:      this.rateLimited429 += 1;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:91:        rateLimited429:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/observability/metrics.registry.ts:92:          this.rateLimited429,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-tasks/care-task.repository.ts:110:    skippedAt:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-tasks/care-task.repository.ts:112:        row.skipped_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-tasks/care-task.types.ts:7:  'SKIPPED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-tasks/care-task.types.ts:32:  'TASK_SKIPPED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-tasks/care-task.types.ts:60:  skippedAt: Date | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts:87:            LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts:127:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:23:  private readonly limit = 20;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:79:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:104:          LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:106:        [residentId, this.limit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:115:          LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:117:        [residentId, this.limit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:126:          LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:128:        [residentId, this.limit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:137:          LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:139:        [residentId, this.limit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:148:          LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:150:        [residentId, this.limit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:164:          LIMIT $2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:166:        [residentId, this.limit],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:278:      limits: {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts:279:        perDomain: this.limit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/warning-reviews/warning-review.repository.ts:54:            LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:6:  foodFluidIntakePercent?: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:144:    declineMetric('foodFluidIntakePercent', 'Food/fluid intake');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.service.ts:199:    accelerationMetric('foodFluidIntakePercent', 'Food/fluid intake');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:13:type Obs={date:string;weightKg?:number;foodFluidIntakePercent?:number;sleepHours?:number;spo2?:number;mobility?:string};
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:45:          'foodFluidIntakePercent',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:83:      foodFluidIntakePercent:'Food/fluid intake',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:91:      foodFluidIntakePercent:'Nutrition and hydration',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:178:    const i0=n(first.foodFluidIntakePercent);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:179:    const i1=n(last.foodFluidIntakePercent);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:186:        add('foodFluidIntakePercent',i0,i1,'HIGH');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:189:        add('foodFluidIntakePercent',i0,i1,'MODERATE');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:192:        add('foodFluidIntakePercent',i0,i1,'POSITIVE');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:310:        'foodFluidIntakePercent',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.ts:350:  demoData(id:string){if(id==='health-trend') return {engineId:id,syntheticData:true,observations:[{date:'2026-07-18',weightKg:63,foodFluidIntakePercent:72,sleepHours:7,spo2:97,mobility:'ASSISTED'},{date:'2026-07-25',weightKg:62.1,foodFluidIntakePercent:68,sleepHours:6.2,spo2:96,mobility:'ASSISTED'},{date:'2026-08-01',weightKg:61,foodFluidIntakePercent:63,sleepHours:5.2,spo2:94,mobility:'ASSISTED'},{date:'2026-08-08',weightKg:60.4,foodFluidIntakePercent:59,sleepHours:4.9,spo2:94,mobility:'ASSISTED'},{date:'2026-08-15',weightKg:59.8,foodFluidIntakePercent:55,sleepHours:4.5,spo2:93,mobility:'HIGH_ASSISTANCE'}]}; return {engineId:id,syntheticData:true};}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:13:type Obs={date:string;weightKg?:number;foodFluidIntakePercent?:number;sleepHours?:number;spo2?:number;mobility?:string};
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:45:          'foodFluidIntakePercent',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:83:      foodFluidIntakePercent:'Food/fluid intake',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:91:      foodFluidIntakePercent:'Nutrition and hydration',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:178:    const i0=n(first.foodFluidIntakePercent);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:179:    const i1=n(last.foodFluidIntakePercent);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:186:        add('foodFluidIntakePercent',i0,i1,'HIGH');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:189:        add('foodFluidIntakePercent',i0,i1,'MODERATE');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:192:        add('foodFluidIntakePercent',i0,i1,'POSITIVE');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:310:        'foodFluidIntakePercent',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/ai-engine.service.v7.3.3.backup.ts:350:  demoData(id:string){if(id==='health-trend') return {engineId:id,syntheticData:true,observations:[{date:'2026-07-18',weightKg:63,foodFluidIntakePercent:72,sleepHours:7,spo2:97,mobility:'ASSISTED'},{date:'2026-07-25',weightKg:62.1,foodFluidIntakePercent:68,sleepHours:6.2,spo2:96,mobility:'ASSISTED'},{date:'2026-08-01',weightKg:61,foodFluidIntakePercent:63,sleepHours:5.2,spo2:94,mobility:'ASSISTED'},{date:'2026-08-08',weightKg:60.4,foodFluidIntakePercent:59,sleepHours:4.9,spo2:94,mobility:'ASSISTED'},{date:'2026-08-15',weightKg:59.8,foodFluidIntakePercent:55,sleepHours:4.5,spo2:93,mobility:'HIGH_ASSISTANCE'}]}; return {engineId:id,syntheticData:true};}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1319:        case 'SKIP_FUNCTIONAL_SUPPORT':
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1399:          if (action === 'SKIP_FUNCTIONAL_SUPPORT') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1402:                'Functional support cannot be skipped from current state.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1406:            nextStatus='SKIPPED';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1407:            eventType='FUNCTIONAL_SUPPORT_SKIPPED';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1408:            timestampColumn='skipped_at';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1427:            'skipped_at',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:11:  inventoryLimit,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:26:    const limit = inventoryLimit(query?.limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:45:    values.push(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:58:      LIMIT $${values.length}
+
+11. SOURCE HASH SNAPSHOT — READ ONLY
+0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts
+1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts
+5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+
+12. RUNTIME HEALTH — OBSERVATION ONLY
+RUNTIME_3000=200
+RUNTIME_3108=200
+RUNTIME_4173=200
+
+13. OPS-3 SCOPE LOCK
+OPS_3_NAME=KPI_OPERATIONAL_VISIBILITY
+OPS_3_MODE=READ_DERIVED_METRICS
+OPS_3_MUST_NOT_BECOME_SECOND_LEDGER=YES
+OPS_3_MUST_NOT_MUTATE_RESIDENT_CONSUMPTION_HISTORY=YES
+OPS_3_MUST_NOT_MUTATE_INVENTORY_HISTORY=YES
+OPS_3_MUST_USE_ACCEPTED_OPERATIONAL_DATA=YES
+OPS_3_RESIDENT_CONSUMPTION_DATA_SOURCE=resident_consumption_events
+OPS_3_INVENTORY_ACCOUNTING_SOURCE=inventory_transactions
+OPS_3_HARD_RESIDENT_MAX_AUTHORIZED=NO
+OPS_3_200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+OPS_3_SCALABLE_PAGINATED_ARCHITECTURE_REQUIRED=YES
+OPS_3_AUTOMATIC_CARE_DECISION=OUT_OF_SCOPE
+OPS_3_SOURCE_MUTATION_AUTHORIZED=NO
+OPS_3_SCHEMA_MUTATION_AUTHORIZED=NO
+
+======================================================================
+ OPS-3 G0 DECISION
+======================================================================
+PASS_COUNT=2
+WARN_COUNT=1
+FAIL_COUNT=2
+STATUS: OPS-3 G0 DISCOVERY FAILED
+NEXT=STOP_AND_CLASSIFY_ONLY
+
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+DATABASE_MUTATION=NO
+OPS_3_IMPLEMENTATION_STARTED=NO
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g0_kpi_operational_visibility_discovery_20260830_185938.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

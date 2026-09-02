@@ -1,0 +1,847 @@
+
+======================================================================
+TAMANCARE — OPS-2-B-R1-P1-R3 — EXACT AUTHORITY + SOURCE-STATE SALVAGE
+======================================================================
+MODE=READ_ONLY_CONTINUATION
+RERUN_P1=NO
+RERUN_R1=NO
+RERUN_R2=NO
+SOURCE_PATCH=NO
+DB_MUTATION=NO
+MIGRATION=NO
+BUILD=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+NEW_RUNTIME_START=NO
+MASTER_3000_TOUCH=NO
+
+======================================================================
+1. CURRENT SOURCE STATE — SINGLE CONSISTENT HASH METHOD
+======================================================================
+API_TREE_METHOD_A=15d5b53738979a465db47f50c35b73de76c218a4315175c99f2b57791fb58cb5
+FE_TREE_METHOD_A=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+
+KNOWN PRE-I1 BASELINES:
+PRE_I1_API=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+PRE_I1_FE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+
+IMPORTANT:
+ -> API is expected to differ if InventoryModule implementation is present
+ -> FE must remain at accepted OPS-1 baseline
+PASS: FRONTEND REMAINS ACCEPTED BASELINE
+
+======================================================================
+2. EXACT INVENTORY SOURCE SET
+======================================================================
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+SHA256=a9e87b2933f67d2df62dbd6984533c6926f0b97a2385ab139c609085b9d9aebd
+BYTES=971
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+SHA256=241602f5a7d51b24460a9a73fd7dafe6fa9a6299398793fd3845b7b18f227cc3
+BYTES=4166
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts
+SHA256=324c57a2da424dbd17309b095eb85bd0e539e7ac34edb4ee2162e87aa1e515f2
+BYTES=6849
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+SHA256=580c4ed70aca98299a57857b0b9a163dcf781421825049ae22bfafaa938c8358
+BYTES=6554
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts
+SHA256=96ec7816464d594d562ad785cef69a24c52c85c17117fa955bfcb9a8668ebdf6
+BYTES=1944
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts
+SHA256=9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+BYTES=10927
+
+======================================================================
+3. AUTHORITY SIGNALS — ALL INVENTORY SERVICES
+======================================================================
+--- HUMAN ROLE LITERALS ---
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:10:  | 'CAREGIVER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:11:  | 'NURSE'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:12:  | 'CARE_MANAGER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:13:  | 'SUPERVISOR';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:23:    'CAREGIVER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:24:    'NURSE',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:25:    'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:26:    'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:30:    'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:31:    'SUPERVISOR',
+
+--- ACTOR / AUTHORITY METHODS ---
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:9:export type InventoryHumanRole =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:17:  actorRole: InventoryHumanRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:22:  private readonly humanRoles: InventoryHumanRole[] = [
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:29:  private readonly authorityRoles: InventoryHumanRole[] = [
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:36:  async requireActor(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:43:      String(actorRole || '').trim().toUpperCase() as InventoryHumanRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:49:    if (!this.humanRoles.includes(role)) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:89:  requireAuthority(actor: InventoryActor): void {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:90:    if (!this.authorityRoles.includes(actor.actorRole)) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:23:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:75:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:95:    const actor = await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:96:    this.authority.requireAuthority(actor);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:161:    const actor = await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:162:    this.authority.requireAuthority(actor);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:24:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:71:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:91:    const actor = await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:92:    this.authority.requireAuthority(actor);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:175:    const actor = await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:176:    this.authority.requireAuthority(actor);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:39:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:98:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:125:    await this.authority.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:241:            await this.authority.requireActor(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:251:          this.authority.requireAuthority(actor);
+
+--- CANONICAL staff_actors SIGNALS ---
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:59:      SELECT actor_id, primary_operational_role, status
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:60:      FROM staff_actors
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:61:      WHERE actor_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:73:    if (actor.status !== 'ACTIVE') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:77:    if (actor.primary_operational_role !== role) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:84:      actorId: actor.actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-authority.service.ts:85:      actorRole: actor.primary_operational_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:102:        ? 'ACTIVE'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:106:      'ACTIVE',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:217:          'ACTIVE',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:317:            if (lot.status !== 'ACTIVE') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:319:                'Outbound requires ACTIVE lot',
+
+HUMAN_ROLE_SIGNAL_COUNT=10
+MANAGER_SIGNAL_COUNT=15
+CANONICAL_ACTOR_SIGNAL_COUNT=8
+
+======================================================================
+4. ITEM SERVICE — EXACT AUTHORITY CONTEXT
+======================================================================
+22:  async list(actorId: string | undefined, actorRole: string | undefined, query: any) {
+23:    await this.authority.requireActor(actorId, actorRole);
+74:  async detail(actorId: string | undefined, actorRole: string | undefined, id: string) {
+75:    await this.authority.requireActor(actorId, actorRole);
+94:  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+95:    const actor = await this.authority.requireActor(actorId, actorRole);
+96:    this.authority.requireAuthority(actor);
+155:  async update(
+161:    const actor = await this.authority.requireActor(actorId, actorRole);
+162:    this.authority.requireAuthority(actor);
+
+======================================================================
+5. LOT SERVICE — EXACT AUTHORITY CONTEXT
+======================================================================
+23:  async list(actorId: string | undefined, actorRole: string | undefined, query: any) {
+24:    await this.authority.requireActor(actorId, actorRole);
+70:  async detail(actorId: string | undefined, actorRole: string | undefined, id: string) {
+71:    await this.authority.requireActor(actorId, actorRole);
+90:  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+91:    const actor = await this.authority.requireActor(actorId, actorRole);
+92:    this.authority.requireAuthority(actor);
+169:  async update(
+175:    const actor = await this.authority.requireActor(actorId, actorRole);
+176:    this.authority.requireAuthority(actor);
+
+======================================================================
+6. TRANSACTION SERVICE — EXACT AUTHORITY CONTEXT
+======================================================================
+38:  async list(actorId: string | undefined, actorRole: string | undefined, query: any) {
+39:    await this.authority.requireActor(actorId, actorRole);
+97:  async detail(actorId: string | undefined, actorRole: string | undefined, id: string) {
+98:    await this.authority.requireActor(actorId, actorRole);
+119:  async readBalance(
+125:    await this.authority.requireActor(actorId, actorRole);
+187:  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+241:            await this.authority.requireActor(
+251:          this.authority.requireAuthority(actor);
+
+======================================================================
+7. FULL MUTATION CALL-SITE WINDOWS
+======================================================================
+
+======================================================================
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts
+======================================================================
+
+--- WINDOW 82-163 ---
+0082:       LIMIT 1
+0083:       `,
+0084:       [id],
+0085:     );
+0086: 
+0087:     if (!result.rowCount) {
+0088:       throw new NotFoundException('Inventory item not found');
+0089:     }
+0090: 
+0091:     return result.rows[0];
+0092:   }
+0093: 
+0094:   async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+0095:     const actor = await this.authority.requireActor(actorId, actorRole);
+0096:     this.authority.requireAuthority(actor);
+0097: 
+0098:     const code = requiredText(body?.code, 'code').toUpperCase();
+0099:     const displayNameVi = requiredText(
+0100:       body?.displayNameVi,
+0101:       'displayNameVi',
+0102:     );
+0103:     const category = requiredText(body?.category, 'category');
+0104:     const baseUnit = requiredText(body?.baseUnit, 'baseUnit');
+0105: 
+0106:     const lotTrackingRequired =
+0107:       body?.lotTrackingRequired === undefined
+0108:         ? false
+0109:         : body.lotTrackingRequired;
+0110: 
+0111:     if (typeof lotTrackingRequired !== 'boolean') {
+0112:       throw new BadRequestException(
+0113:         'lotTrackingRequired must be boolean',
+0114:       );
+0115:     }
+0116: 
+0117:     const id = `inventory-item-${randomUUID()}`;
+0118: 
+0119:     try {
+0120:       const result = await this.database.query(
+0121:         `
+0122:         INSERT INTO inventory_items (
+0123:           inventory_item_id,
+0124:           code,
+0125:           display_name_vi,
+0126:           category,
+0127:           base_unit,
+0128:           active,
+0129:           lot_tracking_required
+0130:         )
+0131:         VALUES ($1,$2,$3,$4,$5,true,$6)
+0132:         RETURNING *
+0133:         `,
+0134:         [
+0135:           id,
+0136:           code,
+0137:           displayNameVi,
+0138:           category,
+0139:           baseUnit,
+0140:           lotTrackingRequired,
+0141:         ],
+0142:       );
+0143: 
+0144:       return result.rows[0];
+0145:     } catch (error: any) {
+0146:       if (String(error?.code || '') === '23505') {
+0147:         throw new ConflictException(
+0148:           'Inventory item code already exists',
+0149:         );
+0150:       }
+0151:       throw error;
+0152:     }
+0153:   }
+0154: 
+0155:   async update(
+0156:     actorId: string | undefined,
+0157:     actorRole: string | undefined,
+0158:     id: string,
+0159:     body: any,
+0160:   ) {
+0161:     const actor = await this.authority.requireActor(actorId, actorRole);
+0162:     this.authority.requireAuthority(actor);
+0163: 
+
+--- WINDOW 143-224 ---
+0143: 
+0144:       return result.rows[0];
+0145:     } catch (error: any) {
+0146:       if (String(error?.code || '') === '23505') {
+0147:         throw new ConflictException(
+0148:           'Inventory item code already exists',
+0149:         );
+0150:       }
+0151:       throw error;
+0152:     }
+0153:   }
+0154: 
+0155:   async update(
+0156:     actorId: string | undefined,
+0157:     actorRole: string | undefined,
+0158:     id: string,
+0159:     body: any,
+0160:   ) {
+0161:     const actor = await this.authority.requireActor(actorId, actorRole);
+0162:     this.authority.requireAuthority(actor);
+0163: 
+0164:     if (body?.code !== undefined) {
+0165:       throw new BadRequestException(
+0166:         'Inventory item code is immutable',
+0167:       );
+0168:     }
+0169: 
+0170:     return this.database.withTransaction(async (client) => {
+0171:       const current = await client.query(
+0172:         `
+0173:         SELECT *
+0174:         FROM inventory_items
+0175:         WHERE inventory_item_id = $1
+0176:         LIMIT 1
+0177:         FOR UPDATE
+0178:         `,
+0179:         [id],
+0180:       );
+0181: 
+0182:       if (!current.rowCount) {
+0183:         throw new NotFoundException('Inventory item not found');
+0184:       }
+0185: 
+0186:       const previous: any = current.rows[0];
+0187: 
+0188:       const displayNameVi =
+0189:         body?.displayNameVi === undefined
+0190:           ? previous.display_name_vi
+0191:           : requiredText(body.displayNameVi, 'displayNameVi');
+0192: 
+0193:       const category =
+0194:         body?.category === undefined
+0195:           ? previous.category
+0196:           : requiredText(body.category, 'category');
+0197: 
+0198:       const baseUnit =
+0199:         body?.baseUnit === undefined
+0200:           ? previous.base_unit
+0201:           : requiredText(body.baseUnit, 'baseUnit');
+0202: 
+0203:       const active =
+0204:         body?.active === undefined
+0205:           ? previous.active
+0206:           : body.active;
+0207: 
+0208:       const lotTrackingRequired =
+0209:         body?.lotTrackingRequired === undefined
+0210:           ? previous.lot_tracking_required
+0211:           : body.lotTrackingRequired;
+0212: 
+0213:       if (typeof active !== 'boolean') {
+0214:         throw new BadRequestException('active must be boolean');
+0215:       }
+0216: 
+0217:       if (typeof lotTrackingRequired !== 'boolean') {
+0218:         throw new BadRequestException(
+0219:           'lotTrackingRequired must be boolean',
+0220:         );
+0221:       }
+0222: 
+0223:       /*
+0224:        * Once ledger history exists, changing the canonical accounting
+
+======================================================================
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+======================================================================
+
+--- WINDOW 78-159 ---
+0078:       LIMIT 1
+0079:       `,
+0080:       [id],
+0081:     );
+0082: 
+0083:     if (!result.rowCount) {
+0084:       throw new NotFoundException('Inventory lot not found');
+0085:     }
+0086: 
+0087:     return result.rows[0];
+0088:   }
+0089: 
+0090:   async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+0091:     const actor = await this.authority.requireActor(actorId, actorRole);
+0092:     this.authority.requireAuthority(actor);
+0093: 
+0094:     const inventoryItemId = requiredText(
+0095:       body?.inventoryItemId,
+0096:       'inventoryItemId',
+0097:     );
+0098: 
+0099:     const lotCode = requiredText(body?.lotCode, 'lotCode');
+0100:     const status =
+0101:       body?.status === undefined
+0102:         ? 'ACTIVE'
+0103:         : requiredText(body.status, 'status');
+0104: 
+0105:     const allowedStatuses = [
+0106:       'ACTIVE',
+0107:       'QUARANTINED',
+0108:       'EXHAUSTED',
+0109:       'CLOSED',
+0110:     ];
+0111: 
+0112:     if (!allowedStatuses.includes(status)) {
+0113:       throw new BadRequestException('Invalid lot status');
+0114:     }
+0115: 
+0116:     const item = await this.database.query(
+0117:       `
+0118:       SELECT inventory_item_id
+0119:       FROM inventory_items
+0120:       WHERE inventory_item_id = $1
+0121:       LIMIT 1
+0122:       `,
+0123:       [inventoryItemId],
+0124:     );
+0125: 
+0126:     if (!item.rowCount) {
+0127:       throw new BadRequestException('Inventory item not found');
+0128:     }
+0129: 
+0130:     const id = `inventory-lot-${randomUUID()}`;
+0131: 
+0132:     try {
+0133:       const result = await this.database.query(
+0134:         `
+0135:         INSERT INTO inventory_lots (
+0136:           inventory_lot_id,
+0137:           inventory_item_id,
+0138:           lot_code,
+0139:           supplier_reference,
+0140:           received_date,
+0141:           expiry_date,
+0142:           status
+0143:         )
+0144:         VALUES ($1,$2,$3,$4,$5,$6,$7)
+0145:         RETURNING *
+0146:         `,
+0147:         [
+0148:           id,
+0149:           inventoryItemId,
+0150:           lotCode,
+0151:           optionalText(body?.supplierReference),
+0152:           optionalText(body?.receivedDate),
+0153:           optionalText(body?.expiryDate),
+0154:           status,
+0155:         ],
+0156:       );
+0157: 
+0158:       return result.rows[0];
+0159:     } catch (error: any) {
+
+--- WINDOW 157-238 ---
+0157: 
+0158:       return result.rows[0];
+0159:     } catch (error: any) {
+0160:       if (String(error?.code || '') === '23505') {
+0161:         throw new ConflictException(
+0162:           'Inventory lot already exists',
+0163:         );
+0164:       }
+0165:       throw error;
+0166:     }
+0167:   }
+0168: 
+0169:   async update(
+0170:     actorId: string | undefined,
+0171:     actorRole: string | undefined,
+0172:     id: string,
+0173:     body: any,
+0174:   ) {
+0175:     const actor = await this.authority.requireActor(actorId, actorRole);
+0176:     this.authority.requireAuthority(actor);
+0177: 
+0178:     if (
+0179:       body?.inventoryItemId !== undefined ||
+0180:       body?.inventory_item_id !== undefined
+0181:     ) {
+0182:       throw new BadRequestException(
+0183:         'inventoryItemId is immutable',
+0184:       );
+0185:     }
+0186: 
+0187:     return this.database.withTransaction(async (client) => {
+0188:       const current = await client.query(
+0189:         `
+0190:         SELECT *
+0191:         FROM inventory_lots
+0192:         WHERE inventory_lot_id = $1
+0193:         LIMIT 1
+0194:         FOR UPDATE
+0195:         `,
+0196:         [id],
+0197:       );
+0198: 
+0199:       if (!current.rowCount) {
+0200:         throw new NotFoundException('Inventory lot not found');
+0201:       }
+0202: 
+0203:       const previous: any = current.rows[0];
+0204: 
+0205:       const lotCode =
+0206:         body?.lotCode === undefined
+0207:           ? previous.lot_code
+0208:           : requiredText(body.lotCode, 'lotCode');
+0209: 
+0210:       const status =
+0211:         body?.status === undefined
+0212:           ? previous.status
+0213:           : requiredText(body.status, 'status');
+0214: 
+0215:       if (
+0216:         ![
+0217:           'ACTIVE',
+0218:           'QUARANTINED',
+0219:           'EXHAUSTED',
+0220:           'CLOSED',
+0221:         ].includes(status)
+0222:       ) {
+0223:         throw new BadRequestException('Invalid lot status');
+0224:       }
+0225: 
+0226:       try {
+0227:         const result = await client.query(
+0228:           `
+0229:           UPDATE inventory_lots
+0230:           SET
+0231:             lot_code = $2,
+0232:             supplier_reference = $3,
+0233:             received_date = $4,
+0234:             expiry_date = $5,
+0235:             status = $6,
+0236:             updated_at = now()
+0237:           WHERE inventory_lot_id = $1
+0238:           RETURNING *
+
+======================================================================
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts
+======================================================================
+
+--- WINDOW 107-188 ---
+0107:       [id],
+0108:     );
+0109: 
+0110:     if (!result.rowCount) {
+0111:       throw new NotFoundException(
+0112:         'Inventory transaction not found',
+0113:       );
+0114:     }
+0115: 
+0116:     return result.rows[0];
+0117:   }
+0118: 
+0119:   async readBalance(
+0120:     actorId: string | undefined,
+0121:     actorRole: string | undefined,
+0122:     inventoryItemId: string,
+0123:     query: any,
+0124:   ) {
+0125:     await this.authority.requireActor(actorId, actorRole);
+0126: 
+0127:     const inventoryLotId =
+0128:       optionalText(query?.inventoryLotId);
+0129: 
+0130:     return this.database.withTransaction(
+0131:       async (client) => {
+0132:         const item = await client.query(
+0133:           `
+0134:           SELECT *
+0135:           FROM inventory_items
+0136:           WHERE inventory_item_id = $1
+0137:           LIMIT 1
+0138:           `,
+0139:           [inventoryItemId],
+0140:         );
+0141: 
+0142:         if (!item.rowCount) {
+0143:           throw new NotFoundException(
+0144:             'Inventory item not found',
+0145:           );
+0146:         }
+0147: 
+0148:         if (inventoryLotId !== null) {
+0149:           const lot = await client.query(
+0150:             `
+0151:             SELECT inventory_lot_id
+0152:             FROM inventory_lots
+0153:             WHERE inventory_lot_id = $1
+0154:               AND inventory_item_id = $2
+0155:             LIMIT 1
+0156:             `,
+0157:             [
+0158:               inventoryLotId,
+0159:               inventoryItemId,
+0160:             ],
+0161:           );
+0162: 
+0163:           if (!lot.rowCount) {
+0164:             throw new NotFoundException(
+0165:               'Inventory lot not found for item',
+0166:             );
+0167:           }
+0168:         }
+0169: 
+0170:         const balance = await this.ledger.balance(
+0171:           client,
+0172:           inventoryItemId,
+0173:           inventoryLotId,
+0174:         );
+0175: 
+0176:         return {
+0177:           inventory_item_id: inventoryItemId,
+0178:           inventory_lot_id: inventoryLotId,
+0179:           unit: item.rows[0].base_unit,
+0180:           balance: balance.toFixed(4),
+0181:           as_of: new Date().toISOString(),
+0182:         };
+0183:       },
+0184:     );
+0185:   }
+0186: 
+0187:   async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+0188:     const inventoryItemId = requiredText(
+
+--- WINDOW 175-256 ---
+0175: 
+0176:         return {
+0177:           inventory_item_id: inventoryItemId,
+0178:           inventory_lot_id: inventoryLotId,
+0179:           unit: item.rows[0].base_unit,
+0180:           balance: balance.toFixed(4),
+0181:           as_of: new Date().toISOString(),
+0182:         };
+0183:       },
+0184:     );
+0185:   }
+0186: 
+0187:   async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+0188:     const inventoryItemId = requiredText(
+0189:       body?.inventoryItemId,
+0190:       'inventoryItemId',
+0191:     );
+0192: 
+0193:     const inventoryLotId =
+0194:       optionalText(body?.inventoryLotId);
+0195: 
+0196:     const transactionType = requiredText(
+0197:       body?.transactionType,
+0198:       'transactionType',
+0199:     );
+0200: 
+0201:     if (
+0202:       ![
+0203:         ...this.inbound,
+0204:         ...this.outbound,
+0205:       ].includes(transactionType)
+0206:     ) {
+0207:       throw new BadRequestException(
+0208:         'Invalid transactionType',
+0209:       );
+0210:     }
+0211: 
+0212:     const quantity = positiveQuantity(body?.quantity);
+0213:     const unit = requiredText(body?.unit, 'unit');
+0214: 
+0215:     const sourceDomain = requiredText(
+0216:       body?.sourceDomain,
+0217:       'sourceDomain',
+0218:     );
+0219: 
+0220:     const sourceEntityType =
+0221:       optionalText(body?.sourceEntityType);
+0222:     const sourceEntityId =
+0223:       optionalText(body?.sourceEntityId);
+0224: 
+0225:     if (
+0226:       (sourceEntityType === null) !==
+0227:       (sourceEntityId === null)
+0228:     ) {
+0229:       throw new BadRequestException(
+0230:         'sourceEntityType and sourceEntityId must both be supplied or both be null',
+0231:       );
+0232:     }
+0233: 
+0234:     const id =
+0235:       `inventory-transaction-${randomUUID()}`;
+0236: 
+0237:     try {
+0238:       return await this.database.withTransaction(
+0239:         async (client) => {
+0240:           const actor =
+0241:             await this.authority.requireActor(
+0242:               actorId,
+0243:               actorRole,
+0244:               client,
+0245:             );
+0246: 
+0247:           /*
+0248:            * OPS-2-B generic stock mutation is deliberately restricted.
+0249:            * Caregiver/nurse resident-attributed ISSUE belongs to OPS-2-C.
+0250:            */
+0251:           this.authority.requireAuthority(actor);
+0252: 
+0253:           const itemResult = await client.query(
+0254:             `
+0255:             SELECT *
+0256:             FROM inventory_items
+
+======================================================================
+8. TRANSACTION CREATE — SERIALIZATION ORDER
+======================================================================
+withTransaction=130,238
+acquireLock=340
+.balance(=170,347
+resultingBalance=353,362
+Insufficient inventory stock=365
+INSERT INTO inventory_transactions=376
+LOCK_LINE=340
+BALANCE_LINE=347
+INSERT_LINE=376
+PASS: LOCK -> BALANCE -> INSERT ORDER
+
+======================================================================
+9. DIRECT GENERIC TRANSACTION MUTATION AUTHORITY
+======================================================================
+  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+    const inventoryItemId = requiredText(
+      body?.inventoryItemId,
+      'inventoryItemId',
+    );
+
+    const inventoryLotId =
+      optionalText(body?.inventoryLotId);
+
+    const transactionType = requiredText(
+      body?.transactionType,
+      'transactionType',
+    );
+
+    if (
+      ![
+        ...this.inbound,
+        ...this.outbound,
+      ].includes(transactionType)
+    ) {
+      throw new BadRequestException(
+        'Invalid transactionType',
+      );
+    }
+
+    const quantity = positiveQuantity(body?.quantity);
+    const unit = requiredText(body?.unit, 'unit');
+
+    const sourceDomain = requiredText(
+      body?.sourceDomain,
+      'sourceDomain',
+    );
+
+    const sourceEntityType =
+      optionalText(body?.sourceEntityType);
+    const sourceEntityId =
+      optionalText(body?.sourceEntityId);
+
+    if (
+      (sourceEntityType === null) !==
+      (sourceEntityId === null)
+    ) {
+      throw new BadRequestException(
+        'sourceEntityType and sourceEntityId must both be supplied or both be null',
+      );
+    }
+
+    const id =
+      `inventory-transaction-${randomUUID()}`;
+
+    try {
+      return await this.database.withTransaction(
+        async (client) => {
+          const actor =
+            await this.authority.requireActor(
+              actorId,
+              actorRole,
+              client,
+            );
+
+          /*
+           * OPS-2-B generic stock mutation is deliberately restricted.
+           * Caregiver/nurse resident-attributed ISSUE belongs to OPS-2-C.
+           */
+          this.authority.requireAuthority(actor);
+
+          const itemResult = await client.query(
+            `
+            SELECT *
+            FROM inventory_items
+            WHERE inventory_item_id = $1
+              AND active = true
+            LIMIT 1
+            `,
+            [inventoryItemId],
+          );
+
+          if (!itemResult.rowCount) {
+            throw new BadRequestException(
+              'Active inventory item not found',
+            );
+          }
+
+          const item: any = itemResult.rows[0];
+
+          if (unit !== item.base_unit) {
+            throw new BadRequestException(
+              'transaction unit must equal item base_unit',
+            );
+          }
+
+          if (
+            item.lot_tracking_required === true &&
+            inventoryLotId === null
+          ) {
+            throw new BadRequestException(
+              'inventoryLotId is required for lot-tracked item',
+            );
+          }
+
+          let lot: any = null;
+
+======================================================================
+10. OPS-2-C BOUNDARY
+======================================================================
+RESIDENT_CONSUMPTION_WRITE_SIGNAL_COUNT=0
+PASS: OPS-2-C WRITE BOUNDARY PRESERVED
+
+======================================================================
+11. DATABASE CLEANLINESS
+======================================================================
+DB_COUNTS=148|0|0|0|0
+PASS: CLEAN OPS-2-B DATABASE BASELINE
+
+======================================================================
+12. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+HEALTH_3000=200
+HEALTH_3108=200
+HEALTH_4173=200
+
+======================================================================
+13. FINAL SOURCE IMMUTABILITY
+======================================================================
+API_TREE_AFTER=15d5b53738979a465db47f50c35b73de76c218a4315175c99f2b57791fb58cb5
+FE_TREE_AFTER=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API UNCHANGED DURING R3
+PASS: FRONTEND UNCHANGED DURING R3
+
+======================================================================
+14. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-R1-P1-R3 EXACT AUTHORITY + SOURCE-STATE SALVAGE PASSED
+
+PROVED:
+ -> exact current inventory implementation state
+ -> authority implementation evidence collected
+ -> canonical actor evidence collected
+ -> lock -> balance -> insert serialization order
+ -> OPS-2-C boundary preserved
+ -> database clean
+ -> accepted runtimes preserved
+ -> no source mutation during R3
+
+NEXT:
+ -> RETURN THIS ENTIRE OUTPUT
+ -> DO NOT RERUN R3
+ -> DO NOT START :3109 YET

@@ -1,0 +1,73 @@
+{
+  "version": "V7.8",
+  "started_at": "2026-08-21T13:48:22.719301+00:00",
+  "starting_checkpoint": "PHASE_4B_PASSED",
+  "completed": [
+    {
+      "gate": "PHASE_4C_R1",
+      "completed_at": "2026-08-21T13:48:55.752380+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt",
+      "result_hash": "83130ebc4b8fe4ce346f8fc8d9517e8f46573f093718e4e258f4d338e5bdccfb",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json",
+      "manifest_hash": "a21422fdcbb998fb048c026083cc6c70133c835b485e49967aa478c45096520a"
+    },
+    {
+      "gate": "PHASE_4C",
+      "completed_at": "2026-08-21T14:08:32.171786+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt",
+      "result_hash": "a91dfede9e766922fafbdfb2dbb97a45a03a586d8b372e747199dbb25f38f0b4",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json",
+      "manifest_hash": "46d0e11f872165dc3027a9e4a43bfb008bb279bc7f807ab6e91670df06d49e99"
+    },
+    {
+      "gate": "PHASE_4_FINAL",
+      "completed_at": "2026-08-21T14:08:40.863546+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt",
+      "result_hash": "d100c072d5bea33bff1e6d24cda8fb62af0168af850d46e2c9f301bcd6741311",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json",
+      "manifest_hash": "93a50322f2e23d7cbe43dd776cafd33676c02cef2e2e858078c46cce27ac02fc"
+    },
+    {
+      "gate": "PHASE_5A",
+      "completed_at": "2026-08-21T14:09:01.997214+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-5A-DISPOSABLE-BACKUP-RESTORE-RESULT.txt",
+      "result_hash": "704e8bc2615428d86dcebfae28e85f9449ac42b6a1505c5eb759d85f3eaf29ed",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-5A-DISPOSABLE-BACKUP-RESTORE.json",
+      "manifest_hash": "805f3d0609dff97e160d4a68b2254921da30db8d86894eb7c797b3efd83040d5"
+    },
+    {
+      "gate": "PHASE_5B",
+      "completed_at": "2026-08-21T14:09:32.650146+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY-RESULT.txt",
+      "result_hash": "48f977929502cbcc377438ae3e277d2682307e219b9cb8576ff994b3b8d8ddd7",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY.json",
+      "manifest_hash": "5c2b8c9f305414b3c14f1ab5e9fcfa0a454f3fff9109fff6adc2d8f98de6a7d0"
+    },
+    {
+      "gate": "PHASE_5_FINAL",
+      "completed_at": "2026-08-21T14:09:41.679694+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-5-FINAL-BACKUP-DATA-INTEGRITY-RESULT.txt",
+      "result_hash": "eefd3ca538659f3707ae08d9cadd5192c90a652d138eeb653cfacc662abb9c2c",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-5-FINAL-BACKUP-DATA-INTEGRITY.json",
+      "manifest_hash": "043b11a1844d01a151ca5d323b17cf74317f8189df8701cd71ff34935596f16c"
+    },
+    {
+      "gate": "PHASE_6",
+      "completed_at": "2026-08-21T14:09:50.686526+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-FINAL-OPERATIONAL-RELEASE-FREEZE-RESULT.txt",
+      "result_hash": "f1e9481851f8fc91fb0e249f174284a03befc1c7f4c56720a3cc7d803094b758",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "manifest_hash": "0b5899596a6bae75eacf3fe7bf8a06c72dbf18fb6dbe536e168d8123b37bf14f"
+    }
+  ],
+  "status": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+  "failed_gate": "PHASE_4C",
+  "reason": "disposable V7.8 schema initialization failed",
+  "stopped_at": "2026-08-21T14:07:59.825782+00:00",
+  "resumed_at": "2026-08-21T14:08:00.031917+00:00",
+  "phase5_restore_container": "taman-care-v78-p5-restore-20260821_140848",
+  "phase5_backup": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/backups/TamAnCare-V7.8-Phase1-20260821T103823Z.dump",
+  "completed_at": "2026-08-21T14:09:50.686837+00:00",
+  "final_result_hash": "f1e9481851f8fc91fb0e249f174284a03befc1c7f4c56720a3cc7d803094b758",
+  "final_manifest_hash": "0b5899596a6bae75eacf3fe7bf8a06c72dbf18fb6dbe536e168d8123b37bf14f"
+}

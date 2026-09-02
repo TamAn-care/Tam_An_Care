@@ -1,0 +1,27 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2C_R5B",
+  "status": "PASSED",
+  "decision": "S2C_PATCH_RUNNER_RECOVERED",
+  "recovered": {
+    "frontend_tsx_syntax": true,
+    "rollback_systemexit_handling": true
+  },
+  "runner": {
+    "sha256": "2f4731d10d9f39c94d7848fe9f27ac3ecca719a54dea5328d3b9a13eb1c625c7",
+    "compiled": true,
+    "executed": false
+  },
+  "application": {
+    "source_patch_executed": false,
+    "schema_patch_executed": false,
+    "bootstrap_created": false
+  },
+  "production": {
+    "database_mutation": false,
+    "runtime_restart": false
+  },
+  "next_authorized_action": "S2C_R5C_RECOVERED_RUNNER_EXECUTION_PREFLIGHT",
+  "created_at": "2026-08-22T12:52:52.302666+00:00"
+}

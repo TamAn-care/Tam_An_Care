@@ -1,0 +1,59 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1",
+  "started_at": "2026-08-21T14:35:48.321776+00:00",
+  "starting_checkpoint": "V7.9_PHASE_0_FINAL_PASSED",
+  "completed": [
+    {
+      "gate": "PHASE_1A",
+      "completed_at": "2026-08-21T14:36:52.680295+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-1A-ROLE-STAFF-ACCESS-CONTRACT-RESULT.txt",
+      "result_hash": "47933774373e362dce367ad4435b6a404b0e0084bcbfb02398b8ff8b28b2d5f9",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-1A-ROLE-STAFF-ACCESS-CONTRACT.json",
+      "manifest_hash": "66b9dad3d6d55074d92cc10b6ae1aa1308c4466053f5adc28fb464cb48f3c3c0"
+    },
+    {
+      "gate": "PHASE_1B",
+      "completed_at": "2026-08-21T14:37:03.533763+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-1B-PERMISSION-MATRIX-RESULT.txt",
+      "result_hash": "59b8f9949ce5d916073b8aedb9efcf64b8ae67b232a0128a8820d0d25704590c",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-1B-PERMISSION-MATRIX.json",
+      "manifest_hash": "a77a53dfbff7bbbb2eb9704cc80f96c3c5558dd7b2116c79b180cb79fc505deb"
+    },
+    {
+      "gate": "PHASE_1C",
+      "completed_at": "2026-08-21T14:44:21.408927+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-1C-STAFF-DISPOSABLE-WORKFLOW-RESULT.txt",
+      "result_hash": "3e6eef23d82f7497a2c4a7966cc51b28e84cbc849c8732ef7702a4a48187c767",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-1C-STAFF-DISPOSABLE-WORKFLOW.json",
+      "manifest_hash": "fbc9f63546f11635466495ed42674f4ed2f2f59d91a6fc57b2fdf6ceafcaf7ae"
+    },
+    {
+      "gate": "PHASE_1D",
+      "completed_at": "2026-08-22T01:15:10.084080+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-1D-RESIDENT-ACCESS-DISPOSABLE-WORKFLOW-RESULT.txt",
+      "result_hash": "50293963c3d68fc8a9acda0d69dfa22d4472826c29212e225b94f9c0f1456f26",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-1D-RESIDENT-ACCESS-DISPOSABLE-WORKFLOW.json",
+      "manifest_hash": "d1db931b2876e3a538b324af5102d13ae4b30c3cf2a6634cfafbf4e47ec527f3"
+    },
+    {
+      "gate": "PHASE_1_FINAL",
+      "completed_at": "2026-08-22T01:15:40.615876+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-1-FINAL-ROLE-ACCESS-STAFF-ACCEPTANCE-RESULT.txt",
+      "result_hash": "dae2d01839384b0fa51bd41687286f6d014d3266223b69bd230bba2973bc09a1",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-1-FINAL-ROLE-ACCESS-STAFF-ACCEPTANCE.json",
+      "manifest_hash": "8cd82b190ac09749c648a6920e1eb9c0a4258434a01052f5e04a9d73c35071f9"
+    }
+  ],
+  "status": "SERIES_02_PASSED",
+  "failed_gate": "PHASE_1D",
+  "reason": "source-proven isolated resident-access assignment did not succeed",
+  "stopped_at": "2026-08-22T01:00:52.831059+00:00",
+  "resumed_at": "2026-08-22T01:13:15.630268+00:00",
+  "series_02_completed_at": "2026-08-22T01:15:40.620265+00:00",
+  "phase2_preflight": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-PHASE-2-RESIDENT-MANAGEMENT-PREFLIGHT.json",
+  "phase2_preflight_hash": "b141ab143e8f5797ca31fc616a5ef3425f43c4428d496d401ade9b40c892c40e",
+  "phase2_preflight_result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9-PHASE-2-RESIDENT-MANAGEMENT-PREFLIGHT-RESULT.txt",
+  "phase2_preflight_result_hash": "de9c5f608f9572ed80147717ce18341d814669da555a65072de4269d4517c9bb"
+}

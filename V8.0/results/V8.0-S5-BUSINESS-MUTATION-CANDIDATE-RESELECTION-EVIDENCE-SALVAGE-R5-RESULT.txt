@@ -1,0 +1,60 @@
+TAM_AN_CARE_VERSION=V8.0
+SERIES=08
+GATE=S5_BUSINESS_MUTATION_CANDIDATE_RESELECTION_EVIDENCE_SALVAGE_R5
+
+STATUS=FAILED
+MUTATION_RESELECTION_SALVAGE_STATE=S5_BUSINESS_MUTATION_RESELECTION_SALVAGE_BLOCKED
+AUTHORITY_PROVEN_ROUTE_COUNT=2
+SELECTED_HANDLER=
+
+{
+  "controller_prefix": "api/operations",
+  "posts": [
+    {
+      "route": "residents/:residentId/access-assignments',\n  )\n  @HttpCode(HttpStatus.CREATED)\n  createAssignment(\n    @Param('residentId",
+      "full": "/api/operations/residents/:residentId/access-assignments',\n  )\n  @HttpCode(HttpStatus.CREATED)\n  createAssignment(\n    @Param('residentId",
+      "handler": "Headers",
+      "x_actor_id": true,
+      "x_actor_role": true,
+      "params": [
+        "residentId"
+      ],
+      "has_body": true,
+      "body_types": [],
+      "service_calls": [],
+      "auth_signals": [
+        "actorRole"
+      ],
+      "surface": "@Post(\n    'residents/:residentId/access-assignments',\n  )\n  @HttpCode(HttpStatus.CREATED)\n  createAssignment(\n    @Param('residentId')\n    residentId: string,\n\n    @Headers('x-actor-id')\n    actorId?: string,\n\n    @Headers('x-actor-role')\n    actorRole?: string,\n\n    @Body()\n    body: {\n      actorId?: string;\n      actorRole?: string;\n      accessScope?: string;\n      effectiveFrom?: string;\n      effectiveTo?: string | null;\n    }"
+    },
+    {
+      "route": "access-assignments/:assignmentId/revoke',\n  )\n  @HttpCode(HttpStatus.OK)\n  revokeAssignment(\n    @Param('assignmentId",
+      "full": "/api/operations/access-assignments/:assignmentId/revoke',\n  )\n  @HttpCode(HttpStatus.OK)\n  revokeAssignment(\n    @Param('assignmentId",
+      "handler": "Headers",
+      "x_actor_id": true,
+      "x_actor_role": true,
+      "params": [
+        "assignmentId"
+      ],
+      "has_body": true,
+      "body_types": [],
+      "service_calls": [],
+      "auth_signals": [
+        "actorRole"
+      ],
+      "surface": "@Post(\n    'access-assignments/:assignmentId/revoke',\n  )\n  @HttpCode(HttpStatus.OK)\n  revokeAssignment(\n    @Param('assignmentId')\n    assignmentId: string,\n\n    @Headers('x-actor-id')\n    actorId?: string,\n\n    @Headers('x-actor-role')\n    actorRole?: string,\n\n    @Body()\n    body: {\n      revocationReason?: string;\n    }"
+    }
+  ]
+}
+HTTP_AUTHORIZED=NO
+BUSINESS_MUTATION_HTTP_AUTHORIZED=NO
+DATABASE_QUERY_AUTHORIZED=NO
+DATABASE_MUTATION_AUTHORIZED=NO
+DATABASE_DDL_AUTHORIZED=NO
+BOOTSTRAP_RERUN_AUTHORIZED=NO
+SECOND_BOOTSTRAP_EXECUTION_ALLOWED=NO
+S6_AUTHORIZED=NO
+
+FAIL_REASON=NO_AUTHORITY_PROVEN_MUTATION_CANDIDATE
+NEXT_CLASS=S5_BUSINESS_MUTATION_RESELECTION_REMEDIATION_REQUIRED
+NEXT_ACTION=STOP_AND_RETURN_OUTPUT

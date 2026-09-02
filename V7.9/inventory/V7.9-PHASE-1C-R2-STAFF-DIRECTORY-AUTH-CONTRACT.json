@@ -1,0 +1,20 @@
+{
+  "version": "V7.9",
+  "phase": "1C-R2",
+  "status": "PASSED",
+  "decision": "PERSISTED_ACTOR_IDENTITY_REQUIRED_AND_PROVEN",
+  "actor_table": "staff_actors",
+  "fixture_columns": [
+    "actor_id",
+    "staff_code",
+    "display_name",
+    "primary_operational_role",
+    "status"
+  ],
+  "actor_id": "v79-p1cr2-actor-470c883261",
+  "actor_role": "SUPERVISOR",
+  "no_actor_http": 401,
+  "authorized_http": 200,
+  "real_staff_mutation": false,
+  "production_database_mutation": false
+}

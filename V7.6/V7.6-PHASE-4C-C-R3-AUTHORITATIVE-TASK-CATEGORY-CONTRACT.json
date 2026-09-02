@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-08-21T02:07:56.723159+00:00",
+  "phase": "V7.6 Phase 4C-C-R3-R1",
+  "diagnostic_model": "stable PostgreSQL + pg_constraint + backend source",
+  "schema_hash": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+  "task_category": {
+    "mode": "FREE_TEXT_NONEMPTY_STRING",
+    "database_check_count": 0,
+    "allowed_values": null,
+    "test_value": "PHASE4CC_TEST",
+    "typescript_type": "string",
+    "service_validation": "requireText"
+  },
+  "priority": {
+    "allowed_values": [
+      "LOW",
+      "MODERATE",
+      "HIGH"
+    ],
+    "test_value": "MODERATE"
+  },
+  "care_tasks_constraints": [
+    {
+      "name": "care_tasks_care_plan_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (care_plan_id) REFERENCES care_plans(care_plan_id)"
+    },
+    {
+      "name": "care_tasks_check",
+      "type": "c",
+      "definition": "CHECK (due_at IS NULL OR scheduled_at IS NULL OR due_at >= scheduled_at)"
+    },
+    {
+      "name": "care_tasks_check1",
+      "type": "c",
+      "definition": "CHECK (assigned_to IS NULL AND assigned_role IS NULL AND assigned_at IS NULL OR assigned_to IS NOT NULL AND assigned_role IS NOT NULL AND assigned_at IS NOT NULL)"
+    },
+    {
+      "name": "care_tasks_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (care_task_id)"
+    },
+    {
+      "name": "care_tasks_priority_check",
+      "type": "c",
+      "definition": "CHECK (priority = ANY (ARRAY['LOW'::text, 'MODERATE'::text, 'HIGH'::text]))"
+    },
+    {
+      "name": "care_tasks_resident_id_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (resident_id) REFERENCES residents(resident_id)"
+    },
+    {
+      "name": "care_tasks_status_check",
+      "type": "c",
+      "definition": "CHECK (status = ANY (ARRAY['PLANNED'::text, 'ASSIGNED'::text, 'IN_PROGRESS'::text, 'COMPLETED'::text, 'MISSED'::text, 'SKIPPED'::text, 'CANCELLED'::text]))"
+    },
+    {
+      "name": "care_tasks_task_code_key",
+      "type": "u",
+      "definition": "UNIQUE (task_code)"
+    }
+  ],
+  "postgres_stability": {
+    "container_samples": 5,
+    "pg_isready_passes": 5,
+    "sql_probe_passes": 3
+  },
+  "production_database_write": "NO"
+}

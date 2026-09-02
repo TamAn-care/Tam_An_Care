@@ -1,0 +1,8 @@
+{
+  "version": "V7.9",
+  "purpose": "V7.7 authoritative source hash contract recovery",
+  "expected_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "matches": [],
+  "historical_reference_count": 145,
+  "status": "REQUIRES_EXACT_HISTORICAL_HASH_LOGIC"
+}

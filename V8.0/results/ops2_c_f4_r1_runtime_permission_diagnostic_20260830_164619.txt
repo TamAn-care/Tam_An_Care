@@ -1,0 +1,232 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F4-R1
+ RUNTIME FILE PERMISSION DIAGNOSTIC
+ READ ONLY / NO REBUILD / NO SOURCE MUTATION / NO DB MUTATION
+======================================================================
+
+======================================================================
+ 1. FAILED F4 AUTHORITY
+======================================================================
+PASS: FAILED F4 AUTHORITY
+F4_ARTIFACT=ops2_c_f4_controlled_isolated_runtime_provisioning_20260830_164248.txt
+FAILURE_CLASS=RUNTIME_FILE_PERMISSION
+
+======================================================================
+ 2. SOURCE HASH PRESERVATION
+======================================================================
+RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: RESIDENT CONSUMPTION SOURCE UNCHANGED
+PASS: CONTROLLER SOURCE UNCHANGED
+
+======================================================================
+ 3. FAILED CONTAINER ROLLBACK CONFIRMATION
+======================================================================
+FAILED_CONTAINER_PRESENT=NO
+PASS: FAILED TEST CONTAINER REMOVED
+
+======================================================================
+ 4. FAILED IMAGE AUTHORITY
+======================================================================
+FAILED_IMAGE_ID=sha256:d315f1a7640ae2151e2aea34e8790389c6d6d449b9f8f0251d84eb6343770077
+PASS: FAILED IMAGE AVAILABLE FOR READ-ONLY INSPECTION
+
+IMAGE_CONFIG_USER=node
+
+======================================================================
+ 5. HOST SOURCE FILE PERMISSIONS
+======================================================================
+--- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts
+-rw-------  1 anhha  staff  9552 Aug 30 16:22 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts
+MODE=-rw------- OCTAL=600 UID=501 GID=20 OWNER=anhha GROUP=staff
+--- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+-rw-r--r--  1 anhha  staff  5265 Aug 30 16:25 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+MODE=-rw-r--r-- OCTAL=644 UID=501 GID=20 OWNER=anhha GROUP=staff
+--- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+-rw-r--r--  1 anhha  staff  1211 Aug 30 16:16 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+MODE=-rw-r--r-- OCTAL=644 UID=501 GID=20 OWNER=anhha GROUP=staff
+--- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts
+-rw-r--r--  1 anhha  staff  1913 Aug 30 07:03 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts
+MODE=-rw-r--r-- OCTAL=644 UID=501 GID=20 OWNER=anhha GROUP=staff
+--- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+-rw-r--r--  1 anhha  staff  6516 Aug 30 06:55 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+MODE=-rw-r--r-- OCTAL=644 UID=501 GID=20 OWNER=anhha GROUP=staff
+
+======================================================================
+ 6. DOCKERFILE PERMISSION / USER CONTRACT
+======================================================================
+--- API DOCKERFILE BEGIN ---
+FROM node:20-bookworm-slim AS build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM node:20-bookworm-slim AS runtime
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --omit=dev \
+ && npm cache clean --force
+
+COPY --from=build /app/dist ./dist
+
+USER node
+
+CMD ["node", "dist/main.js"]
+--- API DOCKERFILE END ---
+
+DOCKERFILE_SIGNALS:
+1:FROM node:20-bookworm-slim AS build
+3:WORKDIR /app
+5:COPY package.json package-lock.json ./
+6:RUN npm ci
+8:COPY . .
+9:RUN npm run build
+11:FROM node:20-bookworm-slim AS runtime
+15:WORKDIR /app
+17:COPY package.json package-lock.json ./
+19:RUN npm ci --omit=dev \
+22:COPY --from=build /app/dist ./dist
+24:USER node
+26:CMD ["node", "dist/main.js"]
+
+======================================================================
+ 7. IMAGE DIST PERMISSIONS — ROOT INSPECTION ONLY
+======================================================================
+INSPECTION_UID_GID:
+uid=0(root) gid=0(root) groups=0(root)
+
+DIST_DIRECTORY:
+drwxr-xr-x  1 root root 4096 Aug 30 09:44 /app
+drwxr-xr-x 45 root root 4096 Aug 30 09:42 /app/dist
+drwxr-xr-x  2 root root 4096 Aug 30 09:42 /app/dist/inventory
+
+TARGET_AND_CONTROLS:
+-rw-r--r-- 1 0 0 2605 Aug 30 00:03 /app/dist/inventory/inventory-ledger.service.js
+-rw-r--r-- 1 0 0 8172 Aug 29 23:55 /app/dist/inventory/inventory-lot.service.js
+-rw-r--r-- 1 0 0 9967 Aug 30 09:24 /app/dist/inventory/inventory.controller.js
+-rw-r--r-- 1 0 0 2681 Aug 30 09:24 /app/dist/inventory/inventory.module.js
+-rw------- 1 0 0 9904 Aug 30 09:22 /app/dist/inventory/resident-consumption.service.js
+
+SYMBOLIC:
+-rw-r--r-- 1 root root 2605 Aug 30 00:03 /app/dist/inventory/inventory-ledger.service.js
+-rw-r--r-- 1 root root 8172 Aug 29 23:55 /app/dist/inventory/inventory-lot.service.js
+-rw-r--r-- 1 root root 9967 Aug 30 09:24 /app/dist/inventory/inventory.controller.js
+-rw-r--r-- 1 root root 2681 Aug 30 09:24 /app/dist/inventory/inventory.module.js
+-rw------- 1 root root 9904 Aug 30 09:22 /app/dist/inventory/resident-consumption.service.js
+
+READ_TEST_AS_ROOT:
+/app/dist/inventory/resident-consumption.service.js=ROOT_READ_OK
+/app/dist/inventory/inventory.controller.js=ROOT_READ_OK
+ROOT_IMAGE_INSPECTION_RC=0
+
+======================================================================
+ 8. IMAGE RUNTIME USER READ TEST
+======================================================================
+RUNTIME_UID_GID:
+uid=1000(node) gid=1000(node) groups=1000(node)
+
+RUNTIME_READ_TEST:
+/app/dist/inventory/resident-consumption.service.js=READ_FAIL
+/app/dist/inventory/inventory.controller.js=READ_OK
+/app/dist/inventory/inventory.module.js=READ_OK
+/app/dist/inventory/inventory-ledger.service.js=READ_OK
+RUNTIME_READ_DIAGNOSTIC_RC=0
+
+======================================================================
+ 9. PERMISSION DIFFERENCE CLASSIFICATION
+======================================================================
+TARGET_PERMISSION_LINE=-rw------- 1 0 0 9904 Aug 30 09:22 /app/dist/inventory/resident-consumption.service.js
+CONTROL_PERMISSION_LINE=-rw-r--r-- 1 0 0 9967 Aug 30 09:24 /app/dist/inventory/inventory.controller.js
+TARGET_MODE=-rw-------
+CONTROL_MODE=-rw-r--r--
+TARGET_UID=0
+CONTROL_UID=0
+TARGET_GID=0
+CONTROL_GID=0
+DIST_TARGET_CONTROL_PERMISSION_DIFFERENCE=YES
+
+======================================================================
+ 10. DATABASE PRESERVATION — READ ONLY
+======================================================================
+DB_BASELINE=1|1|0|0|0|0|0
+PASS: DATABASE BASELINE PRESERVED
+
+======================================================================
+ 11. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 12. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: SOURCE PRESERVED
+
+======================================================================
+ 13. F4-R1 BOUNDARY
+======================================================================
+APPLICATION_SOURCE_MUTATION=NO
+HOST_FILE_PERMISSION_MUTATION=NO
+DATABASE_QUERY_MODE=READ_ONLY
+DATABASE_DATA_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+NEW_IMAGE_BUILT=NO
+PERSISTENT_CONTAINER_CREATED=NO
+FUNCTIONAL_POST_EXECUTED=NO
+TEST_FIXTURE_CREATED=NO
+ACCEPTED_RUNTIME_RESTART=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F4-R1 DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+STATUS: OPS-2-C F4-R1 PERMISSION DEFECT CONFIRMED
+APPLICATION_LOGIC_DEFECT_EVIDENCE=NO
+DIST_PERMISSION_DEFECT=YES
+SOURCE_REPAIR_REQUIRED=NO
+BUILD_PERMISSION_REPAIR_REQUIRED=YES
+REPAIR_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_BOUNDED_BUILD_PERMISSION_REPAIR
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f4_r1_runtime_permission_diagnostic_20260830_164619.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT CHMOD SOURCE
+ -> DO NOT MODIFY DOCKERFILE
+ -> DO NOT MODIFY APPLICATION SOURCE
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT CREATE TEST FIXTURES
+ -> DO NOT RUN FUNCTIONAL API TEST
+ -> DO NOT MODIFY DATABASE
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

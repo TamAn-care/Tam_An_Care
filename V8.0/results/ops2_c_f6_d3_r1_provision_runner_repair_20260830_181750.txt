@@ -1,0 +1,59 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D3-R1
+ CONCURRENCY FIXTURE PROVISION RUNNER REPAIR
+ VERIFY ABORTED TRANSACTION -> PROVISION ONLY
+ NO FUNCTIONAL POST / NO CONCURRENCY EXECUTION
+======================================================================
+
+======================================================================
+ 1. FAILED F6-D3 AUTHORITY
+======================================================================
+D3_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_concurrency_serialization_20260830_181621.txt
+PASS: FAILED D3 PROVISIONING AUTHORITY CAPTURED
+
+======================================================================
+ 2. SOURCE + RUNTIME LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+ISOLATED_STATE=running
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+CONFIG_NODE_ENV=production
+ISOLATED_HEALTH_HTTP=200
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+PASS: ISOLATED RUNNING
+PASS: ACCEPTED IMAGE
+PASS: PRODUCTION MODE
+PASS: HEALTH 200
+
+======================================================================
+ 3. PROVE FAILED PROVISION ROLLED BACK COMPLETELY
+======================================================================
+POST_FAILURE_ITEM_COUNT=0
+POST_FAILURE_TX_COUNT=0
+POST_FAILURE_EVENT_COUNT=0
+PASS: FAILED PROVISION LEFT ZERO PARTIAL MUTATION
+
+======================================================================
+ 4. R3B ACCEPTANCE EVIDENCE PRESERVATION
+======================================================================
+R3B_TRANSACTION_COUNT=4
+R3B_EVENT_COUNT=4
+PASS: R3B TRANSACTIONS PRESERVED
+PASS: R3B EVENTS PRESERVED
+
+======================================================================
+ 5. AUTH SESSION PRECONDITION
+======================================================================
+SUPERVISOR_AUTH_ACTIVE=1
+PASS: SUPERVISOR AUTH ACTIVE
+
+======================================================================
+ 6. PROVISION DISPOSABLE FIXTURE
+ CORRECTED RUNNER: docker exec -i + DIRECT psql STDIN
+======================================================================
+psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: FATAL:  role "postgres" does not exist

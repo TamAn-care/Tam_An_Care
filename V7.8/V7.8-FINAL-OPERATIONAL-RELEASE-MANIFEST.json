@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-08-21T14:09:50.685692+00:00",
+  "version": "V7.8",
+  "status": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+  "parent_release": "V7.7_FINAL_PRODUCTION_RELEASE_FROZEN",
+  "accepted_phases": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4A",
+    "4B",
+    "4C-R1",
+    "4C",
+    "4-FINAL",
+    "5A",
+    "5B",
+    "5-FINAL",
+    "6"
+  ],
+  "production": {
+    "api": "http://127.0.0.1:3100",
+    "ui": "http://127.0.0.1:8080",
+    "api_health": 200,
+    "security": "401|401|401",
+    "operational_care": 200
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "production_restore": false,
+    "release_database_write": false
+  },
+  "source": {
+    "v77_frozen_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "modified": false
+  },
+  "rollback": {
+    "v76_api_preserved": true,
+    "v76_ui_preserved": true,
+    "v76_assets_removed": false
+  },
+  "performance": {
+    "phase3": "ACCEPTED",
+    "higher_load_required": false,
+    "production_tuning_required": false
+  },
+  "operational_smoothness": {
+    "phase4": "ACCEPTED",
+    "staff_access": "VERIFIED",
+    "real_person_test_mutation": false
+  },
+  "backup_restore": {
+    "phase5": "ACCEPTED",
+    "restore_test": "DISPOSABLE_ONLY"
+  },
+  "next_roadmap_step": null
+}

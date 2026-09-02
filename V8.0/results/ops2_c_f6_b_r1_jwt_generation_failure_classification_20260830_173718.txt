@@ -1,0 +1,368 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-B-R1
+ JWT GENERATION FAILURE CLASSIFICATION
+ STRICT READ ONLY
+ NO FIXTURE / NO POST / NO SOURCE MUTATION
+ SECRET VALUE MUST NEVER BE PRINTED
+======================================================================
+
+======================================================================
+ 1. F6-B FAILURE AUTHORITY
+======================================================================
+F6B_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_b_controlled_f01_f31_functional_acceptance_20260830_173549.txt
+PASS: F6-A AUTHORITY WAS VALID
+PASS: SOURCE AUTHORITY WAS VALID
+PASS: FIXTURE/RUNTIME PRECONDITION WAS VALID
+PASS: TEMP AUTH SESSION PROVISIONING SUCCEEDED
+PASS: FAILURE REACHED JWT GENERATION STAGE
+PASS: FUNCTIONAL TEST STAGE WAS NEVER ENTERED
+PASS: EMERGENCY CLEANUP COMPLETED
+
+======================================================================
+ 2. SOURCE HASH RECONFIRMATION
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SERVICE HASH PRESERVED
+PASS: CONTROLLER HASH PRESERVED
+PASS: MODULE HASH PRESERVED
+
+======================================================================
+ 3. DATABASE CLEANLINESS AFTER ABORT
+======================================================================
+DB_STATE=1|1|0|0|0|0|0
+TEMP_F6_AUTH_SESSIONS_LEFT=0
+F5_FIXTURE_ROWS_LEFT=0
+PASS: DATABASE RETURNED TO CLEAN BASELINE
+
+======================================================================
+ 4. ISOLATED RUNTIME AUTHORITY
+======================================================================
+ISOLATED_STATE=running
+ISOLATED_HEALTH_HTTP=200
+PASS: ISOLATED CONTAINER RUNNING
+PASS: ISOLATED HEALTH 200
+
+======================================================================
+ 5. JWT SECRET STRUCTURAL AUTHORITY — VALUE REDACTED
+======================================================================
+JWT_SECRET_STATE=PRESENT
+JWT_SECRET_NONEMPTY=YES
+JWT_SECRET_LENGTH_GE_32=NO
+JWT_SECRET_LENGTH_CLASS=16_TO_31
+PASS: JWT SECRET PRESENT WITHOUT VALUE EXPOSURE
+PASS: JWT SECRET NONEMPTY
+
+======================================================================
+ 6. NODE CRYPTO CAPABILITY
+======================================================================
+NODE_CRYPTO_HMAC_SHA256=AVAILABLE
+NODE_BASE64URL_OUTPUT=AVAILABLE
+NODE_CRYPTO_TEST_RC=0
+PASS: NODE CRYPTO JWT PRIMITIVES AVAILABLE
+
+======================================================================
+ 7. APPLICATION JWT IMPLEMENTATION AUTHORITY
+======================================================================
+------------------------------------------------------------------
+JWT_AUTH_FILE=api/src/auth/auth.service.ts
+------------------------------------------------------------------
+1-import {
+2-  Injectable,
+3-  UnauthorizedException,
+4-} from '@nestjs/common';
+5-
+6-import {
+7:  createHmac,
+8-  pbkdf2Sync,
+9-  randomUUID,
+10-  timingSafeEqual,
+11-} from 'crypto';
+12-
+13-import {
+14-  DatabaseService,
+15-} from '../database/database.service';
+16-
+17-interface CredentialRow {
+18-  actor_id: string;
+19-  password_hash: string;
+20-  password_salt: string;
+21-  password_iterations: number;
+22-  password_digest: string;
+23-  locked_until: Date | string | null;
+24-  primary_operational_role: string;
+25-  status: string;
+26-}
+27-
+28-@Injectable()
+29-export class AuthService {
+30-  constructor(
+31-    private readonly db:
+--
+224-  }
+225-
+226-  private issueToken(
+227-    actorId: string,
+228-    role: string,
+229-    sessionId: string,
+230-    now: number,
+231-    expiresAt: number,
+232-  ): string {
+233-    const secret =
+234:      process.env.JWT_SECRET;
+235-
+236-    if (!secret || secret.length < 32) {
+237-      throw new Error(
+238:        'JWT_SECRET must contain at least 32 characters',
+239-      );
+240-    }
+241-
+242-    const encode =
+243-      (value: unknown) =>
+244-        Buffer
+245-          .from(
+246-            JSON.stringify(value),
+247-          )
+248-          .toString('base64url');
+249-
+250-    const unsigned =
+251-      `${encode({
+252:        alg: 'HS256',
+253-        typ: 'JWT',
+254-      })}.${encode({
+255-        sub: actorId,
+256-        role,
+257-        jti: sessionId,
+258-        iat: now,
+259-        exp: expiresAt,
+260-      })}`;
+261-
+262-    const signature =
+263:      createHmac(
+264-        'sha256',
+265-        secret,
+266-      )
+267-        .update(unsigned)
+268-        .digest('base64url');
+269-
+270-    return `${unsigned}.${signature}`;
+271-  }
+272-}
+------------------------------------------------------------------
+JWT_AUTH_FILE=api/src/security/production-auth.middleware.ts
+------------------------------------------------------------------
+1-import {
+2-  Injectable,
+3-  NestMiddleware,
+4-  UnauthorizedException,
+5-} from '@nestjs/common';
+6-
+7-import {
+8:  createHmac,
+9-  timingSafeEqual,
+10-} from 'crypto';
+11-
+12-import {
+13-  DatabaseService,
+14-} from '../database/database.service';
+15-
+16-type ActorRole =
+17-  | 'CAREGIVER'
+18-  | 'NURSE'
+19-  | 'CARE_MANAGER'
+20-  | 'SUPERVISOR';
+21-
+22-interface JwtPayload {
+23-  sub?: unknown;
+24-  role?: unknown;
+25-  jti?: unknown;
+26-  exp?: unknown;
+27-  nbf?: unknown;
+28-}
+29-
+30-interface HttpRequest {
+31-  originalUrl: string;
+32-
+--
+114-      decode(
+115-        encodedSignature,
+116-      );
+117-  } catch {
+118-    throw new UnauthorizedException(
+119-      'Invalid authentication token',
+120-    );
+121-  }
+122-
+123-  if (
+124:    header.alg !== 'HS256'
+125-  ) {
+126-    throw new UnauthorizedException(
+127-      'Unsupported authentication algorithm',
+128-    );
+129-  }
+130-
+131-  const expected =
+132:    createHmac(
+133-      'sha256',
+134-      secret,
+135-    )
+136-      .update(
+137-        `${encodedHeader}.${encodedPayload}`,
+138-      )
+139-      .digest();
+140-
+141-  if (
+142-    expected.length !==
+143-      supplied.length ||
+144-    !timingSafeEqual(
+145-      expected,
+146-      supplied,
+147-    )
+148-  ) {
+149-    throw new UnauthorizedException(
+150-      'Invalid authentication signature',
+151-    );
+152-  }
+153-
+154-  const now =
+155-    Math.floor(
+156-      Date.now() / 1000,
+--
+245-      path ===
+246-        '/api/health/live' ||
+247-      path ===
+248-        '/api/health/ready'
+249-    ) {
+250-      next();
+251-      return;
+252-    }
+253-
+254-    const secret =
+255:      process.env.JWT_SECRET;
+256-
+257-    if (
+258-      !secret ||
+259-      secret.length < 32
+260-    ) {
+261-      throw new UnauthorizedException(
+262-        'Production authentication is not configured',
+263-      );
+264-    }
+265-
+266-    const authorization =
+267-      req.header(
+268-        'authorization',
+269-      );
+270-
+271-    if (
+272-      !authorization ||
+273-      !authorization.startsWith(
+274-        'Bearer ',
+275-      )
+276-    ) {
+277-      throw new UnauthorizedException(
+278-        'Bearer authentication is required',
+279-      );
+PASS: APPLICATION JWT IMPLEMENTATION CAPTURED
+
+======================================================================
+ 8. PACKAGE JWT AUTHORITY
+======================================================================
+JWT_PACKAGE_MATCH_COUNT=0
+
+======================================================================
+ 9. ISOLATED IMAGE JWT PACKAGE RESOLUTION
+======================================================================
+RUNTIME_JWT_PACKAGE_jsonwebtoken=ABSENT
+RUNTIME_JWT_PACKAGE__nestjs_jwt=ABSENT
+RUNTIME_JWT_PACKAGE_jose=ABSENT
+
+======================================================================
+ 10. EXACT PREVIOUS RUNNER ASSUMPTION CLASSIFICATION
+======================================================================
+F6B_RUNNER_REQUIRED_SECRET_LENGTH_GE_32=YES
+CANONICAL_SECRET_LENGTH_GE_32=NO
+RUNNER_LENGTH_ASSUMPTION_CAUSED_ABORT=YES
+APPLICATION_DEFECT_EVIDENCE_FROM_ABORT=NO
+CLASSIFICATION=TEST_RUNNER_JWT_ASSUMPTION_DEFECT
+
+======================================================================
+ 11. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_3111=200
+PASS: RUNTIME 3111 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 12. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 13. DIAGNOSTIC BOUNDARY
+======================================================================
+DATABASE_QUERY_MODE=READ_ONLY
+DATABASE_MUTATION_EXECUTED=NO
+FIXTURE_CREATED=NO
+AUTH_SESSION_CREATED=NO
+FUNCTIONAL_POST_EXECUTED=NO
+RESIDENT_CONSUMPTION_POST_EXECUTED=NO
+GENERIC_TRANSACTION_POST_EXECUTED=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+CONTAINER_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+OPS_3_STARTED=NO
+
+======================================================================
+ FINAL F6-B-R1 DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+DB_STATE=1|1|0|0|0|0|0
+TEMP_F6_AUTH_SESSIONS_LEFT=0
+F5_FIXTURE_ROWS_LEFT=0
+STATUS: OPS-2-C F6-B-R1 JWT FAILURE CLASSIFICATION PASSED
+DATABASE_CLEAN=YES
+SOURCE_PRESERVED=YES
+ISOLATED_RUNTIME_PRESERVED=YES
+APPLICATION_FUNCTIONAL_FAILURE_PROVEN=NO
+APPLICATION_SOURCE_REPAIR_AUTHORIZED=NO
+FIXTURE_REPROVISION_AUTHORIZED=NO
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_BOUNDED_RUNNER_REPAIR
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_b_r1_jwt_generation_failure_classification_20260830_173718.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DATABASE MUST REMAIN CLEAN
+ -> DO NOT RECREATE F5 FIXTURES
+ -> KEEP tamancare_ops2c_functional RUNNING
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT RUN FUNCTIONAL POST
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

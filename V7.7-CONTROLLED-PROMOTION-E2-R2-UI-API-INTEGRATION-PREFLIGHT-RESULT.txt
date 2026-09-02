@@ -1,0 +1,63 @@
+TAM AN CARE V7.7
+CONTROLLED PROMOTION E2-R2
+PARALLEL UI + API INTEGRATION PREFLIGHT
+
+STATUS=READY
+
+E2_R1_RESULT_HASH=
+9b46c9891d5dcad26fad5d650b91aee0133c8aaed404da7446f8dbea40e2cefc
+
+UI_PACKAGING_CONTRACT_HASH=
+4c321dfc840bb560020c21ab5872d6486a184931375d64fa4afcfb095f553e13
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+ACCEPTED_E1_API_IMAGE_ID=
+sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7
+
+RECOVERED_UI_IMAGE_ID=
+sha256:832b50660cdb340a5395b23d9d02c881c124efcec1a804dd54cbf03e931a33c6
+
+AUTHORITATIVE UI PACKAGING MODEL:
+
+APPLICATION_SOURCE=
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend
+
+RUNTIME_PACKAGING=
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/web
+
+BUILD_OUTPUT=
+dist
+
+TRACKED_SOURCE_MODIFICATION=
+NO
+
+E2-R2 MUST:
+
+1. Verify E2-R1 hashes.
+2. Verify exact V7.7 source.
+3. Verify accepted E1 API image.
+4. Verify recovered UI image.
+5. Verify frozen V7.6.
+6. Capture 118-table DB fingerprint before.
+7. Start API candidate on temporary localhost port.
+8. Start UI candidate on temporary localhost port.
+9. Attach both to production Docker network.
+10. Preserve runtime proxy hostname contract.
+11. Verify candidate API:
+    200|401|401|401
+12. Verify candidate UI:
+    200|401|401|200
+13. Verify /operational-care = 200.
+14. Verify production DB row fingerprint unchanged.
+15. Verify V7.6 healthy during candidate run.
+16. Destroy both candidate containers.
+17. Verify production DB fingerprint unchanged after.
+18. Verify V7.6 healthy after.
+19. Prepare E3 cutover preflight only after PASS.
+
+V7.6 STOP=NO
+PRODUCTION PORT CHANGE=NO
+DATABASE MIGRATION=NO
+TRAFFIC CUTOVER=NO

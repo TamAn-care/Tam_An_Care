@@ -1,0 +1,43 @@
+{
+  "status": "PASSED",
+  "decision": "POST_V79_PRODUCT_ROADMAP_DEFINITION_AUTHORIZED",
+  "v79_release": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+  "successor_authority": null,
+  "implementation_authorized": false,
+  "roadmap_definition_sequence": [
+    {
+      "gate": "RD1",
+      "name": "POST_V79_GAP_AND_BACKLOG_DISCOVERY"
+    },
+    {
+      "gate": "RD2",
+      "name": "BUSINESS_PRIORITY_AND_SCOPE_CLASSIFICATION"
+    },
+    {
+      "gate": "RD3",
+      "name": "MANUAL_TEST_AND_ACCEPTANCE_GATE_MAPPING"
+    },
+    {
+      "gate": "RD4",
+      "name": "SUCCESSOR_VERSION_AND_RELEASE_PLAN"
+    },
+    {
+      "gate": "RD_FINAL",
+      "name": "APPROVED_POST_V79_PRODUCT_ROADMAP"
+    }
+  ],
+  "manual_gate_policy": {
+    "appearance": "USER_REQUIRED",
+    "screen_visual_review": "USER_REQUIRED",
+    "functional_workflow_confirmation": "USER_REQUIRED",
+    "ux_review": "USER_REQUIRED",
+    "uat": "USER_REQUIRED"
+  },
+  "successor_creation_allowed_before_rd_final": false,
+  "new_version_created": false,
+  "new_series_created": false,
+  "new_runner_created": false,
+  "next_gate": "RD1",
+  "next_action": "POST_V79_GAP_AND_BACKLOG_DISCOVERY",
+  "created_at": "2026-08-22T07:52:44.130696+00:00"
+}

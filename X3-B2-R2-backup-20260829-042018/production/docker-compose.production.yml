@@ -1,0 +1,115 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB_REQUIRED}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER_REQUIRED}
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    secrets:
+      - postgres_password
+    volumes:
+      - tamancare_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    mem_limit: ${POSTGRES_MEMORY_LIMIT:-1g}
+    cpus: ${POSTGRES_CPU_LIMIT:-2.00}
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+
+  api:
+    build:
+      context: ../../api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL_FILE: /run/secrets/database_url
+      JWT_SECRET_FILE: /run/secrets/jwt_secret
+      CORS_ORIGIN: ${CORS_ORIGIN:?CORS_ORIGIN_REQUIRED}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-600}
+    secrets:
+      - database_url
+      - jwt_secret
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    mem_limit: ${API_MEMORY_LIMIT:-768m}
+    cpus: ${API_CPU_LIMIT:-1.50}
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/tamancare.conf:/etc/nginx/templates/default.conf.template:ro
+      - ${TAMANCARE_WEB_DIST:?TAMANCARE_WEB_DIST_REQUIRED}:/usr/share/nginx/html:ro
+      - ${TAMANCARE_TLS_DIR:?TAMANCARE_TLS_DIR_REQUIRED}:/etc/nginx/tls:ro
+      - ${TAMANCARE_ACME_DIR:?TAMANCARE_ACME_DIR_REQUIRED}:/var/www/certbot:ro
+    environment:
+      TAMANCARE_SERVER_NAME: ${TAMANCARE_SERVER_NAME:?TAMANCARE_SERVER_NAME_REQUIRED}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget -q --spider http://127.0.0.1/ || exit 1"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    mem_limit: ${WEB_MEMORY_LIMIT:-256m}
+    cpus: ${WEB_CPU_LIMIT:-0.50}
+    networks:
+      - backend
+      - edge
+    security_opt:
+      - no-new-privileges:true
+
+secrets:
+  postgres_password:
+    file: ./secrets/postgres_password
+  database_url:
+    file: ./secrets/database_url
+  jwt_secret:
+    file: ./secrets/jwt_secret
+
+volumes:
+  tamancare_postgres_data:
+
+networks:
+  backend:
+    internal: true
+  edge:

@@ -1,0 +1,31 @@
+======================================================================
+ TAMANCARE V8.0 FULL DEMO
+ DIRECT REPAIR -> SUPERVISOR -> CREDENTIAL -> LOGIN
+======================================================================
+
+----- 1. RUNTIME SAFETY -----
+API_HEALTH_BEFORE=200
+PASS: API HEALTHY
+PASS: DEMO POSTGRES FOUND
+PASS: DEMO API FOUND
+PASS: DEMO DATABASE BINDING FOUND
+
+----- 2. DATABASE PRECONDITION -----
+REQUIRED_AUTH_TABLES_PRESENT=4
+PASS: ALL AUTH/STAFF TABLES PRESENT
+STAFF_ACTORS_BEFORE=0
+AUTH_CREDENTIALS_BEFORE=0
+PASS: CLEAN DEMO AUTH BASELINE
+
+----- 3. BUILD DEMO API -----
+API_BUILD_EXIT=0
+PASS: DEMO API BUILD PASSED
+COMPILED_BOOTSTRAP_EXPECTED=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/dist/staff-actors/staff-bootstrap.js
+FAIL: COMPILED STAFF BOOTSTRAP STILL MISSING
+
+======================================================================
+ STATUS=STOPPED_SAFELY
+ PASS_COUNT=7
+ FAIL_COUNT=1
+ RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_demo_direct_login_final_20260831_060012.txt
+======================================================================

@@ -1,0 +1,67 @@
+TAM AN CARE V8.0 — S5 RECOVERED REQUEST CONTRACT
+READ_ONLY_DISCOVERY=YES
+
+BODY_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|TYPE=any|SOURCE=CONTROLLER_STATIC_USAGE|STATUS=NO_FIELDS_PROVEN|FIELD_COUNT=0
+BODY_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|TYPE=any|SOURCE=CONTROLLER_STATIC_USAGE|STATUS=NO_FIELDS_PROVEN|FIELD_COUNT=0
+BODY_CONTRACT|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|TYPE=GovernanceBody|SOURCE=care-plan-governance/care-plan-governance.controller.ts|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=2
+BODY_FIELD|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|NAME=actorId|OPTIONAL=YES|TYPE=string
+BODY_FIELD|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HANDLER=execute|NAME=actorRole|OPTIONAL=YES|TYPE=string
+BODY_CONTRACT|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|TYPE=CareTaskExecutionInput|SOURCE=care-task-execution/care-task-execution.types.ts|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=6
+BODY_FIELD|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|NAME=actorId|OPTIONAL=NO|TYPE=string | null
+BODY_FIELD|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|NAME=actorRole|OPTIONAL=NO|TYPE=string | null
+BODY_FIELD|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|NAME=assigneeId|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|NAME=assigneeRole|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|NAME=completionNote|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HANDLER=execute|NAME=exceptionReason|OPTIONAL=YES|TYPE=string | null
+BODY_CONTRACT|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|TYPE=ReportIncidentInput|SOURCE=incidents/incident.types.ts|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=9
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=residentId|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=incidentCode|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=incidentType|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=title|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=description|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=location|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=occurredAt|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=actorId|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=report|NAME=actorRole|OPTIONAL=YES|TYPE=string | null
+BODY_CONTRACT|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|TYPE=IncidentMutationInput|SOURCE=incidents/incident.types.ts|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=19
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=actorId|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=actorRole|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=severity|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=summary|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=assignedTo|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=assignedRole|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=responseType|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=responseNote|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=escalationType|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=reason|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=escalationId|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=assignedReviewer|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=assignedReviewerRole|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=resolutionSummary|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=reviewSummary|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=contributingFactors|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=preventiveActions|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=followUpRequired|OPTIONAL=YES|TYPE=boolean | null
+BODY_FIELD|CONTROLLER=incidents/incident.controller.ts|HANDLER=mutate|NAME=linkedId|OPTIONAL=YES|TYPE=string | null
+BODY_CONTRACT|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|TYPE=MedicationAdministrationInput|SOURCE=medication/medication.types.ts|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=8
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=actorId|OPTIONAL=NO|TYPE=string | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=actorRole|OPTIONAL=NO|TYPE=string | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=assignedTo|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=assignedRole|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=checkResult|OPTIONAL=YES|TYPE='PASSED' | 'FAILED' | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=checkNote|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=administrationNote|OPTIONAL=YES|TYPE=string | null
+BODY_FIELD|CONTROLLER=medication/medication.controller.ts|HANDLER=mutate|NAME=exceptionReason|OPTIONAL=YES|TYPE=string | null
+BODY_CONTRACT|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|TYPE={ actorId?: string; actorRole?: string; accessScope?: string; effectiveFrom?: string; effectiveTo?: string|SOURCE=INLINE_TYPE|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=5
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|NAME=actorId|OPTIONAL=YES|TYPE=string
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|NAME=actorRole|OPTIONAL=YES|TYPE=string
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|NAME=accessScope|OPTIONAL=YES|TYPE=string
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|NAME=effectiveFrom|OPTIONAL=YES|TYPE=string
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createAssignment|NAME=effectiveTo|OPTIONAL=YES|TYPE=string
+BODY_CONTRACT|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|TYPE={ revocationReason?: string; } = {}|SOURCE=INLINE_TYPE|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=1
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=revokeAssignment|NAME=revocationReason|OPTIONAL=YES|TYPE=string
+BODY_CONTRACT|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|TYPE=any|SOURCE=CONTROLLER_STATIC_USAGE|STATUS=FIELDS_DISCOVERED|FIELD_COUNT=1
+BODY_FIELD|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|NAME=residentId|OPTIONAL=YES|TYPE=UNKNOWN_FROM_STATIC_USAGE
+BODY_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|TYPE=any|SOURCE=CONTROLLER_STATIC_USAGE|STATUS=NO_FIELDS_PROVEN|FIELD_COUNT=0
+BODY_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|TYPE=any|SOURCE=CONTROLLER_STATIC_USAGE|STATUS=NO_FIELDS_PROVEN|FIELD_COUNT=0
+BODY_CONTRACT|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|TYPE=any|SOURCE=CONTROLLER_STATIC_USAGE|STATUS=NO_FIELDS_PROVEN|FIELD_COUNT=0

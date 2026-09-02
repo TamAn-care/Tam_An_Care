@@ -1,0 +1,115 @@
+{
+  "generated_at": "2026-08-21T13:41:16.462622+00:00",
+  "version": "V7.8",
+  "phase": "4B",
+  "status": "PASSED",
+  "decision": "READ_ONLY_OPERATIONAL_WORKFLOW_VISIBILITY_ACCEPTED",
+  "mode": {
+    "read_only": true,
+    "role_assignment": false,
+    "access_assignment_change": false,
+    "care_action_mutation": false,
+    "care_task_mutation": false,
+    "database_write": false,
+    "source_write": false,
+    "runtime_restart": false
+  },
+  "route_matrix": {
+    "root": "200",
+    "dashboard": "200",
+    "operational_care": "200",
+    "residents": "200",
+    "staff_access": "200",
+    "system_status": "200"
+  },
+  "route_screen_mapping": [
+    {
+      "route": "/dashboard",
+      "component": "<SOURCE_PRESENT>"
+    },
+    {
+      "route": "/operational-care",
+      "component": "<SOURCE_PRESENT>"
+    },
+    {
+      "route": "/residents",
+      "component": "<SOURCE_PRESENT>"
+    },
+    {
+      "route": "/staff-access",
+      "component": "<SOURCE_PRESENT>"
+    },
+    {
+      "route": "/system-status",
+      "component": "<SOURCE_PRESENT>"
+    }
+  ],
+  "staff_access_signals": {
+    "staff_actors": true,
+    "access_assignments": true,
+    "role": true,
+    "resident": true,
+    "loading": true,
+    "error": true,
+    "empty": true
+  },
+  "staff_actor_api": {
+    "staff_route": true,
+    "actor_id": true,
+    "actor_role": true
+  },
+  "access_assignment_api": {
+    "route": true,
+    "resident": true,
+    "actor": true,
+    "role": true,
+    "assignment": true
+  },
+  "care_work": {
+    "care_action_present": true,
+    "care_task_present": true,
+    "assignedTo_present": false,
+    "assignedRole_present": false,
+    "assigneeId_present": false,
+    "assigneeRole_present": false
+  },
+  "visible_roles": [
+    "CAREGIVER",
+    "NURSE",
+    "SUPERVISOR"
+  ],
+  "feedback_states": {
+    "loading": true,
+    "error": true,
+    "empty": true,
+    "retry": false
+  },
+  "mutation_control_inventory": {
+    "assign": 62,
+    "transfer": 8,
+    "create": 9,
+    "save": 0,
+    "update": 0,
+    "resolve": 8,
+    "reopen": 7,
+    "start review": 1
+  },
+  "phase4c_candidate": {
+    "route": "/staff-access",
+    "screen": "StaffAccessPage",
+    "workflow": "STAFF_ACTOR_AND_ACCESS_ASSIGNMENT",
+    "mode_next": "CONTROLLED_DISPOSABLE_OR_REVERSIBLE",
+    "production_mutation_authorized_now": false
+  },
+  "observations": [
+    "generic_retry_action_not_explicitly_detected"
+  ],
+  "blockers": [],
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "delta": false
+  },
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_4C_CONTROLLED_OPERATIONAL_WORKFLOW_ACCEPTANCE"
+}

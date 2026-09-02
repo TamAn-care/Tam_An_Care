@@ -1,0 +1,19 @@
+{
+  "version": "V7.9",
+  "status": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+  "phase6_status": "PASSED",
+  "phase3": "ACCEPTED",
+  "phase4": "ACCEPTED",
+  "phase5": "ACCEPTED",
+  "final_route_count": 6,
+  "manual_test_required": false,
+  "production_restore": false,
+  "production_database_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "v77_source_write": false,
+  "next_roadmap_step": null,
+  "phase6_result_sha256": "74a191689215e86f23d2554b15f0ce05acccefa8c59b4e164a7208e3a3e24361",
+  "phase6_manifest_sha256": "9e384a4d8685b1f4ad2aa9d39ba91babc2a8e98cae93fe34cac594769475ac47"
+}

@@ -1,0 +1,602 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G2-R1
+ EXACT BUILD FAILURE CLASSIFICATION
+ STRICT READ ONLY
+ NO BUILD / NO SOURCE MUTATION / NO DB MUTATION
+======================================================================
+
+1. G2 FAILURE AUTHORITY
+[96msrc/inventory/inventory-kpi.service.ts[0m:[93m532[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'sqlScopeForActor' does not exist on type 'ResidentAccessScopeService'.
+[7m532[0m           .sqlScopeForActor(
+[96mtsconfig.json[0m:[93m1[0m:[93m374[0m - [91merror[0m[90m TS5103: [0mInvalid value for '--ignoreDeprecations'.
+[7m1[0m {"compilerOptions":{"module":"commonjs","declaration":true,"removeComments":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"allowSyntheticDefaultImports":true,"target":"ES2021","sourceMap":true,"outDir":"./dist","baseUrl":"./","incremental":true,"skipLibCheck":true,"strict":true,"strictPropertyInitialization":false,"rootDir":"./src","ignoreDeprecations":"6.0"},"include":["src/**/*"]}
+FAIL: API BUILD
+ STATUS: OPS-3 G2 STOPPED
+ FAIL_COUNT=1
+PASS: G2 FAILURE AUTHORITY FOUND
+
+2. RESIDENT ACCESS SCOPE — FULL PUBLIC CONTRACT
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts
+166b4f1358d2a41df7f5f00b6c23977305af35663fec67eb67de44c4fb8a7790  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts
+
+----- COMPLETE SERVICE -----
+     1	import {
+     2	  Injectable,
+     3	} from '@nestjs/common';
+     4	
+     5	import {
+     6	  DatabaseService,
+     7	} from '../database/database.service';
+     8	
+     9	import {
+    10	  StaffActorService,
+    11	} from '../staff-actors/staff-actor.service';
+    12	
+    13	export type ResidentAccessHumanRole =
+    14	  | 'CAREGIVER'
+    15	  | 'NURSE'
+    16	  | 'SUPERVISOR';
+    17	
+    18	export type ResidentScopeSql = {
+    19	  sql: string;
+    20	  params: any[];
+    21	  nextParameter: number;
+    22	  enforcement:
+    23	    | 'ASSIGNMENT_SCOPED'
+    24	    | 'SUPERVISORY_ALL_ACTIVE_RESIDENTS';
+    25	};
+    26	
+    27	@Injectable()
+    28	export class ResidentAccessScopeService {
+    29	  constructor(
+    30	    private readonly db: DatabaseService,
+    31	    private readonly staffActors: StaffActorService,
+    32	  ) {}
+    33	
+    34	  private scopeForRole(
+    35	    actorRole: ResidentAccessHumanRole,
+    36	  ):
+    37	    | 'DIRECT_CARE'
+    38	    | 'CLINICAL_CARE'
+    39	    | null
+    40	  {
+    41	    if (actorRole === 'CAREGIVER') {
+    42	      return 'DIRECT_CARE';
+    43	    }
+    44	
+    45	    if (actorRole === 'NURSE') {
+    46	      return 'CLINICAL_CARE';
+    47	    }
+    48	
+    49	    return null;
+    50	  }
+    51	
+    52	  async canAccessResident(
+    53	    actorIdInput: string,
+    54	    actorRole: ResidentAccessHumanRole,
+    55	    residentIdInput: string,
+    56	  ): Promise<boolean> {
+    57	    const actorId =
+    58	      String(actorIdInput ?? '').trim();
+    59	
+    60	    const residentId =
+    61	      String(residentIdInput ?? '').trim();
+    62	
+    63	    if (!actorId || !residentId) {
+    64	      return false;
+    65	    }
+    66	
+    67	    const canonicalActor =
+    68	      await this.staffActors
+    69	        .resolveActiveActorWithRole(
+    70	          actorId,
+    71	          actorRole,
+    72	        );
+    73	
+    74	    if (!canonicalActor) {
+    75	      return false;
+    76	    }
+    77	
+    78	    if (actorRole === 'SUPERVISOR') {
+    79	      const result =
+    80	        await this.db.query(
+    81	          `
+    82	            SELECT 1
+    83	            FROM residents r
+    84	            WHERE
+    85	              r.resident_id = $1
+    86	              AND r.active_status = true
+    87	            LIMIT 1
+    88	          `,
+    89	          [
+    90	            residentId,
+    91	          ],
+    92	        );
+    93	
+    94	      return result.rowCount === 1;
+    95	    }
+    96	
+    97	    const accessScope =
+    98	      this.scopeForRole(actorRole);
+    99	
+   100	    if (!accessScope) {
+   101	      return false;
+   102	    }
+   103	
+   104	    const result =
+   105	      await this.db.query(
+   106	        `
+   107	          SELECT 1
+   108	          FROM residents r
+   109	          WHERE
+   110	            r.resident_id = $1
+   111	            AND r.active_status = true
+   112	            AND EXISTS (
+   113	              SELECT 1
+   114	              FROM resident_access_assignments raa
+   115	              WHERE
+   116	                raa.resident_id = r.resident_id
+   117	                AND raa.actor_id = $2
+   118	                AND raa.actor_role = $3
+   119	                AND raa.access_scope = $4
+   120	                AND raa.status = 'ACTIVE'
+   121	                AND raa.effective_from <= NOW()
+   122	                AND (
+   123	                  raa.effective_to IS NULL
+   124	                  OR raa.effective_to > NOW()
+   125	                )
+   126	            )
+   127	          LIMIT 1
+   128	        `,
+   129	        [
+   130	          residentId,
+   131	          actorId,
+   132	          actorRole,
+   133	          accessScope,
+   134	        ],
+   135	      );
+   136	
+   137	    return result.rowCount === 1;
+   138	  }
+   139	
+   140	  sqlPredicate(
+   141	    residentAliasInput: string,
+   142	    actorIdInput: string,
+   143	    actorRole: ResidentAccessHumanRole,
+   144	    startParameter = 1,
+   145	  ): ResidentScopeSql {
+   146	    const residentAlias =
+   147	      String(residentAliasInput ?? '').trim();
+   148	
+   149	    const actorId =
+   150	      String(actorIdInput ?? '').trim();
+   151	
+   152	    if (
+   153	      !/^[A-Za-z_][A-Za-z0-9_]*$/.test(
+   154	        residentAlias,
+   155	      )
+   156	    ) {
+   157	      throw new Error(
+   158	        'Unsafe resident SQL alias.',
+   159	      );
+   160	    }
+   161	
+   162	    if (!actorId) {
+   163	      return {
+   164	        sql: 'FALSE',
+   165	        params: [],
+   166	        nextParameter: startParameter,
+   167	        enforcement: 'ASSIGNMENT_SCOPED',
+   168	      };
+   169	    }
+   170	
+   171	    if (actorRole === 'SUPERVISOR') {
+   172	      const actorIdParameter =
+   173	        startParameter;
+   174	
+   175	      const actorRoleParameter =
+   176	        startParameter + 1;
+   177	
+   178	      return {
+   179	        sql: `
+   180	          ${residentAlias}.active_status = true
+   181	          AND EXISTS (
+   182	            SELECT 1
+   183	            FROM staff_actors sa
+   184	            WHERE
+   185	              sa.actor_id =
+   186	                $${actorIdParameter}
+   187	              AND sa.status = 'ACTIVE'
+   188	              AND sa.primary_operational_role =
+   189	                $${actorRoleParameter}
+   190	          )
+   191	        `,
+   192	        params: [
+   193	          actorId,
+   194	          actorRole,
+   195	        ],
+   196	        nextParameter:
+   197	          startParameter + 2,
+   198	        enforcement:
+   199	          'SUPERVISORY_ALL_ACTIVE_RESIDENTS',
+   200	      };
+   201	    }
+   202	
+   203	    const accessScope =
+   204	      this.scopeForRole(actorRole);
+   205	
+   206	    if (!accessScope) {
+   207	      return {
+   208	        sql: 'FALSE',
+   209	        params: [],
+   210	        nextParameter: startParameter,
+   211	        enforcement: 'ASSIGNMENT_SCOPED',
+   212	      };
+   213	    }
+   214	
+   215	    const actorIdParameter =
+   216	      startParameter;
+   217	
+   218	    const actorRoleParameter =
+   219	      startParameter + 1;
+   220	
+   221	    const accessScopeParameter =
+   222	      startParameter + 2;
+   223	
+   224	    return {
+   225	      sql: `
+   226	        ${residentAlias}.active_status = true
+   227	        AND EXISTS (
+   228	          SELECT 1
+   229	          FROM staff_actors sa
+   230	          WHERE
+   231	            sa.actor_id =
+   232	              $${actorIdParameter}
+   233	            AND sa.status = 'ACTIVE'
+   234	            AND sa.primary_operational_role =
+   235	              $${actorRoleParameter}
+   236	        )
+   237	        AND EXISTS (
+   238	          SELECT 1
+   239	          FROM resident_access_assignments raa
+   240	          WHERE
+   241	            raa.resident_id =
+   242	              ${residentAlias}.resident_id
+   243	            AND raa.actor_id =
+   244	              $${actorIdParameter}
+   245	            AND raa.actor_role =
+   246	              $${actorRoleParameter}
+   247	            AND raa.access_scope =
+   248	              $${accessScopeParameter}
+   249	            AND raa.status = 'ACTIVE'
+   250	            AND raa.effective_from <= NOW()
+   251	            AND (
+   252	              raa.effective_to IS NULL
+   253	              OR raa.effective_to > NOW()
+   254	            )
+   255	        )
+   256	      `,
+   257	      params: [
+   258	        actorId,
+   259	        actorRole,
+   260	        accessScope,
+   261	      ],
+   262	      nextParameter:
+   263	        startParameter + 3,
+   264	      enforcement: 'ASSIGNMENT_SCOPED',
+   265	    };
+   266	  }
+   267	}
+
+----- METHOD SIGNALS -----
+11:} from '../staff-actors/staff-actor.service';
+29:  constructor(
+30:    private readonly db: DatabaseService,
+31:    private readonly staffActors: StaffActorService,
+34:  private scopeForRole(
+35:    actorRole: ResidentAccessHumanRole,
+41:    if (actorRole === 'CAREGIVER') {
+45:    if (actorRole === 'NURSE') {
+52:  async canAccessResident(
+53:    actorIdInput: string,
+54:    actorRole: ResidentAccessHumanRole,
+55:    residentIdInput: string,
+57:    const actorId =
+58:      String(actorIdInput ?? '').trim();
+60:    const residentId =
+61:      String(residentIdInput ?? '').trim();
+63:    if (!actorId || !residentId) {
+69:        .resolveActiveActorWithRole(
+70:          actorId,
+71:          actorRole,
+78:    if (actorRole === 'SUPERVISOR') {
+83:            FROM residents r
+85:              r.resident_id = $1
+90:            residentId,
+97:    const accessScope =
+98:      this.scopeForRole(actorRole);
+100:    if (!accessScope) {
+108:          FROM residents r
+110:            r.resident_id = $1
+114:              FROM resident_access_assignments raa
+116:                raa.resident_id = r.resident_id
+117:                AND raa.actor_id = $2
+118:                AND raa.actor_role = $3
+119:                AND raa.access_scope = $4
+130:          residentId,
+131:          actorId,
+132:          actorRole,
+133:          accessScope,
+140:  sqlPredicate(
+141:    residentAliasInput: string,
+142:    actorIdInput: string,
+143:    actorRole: ResidentAccessHumanRole,
+146:    const residentAlias =
+147:      String(residentAliasInput ?? '').trim();
+149:    const actorId =
+150:      String(actorIdInput ?? '').trim();
+154:        residentAlias,
+158:        'Unsafe resident SQL alias.',
+162:    if (!actorId) {
+171:    if (actorRole === 'SUPERVISOR') {
+172:      const actorIdParameter =
+175:      const actorRoleParameter =
+180:          ${residentAlias}.active_status = true
+183:            FROM staff_actors sa
+185:              sa.actor_id =
+186:                $${actorIdParameter}
+189:                $${actorRoleParameter}
+193:          actorId,
+194:          actorRole,
+203:    const accessScope =
+204:      this.scopeForRole(actorRole);
+206:    if (!accessScope) {
+215:    const actorIdParameter =
+218:    const actorRoleParameter =
+221:    const accessScopeParameter =
+226:        ${residentAlias}.active_status = true
+229:          FROM staff_actors sa
+231:            sa.actor_id =
+232:              $${actorIdParameter}
+235:              $${actorRoleParameter}
+239:          FROM resident_access_assignments raa
+241:            raa.resident_id =
+242:              ${residentAlias}.resident_id
+243:            AND raa.actor_id =
+244:              $${actorIdParameter}
+245:            AND raa.actor_role =
+246:              $${actorRoleParameter}
+247:            AND raa.access_scope =
+248:              $${accessScopeParameter}
+258:        actorId,
+259:        actorRole,
+260:        accessScope,
+PASS: RESIDENT ACCESS SERVICE CONTRACT CAPTURED
+
+3. EXISTING CALLERS OF RESIDENT ACCESS SERVICE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.module.ts:14:  ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.module.ts:23:    ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.module.ts:26:    ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts:28:export class ResidentAccessScopeService {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts:14:  ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts:56:    private readonly residentAccess: ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts:13:  ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts:43:      ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:12:  ResidentAccessScopeService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:46:      ResidentAccessScopeService,
+PASS: EXISTING CALLERS CAPTURED
+
+4. STAFF ACTOR SERVICE CONTRACT
+STAFF_ACTOR_SERVICE=<NOT_FOUND_AT_EXPECTED_PATH>
+
+5. TYPESCRIPT TOOLCHAIN AUTHORITY
+NODE_VERSION=v24.19.0
+NPM_VERSION=11.17.0
+NPX_TSC_VERSION=Version 5.9.3
+
+----- PACKAGE TYPESCRIPT / NEST SIGNALS -----
+6:    "build": "nest build",
+22:    "@nestjs/cli": "12.0.0",
+27:    "typescript": "6.0.2"
+
+----- LOCKFILE TYPESCRIPT SIGNALS -----
+3108:    "node_modules/typescript": {
+    "node_modules/typescript": {
+      "version": "6.0.2",
+      "resolved": "https://registry.npmjs.org/typescript/-/typescript-6.0.2.tgz",
+      "integrity": "sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==",
+      "dev": true,
+      "license": "Apache-2.0",
+      "bin": {
+        "tsc": "bin/tsc",
+        "tsserver": "bin/tsserver"
+      },
+      "engines": {
+        "node": ">=14.17"
+      }
+    },
+    "node_modules/uid": {
+      "version": "2.0.2",
+      "resolved": "https://registry.npmjs.org/uid/-/uid-2.0.2.tgz",
+      "integrity": "sha512-u3xV3X7uzvi5b1MncmZo3i2Aw222Zk1keqLA1YkHldREkAhAqi65wuPfe7lHx8H/Wzy+8CE7S7uS3jekIM5s8g==",
+      "license": "MIT",
+
+----- TSC RESOLUTION -----
+typescript_package=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/typescript/package.json
+typescript_version=5.9.3
+PASS: TYPESCRIPT TOOLCHAIN CAPTURED
+
+6. TSCONFIG EXACT AUTHORITY
+{"compilerOptions":{"module":"commonjs","declaration":true,"removeComments":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"allowSyntheticDefaultImports":true,"target":"ES2021","sourceMap":true,"outDir":"./dist","baseUrl":"./","incremental":true,"skipLibCheck":true,"strict":true,"strictPropertyInitialization":false,"rootDir":"./src","ignoreDeprecations":"6.0"},"include":["src/**/*"]}
+
+TSCONFIG_HASH=7ec543c24bb3ed6721aec14f896079f652e21e8e3290dc13d4400b69c7e9815a
+PASS: TSCONFIG CAPTURED
+
+7. CONFIG HISTORY / DUPLICATE CONFIG SIGNALS
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/api/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/api/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/api/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/frontend/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/frontend/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/frontend/tsconfig.app.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/frontend/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/frontend/tsconfig.node.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/api/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/api/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/api/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/tsconfig.app.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/tsconfig.node.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/api/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/api/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/api/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/frontend/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/frontend/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/frontend/tsconfig.app.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/frontend/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/workspace/frontend/tsconfig.node.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/VW-9E-B3-B-R1-backup-20260828-121226/package-lock.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/VW-9E-B3-B-R1-backup-20260828-121226/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/accepts/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/acorn/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ajv-formats/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ajv-keywords/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ajv/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ansi-colors/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ansi-escapes/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ansi-regex/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ansi-styles/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/anymatch/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/append-field/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/argparse/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/array-flatten/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/array-timsort/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/balanced-match/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/base64-js/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/baseline-browser-mapping/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/binary-extensions/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/bl/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/body-parser/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/brace-expansion/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/braces/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/browserslist/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/buffer-from/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/buffer/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/busboy/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/bytes/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/call-bind-apply-helpers/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/call-bind-apply-helpers/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/call-bind/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/call-bound/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/call-bound/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/callsites/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/caniuse-lite/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/chalk/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/chardet/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/chokidar/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/chrome-trace-event/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cli-cursor/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cli-spinners/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cli-table3/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cli-width/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/clone/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/color-convert/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/color-name/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/commander/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/comment-json/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/concat-map/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/concat-stream/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/consola/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/content-disposition/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/content-type/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cookie-signature/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cookie/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/core-util-is/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cors/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cosmiconfig/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/cross-spawn/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/debug/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/deepmerge/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/defaults/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/define-data-property/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/define-data-property/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/depd/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/destroy/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/dunder-proto/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/dunder-proto/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/eastasianwidth/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/ee-first/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/electron-to-chromium/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/emoji-regex/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/encodeurl/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/enhanced-resolve/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/error-ex/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-define-property/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-define-property/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-errors/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-errors/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-module-lexer/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-object-atoms/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-object-atoms/tsconfig.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/escalade/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/escape-html/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/escape-string-regexp/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/eslint-scope/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/esprima/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/esrecurse/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/estraverse/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/etag/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/events/package.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/express/package.json
+
+IGNORE_DEPRECATIONS_SIGNALS:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/node_modules/es-object-atoms/tsconfig.json:5:		"ignoreDeprecations": "6.0",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/tsconfig.json:1:{"compilerOptions":{"module":"commonjs","declaration":true,"removeComments":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"allowSyntheticDefaultImports":true,"target":"ES2021","sourceMap":true,"outDir":"./dist","baseUrl":"./","incremental":true,"skipLibCheck":true,"strict":true,"strictPropertyInitialization":false,"rootDir":"./src","ignoreDeprecations":"6.0"},"include":["src/**/*"]}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/workspace/api/node_modules/es-object-atoms/tsconfig.json:5:		"ignoreDeprecations": "6.0",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/node_modules/es-object-atoms/tsconfig.json:5:		"ignoreDeprecations": "6.0",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/api/node_modules/es-object-atoms/tsconfig.json:5:		"ignoreDeprecations": "6.0",
+
+8. G2 MUTATED SOURCE HASHES
+1b43ca3141fdbe02847b8e78495904fe03052c071ad88c386170f6f4c35dc360  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-kpi.service.ts
+fa611fe5d47fccab7b19f5faa02d9adc2459c2ba8985dd27f962329a9fc4a651  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+
+9. ACCEPTED OPS-2-C PRESERVATION
+resident-consumption.service.ts=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: PRESERVED resident-consumption.service.ts
+inventory-ledger.service.ts=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: PRESERVED inventory-ledger.service.ts
+inventory-lot.service.ts=5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087
+PASS: PRESERVED inventory-lot.service.ts
+
+10. DATABASE IMMUTABILITY
+DATABASE_BASELINE=1|1|0|0|0|0
+PASS: DATABASE UNCHANGED
+
+======================================================================
+ OPS-3 G2-R1 DECISION
+======================================================================
+PASS_COUNT=9
+FAIL_COUNT=0
+STATUS: OPS-3 G2-R1 DIAGNOSTIC COMPLETE
+APPLICATION_REPAIR_AUTHORIZED=NOT_YET
+TSCONFIG_REPAIR_AUTHORIZED=NOT_YET
+ROLLBACK_AUTHORIZED=NO
+NEXT=CLASSIFY_EXACT_MINIMAL_REPAIR
+
+BUILD_EXECUTED=NO
+SOURCE_MUTATION=NO
+TSCONFIG_MUTATION=NO
+SCHEMA_MUTATION=NO
+DATABASE_MUTATION=NO
+G3_AUTHORIZED=NO
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g2_r1_exact_build_failure_classification_20260830_190541.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

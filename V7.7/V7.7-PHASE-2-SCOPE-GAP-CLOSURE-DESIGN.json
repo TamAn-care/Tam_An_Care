@@ -1,0 +1,83 @@
+{
+  "release": "V7.7",
+  "baseline": "Frozen stable V7.6",
+  "architecture_policy": [
+    "Preserve current backend domain architecture",
+    "Preserve Operational Care as integrated operational workspace",
+    "Do not create one screen per backend module automatically",
+    "Do not invent request DTO fields",
+    "Do not invent roles",
+    "Do not invent routes",
+    "Do not alter schema unless separately proven necessary",
+    "All actor-sensitive mutations must be contract-proven",
+    "All functional tests use disposable PostgreSQL",
+    "Production remains immutable until formal cutover"
+  ],
+  "accepted_design_tracks": [
+    {
+      "track": "CONTRACT_RECOVERY",
+      "purpose": "Resolve exact routes/DTOs/state/action contracts that Phase 1 could not parse."
+    },
+    {
+      "track": "SECURITY_PROOF",
+      "purpose": "Trace actor identity, role authorization, anti-impersonation and fail-closed behavior before authorizing security patches."
+    },
+    {
+      "track": "OPERATIONAL_CARE_EXPANSION",
+      "purpose": "Determine which source-proven care domains should be surfaced inside existing Operational Care rather than adding disconnected pages."
+    },
+    {
+      "track": "AUDIT_VISIBILITY",
+      "purpose": "Determine source-proven audit/history capabilities suitable for supervisor visibility."
+    }
+  ],
+  "explicit_exclusions": [
+    "No production database migration",
+    "No production fixture creation",
+    "No V7.6 source modification",
+    "No V7.5 rollback deletion",
+    "No AI autonomy expansion",
+    "No new clinical decision authority",
+    "No guessed security restriction",
+    "No guessed API route",
+    "No guessed DTO field",
+    "No wholesale architecture rewrite"
+  ],
+  "gap_decisions": [
+    {
+      "id": "GAP-P1-004",
+      "decision": "SECURITY_TRACE_REQUIRED",
+      "implementation_authorized": false,
+      "reason": "Controller-file actor headers are absent for many mutation endpoints, but this does not prove missing authorization. Guards, service authorization and body actor contracts must be traced first.",
+      "next_gate": "PHASE_3B_SECURITY_TRACE"
+    },
+    {
+      "id": "GAP-P1-001",
+      "decision": "CONTRACT_DISCOVERY_REQUIRED",
+      "implementation_authorized": false,
+      "reason": "Two access-assignment routes exist but Phase 1 parser could not resolve decorator syntax. This is first an audit/parser contract issue.",
+      "next_gate": "PHASE_3A_EXACT_ROUTE_RECOVERY"
+    },
+    {
+      "id": "GAP-P1-002",
+      "decision": "INTEGRATED_UI_DESIGN_CANDIDATE",
+      "implementation_authorized": false,
+      "reason": "Backend route without dedicated page is not automatically a missing feature. V7.7 preserves Operational Care as the primary integration workspace.",
+      "next_gate": "PHASE_3C_FRONTEND_BACKEND_MAPPING"
+    },
+    {
+      "id": "GAP-P1-006",
+      "decision": "INTEGRATED_UI_DESIGN_CANDIDATE",
+      "implementation_authorized": false,
+      "reason": "Backend route without dedicated page is not automatically a missing feature. V7.7 preserves Operational Care as the primary integration workspace.",
+      "next_gate": "PHASE_3C_FRONTEND_BACKEND_MAPPING"
+    },
+    {
+      "id": "GAP-P1-003",
+      "decision": "SUPERVISOR_AUDIT_VISIBILITY_CANDIDATE",
+      "implementation_authorized": false,
+      "reason": "18 audit tables exist but frontend visibility requirements must be mapped to existing API capabilities first.",
+      "next_gate": "PHASE_3C_AUDIT_VISIBILITY_DISCOVERY"
+    }
+  ]
+}

@@ -1,0 +1,568 @@
+import {
+  Injectable,
+} from '@nestjs/common';
+
+import {
+  DatabaseService,
+} from '../database/database.service';
+
+import {
+  CareAction,
+  AssignCareActionInput,
+  TransferCareActionInput,
+} from './care-action.types';
+
+import {
+  CareActionRepository,
+} from './care-action.repository';
+
+import {
+  assertValidPriority,
+  normalizeNullableDate,
+  requireNonEmptyText,
+} from './care-action.validation';
+
+
+@Injectable()
+export class CareActionService {
+
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly repository: CareActionRepository,
+  ) {}
+
+
+  async getOrCreate(
+    residentId: string,
+    patternId: string,
+  ): Promise<CareAction> {
+
+    const normalizedResidentId =
+      requireNonEmptyText(
+        residentId,
+        'residentId',
+      );
+
+    const normalizedPatternId =
+      requireNonEmptyText(
+        patternId,
+        'patternId',
+      );
+
+
+    return this.db.withTransaction(
+      async client => {
+
+        const existing =
+          await this.repository
+            .findByResidentAndPattern(
+              normalizedResidentId,
+              normalizedPatternId,
+              client,
+            );
+
+        if (existing) {
+          return existing;
+        }
+
+
+        const created =
+          await this.repository.insert(
+            normalizedResidentId,
+            normalizedPatternId,
+            client,
+          );
+
+
+        await this.repository.insertAudit(
+          {
+            careActionId:
+              created.id,
+
+            residentId:
+              created.residentId,
+
+            patternId:
+              created.patternId,
+
+            eventType:
+              'CREATED',
+
+            actorId:
+              null,
+
+            actorRole:
+              null,
+
+            previousState:
+              null,
+
+            newState:
+              {
+                status:
+                  created.status,
+              },
+          },
+          client,
+        );
+
+
+        return created;
+
+      },
+    );
+
+  }
+
+
+  async assign(
+    residentId: string,
+    patternId: string,
+    input: AssignCareActionInput,
+  ): Promise<CareAction> {
+
+    const normalizedResidentId =
+      requireNonEmptyText(
+        residentId,
+        'residentId',
+      );
+
+    const normalizedPatternId =
+      requireNonEmptyText(
+        patternId,
+        'patternId',
+      );
+
+    const assignedTo =
+      requireNonEmptyText(
+        input.assignedTo,
+        'assignedTo',
+      );
+
+    const assignedRole =
+      requireNonEmptyText(
+        input.assignedRole,
+        'assignedRole',
+      );
+
+    const priority =
+      assertValidPriority(
+        input.priority,
+      );
+
+    const dueAt =
+      normalizeNullableDate(
+        input.dueAt,
+      );
+
+
+    return this.db.withTransaction(
+      async client => {
+
+        let action =
+          await this.repository
+            .findByResidentAndPatternForUpdate(
+              normalizedResidentId,
+              normalizedPatternId,
+              client,
+            );
+
+        let createdNow = false;
+
+
+        if (!action) {
+
+          action =
+            await this.repository.insert(
+              normalizedResidentId,
+              normalizedPatternId,
+              client,
+            );
+
+          createdNow = true;
+
+
+          await this.repository.insertAudit(
+            {
+              careActionId:
+                action.id,
+
+              residentId:
+                action.residentId,
+
+              patternId:
+                action.patternId,
+
+              eventType:
+                'CREATED',
+
+              actorId:
+                input.actorId,
+
+              actorRole:
+                input.actorRole,
+
+              previousState:
+                null,
+
+              newState:
+                {
+                  status:
+                    action.status,
+                },
+            },
+            client,
+          );
+
+        }
+
+
+        if (action.assignedTo) {
+
+          throw new Error(
+            'Care Action is already assigned. Use transfer().',
+          );
+
+        }
+
+
+        const previousState = {
+          assignedTo:
+            action.assignedTo,
+
+          assignedRole:
+            action.assignedRole,
+
+          assignedAt:
+            action.assignedAt,
+
+          priority:
+            action.priority,
+
+          dueAt:
+            action.dueAt,
+        };
+
+
+        const now =
+          new Date();
+
+
+        const eventType =
+          'ASSIGNMENT' as const;
+
+
+        const updated =
+          await this.repository.update(
+            action.id,
+            {
+              assignedTo,
+              assignedRole,
+              assignedAt:
+                now,
+
+              priority,
+              dueAt,
+            },
+            client,
+          );
+
+
+        await this.repository.insertTransfer(
+          {
+            careActionId:
+              updated.id,
+
+            eventType,
+
+            fromAssignedTo:
+              action.assignedTo,
+
+            fromAssignedRole:
+              action.assignedRole,
+
+            toAssignedTo:
+              updated.assignedTo!,
+
+            toAssignedRole:
+              updated.assignedRole!,
+
+            priority:
+              updated.priority,
+
+            dueAt:
+              updated.dueAt,
+
+            actorId:
+              input.actorId,
+
+            actorRole:
+              input.actorRole,
+          },
+          client,
+        );
+
+
+        await this.repository.insertAudit(
+          {
+            careActionId:
+              updated.id,
+
+            residentId:
+              updated.residentId,
+
+            patternId:
+              updated.patternId,
+
+            eventType:
+              'ASSIGNED',
+
+            actorId:
+              input.actorId,
+
+            actorRole:
+              input.actorRole,
+
+            previousState,
+
+            newState:
+              {
+                assignedTo:
+                  updated.assignedTo,
+
+                assignedRole:
+                  updated.assignedRole,
+
+                assignedAt:
+                  updated.assignedAt,
+
+                priority:
+                  updated.priority,
+
+                dueAt:
+                  updated.dueAt,
+
+                createdNow,
+              },
+          },
+          client,
+        );
+
+
+        return updated;
+
+      },
+    );
+
+  }
+
+
+  async transfer(
+    residentId: string,
+    patternId: string,
+    input: TransferCareActionInput,
+  ): Promise<CareAction> {
+
+    const normalizedResidentId =
+      requireNonEmptyText(
+        residentId,
+        'residentId',
+      );
+
+    const normalizedPatternId =
+      requireNonEmptyText(
+        patternId,
+        'patternId',
+      );
+
+    const assignedTo =
+      requireNonEmptyText(
+        input.assignedTo,
+        'assignedTo',
+      );
+
+    const assignedRole =
+      requireNonEmptyText(
+        input.assignedRole,
+        'assignedRole',
+      );
+
+    const priority =
+      assertValidPriority(
+        input.priority,
+      );
+
+    const dueAt =
+      normalizeNullableDate(
+        input.dueAt,
+      );
+
+
+    return this.db.withTransaction(
+      async client => {
+
+        const action =
+          await this.repository
+            .findByResidentAndPatternForUpdate(
+              normalizedResidentId,
+              normalizedPatternId,
+              client,
+            );
+
+
+        if (!action) {
+
+          throw new Error(
+            'Care Action not found.',
+          );
+
+        }
+
+
+        if (!action.assignedTo) {
+
+          throw new Error(
+            'Care Action is not assigned. Use assign() first.',
+          );
+
+        }
+
+
+        if (action.status === 'RESOLVED') {
+
+          throw new Error(
+            'Resolved Care Action must be reopened before transfer.',
+          );
+
+        }
+
+
+        const previousState = {
+          assignedTo:
+            action.assignedTo,
+
+          assignedRole:
+            action.assignedRole,
+
+          assignedAt:
+            action.assignedAt,
+
+          priority:
+            action.priority,
+
+          dueAt:
+            action.dueAt,
+
+          status:
+            action.status,
+        };
+
+
+        const updated =
+          await this.repository.update(
+            action.id,
+            {
+              assignedTo,
+              assignedRole,
+
+              assignedAt:
+                new Date(),
+
+              priority,
+              dueAt,
+            },
+            client,
+          );
+
+
+        await this.repository.insertTransfer(
+          {
+            careActionId:
+              updated.id,
+
+            eventType:
+              'TRANSFER',
+
+            fromAssignedTo:
+              action.assignedTo,
+
+            fromAssignedRole:
+              action.assignedRole,
+
+            toAssignedTo:
+              updated.assignedTo!,
+
+            toAssignedRole:
+              updated.assignedRole!,
+
+            priority:
+              updated.priority,
+
+            dueAt:
+              updated.dueAt,
+
+            actorId:
+              input.actorId,
+
+            actorRole:
+              input.actorRole,
+          },
+          client,
+        );
+
+
+        await this.repository.insertAudit(
+          {
+            careActionId:
+              updated.id,
+
+            residentId:
+              updated.residentId,
+
+            patternId:
+              updated.patternId,
+
+            eventType:
+              'TRANSFERRED',
+
+            actorId:
+              input.actorId,
+
+            actorRole:
+              input.actorRole,
+
+            previousState,
+
+            newState:
+              {
+                assignedTo:
+                  updated.assignedTo,
+
+                assignedRole:
+                  updated.assignedRole,
+
+                assignedAt:
+                  updated.assignedAt,
+
+                priority:
+                  updated.priority,
+
+                dueAt:
+                  updated.dueAt,
+
+                status:
+                  updated.status,
+              },
+          },
+          client,
+        );
+
+
+        return updated;
+
+      },
+    );
+
+  }
+
+}

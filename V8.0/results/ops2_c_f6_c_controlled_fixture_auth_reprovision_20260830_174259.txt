@@ -1,0 +1,179 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-C
+ CONTROLLED DISPOSABLE FIXTURE + AUTH REPROVISION
+ NO FUNCTIONAL API POST
+ NO SOURCE / DIST / IMAGE / SCHEMA MUTATION
+======================================================================
+
+======================================================================
+ 1. R2A AUTHORITY
+======================================================================
+PASS: R2A AUTHORITY
+
+======================================================================
+ 2. SOURCE HASH AUTHORITY
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SOURCE HASHES PRESERVED
+
+======================================================================
+ 3. ISOLATED JWT RUNTIME AUTHORITY
+======================================================================
+ISOLATED_STATE=running
+ISOLATED_HEALTH_HTTP=200
+JWT_TEST_SECRET_STATE=READY
+PASS: ISOLATED JWT RUNTIME READY
+
+======================================================================
+ 4. EXACT CLEAN DATABASE PRECONDITION
+======================================================================
+PRE_DB_BASELINE=1|1|0|0|0|0|0
+PRE_TEMP_AUTH_COUNT=0
+PASS: CLEAN DATABASE PRECONDITION
+
+======================================================================
+ 5. EXACT NAMESPACE COLLISION HARD STOP
+======================================================================
+FIXTURE_NAMESPACE_COLLISION_COUNT=0
+PASS: DISPOSABLE NAMESPACE CLEAN
+
+======================================================================
+ 6. CANONICAL SUPERVISOR AUTHORITY
+======================================================================
+ACTIVE_SUPERVISOR_MATCH_COUNT=1
+PASS: CANONICAL SUPERVISOR AUTHORITY
+
+======================================================================
+ 7. ATOMIC FIXTURE + AUTH REPROVISION
+======================================================================
+BEGIN
+INSERT 0 4
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 5
+COMMIT
+PASS: ATOMIC FIXTURE + AUTH REPROVISION
+
+======================================================================
+ 8. EXACT FIXTURE COUNTS
+======================================================================
+FIXTURE_AUTH_COUNTS=4|1|2|3|3|4|0|5
+PASS: EXACT FIXTURE + AUTH COUNTS
+
+======================================================================
+ 9. ACCESS MATRIX
+======================================================================
+ACCESS_MATRIX=1|1|0|0
+PASS: ACCESS MATRIX
+
+======================================================================
+ 10. STOCK + LOT CONDITIONS
+======================================================================
+INITIAL_STOCK_MATRIX=20.0000|20.0000|20.0000|20.0000
+NUMERIC_STOCK_SEMANTIC_RESULT=PASS
+LOT_CONDITION_MATRIX=1|1|1
+PASS: STOCK + LOT CONDITIONS
+
+======================================================================
+ 11. AUTH SESSION MATRIX
+======================================================================
+AUTH_SESSION_MATRIX=1|1|1|1|1
+PASS: AUTH SESSION MATRIX
+
+======================================================================
+ 12. GLOBAL DATABASE FIXTURE STATE
+======================================================================
+POST_DB_FIXTURE_STATE=5|2|2|3|3|4|0
+PASS: GLOBAL FIXTURE STATE
+
+======================================================================
+ 13. RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_3111=200
+PASS: RUNTIME 3111 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 14. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SOURCE HASHES PRESERVED
+
+======================================================================
+ 15. F6-C BOUNDARY
+======================================================================
+DATABASE_TEST_FIXTURE_MUTATION=YES
+DATABASE_PRODUCTION_MUTATION=NO
+AUTH_SESSION_TEST_FIXTURE_MUTATION=YES
+FUNCTIONAL_API_POST_EXECUTED=NO
+RESIDENT_CONSUMPTION_POST_EXECUTED=NO
+GENERIC_TRANSACTION_POST_EXECUTED=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+EPHEMERAL_TEST_JWT_SECRET_PRESERVED=YES
+CANONICAL_JWT_SECRET_CHANGED=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-C DECISION
+======================================================================
+STATUS: OPS-2-C F6-C CONTROLLED FIXTURE + AUTH REPROVISION PASSED
+FIXTURE_AUTH_COUNTS=4|1|2|3|3|4|0|5
+ACCESS_MATRIX=1|1|0|0
+INITIAL_STOCK_MATRIX=20.0000|20.0000|20.0000|20.0000
+NUMERIC_STOCK_SEMANTIC_RESULT=PASS
+LOT_CONDITION_MATRIX=1|1|1
+AUTH_SESSION_MATRIX=1|1|1|1|1
+POST_DB_FIXTURE_STATE=5|2|2|3|3|4|0
+FIXTURE_READY=YES
+AUTH_TEST_AUTHORITY_READY=YES
+ISOLATED_RUNTIME_READY=YES
+FUNCTIONAL_TEST_EXECUTED=NO
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_F01_F31_FUNCTIONAL_RETRY
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_c_controlled_fixture_auth_reprovision_20260830_174259.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING
+ -> PRESERVE ITS CURRENT EPHEMERAL JWT SECRET
+ -> KEEP F5/F6 DISPOSABLE FIXTURES IN PLACE
+ -> DO NOT REPROVISION FIXTURES
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT REPROVISION CONTAINER
+ -> DO NOT CHANGE CANONICAL JWT_SECRET
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT RUN FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

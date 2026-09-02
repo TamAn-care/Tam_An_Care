@@ -1,0 +1,11 @@
+{
+  "version": "V7.9",
+  "phase": "1A",
+  "status": "PASSED",
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-1A-ROLE-STAFF-ACCESS-CONTRACT.json",
+  "inventory_hash": "49437e5cf3ef3442e36d61b7241a7a1b17db753feece1dcc0a87f6660c5466d7",
+  "staff_route_count": 2,
+  "access_route_count": 1,
+  "production_write": false,
+  "next": "PHASE_1B"
+}

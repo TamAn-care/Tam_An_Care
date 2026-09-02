@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-08-21T08:32:20.109006+00:00",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "workflow": "Care Action Assign",
+  "route": "/api/care-actions/:residentId/:patternId/assign",
+  "request_contract": {
+    "actorId": "required authenticated human actor",
+    "actorRole": "required authenticated human role",
+    "assignedTo": "required assignment target",
+    "assignedRole": "required assignment target role",
+    "priority": "required; HIGH|MODERATE|LOW"
+  },
+  "accepted_test_priority": "MODERATE",
+  "care_task_distinction": {
+    "care_action": "assignedTo + assignedRole",
+    "care_task": "assigneeId + assigneeRole"
+  },
+  "functional_evidence": {
+    "missing_priority_rejected": true,
+    "complete_no_actor_rejected": true,
+    "authorized_assign_2xx": true,
+    "persistence": true,
+    "audit": true
+  },
+  "application_source_write": false,
+  "production_database_write": false,
+  "v7_6_change": false
+}

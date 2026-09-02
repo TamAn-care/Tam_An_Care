@@ -1,0 +1,50 @@
+STEP 7U — CONCURRENCY CONTRACT
+
+State-changing operation:
+
+BEGIN
+-> SELECT target row FOR UPDATE
+-> revalidate current state
+-> validate human actor
+-> validate owner/reviewer
+-> mutate
+-> audit
+-> COMMIT
+
+
+INCOMPATIBLE CONCURRENT MUTATIONS
+
+Exactly one winner.
+
+LOSER:
+
+zero business mutation
+zero audit
+
+
+APPEND-ONLY HISTORY
+
+Compatible independent factual observations and responses
+may coexist without lost history.
+
+
+MANDATORY STEP 7U.C RACES
+
+1. double sleep observation verification
+2. double sleep-care-plan activation
+3. double night-check completion
+4. completed vs missed night check
+5. double sleep-event assignment
+6. double sleep-event acknowledgement
+7. response verification race
+8. double safety-alert acknowledgement
+9. escalation assignment race
+10. wrong reviewer acceptance denial
+11. double escalation acceptance
+12. double escalation resolution
+13. double sleep-event resolution
+14. double sleep-event closure
+
+OWNER PRESERVATION = REQUIRED
+REVIEWER PRESERVATION = REQUIRED
+TERMINAL SINGLE-WINNER = REQUIRED

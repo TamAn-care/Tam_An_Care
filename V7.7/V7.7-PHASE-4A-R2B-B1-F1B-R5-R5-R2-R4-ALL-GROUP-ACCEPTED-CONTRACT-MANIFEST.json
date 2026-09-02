@@ -1,0 +1,315 @@
+{
+  "generated_at": "2026-08-21T07:31:50.312391+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R4",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "assembly_preflight": {
+    "file": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R4-ALL-GROUP-CONTENT-AWARE-ASSEMBLY-PREFLIGHT-RESULT.txt",
+    "sha256": "36cff5f61dee345e1d806d5f12685d227cf1aa46c0513b965225b440156cfb3c"
+  },
+  "care_task_durable_acceptance": {
+    "file": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R3-R1-CARE-TASK-DURABLE-ACCEPTANCE.json",
+    "sha256": "932f8fab1fe2e0ea03caf6623509a603c373b9d1b13e2c6542746d3900ddc2b2",
+    "request_fields": [
+      "actorId",
+      "actorRole",
+      "assigneeId",
+      "assigneeRole"
+    ],
+    "transition": "PLANNED -> ASSIGNED"
+  },
+  "accepted_groups": {
+    "care_action": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R1-R1-CARE-ACTION-FOUNDATION-CONTRACT.json",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-PHASE-4A-R2B-B1-F1B-R1-R1-CARE-ACTION-FOUNDATION-CONTRACT.json",
+          "sha256": "1f3edee9bdf3fa05d2f458925294f2ec226162c5147ccb579df2ac25af05631c",
+          "score": 140,
+          "identity_hits": [
+            "care_action",
+            "care-action"
+          ],
+          "functional_hits": [],
+          "state_hits": [
+            "resolved",
+            "in_review",
+            "pending"
+          ]
+        },
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1A-DETERMINISTIC-INTEGRATION-FIXTURE-CONTRACT.json",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-PHASE-4A-R2B-B1-F1A-DETERMINISTIC-INTEGRATION-FIXTURE-CONTRACT.json",
+          "sha256": "4471dcae82241036a96803ad7b5f47784d906ff089228c121e69598036efc8a2",
+          "score": 70,
+          "identity_hits": [
+            "care action lifecycle",
+            "care_action",
+            "care-action"
+          ],
+          "functional_hits": [
+            "care action lifecycle"
+          ],
+          "state_hits": [
+            "reopen",
+            "resolved",
+            "pending"
+          ]
+        }
+      ]
+    },
+    "care_task": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R3-R1-CARE-TASK-DURABLE-ACCEPTANCE.json",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R3-R1-CARE-TASK-DURABLE-ACCEPTANCE.json",
+          "sha256": "932f8fab1fe2e0ea03caf6623509a603c373b9d1b13e2c6542746d3900ddc2b2",
+          "score": 170,
+          "identity_hits": [
+            "/api/care-task-execution",
+            "care_task",
+            "care-task"
+          ],
+          "functional_hits": [
+            "planned -> assigned"
+          ],
+          "state_hits": [
+            "assigned"
+          ]
+        },
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R3-R1-CARE-TASK-DURABLE-ACCEPTANCE-RESULT.txt",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-R3-R1-CARE-TASK-DURABLE-ACCEPTANCE-RESULT.txt",
+          "sha256": "8b5503b4c025f35a2bf7fb8b9f4cbb87d15f5feffa76b1b3b1c51b41d97be917",
+          "score": 205,
+          "identity_hits": [
+            "care task",
+            "care_task",
+            "care-task"
+          ],
+          "functional_hits": [
+            "care_task_assign_http=201",
+            "planned -> assigned"
+          ],
+          "state_hits": [
+            "assigned"
+          ]
+        }
+      ]
+    },
+    "medication": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R3-R2-MEDICATION-ADMINISTRATION-SCHEDULED-FOUNDATION-CONTRACT.json",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-PHASE-4A-R2B-B1-F1B-R3-R2-MEDICATION-ADMINISTRATION-SCHEDULED-FOUNDATION-CONTRACT.json",
+          "sha256": "c05b92bd1468bb9a922bf41febc3c60bff03e198920f6c0a457e8493b650194f",
+          "score": 135,
+          "identity_hits": [
+            "medication_administration",
+            "medication-administration"
+          ],
+          "functional_hits": [],
+          "state_hits": [
+            "scheduled",
+            "assigned"
+          ]
+        },
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1A-R1-MEDICATION-CONTRACT-RECOVERY-RESULT.txt",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-PHASE-4A-R2B-B1-F1A-R1-MEDICATION-CONTRACT-RECOVERY-RESULT.txt",
+          "sha256": "8d8eb71718c6cb8db0fc844c0bb9de68522b498f0ebf9c9d6aa7a17d62a2bc4f",
+          "score": 90,
+          "identity_hits": [
+            "/api/medication-administrations",
+            "medication administration",
+            "medication_administration",
+            "medication-administration"
+          ],
+          "functional_hits": [
+            "med_admin_assigned"
+          ],
+          "state_hits": [
+            "scheduled",
+            "assigned"
+          ]
+        }
+      ]
+    },
+    "activity_rehabilitation": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B0-INTEGRATED-16-ROUTE-EXECUTION-CONTRACT.json",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-PHASE-4A-R2B-B0-INTEGRATED-16-ROUTE-EXECUTION-CONTRACT.json",
+          "sha256": "b042c45788819857b0785a3b98e85cc3f3abf7c543bf7d7c22e131df3abdff33",
+          "score": 60,
+          "identity_hits": [
+            "/api/activity-rehabilitation",
+            "activity-rehabilitation",
+            "rehabilitation_escalations"
+          ],
+          "functional_hits": [
+            "create_escalation"
+          ],
+          "state_hits": [
+            "create_escalation"
+          ]
+        }
+      ]
+    },
+    "nutrition": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R4-R4-NUTRITION-CREATE-ALERT-FUNCTIONAL-RESULT.txt",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-PHASE-4A-R2B-B1-F1B-R4-R4-NUTRITION-CREATE-ALERT-FUNCTIONAL-RESULT.txt",
+          "sha256": "8539311122d1f823dba2bbc9fd27c1cd7924d4bed391009c86b7d3ab16ee8bc5",
+          "score": 220,
+          "identity_hits": [
+            "/api/nutrition-hydration",
+            "nutrition-hydration",
+            "create_alert"
+          ],
+          "functional_hits": [
+            "nutrition create_alert",
+            "create_alert",
+            "http=201"
+          ],
+          "state_hits": [
+            "create_alert"
+          ]
+        },
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R4-R4-NUTRITION-CREATE-ALERT-AUTHORITATIVE-CONTRACT.json",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-PHASE-4A-R2B-B1-F1B-R4-R4-NUTRITION-CREATE-ALERT-AUTHORITATIVE-CONTRACT.json",
+          "sha256": "465dbf6a99ce8933e2f384c8e8b537fc2b78bac8b8ea86506e79a6d081d52279",
+          "score": 160,
+          "identity_hits": [
+            "/api/nutrition-hydration",
+            "nutrition-hydration",
+            "create_alert"
+          ],
+          "functional_hits": [
+            "create_alert"
+          ],
+          "state_hits": [
+            "create_alert"
+          ]
+        }
+      ]
+    },
+    "skin_wound": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R4-SKIN-WOUND-CREATE-CARE-PLAN-RESULT.txt",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-PHASE-4A-R2B-B1-F1B-R5-R4-SKIN-WOUND-CREATE-CARE-PLAN-RESULT.txt",
+          "sha256": "b69c0dfc5aa0bca27649ada413de4ea43a42dec0e923ede6efc3b83e7bfc03a3",
+          "score": 70,
+          "identity_hits": [
+            "skin/wound",
+            "skin-wound",
+            "wound_type"
+          ],
+          "functional_hits": [
+            "create_care_plan"
+          ],
+          "state_hits": [
+            "draft"
+          ]
+        },
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-INTEGRATED-EXECUTION-CONTINUATION-PREFLIGHT-RESULT.txt",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-INTEGRATED-EXECUTION-CONTINUATION-PREFLIGHT-RESULT.txt",
+          "sha256": "bc527a353e90325cb5aefb5fc9602abbc8cc4076bd51c2ce7a07fcb35052fa73",
+          "score": 57,
+          "identity_hits": [
+            "skin/wound",
+            "wound_type"
+          ],
+          "functional_hits": [
+            "create_care_plan"
+          ],
+          "state_hits": [
+            "runtime_free_text",
+            "phase4a_r2b_wound_type_test"
+          ]
+        }
+      ]
+    },
+    "resident_ai": {
+      "functional_proven": true,
+      "artifacts": [
+        {
+          "name": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-INTEGRATED-EXECUTION-CONTINUATION-PREFLIGHT-RESULT.txt",
+          "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-PHASE-4A-R2B-B1-F1B-R5-R5-R2-INTEGRATED-EXECUTION-CONTINUATION-PREFLIGHT-RESULT.txt",
+          "sha256": "bc527a353e90325cb5aefb5fc9602abbc8cc4076bd51c2ce7a07fcb35052fa73",
+          "score": 92,
+          "identity_hits": [
+            "resident ai"
+          ],
+          "functional_hits": [
+            "no actor = 401",
+            "resident ai no actor",
+            "autonomousclinicalaction"
+          ],
+          "state_hits": [
+            "autonomousclinicalaction",
+            "false",
+            "401"
+          ]
+        }
+      ]
+    }
+  },
+  "cross_group_invariants": [
+    "one disposable PostgreSQL database",
+    "one isolated V7.7 backend",
+    "negative security request before authorized mutation",
+    "rejected request must not create target mutation",
+    "Care Task uses assigneeId and assigneeRole",
+    "Care Task transition is PLANNED -> ASSIGNED",
+    "Medication Administration starts SCHEDULED before ASSIGN",
+    "Medication Order verification triplet is complete",
+    "Skin/Wound uses corrected free-text wound_type contract",
+    "CREATE_WOUND must not be used as wound_type",
+    "Nutrition CREATE_ALERT uses accepted authoritative contract",
+    "Resident AI no-actor security must remain fail-closed",
+    "autonomousClinicalAction must remain false",
+    "all dependent workflow operations execute in lifecycle order",
+    "V7.7 source hash remains unchanged",
+    "V7.6 runtime remains unchanged",
+    "production database remains unchanged"
+  ],
+  "execution_order": [
+    "lock production V7.6 baseline",
+    "build exact V7.7 backend",
+    "create one disposable PostgreSQL",
+    "create shared actors and resident",
+    "create care action foundation",
+    "execute care action workflow",
+    "create care plan and task",
+    "execute care task ASSIGN",
+    "create medication order",
+    "create medication schedule",
+    "create SCHEDULED medication administration",
+    "execute medication ASSIGN",
+    "execute activity rehabilitation CREATE_ESCALATION",
+    "create corrected wound record",
+    "execute Skin/Wound CREATE_CARE_PLAN",
+    "execute Nutrition/Hydration CREATE_ALERT",
+    "execute Resident AI pattern workflow",
+    "verify Resident AI no-actor rejection",
+    "verify all persistence",
+    "verify all audits",
+    "verify autonomousClinicalAction=false",
+    "verify cross-domain read compatibility",
+    "verify V7.7 source immutability",
+    "verify V7.6 runtime/database immutability",
+    "destroy disposable infrastructure"
+  ],
+  "production_change": false,
+  "production_database_write": false
+}

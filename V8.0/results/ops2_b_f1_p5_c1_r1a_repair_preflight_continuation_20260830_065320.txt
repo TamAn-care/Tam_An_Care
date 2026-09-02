@@ -1,0 +1,412 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-C1-R1A
+ LOT SOURCE / SCHEMA REPAIR PREFLIGHT CONTINUATION
+ MODE: READ ONLY
+======================================================================
+
+CLASSIFICATION_FROM_PREVIOUS_GATE:
+ -> P5-C1 runtime failure = PROVEN
+ -> received_date database column = ABSENT
+ -> received_at database column = PRESENT
+ -> inventory after failure = 1|0|0|0
+ -> R1 premature exit = TEST WRAPPER PIPEFAIL
+
+THIS BLOCK:
+ -> performs NO source mutation
+ -> performs NO schema mutation
+ -> performs NO API mutation
+ -> performs NO runtime restart
+
+======================================================================
+ 1. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: API SOURCE BASELINE
+PASS: FRONTEND SOURCE BASELINE
+
+======================================================================
+ 2. MIGRATION AUTHORITY — EXACT FILE
+======================================================================
+PASS: INVENTORY MIGRATION EXISTS
+
+--- inventory_lots migration window ---
+28-
+29-    CONSTRAINT inventory_items_base_unit_ck
+30-        CHECK (length(btrim(base_unit)) > 0)
+31-);
+32-
+33:CREATE TABLE inventory_lots (
+34-    inventory_lot_id text PRIMARY KEY,
+35-
+36-    inventory_item_id text NOT NULL
+37-        REFERENCES inventory_items(inventory_item_id)
+38-        ON DELETE RESTRICT,
+39-
+40-    lot_code text NULL,
+41-    received_at timestamptz NULL,
+42-    expiry_date date NULL,
+43-    supplier_reference text NULL,
+44-    note text NULL,
+45-    status text NOT NULL DEFAULT 'ACTIVE',
+46-    created_at timestamptz NOT NULL DEFAULT now(),
+47-
+48-    CONSTRAINT inventory_lots_status_ck
+49-        CHECK (
+50-            status IN (
+51-                'ACTIVE',
+52-                'EXHAUSTED',
+53-                'CLOSED',
+54-                'QUARANTINED'
+55-            )
+56-        )
+57-);
+58-
+
+MIGRATION_HAS_RECEIVED_AT=1
+MIGRATION_HAS_RECEIVED_DATE=0
+PASS: MIGRATION DEFINES CANONICAL received_at
+
+======================================================================
+ 3. LIVE DATABASE SCHEMA RECONFIRMATION
+======================================================================
+inventory_lot_id
+inventory_item_id
+lot_code
+received_at
+expiry_date
+supplier_reference
+note
+status
+created_at
+
+DB_RECEIVED_AT_COUNT=1
+DB_RECEIVED_DATE_COUNT=0
+DB_UPDATED_AT_COUNT=0
+PASS: LIVE DATABASE MATCHES MIGRATION CONTRACT
+
+======================================================================
+ 4. EXACT DEFECT REFERENCES IN LOT SERVICE
+======================================================================
+--- received_date references ---
+140:          received_date,
+233:            received_date = $4,
+247:              ? previous.received_date
+
+--- received_at references ---
+
+--- updated_at references ---
+236:            updated_at = now()
+
+SOURCE_RECEIVED_DATE_COUNT=3
+SOURCE_RECEIVED_AT_COUNT=0
+SOURCE_UPDATED_AT_COUNT=1
+PASS: received_date DEFECT REFERENCES PRESENT
+PASS: unsupported updated_at REFERENCE PRESENT
+
+======================================================================
+ 5. CREATE PATH — EXACT CONTEXT
+======================================================================
+    85	    }
+    86	
+    87	    return result.rows[0];
+    88	  }
+    89	
+    90	  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+    91	    const actor = await this.authority.requireActor(actorId, actorRole);
+    92	    this.authority.requireAuthority(actor);
+    93	
+    94	    const inventoryItemId = requiredText(
+    95	      body?.inventoryItemId,
+    96	      'inventoryItemId',
+    97	    );
+    98	
+    99	    const lotCode = requiredText(body?.lotCode, 'lotCode');
+   100	    const status =
+   101	      body?.status === undefined
+   102	        ? 'ACTIVE'
+   103	        : requiredText(body.status, 'status');
+   104	
+   105	    const allowedStatuses = [
+   106	      'ACTIVE',
+   107	      'QUARANTINED',
+   108	      'EXHAUSTED',
+   109	      'CLOSED',
+   110	    ];
+   111	
+   112	    if (!allowedStatuses.includes(status)) {
+   113	      throw new BadRequestException('Invalid lot status');
+   114	    }
+   115	
+   116	    const item = await this.database.query(
+   117	      `
+   118	      SELECT inventory_item_id
+   119	      FROM inventory_items
+   120	      WHERE inventory_item_id = $1
+   121	      LIMIT 1
+   122	      `,
+   123	      [inventoryItemId],
+   124	    );
+   125	
+   126	    if (!item.rowCount) {
+   127	      throw new BadRequestException('Inventory item not found');
+   128	    }
+   129	
+   130	    const id = `inventory-lot-${randomUUID()}`;
+   131	
+   132	    try {
+   133	      const result = await this.database.query(
+   134	        `
+   135	        INSERT INTO inventory_lots (
+   136	          inventory_lot_id,
+   137	          inventory_item_id,
+   138	          lot_code,
+   139	          supplier_reference,
+   140	          received_date,
+   141	          expiry_date,
+   142	          status
+   143	        )
+   144	        VALUES ($1,$2,$3,$4,$5,$6,$7)
+   145	        RETURNING *
+   146	        `,
+   147	        [
+   148	          id,
+   149	          inventoryItemId,
+   150	          lotCode,
+   151	          optionalText(body?.supplierReference),
+   152	          optionalText(body?.receivedDate),
+   153	          optionalText(body?.expiryDate),
+   154	          status,
+   155	        ],
+   156	      );
+   157	
+   158	      return result.rows[0];
+   159	    } catch (error: any) {
+   160	      if (String(error?.code || '') === '23505') {
+   161	        throw new ConflictException(
+   162	          'Inventory lot already exists',
+   163	        );
+   164	      }
+   165	      throw error;
+   166	    }
+   167	  }
+   168	
+   169	  async update(
+   170	    actorId: string | undefined,
+
+======================================================================
+ 6. UPDATE PATH — EXACT CONTEXT
+======================================================================
+   165	      throw error;
+   166	    }
+   167	  }
+   168	
+   169	  async update(
+   170	    actorId: string | undefined,
+   171	    actorRole: string | undefined,
+   172	    id: string,
+   173	    body: any,
+   174	  ) {
+   175	    const actor = await this.authority.requireActor(actorId, actorRole);
+   176	    this.authority.requireAuthority(actor);
+   177	
+   178	    if (
+   179	      body?.inventoryItemId !== undefined ||
+   180	      body?.inventory_item_id !== undefined
+   181	    ) {
+   182	      throw new BadRequestException(
+   183	        'inventoryItemId is immutable',
+   184	      );
+   185	    }
+   186	
+   187	    return this.database.withTransaction(async (client) => {
+   188	      const current = await client.query(
+   189	        `
+   190	        SELECT *
+   191	        FROM inventory_lots
+   192	        WHERE inventory_lot_id = $1
+   193	        LIMIT 1
+   194	        FOR UPDATE
+   195	        `,
+   196	        [id],
+   197	      );
+   198	
+   199	      if (!current.rowCount) {
+   200	        throw new NotFoundException('Inventory lot not found');
+   201	      }
+   202	
+   203	      const previous: any = current.rows[0];
+   204	
+   205	      const lotCode =
+   206	        body?.lotCode === undefined
+   207	          ? previous.lot_code
+   208	          : requiredText(body.lotCode, 'lotCode');
+   209	
+   210	      const status =
+   211	        body?.status === undefined
+   212	          ? previous.status
+   213	          : requiredText(body.status, 'status');
+   214	
+   215	      if (
+   216	        ![
+   217	          'ACTIVE',
+   218	          'QUARANTINED',
+   219	          'EXHAUSTED',
+   220	          'CLOSED',
+   221	        ].includes(status)
+   222	      ) {
+   223	        throw new BadRequestException('Invalid lot status');
+   224	      }
+   225	
+   226	      try {
+   227	        const result = await client.query(
+   228	          `
+   229	          UPDATE inventory_lots
+   230	          SET
+   231	            lot_code = $2,
+   232	            supplier_reference = $3,
+   233	            received_date = $4,
+   234	            expiry_date = $5,
+   235	            status = $6,
+   236	            updated_at = now()
+   237	          WHERE inventory_lot_id = $1
+   238	          RETURNING *
+   239	          `,
+   240	          [
+   241	            id,
+   242	            lotCode,
+   243	            body?.supplierReference === undefined
+   244	              ? previous.supplier_reference
+   245	              : optionalText(body.supplierReference),
+   246	            body?.receivedDate === undefined
+   247	              ? previous.received_date
+   248	              : optionalText(body.receivedDate),
+   249	            body?.expiryDate === undefined
+   250	              ? previous.expiry_date
+   251	              : optionalText(body.expiryDate),
+   252	            status,
+   253	          ],
+   254	        );
+   255	
+   256	        return result.rows[0];
+   257	      } catch (error: any) {
+   258	        if (String(error?.code || '') === '23505') {
+   259	          throw new ConflictException(
+   260	            'Inventory lot already exists',
+   261	          );
+   262	        }
+   263	        throw error;
+   264	      }
+   265	    });
+   266	  }
+   267	}
+
+======================================================================
+ 7. VERIFY REQUEST/API NAMING IS DISTINCT FROM DB NAMING
+======================================================================
+REQUEST_FIELD_receivedDate_REFERENCE_COUNT=3
+PASS: REST REQUEST FIELD receivedDate EXISTS
+DECISION: PRESERVE receivedDate API FIELD
+
+======================================================================
+ 8. CROSS-SOURCE SCOPE CHECK
+======================================================================
+--- received_date anywhere under api/src ---
+api/src/inventory/inventory-lot.service.ts:140:          received_date,
+api/src/inventory/inventory-lot.service.ts:233:            received_date = $4,
+api/src/inventory/inventory-lot.service.ts:247:              ? previous.received_date
+
+--- inventory_lots updated_at usage under api/src ---
+api/src/inventory/inventory-lot.service.ts:55:      FROM inventory_lots
+api/src/inventory/inventory-lot.service.ts:76:      FROM inventory_lots
+api/src/inventory/inventory-lot.service.ts:135:        INSERT INTO inventory_lots (
+api/src/inventory/inventory-lot.service.ts:191:        FROM inventory_lots
+api/src/inventory/inventory-lot.service.ts:229:          UPDATE inventory_lots
+api/src/inventory/inventory-lot.service.ts:236:            updated_at = now()
+api/src/inventory/inventory-transaction.service.ts:152:            FROM inventory_lots
+api/src/inventory/inventory-transaction.service.ts:293:              FROM inventory_lots
+api/src/inventory/inventory-item.service.ts:254:          updated_at = now()
+
+======================================================================
+ 9. P5 DATABASE STATE PRESERVATION
+======================================================================
+INVENTORY_COUNTS=1|0|0|0
+EPHEMERAL_AUTH_STATE=1|1
+PASS: FAILED LOT CREATE LEFT NO DATABASE ROW
+PASS: AUTH FIXTURE PRESERVED
+
+======================================================================
+ 10. RUNTIME PRESERVATION
+======================================================================
+ISOLATED_HEALTH=200
+PASS: ISOLATED RUNTIME PRESERVED
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+======================================================================
+ 11. SOURCE FINAL RECHECK
+======================================================================
+API_SOURCE_HASH_AFTER=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: READ-ONLY PREFLIGHT CHANGED NO SOURCE
+
+======================================================================
+ 12. REPAIR DECISION
+======================================================================
+STATUS: OPS-2-B-F1-P5-C1-R1A LOT SOURCE-SCHEMA DEFECT CONFIRMED
+
+R1_PREMATURE_EXIT_CLASSIFICATION=TEST_WRAPPER_PIPEFAIL
+
+CANONICAL_DATABASE_COLUMN=received_at
+DATABASE_received_date=ABSENT
+DATABASE_updated_at=ABSENT
+
+APPLICATION_SOURCE_DEFECT=YES
+DATABASE_SCHEMA_DEFECT=NO
+MIGRATION_DEFECT=NO
+
+MINIMAL_REPAIR_FILE=api/src/inventory/inventory-lot.service.ts
+
+MINIMAL_REPAIR_1:
+ -> INSERT SQL received_date => received_at
+
+MINIMAL_REPAIR_2:
+ -> UPDATE SQL received_date => received_at
+
+MINIMAL_REPAIR_3:
+ -> previous.received_date => previous.received_at
+
+MINIMAL_REPAIR_4:
+ -> remove unsupported updated_at = now() assignment
+
+PRESERVE_REQUEST_FIELD=receivedDate
+PRESERVE_API_ROUTE=YES
+SCHEMA_CHANGE_REQUIRED=NO
+MIGRATION_CHANGE_REQUIRED=NO
+
+SOURCE_PATCH_THIS_GATE=NO
+DATABASE_MUTATION_THIS_GATE=NO
+RUNTIME_RESTART_THIS_GATE=NO
+
+NEXT=OPS-2-B-F1-P5-C1-R2 MINIMAL LOT SOURCE REPAIR
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1a_repair_preflight_continuation_20260830_065320.txt
+
+======================================================================
+ IMPORTANT:
+ -> DO NOT RERUN P5-C1 OR R1
+ -> DO NOT PATCH SOURCE MANUALLY
+ -> DO NOT MODIFY DATABASE SCHEMA
+ -> DO NOT ADD received_date
+ -> DO NOT ADD updated_at
+ -> KEEP CURRENT P5 ITEM
+ -> KEEP AUTH FIXTURE
+ -> KEEP P5 state.env
+ -> DO NOT CREATE LOT
+ -> DO NOT CREATE TRANSACTION
+ -> DO NOT RESTART RUNTIME
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

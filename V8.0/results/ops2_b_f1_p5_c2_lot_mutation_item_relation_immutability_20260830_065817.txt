@@ -1,0 +1,178 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-C2
+ LOT MUTATION + ITEM RELATION IMMUTABILITY
+======================================================================
+
+AUTHORIZED:
+ -> PATCH mutable lot metadata
+ -> negative inventoryItemId mutation attempt
+
+NOT AUTHORIZED:
+ -> new item
+ -> new lot
+ -> inventory transaction
+ -> resident consumption
+ -> source patch
+ -> schema/migration change
+ -> accepted runtime restart
+ -> auth mutation
+
+======================================================================
+ 1. LOAD ACCEPTED P5 CHECKPOINT
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_TEST_CODE=OPS2B_F1_20260830_064735
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_LOT_CODE=LOT_R3_20260830_065705
+P5_ACCEPTED_API_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+P5_POST_REPAIR_FUNCTIONAL_ACCEPTANCE=PASS
+PASS: ACCEPTED POST-REPAIR P5 CHECKPOINT LOADED
+
+======================================================================
+ 2. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED REPAIRED SOURCE BASELINE
+
+======================================================================
+ 3. RUNTIME + AUTH
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+AUTHENTICATED_LOT_PROBE=200
+TOKEN_VALUE_PRINTED=NO
+PASS: AUTHENTICATED LOT AVAILABLE
+
+======================================================================
+ 4. DATABASE BASELINE
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|1|0|0
+LOT_BEFORE=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|LOT_R3_20260830_065705|OPS2B-P5-C1-R3|2026-08-30|2027-08-30|ACTIVE
+PASS: EXACT P5 LOT BASELINE
+
+======================================================================
+ 5. AUTHORIZED LOT PATCH
+======================================================================
+AUTHORIZED_LOT_PATCH_HTTP=200
+AUTHORIZED_LOT_PATCH_RESPONSE:
+{"inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","lot_code":"LOT_R3_20260830_065705_M1","received_at":"2026-08-29T00:00:00.000Z","expiry_date":"2027-12-31T00:00:00.000Z","supplier_reference":"OPS2B-P5-C2-20260830_065817","note":null,"status":"ACTIVE","created_at":"2026-08-29T23:57:06.480Z"}
+PASS: AUTHORIZED LOT PATCH HTTP 200
+
+======================================================================
+ 6. VERIFY MUTATED LOT IN DATABASE
+======================================================================
+LOT_AFTER_PATCH=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|LOT_R3_20260830_065705_M1|OPS2B-P5-C2-20260830_065817|2026-08-29|2027-12-31|ACTIVE
+PASS: LOT MUTABLE FIELDS UPDATED
+PASS: canonical received_at UPDATE PATH WORKS
+PASS: LOT REMAINS ACTIVE
+
+======================================================================
+ 7. ITEM RELATION IMMUTABILITY NEGATIVE TEST
+======================================================================
+IMMUTABLE_ITEM_RELATION_HTTP=400
+IMMUTABLE_ITEM_RELATION_RESPONSE:
+{"message":"inventoryItemId is immutable","error":"Bad Request","statusCode":400}
+PASS: LOT ITEM RELATION MUTATION REJECTED
+
+======================================================================
+ 8. DATABASE IMMUTABILITY VERIFICATION
+======================================================================
+LOT_AFTER_IMMUTABILITY_TEST=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|LOT_R3_20260830_065705_M1|OPS2B-P5-C2-20260830_065817|2026-08-29|2027-12-31|ACTIVE
+PASS: inventoryItemId REMAINS IMMUTABLE
+PASS: VALID PRIOR PATCH STATE PRESERVED
+
+======================================================================
+ 9. AUTHENTICATED FINAL LOT READ
+======================================================================
+FINAL_GET_LOT_HTTP=200
+FINAL_GET_LOT_RESPONSE:
+{"inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","lot_code":"LOT_R3_20260830_065705_M1","received_at":"2026-08-29T00:00:00.000Z","expiry_date":"2027-12-31T00:00:00.000Z","supplier_reference":"OPS2B-P5-C2-20260830_065817","note":null,"status":"ACTIVE","created_at":"2026-08-29T23:57:06.480Z"}
+PASS: MUTATED LOT READABLE
+
+======================================================================
+ 10. INVENTORY SCOPE
+======================================================================
+INVENTORY_COUNTS_AFTER=1|1|0|0
+PASS: NO EXTRA INVENTORY OBJECT CREATED
+PASS: NO TRANSACTION CREATED
+
+======================================================================
+ 11. UPDATE P5 CHECKPOINT
+======================================================================
+P5_STATE_UPDATED=YES
+P5_LOT_CODE_AFTER_C2=LOT_R3_20260830_065705_M1
+P5_LOT_STATUS_AFTER_C2=ACTIVE
+
+======================================================================
+ 12. SOURCE PRESERVATION
+======================================================================
+API_SOURCE_HASH_AFTER=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES UNCHANGED
+
+======================================================================
+ 13. AUTH FIXTURE PRESERVATION
+======================================================================
+FINAL_AUTH_STATE=1|1
+PASS: AUTH FIXTURE PRESERVED
+
+======================================================================
+ 14. ACCEPTED RUNTIMES PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 15. ISOLATED RUNTIME FINAL HEALTH
+======================================================================
+FINAL_ISOLATED_HEALTH=200
+PASS: ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 16. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P5-C2 LOT MUTATION + ITEM RELATION IMMUTABILITY PASSED
+
+LOT_AUTHORIZED_PATCH=PASS
+LOT_CODE_MUTATION=PASS
+LOT_SUPPLIER_MUTATION=PASS
+LOT_RECEIVED_AT_MUTATION=PASS
+LOT_EXPIRY_MUTATION=PASS
+LOT_ACTIVE_STATUS_PRESERVED=PASS
+LOT_ITEM_RELATION_IMMUTABILITY=PASS
+LOT_AUTHENTICATED_READ=PASS
+
+API_BASELINE=1f11e876eb1b7080e1cc59de2dfe813e6ee460ace92366708995e3e6c36e5e19
+FRONTEND_BASELINE=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+
+INVENTORY_DATABASE=1|1|0|0
+AUTH_FIXTURE=1|1
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+MIGRATION_CHANGE=NO
+ACCEPTED_RUNTIME_REGRESSION=NO
+
+P5_C2_STATUS=PASS
+NEXT=OPS-2-B-F1-P5-D RECEIPT + DERIVED BALANCE
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c2_lot_mutation_item_relation_immutability_20260830_065817.txt
+
+======================================================================
+ IMPORTANT:
+ -> KEEP P5 ITEM
+ -> KEEP P5 LOT ACTIVE
+ -> KEEP P5 state.env
+ -> KEEP AUTH FIXTURE + token
+ -> KEEP ACCEPTED REPAIRED SOURCE
+ -> DO NOT CREATE TRANSACTION MANUALLY
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT RERUN P5-C2
+ -> DO NOT START P5-D MANUALLY
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

@@ -1,0 +1,75 @@
+TAM AN CARE V7.4.3
+STEP 7M MAR LIFECYCLE
+
+MEDICATION ORDER
+
+DRAFT
+  -> VERIFIED
+  -> ACTIVE
+
+ACTIVE
+  -> SUSPENDED
+  -> COMPLETED
+  -> CANCELLED
+
+SUSPENDED
+  -> ACTIVE
+  -> CANCELLED
+
+
+MEDICATION SCHEDULE
+
+PLANNED
+  -> ACTIVE
+
+ACTIVE
+  -> SUSPENDED
+  -> COMPLETED
+  -> CANCELLED
+
+SUSPENDED
+  -> ACTIVE
+  -> CANCELLED
+
+
+MEDICATION ADMINISTRATION
+
+SCHEDULED
+  -> ASSIGNED
+
+ASSIGNED
+  -> ACCEPTED
+  -> MISSED
+  -> CANCELLED
+
+ACCEPTED
+  -> READY
+  -> MISSED
+  -> REFUSED
+  -> HELD
+  -> CANCELLED
+
+READY
+  -> ADMINISTERED
+  -> MISSED
+  -> REFUSED
+  -> HELD
+  -> CANCELLED
+
+
+TERMINAL:
+
+ADMINISTERED
+MISSED
+REFUSED
+CANCELLED
+
+HELD:
+
+HELD is intentionally non-administration.
+A held item requires explicit authorized human review
+before any later administration path is created.
+
+No hidden state transition.
+No automatic terminal transition.
+No AI transition.

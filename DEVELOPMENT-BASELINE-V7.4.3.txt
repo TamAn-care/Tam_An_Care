@@ -1,0 +1,32 @@
+TAM AN CARE V7.4.3
+DEVELOPMENT WORKSPACE
+
+Created:
+2026-08-18T15:38:36.585783
+
+PURPOSE:
+Development of the next Tam An Care milestone.
+
+BASELINE:
+V7.4.2 known-good production release.
+
+RULES:
+
+1. DO NOT modify the V7.4.2 production directory.
+
+2. DO NOT modify the V7.4.2 production database.
+
+3. DO NOT replace the production API container.
+
+4. DO NOT replace the frozen production UI.
+
+5. All V7.4.3 source changes must occur inside this directory.
+
+6. Development databases must be isolated from production.
+
+7. Development containers must use separate names and ports.
+
+8. V7.4.3 must pass regression testing before any future cutover.
+
+STATUS:
+V7.4.3 DEVELOPMENT WORKSPACE

@@ -1,0 +1,511 @@
+======================================================================
+ TAMANCARE V8.0 — FULL DEMO
+ DEMO-3 — LOGIN + FUNCTIONAL ENABLEMENT PREFLIGHT
+ READ-ONLY / SECRET-SAFE
+======================================================================
+
+----- 1. RUNTIME MUST REMAIN ACCEPTED -----
+API_HEALTH_HTTP=200
+PASS: ACCEPTED API RUNTIME PRESERVED
+
+----- 2. AUTH CONTRACT — SOURCE -----
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.controller.ts:21:  @Post('login')
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.controller.ts:23:  login(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.controller.ts:27:      password?: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.controller.ts:30:    return this.authService.login(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.controller.ts:32:      String(body.password || ''),
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:19:  password_hash: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:20:  password_salt: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:21:  password_iterations: number;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:22:  password_digest: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:35:  async login(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:37:    password: string,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:39:    if (!actorId || !password) {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:50:          c.password_hash,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:51:          c.password_salt,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:52:          c.password_iterations,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:53:          c.password_digest,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:85:        password,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:86:        row.password_salt,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:87:        row.password_iterations,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:89:        row.password_digest,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:94:        row.password_hash,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:136:        last_login_at = now(),
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:154:      INSERT INTO auth_sessions (
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:187:      tokenType: [REDACTED]
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:205:        UPDATE auth_sessions
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:234:      process.env.JWT_SECRET;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:238:        'JWT_SECRET must contain at least 32 characters',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts:253:        typ: 'JWT',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:22:interface JwtPayload {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:75:): JwtPayload {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:97:    JwtPayload;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:242:        '/api/auth/login' ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:255:      process.env.JWT_SECRET;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:274:        'Bearer ',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:278:        'Bearer authentication is required',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:285:          'Bearer '.length,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts:313:        FROM auth_sessions
+
+----- 3. AUTH CONTROLLER / DTO STRUCTURE -----
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/activity-rehabilitation/activity-rehabilitation-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.controller.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.module.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/auth/auth.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-plan-authorization/care-plan-authorization.module.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-plan-authorization/care-plan-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-plan-authorization/care-plan-authorization.types.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-task-authorization/care-task-authorization.module.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-task-authorization/care-task-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-task-authorization/care-task-authorization.types.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/clinical-observations/clinical-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/incidents/incident-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/inventory/inventory-authority.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication/medication-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/reopen-authorization/reopen-authorization.module.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/reopen-authorization/reopen-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/reopen-authorization/reopen-authorization.types.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/resolution-authorization/resolution-authorization.module.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/resolution-authorization/resolution-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/resolution-authorization/resolution-authorization.types.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/security/production-auth.middleware.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/start-review-authorization/start-review-authorization.module.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/start-review-authorization/start-review-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/start-review-authorization/start-review-authorization.types.ts
+
+----- 4. FRONTEND API CONTRACT -----
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:148:  const response = await fetch(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:218:              void query.refetch();
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:707:              eventsQuery.refetch()
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:363:              void staffQuery.refetch();
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:667:              void assignmentQuery.refetch();
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:297:            void query.refetch();
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/api/client.ts:16:      .VITE_API_BASE_URL as string |
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/api/client.ts:79:      await fetch(
+
+BUILT_FRONTEND_API_SIGNALS:
+http://127.0.0.1:3100
+
+----- 5. DEMO DATABASE — NON-SECRET ACTOR INVENTORY -----
+STAFF_ACTORS:
+ actor_id | staff_code | display_name | primary_operational_role | status 
+----------+------------+--------------+--------------------------+--------
+(0 rows)
+
+
+STAFF_ACTOR_COUNT:
+0
+
+----- 6. AUTH-RELATED TABLE STRUCTURE — NO VALUES -----
+    table_name     |       column_name        |        data_type         
+-------------------+--------------------------+--------------------------
+ activity_sessions | activity_session_id      | text
+ activity_sessions | resident_id              | text
+ activity_sessions | activity_program_id      | text
+ activity_sessions | rehabilitation_plan_id   | text
+ activity_sessions | session_code             | text
+ activity_sessions | session_type             | text
+ activity_sessions | scheduled_at             | timestamp with time zone
+ activity_sessions | location                 | text
+ activity_sessions | planned_duration_minutes | integer
+ activity_sessions | support_level            | text
+ activity_sessions | status                   | text
+ activity_sessions | assigned_to              | text
+ activity_sessions | assigned_role            | text
+ activity_sessions | assigned_at              | timestamp with time zone
+ activity_sessions | accepted_at              | timestamp with time zone
+ activity_sessions | safety_checked_at        | timestamp with time zone
+ activity_sessions | ready_at                 | timestamp with time zone
+ activity_sessions | started_at               | timestamp with time zone
+ activity_sessions | completed_at             | timestamp with time zone
+ activity_sessions | missed_at                | timestamp with time zone
+ activity_sessions | refused_at               | timestamp with time zone
+ activity_sessions | held_at                  | timestamp with time zone
+ activity_sessions | cancelled_at             | timestamp with time zone
+ activity_sessions | completion_note          | text
+ activity_sessions | exception_reason         | text
+ activity_sessions | created_at               | timestamp with time zone
+ activity_sessions | updated_at               | timestamp with time zone
+(27 rows)
+
+
+----- 7. DEMO DATA COVERAGE -----
+residents=0
+staff_actors=0
+resident_access_assignments=0
+admissions=TABLE_NOT_PRESENT
+admission_cases=0
+inventory_items=TABLE_NOT_PRESENT
+inventory_lots=TABLE_NOT_PRESENT
+inventory_transactions=TABLE_NOT_PRESENT
+resident_consumption_events=TABLE_NOT_PRESENT
+resident_cost_events=TABLE_NOT_PRESENT
+resident_cost_periods=TABLE_NOT_PRESENT
+food_receiving_events=TABLE_NOT_PRESENT
+health_reports=0
+health_report_snapshots=0
+health_report_deliveries=0
+
+----- 8. FRONTEND ROUTE / FEATURE INVENTORY -----
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/App.tsx:2:  RouterProvider,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/App.tsx:3:} from 'react-router-dom';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/App.tsx:6:  router,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/App.tsx:7:} from './router';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/App.tsx:11:    <RouterProvider router={router} />
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/page-meta.ts:8:    '/dashboard': {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/page-meta.ts:13:    '/residents': {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/page-meta.ts:18:    '/health-reports': {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:2:import { AdmissionPage } from '../features/admissions/AdmissionPage';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:3:import HealthReportsPage from '../features/health-reports/HealthReportsPage';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:6:  createBrowserRouter,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:8:} from 'react-router-dom';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:23:  DashboardPage,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:24:} from '../features/dashboard/DashboardPage';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:27:  ResidentsPage,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:28:} from '../features/residents/ResidentsPage';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:32:} from '../features/care-view/CareViewPage';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:42:export const router =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:43:  createBrowserRouter([
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:51:              to="/dashboard"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:57:          path: '/dashboard',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:60:              <DashboardPage />
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:65:          path: '/residents',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:68:              <ResidentsPage />
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:74:            '/residents/:residentId',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:83:            '/residents/:residentId/care',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:91:          path: '/admissions',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:92:          element: <AdmissionPage />,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/app/router.tsx:95:          path: '/health-reports',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/RequireActor.tsx:7:} from 'react-router-dom';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:13:export type AppRouteKey =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:14:  | 'dashboard'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:15:  | 'residents'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:19:  | 'admissions'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:20:  | 'health-reports';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:22:export function canAccessRoute(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:24:  route: AppRouteKey,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/auth/role-policy.ts:26:  if (route === 'staff-access') {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:29:  resident_id: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:41:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:49:  admissionContactId: string;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:61:    '/health-reports',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:75:    '/health-reports',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:89:    `/health-reports/${encodeURIComponent(id)}/generate`,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:102:    `/health-reports/${encodeURIComponent(id)}/start-review`,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:115:    `/health-reports/${encodeURIComponent(id)}/approve`,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:129:    `/health-reports/${encodeURIComponent(id)}/deliver`,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/healthReportsApi.ts:149:    `${API_BASE_URL}/health-reports/${encodeURIComponent(id)}/pdf`,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:50:  const [residentId, setResidentId] =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:141:      !residentId ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:156:            residentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:190:            admissionContactId:
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:302:              value={residentId}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:304:                setResidentId(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:308:              placeholder="resident-..."
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:381:            placeholder="admission-contact-..."
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/health-reports/HealthReportsPage.tsx:479:                          report.resident_id
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/resident-ui.ts:3:  ResidentCareLevel,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/resident-ui.ts:4:  ResidentGender,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/resident-ui.ts:5:} from '../../api/residents';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/resident-ui.ts:8:  Record<ResidentCareLevel, string> = {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/resident-ui.ts:16:  Record<ResidentGender, string> = {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:12:} from 'react-router-dom';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:15:  listResidents,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:16:} from '../../api/residents';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:36:} from './resident-ui';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:43:export function ResidentsPage() {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:54:      'residents',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:59:      listResidents(actor),
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:62:  const residents =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:71:      return rows.filter(({ resident }) => {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:74:          !resident.activeStatus
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:81:          resident.activeStatus
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:91:          resident.displayName,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:92:          resident.residentCode,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:93:          resident.room ?? '',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:94:          resident.bed ?? '',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:111:      ({ resident }) =>
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:112:        resident.activeStatus,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:141:      <section className="resident-summary-grid">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:142:        <div className="card resident-summary-card">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:152:        <div className="card resident-summary-card">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:166:        <div className="resident-toolbar">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:215:            className="button button-subtle resident-refresh"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:246:            description="Backend hiện chưa có dữ liệu resident."
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:252:        residents.length === 0 && (
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:260:        residents.length > 0 && (
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:262:            className="resident-list"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:265:            {residents.map(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:266:              ({ resident }) => (
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:268:                  key={resident.residentId}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:269:                  className="card resident-card"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:271:                  <div className="resident-card-main">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:273:                      <div className="resident-card-heading">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:275:                          {resident.displayName}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:280:                            resident.activeStatus
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:281:                              ? 'resident-status resident-status-active'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:282:                              : 'resident-status'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:285:                          {resident.activeStatus
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:291:                      <div className="resident-code">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:292:                        Mã: {resident.residentCode}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:296:                    <dl className="resident-facts">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:301:                            resident.dateOfBirth,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:311:                              resident.gender
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:322:                              resident.careLevel
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:331:                          {resident.room ?? '—'}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:333:                          {resident.bed ?? '—'}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:339:                  <div className="resident-card-actions">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:341:                      className="button resident-open-button"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:342:                      to={`/residents/${
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:344:                          resident.residentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:357:      <div className="notice notice-info resident-authority-note">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/residents/ResidentsPage.tsx:364:        quyền truy cập cho từng resident.
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:11:  listResidents,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:12:} from '../../api/residents';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:86:  const [residentId, setResidentId] =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:103:    createResidentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:104:    setCreateResidentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:137:      residentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:146:        residentId:
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:147:          residentId || undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:171:  const residentsQuery = useQuery({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:173:      'operations-residents',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:178:      listResidents(actor),
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:227:  const residentById = useMemo(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:230:        (residentsQuery.data ?? []).map(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:231:          ({ resident }) => [
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:232:            resident.residentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:233:            resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:237:    [residentsQuery.data],
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:257:    setResidentId('');
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:294:        selectedType?.resident_related &&
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:295:        !createResidentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:319:          residentId:
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:320:            createResidentId ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:485:        <div className="card resident-summary-card">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:496:        <div className="card resident-summary-card">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:507:        <div className="card resident-summary-card">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:532:              value={residentId}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:534:                setResidentId(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:543:              {(residentsQuery.data ??
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:545:                ({ resident }) => (
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:548:                      resident.residentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:551:                      resident.residentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:554:                    {resident.displayName}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:556:                    {resident.residentCode}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:737:              value={createResidentId}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:739:                setCreateResidentId(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:748:              {(residentsQuery.data ??
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:750:                ({ resident }) => (
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:753:                      resident.residentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:756:                      resident.residentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:759:                    {resident.displayName}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:955:                      .resident_id
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:956:                      ? residentById.get(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:958:                            .resident_id,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:961:                          .resident_id
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:1322:                    const resident =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:1323:                      item.resident_id
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:1324:                        ? residentById.get(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:1325:                            item.resident_id,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:1344:                          {resident
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/operations/OperationsPage.tsx:1346:                            item.resident_id ??
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/dashboard/DashboardPage.tsx:13:export function DashboardPage() {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/dashboard/DashboardPage.tsx:72:            tại bước dashboard integration.
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:18:  createResidentAccessAssignment,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:19:  listResidentAccessAssignments,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:20:  revokeResidentAccessAssignment,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:22:} from '../../api/resident-access-administration';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:87:  const [residentId, setResidentId] =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:121:      'resident-access-assignments',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:132:      return listResidentAccessAssignments(actor);
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:201:      const normalizedResident =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:202:        residentId.trim();
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:206:      if (!normalizedResident) {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:208:          'Vui lòng nhập Resident ID.',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:218:      return createResidentAccessAssignment(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:221:          residentId: normalizedResident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:234:          'resident-access-assignments',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:258:      return revokeResidentAccessAssignment(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:273:          'resident-access-assignments',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:486:                    <div className="resident-code">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:494:                        ? 'resident-status resident-status-active'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:495:                        : 'resident-status'
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:502:                <dl className="resident-facts">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:546:              Resident ID
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:550:              value={residentId}
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:552:                setResidentId(event.target.value)
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:554:              placeholder="resident-id"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:707:                        .residentAccessAssignmentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:716:                        Resident: {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:717:                          assignment.residentId
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/staff-access/StaffAccessPage.tsx:740:                              .residentAccessAssignmentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:8:} from 'react-router-dom';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:11:  getResidentCareView,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:12:} from '../../api/residents';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:31:} from '../residents/resident-ui';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:48:  const { residentId } =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:53:  const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:54:    residentId ?? '';
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:58:      'resident-care-view',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:59:      normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:65:      Boolean(normalizedResidentId) &&
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:75:      return getResidentCareView(
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:76:        normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:95:  if (!normalizedResidentId) {
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:99:        description="Mã resident không hợp lệ."
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:172:        <div className="resident-back-row">
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:174:            to="/residents"
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:195:  const residentName =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:197:      data.resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:201:      data.resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:206:  const residentCode =
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:208:      data.resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:209:      'residentCode',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:212:      data.resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:213:      'resident_code',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:218:      data.resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:224:      data.resident,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/src/features/care-view/CareViewPage.tsx:284:      <div className="resident-back-row">
+
+----- 9. EXISTING DEMO/SEED/BOOTSTRAP MECHANISMS -----
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.6-PHASE-0-1-BOOTSTRAP-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.6-PHASE-4C-B-FIXTURE-DISCOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.6/V7.6-PHASE-4C-B-FIXTURE-CONTRACT.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7-PHASE-4A-R1-EXACT-DTO-FIXTURE-DISCOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7-PHASE-4A-R2B-A-R1-UNIQUE-STAFF-FIXTURE-RECOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7-PHASE-4A-R2B-A-R2-TARGETED-DOMAIN-FIXTURE-RECOVERY-PREFLIGHT-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7-PHASE-4A-R2B-A-R2-TARGETED-DOMAIN-FIXTURE-RECOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7-PHASE-4A-R2B-B1-F1A-DETERMINISTIC-FIXTURE-DISCOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7-PHASE-4A-R2B-B1-F1B-R1-R1-CARE-ACTION-FIXTURE-RECOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7/V7.7-PHASE-4A-R1-EXACT-DTO-FIXTURE-DISCOVERY.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7/V7.7-PHASE-4A-R1-EXACT-DTO-FIXTURE-DISCOVERY.md
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.7/V7.7-PHASE-4A-R2B-B1-F1A-DETERMINISTIC-INTEGRATION-FIXTURE-CONTRACT.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.9/manifests/V7.9-PHASE-1D-R6.2-ASSIGNED-CAREGIVER-FIXTURE.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.9/manifests/V7.9-PHASE-1D-R6.3-R1-ACTIVE-RESIDENT-FIXTURE.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.9/results/V7.9-PHASE-1D-R6.2-ASSIGNED-CAREGIVER-FIXTURE-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V7.9/results/V7.9-PHASE-1D-R6.3-R1-ACTIVE-RESIDENT-FIXTURE-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0-DEMO-SOURCE-SHA256.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0-FULL-DEMO-SCOPE.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/backups/S5-bootstrap-root-binding/PRE-BIND-ROOT-BOOTSTRAP-ABSENT.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S2B-EXACT-STAFF-BOOTSTRAP-DESIGN.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S4E-R3-R1-R11-R12-R1-STAFF-FIXTURE-CONTRACT-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S4E-R3-R1-R11-R12-R2-CORRECTED-FIXTURE-FUNCTIONAL-PREFLIGHT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S4E-R3-R1-R11-R12-R3-R2-R1-RESIDENT-FIXTURE-CONTRACT-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S4E-R3-R1-R11-R12-R3-R2-R2-R1-CARE-PLAN-FIXTURE-CONTRACT-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S4E-R3-R1-R9-EXACT-FUNCTIONAL-FIXTURE-PREFLIGHT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S4E-R3-R1-R9-R1-EXACT-FIXTURE-LOCK-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-ASSIGNMENT-DEDICATED-FIXTURE-ATOMIC-CLEANUP-EXECUTION-R87-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-ASSIGNMENT-DEDICATED-FIXTURE-ATOMIC-CLEANUP-STATIC-CONTRACT-R86-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-ASSIGNMENT-DEDICATED-FIXTURE-PAIR-STATIC-CONTRACT-SALVAGE-R67-R2-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-ASSIGNMENT-WORKFLOW-POST-ACCEPTANCE-FIXTURE-CLEANUP-CLASSIFICATION-R85-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-RESIDENT-FIXTURE-CREATE-DEEP-STATIC-HTTP-CONTRACT-R5-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-RESIDENT-FIXTURE-FRESH-SINGLE-POST-STATIC-EXECUTION-CONTRACT-R12-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-STAFF-FIXTURE-STATIC-CONTRACT-SALVAGE-R41-R2-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-ARGUMENT-AUTHORIZATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-AUTHORITY-CLASSIFICATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-CLI-CALLSITE-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-CLI-IDENTITY-AUTHORITY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-AUTHORITY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-REAUTHORIZATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-REAUTHORIZATION-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-FAILURE-CLASSIFICATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-MUTATION-SCOPE-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-ONE-SHOT-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-TYPESCRIPT-CLI-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-CLEAN-BOOTSTRAP-ARGUMENT-AUTHORITY-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-CLEAN-BOOTSTRAP-AUTHORITY-RECONCILIATION-R2-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-CLEAN-BOOTSTRAP-ONE-SHOT-R2-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-CLEAN-BOOTSTRAP-REAUTHORIZATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-CORRECTED-PREBOOTSTRAP-DATABASE-STATE-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-FAILED-BOOTSTRAP-POSTSTATE-AUTHORITY-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-FAILED-BOOTSTRAP-TRANSACTION-POSTSTATE-CONTRACT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-FAILED-BOOTSTRAP-TRANSACTION-POSTSTATE-SINGLE-READ-ONLY-QUERY-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-CONTRACT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-TRANSPORT-REMEDIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-EXISTING-BOOTSTRAP-AUTHORITY-DEEP-RECONCILIATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-EXISTING-SUPERVISOR-BOOTSTRAP-AUTHORITY-BINDING-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-POST-FIXTURE-STATE-CLEANUP-CLASSIFICATION-R60-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-ACCESS-ASSIGNMENT-CREATE-TEST-FIXTURE-AND-REVERSIBILITY-STATIC-CONTRACT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-ACCESS-ASSIGNMENT-FIXTURE-AVAILABILITY-SCHEMA-EVIDENCE-SALVAGE-R2-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-ACCESS-ASSIGNMENT-FIXTURE-DISCOVERY-QUERY-SCHEMA-SALVAGE-R3-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-ACCESS-ASSIGNMENT-RUNTIME-FIXTURE-DISCOVERY-AND-TRACEABILITY-BOUNDARY-CONTRACT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-ACCESS-ASSIGNMENT-RUNTIME-FIXTURE-SINGLE-READ-ONLY-DISCOVERY-QUERY-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-AND-TARGET-STAFF-CANONICAL-FIXTURE-PROVISIONING-GAP-REMEDIATION-STATIC-DESIGN-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-RESIDENT-AND-TARGET-STAFF-FIXTURE-PROVISIONING-CAPABILITY-GAP-STATIC-CLASSIFICATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-ROOT-BOOTSTRAP-STATIC-COMPILABILITY-CONTRACT-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-ROOT-BOOTSTRAP-TYPESCRIPT-NO-EMIT-CHECK-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-EXPECTATION-FIXTURE-READINESS-CLASSIFICATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-FIXTURE-AUTH-CONTRACT-CLASSIFICATION-RESUME-F5-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-FIXTURE-AUTH-F4-HARNESS-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-INPUT-VALUE-AND-FIXTURE-CONTRACT-DISCOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-INPUT-VALUE-FIXTURE-DEEP-GAP-CLASSIFICATION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-INPUT-VALUE-FIXTURE-GAP-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-TARGETED-RUNTIME-PAYLOAD-FIXTURE-D4-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-V8-BOOTSTRAP-TO-ROOT-RUNTIME-BINDING-CONTRACT-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/manifests/V8.0-S5-V8-BOOTSTRAP-TO-ROOT-SINGLE-FILE-BINDING-EXECUTION-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/preflight/V8.0-S2B-EXACT-STAFF-BOOTSTRAP-DESIGN.json
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/V8.0/workspace/api/src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B1-R1-backup-20260828-091758/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B1-R2-backup-20260828-093117/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B1-backup-20260828-085500/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B3-B-R1-backup-20260828-121226/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B3-B-R2-backup-20260828-121427/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B3-B-R2A-backup-20260828-135424/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/VW-9E-B3-B-backup-20260828-114036/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-R1-backup-20260829-032905/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-R2-backup-20260829-033832/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-R3-backup-20260829-035206/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-R4-backup-20260829-035450/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-R5-backup-20260829-035916/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-R6-backup-20260829-040354/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-CLOSEOUT-backup-20260829-031219/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-ENTERPRISE-FOUNDATION-backup-20260828-230349/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-R1-backup-20260828-230616/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-R2-backup-20260828-230750/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X2-A-R3-backup-20260828-231000/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B4-B-R1-backup-20260829-044152/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B4-B-backup-20260829-043521/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B4-C-F2-backup-20260829-061641/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B4-D-backup-20260829-133218/api-src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/staff-actors/staff-bootstrap.ts
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/docker-compose.pre-cors-demo-20260831_033627.yml
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-final-20260831_033950.log
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-final-20260831_033950.pid
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-frontend-20260831_032849.log
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-frontend.pid
+
+----- 10. SAFETY -----
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+CREDENTIAL_MUTATION=NO
+MIGRATION=NO
+REBUILD=NO
+API_RESTART=NO
+POSTGRES_RESTART=NO
+FROZEN_PARENT_MUTATION=NO
+PRODUCTION_DATABASE_WRITE=NO
+PASSWORD_PRINTED=NO
+TOKEN_PRINTED=NO
+
+======================================================================
+ DEMO-3 PREFLIGHT COMPLETE
+======================================================================
+STATUS=DEMO3_LOGIN_FUNCTIONAL_PREFLIGHT_CAPTURED
+NEXT=RETURN_OUTPUT_FOR_DEMO_LOGIN_AND_DATA_ENABLEMENT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_demo3_login_functional_preflight_20260831_034210.txt
+
+IMPORTANT:
+ -> KEEP CURRENT DEMO RUNNING
+ -> DO NOT RUN MIGRATIONS
+ -> DO NOT CREATE USERS MANUALLY
+ -> DO NOT CHANGE PASSWORDS MANUALLY
+ -> DO NOT MODIFY FROZEN V8.0
+ -> RETURN THIS ENTIRE OUTPUT
+======================================================================

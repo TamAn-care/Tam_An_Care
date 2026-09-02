@@ -1,0 +1,110 @@
+
+======================================================================
+TAMANCARE — OPS-1-G — FINAL INTEGRATION ACCEPTANCE
+======================================================================
+MODE=READ_ONLY_CONSOLIDATION
+DB_MUTATION=NO
+SOURCE_PATCH=NO
+BUILD=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+FIXTURE=NO
+RERUN_PRIOR_LIFECYCLE=NO
+MASTER_3000_TOUCH=NO
+
+======================================================================
+1. SOURCE BASELINES
+======================================================================
+API_TREE=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API ACCEPTED BASELINE
+PASS: FRONTEND ACCEPTED BASELINE
+
+======================================================================
+2. RUNTIME PRESERVATION
+======================================================================
+http://127.0.0.1:4173/operations -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:3000/api/health -> 200
+
+======================================================================
+3. DATABASE CLEANLINESS
+======================================================================
+PUBLIC_TABLES=144
+WORK_EVENT_TYPES=3
+WORK_EVENTS=0
+TYPE_AUDIT=0
+EVENT_AUDIT=0
+PASS: OPS-1 DATABASE CLEAN BASELINE
+
+======================================================================
+4. CANONICAL WAVE-1 TYPES
+======================================================================
+           code           |       display_name_vi        |   category    | active 
+--------------------------+------------------------------+---------------+--------
+ CARE_TASK_COMPLETION     | Hoàn thành nhiệm vụ chăm sóc | OTHER         | t
+ PERSONAL_CARE_ASSISTANCE | Hỗ trợ chăm sóc cá nhân      | PERSONAL_CARE | t
+ TOILETING_ASSISTANCE     | Hỗ trợ đi vệ sinh            | PERSONAL_CARE | t
+(3 rows)
+
+PASS: EXACT THREE WAVE-1 TYPES
+
+======================================================================
+5. OPERATIONAL UI INTEGRATION SURFACE
+======================================================================
+PASS: OPERATIONAL UI FILES PRESENT
+51:  'CARE_TASK_COMPLETION',
+52:  'PERSONAL_CARE_ASSISTANCE',
+53:  'TOILETING_ASSISTANCE',
+PROJECTION_GUARD_SIGNAL_COUNT=3
+PASS: PROJECTION GUARD SIGNAL PRESENT
+
+======================================================================
+6. ROUTE + NAVIGATION SURFACE
+======================================================================
+OPERATIONS_ROUTE_NAV_SIGNAL_COUNT=5
+PASS: OPERATIONS ROUTE/NAV PRESENT
+
+======================================================================
+7. BACKEND WORK EVENT CONTRACT SURFACE
+======================================================================
+EVENT_SOURCE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts
+PASS: WORK EVENT SERVICE PRESENT
+HUMAN_ROLE_SIGNAL_COUNT=20
+BOUNDED_LIMIT_SIGNAL_COUNT=3
+AUDIT_SIGNAL_COUNT=0
+
+======================================================================
+8. BRIDGE INTEGRATION SIGNALS
+======================================================================
+CARE_TASK_BRIDGE_SIGNAL=1
+PERSONAL_CARE_BRIDGE_SIGNAL=4
+TOILETING_BRIDGE_SIGNAL=1
+PASS: ALL THREE WAVE-1 BRIDGE SIGNALS PRESENT
+
+======================================================================
+9. HARD RESIDENT CAP MUST REMAIN ABSENT
+======================================================================
+PASS: NO APPLICATION HARD RESIDENT CAP SIGNAL
+
+======================================================================
+10. FINAL IMMUTABILITY CHECK
+======================================================================
+API_TREE_AFTER=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_AFTER=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API SOURCE UNCHANGED
+PASS: FRONTEND SOURCE UNCHANGED
+
+======================================================================
+11. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-1-G CONTROLLED STOP
+
+IMPORTANT:
+ -> DO NOT RERUN OPS-1-G
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MUTATE DB
+ -> DO NOT RESTART :4173
+ -> DO NOT RESTART :3108
+ -> DO NOT RESTART :3000
+ -> RETURN THIS ENTIRE OUTPUT

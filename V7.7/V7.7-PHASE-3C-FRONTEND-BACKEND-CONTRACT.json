@@ -1,0 +1,303 @@
+{
+  "specialized_care_domains": [
+    {
+      "domain": "activity-rehabilitation",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/activity-rehabilitation/test/summary",
+          "controller_expression": "'api/activity-rehabilitation'",
+          "route_expression": "'test/summary'",
+          "handler": "summary",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/activity-rehabilitation/:residentId/execute",
+          "controller_expression": "'api/activity-rehabilitation'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "behavioral-cognitive",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/behavioral-cognitive/summary",
+          "controller_expression": "'api/behavioral-cognitive'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/behavioral-cognitive/:residentId/execute",
+          "controller_expression": "'api/behavioral-cognitive'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "fall-mobility",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/fall-mobility/summary",
+          "controller_expression": "'api/fall-mobility'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/fall-mobility/:residentId/execute",
+          "controller_expression": "'api/fall-mobility'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "infection-control",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/infection-control/summary",
+          "controller_expression": "'api/infection-control'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/infection-control/:residentId/execute",
+          "controller_expression": "'api/infection-control'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "medication-safety",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/medication-safety/summary",
+          "controller_expression": "'api/medication-safety'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/medication-safety/:residentId/execute",
+          "controller_expression": "'api/medication-safety'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "nutrition-hydration",
+      "backend_routes": [
+        {
+          "method": "POST",
+          "path": "/api/nutrition-hydration/:residentId/execute",
+          "controller_expression": "'api/nutrition-hydration'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/nutrition-hydration/:residentId/summary",
+          "controller_expression": "'api/nutrition-hydration'",
+          "route_expression": "':residentId/summary'",
+          "handler": "summary",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "pain-comfort",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/pain-comfort/summary",
+          "controller_expression": "'api/pain-comfort'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/pain-comfort/:residentId/execute",
+          "controller_expression": "'api/pain-comfort'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "personal-care",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/personal-care/summary",
+          "controller_expression": "'api/personal-care'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/personal-care/:residentId/execute",
+          "controller_expression": "'api/personal-care'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "safeguarding",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/safeguarding/summary",
+          "controller_expression": "'api/safeguarding'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/safeguarding/:residentId/execute",
+          "controller_expression": "'api/safeguarding'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "skin-wound",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/skin-wound/summary",
+          "controller_expression": "'api/skin-wound'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/skin-wound/:residentId/execute",
+          "controller_expression": "'api/skin-wound'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    },
+    {
+      "domain": "sleep-rest",
+      "backend_routes": [
+        {
+          "method": "GET",
+          "path": "/api/sleep-rest/summary",
+          "controller_expression": "'api/sleep-rest'",
+          "route_expression": "'summary'",
+          "handler": "summary",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "path": "/api/sleep-rest/:residentId/execute",
+          "controller_expression": "'api/sleep-rest'",
+          "route_expression": "':residentId/execute'",
+          "handler": "execute",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "resolved": true
+        }
+      ],
+      "frontend_direct_reference": false,
+      "design_target": "OPERATIONAL_CARE_INTEGRATION_CANDIDATE"
+    }
+  ],
+  "audit_tables": [
+    "ai_analysis_audit",
+    "behavioral_audit",
+    "care_action_audit",
+    "care_plan_audit",
+    "care_task_audit",
+    "clinical_audit",
+    "fall_audit",
+    "incident_audit",
+    "infection_audit",
+    "medication_audit",
+    "medication_safety_audit",
+    "nutrition_audit",
+    "pain_audit",
+    "personal_care_audit",
+    "rehabilitation_audit",
+    "safeguarding_audit",
+    "sleep_audit",
+    "wound_audit"
+  ],
+  "direct_audit_routes": [],
+  "audit_visibility_design": "NEEDS_EXISTING_RESPONSE_FIELD_DISCOVERY",
+  "operational_care_architecture": "PRESERVE_AND_EXTEND",
+  "new_top_level_screen_per_domain": false
+}

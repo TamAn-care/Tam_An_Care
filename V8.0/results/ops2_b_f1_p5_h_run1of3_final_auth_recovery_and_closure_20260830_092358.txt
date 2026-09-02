@@ -1,0 +1,125 @@
+======================================================================
+ TAMANCARE — OPS-2-B FINALIZATION
+ RUN 1/3
+ P5-H FINAL AUTH RECOVERY + COMPLETE ACCEPTANCE + CLOSURE
+======================================================================
+
+AUTHORIZED:
+ -> rotate ONLY proven OPS-2-B ephemeral auth fixture
+ -> exactly one real application login
+ -> inventory verification READ ONLY
+ -> close P5-H only if all acceptance conditions pass
+
+FORBIDDEN:
+ -> inventory mutation
+ -> source/schema/migration mutation
+ -> manual auth-session insertion
+ -> manual JWT creation
+ -> production mutation
+ -> accepted runtime restart
+
+======================================================================
+ 1. LOAD CONTINUATION AUTHORITY
+======================================================================
+P5_D_STATUS=PASS
+P5_E_STATUS=PASS
+P5_F_STATUS=PASS
+P5_G_STATUS=PASS
+P5_H_STATUS=NOT_WRITTEN
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_RECEIPT_TX_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+P5_OUTBOUND_TX_ID=inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917
+PASS: P5-D/E/F/G CHAIN + EXACT FIXTURE IDS LOADED
+
+======================================================================
+ 2. SOURCE BASELINES
+======================================================================
+API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES
+
+======================================================================
+ 3. ISOLATED RUNTIME + DATABASE CONNECTION
+======================================================================
+CONTAINER_STATE=running
+CONTAINER_IMAGE=tamancare_ops2b_balancefix:20260830_070355
+HEALTH_HTTP=200
+PASS: RUNTIME + DATABASE CONTRACT READY
+
+======================================================================
+ 4. EXACT PRE-ROTATION AUTH OWNERSHIP
+======================================================================
+AUTH_BEFORE=1|1|0
+ACTOR_STATE=hqa-supervisor-001|SUPERVISOR|ACTIVE
+CREDENTIAL_STATE=hqa-supervisor-001|120000|sha256|0|NOT_LOCKED
+EXPIRED_SESSION_COUNT=1
+PASS: AUTH FIXTURE OWNERSHIP EXACT
+
+======================================================================
+ 5. INVENTORY PRECONDITION — READ ONLY
+======================================================================
+INVENTORY_BEFORE=1|1|2|0
+PASS: INVENTORY PRECONDITION = 1|1|2|0
+
+======================================================================
+ 6. GENERATE REPLACEMENT EPHEMERAL CREDENTIAL MATERIAL
+======================================================================
+PASSWORD_GENERATED=YES
+PASSWORD_LENGTH=43
+SALT_HEX_LENGTH=48
+DERIVED_HASH_HEX_LENGTH=64
+PBKDF2_ITERATIONS=120000
+PBKDF2_DIGEST=sha256
+PBKDF2_BYTES=32
+SECRET_VALUES_PRINTED=NO
+PASS: REPLACEMENT CREDENTIAL MATERIAL READY
+
+======================================================================
+ 7. ATOMIC AUTH FIXTURE ROTATION
+======================================================================
+ AUTH_INSIDE_TX|1|0
+COMMIT
+AUTH_AFTER_ROTATION=1|0
+PASS: OLD EXPIRED FIXTURE REPLACED ATOMICALLY
+
+======================================================================
+ 8. EXACTLY ONE REAL APPLICATION LOGIN
+======================================================================
+LOGIN_REQUEST_READY=YES
+LOGIN_ACTOR=hqa-supervisor-001
+LOGIN_PASSWORD_PRINTED=NO
+LOGIN_REQUEST_COUNT=1
+LOGIN_HTTP=401
+LOGIN_RESPONSE_PRINTED=NO
+FAIL: real application login failed
+
+======================================================================
+ STATUS: RUN 1/3 CONTROLLED STOP
+======================================================================
+
+P5_H_STATUS=OPEN
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+INVENTORY_MUTATION=NO
+ACCEPTED_RUNTIME_RESTART=NO
+MANUAL_SESSION_INSERT=NO
+MANUAL_JWT_CREATION=NO
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_h_run1of3_final_auth_recovery_and_closure_20260830_092358.txt
+NEXT=STOP_AND_RETURN_OUTPUT
+
+RECOVERY_PASSWORD_FILE_PRESENT=YES
+RECOVERY_PASSWORD_PRINTED=NO
+RECOVERY_WORKDIR=/tmp/tamancare_ops2b_run1_20260830_092358
+IMPORTANT_RECOVERY=DO_NOT_DELETE_WORKDIR_UNTIL_REVIEW
+
+IMPORTANT:
+ -> DO NOT RERUN THIS BLOCK
+ -> DO NOT START RUN 2/3
+ -> DO NOT CLEAN INVENTORY MANUALLY
+ -> DO NOT CLEAN AUTH MANUALLY
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START CODEX AUTOPILOT
+ -> SEND THIS ENTIRE OUTPUT BACK

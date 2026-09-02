@@ -1,0 +1,350 @@
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.policy.ts:13:      'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.policy.ts:16:    IN_REVIEW: [
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.policy.ts:21:      'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:12:  TransferCareActionInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:13:  StartCareActionReviewInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:32:import { StartReviewAuthorizationService } from '../start-review-authorization/start-review-authorization.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:50:    private readonly startReviewAuthorization:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:51:      StartReviewAuthorizationService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:62:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:66:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:68:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:69:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:79:      .findByResidentAndPattern(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:80:        normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:88:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:94:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:103:      transferHistory,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:108:          .listTransfers(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:120:      transferHistory,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:128:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:132:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:134:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:135:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:150:            .findByResidentAndPattern(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:151:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:163:            normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:174:            residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:175:              created.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:211:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:216:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:218:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:219:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:268:            .findByResidentAndPatternForUpdate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:269:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:281:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:294:              residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:295:                action.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:324:            'Care Action is already assigned. Use transfer().',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:372:        await this.repository.insertTransfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:409:            residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:410:              updated.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:455:  async transfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:456:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:458:    input: TransferCareActionInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:461:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:463:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:464:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:513:            .findByResidentAndPatternForUpdate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:514:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:541:            'Resolved Care Action must be reopened before transfer.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:585:        await this.repository.insertTransfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:591:              'TRANSFER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:623:            residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:624:              updated.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:630:              'TRANSFERRED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:670:  async startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:671:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:673:    input: StartCareActionReviewInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:676:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:678:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:679:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:706:            .findByResidentAndPatternForUpdate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:707:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:723:        this.startReviewAuthorization.authorize({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:740:            'Care Action must be assigned before review starts.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:748:          'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:772:                'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:786:            residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:787:              updated.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:793:              'REVIEW_STARTED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:828:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:833:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:835:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:836:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:875:            .findByResidentAndPatternForUpdate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:876:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:899:            reviewStartedAt:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:960:            residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:961:              updated.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1011:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1016:    const normalizedResidentId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1018:        residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1019:        'residentId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1053:            .findByResidentAndPatternForUpdate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1054:              normalizedResidentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1086:          'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1119:                'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1142:            residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1143:              updated.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:19:  StartCareActionReviewInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:20:  TransferCareActionInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:86:        'reopened before transfer'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:89:        'Only an IN_REVIEW Care Action can be resolved.'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:95:        'Care Action review must be started before resolution.'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:151:    ':residentId/:patternId',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:154:    @Param('residentId')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:155:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:165:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:210:    ':residentId/:patternId/assign',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:213:    @Param('residentId')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:214:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:227:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:254:    ':residentId/:patternId/transfer',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:256:  async transfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:257:    @Param('residentId')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:258:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:264:    body: TransferCareActionInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:270:        await this.service.transfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:271:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:298:    ':residentId/:patternId/start-review',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:300:  async startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:301:    @Param('residentId')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:302:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:309:      StartCareActionReviewInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:315:        await this.service.startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:316:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:337:            'Care Action must have an assigned human owner before review can start.' ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:339:            'Care Action must be assigned before review starts.' ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:341:            'AI or SYSTEM actor cannot start Care Action review.' ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:343:            'Actor is not authorized to start review for this Care Action.' ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:345:            'Only a PENDING Care Action can start review.'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:370:    ':residentId/:patternId/resolve',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:373:    @Param('residentId')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:374:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:387:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:414:    ':residentId/:patternId/reopen',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:417:    @Param('residentId')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:418:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.controller.ts:431:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:21:  CareActionTransfer,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:38:  resident_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:50:  review_started_at: Date | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:61:type TransferRow = {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:69:    'TRANSFER';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:80:  transferred_at: Date;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:94:  resident_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:130:export type InsertTransferInput = {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:135:    'TRANSFER';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:154:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:194:      residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:195:        row.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:223:        row.review_started_at
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:225:              row.review_started_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:252:  private mapTransfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:253:    row: TransferRow,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:254:  ): CareActionTransfer {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:295:      transferredAt:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:297:          row.transferred_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:318:      residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:319:        row.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:374:  async findByResidentAndPattern(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:375:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:386:          WHERE resident_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:391:            residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:407:  async findByResidentAndPatternForUpdate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:408:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:418:        WHERE resident_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:424:          residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:441:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:451:            resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:458:            residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:581:        'review_started_at',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:681:  async insertTransfer(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:682:    input: InsertTransferInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:689:        INSERT INTO care_action_transfers (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:744:          resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:763:          input.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:787:  async listTransfers(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:790:  ): Promise<CareActionTransfer[]> {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:794:        .query<TransferRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:797:          FROM care_action_transfers
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.repository.ts:808:        this.mapTransfer(row),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:3:  'IN_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:24:  'TRANSFERRED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:25:  'REVIEW_STARTED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:37:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:60:export interface CareActionTransfer {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:69:    'TRANSFER';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:83:  transferredAt: Date;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:93:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:112:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:129:export interface TransferCareActionInput {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:141:export interface StartCareActionReviewInput {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:166:  transferHistory:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.types.ts:167:    CareActionTransfer[];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.types.ts:12:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.types.ts:21:  reviewId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.types.ts:24:    | 'HUMAN_REVIEW_APPROVED';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.types.ts:28:  reviewId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.types.ts:31:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:5:import { WarningReviewService } from '../warning-reviews/warning-review.service';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:19:    private readonly warningReviews:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:20:      WarningReviewService,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:65:    const review =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:66:      await this.warningReviews
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:69:    if (!review) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:71:        'Warning review not found.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:76:      review.decision !==
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:80:        'Warning review is not approved for Care Action creation.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:89:        review.warningId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:91:      residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:92:        review.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:95:        review.patternId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:103:      reviewId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:104:        review.reviewId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:107:        'HUMAN_REVIEW_APPROVED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:122:        approval.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:128:        'Care Action already exists for this reviewed warning pattern.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:135:          approval.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:149:      reviewId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:150:        approval.reviewId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:155:      residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.service.ts:156:        approval.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.module.ts:3:import { WarningReviewModule } from '../warning-reviews/warning-review.module';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.module.ts:13:import { StartReviewAuthorizationModule } from '../start-review-authorization/start-review-authorization.module';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.module.ts:25:    WarningReviewModule,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-action-bridge/care-action-bridge.module.ts:27:    StartReviewAuthorizationModule,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:119:              care_plan_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:120:              resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:568:            care_plan_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:569:            resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:595:            updated.care_plan_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:596:            updated.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:618:              residentId: updated.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:639:          carePlanId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:640:            updated.care_plan_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:642:          residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:643:            updated.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:22:export type HealthReportActorRole =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:28:export interface HealthReportActor {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:30:  actorRole: HealthReportActorRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:33:export interface HealthReportRow {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:34:  health_report_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:35:  resident_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:47:  reviewed_at: Date | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:48:  reviewed_by: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:49:  reviewed_by_role: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:58:export interface HealthReportSnapshotRow {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:59:  health_report_snapshot_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:60:  health_report_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:73:    HealthReportActorRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:78:  residentId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:91:  admissionContactId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:104:export class HealthReportService {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:106:    'TAMANCARE-HEALTH-REPORT-SNAPSHOT-V1';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:140:        key: 'painAssessments',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:141:        table: 'pain_assessments',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:165:        key: 'residentConsumptionEvents',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:166:        table: 'resident_consumption_events',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:170:        key: 'residentCostPeriods',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:171:        table: 'resident_cost_periods',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:238:    actor: HealthReportActor,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:239:    allowed: HealthReportActorRole[],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:283:        'Actor is not authorized for this health report action',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:289:    healthReportId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:290:  ): Promise<HealthReportRow> {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:292:      await this.db.query<HealthReportRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:295:          FROM health_reports
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:296:          WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:299:        [healthReportId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:304:        'Health report not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:312:    actor: HealthReportActor,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:313:    residentId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:314:  ): Promise<HealthReportRow[]> {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:326:      residentId
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:327:        ? await this.db.query<HealthReportRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:330:              FROM health_reports
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:331:              WHERE resident_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:336:            [residentId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:338:        : await this.db.query<HealthReportRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:341:              FROM health_reports
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:353:    actor: HealthReportActor,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:354:    healthReportId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:367:      await this.getReport(healthReportId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:373:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:374:          WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:377:        [healthReportId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:384:          FROM health_report_deliveries
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:385:          WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:388:        [healthReportId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:395:          FROM health_report_audit
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:396:          WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:399:        [healthReportId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:411:    actor: HealthReportActor,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:413:  ): Promise<HealthReportRow> {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:430:      !input.residentId ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:437:        'Invalid health report request',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:441:    const resident =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:444:          SELECT resident_id
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:445:          FROM residents
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:446:          WHERE resident_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:449:        [input.residentId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:452:    if (!resident.rows[0]) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:454:        'Resident not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:459:      `health-report-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:464:          await client.query<HealthReportRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:466:              INSERT INTO health_reports (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:467:                health_report_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:468:                resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:486:              input.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:498:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:499:              health_report_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:500:              resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:514:            input.residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:529:    residentId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:571:                t.resident_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:596:              residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:612:                t.resident_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:648:              residentId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:666:        residentKey:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:667:          'resident_id',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:691:    actor: HealthReportActor,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:692:    healthReportId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:704:      await this.getReport(healthReportId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:720:        report.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:731:      residentId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:732:        report.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:758:      `health-report-snapshot-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:770:            `health-report-snapshot:${healthReportId}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:781:              FROM health_reports
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:782:              WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:785:            [healthReportId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:793:            'Health report not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:799:            'Concurrent health report generation rejected',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:813:              FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:814:              WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:816:            [healthReportId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:827:          await client.query<HealthReportSnapshotRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:829:              INSERT INTO health_report_snapshots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:830:                health_report_snapshot_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:831:                health_report_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:847:              healthReportId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:861:            UPDATE health_reports
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:868:            WHERE health_report_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:871:            healthReportId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:879:            INSERT INTO health_report_audit (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:880:              health_report_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:881:              resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:894:            healthReportId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:895:            report.resident_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:919:  async startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:920:    actor: HealthReportActor,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:921:    healthReportId: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:922:  ): Promise<HealthReportRow> {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:933:      await this.getReport(healthReportId);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:937:        'Only GENERATED report may enter review',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:945:            UPDATE health_reports
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:947:              status='UNDER_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:948:              reviewed_at=now(),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:949:              reviewed_by=$2,

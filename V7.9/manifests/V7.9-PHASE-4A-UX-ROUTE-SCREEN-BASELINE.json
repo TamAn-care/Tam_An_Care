@@ -1,0 +1,292 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4A",
+  "phase_name": "UX_ROUTE_SCREEN_BASELINE",
+  "status": "PASSED",
+  "decision": "UX_ROUTE_SCREEN_BASELINE_ACCEPTED",
+  "frontend_authority": "V7.7/workspace/frontend",
+  "frontend_root": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend",
+  "frontend_workspace_copy": false,
+  "frontend_bootstrap": false,
+  "route_signal_count": 7,
+  "screen_component_count": 18,
+  "frontend_api_reference_count": 5,
+  "routes": [
+    {
+      "route": "/",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 46
+    },
+    {
+      "route": "/dashboard",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 49
+    },
+    {
+      "route": "/dashboard",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 55
+    },
+    {
+      "route": "/residents",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 63
+    },
+    {
+      "route": "/staff-access",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 89
+    },
+    {
+      "route": "/system-status",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 99
+    },
+    {
+      "route": "/operational-care",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "line": 105
+    }
+  ],
+  "screens": [
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/router.tsx",
+      "score": 35,
+      "domain_signals": [
+        "resident",
+        "staff",
+        "access",
+        "operation",
+        "dashboard",
+        "care",
+        "review"
+      ],
+      "ui_signals": []
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/care-work/CareWorkPage.tsx",
+      "score": 34,
+      "domain_signals": [
+        "resident",
+        "operation",
+        "warning",
+        "dashboard",
+        "care",
+        "review"
+      ],
+      "ui_signals": [
+        "<main",
+        "<section",
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/staff-access/StaffAccessPage.tsx",
+      "score": 33,
+      "domain_signals": [
+        "resident",
+        "staff",
+        "access",
+        "operation",
+        "care",
+        "assignment"
+      ],
+      "ui_signals": [
+        "<section",
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/care-view/CareViewPage.tsx",
+      "score": 23,
+      "domain_signals": [
+        "resident",
+        "access",
+        "care",
+        "review"
+      ],
+      "ui_signals": [
+        "<section",
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/components/navigation/AppNavigation.tsx",
+      "score": 21,
+      "domain_signals": [
+        "resident",
+        "staff",
+        "access",
+        "dashboard"
+      ],
+      "ui_signals": [
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/residents/ResidentsPage.tsx",
+      "score": 13,
+      "domain_signals": [
+        "resident",
+        "care"
+      ],
+      "ui_signals": [
+        "<section",
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/components/layout/AppShell.tsx",
+      "score": 8,
+      "domain_signals": [
+        "care"
+      ],
+      "ui_signals": [
+        "<main",
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/auth/DevelopmentActorPanel.tsx",
+      "score": 7,
+      "domain_signals": [
+        "care"
+      ],
+      "ui_signals": [
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/auth/RequireSupervisor.tsx",
+      "score": 7,
+      "domain_signals": [
+        "warning"
+      ],
+      "ui_signals": [
+        "<section",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/dashboard/DashboardPage.tsx",
+      "score": 7,
+      "domain_signals": [
+        "dashboard"
+      ],
+      "ui_signals": [
+        "<section",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/auth/RequireActor.tsx",
+      "score": 2,
+      "domain_signals": [],
+      "ui_signals": [
+        "<section",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/components/navigation/MobileNavigationButton.tsx",
+      "score": 2,
+      "domain_signals": [],
+      "ui_signals": [
+        "<button",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/system-status/SystemStatusPage.tsx",
+      "score": 2,
+      "domain_signals": [],
+      "ui_signals": [
+        "<section",
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/App.tsx",
+      "score": 1,
+      "domain_signals": [],
+      "ui_signals": [
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/app/providers.tsx",
+      "score": 1,
+      "domain_signals": [],
+      "ui_signals": [
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/auth/ActorContext.tsx",
+      "score": 1,
+      "domain_signals": [],
+      "ui_signals": [
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/components/feedback/ConnectivityStatus.tsx",
+      "score": 1,
+      "domain_signals": [],
+      "ui_signals": [
+        "return ("
+      ]
+    },
+    {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/components/feedback/FeedbackStates.tsx",
+      "score": 1,
+      "domain_signals": [],
+      "ui_signals": [
+        "return ("
+      ]
+    }
+  ],
+  "frontend_api_references": [
+    {
+      "endpoint": "/api/operations/dashboard",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/api/operational-care.ts",
+      "line": 64
+    },
+    {
+      "endpoint": "/api/warning-reviews",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/api/operational-care.ts",
+      "line": 258
+    },
+    {
+      "endpoint": "/api/health",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/api/health.ts",
+      "line": 7
+    },
+    {
+      "endpoint": "/api/operations/access-assignments",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/api/resident-access-administration.ts",
+      "line": 47
+    },
+    {
+      "endpoint": "/api/residents",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/api/residents.ts",
+      "line": 110
+    }
+  ],
+  "ui_root_http": 200,
+  "mutation_requests": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "application_source_write": false,
+  "r1_authority_manifest_sha256": "3ecb05f42973b1f6d9158b5d09276e38e8932265367121b65ee54bbf437278c9",
+  "roadmap_sha256": "e0ea0fb11c7d6cd3bde00d3769bde039a18ce9b1d1e623e547d7721041ad4a0e",
+  "next_gate": "PHASE_4B",
+  "accepted_at": "2026-08-22T04:50:05.990890+00:00"
+}

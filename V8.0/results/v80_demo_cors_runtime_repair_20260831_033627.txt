@@ -1,0 +1,82 @@
+======================================================================
+ TAMANCARE V8.0 — FULL DEMO
+ DEMO-2R4 — CORS RUNTIME CONFIG REPAIR
+======================================================================
+
+AUTHORIZED_CHANGE:
+ -> DEMO docker-compose.yml ONLY
+ -> ADD CORS_ALLOWED_ORIGINS FOR LOCAL DEMO
+
+FORBIDDEN:
+ -> FROZEN V8.0 SOURCE CHANGE
+ -> DATABASE MIGRATION
+ -> PRODUCTION DATABASE
+ -> APPLICATION SOURCE PATCH
+
+----- 1. PRECONDITIONS -----
+PASS: DEMO COMPOSE EXISTS
+PASS: DOCKER ENGINE RUNNING
+POSTGRES_RUNNING_COUNT=1
+PASS: DEMO POSTGRES RUNNING
+
+----- 2. BACKUP DEMO COMPOSE -----
+PASS: DEMO COMPOSE BACKUP CREATED
+
+----- 3. ADD LOCAL DEMO CORS CONTRACT -----
+CORS_PATCH=APPLIED
+PASS: LOCAL DEMO CORS CONFIGURED
+
+----- 4. VALIDATE COMPOSE -----
+PASS: COMPOSE PARSES AFTER CORS PATCH
+CORS_CONFIGURED=YES
+LOCAL_CORS_RANGE_VALID=YES
+PASS: CORS CONTRACT VALID
+
+----- 5. RECREATE API ONLY -----
+ Container tamancare_v80_full_demo-api-1 Recreate 
+ Container tamancare_v80_full_demo-api-1 Recreated 
+ Container tamancare_v80_full_demo-api-1 Starting 
+ Container tamancare_v80_full_demo-api-1 Started 
+PASS: DEMO API RECREATED WITH CORS CONFIG
+
+----- 6. API CONTAINER ACCEPTANCE -----
+NAMES                                STATUS         PORTS
+tamancare_v80_full_demo-api-1        Up 8 seconds   0.0.0.0:3100->3000/tcp, [::]:3100->3000/tcp
+tamancare_v80_full_demo-postgres-1   Up 4 minutes   5432/tcp
+API_RUNNING_COUNT=1
+PASS: DEMO API CONTAINER REMAINS RUNNING
+
+----- 7. API HTTP ACCEPTANCE -----
+API_ROOT_HTTP=000000
+API_HEALTH_HTTP=000000
+FAIL: API HTTP NOT RESPONDING
+WARN: API HEALTH ENDPOINT NOT 2XX
+
+----- 8. FRONTEND PORT -----
+PASS: FRONTEND PORT SELECTED
+FRONTEND_PORT=4175
+
+----- 9. FRONTEND START -----
+
+----- 10. FROZEN PARENT -----
+PASS: FROZEN V8.0 SOURCE UNCHANGED
+
+======================================================================
+ TAMANCARE V8.0 FULL DEMO — RESULT
+======================================================================
+PASS_COUNT=11
+WARN_COUNT=1
+FAIL_COUNT=1
+
+STATUS=V8_FULL_DEMO_RUNTIME_FAILED
+NEXT=STOP_AND_RETURN_OUTPUT
+
+DEMO_COMPOSE_BACKUP=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/docker-compose.pre-cors-demo-20260831_033627.yml
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_demo_cors_runtime_repair_20260831_033627.txt
+FRONTEND_LOG=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-frontend-20260831_033627.log
+
+IMPORTANT:
+ -> DO NOT RUN MIGRATIONS
+ -> DO NOT MODIFY FROZEN V8.0
+ -> RETURN THIS ENTIRE OUTPUT
+======================================================================

@@ -1,0 +1,43 @@
+TAM AN CARE V7.4.3
+STEP 8C.C1
+CONTROLLED DASHBOARD BACKEND IMPLEMENTATION
+
+SOURCE_BEFORE=3e129d22ad732c2da8951e8e0db423b1b42b3e217674c564cf152eee35615c5c
+SOURCE_AFTER=8009a4e0822c07e1b9b6c15b0794f3736e7ddfeb2f295159d04c9ca36bcc5bc3
+
+SCHEMA=839c7430f134cd40c00c85d5cc2961821e5be86ce94a2469e461de83c4e853c7
+
+BACKUP=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step8c-c1-20260820_085215
+
+CHANGED_FILE=
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.module.ts
+
+NEW_FILE=
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.controller.ts
+
+NEW_FILE=
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts
+
+MODULE_HASH=47070f8f6117fb951d3eaf1e59727fd788fea5c7dc51674da10aea0bcbf709ce
+CONTROLLER_HASH=fd76c8945d97753db6e33522e27727f5ea35799e6ecd5c9b018cf07ba9664923
+SERVICE_HASH=270a556b28d414a81c41d8de98156bbb98540a4e0bf8353e1d6036a44e31b324
+
+DASHBOARD_ENDPOINT=
+GET /api/operations/dashboard
+
+DATABASE_QUERY_COUNT=6
+
+N_PLUS_1=NO
+PER_RESIDENT_8B_LOOP=NO
+
+READ_ONLY=YES
+GET_ONLY=YES
+
+ROLE_GATE_ONLY=YES
+FULL_ASSIGNMENT_SCOPE=DEFERRED
+
+SCHEMA_CHANGE=NO
+DATABASE_BUSINESS_WRITE=NO
+DOCKER_IMAGE_BUILD=NO
+RUNTIME_CUTOVER=NO
+PRODUCTION_CHANGE=NO

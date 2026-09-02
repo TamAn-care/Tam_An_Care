@@ -1,0 +1,78 @@
+TAM_AN_CARE_VERSION=V8.0
+SERIES=08
+CONTRACT=S7_POST_RESTORE_READ_ONLY_DATA_INTEGRITY_R116
+
+TARGET_CONTAINER=tamancare-s7-restore-validation
+TARGET_CONTAINER_ID=4ff6687fe5322fc51d83e87ffebaa6babfad50757e9c93c244c4d52d64b31b9c
+
+TARGET_DATABASE=taman_care_s7_restore_validation
+TARGET_DATABASE_USER=taman_s7_restore
+
+LIVE_DATABASE_NAME=taman_care
+LIVE_DATABASE_ALLOWED_AS_VALIDATION_TARGET=NO
+
+VALIDATION_MODE=READ_ONLY_ISOLATED_TARGET_ONLY
+
+VALIDATION_SQL_BEGIN
+BEGIN READ ONLY;
+
+SELECT
+  (SELECT COUNT(*) FROM pg_namespace WHERE nspname = 'public') AS public_schema_count,
+
+  (
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+  ) AS public_table_count,
+
+  (
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'residents'
+  ) AS residents_table_count,
+
+  (
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'staff_actors'
+  ) AS staff_actors_table_count,
+
+  (
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'resident_access_assignments'
+  ) AS assignments_table_count,
+
+  (
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'resident_audit'
+  ) AS resident_audit_table_count,
+
+  (
+    SELECT COUNT(*)
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_name = 'staff_actor_audit'
+  ) AS staff_actor_audit_table_count,
+
+  (
+    SELECT
+      CASE
+        WHEN
+          (SELECT COUNT(*) FROM information_schema.tables
+           WHERE table_schema='public' AND table_name='residents') = 1
+          AND
+          (SELECT COUNT(*) FROM information_schema.tables
+           WHERE table_schema='public' AND table_name='staff_actors') = 1
+        THEN 1
+        ELSE 0
+      END
+  ) AS core_table_pair_present;
+
+ROLLBACK;
+VALIDATION_SQL_END

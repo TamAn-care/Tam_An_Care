@@ -1,0 +1,45 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2D",
+  "status": "PASSED",
+  "decision": "BUILD_STATIC_ACCEPTANCE_PASSED",
+  "build_evidence": {
+    "api": "PASSED",
+    "frontend": "PASSED",
+    "authority": "S2D_PREFLIGHT"
+  },
+  "staff_management": {
+    "create_api": true,
+    "update_api": true,
+    "care_manager": true,
+    "last_active_supervisor_guard": true,
+    "staff_audit": true,
+    "http_delete": false
+  },
+  "assignment_domain": {
+    "roles": [
+      "CAREGIVER",
+      "NURSE"
+    ],
+    "supervisor": false,
+    "care_manager": false
+  },
+  "bootstrap": {
+    "source_present": true,
+    "executed": false,
+    "production_seed": false
+  },
+  "production": {
+    "api": 200,
+    "ui": 200,
+    "staff_no_actor": 401,
+    "access_no_actor": 401,
+    "table_count": 118,
+    "staff_actor_count": 0,
+    "database_mutation": false,
+    "runtime_restart": false
+  },
+  "next_authorized_action": "S2E_ISOLATED_RUNTIME_FUNCTIONAL_PREFLIGHT",
+  "created_at": "2026-08-22T13:41:41.299123+00:00"
+}

@@ -1,0 +1,19 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R5.6-R3",
+  "status": "PASSED",
+  "root_cause": "multiline API_SRC_CANDIDATES list was partially replaced",
+  "recovery": "whole API_SRC_CANDIDATES block replaced structurally",
+  "candidate_order": [
+    "V7.9/workspace/api/src",
+    "V7.7/workspace/api/src",
+    "api/src"
+  ],
+  "runner_sha256": "aeae48522ac7979a0f536757e71f46ceeab23cf0ab21f4f60e7c63e2441c5f2d",
+  "accepted_gate_rerun": false,
+  "production_database_mutation": false,
+  "production_restart": false,
+  "v77_source_write": false,
+  "next": "RESUME_PHASE_1D"
+}

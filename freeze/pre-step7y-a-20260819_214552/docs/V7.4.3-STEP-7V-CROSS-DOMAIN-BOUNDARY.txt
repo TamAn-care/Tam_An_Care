@@ -1,0 +1,55 @@
+STEP 7V — CROSS-DOMAIN BOUNDARY
+
+Step 7V may reference information from other domains for human review.
+
+Step 7V MUST NOT autonomously mutate:
+
+- care_actions
+- care_action_transfers
+- care_tasks
+
+- medication_orders
+- medication_schedules
+- medication_administrations
+- medication_double_checks
+
+- clinical_observations
+- clinical_escalations
+
+- incidents
+- incident_triage
+- incident_assignments
+- incident_responses
+
+- nutrition domain
+
+- rehabilitation domain
+
+- wound domain
+
+- hygiene domain
+
+- behavioral / cognitive domain
+
+- sleep / rest domain
+
+
+Examples:
+
+Pain after fall
+-> may suggest HUMAN incident review
+-> must not create incident automatically.
+
+Pain during wound care
+-> may alert HUMAN
+-> must not modify wound treatment automatically.
+
+Possible medication-related discomfort
+-> may alert HUMAN
+-> cannot change medication.
+
+Severe new symptom
+-> may recommend urgent HUMAN review
+-> cannot autonomously decide transfer or emergency service.
+
+ZERO CROSS-DOMAIN AUTONOMY = REQUIRED

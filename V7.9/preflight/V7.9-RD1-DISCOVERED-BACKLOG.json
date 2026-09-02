@@ -1,0 +1,330 @@
+{
+  "status": "DISCOVERY_COMPLETE",
+  "phase": "RD1",
+  "classification_policy": {
+    "CONFIRMED_GAP": "Only source/runtime evidence directly proves missing or failing required capability.",
+    "CONFIRMED_OBSERVATION": "Accepted prior evidence explicitly records an issue or optimization signal without declaring acceptance failure.",
+    "REVIEW_CANDIDATE": "Evidence requires semantic or business review; not yet a confirmed defect.",
+    "OBSERVATION": "Informational inventory item only."
+  },
+  "inventory": {
+    "frontend_page_count": 6,
+    "frontend_route_count": 8,
+    "frontend_api_reference_count": 5,
+    "backend_http_route_count": 61,
+    "explicit_source_marker_count": 5,
+    "accepted_observation_count": 0,
+    "structural_contract_review_candidate_count": 5
+  },
+  "backlog_items": [
+    {
+      "id": "RD1-001",
+      "domain": "SOURCE_EXPLICIT_MARKER",
+      "title": "PLACEHOLDER marker requires semantic review",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/auth/DevelopmentActorPanel.tsx",
+          "line": 61,
+          "text": "placeholder=\"actor-id\""
+        }
+      ],
+      "current_state": "Explicit source marker present",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-002",
+      "domain": "SOURCE_EXPLICIT_MARKER",
+      "title": "PLACEHOLDER marker requires semantic review",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/design/globals.css",
+          "line": 191,
+          "text": ".placeholder {"
+        }
+      ],
+      "current_state": "Explicit source marker present",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-003",
+      "domain": "SOURCE_EXPLICIT_MARKER",
+      "title": "PLACEHOLDER marker requires semantic review",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/residents/ResidentsPage.tsx",
+          "line": 176,
+          "text": "placeholder=\"T\u00ean, m\u00e3 h\u1ed3 s\u01a1, ph\u00f2ng ho\u1eb7c gi\u01b0\u1eddng\""
+        }
+      ],
+      "current_state": "Explicit source marker present",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-004",
+      "domain": "SOURCE_EXPLICIT_MARKER",
+      "title": "PLACEHOLDER marker requires semantic review",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/staff-access/StaffAccessPage.tsx",
+          "line": 380,
+          "text": "placeholder=\"T\u00ean, m\u00e3 nh\u00e2n s\u1ef1 ho\u1eb7c Actor ID\""
+        }
+      ],
+      "current_state": "Explicit source marker present",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-005",
+      "domain": "SOURCE_EXPLICIT_MARKER",
+      "title": "PLACEHOLDER marker requires semantic review",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/features/staff-access/StaffAccessPage.tsx",
+          "line": 553,
+          "text": "placeholder=\"resident-id\""
+        }
+      ],
+      "current_state": "Explicit source marker present",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-006",
+      "domain": "FRONTEND_BACKEND_CONTRACT",
+      "title": "Frontend API reference not directly matched by static backend route inventory",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "endpoint": "/api/health",
+          "file": "src/api/health.ts",
+          "line": 7
+        }
+      ],
+      "current_state": "Static frontend reference not directly matched by static backend parser",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-007",
+      "domain": "FRONTEND_BACKEND_CONTRACT",
+      "title": "Frontend API reference not directly matched by static backend route inventory",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "endpoint": "/api/operations/dashboard",
+          "file": "src/api/operational-care.ts",
+          "line": 64
+        }
+      ],
+      "current_state": "Static frontend reference not directly matched by static backend parser",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-008",
+      "domain": "FRONTEND_BACKEND_CONTRACT",
+      "title": "Frontend API reference not directly matched by static backend route inventory",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "endpoint": "/api/warning-reviews",
+          "file": "src/api/operational-care.ts",
+          "line": 258
+        }
+      ],
+      "current_state": "Static frontend reference not directly matched by static backend parser",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-009",
+      "domain": "FRONTEND_BACKEND_CONTRACT",
+      "title": "Frontend API reference not directly matched by static backend route inventory",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "endpoint": "/api/operations/access-assignments",
+          "file": "src/api/resident-access-administration.ts",
+          "line": 47
+        }
+      ],
+      "current_state": "Static frontend reference not directly matched by static backend parser",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    },
+    {
+      "id": "RD1-010",
+      "domain": "FRONTEND_BACKEND_CONTRACT",
+      "title": "Frontend API reference not directly matched by static backend route inventory",
+      "classification": "REVIEW_CANDIDATE",
+      "evidence": [
+        {
+          "endpoint": "/api/residents",
+          "file": "src/api/residents.ts",
+          "line": 110
+        }
+      ],
+      "current_state": "Static frontend reference not directly matched by static backend parser",
+      "target_state": "TO_BE_DEFINED_IN_RD2",
+      "priority": "UNCLASSIFIED",
+      "business_purpose": "TO_BE_DEFINED_IN_RD2",
+      "user_role": "TO_BE_DEFINED_IN_RD2",
+      "dependencies": [],
+      "data_impact": "UNCLASSIFIED",
+      "source_write_required": "UNCLASSIFIED",
+      "database_mutation_required": "UNCLASSIFIED",
+      "manual_appearance_test": "UNCLASSIFIED",
+      "manual_function_test": "UNCLASSIFIED",
+      "manual_ux_test": "UNCLASSIFIED",
+      "manual_uat": "UNCLASSIFIED",
+      "automated_tests": "TO_BE_DEFINED",
+      "rollback_requirement": "TO_BE_DEFINED",
+      "acceptance_criteria": "TO_BE_DEFINED",
+      "target_version": "UNASSIGNED"
+    }
+  ],
+  "backlog_item_count": 10,
+  "confirmed_gap_count": 0,
+  "confirmed_observation_count": 0,
+  "review_candidate_count": 10,
+  "priority_decision_made": false,
+  "scope_decision_made": false,
+  "manual_test_executed": false,
+  "implementation_authorized": false,
+  "next_gate": "RD2"
+}

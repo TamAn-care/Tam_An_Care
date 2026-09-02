@@ -1,0 +1,30 @@
+TAM AN CARE V7.5
+STEP=9F.B1-R1
+
+PATCH RECORD
+
+CREATED:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts
+
+MODIFIED:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.module.ts
+
+UNCHANGED:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/schema.sql
+
+CONTROLLER_HASH=9b58b493eb0e7320237190ac02fe25a93dfb1d8ab499cc85ed0864ada7b3928b
+MODULE_HASH=a7e1600526a6d77ebb830406a73372be937ce7f59b45baad03386697c286a8f6
+SERVICE_HASH=6726717309492efd5e72867ae7a956a959baa519f640f9bef1cb9301c4100a46
+SCHEMA_HASH=5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80
+
+HTTP_SURFACE=
+GET /api/operations/staff-actors
+GET /api/operations/staff-actors/:actorId
+
+STAFF_MUTATION_HTTP=NO
+STAFF_MUTATION_SQL=NO
+
+ACTIVE_RUNTIME_CUTOVER=NO
+DATABASE_WRITE=ZERO
+PRODUCTION_CHANGE=NO

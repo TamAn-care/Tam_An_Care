@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-08-21T05:28:52.366215+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-A-R2",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "recovery_contract_hash": "895250b5ecbe6f9394e346b14117f6b65686afcd9b53f93f9a8c243fc3403221",
+  "previously_accepted_not_rerun": [
+    "infection-control",
+    "medication-safety",
+    "pain-comfort",
+    "personal-care",
+    "sleep-rest",
+    "care-plan-governance"
+  ],
+  "targeted_results": [
+    {
+      "module": "behavioral-cognitive",
+      "action": "CREATE_COGNITIVE_OBSERVATION",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "row_before": 0,
+      "row_after": 1,
+      "audit_before": 0,
+      "audit_after": 1,
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"observation_id\":\"0528e038-97bd-4e8d-b7dd-e27398456e73\",\"resident_id\":\"v77-r2bar2-resident\",\"observation_type\":\"COGNITIVE_OBSERVATION\",\"observed_at\":\"2026-08-21T05:28:51.024Z\",\"observable_facts\":\"V77_R2B_R2_OBSERVABLE_FACTS\",\"baseline_change\":false,\"state\":\"RECORDED\",\"recorded_by\":\"v77-r2bar2-supervisor\",\"recorded_by_role\":\"SUPERVISOR\",\"verified_by\":null,\"verified_by_role\":null,\"verified_at\":null,\"amendment_of\":null,\"amendment_reason\":null,\"created_at\":\"2026-08-21T05:28:51.024Z\",\"updated_at\":\"2026-08-21T05:28:51.024Z\"},\"autonomousClinicalAction\":false}"
+    },
+    {
+      "module": "fall-mobility",
+      "action": "CREATE_FALL_RISK_ASSESSMENT",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "row_before": 0,
+      "row_after": 1,
+      "audit_before": 0,
+      "audit_after": 1,
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"fall_risk_assessment_id\":\"3e397f34-d5cc-40aa-a458-7164712dd206\",\"resident_id\":\"v77-r2bar2-resident\",\"assessment_context\":\"V77_R2B_R2_HUMAN_FALL_RISK_ASSESSMENT\",\"observable_risk_factors\":null,\"mobility_observations\":null,\"prior_fall_context\":null,\"environmental_context\":null,\"state\":\"DRAFT\",\"assessor_id\":\"v77-r2bar2-supervisor\",\"assessor_role\":\"SUPERVISOR\",\"verified_by\":null,\"verified_by_role\":null,\"verified_at\":null,\"amendment_of\":null,\"amendment_reason\":null,\"created_at\":\"2026-08-21T05:28:51.322Z\",\"updated_at\":\"2026-08-21T05:28:51.322Z\"},\"fallIsInjuryDiagnosis\":false,\"autonomousRestraint\":false,\"autonomousMedicationAction\":false,\"autonomousHospitalTransfer\":false,\"autonomousClinicalAction\":false}"
+    },
+    {
+      "module": "safeguarding",
+      "action": "CREATE_SAFEGUARDING_REPORT",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "row_before": 0,
+      "row_after": 1,
+      "audit_before": 0,
+      "audit_after": 1,
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"safeguarding_report_id\":\"5baa50cb-7c2f-4647-935c-5a1b18572116\",\"resident_id\":\"v77-r2bar2-resident\",\"concern_category\":\"V77_R2B_R2_TEST_CONCERN\",\"factual_description\":\"V77_R2B_R2_FACTUAL_DESCRIPTION\",\"resident_statement\":null,\"immediate_safety_concern\":false,\"confidentiality_note\":null,\"state\":\"REPORTED\",\"reporter_id\":\"v77-r2bar2-supervisor\",\"reporter_role\":\"SUPERVISOR\",\"resolved_by\":null,\"resolved_by_role\":null,\"resolution_summary\":null,\"resolved_at\":null,\"closed_by\":null,\"closed_by_role\":null,\"closed_at\":null,\"created_at\":\"2026-08-21T05:28:51.624Z\",\"updated_at\":\"2026-08-21T05:28:51.624Z\"},\"reportIsProvenFinding\":false,\"autonomousRightsRestriction\":false,\"autonomousDisciplinaryAction\":false,\"autonomousExternalReporting\":false,\"autonomousClinicalAction\":false}"
+    }
+  ],
+  "summary": {
+    "fail_closed_count": 3,
+    "security_gap_count": 0,
+    "recovery_remaining_count": 0
+  },
+  "source_changed": false,
+  "production_changed": false
+}

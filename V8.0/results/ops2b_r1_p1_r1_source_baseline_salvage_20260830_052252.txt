@@ -1,0 +1,127 @@
+======================================================================
+ TAMANCARE — OPS-2-B-R1-P1-R1 — SOURCE BASELINE SALVAGE
+======================================================================
+
+MODE=READ_ONLY_CONTINUATION
+RERUN_P1=NO
+SOURCE_PATCH=NO
+DB_MUTATION=NO
+BUILD=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+NEW_RUNTIME_START=NO
+MASTER_3000_TOUCH=NO
+
+======================================================================
+1. LOCK EXACT STATE OBSERVED BY FAILED P1
+======================================================================
+API_TREE_NOW=64a8c1fb83adbff374c009d67eac1d215251c6fc5a5263cca899d22af9a0375a
+FE_TREE_NOW=8e9c842c6861bbfe90481a11bc89fdf6d0e73a25e15319b1a15c63a7a68149f8
+FAIL: API CHANGED AFTER FAILED P1
+FAIL: FRONTEND CHANGED AFTER FAILED P1
+
+PRE_I1_API=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+PRE_I1_FE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+
+======================================================================
+2. PROVE INVENTORY IMPLEMENTATION EXISTS IN CURRENT API SOURCE
+======================================================================
+PASS: EXISTS /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+PASS: EXISTS /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+PASS: EXISTS /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts
+PASS: EXISTS /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts
+PASS: EXISTS /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts
+PASS: EXISTS /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts
+
+--- INVENTORY MODULE REGISTRATION ---
+65:import { InventoryModule } from './inventory/inventory.module';
+69:    InventoryModule,
+INVENTORY_IMPORT_SIGNAL_COUNT=1
+INVENTORY_MODULE_SIGNAL_COUNT=2
+PASS: INVENTORY MODULE REGISTERED
+
+======================================================================
+3. PROVE LOCKED API SURFACE EXISTS
+======================================================================
+api/inventory_SIGNAL_COUNT=1
+items_SIGNAL_COUNT=10
+lots_SIGNAL_COUNT=9
+transactions_SIGNAL_COUNT=8
+balance_SIGNAL_COUNT=2
+
+======================================================================
+4. PROVE LEDGER SOURCE OF TRUTH / NO SECOND BALANCE
+======================================================================
+DERIVED_SUM_SIGNAL_COUNT=2
+ADVISORY_LOCK_SIGNAL_COUNT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:0
+INVENTORY_TRANSACTION_LEDGER_SIGNAL_COUNT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:3
+PASS: DERIVED BALANCE SIGNAL PRESENT
+bash: line 184: [: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:0: integer expression expected
+FAIL: ADVISORY LOCK SIGNAL ABSENT
+bash: line 191: [: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:3: integer expression expected
+FAIL: LEDGER TABLE SIGNAL ABSENT
+
+======================================================================
+5. PROVE NEGATIVE-STOCK PROTECTION SIGNAL
+======================================================================
+NEGATIVE_STOCK_PROTECTION_SIGNAL_COUNT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:0
+bash: line 211: [: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:2
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-ledger.service.ts:0: integer expression expected
+FAIL: NEGATIVE-STOCK PROTECTION NOT PROVEN
+
+======================================================================
+6. PROVE OPS-2-C BOUNDARY REMAINS CLOSED
+======================================================================
+RESIDENT_CONSUMPTION_WRITE_SIGNAL_COUNT=0
+PASS: OPS-2-C WRITE NOT IMPLEMENTED INSIDE OPS-2-B
+
+======================================================================
+7. DIST IMPLEMENTATION PROVEN WITHOUT REBUILD
+======================================================================
+DIST_INVENTORY_SIGNAL_COUNT=10
+PASS: COMPILED INVENTORY IMPLEMENTATION PRESENT
+
+======================================================================
+8. DATABASE CLEANLINESS — READ ONLY
+======================================================================
+DB_COUNTS=148|0|0|0|0
+PUBLIC_TABLES=148
+INVENTORY_ITEMS=0
+INVENTORY_LOTS=0
+INVENTORY_TRANSACTIONS=0
+RESIDENT_CONSUMPTION_EVENTS=0
+PASS: CLEAN OPS-2-B DATABASE BASELINE
+
+======================================================================
+9. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+HEALTH_3000=200
+HEALTH_3108=200
+HEALTH_4173=200
+
+======================================================================
+10. FINAL SOURCE IMMUTABILITY
+======================================================================
+API_TREE_AFTER=64a8c1fb83adbff374c009d67eac1d215251c6fc5a5263cca899d22af9a0375a
+FE_TREE_AFTER=8e9c842c6861bbfe90481a11bc89fdf6d0e73a25e15319b1a15c63a7a68149f8
+FAIL: API SOURCE CHANGED
+FAIL: FRONTEND SOURCE CHANGED
+
+======================================================================
+11. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-R1-P1-R1 CONTROLLED STOP
+
+IMPORTANT:
+ -> DO NOT RERUN P1
+ -> DO NOT RERUN R1
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MUTATE DB
+ -> DO NOT START :3109
+ -> DO NOT RESTART :3000 OR :3108
+ -> RETURN THIS ENTIRE OUTPUT

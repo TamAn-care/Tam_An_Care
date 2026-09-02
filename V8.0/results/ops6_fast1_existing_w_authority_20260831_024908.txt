@@ -1,0 +1,2122 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-6 FAST-1
+ EXISTING W SNAPSHOT / FAMILY REPORT INTEGRATION AUTHORITY
+
+ MODE = CONSOLIDATED READ-ONLY DISCOVERY
+
+ SOURCE MUTATION = NO
+ SCHEMA MUTATION = NO
+ DATABASE MUTATION = NO
+ MIGRATION = NO
+ BUILD = NO
+ RUNTIME RESTART = NO
+
+ OBJECTIVE:
+  OPS SOURCES
+      ↓
+  EXISTING W SNAPSHOT
+      ↓
+  HUMAN REVIEW
+      ↓
+  APPROVAL
+      ↓
+  PDF
+      ↓
+  AUTHORIZED FAMILY / GUARDIAN
+
+ SECOND FAMILY REPORT MODULE = FORBIDDEN
+ EXISTING HEALTH-REPORT DOMAIN = REUSE / EXTEND
+======================================================================
+
+----- 1. OPS-5 ACCEPTED HANDOFF -----
+OPS5_HUMAN_ACCEPTANCE=CONFIRMED
+M5_REGISTRY=1
+M5_TABLES=1|1
+DATABASE_BASELINE=1|1|0|0|0|0|0|0
+PASS: OPS-5 ACCEPTED HANDOFF CLEAN
+
+----- 2. SOURCE BASELINE -----
+API_SOURCE_TREE=b66922757bee8a36bb7f65ba6519a636251f5b0f7990f7070f3133d4fe88bca5
+PASS: API SOURCE BASELINE CAPTURED
+
+----- 3. EXISTING W / HEALTH-REPORT SOURCE INVENTORY -----
+HEALTH_REPORT_FILES_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.module.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts
+HEALTH_REPORT_FILES_END
+PASS: EXISTING HEALTH-REPORT MODULE FOUND
+HEALTH_REPORT_TREE_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.module.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts
+HEALTH_REPORT_TREE_END
+SECOND_FAMILY_REPORT_MODULE_SIGNAL=0
+PASS: NO SECOND FAMILY-REPORT MODULE
+
+----- 4. EXISTING W DATABASE OBJECTS -----
+        table_name        
+--------------------------
+ health_report_audit
+ health_report_deliveries
+ health_report_snapshots
+ health_reports
+(4 rows)
+
+health_reports_EXISTS=1
+health_report_snapshots_EXISTS=1
+health_report_deliveries_EXISTS=1
+health_report_audit_EXISTS=1
+EXISTING_W_CORE_TABLES=1|1|1|1
+PASS: EXISTING W REPORT DOMAIN PRESENT
+
+----- 5. EXACT W TABLE SCHEMA -----
+        table_name        | ordinal_position |         column_name         |        data_type         | is_nullable |  column_default   
+--------------------------+------------------+-----------------------------+--------------------------+-------------+-------------------
+ health_report_audit      |                1 | audit_id                    | uuid                     | NO          | gen_random_uuid()
+ health_report_audit      |                2 | health_report_id            | text                     | NO          | 
+ health_report_audit      |                3 | resident_id                 | text                     | NO          | 
+ health_report_audit      |                4 | event_type                  | text                     | NO          | 
+ health_report_audit      |                5 | actor_id                    | text                     | NO          | 
+ health_report_audit      |                6 | actor_role                  | text                     | NO          | 
+ health_report_audit      |                7 | previous_state              | jsonb                    | YES         | 
+ health_report_audit      |                8 | new_state                   | jsonb                    | YES         | 
+ health_report_audit      |                9 | created_at                  | timestamp with time zone | NO          | now()
+ health_report_deliveries |                1 | health_report_delivery_id   | text                     | NO          | 
+ health_report_deliveries |                2 | health_report_id            | text                     | NO          | 
+ health_report_deliveries |                3 | recipient_name              | text                     | NO          | 
+ health_report_deliveries |                4 | recipient_relationship      | text                     | YES         | 
+ health_report_deliveries |                5 | recipient_contact_reference | text                     | YES         | 
+ health_report_deliveries |                6 | delivery_method             | text                     | NO          | 
+ health_report_deliveries |                7 | authorization_reference     | text                     | YES         | 
+ health_report_deliveries |                8 | delivery_status             | text                     | NO          | 
+ health_report_deliveries |                9 | delivered_by                | text                     | YES         | 
+ health_report_deliveries |               10 | delivered_by_role           | text                     | YES         | 
+ health_report_deliveries |               11 | delivered_at                | timestamp with time zone | YES         | 
+ health_report_deliveries |               12 | notes                       | text                     | YES         | 
+ health_report_deliveries |               13 | created_at                  | timestamp with time zone | NO          | now()
+ health_report_snapshots  |                1 | health_report_snapshot_id   | text                     | NO          | 
+ health_report_snapshots  |                2 | health_report_id            | text                     | NO          | 
+ health_report_snapshots  |                3 | snapshot_version            | integer                  | NO          | 1
+ health_report_snapshots  |                4 | baseline_reference          | text                     | YES         | 
+ health_report_snapshots  |                5 | source_cutoff_at            | timestamp with time zone | NO          | 
+ health_report_snapshots  |                6 | snapshot_data               | jsonb                    | NO          | 
+ health_report_snapshots  |                7 | source_manifest             | jsonb                    | NO          | '[]'::jsonb
+ health_report_snapshots  |                8 | source_hash                 | text                     | NO          | 
+ health_report_snapshots  |                9 | captured_at                 | timestamp with time zone | NO          | now()
+ health_reports           |                1 | health_report_id            | text                     | NO          | 
+ health_reports           |                2 | resident_id                 | text                     | NO          | 
+ health_reports           |                3 | report_type                 | text                     | NO          | 
+ health_reports           |                4 | period_start                | timestamp with time zone | NO          | 
+ health_reports           |                5 | period_end                  | timestamp with time zone | NO          | 
+ health_reports           |                6 | status                      | text                     | NO          | 'DRAFT'::text
+ health_reports           |                7 | report_version              | integer                  | NO          | 1
+ health_reports           |                8 | summary                     | text                     | YES         | 
+ health_reports           |                9 | created_by                  | text                     | NO          | 
+ health_reports           |               10 | created_by_role             | text                     | NO          | 
+ health_reports           |               11 | generated_at                | timestamp with time zone | YES         | 
+ health_reports           |               12 | generated_by                | text                     | YES         | 
+ health_reports           |               13 | generated_by_role           | text                     | YES         | 
+ health_reports           |               14 | reviewed_at                 | timestamp with time zone | YES         | 
+ health_reports           |               15 | reviewed_by                 | text                     | YES         | 
+ health_reports           |               16 | reviewed_by_role            | text                     | YES         | 
+ health_reports           |               17 | approved_at                 | timestamp with time zone | YES         | 
+ health_reports           |               18 | approved_by                 | text                     | YES         | 
+ health_reports           |               19 | approved_by_role            | text                     | YES         | 
+ health_reports           |               20 | supersedes_report_id        | text                     | YES         | 
+ health_reports           |               21 | created_at                  | timestamp with time zone | NO          | now()
+ health_reports           |               22 | updated_at                  | timestamp with time zone | NO          | now()
+(53 rows)
+
+PASS: EXACT W TABLE SCHEMA CAPTURED
+
+----- 6. W CONSTRAINTS / FOREIGN KEYS / INDEXES -----
+        table_name        |                constraint_name                 | constraint_type |        column_name        |    foreign_table_name    |    foreign_column_name    
+--------------------------+------------------------------------------------+-----------------+---------------------------+--------------------------+---------------------------
+ health_report_audit      | 2200_46842_1_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | 2200_46842_2_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | 2200_46842_3_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | 2200_46842_4_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | 2200_46842_5_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | 2200_46842_6_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | 2200_46842_9_not_null                          | CHECK           |                           |                          | 
+ health_report_audit      | health_report_audit_health_report_id_fkey      | FOREIGN KEY     | health_report_id          | health_reports           | health_report_id
+ health_report_audit      | health_report_audit_pkey                       | PRIMARY KEY     | audit_id                  | health_report_audit      | audit_id
+ health_report_audit      | health_report_audit_resident_id_fkey           | FOREIGN KEY     | resident_id               | residents                | resident_id
+ health_report_deliveries | 2200_46849_13_not_null                         | CHECK           |                           |                          | 
+ health_report_deliveries | 2200_46849_1_not_null                          | CHECK           |                           |                          | 
+ health_report_deliveries | 2200_46849_2_not_null                          | CHECK           |                           |                          | 
+ health_report_deliveries | 2200_46849_3_not_null                          | CHECK           |                           |                          | 
+ health_report_deliveries | 2200_46849_6_not_null                          | CHECK           |                           |                          | 
+ health_report_deliveries | 2200_46849_8_not_null                          | CHECK           |                           |                          | 
+ health_report_deliveries | health_report_deliveries_delivery_status_check | CHECK           |                           | health_report_deliveries | delivery_status
+ health_report_deliveries | health_report_deliveries_health_report_id_fkey | FOREIGN KEY     | health_report_id          | health_reports           | health_report_id
+ health_report_deliveries | health_report_deliveries_pkey                  | PRIMARY KEY     | health_report_delivery_id | health_report_deliveries | health_report_delivery_id
+ health_report_snapshots  | 2200_46856_1_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_2_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_3_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_5_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_6_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_7_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_8_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | 2200_46856_9_not_null                          | CHECK           |                           |                          | 
+ health_report_snapshots  | health_report_snapshots_health_report_id_fkey  | FOREIGN KEY     | health_report_id          | health_reports           | health_report_id
+ health_report_snapshots  | health_report_snapshots_pkey                   | PRIMARY KEY     | health_report_snapshot_id | health_report_snapshots  | health_report_snapshot_id
+ health_reports           | 2200_46864_10_not_null                         | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_1_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_21_not_null                         | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_22_not_null                         | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_2_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_3_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_4_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_5_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_6_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_7_not_null                          | CHECK           |                           |                          | 
+ health_reports           | 2200_46864_9_not_null                          | CHECK           |                           |                          | 
+ health_reports           | health_reports_check                           | CHECK           |                           | health_reports           | period_start
+ health_reports           | health_reports_check                           | CHECK           |                           | health_reports           | period_end
+ health_reports           | health_reports_pkey                            | PRIMARY KEY     | health_report_id          | health_reports           | health_report_id
+ health_reports           | health_reports_report_type_check               | CHECK           |                           | health_reports           | report_type
+ health_reports           | health_reports_resident_id_fkey                | FOREIGN KEY     | resident_id               | residents                | resident_id
+ health_reports           | health_reports_status_check                    | CHECK           |                           | health_reports           | status
+ health_reports           | health_reports_supersedes_report_id_fkey       | FOREIGN KEY     | supersedes_report_id      | health_reports           | health_report_id
+(47 rows)
+
+        tablename         |                indexname                 |                                                             indexdef                                                              
+--------------------------+------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------
+ health_report_audit      | health_report_audit_pkey                 | CREATE UNIQUE INDEX health_report_audit_pkey ON public.health_report_audit USING btree (audit_id)
+ health_report_audit      | idx_health_report_audit_report_created   | CREATE INDEX idx_health_report_audit_report_created ON public.health_report_audit USING btree (health_report_id, created_at)
+ health_report_audit      | idx_health_report_audit_resident_created | CREATE INDEX idx_health_report_audit_resident_created ON public.health_report_audit USING btree (resident_id, created_at)
+ health_report_deliveries | health_report_deliveries_pkey            | CREATE UNIQUE INDEX health_report_deliveries_pkey ON public.health_report_deliveries USING btree (health_report_delivery_id)
+ health_report_deliveries | idx_health_report_delivery_report        | CREATE INDEX idx_health_report_delivery_report ON public.health_report_deliveries USING btree (health_report_id, created_at)
+ health_report_snapshots  | health_report_snapshots_pkey             | CREATE UNIQUE INDEX health_report_snapshots_pkey ON public.health_report_snapshots USING btree (health_report_snapshot_id)
+ health_report_snapshots  | idx_health_report_snapshot_report        | CREATE INDEX idx_health_report_snapshot_report ON public.health_report_snapshots USING btree (health_report_id, snapshot_version)
+ health_reports           | health_reports_pkey                      | CREATE UNIQUE INDEX health_reports_pkey ON public.health_reports USING btree (health_report_id)
+ health_reports           | idx_health_report_resident_period        | CREATE INDEX idx_health_report_resident_period ON public.health_reports USING btree (resident_id, period_end DESC)
+ health_reports           | idx_health_report_resident_status        | CREATE INDEX idx_health_report_resident_status ON public.health_reports USING btree (resident_id, status)
+(10 rows)
+
+PASS: W CONSTRAINT / INDEX AUTHORITY CAPTURED
+
+----- 7. EXISTING HEALTH-REPORT SOURCE CONTRACT -----
+
+======================================================================
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts
+SHA256=fd018d3a41acef7ac9ceed509c1e9176a760067a959f93b012521db714861d87
+----------------------------------------------------------------------
+     1	import {
+     2	  Body,
+     3	  Controller,
+     4	  Get,
+     5	  Headers,
+     6	  Param,
+     7	  Post,
+     8	  Query,
+     9	  StreamableFile,
+    10	  UnauthorizedException,
+    11	} from '@nestjs/common';
+    12	
+    13	import {
+    14	  HealthReportActorRole,
+    15	  HealthReportRow,
+    16	  HealthReportService,
+    17	} from './health-report.service';
+    18	
+    19	@Controller('health-reports')
+    20	export class HealthReportController {
+    21	  constructor(
+    22	    private readonly service:
+    23	      HealthReportService,
+    24	  ) {}
+    25	
+    26	  private actor(
+    27	    actorId?: string,
+    28	    actorRole?: string,
+    29	  ): {
+    30	    actorId: string;
+    31	    actorRole:
+    32	      HealthReportActorRole;
+    33	  } {
+    34	    if (!actorId || !actorRole) {
+    35	      throw new UnauthorizedException(
+    36	        'x-actor-id and x-actor-role are required',
+    37	      );
+    38	    }
+    39	
+    40	    const roles:
+    41	      HealthReportActorRole[] = [
+    42	        'CAREGIVER',
+    43	        'NURSE',
+    44	        'CARE_MANAGER',
+    45	        'SUPERVISOR',
+    46	      ];
+    47	
+    48	    if (
+    49	      !roles.includes(
+    50	        actorRole as
+    51	          HealthReportActorRole,
+    52	      )
+    53	    ) {
+    54	      throw new UnauthorizedException(
+    55	        'Unsupported actor role',
+    56	      );
+    57	    }
+    58	
+    59	    return {
+    60	      actorId,
+    61	      actorRole:
+    62	        actorRole as
+    63	          HealthReportActorRole,
+    64	    };
+    65	  }
+    66	
+    67	  @Get()
+    68	  list(
+    69	    @Headers('x-actor-id')
+    70	    actorId?: string,
+    71	    @Headers('x-actor-role')
+    72	    actorRole?: string,
+    73	    @Query('residentId')
+    74	    residentId?: string,
+    75	  ): Promise<HealthReportRow[]> {
+    76	    return this.service.list(
+    77	      this.actor(
+    78	        actorId,
+    79	        actorRole,
+    80	      ),
+    81	      residentId,
+    82	    );
+    83	  }
+    84	
+    85	  @Get(':healthReportId')
+    86	  detail(
+    87	    @Headers('x-actor-id')
+    88	    actorId: string | undefined,
+    89	    @Headers('x-actor-role')
+    90	    actorRole: string | undefined,
+    91	    @Param('healthReportId')
+    92	    healthReportId: string,
+    93	  ): Promise<
+    94	    Record<string, unknown>
+    95	  > {
+    96	    return this.service.detail(
+    97	      this.actor(
+    98	        actorId,
+    99	        actorRole,
+   100	      ),
+   101	      healthReportId,
+   102	    );
+   103	  }
+   104	
+   105	  @Post()
+   106	  create(
+   107	    @Headers('x-actor-id')
+   108	    actorId: string | undefined,
+   109	    @Headers('x-actor-role')
+   110	    actorRole: string | undefined,
+   111	    @Body()
+   112	    body: {
+   113	      residentId: string;
+   114	      reportType:
+   115	        | 'WEEKLY'
+   116	        | 'MONTHLY'
+   117	        | 'QUARTERLY'
+   118	        | 'CUSTOM'
+   119	        | 'EVENT_BASED';
+   120	      periodStart: string;
+   121	      periodEnd: string;
+   122	      summary?: string;
+   123	    },
+   124	  ): Promise<HealthReportRow> {
+   125	    return this.service.create(
+   126	      this.actor(
+   127	        actorId,
+   128	        actorRole,
+   129	      ),
+   130	      body,
+   131	    );
+   132	  }
+   133	
+   134	  @Post(':healthReportId/generate')
+   135	  generate(
+   136	    @Headers('x-actor-id')
+   137	    actorId: string | undefined,
+   138	    @Headers('x-actor-role')
+   139	    actorRole: string | undefined,
+   140	    @Param('healthReportId')
+   141	    healthReportId: string,
+   142	  ): Promise<
+   143	    Record<string, unknown>
+   144	  > {
+   145	    return this.service.generate(
+   146	      this.actor(
+   147	        actorId,
+   148	        actorRole,
+   149	      ),
+   150	      healthReportId,
+   151	    );
+   152	  }
+   153	
+   154	  @Post(':healthReportId/start-review')
+   155	  startReview(
+   156	    @Headers('x-actor-id')
+   157	    actorId: string | undefined,
+   158	    @Headers('x-actor-role')
+   159	    actorRole: string | undefined,
+   160	    @Param('healthReportId')
+   161	    healthReportId: string,
+   162	  ): Promise<HealthReportRow> {
+   163	    return this.service.startReview(
+   164	      this.actor(
+   165	        actorId,
+   166	        actorRole,
+   167	      ),
+   168	      healthReportId,
+   169	    );
+   170	  }
+   171	
+   172	  @Post(':healthReportId/approve')
+   173	  approve(
+   174	    @Headers('x-actor-id')
+   175	    actorId: string | undefined,
+   176	    @Headers('x-actor-role')
+   177	    actorRole: string | undefined,
+   178	    @Param('healthReportId')
+   179	    healthReportId: string,
+   180	  ): Promise<HealthReportRow> {
+   181	    return this.service.approve(
+   182	      this.actor(
+   183	        actorId,
+   184	        actorRole,
+   185	      ),
+   186	      healthReportId,
+   187	    );
+   188	  }
+   189	
+   190	  @Post(':healthReportId/deliver')
+   191	  deliver(
+   192	    @Headers('x-actor-id')
+   193	    actorId: string | undefined,
+   194	    @Headers('x-actor-role')
+   195	    actorRole: string | undefined,
+   196	    @Param('healthReportId')
+   197	    healthReportId: string,
+   198	    @Body()
+   199	    body: {
+   200	      admissionContactId: string;
+   201	      deliveryMethod: string;
+   202	      notes?: string;
+   203	    },
+   204	  ): Promise<
+   205	    Record<string, unknown>
+   206	  > {
+   207	    return this.service.deliver(
+   208	      this.actor(
+   209	        actorId,
+   210	        actorRole,
+   211	      ),
+   212	      healthReportId,
+   213	      body,
+   214	    );
+   215	  }
+   216	
+   217	  @Get(':healthReportId/pdf')
+   218	  async pdf(
+   219	    @Headers('x-actor-id')
+   220	    actorId: string | undefined,
+   221	    @Headers('x-actor-role')
+   222	    actorRole: string | undefined,
+   223	    @Param('healthReportId')
+   224	    healthReportId: string,
+   225	  ): Promise<StreamableFile> {
+   226	    const pdf =
+   227	      await this.service.pdf(
+   228	        this.actor(
+   229	          actorId,
+   230	          actorRole,
+   231	        ),
+   232	        healthReportId,
+   233	      );
+   234	
+   235	    return new StreamableFile(
+   236	      pdf,
+   237	      {
+   238	        type:
+   239	          'application/pdf',
+   240	        disposition:
+   241	          `inline; filename="${healthReportId}.pdf"`,
+   242	      },
+   243	    );
+   244	  }
+   245	}
+
+======================================================================
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.module.ts
+SHA256=6bec154b0ddbea8b3469652f577b53669831dd73e7ad26eee9f0c7ed86916f78
+----------------------------------------------------------------------
+     1	import {
+     2	  Module,
+     3	} from '@nestjs/common';
+     4	
+     5	import {
+     6	  DatabaseModule,
+     7	} from '../database/database.module';
+     8	
+     9	import {
+    10	  HealthReportController,
+    11	} from './health-report.controller';
+    12	
+    13	import {
+    14	  HealthReportService,
+    15	} from './health-report.service';
+    16	
+    17	@Module({
+    18	  imports: [
+    19	    DatabaseModule,
+    20	  ],
+    21	  controllers: [
+    22	    HealthReportController,
+    23	  ],
+    24	  providers: [
+    25	    HealthReportService,
+    26	  ],
+    27	})
+    28	export class HealthReportModule {}
+
+======================================================================
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts
+SHA256=8863f592ca988f10649c3d54fcce76fd38741510a280755884e1b02b14bac2ab
+----------------------------------------------------------------------
+     1	import { PDFDocument, rgb } from 'pdf-lib';
+     2	import * as fontkit from '@pdf-lib/fontkit';
+     3	import { readFile } from 'node:fs/promises';
+     4	import { join } from 'node:path';
+     5	import {
+     6	  BadRequestException,
+     7	  ForbiddenException,
+     8	  Injectable,
+     9	  NotFoundException,
+    10	  UnauthorizedException,
+    11	} from '@nestjs/common';
+    12	
+    13	import {
+    14	  createHash,
+    15	  randomUUID,
+    16	} from 'crypto';
+    17	
+    18	import {
+    19	  DatabaseService,
+    20	} from '../database/database.service';
+    21	
+    22	export type HealthReportActorRole =
+    23	  | 'CAREGIVER'
+    24	  | 'NURSE'
+    25	  | 'CARE_MANAGER'
+    26	  | 'SUPERVISOR';
+    27	
+    28	export interface HealthReportActor {
+    29	  actorId: string;
+    30	  actorRole: HealthReportActorRole;
+    31	}
+    32	
+    33	export interface HealthReportRow {
+    34	  health_report_id: string;
+    35	  resident_id: string;
+    36	  report_type: string;
+    37	  period_start: Date;
+    38	  period_end: Date;
+    39	  status: string;
+    40	  report_version: number;
+    41	  summary: string | null;
+    42	  created_by: string;
+    43	  created_by_role: string;
+    44	  generated_at: Date | null;
+    45	  generated_by: string | null;
+    46	  generated_by_role: string | null;
+    47	  reviewed_at: Date | null;
+    48	  reviewed_by: string | null;
+    49	  reviewed_by_role: string | null;
+    50	  approved_at: Date | null;
+    51	  approved_by: string | null;
+    52	  approved_by_role: string | null;
+    53	  supersedes_report_id: string | null;
+    54	  created_at: Date;
+    55	  updated_at: Date;
+    56	}
+    57	
+    58	export interface HealthReportSnapshotRow {
+    59	  health_report_snapshot_id: string;
+    60	  health_report_id: string;
+    61	  snapshot_version: number;
+    62	  baseline_reference: string | null;
+    63	  source_cutoff_at: Date;
+    64	  snapshot_data: unknown;
+    65	  source_manifest: unknown;
+    66	  source_hash: string;
+    67	  captured_at: Date;
+    68	}
+    69	
+    70	interface ActorRow {
+    71	  actor_id: string;
+    72	  primary_operational_role:
+    73	    HealthReportActorRole;
+    74	  status: string;
+    75	}
+    76	
+    77	interface CreateInput {
+    78	  residentId: string;
+    79	  reportType:
+    80	    | 'WEEKLY'
+    81	    | 'MONTHLY'
+    82	    | 'QUARTERLY'
+    83	    | 'CUSTOM'
+    84	    | 'EVENT_BASED';
+    85	  periodStart: string;
+    86	  periodEnd: string;
+    87	  summary?: string;
+    88	}
+    89	
+    90	interface DeliveryInput {
+    91	  admissionContactId: string;
+    92	  deliveryMethod: string;
+    93	  notes?: string;
+    94	}
+    95	
+    96	interface SourceDefinition {
+    97	  key: string;
+    98	  table: string;
+    99	  timeExpression: string;
+   100	}
+   101	
+   102	@Injectable()
+   103	export class HealthReportService {
+   104	  private readonly snapshotContract =
+   105	    'TAMANCARE-HEALTH-REPORT-SNAPSHOT-V1';
+   106	
+   107	  private readonly sourcePolicy =
+   108	    'VW9E-SNAPSHOT-SOURCE-V1';
+   109	
+   110	  private readonly sources:
+   111	    SourceDefinition[] = [
+   112	      {
+   113	        key: 'clinicalObservations',
+   114	        table: 'clinical_observations',
+   115	        timeExpression: 'measured_at',
+   116	      },
+   117	      {
+   118	        key: 'nursingNotes',
+   119	        table: 'nursing_notes',
+   120	        timeExpression: 'authored_at',
+   121	      },
+   122	      {
+   123	        key: 'medicationAdministrations',
+   124	        table: 'medication_administrations',
+   125	        timeExpression:
+   126	          'COALESCE(administered_at, scheduled_at)',
+   127	      },
+   128	      {
+   129	        key: 'medicationOrders',
+   130	        table: 'medication_orders',
+   131	        timeExpression: 'prescribed_at',
+   132	      },
+   133	      {
+   134	        key: 'nutritionIntakeRecords',
+   135	        table: 'nutrition_intake_records',
+   136	        timeExpression: 'recorded_at',
+   137	      },
+   138	      {
+   139	        key: 'painAssessments',
+   140	        table: 'pain_assessments',
+   141	        timeExpression: 'assessed_at',
+   142	      },
+   143	      {
+   144	        key: 'cognitiveObservations',
+   145	        table: 'cognitive_observations',
+   146	        timeExpression: 'observed_at',
+   147	      },
+   148	      {
+   149	        key: 'sleepObservations',
+   150	        table: 'sleep_observations',
+   151	        timeExpression: 'observed_at',
+   152	      },
+   153	      {
+   154	        key: 'symptomObservations',
+   155	        table: 'symptom_observations',
+   156	        timeExpression: 'observed_at',
+   157	      },
+   158	      {
+   159	        key: 'activityParticipation',
+   160	        table: 'activity_participation',
+   161	        timeExpression: 'recorded_at',
+   162	      },
+   163	      {
+   164	        key: 'hygieneCareRecords',
+   165	        table: 'hygiene_care_records',
+   166	        timeExpression: 'performed_at',
+   167	      },
+   168	      {
+   169	        key: 'incidents',
+   170	        table: 'incidents',
+   171	        timeExpression:
+   172	          'COALESCE(occurred_at, discovered_at)',
+   173	      },
+   174	    ];
+   175	
+   176	  constructor(
+   177	    private readonly db: DatabaseService,
+   178	  ) {}
+   179	
+   180	  private stableSerialize(
+   181	    value: unknown,
+   182	  ): string {
+   183	    const normalize = (
+   184	      input: unknown,
+   185	    ): unknown => {
+   186	      if (Array.isArray(input)) {
+   187	        return input.map(normalize);
+   188	      }
+   189	
+   190	      if (
+   191	        input !== null &&
+   192	        typeof input === 'object'
+   193	      ) {
+   194	        return Object.fromEntries(
+   195	          Object.entries(
+   196	            input as Record<
+   197	              string,
+   198	              unknown
+   199	            >,
+   200	          )
+   201	            .sort(
+   202	              ([left], [right]) =>
+   203	                left.localeCompare(
+   204	                  right,
+   205	                ),
+   206	            )
+   207	            .map(
+   208	              ([key, child]) => [
+   209	                key,
+   210	                normalize(child),
+   211	              ],
+   212	            ),
+   213	        );
+   214	      }
+   215	
+   216	      return input;
+   217	    };
+   218	
+   219	    return JSON.stringify(
+   220	      normalize(value),
+   221	    );
+   222	  }
+   223	
+   224	  private async authorize(
+   225	    actor: HealthReportActor,
+   226	    allowed: HealthReportActorRole[],
+   227	  ): Promise<void> {
+   228	    if (!actor.actorId || !actor.actorRole) {
+   229	      throw new UnauthorizedException(
+   230	        'Human actor is required',
+   231	      );
+   232	    }
+   233	
+   234	    const result =
+   235	      await this.db.query<ActorRow>(
+   236	        `
+   237	          SELECT
+   238	            actor_id,
+   239	            primary_operational_role,
+   240	            status
+   241	          FROM staff_actors
+   242	          WHERE actor_id=$1
+   243	          LIMIT 1
+   244	        `,
+   245	        [actor.actorId],
+   246	      );
+   247	
+   248	    const canonical = result.rows[0];
+   249	
+   250	    if (
+   251	      !canonical ||
+   252	      canonical.status !== 'ACTIVE'
+   253	    ) {
+   254	      throw new UnauthorizedException(
+   255	        'Canonical active human actor is required',
+   256	      );
+   257	    }
+   258	
+   259	    if (
+   260	      canonical.primary_operational_role !==
+   261	      actor.actorRole
+   262	    ) {
+   263	      throw new ForbiddenException(
+   264	        'Human actor role does not match canonical role',
+   265	      );
+   266	    }
+   267	
+   268	    if (!allowed.includes(actor.actorRole)) {
+   269	      throw new ForbiddenException(
+   270	        'Actor is not authorized for this health report action',
+   271	      );
+   272	    }
+   273	  }
+   274	
+   275	  private async getReport(
+   276	    healthReportId: string,
+   277	  ): Promise<HealthReportRow> {
+   278	    const result =
+   279	      await this.db.query<HealthReportRow>(
+   280	        `
+   281	          SELECT *
+   282	          FROM health_reports
+   283	          WHERE health_report_id=$1
+   284	          LIMIT 1
+   285	        `,
+   286	        [healthReportId],
+   287	      );
+   288	
+   289	    if (!result.rows[0]) {
+   290	      throw new NotFoundException(
+   291	        'Health report not found',
+   292	      );
+   293	    }
+   294	
+   295	    return result.rows[0];
+   296	  }
+   297	
+   298	  async list(
+   299	    actor: HealthReportActor,
+   300	    residentId?: string,
+   301	  ): Promise<HealthReportRow[]> {
+   302	    await this.authorize(
+   303	      actor,
+   304	      [
+   305	        'CAREGIVER',
+   306	        'NURSE',
+   307	        'CARE_MANAGER',
+   308	        'SUPERVISOR',
+   309	      ],
+   310	    );
+   311	
+   312	    const result =
+   313	      residentId
+   314	        ? await this.db.query<HealthReportRow>(
+   315	            `
+   316	              SELECT *
+   317	              FROM health_reports
+   318	              WHERE resident_id=$1
+   319	              ORDER BY
+   320	                period_end DESC,
+   321	                created_at DESC
+   322	            `,
+   323	            [residentId],
+   324	          )
+   325	        : await this.db.query<HealthReportRow>(
+   326	            `
+   327	              SELECT *
+   328	              FROM health_reports
+   329	              ORDER BY
+   330	                period_end DESC,
+   331	                created_at DESC
+   332	              LIMIT 100
+   333	            `,
+   334	          );
+   335	
+   336	    return result.rows;
+   337	  }
+   338	
+   339	  async detail(
+   340	    actor: HealthReportActor,
+   341	    healthReportId: string,
+   342	  ): Promise<Record<string, unknown>> {
+   343	    await this.authorize(
+   344	      actor,
+   345	      [
+   346	        'CAREGIVER',
+   347	        'NURSE',
+   348	        'CARE_MANAGER',
+   349	        'SUPERVISOR',
+   350	      ],
+   351	    );
+   352	
+   353	    const report =
+   354	      await this.getReport(healthReportId);
+   355	
+   356	    const snapshots =
+   357	      await this.db.query(
+   358	        `
+   359	          SELECT *
+   360	          FROM health_report_snapshots
+   361	          WHERE health_report_id=$1
+   362	          ORDER BY snapshot_version DESC
+   363	        `,
+   364	        [healthReportId],
+   365	      );
+   366	
+   367	    const deliveries =
+   368	      await this.db.query(
+   369	        `
+   370	          SELECT *
+   371	          FROM health_report_deliveries
+   372	          WHERE health_report_id=$1
+   373	          ORDER BY created_at ASC
+   374	        `,
+   375	        [healthReportId],
+   376	      );
+   377	
+   378	    const audit =
+   379	      await this.db.query(
+   380	        `
+   381	          SELECT *
+   382	          FROM health_report_audit
+   383	          WHERE health_report_id=$1
+   384	          ORDER BY created_at ASC
+   385	        `,
+   386	        [healthReportId],
+   387	      );
+   388	
+   389	    return {
+   390	      report,
+   391	      snapshots: snapshots.rows,
+   392	      deliveries: deliveries.rows,
+   393	      audit: audit.rows,
+   394	    };
+   395	  }
+   396	
+   397	  async create(
+   398	    actor: HealthReportActor,
+   399	    input: CreateInput,
+   400	  ): Promise<HealthReportRow> {
+   401	    await this.authorize(
+   402	      actor,
+   403	      [
+   404	        'NURSE',
+   405	        'CARE_MANAGER',
+   406	        'SUPERVISOR',
+   407	      ],
+   408	    );
+   409	
+   410	    const start =
+   411	      new Date(input.periodStart);
+   412	
+   413	    const end =
+   414	      new Date(input.periodEnd);
+   415	
+   416	    if (
+   417	      !input.residentId ||
+   418	      !input.reportType ||
+   419	      Number.isNaN(start.getTime()) ||
+   420	      Number.isNaN(end.getTime()) ||
+   421	      end.getTime() < start.getTime()
+   422	    ) {
+   423	      throw new BadRequestException(
+   424	        'Invalid health report request',
+   425	      );
+   426	    }
+   427	
+   428	    const resident =
+   429	      await this.db.query(
+   430	        `
+   431	          SELECT resident_id
+   432	          FROM residents
+   433	          WHERE resident_id=$1
+   434	          LIMIT 1
+   435	        `,
+   436	        [input.residentId],
+   437	      );
+   438	
+   439	    if (!resident.rows[0]) {
+   440	      throw new NotFoundException(
+   441	        'Resident not found',
+   442	      );
+   443	    }
+   444	
+   445	    const id =
+   446	      `health-report-${randomUUID()}`;
+   447	
+   448	    return this.db.withTransaction(
+   449	      async (client) => {
+   450	        const inserted =
+   451	          await client.query<HealthReportRow>(
+   452	            `
+   453	              INSERT INTO health_reports (
+   454	                health_report_id,
+   455	                resident_id,
+   456	                report_type,
+   457	                period_start,
+   458	                period_end,
+   459	                status,
+   460	                report_version,
+   461	                summary,
+   462	                created_by,
+   463	                created_by_role
+   464	              )
+   465	              VALUES (
+   466	                $1,$2,$3,$4,$5,
+   467	                'DRAFT',1,$6,$7,$8
+   468	              )
+   469	              RETURNING *
+   470	            `,
+   471	            [
+   472	              id,
+   473	              input.residentId,
+   474	              input.reportType,
+   475	              start,
+   476	              end,
+   477	              input.summary ?? null,
+   478	              actor.actorId,
+   479	              actor.actorRole,
+   480	            ],
+   481	          );
+   482	
+   483	        await client.query(
+   484	          `
+   485	            INSERT INTO health_report_audit (
+   486	              health_report_id,
+   487	              resident_id,
+   488	              event_type,
+   489	              actor_id,
+   490	              actor_role,
+   491	              previous_state,
+   492	              new_state
+   493	            )
+   494	            VALUES (
+   495	              $1,$2,'REPORT_CREATED',
+   496	              $3,$4,NULL,$5::jsonb
+   497	            )
+   498	          `,
+   499	          [
+   500	            id,
+   501	            input.residentId,
+   502	            actor.actorId,
+   503	            actor.actorRole,
+   504	            JSON.stringify({
+   505	              status: 'DRAFT',
+   506	            }),
+   507	          ],
+   508	        );
+   509	
+   510	        return inserted.rows[0];
+   511	      },
+   512	    );
+   513	  }
+   514	
+   515	  private async captureSnapshotData(
+   516	    residentId: string,
+   517	    periodStart: Date,
+   518	    periodEnd: Date,
+   519	    cutoff: Date,
+   520	  ): Promise<{
+   521	    snapshotData:
+   522	      Record<string, unknown>;
+   523	    sourceManifest:
+   524	      Array<Record<string, unknown>>;
+   525	  }> {
+   526	    const snapshotData:
+   527	      Record<string, unknown> = {};
+   528	
+   529	    const sourceManifest:
+   530	      Array<Record<string, unknown>> = [];
+   531	
+   532	    for (const source of this.sources) {
+   533	      if (
+   534	        !/^[a-z_][a-z0-9_]*$/.test(
+   535	          source.table,
+   536	        )
+   537	      ) {
+   538	        throw new BadRequestException(
+   539	          'Invalid canonical source table',
+   540	        );
+   541	      }
+   542	
+   543	      let rows;
+   544	
+   545	      if (
+   546	        source.key ===
+   547	        'medicationOrders'
+   548	      ) {
+   549	        rows =
+   550	          await this.db.query<{
+   551	            row_data: unknown;
+   552	          }>(
+   553	            `
+   554	              SELECT
+   555	                to_jsonb(t) AS row_data
+   556	              FROM public."${source.table}" t
+   557	              WHERE
+   558	                t.resident_id=$1
+   559	
+   560	                AND
+   561	                COALESCE(
+   562	                  t.effective_from,
+   563	                  t.prescribed_at
+   564	                ) <= $3
+   565	
+   566	                AND
+   567	                COALESCE(
+   568	                  t.effective_to,
+   569	                  $3
+   570	                ) >= $2
+   571	
+   572	                AND
+   573	                t.created_at <= $4
+   574	
+   575	              ORDER BY
+   576	                COALESCE(
+   577	                  t.effective_from,
+   578	                  t.prescribed_at
+   579	                ) ASC,
+   580	                to_jsonb(t)::text ASC
+   581	            `,
+   582	            [
+   583	              residentId,
+   584	              periodStart,
+   585	              periodEnd,
+   586	              cutoff,
+   587	            ],
+   588	          );
+   589	      } else {
+   590	        rows =
+   591	          await this.db.query<{
+   592	            row_data: unknown;
+   593	          }>(
+   594	            `
+   595	              SELECT
+   596	                to_jsonb(t) AS row_data
+   597	              FROM public."${source.table}" t
+   598	              WHERE
+   599	                t.resident_id=$1
+   600	
+   601	                AND
+   602	                ${source.timeExpression}
+   603	                  >= $2
+   604	
+   605	                AND
+   606	                ${source.timeExpression}
+   607	                  <= $3
+   608	
+   609	                AND
+   610	                ${source.timeExpression}
+   611	                  <= $4
+   612	
+   613	                AND (
+   614	                  NOT (
+   615	                    to_jsonb(t)
+   616	                    ? 'created_at'
+   617	                  )
+   618	                  OR (
+   619	                    to_jsonb(t)
+   620	                      ->> 'created_at'
+   621	                  )::timestamptz
+   622	                    <= $4
+   623	                )
+   624	
+   625	              ORDER BY
+   626	                ${source.timeExpression}
+   627	                  ASC,
+   628	                to_jsonb(t)::text ASC
+   629	            `,
+   630	            [
+   631	              residentId,
+   632	              periodStart,
+   633	              periodEnd,
+   634	              cutoff,
+   635	            ],
+   636	          );
+   637	      }
+   638	
+   639	      snapshotData[source.key] =
+   640	        rows.rows.map(
+   641	          (row) => row.row_data,
+   642	        );
+   643	
+   644	      sourceManifest.push({
+   645	        sourcePolicy:
+   646	          this.sourcePolicy,
+   647	        key: source.key,
+   648	        table: source.table,
+   649	        residentKey:
+   650	          'resident_id',
+   651	        periodExpression:
+   652	          source.key ===
+   653	          'medicationOrders'
+   654	            ? 'effective interval overlap'
+   655	            : source.timeExpression,
+   656	        cutoffPolicy:
+   657	          'event-time + created_at <= source_cutoff_at',
+   658	        deterministicOrder:
+   659	          'event-time + canonical row JSON',
+   660	        rowCount:
+   661	          rows.rowCount ?? 0,
+   662	      });
+   663	    }
+   664	
+   665	    return {
+   666	      snapshotData,
+   667	      sourceManifest,
+   668	    };
+   669	  }
+   670	
+   671	  async generate(
+   672	    actor: HealthReportActor,
+   673	    healthReportId: string,
+   674	  ): Promise<Record<string, unknown>> {
+   675	    await this.authorize(
+   676	      actor,
+   677	      [
+   678	        'NURSE',
+   679	        'CARE_MANAGER',
+   680	        'SUPERVISOR',
+   681	      ],
+   682	    );
+   683	
+   684	    const report =
+   685	      await this.getReport(healthReportId);
+   686	
+   687	    if (
+   688	      report.status !== 'DRAFT' &&
+   689	      report.status !==
+   690	        'REVISION_REQUIRED'
+   691	    ) {
+   692	      throw new BadRequestException(
+   693	        'Report cannot be generated from current status',
+   694	      );
+   695	    }
+   696	
+   697	    const cutoff = new Date();
+   698	
+   699	    const captured =
+   700	      await this.captureSnapshotData(
+   701	        report.resident_id,
+   702	        new Date(report.period_start),
+   703	        new Date(report.period_end),
+   704	        cutoff,
+   705	      );
+   706	
+   707	    const payload = {
+   708	      contractVersion:
+   709	        this.snapshotContract,
+   710	      sourcePolicy:
+   711	        this.sourcePolicy,
+   712	      residentId:
+   713	        report.resident_id,
+   714	      reportType:
+   715	        report.report_type,
+   716	      periodStart:
+   717	        new Date(
+   718	          report.period_start,
+   719	        ).toISOString(),
+   720	      periodEnd:
+   721	        new Date(
+   722	          report.period_end,
+   723	        ).toISOString(),
+   724	      sourceCutoffAt:
+   725	        cutoff.toISOString(),
+   726	      sources:
+   727	        captured.snapshotData,
+   728	    };
+   729	
+   730	    const serialized =
+   731	      this.stableSerialize(payload);
+   732	
+   733	    const sourceHash =
+   734	      createHash('sha256')
+   735	        .update(serialized)
+   736	        .digest('hex');
+   737	
+   738	    const snapshotId =
+   739	      `health-report-snapshot-${randomUUID()}`;
+   740	
+   741	    return this.db.withTransaction(
+   742	      async (client) => {
+   743	        await client.query(
+   744	          `
+   745	            SELECT
+   746	              pg_advisory_xact_lock(
+   747	                hashtext($1)
+   748	              )
+   749	          `,
+   750	          [
+   751	            `health-report-snapshot:${healthReportId}`,
+   752	          ],
+   753	        );
+   754	
+   755	        const lockedReportResult =
+   756	          await client.query<{
+   757	            status: string;
+   758	          }>(
+   759	            `
+   760	              SELECT
+   761	                status
+   762	              FROM health_reports
+   763	              WHERE health_report_id=$1
+   764	              FOR UPDATE
+   765	            `,
+   766	            [healthReportId],
+   767	          );
+   768	
+   769	        const lockedReport =
+   770	          lockedReportResult.rows[0];
+   771	
+   772	        if (!lockedReport) {
+   773	          throw new BadRequestException(
+   774	            'Health report not found',
+   775	          );
+   776	        }
+   777	
+   778	        if (lockedReport.status !== 'DRAFT') {
+   779	          throw new BadRequestException(
+   780	            'Concurrent health report generation rejected',
+   781	          );
+   782	        }
+   783	
+   784	        const snapshotVersionResult =
+   785	          await client.query<{
+   786	            next_version: number;
+   787	          }>(
+   788	            `
+   789	              SELECT
+   790	                COALESCE(
+   791	                  MAX(snapshot_version),
+   792	                  0
+   793	                ) + 1 AS next_version
+   794	              FROM health_report_snapshots
+   795	              WHERE health_report_id=$1
+   796	            `,
+   797	            [healthReportId],
+   798	          );
+   799	
+   800	        const snapshotVersion =
+   801	          Number(
+   802	            snapshotVersionResult
+   803	              .rows[0]?.next_version ??
+   804	              1,
+   805	          );
+   806	
+   807	        const insertedSnapshot =
+   808	          await client.query<HealthReportSnapshotRow>(
+   809	            `
+   810	              INSERT INTO health_report_snapshots (
+   811	                health_report_snapshot_id,
+   812	                health_report_id,
+   813	                snapshot_version,
+   814	                baseline_reference,
+   815	                source_cutoff_at,
+   816	                snapshot_data,
+   817	                source_manifest,
+   818	                source_hash
+   819	              )
+   820	              VALUES (
+   821	                $1,$2,$3,$4,$5,
+   822	                $6::jsonb,$7::jsonb,$8
+   823	              )
+   824	              RETURNING *
+   825	            `,
+   826	            [
+   827	              snapshotId,
+   828	              healthReportId,
+   829	              snapshotVersion,
+   830	              `report-version:${report.report_version}`,
+   831	              cutoff,
+   832	              serialized,
+   833	              JSON.stringify(
+   834	                captured.sourceManifest,
+   835	              ),
+   836	              sourceHash,
+   837	            ],
+   838	          );
+   839	
+   840	        await client.query(
+   841	          `
+   842	            UPDATE health_reports
+   843	            SET
+   844	              status='GENERATED',
+   845	              generated_at=now(),
+   846	              generated_by=$2,
+   847	              generated_by_role=$3,
+   848	              updated_at=now()
+   849	            WHERE health_report_id=$1
+   850	          `,
+   851	          [
+   852	            healthReportId,
+   853	            actor.actorId,
+   854	            actor.actorRole,
+   855	          ],
+   856	        );
+   857	
+   858	        await client.query(
+   859	          `
+   860	            INSERT INTO health_report_audit (
+   861	              health_report_id,
+   862	              resident_id,
+   863	              event_type,
+   864	              actor_id,
+   865	              actor_role,
+   866	              previous_state,
+   867	              new_state
+   868	            )
+   869	            VALUES (
+   870	              $1,$2,'SNAPSHOT_GENERATED',
+   871	              $3,$4,$5::jsonb,$6::jsonb
+   872	            )
+   873	          `,
+   874	          [
+   875	            healthReportId,
+   876	            report.resident_id,
+   877	            actor.actorId,
+   878	            actor.actorRole,
+   879	            JSON.stringify({
+   880	              status: report.status,
+   881	            }),
+   882	            JSON.stringify({
+   883	              status: 'GENERATED',
+   884	              snapshotVersion,
+   885	              sourceHash,
+   886	            }),
+   887	          ],
+   888	        );
+   889	
+   890	        return {
+   891	          snapshot:
+   892	            insertedSnapshot.rows[0],
+   893	          sourceHash,
+   894	          snapshotVersion,
+   895	        };
+   896	      },
+   897	    );
+   898	  }
+   899	
+   900	  async startReview(
+PASS: HEALTH-REPORT SOURCE CONTRACT CAPTURED
+
+----- 8. APP MODULE WIRING -----
+60:import { HealthReportModule } from './health-reports/health-report.module';
+68:@Module({imports:[
+76:    HealthReportModule,
+HEALTH_REPORT_MODULE_SIGNALS=2
+PASS: HEALTH-REPORT MODULE WIRED
+
+----- 9. W LIFECYCLE SIGNALS -----
+/bin/bash: line 423: ${TERM^^}_SIGNAL_COUNT=$COUNT: bad substitution
+
+W_LIFECYCLE_MATCHES_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1:import { PDFDocument, rgb } from 'pdf-lib';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:2:import * as fontkit from '@pdf-lib/fontkit';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:10:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:47:  reviewed_at: Date | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:48:  reviewed_by: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:49:  reviewed_by_role: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:50:  approved_at: Date | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:51:  approved_by: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:52:  approved_by_role: string | null;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:58:export interface HealthReportSnapshotRow {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:59:  health_report_snapshot_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:61:  snapshot_version: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:64:  snapshot_data: unknown;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:90:interface DeliveryInput {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:92:  deliveryMethod: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:104:  private readonly snapshotContract =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:105:    'TAMANCARE-HEALTH-REPORT-SNAPSHOT-V1';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:108:    'VW9E-SNAPSHOT-SOURCE-V1';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:224:  private async authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:229:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:254:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:270:        'Actor is not authorized for this health report action',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:302:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:343:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:356:    const snapshots =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:360:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:362:          ORDER BY snapshot_version DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:367:    const deliveries =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:371:          FROM health_report_deliveries
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:391:      snapshots: snapshots.rows,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:392:      deliveries: deliveries.rows,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:401:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:515:  private async captureSnapshotData(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:521:    snapshotData:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:526:    const snapshotData:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:639:      snapshotData[source.key] =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:666:      snapshotData,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:675:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:700:      await this.captureSnapshotData(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:709:        this.snapshotContract,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:727:        captured.snapshotData,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:738:    const snapshotId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:739:      `health-report-snapshot-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:751:            `health-report-snapshot:${healthReportId}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:784:        const snapshotVersionResult =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:791:                  MAX(snapshot_version),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:794:              FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:800:        const snapshotVersion =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:802:            snapshotVersionResult
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:807:        const insertedSnapshot =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:808:          await client.query<HealthReportSnapshotRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:810:              INSERT INTO health_report_snapshots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:811:                health_report_snapshot_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:813:                snapshot_version,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:816:                snapshot_data,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:827:              snapshotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:829:              snapshotVersion,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:870:              $1,$2,'SNAPSHOT_GENERATED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:884:              snapshotVersion,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:891:          snapshot:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:892:            insertedSnapshot.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:894:          snapshotVersion,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:900:  async startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:904:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:918:        'Only GENERATED report may enter review',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:928:              status='UNDER_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:929:              reviewed_at=now(),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:930:              reviewed_by=$2,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:931:              reviewed_by_role=$3,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:954:              $1,$2,'REVIEW_STARTED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:967:              status: 'UNDER_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:979:  async approve(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:983:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:995:      report.status !== 'UNDER_REVIEW'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:998:        'Only UNDER_REVIEW report may be approved',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1002:    const snapshot =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1003:      await this.db.query<HealthReportSnapshotRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1006:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1008:          ORDER BY snapshot_version DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1014:    if (!snapshot.rows[0]) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1016:        'Frozen snapshot is required',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1026:              status='APPROVED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1027:              approved_at=now(),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1028:              approved_by=$2,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1029:              approved_by_role=$3,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1052:              $1,$2,'REPORT_APPROVED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1063:                'UNDER_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1067:                'APPROVED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1069:                snapshot.rows[0]
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1082:  async deliver(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1085:    input: DeliveryInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1087:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1100:      report.status !== 'APPROVED' &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1101:      report.status !== 'DELIVERED'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1104:        'Report is not approved for delivery',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1116:        authorized_for_health_reports:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1118:        authorization_effective_from:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1120:        authorization_effective_to:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1131:            ac.authorized_for_health_reports,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1132:            ac.authorization_effective_from,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1133:            ac.authorization_effective_to
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1155:        'Authorized recipient link not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1162:      contact.authorized_for_health_reports === true &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1164:        !contact.authorization_effective_from ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1166:          contact.authorization_effective_from,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1170:        !contact.authorization_effective_to ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1172:          contact.authorization_effective_to,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1178:        'Recipient authorization is not effective',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1182:    const deliveryId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1183:      `health-report-delivery-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1203:        const delivery =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1206:              INSERT INTO health_report_deliveries (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1207:                health_report_delivery_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1212:                delivery_method,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1213:                authorization_reference,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1214:                delivery_status,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1215:                delivered_by,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1216:                delivered_by_role,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1217:                delivered_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1222:                'DELIVERED',$8,$9,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1228:              deliveryId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1233:              input.deliveryMethod ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1246:              status='DELIVERED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1265:              $1,$2,'REPORT_DELIVERED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1278:              status: 'DELIVERED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1279:              deliveryId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1280:              authorizationReference:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1287:          delivery:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1288:            delivery.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1294:  async pdf(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1298:    await this.authorize(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1314:      report.status !== 'APPROVED' &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1315:      report.status !== 'DELIVERED'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1318:        'PDF requires approved report',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1324:        snapshot_version: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1326:        snapshot_data:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1332:            snapshot_version,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1334:            snapshot_data,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1336:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1339:            snapshot_version DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1345:    const snapshot =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1348:    if (!snapshot) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1350:        'Frozen snapshot not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1354:    const pdf =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1355:      await PDFDocument.create();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1357:    const deterministicPdfDate =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1359:        snapshot.source_cutoff_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1362:    pdf.setCreationDate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1363:      deterministicPdfDate,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1366:    pdf.setModificationDate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1367:      deterministicPdfDate,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1370:    pdf.registerFontkit(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1385:      await pdf.embedFont(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1397:      pdf.addPage([
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1411:          pdf.addPage([
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1511:      `Phiên bản snapshot: ${snapshot.snapshot_version}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1516:        snapshot.source_cutoff_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1521:      `Mã kiểm chứng: ${snapshot.source_hash}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1544:      snapshot.snapshot_data;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1616:      'Báo cáo được tạo từ snapshot dữ liệu đã khóa.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1620:      'PDF không truy vấn lại dữ liệu lâm sàng trực tiếp.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1624:      await pdf.save({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:10:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:35:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:54:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:154:  @Post(':healthReportId/start-review')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:155:  startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:163:    return this.service.startReview(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:172:  @Post(':healthReportId/approve')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:173:  approve(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:181:    return this.service.approve(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:190:  @Post(':healthReportId/deliver')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:191:  deliver(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:201:      deliveryMethod: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:207:    return this.service.deliver(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:217:  @Get(':healthReportId/pdf')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:218:  async pdf(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:226:    const pdf =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:227:      await this.service.pdf(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:236:      pdf,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:239:          'application/pdf',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:241:          `inline; filename="${healthReportId}.pdf"`,
+W_LIFECYCLE_MATCHES_END
+PASS: W LIFECYCLE SIGNALS CAPTURED
+
+----- 10. FAMILY / GUARDIAN AUTHORITY -----
+FAMILY_GUARDIAN_TABLES_BEGIN
+         table_name          
+-----------------------------
+ admission_contacts
+ resident_access_assignments
+(2 rows)
+
+FAMILY_GUARDIAN_TABLES_END
+
+FAMILY_GUARDIAN_SOURCE_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:90:interface DeliveryInput {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:92:  deliveryMethod: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1085:    input: DeliveryInput,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1104:        'Report is not approved for delivery',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1155:        'Authorized recipient link not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1178:        'Recipient authorization is not effective',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1182:    const deliveryId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1183:      `health-report-delivery-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1203:        const delivery =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1207:                health_report_delivery_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1209:                recipient_name,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1210:                recipient_relationship,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1211:                recipient_contact_reference,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1212:                delivery_method,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1214:                delivery_status,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1228:              deliveryId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1233:              input.deliveryMethod ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1279:              deliveryId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1287:          delivery:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1288:            delivery.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:201:      deliveryMethod: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:871:      'GUARDIAN',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:873:      'FAMILY',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:96:      'RESTRICT_FAMILY_CONTACT',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts:82:        'Actor is not authorized for resident care view.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts:491:    const residentAuthorized =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts:499:    if (!residentAuthorized) {
+FAMILY_GUARDIAN_SOURCE_SIGNALS_END
+PASS: FAMILY / GUARDIAN AUTHORITY DISCOVERY CAPTURED
+
+----- 11. OPS-6 INPUT SOURCES -----
+         table_name          | ordinal_position |          column_name          |        data_type         | is_nullable 
+-----------------------------+------------------+-------------------------------+--------------------------+-------------
+ resident_consumption_events |                1 | resident_consumption_event_id | text                     | NO
+ resident_consumption_events |                2 | resident_id                   | text                     | NO
+ resident_consumption_events |                3 | inventory_item_id             | text                     | NO
+ resident_consumption_events |                4 | inventory_lot_id              | text                     | YES
+ resident_consumption_events |                5 | inventory_transaction_id      | text                     | NO
+ resident_consumption_events |                6 | work_event_id                 | text                     | YES
+ resident_consumption_events |                7 | quantity                      | numeric                  | NO
+ resident_consumption_events |                8 | unit                          | text                     | NO
+ resident_consumption_events |                9 | occurred_at                   | timestamp with time zone | NO
+ resident_consumption_events |               10 | recorded_by                   | text                     | NO
+ resident_consumption_events |               11 | recorded_by_role              | text                     | NO
+ resident_consumption_events |               12 | source_domain                 | text                     | NO
+ resident_consumption_events |               13 | source_entity_type            | text                     | YES
+ resident_consumption_events |               14 | source_entity_id              | text                     | YES
+ resident_consumption_events |               15 | note                          | text                     | YES
+ resident_consumption_events |               16 | created_at                    | timestamp with time zone | NO
+ resident_cost_periods       |                1 | resident_cost_period_id       | text                     | NO
+ resident_cost_periods       |                2 | resident_id                   | text                     | NO
+ resident_cost_periods       |                3 | period_start                  | timestamp with time zone | NO
+ resident_cost_periods       |                4 | period_end                    | timestamp with time zone | NO
+ resident_cost_periods       |                5 | status                        | text                     | NO
+ resident_cost_periods       |                6 | calculated_total_vnd          | numeric                  | NO
+ resident_cost_periods       |                7 | reconciled_total_vnd          | numeric                  | YES
+ resident_cost_periods       |                8 | reconciled_at                 | timestamp with time zone | YES
+ resident_cost_periods       |                9 | reconciled_by                 | text                     | YES
+ resident_cost_periods       |               10 | reconciled_by_role            | text                     | YES
+ resident_cost_periods       |               11 | locked_at                     | timestamp with time zone | YES
+ resident_cost_periods       |               12 | locked_by                     | text                     | YES
+ resident_cost_periods       |               13 | locked_by_role                | text                     | YES
+ resident_cost_periods       |               14 | note                          | text                     | YES
+ resident_cost_periods       |               15 | created_at                    | timestamp with time zone | NO
+ resident_cost_periods       |               16 | updated_at                    | timestamp with time zone | NO
+(32 rows)
+
+
+RECONCILED_COST_PERIODS=0
+LOCKED_COST_PERIODS=0
+PASS: OPS CONSUMPTION / COST INPUT AUTHORITY CAPTURED
+
+----- 12. EXISTING W SOURCE DOMAINS -----
+SOURCE_DOMAIN_TABLES_BEGIN
+           table_name            
+---------------------------------
+ activity_participation
+ activity_programs
+ activity_sessions
+ admission_care_classifications
+ admission_clinical_examinations
+ admission_nutrition_assessments
+ care_action_audit
+ care_action_transfers
+ care_actions
+ care_plan_audit
+ care_plans
+ care_task_audit
+ care_tasks
+ clinical_audit
+ clinical_escalations
+ clinical_observation_amendments
+ clinical_observations
+ diet_orders
+ health_report_audit
+ health_report_deliveries
+ health_report_snapshots
+ health_reports
+ hygiene_care_plans
+ hygiene_care_records
+ meal_schedules
+ nutrition_alerts
+ nutrition_audit
+ nutrition_escalations
+ nutrition_intake_records
+ nutrition_plans
+ pain_care_plans
+ personal_care_assistance
+ personal_care_audit
+ personal_care_escalations
+ rehabilitation_audit
+ rehabilitation_escalations
+ rehabilitation_plans
+ sleep_care_plans
+ wound_care_plans
+(39 rows)
+
+SOURCE_DOMAIN_TABLES_END
+
+HEALTH_REPORT_SOURCE_QUERY_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:25:  | 'CARE_MANAGER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:113:        key: 'clinicalObservations',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:114:        table: 'clinical_observations',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:134:        key: 'nutritionIntakeRecords',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:135:        table: 'nutrition_intake_records',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:159:        key: 'activityParticipation',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:160:        table: 'activity_participation',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:165:        table: 'hygiene_care_records',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:307:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:348:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:405:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:679:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:908:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:986:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1091:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1303:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1564:        clinicalObservations:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1572:        nutritionIntakeRecords:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1582:        activityParticipation:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:44:        'CARE_MANAGER',
+HEALTH_REPORT_SOURCE_QUERY_SIGNALS_END
+PASS: EXISTING W SOURCE DOMAIN AUTHORITY CAPTURED
+
+----- 13. CURRENT OPS → W INTEGRATION STATUS -----
+W_RESIDENT_CONSUMPTION_SOURCE_FILES=0
+W_RESIDENT_COST_PERIOD_SOURCE_FILES=0
+CONSUMPTION_ALREADY_IN_W=NO
+COST_ALREADY_IN_W=NO
+PASS: OPS → W CURRENT INTEGRATION CLASSIFIED
+
+----- 14. SNAPSHOT PAYLOAD AUTHORITY -----
+SNAPSHOT_JSON_COLUMNS_BEGIN
+       table_name        |   column_name   | data_type 
+-------------------------+-----------------+-----------
+ health_report_audit     | previous_state  | jsonb
+ health_report_audit     | new_state       | jsonb
+ health_report_snapshots | snapshot_data   | jsonb
+ health_report_snapshots | source_manifest | jsonb
+(4 rows)
+
+SNAPSHOT_JSON_COLUMNS_END
+
+SNAPSHOT_PAYLOAD_SOURCE_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:58:export interface HealthReportSnapshotRow {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:59:  health_report_snapshot_id: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:61:  snapshot_version: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:64:  snapshot_data: unknown;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:104:  private readonly snapshotContract =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:105:    'TAMANCARE-HEALTH-REPORT-SNAPSHOT-V1';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:108:    'VW9E-SNAPSHOT-SOURCE-V1';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:219:    return JSON.stringify(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:356:    const snapshots =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:360:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:362:          ORDER BY snapshot_version DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:391:      snapshots: snapshots.rows,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:496:              $3,$4,NULL,$5::jsonb
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:504:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:515:  private async captureSnapshotData(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:521:    snapshotData:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:526:    const snapshotData:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:555:                to_jsonb(t) AS row_data
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:580:                to_jsonb(t)::text ASC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:596:                to_jsonb(t) AS row_data
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:615:                    to_jsonb(t)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:619:                    to_jsonb(t)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:628:                to_jsonb(t)::text ASC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:639:      snapshotData[source.key] =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:666:      snapshotData,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:700:      await this.captureSnapshotData(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:707:    const payload = {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:709:        this.snapshotContract,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:727:        captured.snapshotData,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:731:      this.stableSerialize(payload);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:738:    const snapshotId =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:739:      `health-report-snapshot-${randomUUID()}`;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:751:            `health-report-snapshot:${healthReportId}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:784:        const snapshotVersionResult =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:791:                  MAX(snapshot_version),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:794:              FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:800:        const snapshotVersion =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:802:            snapshotVersionResult
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:807:        const insertedSnapshot =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:808:          await client.query<HealthReportSnapshotRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:810:              INSERT INTO health_report_snapshots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:811:                health_report_snapshot_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:813:                snapshot_version,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:816:                snapshot_data,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:822:                $6::jsonb,$7::jsonb,$8
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:827:              snapshotId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:829:              snapshotVersion,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:833:              JSON.stringify(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:870:              $1,$2,'SNAPSHOT_GENERATED',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:871:              $3,$4,$5::jsonb,$6::jsonb
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:879:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:882:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:884:              snapshotVersion,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:891:          snapshot:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:892:            insertedSnapshot.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:894:          snapshotVersion,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:955:              $3,$4,$5::jsonb,$6::jsonb
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:963:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:966:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1002:    const snapshot =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1003:      await this.db.query<HealthReportSnapshotRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1006:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1008:          ORDER BY snapshot_version DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1014:    if (!snapshot.rows[0]) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1016:        'Frozen snapshot is required',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1053:              $3,$4,$5::jsonb,$6::jsonb
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1061:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1065:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1069:                snapshot.rows[0]
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1266:              $3,$4,$5::jsonb,$6::jsonb
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1274:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1277:            JSON.stringify({
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1324:        snapshot_version: number;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1326:        snapshot_data:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1332:            snapshot_version,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1334:            snapshot_data,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1336:          FROM health_report_snapshots
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1339:            snapshot_version DESC
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1345:    const snapshot =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1348:    if (!snapshot) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1350:        'Frozen snapshot not found',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1359:        snapshot.source_cutoff_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1511:      `Phiên bản snapshot: ${snapshot.snapshot_version}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1516:        snapshot.source_cutoff_at,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1521:      `Mã kiểm chứng: ${snapshot.source_hash}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1544:      snapshot.snapshot_data;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1616:      'Báo cáo được tạo từ snapshot dữ liệu đã khóa.',
+SNAPSHOT_PAYLOAD_SOURCE_SIGNALS_END
+PASS: SNAPSHOT PAYLOAD AUTHORITY CAPTURED
+
+----- 15. HUMAN AUTHORITY -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:22:export type HealthReportActorRole =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:25:  | 'CARE_MANAGER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:26:  | 'SUPERVISOR';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:29:  actorId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:30:  actorRole: HealthReportActorRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:73:    HealthReportActorRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:226:    allowed: HealthReportActorRole[],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:228:    if (!actor.actorId || !actor.actorRole) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:245:        [actor.actorId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:261:      actor.actorRole
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:268:    if (!allowed.includes(actor.actorRole)) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:307:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:308:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:348:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:349:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:405:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:406:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:478:              actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:479:              actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:502:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:503:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:679:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:680:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:853:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:854:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:877:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:878:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:908:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:909:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:937:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:938:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:961:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:962:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:986:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:987:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1035:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1036:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1059:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1060:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1091:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1092:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1236:              actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1237:              actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1272:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1273:            actor.actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1303:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1304:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:14:  HealthReportActorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:27:    actorId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:28:    actorRole?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:30:    actorId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:31:    actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:32:      HealthReportActorRole;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:34:    if (!actorId || !actorRole) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:36:        'x-actor-id and x-actor-role are required',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:41:      HealthReportActorRole[] = [
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:44:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:45:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:50:        actorRole as
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:51:          HealthReportActorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:60:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:61:      actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:62:        actorRole as
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:63:          HealthReportActorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:69:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:70:    actorId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:71:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:72:    actorRole?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:78:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:79:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:87:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:88:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:89:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:90:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:98:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:99:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:107:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:108:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:109:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:110:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:127:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:128:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:136:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:137:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:138:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:139:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:147:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:148:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:156:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:157:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:158:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:159:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:165:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:166:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:174:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:175:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:176:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:177:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:183:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:184:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:192:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:193:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:194:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:195:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:209:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:210:        actorRole,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:219:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:220:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:221:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:222:    actorRole: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:229:          actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:230:          actorRole,
+AI_AUTHORITATIVE_REPORT_ACTION_SIGNALS=0
+PASS: HUMAN AUTHORITY SIGNALS CAPTURED
+
+----- 16. SCALABILITY / PAGINATION -----
+PAGINATION_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:243:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:284:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:332:              LIMIT 100
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:434:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1009:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1142:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1340:          LIMIT 1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1396:    let page =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1397:      pdf.addPage([
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1410:        page =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1411:          pdf.addPage([
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1425:      page.drawText(
+PAGINATION_SIGNALS_END
+HARD_RESIDENT_200_SIGNALS=0
+PASS: NO HARD 200-RESIDENT CAP IN W MODULE
+
+----- 17. MIGRATION NEED CLASSIFICATION -----
+CURRENT_MIGRATION_FILES_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_001_enterprise_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_002_auth_session_lifecycle.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_003_ops_operational_work_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_004_ops_work_event_type_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_wave1_work_event_types.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_work_event_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260831_009_ops_resident_cost.sql
+CURRENT_MIGRATION_FILES_END
+
+W_SCHEMA_CAPABILITY_SIGNALS_BEGIN
+        table_name        |         column_name         |        data_type         
+--------------------------+-----------------------------+--------------------------
+ health_report_audit      | actor_id                    | text
+ health_report_audit      | actor_role                  | text
+ health_report_deliveries | health_report_delivery_id   | text
+ health_report_deliveries | recipient_name              | text
+ health_report_deliveries | recipient_relationship      | text
+ health_report_deliveries | recipient_contact_reference | text
+ health_report_deliveries | delivery_method             | text
+ health_report_deliveries | delivery_status             | text
+ health_report_deliveries | delivered_by                | text
+ health_report_deliveries | delivered_by_role           | text
+ health_report_deliveries | delivered_at                | timestamp with time zone
+ health_report_snapshots  | health_report_snapshot_id   | text
+ health_report_snapshots  | snapshot_version            | integer
+ health_report_snapshots  | snapshot_data               | jsonb
+ health_reports           | status                      | text
+ health_reports           | reviewed_at                 | timestamp with time zone
+ health_reports           | reviewed_by                 | text
+ health_reports           | reviewed_by_role            | text
+ health_reports           | approved_at                 | timestamp with time zone
+ health_reports           | approved_by                 | text
+ health_reports           | approved_by_role            | text
+(21 rows)
+
+W_SCHEMA_CAPABILITY_SIGNALS_END
+M6_AUTHORITY=NOT_PREAUTHORIZED
+MIGRATION_POLICY=NO_NEW_MIGRATION_UNLESS_EXISTING_W_SCHEMA_GAP_PROVEN
+PASS: MIGRATION AUTHORITY BOUNDED
+
+----- 18. CROSS-CUTTING OVERLAYS -----
+UI_VN=VIETNAMESE_FIRST_STAFF_UX_REQUIRED
+VIETNAMESE_UI_TERMINOLOGY=REQUIRED_FOR_ANY_NEW_STAFF_UI
+
+SEC_L3=READINESS_REQUIRED
+SEC_L3_FULL_COMPLIANCE=NOT_CLAIMED
+
+SEC_L3_OPS6_FOCUS:
+ -> HUMAN REVIEW / APPROVAL TRACEABILITY
+ -> AUTHORIZED RECIPIENT ONLY
+ -> REPORT DELIVERY AUDIT
+ -> NO CLIENT-SUPPLIED AUTHORITY BYPASS
+ -> NO AI FINAL APPROVAL
+ -> MINIMUM NECESSARY FAMILY DISCLOSURE
+ -> SNAPSHOT IMMUTABILITY / TRACEABILITY
+PASS: UI-VN + SEC-L3 OVERLAYS REGISTERED
+
+----- 19. READ-ONLY IMMUTABILITY -----
+API_SOURCE_TREE_AFTER=b66922757bee8a36bb7f65ba6519a636251f5b0f7990f7070f3133d4fe88bca5
+DATABASE_FINAL=1|1|0|0|0|0|0|0
+PASS: SOURCE IMMUTABILITY
+PASS: DATABASE IMMUTABILITY
+
+----- 20. OPS-6 AUTHORITY CONTRACT -----
+OPS_6_NAME=W_UNIFIED_FAMILY_REPORT_INTEGRATION
+
+EXISTING_HEALTH_REPORT_MODULE=REUSE_AND_EXTEND
+SECOND_FAMILY_REPORT_MODULE=FORBIDDEN
+EXISTING_W_TABLE_REPLACEMENT=FORBIDDEN
+
+OPS6_INPUT_HEALTH_EXISTING=REQUIRED
+OPS6_INPUT_CARE_EXISTING=REQUIRED
+OPS6_INPUT_NUTRITION_EXISTING=REQUIRED
+OPS6_INPUT_ACTIVITY_EXISTING=REQUIRED
+OPS6_INPUT_RESIDENT_CONSUMPTION_EVENTS=REQUIRED
+OPS6_INPUT_RECONCILED_RESIDENT_COST_PERIODS=REQUIRED
+
+OPS6_FLOW=OPS_SOURCES_TO_EXISTING_W_SNAPSHOT_TO_HUMAN_REVIEW_TO_APPROVAL_TO_PDF_TO_AUTHORIZED_FAMILY_GUARDIAN
+
+HUMAN_REVIEW_REQUIRED=YES
+HUMAN_APPROVAL_REQUIRED=YES
+AI_FINAL_REPORT_AUTHORITY=FORBIDDEN
+AI_DELIVERY_AUTHORITY=FORBIDDEN
+
+AUTHORIZED_FAMILY_GUARDIAN_ONLY=REQUIRED
+DELIVERY_AUDIT_REQUIRED=YES
+SNAPSHOT_TRACEABILITY_REQUIRED=YES
+
+M6_PREAUTHORIZED=NO
+ADDITIVE_SCHEMA_CHANGE_ONLY_IF_GAP_PROVEN=YES
+
+NO_HARD_RESIDENT_MAX=YES
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+LOAD_ALL_QUERY=FORBIDDEN
+BOUNDED_SERVER_SIDE_QUERY=REQUIRED
+
+UI_VN=REQUIRED
+SEC_L3_READINESS=REQUIRED
+SEC_L3_FULL_COMPLIANCE=NOT_CLAIMED
+
+OPS7=OUT_OF_SCOPE
+OPS8=OUT_OF_SCOPE
+
+======================================================================
+ TAMANCARE V8.0 — OPS-6 FAST-1 DECISION
+======================================================================
+
+PASS_COUNT=21
+WARN_COUNT=0
+FAIL_COUNT=0
+
+STATUS: V8.0 OPS-6 FAST-1 AUTHORITY DISCOVERY PASSED
+
+OPS_6=IN_PROGRESS
+OPS_6_AUTHORITY_DISCOVERY=COMPLETE
+OPS_6_IMPLEMENTATION_STARTED=NO
+
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+DATABASE_MUTATION=NO
+
+NEXT=RETURN_OUTPUT_FOR_OPS6_CONSOLIDATED_IMPLEMENTATION_AND_ACCEPTANCE
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt
+
+IMPORTANT:
+ -> DO NOT CREATE SECOND FAMILY REPORT MODULE
+ -> DO NOT CREATE M6 MANUALLY
+ -> DO NOT START OPS-7
+ -> DO NOT MODIFY OPS-5
+ -> DO NOT CLAIM SEC-L3 FULL COMPLIANCE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

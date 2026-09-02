@@ -1,0 +1,287 @@
+{
+  "generated_at": "2026-08-21T04:24:43.605828+00:00",
+  "mutation_routes": [
+    {
+      "method": "POST",
+      "path": "/api/activity-rehabilitation/:residentId/execute",
+      "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/analyze",
+      "source": "api/src/ai/ai-engine.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/demo",
+      "source": "api/src/ai/ai-engine.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/patterns",
+      "source": "api/src/ai/early-warning.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "source": "api/src/ai/early-warning.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/behavioral-cognitive/:residentId/execute",
+      "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/assign",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/transfer",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/start-review",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/resolve",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/reopen",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-plan-governance/:carePlanId/:action",
+      "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-task-execution/:careTaskId/:action",
+      "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+      "source": "api/src/clinical-observations/clinical.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/fall-mobility/:residentId/execute",
+      "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "source": "api/src/incidents/incident.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "source": "api/src/incidents/incident.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/infection-control/:residentId/execute",
+      "source": "api/src/infection-control/infection-control.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-administrations/:administrationId/:action",
+      "source": "api/src/medication/medication.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-safety/:residentId/execute",
+      "source": "api/src/medication-safety/medication-safety.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/nutrition-hydration/:residentId/execute",
+      "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/pain-comfort/:residentId/execute",
+      "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/personal-care/:residentId/execute",
+      "source": "api/src/personal-care/personal-care.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": null,
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+      "actor_id_header_evidence": true,
+      "actor_role_header_evidence": true,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": null,
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+      "actor_id_header_evidence": true,
+      "actor_role_header_evidence": true,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+      "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/safeguarding/:residentId/execute",
+      "source": "api/src/safeguarding/safeguarding.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/skin-wound/:residentId/execute",
+      "source": "api/src/skin-wound/skin-wound.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/sleep-rest/:residentId/execute",
+      "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+      "actor_id_header_evidence": false,
+      "actor_role_header_evidence": false,
+      "unauthorized_evidence": false,
+      "forbidden_evidence": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/warning-reviews",
+      "source": "api/src/warning-reviews/warning-review.controller.ts",
+      "actor_id_header_evidence": true,
+      "actor_role_header_evidence": true,
+      "unauthorized_evidence": true,
+      "forbidden_evidence": true
+    }
+  ],
+  "mutation_route_count": 31,
+  "mutation_routes_with_actor_header_evidence": 3,
+  "important_note": "Absence of actor headers in a controller file is not automatically classified as a vulnerability. Phase 2 must trace global guards/interceptors/authorization services before remediation."
+}

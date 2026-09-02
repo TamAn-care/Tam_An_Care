@@ -1,0 +1,49 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-6 FAST-2R
+ FIXTURE CONTRACT RECOVERY + REMAINING ACCEPTANCE
+
+ PREVIOUS RESULT:
+  SOURCE PATCH = APPLIED
+  NODE22 BUILD = PASS
+  DB TEST = RUNNER FIXTURE FAILURE ONLY
+
+ THIS RUN:
+  -> DO NOT REPATCH SOURCE
+  -> DO NOT CHANGE SCHEMA
+  -> DO NOT MODIFY OPS-5
+  -> RECOVER REAL INVENTORY CONSTRAINT
+  -> USE CONSTRAINT-COMPLIANT ROLLBACK FIXTURE
+  -> COMPLETE OPS-6 ACCEPTANCE
+======================================================================
+
+----- 1. RECOVERY PRECONDITIONS -----
+PASS: PREVIOUS OPS-6 SOURCE PATCH PRESERVED
+DATABASE_BASELINE=1|1|0|0|0|0|0|0
+PASS: FAILED TEST LEFT DATABASE CLEAN
+
+----- 2. REAL INVENTORY CONSTRAINT AUTHORITY -----
+           conname            |                                                                           pg_get_constraintdef                                                                            
+------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ inventory_items_base_unit_ck | CHECK ((length(btrim(base_unit)) > 0))
+ inventory_items_category_ck  | CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+ inventory_items_code_ck      | CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+ inventory_items_code_key     | UNIQUE (code)
+ inventory_items_pkey         | PRIMARY KEY (inventory_item_id)
+(5 rows)
+
+INVENTORY_ITEMS_CODE_CK=CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+PASS: INVENTORY CODE CONSTRAINT RECOVERED
+DERIVED_VALID_INVENTORY_CODE=^[A-Z][A-Z0-9_]*$
+PASS: CONSTRAINT-COMPLIANT INVENTORY CODE DERIVED
+CATEGORY_CK=CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+UNIT_CK=CHECK ((length(btrim(base_unit)) > 0))
+FIXTURE_CODE=^[A-Z][A-Z0-9_]*$
+FIXTURE_CATEGORY=PERSONAL_CARE
+FIXTURE_UNIT=piece
+
+----- 3. FIXTURE CONTRACT PROBE -----
+BEGIN
+ERROR:  new row for relation "inventory_items" violates check constraint "inventory_items_code_ck"
+DETAIL:  Failing row contains (ops6-contract-probe, ^[A-Z][A-Z0-9_]*$, Vật tư kiểm thử OPS-6, PERSONAL_CARE, piece, t, 2026-08-30 19:53:19.574485+00, 2026-08-30 19:53:19.574485+00, f).
+FAIL: FIXTURE CONTRACT STILL INVALID
+STOP — RETURN THIS OUTPUT

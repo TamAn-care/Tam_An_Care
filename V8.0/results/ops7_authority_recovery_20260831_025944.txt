@@ -1,0 +1,660 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-7 AUTHORITY RECOVERY
+ STRICTLY READ-ONLY
+
+ OPS-6 = CLOSED / HUMAN ACCEPTED
+ OPS-7 IMPLEMENTATION = NOT STARTED
+
+ SOURCE MUTATION = NO
+ DATABASE MUTATION = NO
+ SCHEMA MUTATION = NO
+ MIGRATION = NO
+======================================================================
+
+----- 1. OPS-6 ACCEPTED HANDOFF -----
+OPS6_CHECKPOINT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops6_final_20260831_025722
+PASS: OPS-6 CHECKPOINT FOUND
+TAMANCARE V8.0 — OPS-6 TECHNICAL ACCEPTANCE
+
+OPS_6_NAME=W_UNIFIED_FAMILY_REPORT_INTEGRATION
+
+AUTHORITY_DISCOVERY=PASS
+IMPLEMENTATION=PASS
+NODE22_BUILD=PASS_PREVIOUSLY_VERIFIED
+DB_FUNCTIONAL=PASS_PREVIOUSLY_VERIFIED
+DB_FUNCTIONAL_ROLLBACK=PASS
+
+EXISTING_W_REUSED=YES
+SECOND_FAMILY_REPORT_MODULE=NO
+OPS6_MIGRATION=NO
+
+RESIDENT_CONSUMPTION_IN_W=YES
+RECONCILED_OR_LOCKED_COST_PERIODS_IN_W=YES
+OPEN_COST_PERIODS_IN_W=NO
+
+HUMAN_REVIEW_PRESERVED=YES
+HUMAN_APPROVAL_PRESERVED=YES
+APPROVED_SNAPSHOT_PDF_PRESERVED=YES
+AUTHORIZED_RECIPIENT_CONTROL_PRESERVED=YES
+DELIVERY_AUDIT_PRESERVED=YES
+
+UI_VN=PASS_NO_NEW_STAFF_UI
+SEC_L3_READINESS_OVERLAY=REGISTERED
+SEC_L3_FULL_COMPLIANCE=NOT_CLAIMED
+
+SERVICE_SHA256=3e92607de925b375b576d740f9de7385400694a12c38de4a396369886474ecf6
+DATABASE_FINAL=1|1|0|0|0|0|0|0
+
+----- 2. SEARCH PRIVATE ROADMAP AUTHORITY -----
+OPS7_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt:2: TAMANCARE V8.0 — OPS-7 AUTHORITY RECOVERY
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt:6: OPS-7 IMPLEMENTATION = NOT STARTED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt:49:OPS7_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:2091:OPS7=OUT_OF_SCOPE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:2092:OPS8=OUT_OF_SCOPE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:2118: -> DO NOT START OPS-7
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_closeout_only_20260831_025722.txt:66: -> DO NOT START OPS-7
+OPS7_SIGNALS_END
+
+----- 3. SERIES08 / OPS ROADMAP ARTIFACTS -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7K.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7R-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7R-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7R.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7S-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7S-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7S.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7T-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7T.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7U-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7U-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7U.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7V-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7V-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7V.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7W-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7W-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7W.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7X-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7X-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7X.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Y-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Y-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Y.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Z-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Z-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Z-C0.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Z.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.4.3-ROADMAP.md
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.5-STEP-9A-MASTER-ROADMAP.md
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.6/V7.6-ROADMAP.md
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-AUTHORITATIVE-ROADMAP-DIRECT-INSPECTION-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-NEXT-ROADMAP-GATE-PREFLIGHT-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-POST-4A-R2B-ROADMAP-RESOLUTION-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-POST-4A-R2B-V77-ONLY-ROADMAP-RESOLUTION-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-ROADMAP-CLOSURE-RELEASE-DECISION-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7-ROADMAP-PREFLIGHT-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-AUTHORITATIVE-ROADMAP-DIRECT-INSPECTION.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/V7.7-ROADMAP-CLOSURE-RELEASE-READINESS-MANIFEST.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-ROADMAP.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-POST-PHASE-4-ROADMAP-DISCOVERY.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-POST-PHASE-5-ROADMAP-DISCOVERY.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-POST-RELEASE-PRODUCT-ROADMAP-DEFINITION-PREFLIGHT.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-RD-FINAL-APPROVED-POST-V79-PRODUCT-ROADMAP.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-SERIES-04-PHASE-3-ROADMAP-AUTHORITY.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-SERIES-05-PHASE-4-ROADMAP-AUTHORITY-DISCOVERY.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-SERIES-05-PHASE-4-ROADMAP-RESOLUTION.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-PHASE-3-PERFORMANCE-ROADMAP.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-PHASE-4-UX-OPERATIONAL-SMOOTHNESS-ROADMAP.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-PHASE-5-BACKUP-RESTORE-DATA-INTEGRITY-ROADMAP.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-POST-RELEASE-PRODUCT-ROADMAP-DEFINITION-PREFLIGHT.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V8.0-APPROVED-PRODUCT-ROADMAP.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-POST-PHASE-4-ROADMAP-DISCOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-POST-PHASE-5-ROADMAP-DISCOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-POST-RELEASE-PRODUCT-ROADMAP-DEFINITION-PREFLIGHT-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-RD-FINAL-APPROVED-POST-V79-PRODUCT-ROADMAP-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-SERIES-04-PHASE-3-ROADMAP-AUTHORITY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-SERIES-05-PHASE-4-ROADMAP-AUTHORITY-DISCOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-SERIES-05-PHASE-4-ROADMAP-RESOLUTION-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1c-recovery-20260821_213956
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r5.6-r2-20260821_221827
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r5.6-r3-20260822_045837
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r5.8-20260822_051105
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r5.9-r1-20260822_051721
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r5.9-r2-r1-20260822_052129
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r6.0-r2-r3-20260822_053859
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r6.0-r2-r3-r2-20260822_054840
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r6.1-r2-20260822_072144
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r6.2-20260822_075912
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-r6.3-r1-20260822_081312
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-phase1d-source-root-r1-20260821_221716
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-r603r2-r1-reconcile-20260822_055536
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.before-v77-release-identity-guard-20260821_215750
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series02_phase1.py.failed-indentation-20260822_054041
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series03_phase2.py.before-phase2-preflight-locator-r1-20260822_082653
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series06_phase5.py.before-phase5a-r1-20260822T060421Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series06_phase5.py.before-phase5a-r2-20260822T060547Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series06_phase5.py.before-phase5a-r3-20260822T060814Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_series07_phase6.py.before-phase6-r2b-20260822T072520Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/runner/run_v80_series08_s0.py
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-MASTER-ROADMAP-SUCCESSOR-AUTHORITY-DISCOVERY-R168-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-SCOPE-CORRECTION-R169-R2-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-S5-MASTER-ROADMAP-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-S5-ROADMAP-AUTHORITY-RECOVERY-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-S6-APPROVED-ROADMAP-CONTEXT-R90-R3-R3-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-S6-ROADMAP-SCOPE-SEMANTIC-SALVAGE-R90-R3-R4-MANIFEST.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-AUTHORITY-DISCOVERY-R168-CANDIDATES.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-AUTHORITY-DISCOVERY-R168-CONTRACT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-AUTHORITY-DISCOVERY-R168-DISCOVERY.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-AUTHORITY-DISCOVERY-R168-EVIDENCE.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-AUTHORITY-DISCOVERY-R168-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-CONTRACT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-EVIDENCE.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-SCOPE-CORRECTION-R169-R2-CONTRACT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-SCOPE-CORRECTION-R169-R2-EVIDENCE.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-SCOPE-CORRECTION-R169-R2-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-POST-S8-R167-INVENTORY-SIGPIPE-SALVAGE-R2-ROADMAP.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-MASTER-ROADMAP-RECOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-CANDIDATES.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-CLASSIFICATION.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-CONTRACT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-DISCOVERY.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-EVIDENCE.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-POST-BINDING-EXACT-ROADMAP-AUTHORITY-DISCOVERY-R219-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-ROADMAP-AUTHORITY-RECOVERY-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-APPROVED-ROADMAP-CONTEXT-R90-R3-R3-EVIDENCE.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-APPROVED-ROADMAP-CONTEXT-R90-R3-R3-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-ROADMAP-SCOPE-SEMANTIC-SALVAGE-R90-R3-R4-EVIDENCE.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-ROADMAP-SCOPE-SEMANTIC-SALVAGE-R90-R3-R4-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops1f_r1_p2_preview.pid
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops1f_r1_p2_preview_20260829_190253.log
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_r2_owned_fixture_recovery_20260830_064344.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_r4_corrected_owned_fixture_recovery_20260830_064623.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_h_r2_auth_renewal_preflight_20260830_091301.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_h_r2b_r8_password_generation_contract_review_20260830_091624.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f4_r7d_cors_runtime_authority_diagnostic_20260830_172200.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_b_r1_jwt_generation_failure_classification_20260830_173718.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_b_r2_isolated_jwt_test_authority_reprovision_20260830_173849.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_b_r2a_jwt_selfcheck_runner_repair_20260830_174023.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d1_r1_http_status_authority_classification_20260830_175602.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r1a_pg_authority_runner_repair_20260830_181923.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast2n_network_recovery_final_20260830_185706.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_m2_inventory_module_wiring_20260830_161640.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_sia_r1_db_authority_discovery_20260830_162959.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r3_authority_source_salvage_20260830_053836.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_source_hash_authority_reconciliation_20260830_160103.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_auth_middleware_exact_final_20260831_022002.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_docker_network_final_20260831_020823.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_jwt_runtime_20260831_021703.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fixture_authority_recovery_20260830_220150.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1r_remaining_authority_20260831_023051.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops_post_2b_continuation_authority_discovery_20260830_155823.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s2c_patch.py
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s2c_patch.py.before-s2c-r5b-20260822T125251Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s2c_patch.py.before-s2c-r5e-20260822T131057Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s2c_patch.py.before-s2c-r5i-20260822T132506Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s2c_patch.py.before-s2c-r5i-r2-20260822T133007Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s2c_patch.py.partial-r5e-20260822T131509Z
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s4c_patch.py
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/runner/run_series08_s4c_patch_r2.py
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/state/series08_s0_state.json
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8/results/ops1e_i1_partial_20260829_162549/20260829_005_ops_wave1_work_event_types.partial.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_003_ops_operational_work_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_004_ops_work_event_type_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_wave1_work_event_types.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_work_event_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7m-a-20260819_052854/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7o-a-20260819_060423/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7p-a-20260819_063643/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7K.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7q-a-20260819_070259/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7K.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7r-a-20260819_072703/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7K.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L1.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L2.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L3.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L4.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L5.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7L6B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7M.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7N.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7O.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7P.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7Q.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7R-A.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7R-B.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/freeze/pre-step7s-a-20260819_150450/V7.4.3-ROADMAP-CHECKPOINT-AFTER-7R.txt
+
+----- 4. ROADMAP CONTENT SIGNALS -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_20260831_022002/manifest.sha256:2:637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3  ./database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:303:database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:304:database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:313:database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql:3:ALTER TABLE inventory_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:314:database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql:4:    ADD COLUMN lot_tracking_required boolean NOT NULL DEFAULT false;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:315:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:3:CREATE TABLE inventory_items (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:316:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:8:    base_unit text NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:317:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:13:    CONSTRAINT inventory_items_code_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:318:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:16:    CONSTRAINT inventory_items_category_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:319:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:29:    CONSTRAINT inventory_items_base_unit_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:320:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:30:        CHECK (length(btrim(base_unit)) > 0)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:321:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:33:CREATE TABLE inventory_lots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:322:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:37:        REFERENCES inventory_items(inventory_item_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:323:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:48:    CONSTRAINT inventory_lots_status_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:324:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:59:CREATE TABLE inventory_transactions (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:325:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:63:        REFERENCES inventory_items(inventory_item_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:326:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:67:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:327:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:72:    quantity numeric(14,4) NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:328:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:84:    source_domain text NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:329:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:93:    CONSTRAINT inventory_transactions_type_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:330:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:105:    CONSTRAINT inventory_transactions_quantity_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:331:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:106:        CHECK (quantity > 0),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:332:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:108:    CONSTRAINT inventory_transactions_unit_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:333:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:111:    CONSTRAINT inventory_transactions_role_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:334:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:121:    CONSTRAINT inventory_transactions_source_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:335:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:143:        REFERENCES inventory_items(inventory_item_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:336:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:147:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:337:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:151:        REFERENCES inventory_transactions(inventory_transaction_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:338:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:158:    quantity numeric(14,4) NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:339:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:170:    source_domain text NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:340:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:178:    CONSTRAINT resident_consumption_quantity_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:341:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:179:        CHECK (quantity > 0),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:342:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:208:CREATE INDEX idx_inventory_items_active_category
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:343:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:209:    ON inventory_items(active, category, code);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:344:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:211:CREATE INDEX idx_inventory_lots_item
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:345:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:212:    ON inventory_lots(inventory_item_id);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:346:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:214:CREATE INDEX idx_inventory_lots_expiry
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:347:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:215:    ON inventory_lots(expiry_date)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:348:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:218:CREATE INDEX idx_inventory_lots_status
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:349:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:219:    ON inventory_lots(status);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:350:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:222:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:351:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:228:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:352:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:235:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:353:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:241:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:354:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:242:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:355:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:249:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:356:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:250:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:357:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:283:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:358:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:291:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt:427:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt:428:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_kitchen_http_closeout_20260830_222327.txt:36:DETAIL:  Failing row contains (20260830_008_ops_kitchen_food_receiving, 2026-08-30 15:23:32.675469+00, null, OPS-4 kitchen food receiving evidence).
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:32:20260829_006_ops_inventory_resident_consumption.sql|SHA256=2678a69de594d685a0e0986f12b99ae0eedcbd298eda51f5208c83426d8650de
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:33:20260829_007_ops_inventory_lot_tracking_required.sql|SHA256=79e74d869bf62c91af184f0f0c630bdb60be3b4848811235341ea83a84be1b1a
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:34:20260830_008_ops_kitchen_food_receiving.sql|SHA256=637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:43: 20260830_008_ops_kitchen_food_receiving      | 637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3 | OPS-4 kitchen food receiving evidence
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_safety_preflight_20260830_100041.txt:283:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_safety_preflight_20260830_100041.txt:284:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops_post_2b_continuation_authority_discovery_20260830_155823.txt:564:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops_post_2b_continuation_authority_discovery_20260830_155823.txt:565:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_d2_implementation_contract_20260830_160502.txt:1585:SCHEMA_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_d1_exact_scope_preflight_20260830_160249.txt:2187:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_d1_exact_scope_preflight_20260830_160249.txt:2188:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_m1_r1_lot_tracking_schema_20260829_221938.txt:38:TARGET_MIGRATION=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:1994:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:1995:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:1996:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:58:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:11:    updated_at timestamptz NOT NULL DEFAULT now(),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:59:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:33:CREATE TABLE inventory_lots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:60:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:41:    received_at timestamptz NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:61:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:48:    CONSTRAINT inventory_lots_status_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:62:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:67:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:63:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:147:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:64:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:211:CREATE INDEX idx_inventory_lots_item
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:65:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:212:    ON inventory_lots(inventory_item_id);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:66:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:214:CREATE INDEX idx_inventory_lots_expiry
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:67:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:215:    ON inventory_lots(expiry_date)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:68:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:218:CREATE INDEX idx_inventory_lots_status
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:69:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:219:    ON inventory_lots(status);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_a_m1_p2_inventory_schema_migration_20260829_221317.txt:34:TARGET_MIGRATION=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_20260831_022002/manifest.sha256:2:637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3  ./database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:303:database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:304:database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:313:database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql:3:ALTER TABLE inventory_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:314:database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql:4:    ADD COLUMN lot_tracking_required boolean NOT NULL DEFAULT false;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:315:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:3:CREATE TABLE inventory_items (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:316:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:8:    base_unit text NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:317:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:13:    CONSTRAINT inventory_items_code_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:318:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:16:    CONSTRAINT inventory_items_category_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:319:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:29:    CONSTRAINT inventory_items_base_unit_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:320:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:30:        CHECK (length(btrim(base_unit)) > 0)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:321:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:33:CREATE TABLE inventory_lots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:322:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:37:        REFERENCES inventory_items(inventory_item_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:323:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:48:    CONSTRAINT inventory_lots_status_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:324:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:59:CREATE TABLE inventory_transactions (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:325:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:63:        REFERENCES inventory_items(inventory_item_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:326:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:67:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:327:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:72:    quantity numeric(14,4) NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:328:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:84:    source_domain text NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:329:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:93:    CONSTRAINT inventory_transactions_type_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:330:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:105:    CONSTRAINT inventory_transactions_quantity_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:331:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:106:        CHECK (quantity > 0),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:332:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:108:    CONSTRAINT inventory_transactions_unit_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:333:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:111:    CONSTRAINT inventory_transactions_role_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:334:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:121:    CONSTRAINT inventory_transactions_source_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:335:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:143:        REFERENCES inventory_items(inventory_item_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:336:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:147:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:337:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:151:        REFERENCES inventory_transactions(inventory_transaction_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:338:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:158:    quantity numeric(14,4) NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:339:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:170:    source_domain text NOT NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:340:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:178:    CONSTRAINT resident_consumption_quantity_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:341:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:179:        CHECK (quantity > 0),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:342:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:208:CREATE INDEX idx_inventory_items_active_category
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:343:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:209:    ON inventory_items(active, category, code);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:344:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:211:CREATE INDEX idx_inventory_lots_item
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:345:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:212:    ON inventory_lots(inventory_item_id);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:346:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:214:CREATE INDEX idx_inventory_lots_expiry
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:347:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:215:    ON inventory_lots(expiry_date)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:348:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:218:CREATE INDEX idx_inventory_lots_status
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:349:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:219:    ON inventory_lots(status);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:350:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:222:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:351:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:228:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:352:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:235:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:353:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:241:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:354:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:242:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:355:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:249:    ON inventory_transactions(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:356:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:250:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:357:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:283:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt:358:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:291:        source_domain,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt:427:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt:428:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_kitchen_http_closeout_20260830_222327.txt:36:DETAIL:  Failing row contains (20260830_008_ops_kitchen_food_receiving, 2026-08-30 15:23:32.675469+00, null, OPS-4 kitchen food receiving evidence).
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:32:20260829_006_ops_inventory_resident_consumption.sql|SHA256=2678a69de594d685a0e0986f12b99ae0eedcbd298eda51f5208c83426d8650de
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:33:20260829_007_ops_inventory_lot_tracking_required.sql|SHA256=79e74d869bf62c91af184f0f0c630bdb60be3b4848811235341ea83a84be1b1a
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:34:20260830_008_ops_kitchen_food_receiving.sql|SHA256=637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt:43: 20260830_008_ops_kitchen_food_receiving      | 637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3 | OPS-4 kitchen food receiving evidence
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_safety_preflight_20260830_100041.txt:283:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_safety_preflight_20260830_100041.txt:284:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops_post_2b_continuation_authority_discovery_20260830_155823.txt:564:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops_post_2b_continuation_authority_discovery_20260830_155823.txt:565:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_d2_implementation_contract_20260830_160502.txt:1585:SCHEMA_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_d1_exact_scope_preflight_20260830_160249.txt:2187:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_d1_exact_scope_preflight_20260830_160249.txt:2188:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_m1_r1_lot_tracking_schema_20260829_221938.txt:38:TARGET_MIGRATION=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:1994:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:1995:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt:1996:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:58:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:11:    updated_at timestamptz NOT NULL DEFAULT now(),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:59:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:33:CREATE TABLE inventory_lots (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:60:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:41:    received_at timestamptz NULL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:61:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:48:    CONSTRAINT inventory_lots_status_ck
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:62:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:67:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:63:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:147:        REFERENCES inventory_lots(inventory_lot_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:64:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:211:CREATE INDEX idx_inventory_lots_item
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:65:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:212:    ON inventory_lots(inventory_item_id);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:66:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:214:CREATE INDEX idx_inventory_lots_expiry
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:67:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:215:    ON inventory_lots(expiry_date)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:68:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:218:CREATE INDEX idx_inventory_lots_status
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_r1_lot_source_schema_repair_preflight_20260830_065212.txt:69:database/migrations/20260829_006_ops_inventory_resident_consumption.sql:219:    ON inventory_lots(status);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_a_m1_p2_inventory_schema_migration_20260829_221317.txt:34:TARGET_MIGRATION=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+
+----- 5. RESULT / CHECKPOINT HISTORY AFTER OPS-6 -----
+LATEST_RESULTS_BEGIN
+-rw-r--r--  1 anhha  staff     71601 Aug 31 03:01 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt
+-rw-r--r--  1 anhha  staff      2328 Aug 31 02:57 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_closeout_only_20260831_025722.txt
+-rw-r--r--  1 anhha  staff       574 Aug 31 02:56 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_final_micro_closeout_20260831_025607.txt
+-rw-r--r--  1 anhha  staff       809 Aug 31 02:54 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast2r2_final_20260831_025443.txt
+-rw-r--r--  1 anhha  staff      2537 Aug 31 02:53 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast2r_fixture_recovery_20260831_025318.txt
+-rw-r--r--  1 anhha  staff      2787 Aug 31 02:51 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast2_integrate_accept_20260831_025132.txt
+-rw-r--r--  1 anhha  staff    126179 Aug 31 02:49 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops6_fast1_existing_w_authority_20260831_024908.txt
+-rw-r--r--  1 anhha  staff      2769 Aug 31 02:43 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_db_functional_micro_closeout_20260831_024302.txt
+-rw-r--r--  1 anhha  staff      3596 Aug 31 02:40 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_registry_http_recovery_20260831_023939.txt
+-rw-r--r--  1 anhha  staff      1300 Aug 31 02:36 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_final_http_closeout_20260831_023635.txt
+-rw-r--r--  1 anhha  staff      7569 Aug 31 02:34 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_source_contract_recovery_20260831_023420.txt
+-rw-r--r--  1 anhha  staff      1633 Aug 31 02:32 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_consolidated_implementation_20260831_023242.txt
+-rw-r--r--  1 anhha  staff     33148 Aug 31 02:30 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1r_remaining_authority_20260831_023051.txt
+-rw-r--r--@ 1 anhha  staff     30160 Aug 31 02:29 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops5_fast1_consolidated_authority_20260831_022917.txt
+-rw-r--r--  1 anhha  staff      4981 Aug 31 02:20 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_auth_middleware_exact_final_20260831_022002.txt
+-rw-r--r--  1 anhha  staff      5045 Aug 31 02:17 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_jwt_runtime_20260831_021703.txt
+-rw-r--r--  1 anhha  staff      7534 Aug 31 02:15 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_temp_context_20260831_021423.txt
+-rw-r--r--  1 anhha  staff      2501 Aug 31 02:12 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_dependency_aligned_runtime_final_20260831_021248.txt
+-rw-r--r--  1 anhha  staff      2853 Aug 31 02:10 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_exec_i_dist_mount_20260831_021029.txt
+-rw-r--r--  1 anhha  staff      1428 Aug 31 02:08 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_docker_network_final_20260831_020823.txt
+-rw-r--r--  1 anhha  staff       718 Aug 31 02:07 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_host_db_runtime_final_20260831_020702.txt
+-rw-r--r--@ 1 anhha  staff      3500 Aug 31 02:05 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_exact_auth_runtime_final_20260831_020500.txt
+-rw-r--r--  1 anhha  staff      1288 Aug 30 22:27 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_runtime_only_closeout_20260830_222720.txt
+-rw-r--r--  1 anhha  staff      1066 Aug 30 22:25 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_registry_http_recovery_20260830_222521.txt
+-rw-r--r--  1 anhha  staff      1045 Aug 30 22:23 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_kitchen_http_closeout_20260830_222327.txt
+-rw-r--r--  1 anhha  staff      2278 Aug 30 22:21 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_runtime_binding_real_login_recovery_20260830_222106.txt
+-rw-r--r--  1 anhha  staff     12008 Aug 30 22:18 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_real_login_bootstrap_20260830_221838.txt
+-rw-r--r--  1 anhha  staff      2307 Aug 30 22:16 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_residue_login_direct_repair_20260830_221608.txt
+-rw-r--r--  1 anhha  staff     10695 Aug 30 22:14 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_canonical_login_recovery_20260830_221431.txt
+-rw-r--r--  1 anhha  staff      8935 Aug 30 22:13 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_auth_contract_recovery_20260830_221307.txt
+-rw-r--r--  1 anhha  staff      1773 Aug 30 22:08 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_http_closeout_20260830_220757.txt
+-rw-r--r--  1 anhha  staff      2556 Aug 30 22:01 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fixture_authority_recovery_20260830_220150.txt
+-rw-r--r--@ 1 anhha  staff      1762 Aug 30 21:58 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_recovery_20260830_215850.txt
+-rw-r--r--@ 1 anhha  staff      2069 Aug 30 21:56 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_onepass_20260830_215607.txt
+-rw-r--r--  1 anhha  staff       975 Aug 30 21:53 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast_replay_final_implementation_20260830_215350.txt
+-rw-r--r--  1 anhha  staff      2213 Aug 30 21:49 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast2r2_fixture_contract_repair_20260830_214956.txt
+-rw-r--r--  1 anhha  staff      7536 Aug 30 21:47 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast2r_actor_contract_repair_20260830_214734.txt
+-rw-r--r--  1 anhha  staff      5109 Aug 30 21:44 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast2_implementation_build_schema_20260830_214419.txt
+-rw-r--r--  1 anhha  staff     62623 Aug 30 21:30 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt
+-rw-r--r--  1 anhha  staff      3960 Aug 30 21:22 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_final_closeout_r1_20260830_212207.txt
+-rw-r--r--  1 anhha  staff      1418 Aug 30 21:20 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_final_closeout_20260830_212017.txt
+-rw-r--r--  1 anhha  staff      3975 Aug 30 21:18 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r6_final_runtime_repair_20260830_211849.txt
+-rw-r--r--  1 anhha  staff      1428 Aug 30 21:16 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r5_harness_runtime_repair_20260830_211622.txt
+-rw-r--r--  1 anhha  staff      1389 Aug 30 21:14 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_final_functional_execution_20260830_211356.txt
+-rw-r--r--  1 anhha  staff     17261 Aug 30 21:11 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r4_fixture_contract_completion_20260830_211136.txt
+-rw-r--r--  1 anhha  staff      1841 Aug 30 21:10 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r3_selfcontained_functional_20260830_211030.txt
+-rw-r--r--  1 anhha  staff      2057 Aug 30 21:07 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_r1_runner_repair_functional_acceptance_20260830_210708.txt
+-rw-r--r--  1 anhha  staff      1597 Aug 30 21:05 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g3_functional_acceptance_20260830_210459.txt
+-rw-r--r--  1 anhha  staff      3561 Aug 30 19:07 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g2_r2_minimal_repair_build_20260830_190656.txt
+-rw-r--r--  1 anhha  staff     29717 Aug 30 19:05 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g2_r1_exact_build_failure_classification_20260830_190541.txt
+-rw-r--r--  1 anhha  staff      3528 Aug 30 19:04 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g2_source_implementation_build_20260830_190437.txt
+-rw-r--r--  1 anhha  staff     24349 Aug 30 19:02 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g1_implementation_contract_20260830_190252.txt
+-rw-r--r--  1 anhha  staff      3056 Aug 30 19:01 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g0_r2_closeout_20260830_190147.txt
+-rw-r--r--  1 anhha  staff     11948 Aug 30 19:00 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g0_r1_bounded_classification_20260830_190048.txt
+-rw-r--r--  1 anhha  staff     79989 Aug 30 18:59 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g0_kpi_operational_visibility_discovery_20260830_185938.txt
+-rw-r--r--  1 anhha  staff      3207 Aug 30 18:57 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast2n_network_recovery_final_20260830_185706.txt
+-rw-r--r--  1 anhha  staff     14371 Aug 30 18:55 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast_auth500_root_cause_20260830_185529.txt
+-rw-r--r--  1 anhha  staff      1430 Aug 30 18:54 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast_auth_probe2_20260830_185421.txt
+-rw-r--r--  1 anhha  staff     10676 Aug 30 18:53 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast2_auth500_diagnostic_20260830_185304.txt
+-rw-r--r--  1 anhha  staff      2466 Aug 30 18:52 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast2r_final_20260830_185157.txt
+-rw-r--r--  1 anhha  staff      1709 Aug 30 18:50 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast2d_negative_targeted_diagnosis_20260830_185042.txt
+-rw-r--r--  1 anhha  staff       625 Aug 30 18:49 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast2_final_acceptance_20260830_184937.txt
+-rw-r--r--  1 anhha  staff       463 Aug 30 18:47 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast1r_negative_acceptance_20260830_184730.txt
+-rw-r--r--  1 anhha  staff       852 Aug 30 18:46 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast1_negative_acceptance_20260830_184627.txt
+-rw-r--r--  1 anhha  staff     34388 Aug 30 18:43 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d4_r0a_runtime_health_forensic_20260830_184244.txt
+-rw-r--r--  1 anhha  staff      2752 Aug 30 18:32 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d4_r0_runtime_recovery_preflight_20260830_183020.txt
+-rw-r--r--  1 anhha  staff     12828 Aug 30 18:28 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2e_post_acceptance_runtime_forensic_20260830_182846.txt
+-rw-r--r--  1 anhha  staff      7469 Aug 30 18:27 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2d_concurrency_semantic_classification_20260830_182738.txt
+-rw-r--r--  1 anhha  staff      7110 Aug 30 18:26 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2c_concurrency_serialization_20260830_182553.txt
+-rw-r--r--  1 anhha  staff      6567 Aug 30 18:24 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2b_same_container_recovery_20260830_182409.txt
+-rw-r--r--  1 anhha  staff     31130 Aug 30 18:22 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2a_runtime_exit_forensic_20260830_182221.txt
+-rw-r--r--  1 anhha  staff      1402 Aug 30 18:20 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2_bounded_concurrency_execution_20260830_182058.txt
+-rw-r--r--  1 anhha  staff      6225 Aug 30 18:19 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r1a_pg_authority_runner_repair_20260830_181923.txt
+-rw-r--r--  1 anhha  staff      2579 Aug 30 18:17 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r1_provision_runner_repair_20260830_181750.txt
+-rw-r--r--  1 anhha  staff      2523 Aug 30 18:16 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_concurrency_serialization_20260830_181621.txt
+-rw-r--r--  1 anhha  staff      7495 Aug 30 18:14 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r3b_exact_id_positive_matrix_20260830_181433.txt
+-rw-r--r--  1 anhha  staff      7630 Aug 30 18:12 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r3a_fixture_identity_diagnostic_20260830_181228.txt
+-rw-r--r--  1 anhha  staff      2098 Aug 30 18:10 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r3_positive_functional_matrix_20260830_181051.txt
+-rw-r--r--  1 anhha  staff      5842 Aug 30 18:08 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r2_same_container_restart_20260830_180758.txt
+-rw-r--r--  1 anhha  staff     45887 Aug 30 18:06 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r1_repeated_runtime_exit_forensic_20260830_180601.txt
+LATEST_RESULTS_END
+
+CHECKPOINT_HISTORY_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops2_c_f4_r5_pre_dist_clean_20260830_170909
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops2_c_f4_r7_pre_umask022_rebuild_20260830_171313
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops2_c_final_20260830_185706
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops2_c_pre_mutation_20260830_161356
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops2_c_source_integrated_20260830_163126
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops3_final_20260830_212207
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops3_g2_pre_mutation_20260830_190437
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_fast2_pre_20260830_214419
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_fast2r_pre_20260830_214734
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_fast_replay_20260830_215350
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_20260831_022002
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_http_pre_20260830_220757
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_pre_20260830_215607
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_recovery_pre_20260830_215850
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops5_final_20260831_024302
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops6_final_20260831_025722
+CHECKPOINT_HISTORY_END
+
+----- 6. CURRENT MODULE INVENTORY -----
+activity-rehabilitation
+admissions
+ai
+auth
+behavioral-cognitive
+care-action-bridge
+care-actions
+care-plan-authorization
+care-plan-governance
+care-plans
+care-task-authorization
+care-task-execution
+care-tasks
+clinical-observations
+cross-domain-integration
+database
+fall-mobility
+health
+health-reports
+incidents
+infection-control
+inventory
+kitchen-operations
+medication
+medication-safety
+nutrition-hydration
+observability
+operational-care-view
+operational-work
+pain-comfort
+personal-care
+reopen-authorization
+resident-access-administration
+resident-access-scope
+resident-cost
+residents
+resolution-authorization
+responsibility-acceptance
+safeguarding
+security
+skin-wound
+sleep-rest
+staff-actors
+start-review-authorization
+warning-reviews
+
+----- 7. CURRENT DATABASE MIGRATION AUTHORITY -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_001_enterprise_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_002_auth_session_lifecycle.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_003_ops_operational_work_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_004_ops_work_event_type_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_wave1_work_event_types.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_work_event_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260831_009_ops_resident_cost.sql
+
+----- 8. SOURCE IMMUTABILITY HASH -----
+API_TREE_START=0f7e5c7ea208a3e56a1bfb2feea0c4fb4ab6f411b29bd45c38efc290ac3b7fc5
+API_TREE_FINAL=0f7e5c7ea208a3e56a1bfb2feea0c4fb4ab6f411b29bd45c38efc290ac3b7fc5
+PASS: SOURCE IMMUTABILITY
+
+======================================================================
+ TAMANCARE V8.0 — OPS-7 AUTHORITY RECOVERY COMPLETE
+======================================================================
+
+OPS_6=CLOSED_HUMAN_ACCEPTED
+OPS_7=AUTHORITY_RECOVERY_ONLY
+OPS_7_IMPLEMENTATION_STARTED=NO
+
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION=NO
+
+RULE:
+ -> DO NOT INVENT OPS-7 SCOPE
+ -> DO NOT START X3-B5 FROM ASSUMPTION
+ -> DO NOT START OPS-8
+ -> DO NOT MODIFY OPS-6
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_authority_recovery_20260831_025944.txt
+NEXT=STOP_AND_RETURN_OUTPUT
+======================================================================

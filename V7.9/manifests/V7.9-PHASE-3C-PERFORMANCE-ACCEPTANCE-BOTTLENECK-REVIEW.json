@@ -1,0 +1,109 @@
+{
+  "version": "V7.9",
+  "series": "04",
+  "phase": "3C",
+  "status": "PASSED",
+  "decision": "PERFORMANCE_ACCEPTED_WITH_BOTTLENECK_REVIEW",
+  "execution_mode": "REVIEW_ONLY",
+  "new_load_executed": false,
+  "concurrency_above_5": false,
+  "mutation_requests": false,
+  "performance_matrix": {
+    "ACCESS_FAIL_CLOSED": {
+      "c1_mean_ms": 5.3306000000000004,
+      "c1_p95_ms": 6.591999999999999,
+      "c2_mean_ms": 6.7066,
+      "c2_p95_ms": 8.14795,
+      "c5_mean_ms": 5.4193,
+      "c5_p95_ms": 7.6661,
+      "c5_max_ms": 10.283000000000001,
+      "mean_ratio_c5_to_c1": 1.0166397778861664,
+      "p95_ratio_c5_to_c1": 1.1629399271844663,
+      "mean_ratio_c5_to_c2": 0.8080547520353085,
+      "p95_ratio_c5_to_c2": 0.9408624255180751
+    },
+    "API_HEALTH": {
+      "c1_mean_ms": 8.7576,
+      "c1_p95_ms": 22.379499999999993,
+      "c2_mean_ms": 6.3949,
+      "c2_p95_ms": 13.14765,
+      "c5_mean_ms": 6.45352,
+      "c5_p95_ms": 14.01349999999999,
+      "c5_max_ms": 23.052,
+      "mean_ratio_c5_to_c1": 0.7369050881520052,
+      "p95_ratio_c5_to_c1": 0.6261757411917154,
+      "mean_ratio_c5_to_c2": 1.0091666796978842,
+      "p95_ratio_c5_to_c2": 1.0658558753845737
+    },
+    "STAFF_FAIL_CLOSED": {
+      "c1_mean_ms": 6.1239,
+      "c1_p95_ms": 8.057599999999999,
+      "c2_mean_ms": 6.9112,
+      "c2_p95_ms": 9.685250000000002,
+      "c5_mean_ms": 7.0784,
+      "c5_p95_ms": 17.85259999999999,
+      "c5_max_ms": 25.175,
+      "mean_ratio_c5_to_c1": 1.1558647267264326,
+      "p95_ratio_c5_to_c1": 2.215622517871325,
+      "mean_ratio_c5_to_c2": 1.0241926148859821,
+      "p95_ratio_c5_to_c2": 1.8432771482408803
+    },
+    "UI_ROOT": {
+      "c1_mean_ms": 3.6558,
+      "c1_p95_ms": 6.133149999999995,
+      "c2_mean_ms": 3.9216,
+      "c2_p95_ms": 6.32965,
+      "c5_mean_ms": 3.89304,
+      "c5_p95_ms": 7.044749999999996,
+      "c5_max_ms": 24.27,
+      "mean_ratio_c5_to_c1": 1.0648941408173314,
+      "p95_ratio_c5_to_c1": 1.1486348776729742,
+      "mean_ratio_c5_to_c2": 0.9927172582619339,
+      "p95_ratio_c5_to_c2": 1.112976230913241
+    }
+  },
+  "bottleneck_review": {
+    "ACCESS_FAIL_CLOSED": {
+      "classification": "NO_MATERIAL_SCALING_SIGNAL",
+      "observations": []
+    },
+    "API_HEALTH": {
+      "classification": "NO_MATERIAL_SCALING_SIGNAL",
+      "observations": []
+    },
+    "STAFF_FAIL_CLOSED": {
+      "classification": "BOTTLENECK_CANDIDATE",
+      "observations": [
+        "P95_C5_AT_LEAST_2X_C1",
+        "P95_C5_AT_LEAST_1_5X_C2"
+      ]
+    },
+    "UI_ROOT": {
+      "classification": "NO_MATERIAL_SCALING_SIGNAL",
+      "observations": []
+    }
+  },
+  "bottleneck_candidates": [
+    "STAFF_FAIL_CLOSED"
+  ],
+  "latency_rejection_threshold_invented": false,
+  "acceptance_basis": [
+    "PHASE_3A_PASSED",
+    "PHASE_3B_PASSED",
+    "PHASE_3B_R1_PASSED",
+    "ZERO_HTTP_ERRORS",
+    "ZERO_TRANSPORT_ERRORS",
+    "ZERO_MUTATION",
+    "ZERO_DB_FINGERPRINT_DELTA",
+    "PRODUCTION_RUNTIME_PRESERVED"
+  ],
+  "phase3a_manifest_sha256": "19c6f1a121ee0e83a0cf08ec385670ccde1f65689887be0ec9b668b23533e639",
+  "phase3b_manifest_sha256": "9dae5a22fc2dc4dd3a994f489818ca106031f6661f07c69729c0116b58a889ac",
+  "phase3b_r1_manifest_sha256": "b25dfafe9bf980da0ca7d9695efca3688619bccc7548a2087fd2cdcaf869a0fe",
+  "roadmap_sha256": "a217cb8f18c2038ee65b67c2789f39d424d2bfa83fb3cac642cfd9b90a3920af",
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "next": "PHASE_3_FINAL",
+  "accepted_at": "2026-08-22T04:05:35.886944+00:00"
+}

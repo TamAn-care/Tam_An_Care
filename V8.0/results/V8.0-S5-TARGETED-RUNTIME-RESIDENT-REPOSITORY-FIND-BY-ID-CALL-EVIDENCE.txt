@@ -1,0 +1,7 @@
+TAM AN CARE V8.0 — S5 ResidentRepository.findById CALL EVIDENCE
+STATIC_ONLY=YES
+
+RESIDENT_REPOSITORY_FIND_BY_ID_CALL|INDEX=1|CLASS=THIS_PROPERTY_METHOD|OBJECT=db|METHOD=withTransaction|AWAITED=NO|ARGUMENT_EXPRESSION=async (client) => { const result = await client.query<ResidentRow>( ` SELECT resident_id, resident_code, display_name, date_of_birth, gender, room, bed, care_level, active_status FROM residents WHERE resident_id = $1 LIMIT 1 `, [residentId], ); if (!result.rows.length) { return null; } return this.mapResident( result.rows[0], ); },|DEEPER_CONTRACT_TRACED=NO|RUNTIME_AUTHORIZED=NO
+RESIDENT_REPOSITORY_FIND_BY_ID_CALL|INDEX=2|CLASS=VARIABLE_METHOD|OBJECT=client|METHOD=query|AWAITED=YES|ARGUMENT_EXPRESSION=` SELECT resident_id, resident_code, display_name, date_of_birth, gender, room, bed, care_level, active_status FROM residents WHERE resident_id = $1 LIMIT 1 `, [residentId],|DEEPER_CONTRACT_TRACED=NO|RUNTIME_AUTHORIZED=NO
+
+RESIDENT_REPOSITORY_FIND_BY_ID_CALL_COUNT=2

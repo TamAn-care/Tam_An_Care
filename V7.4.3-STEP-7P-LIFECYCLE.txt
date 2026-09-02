@@ -1,0 +1,119 @@
+TAM AN CARE V7.4.3
+STEP 7P LIFECYCLE CONTRACT
+
+NUTRITION PLAN:
+
+DRAFT
+-> ACTIVE
+-> SUSPENDED
+-> ACTIVE
+-> COMPLETED
+
+DRAFT
+-> CANCELLED
+
+ACTIVE
+-> CANCELLED
+
+Human authorization required.
+
+
+DIET ORDER:
+
+DRAFT
+-> ACTIVE
+-> SUSPENDED
+-> ACTIVE
+-> DISCONTINUED
+
+No AI activation.
+No autonomous restriction change.
+
+
+MEAL / HYDRATION EVENT:
+
+SCHEDULED
+-> ASSIGNED
+-> ACCEPTED
+-> READY
+
+READY
+-> COMPLETED
+
+READY
+-> MISSED
+
+READY
+-> REFUSED
+
+READY
+-> HELD
+
+SCHEDULED / ASSIGNED / ACCEPTED
+-> CANCELLED
+
+Terminal:
+COMPLETED
+MISSED
+REFUSED
+HELD
+CANCELLED
+
+Terminal transitions are single-winner.
+
+
+FEEDING ASSISTANCE:
+
+PLANNED
+-> ASSIGNED
+-> ACCEPTED
+-> IN_PROGRESS
+-> COMPLETED
+
+PLANNED / ASSIGNED / ACCEPTED
+-> SKIPPED
+
+PLANNED / ASSIGNED / ACCEPTED
+-> CANCELLED
+
+
+INTAKE RECORD:
+
+RECORDED
+-> VERIFIED
+
+VERIFIED
+-> AMENDED
+
+RECORDED
+-> VOIDED
+
+Verified content is immutable.
+Correction creates attributable amendment.
+
+
+NUTRITION ALERT:
+
+OPEN
+-> ACKNOWLEDGED
+-> ESCALATED
+-> RESOLVED
+
+OPEN
+-> DISMISSED
+
+AI may create suspected alert only.
+Human acknowledgement required.
+
+
+NUTRITION ESCALATION:
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+OPEN / ASSIGNED
+-> CANCELLED
+
+Reviewer ownership preserved.

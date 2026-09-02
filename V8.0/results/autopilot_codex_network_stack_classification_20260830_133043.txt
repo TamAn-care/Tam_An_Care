@@ -1,0 +1,130 @@
+======================================================================
+ TAMANCARE — CODEX NETWORK STACK CLASSIFICATION
+ READ ONLY / NO LOGIN / NO CODEX EXEC / NO NETWORK CHANGE
+======================================================================
+
+======================================================================
+ 1. CODEX LOCK
+======================================================================
+CODEX_EXECUTABLE=/Users/anhha/.local/bin/codex
+CODEX_VERSION=codex-cli 0.151.0
+
+======================================================================
+ 2. IPV4 TOKEN-ENDPOINT TRANSPORT
+======================================================================
+HTTP_CODE=400
+REMOTE_IP=104.18.41.241
+SSL_VERIFY=0
+IPV4_TRANSPORT=PASS
+
+======================================================================
+ 3. IPV6 TOKEN-ENDPOINT TRANSPORT
+======================================================================
+HTTP_CODE=400
+REMOTE_IP=2606:4700:4400::6812:29f1
+SSL_VERIFY=0
+IPV6_TRANSPORT=PASS
+
+======================================================================
+ 4. MACOS NETWORK SERVICES
+======================================================================
+NETWORK_SERVICES_DISCOVERED=YES
+
+SERVICE_BEGIN
+SERVICE_NAME_PRESENT=YES
+AUTO_PROXY_ENABLED=No
+AUTO_DISCOVERY_ENABLED=UNKNOWN
+PAC_URL_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_NAME_PRESENT=YES
+AUTO_PROXY_ENABLED=No
+AUTO_DISCOVERY_ENABLED=UNKNOWN
+PAC_URL_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_NAME_PRESENT=YES
+AUTO_PROXY_ENABLED=No
+AUTO_DISCOVERY_ENABLED=UNKNOWN
+PAC_URL_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_NAME_PRESENT=YES
+AUTO_PROXY_ENABLED=No
+AUTO_DISCOVERY_ENABLED=UNKNOWN
+PAC_URL_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_NAME_PRESENT=YES
+AUTO_PROXY_ENABLED=No
+AUTO_DISCOVERY_ENABLED=UNKNOWN
+PAC_URL_PRINTED=NO
+SERVICE_END
+
+SERVICE_BEGIN
+SERVICE_NAME_PRESENT=YES
+AUTO_PROXY_ENABLED=No
+AUTO_DISCOVERY_ENABLED=UNKNOWN
+PAC_URL_PRINTED=NO
+SERVICE_END
+
+======================================================================
+ 5. SYSTEM PROXY SUMMARY
+======================================================================
+  ProxyAutoConfigEnable : 1
+  ProxyAutoDiscoveryEnable : 1
+PROXY_HOSTS_PRINTED=NO
+PAC_URL_PRINTED=NO
+
+======================================================================
+ 6. ROUTING FAMILY CHECK
+======================================================================
+IPV4_ROUTE_INTERFACE=en0
+IPV6_ROUTE_INTERFACE=UNRESOLVED
+
+======================================================================
+ 7. CLASSIFICATION
+======================================================================
+NETWORK_STACK_CLASSIFICATION=IPV4_AND_IPV6_TRANSPORT_PASS
+NEXT=CODEX_CLIENT_STACK_OR_PAC_DIAGNOSTIC
+
+======================================================================
+ 8. TAMANCARE PRESERVATION
+======================================================================
+RUNTIME_3000=200
+RUNTIME_3108=200
+RUNTIME_4173=200
+
+======================================================================
+ 9. SAFETY ASSERTIONS
+======================================================================
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+NETWORK_CONFIGURATION_MUTATION=NO
+HOSTS_FILE_MUTATION=NO
+CODEX_LOGIN_STARTED=NO
+CODEX_EXEC_STARTED=NO
+AUTOPILOT_STARTED=NO
+GIT_INIT=NO
+
+FAIL_COUNT=0
+WARN_COUNT=0
+AUTONOMOUS_EXECUTION_AUTHORIZED=NO
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_codex_network_stack_classification_20260830_133043.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT LOGIN AGAIN YET
+ -> DO NOT MODIFY /etc/hosts
+ -> DO NOT DISABLE IPV6
+ -> DO NOT CHANGE PROXY/PAC SETTINGS
+ -> DO NOT RUN CODEX EXEC
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

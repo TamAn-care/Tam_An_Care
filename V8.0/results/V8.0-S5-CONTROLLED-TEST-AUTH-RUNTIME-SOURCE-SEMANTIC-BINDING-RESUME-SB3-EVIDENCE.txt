@@ -1,0 +1,11 @@
+TAM AN CARE V8.0
+SERIES=SERIES_08
+PHASE=S5_AUTH_RUNTIME_SOURCE_SEMANTIC_BINDING_RESUME_SB3
+TARGET_CONTROLLER=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.controller.ts
+TARGET_CONTROLLER_SHA256=28a4031a8c9daf17c8220ffc699028605a261eedf5110b8b01eb1d295d3f6cb2
+
+12:@Controller('api/ai/engines/health-trend')
+24:  @Post('patterns')
+25:  patterns(
+33:  @Post('resident/:residentId/patterns')
+34:  async residentPatterns(

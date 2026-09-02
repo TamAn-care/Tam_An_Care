@@ -1,0 +1,50 @@
+{
+  "version": "V8.0",
+  "phase": "S0_PREFLIGHT",
+  "status": "PASSED",
+  "decision": "V8_0_INITIALIZATION_PREFLIGHT_ACCEPTED",
+  "parent": {
+    "version": "V7.9",
+    "frontend_authority": "V7.7/workspace/frontend",
+    "api_authority": "V7.9/workspace/api",
+    "schema_authority": "database/schema.sql",
+    "frontend_sha256": "fb145df50849da824a8c9ba239adb9b574e11864afafa4bfdeb41059c53f11e3",
+    "api_sha256": "3c9c6d3532d2c96f2f6de378a8238c4c014a253e618ca2942079a5c16ec99d90",
+    "schema_sha256": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+    "modifiable": false
+  },
+  "production_database": {
+    "table_count": 118,
+    "staff_actor_count": 0,
+    "structure_rows": 1971,
+    "structure_sha256": "215f8e34e9afb08844eaa690f03b8df70d0529abbffe890194a29b9532096944",
+    "mutation": false
+  },
+  "runtime": {
+    "api_state": "running",
+    "ui_state": "running",
+    "api_started": "2026-08-21T10:42:58.92688025Z",
+    "ui_started": "2026-08-21T10:43:11.079908006Z",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "restart": false
+  },
+  "clone_contract": {
+    "strategy": "CONTROLLED_NEW_WORKSPACE",
+    "target": "V8.0",
+    "copy_node_modules": false,
+    "copy_dist": false,
+    "copy_runtime_state": false,
+    "copy_backups": false
+  },
+  "manual_gate": {
+    "gate": "S8",
+    "required": true,
+    "owner": "USER",
+    "current_status": "DEFERRED_NOT_PASSED",
+    "skip_allowed": false
+  },
+  "s0_execution_authorized": false,
+  "next_authorized_action": "EXECUTE_GENERATED_S0_INITIALIZATION_RUNNER",
+  "created_at": "2026-08-22T08:27:02.377057+00:00"
+}

@@ -1,0 +1,17 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2C-R1",
+  "status": "DISCOVERY_COMPLETE",
+  "http_write": false,
+  "sql_write": false,
+  "sql_kinds": [],
+  "decision": "C_RESIDENT_MUTATION_LOGIC_ABSENT",
+  "phase2a_rerun": false,
+  "phase2b_rerun": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "real_resident_mutation": false,
+  "v77_source_write": false,
+  "runner_sha256": "4183dc9c25e44c142fbda4fc5d9845a5c53a205470ca35ca91eccd0f2597ce20"
+}

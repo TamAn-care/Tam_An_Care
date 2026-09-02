@@ -1,0 +1,418 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G0-R1
+ BOUNDED DB AUTHORITY + RESIDENT LIMIT CLASSIFICATION
+ STRICT READ ONLY
+======================================================================
+
+1. OPS-3 G0 FAILURE AUTHORITY
+POSTGRES_CONTAINER=tamancare-demo-postgres
+FAIL: DATABASE TABLE DISCOVERY
+FAIL: DATABASE BASELINE
+WARN: POSSIBLE HARD RESIDENT LIMIT SIGNAL — CLASSIFY BEFORE MUTATION
+FAIL_COUNT=2
+STATUS: OPS-3 G0 DISCOVERY FAILED
+PASS: G0 FAILURE AUTHORITY FOUND
+
+2. RUNNING POSTGRES AUTHORITY
+ALL_POSTGRES_CONTAINERS:
+
+RUNNING_POSTGRES_CONTAINERS:
+SELECTED_POSTGRES=tamancare_v7_4_3_development-postgres-1
+PASS: RUNNING CANONICAL POSTGRES IDENTIFIED
+
+3. DATABASE BASELINE
+CURRENT_DATABASE_BASELINE=1|1|0|0|0|0
+EXPECTED_DATABASE_BASELINE=1|1|0|0|0|0
+PASS: POST-OPS-2-C DATABASE BASELINE
+
+4. KPI-RELEVANT DATABASE TABLES
+admission_care_classifications
+care_action_audit
+care_action_transfers
+care_actions
+care_plan_audit
+care_plans
+care_task_audit
+care_tasks
+clinical_observation_amendments
+clinical_observations
+cognitive_observations
+continence_observations
+health_report_audit
+health_report_deliveries
+health_report_snapshots
+health_reports
+hygiene_care_plans
+hygiene_care_records
+incident_assignments
+incident_audit
+incident_escalations
+incident_post_reviews
+incident_responses
+incident_triage
+incidents
+infection_observations
+inventory_items
+inventory_lots
+inventory_transactions
+medication_adverse_reaction_observations
+operational_work_event_audit
+operational_work_event_type_audit
+operational_work_event_types
+operational_work_events
+pain_care_plans
+personal_care_assistance
+personal_care_audit
+personal_care_escalations
+post_fall_observations
+resident_access_assignments
+resident_audit
+resident_consumption_events
+residents
+safeguarding_reports
+sleep_care_plans
+sleep_observations
+symptom_observations
+wound_care_plans
+
+5. EXISTING KPI/METRIC DATABASE OBJECTS
+<NONE>
+EXISTING_KPI_DB_OBJECTS=NO
+PASS: KPI DATABASE OBJECT CLASSIFICATION
+
+6. OPERATIONAL DASHBOARD RESIDENT LIMIT — EXACT SOURCE
+DASHBOARD_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts
+20296c4d1074e6b927512b99c575db1f1df301d23e3e92ea58d155c2f7525a9f  /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts
+
+----- DECLARATION -----
+    25	type Availability =
+    26	  | 'AVAILABLE'
+    27	  | 'EMPTY'
+    28	  | 'UNAVAILABLE';
+    29	
+    30	type SettledDomain = {
+    31	  rows: any[];
+    32	  availability: Availability;
+    33	  total: number;
+    34	};
+    35	
+    36	@Injectable()
+    37	export class OperationalDashboardService {
+    38	  private readonly residentLimit = 50;
+    39	  private readonly workQueueLimit = 100;
+    40	  private readonly attentionLimit = 100;
+    41	
+    42	  constructor(
+    43	    private readonly db: DatabaseService,
+    44	
+    45	    private readonly residentAccessScope:
+    46	      ResidentAccessScopeService,
+    47	  ) {}
+    48	
+    49	  private authorize(
+    50	    actorIdInput?: string,
+
+----- USE AROUND ~340 -----
+   320	            resident_code,
+   321	            display_name,
+   322	            room,
+   323	            bed,
+   324	            care_level,
+   325	            active_status,
+   326	            updated_at,
+   327	            COUNT(*) OVER() AS total_count
+   328	          FROM residents
+   329	          WHERE active_status = true
+   330	            AND ${residentScope.sql}
+   331	          ORDER BY
+   332	            room ASC NULLS LAST,
+   333	            bed ASC NULLS LAST,
+   334	            display_name ASC,
+   335	            resident_id ASC
+   336	          LIMIT $${residentScope.nextParameter}
+   337	        `,
+   338	        [
+   339	          ...residentScope.params,
+   340	          this.residentLimit + 1,
+   341	        ],
+   342	      ),
+   343	
+   344	      this.db.query(
+   345	        `
+   346	          SELECT
+   347	            ct.care_task_id,
+   348	            ct.resident_id,
+   349	            ct.task_code,
+   350	            ct.title,
+   351	            ct.task_category,
+   352	            ct.status,
+   353	            ct.priority,
+   354	            ct.scheduled_at,
+   355	            ct.due_at,
+   356	            ct.assigned_to,
+   357	            ct.assigned_role,
+   358	            ct.updated_at,
+   359	            r.display_name,
+   360	            COUNT(*) OVER() AS total_count
+
+----- USE AROUND ~585 -----
+   565	    const clinicalDomain =
+   566	      this.domain(clinicalResult);
+   567	
+   568	    const medOrdersDomain =
+   569	      this.domain(
+   570	        medicationOrderResult,
+   571	      );
+   572	
+   573	    const medAdminsDomain =
+   574	      this.domain(
+   575	        medicationAdministrationResult,
+   576	      );
+   577	
+   578	    const incidentsDomain =
+   579	      this.domain(incidentResult);
+   580	
+   581	    const residents =
+   582	      residentsDomain.rows
+   583	        .slice(
+   584	          0,
+   585	          this.residentLimit,
+   586	        )
+   587	        .map(
+   588	          (row: any) => ({
+   589	            residentId:
+   590	              row.resident_id,
+   591	            residentCode:
+   592	              row.resident_code,
+   593	            displayName:
+   594	              row.display_name,
+   595	            room:
+   596	              row.room ?? null,
+   597	            bed:
+   598	              row.bed ?? null,
+   599	            careLevel:
+   600	              row.care_level,
+   601	            activeStatus:
+   602	              row.active_status,
+   603	            navigationHref:
+   604	              this.navigationHref(
+   605	                row.resident_id,
+
+----- USE AROUND ~1261 -----
+  1235	          false,
+  1236	      },
+  1237	
+  1238	      access: {
+  1239	        actorId:
+  1240	          actor.actorId,
+  1241	        actorRole:
+  1242	          actor.actorRole,
+  1243	        scope:
+  1244	          actor.actorRole
+  1245	            === 'SUPERVISOR'
+  1246	            ? 'SUPERVISORY'
+  1247	            : actor.actorRole
+  1248	                === 'NURSE'
+  1249	              ? 'CLINICAL_OPERATIONAL'
+  1250	              : 'OPERATIONAL',
+  1251	        serverAuthorized: true,
+  1252	        redactionApplied:
+  1253	          actor.actorRole
+  1254	          === 'CAREGIVER',
+  1255	        residentScopeEnforcement:
+  1256	          'CANONICAL_RESIDENT_SCOPE',
+  1257	      },
+  1258	
+  1259	      limits: {
+  1260	        residents:
+  1261	          this.residentLimit,
+  1262	        workQueue:
+  1263	          this.workQueueLimit,
+  1264	        attention:
+  1265	          this.attentionLimit,
+  1266	      },
+  1267	
+  1268	      truncated: {
+  1269	        residents:
+  1270	          residentsDomain.total
+  1271	          > this.residentLimit,
+  1272	        workQueue:
+  1273	          tasksDomain.total
+  1274	          > this.workQueueLimit,
+  1275	        attention:
+  1276	          attention.length
+  1277	          > this.attentionLimit
+  1278	          || clinicalDomain.total
+  1279	            > this.attentionLimit
+  1280	          || medOrdersDomain.total
+  1281	            > this.attentionLimit
+  1282	          || medAdminsDomain.total
+  1283	            > this.attentionLimit
+  1284	          || incidentsDomain.total
+  1285	            > this.attentionLimit,
+PASS: RESIDENT LIMIT SOURCE CAPTURED
+
+7. RESIDENT PAGINATION CONTRACT
+----- CONTROLLER -----
+    40	      actorRole,
+    41	    );
+    42	
+    43	    return this.residentService.create(
+    44	      body,
+    45	      actorId as string,
+    46	    );
+    47	  }
+    48	
+    49	  @Get()
+    50	  listResidents(
+    51	    @Query('limit')
+    52	    limitRaw?: string,
+    53	
+    54	    @Query('offset')
+    55	    offsetRaw?: string,
+    56	  ) {
+    57	    if (
+    58	      limitRaw === undefined &&
+    59	      offsetRaw === undefined
+    60	    ) {
+    61	      return this.residentService.list();
+    62	    }
+    63	
+    64	    const parsedLimit =
+    65	      Number(limitRaw ?? 50);
+    66	
+    67	    const parsedOffset =
+    68	      Number(offsetRaw ?? 0);
+    69	
+    70	    const limit =
+    71	      Number.isInteger(parsedLimit)
+    72	        ? Math.min(
+    73	            Math.max(
+    74	              parsedLimit,
+    75	              1,
+    76	            ),
+    77	            200,
+    78	          )
+    79	        : 50;
+    80	
+    81	    const offset =
+    82	      Number.isInteger(parsedOffset)
+    83	        ? Math.max(
+    84	            parsedOffset,
+    85	            0,
+    86	          )
+    87	        : 0;
+    88	
+    89	    return this.residentService
+    90	      .listPage(
+    91	        limit,
+    92	        offset,
+    93	      );
+    94	  }
+    95	
+    96	  @Get(':residentId')
+    97	  getResident(
+    98	    @Param('residentId') residentId: string,
+    99	  ) {
+   100	    return this.residentService.getById(residentId);
+
+----- REPOSITORY -----
+   190	
+   191	        return result.rows.map(
+   192	          (row) => this.mapResident(row),
+   193	        );
+   194	      },
+   195	    );
+   196	  }
+   197	
+   198	  async listPage(
+   199	    limit: number,
+   200	    offset: number,
+   201	  ): Promise<{
+   202	    items: ResidentContext[];
+   203	    total: number;
+   204	    limit: number;
+   205	    offset: number;
+   206	  }> {
+   207	    return this.db.withTransaction(
+   208	      async (client) => {
+   209	        const countResult =
+   210	          await client.query<{
+   211	            total: string;
+   212	          }>(
+   213	            `
+   214	            SELECT
+   215	              COUNT(*)::text AS total
+   216	            FROM residents
+   217	            `,
+   218	          );
+   219	
+   220	        const result =
+   221	          await client.query<ResidentRow>(
+   222	            `
+   223	            SELECT
+   224	              resident_id,
+   225	              resident_code,
+   226	              display_name,
+   227	              date_of_birth,
+   228	              gender,
+   229	              room,
+   230	              bed,
+   231	              care_level,
+   232	              active_status
+   233	            FROM residents
+   234	            ORDER BY
+   235	              resident_code ASC,
+   236	              resident_id ASC
+   237	            LIMIT $1
+   238	            OFFSET $2
+   239	            `,
+   240	            [
+   241	              limit,
+   242	              offset,
+   243	            ],
+   244	          );
+   245	
+   246	        return {
+   247	          items:
+   248	            result.rows.map(
+   249	              (row: ResidentRow) =>
+   250	                this.mapResident(row),
+   251	            ),
+   252	          total:
+   253	            Number(
+   254	              countResult
+   255	                .rows[0]
+   256	                ?.total ?? 0,
+   257	            ),
+   258	          limit,
+   259	          offset,
+   260	        };
+   261	      },
+   262	    );
+   263	  }
+   264	
+   265	
+PASS: RESIDENT PAGINATION SOURCE CAPTURED
+
+8. STATIC LIMIT CLASSIFICATION
+327:            COUNT(*) OVER() AS total_count
+336:          LIMIT $${residentScope.nextParameter}
+340:          this.residentLimit + 1,
+360:            COUNT(*) OVER() AS total_count
+406:          LIMIT $${taskScope.nextParameter}
+426:            COUNT(*) OVER() AS total_count
+444:          LIMIT $${joinedScope.nextParameter}
+463:            COUNT(*) OVER() AS total_count
+478:          LIMIT $${joinedScope.nextParameter}
+495:            COUNT(*) OVER() AS total_count
+511:          LIMIT $${joinedScope.nextParameter}
+529:            COUNT(*) OVER() AS total_count
+550:          LIMIT $${joinedScope.nextParameter}
+1268:      truncated: {
+RESIDENT_LIMIT_50_SIGNAL=PRESENT
+RESIDENT_LIMIT_REQUIRES_SEMANTIC_CLASSIFICATION=YES
+
+9. OPS-2-C SOURCE REGRESSION
+/bin/bash: line 276: declare: -A: invalid option
+declare: usage: declare [-afFirtx] [-p] [name[=value] ...]

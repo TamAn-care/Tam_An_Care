@@ -1,0 +1,51 @@
+STEP 7W — CONCURRENCY CONTRACT
+
+OFFICIAL STATE MUTATION
+
+BEGIN
+-> SELECT target FOR UPDATE
+-> re-read state
+-> verify actor
+-> verify authority
+-> verify owner / reviewer
+-> mutate
+-> audit
+-> COMMIT
+
+
+INCOMPATIBLE RACE
+
+Exactly one winner.
+
+LOSER:
+zero business mutation
+zero audit
+
+
+APPEND-ONLY HISTORY
+
+Independent compatible factual observations may coexist.
+
+Independent valid amendments may coexist.
+
+Lost clinical / surveillance history = NO.
+
+
+MANDATORY STEP 7W.C RACES
+
+1. double infection observation verify
+2. double plan activation
+3. double exposure review
+4. double precaution authorization
+5. activate vs discontinue precaution
+6. double monitoring verify
+7. double alert acknowledgement
+8. escalation assignment race
+9. wrong reviewer denial
+10. double escalation acceptance
+11. double escalation resolution
+12. concurrent amendment history test
+
+OWNER PRESERVATION = REQUIRED
+REVIEWER PRESERVATION = REQUIRED
+SINGLE WINNER = REQUIRED

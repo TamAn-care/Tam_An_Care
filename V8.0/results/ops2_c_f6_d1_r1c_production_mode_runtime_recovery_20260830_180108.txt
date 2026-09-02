@@ -1,0 +1,200 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D1-R1C
+ CONTROLLED ISOLATED PRODUCTION-MODE RUNTIME RECOVERY
+ ACCEPTED IMAGE ONLY
+ PRESERVE EXISTING EPHEMERAL JWT SECRET
+ NO FUNCTIONAL POST
+======================================================================
+
+======================================================================
+ 1. R1B AUTHORITY
+======================================================================
+R1B_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d1_r1b_exited_container_forensic_20260830_175921.txt
+PASS: R1B FAIL_COUNT=0
+PASS: R1B FORENSIC PASSED
+PASS: OLD CONTAINER METADATA AUTHORITY
+
+======================================================================
+ 2. SOURCE HASH LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+
+======================================================================
+ 3. OLD CONTAINER + ACCEPTED IMAGE AUTHORITY
+======================================================================
+OLD_STATE=exited
+OLD_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+PASS: OLD CONTAINER EXITED
+PASS: OLD ACCEPTED IMAGE ID
+IMAGE_REF_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+PASS: ACCEPTED IMAGE REF
+PASS: RECOVERY CONTAINER NAME CLEAN
+
+======================================================================
+ 4. EXTRACT REQUIRED ENV IN MEMORY — VALUES NEVER PRINTED
+======================================================================
+DATABASE_URL_PRESENT=YES
+JWT_SECRET_PRESENT=YES
+JWT_SECRET_LENGTH_GE_32=YES
+ENV_SECRET_VALUES_PRINTED=NO
+PASS: DATABASE URL RECOVERED IN MEMORY
+PASS: EPHEMERAL JWT SECRET RECOVERED IN MEMORY
+PASS: JWT SECRET LENGTH CONTRACT
+
+======================================================================
+ 5. FIXTURE + AUTH PRECONDITION
+======================================================================
+PRE_DB_STATE=5|2|2|3|3|4|0
+PRE_TEST_AUTH_SESSION_TOTAL=5
+PASS: FIXTURE STATE
+PASS: AUTH SESSION COUNT
+
+======================================================================
+ 6. CREATE PRODUCTION-MODE RECOVERY CONTAINER
+======================================================================
+PASS: RECOVERY CONTAINER CREATED
+RECOVERY_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+RECOVERY_NODE_ENV=production
+RECOVERY_CORS_PRESENT=YES
+RECOVERY_JWT_SECRET_LENGTH_GE_32=YES
+RECOVERY_SECRET_VALUES_PRINTED=NO
+PASS: RECOVERY ACCEPTED IMAGE
+PASS: PRODUCTION MODE ENABLED
+PASS: PRODUCTION CORS CONTRACT PRESENT
+PASS: EPHEMERAL JWT SECRET PRESERVED STRUCTURALLY
+
+======================================================================
+ 7. REMOVE ONLY EXITED OLD CONTAINER + PROMOTE RECOVERY NAME
+======================================================================
+PASS: EXITED OLD CONTAINER REMOVED
+PASS: RECOVERY CONTAINER PROMOTED TO CANONICAL ISOLATED NAME
+
+======================================================================
+ 8. START RECOVERED ISOLATED RUNTIME
+======================================================================
+PASS: RECOVERED CONTAINER STARTED
+RECOVERED_STATE=running
+RECOVERED_HEALTH_HTTP=200
+RECOVERED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+PASS: RECOVERED RUNTIME RUNNING
+PASS: RECOVERED HEALTH 200
+PASS: ACCEPTED IMAGE PRESERVED
+
+======================================================================
+ 9. PRODUCTION AUTH MODE STRUCTURAL ACCEPTANCE
+======================================================================
+FINAL_NODE_ENV=production
+FINAL_JWT_SECRET_PRESENT=YES
+FINAL_JWT_SECRET_LENGTH_GE_32=YES
+FINAL_CORS_ALLOWED_ORIGINS_PRESENT=YES
+JWT_SECRET_VALUE_PRINTED=NO
+PASS: PRODUCTION AUTH MODE ACTIVE
+PASS: JWT SECRET PRESENT
+PASS: JWT SECRET LENGTH
+PASS: CORS PRESENT
+
+======================================================================
+ 10. READ-ONLY AUTH MIDDLEWARE SMOKE TEST
+ NO BEARER TOKEN — EXPECT 401 IN PRODUCTION MODE
+======================================================================
+UNAUTHENTICATED_PROTECTED_GET_HTTP=401
+PASS: PRODUCTION AUTH MIDDLEWARE ENFORCEMENT OBSERVED
+
+======================================================================
+ 11. FIXTURE + AUTH PRESERVATION AFTER RUNTIME RECOVERY
+======================================================================
+POST_DB_STATE=5|2|2|3|3|4|0
+POST_TEST_AUTH_SESSION_TOTAL=5
+PASS: FIXTURES PRESERVED
+PASS: AUTH SESSIONS PRESERVED
+
+======================================================================
+ 12. CANONICAL RUNTIME REGRESSION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+
+======================================================================
+ 13. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 14. R1C BOUNDARY
+======================================================================
+FUNCTIONAL_POST_EXECUTED=NO
+RESIDENT_CONSUMPTION_POST_EXECUTED=NO
+GENERIC_TRANSACTION_POST_EXECUTED=NO
+READ_ONLY_AUTH_SMOKE_GET_EXECUTED=YES
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+ACCEPTED_IMAGE_CHANGED=NO
+SCHEMA_MUTATION=NO
+DATABASE_MUTATION_EXECUTED=NO
+FIXTURE_MUTATION=NO
+AUTH_SESSION_MUTATION=NO
+ISOLATED_CONTAINER_REPROVISION_EXECUTED=YES
+CANONICAL_RUNTIME_REPROVISION_EXECUTED=NO
+CANONICAL_JWT_SECRET_CHANGED=NO
+EPHEMERAL_JWT_SECRET_ROTATED=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D1-R1C DECISION
+======================================================================
+FAIL_COUNT=0
+STATUS: OPS-2-C F6-D1-R1C PRODUCTION-MODE RUNTIME RECOVERY PASSED
+ISOLATED_RUNTIME_READY=YES
+PRODUCTION_AUTH_MIDDLEWARE_ENFORCEMENT=YES
+ACCEPTED_IMAGE_PRESERVED=YES
+EPHEMERAL_JWT_SECRET_PRESERVED=YES
+FIXTURES_PRESERVED=YES
+AUTH_SESSIONS_PRESERVED=YES
+SOURCE_REPAIR_REQUIRED=NO
+FUNCTIONAL_RETRY_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_BOUNDED_F06_F07_F13_RETRY
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d1_r1c_production_mode_runtime_recovery_20260830_180108.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING IF HEALTHY
+ -> PRESERVE CURRENT EPHEMERAL JWT SECRET
+ -> KEEP F5/F6 FIXTURES + AUTH SESSIONS
+ -> DO NOT REPROVISION FIXTURES
+ -> DO NOT RUN FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT CHANGE CANONICAL JWT_SECRET
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT DELETE FIXTURES
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

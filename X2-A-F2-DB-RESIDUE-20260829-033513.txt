@@ -1,0 +1,6 @@
+    table_name     
+-------------------
+ auth_credentials
+ schema_migrations
+(2 rows)
+

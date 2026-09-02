@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-08-21T10:45:56.111163+00:00",
+  "status": "PASSED",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "production_db_restart": false,
+  "production_db_write": false,
+  "production_db_restore": false,
+  "production_db_migration": false,
+  "backup_hash": "35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9",
+  "db_data_volume": "taman-care-v743-dev-postgres-data",
+  "disposable_restart_test": "PASSED",
+  "production_db_restart_decision": "PRODUCTION_DB_RESTART_APPROVED_FOR_CONTROLLED_EXECUTION",
+  "production_table_count": 118,
+  "production_fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+  "v76_rollback_assets_preserved": true,
+  "safety_contract_hash": "6cfea53a1eff2d49023d3e76c5058dbe8b039fc65a787f9193d31b85474374e1",
+  "next": "V7.8_PHASE_2B_R1_CONTROLLED_PRODUCTION_DB_RESTART"
+}

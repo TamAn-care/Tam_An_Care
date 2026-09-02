@@ -1,0 +1,125 @@
+======================================================================
+ TAMANCARE — CODEX AUTH TRANSPORT DIAGNOSTIC
+ READ ONLY / NO LOGIN / NO CODEX EXEC
+======================================================================
+
+======================================================================
+ 1. CODEX STATE
+======================================================================
+CODEX_EXECUTABLE=/Users/anhha/.local/bin/codex
+CODEX_VERSION=codex-cli 0.151.0
+CODEX_LOGIN_STARTED=NO
+CODEX_EXEC_STARTED=NO
+
+======================================================================
+ 2. LOCAL CLOCK
+======================================================================
+LOCAL_DATE=Sun Aug 30 10:45:06 +07 2026
+UTC_DATE=Sun Aug 30 03:45:06 UTC 2026
+
+======================================================================
+ 3. DNS RESOLUTION — auth.openai.com
+======================================================================
+DNS_STATUS=PASS
+DNS_ADDRESS=104.18.41.241
+DNS_ADDRESS=172.64.146.15
+DNS_ADDRESS=2606:4700:4400::6812:29f1
+DNS_ADDRESS=2a06:98c1:310c::ac40:920f
+
+======================================================================
+ 4. PROXY / VPN SIGNALS — VALUES NOT PRINTED
+======================================================================
+HTTP_PROXY=NOT_SET
+HTTPS_PROXY=NOT_SET
+ALL_PROXY=NOT_SET
+NO_PROXY=NOT_SET
+http_proxy=NOT_SET
+https_proxy=NOT_SET
+all_proxy=NOT_SET
+no_proxy=NOT_SET
+
+MACOS_SYSTEM_PROXY_SUMMARY_BEGIN
+  ProxyAutoConfigEnable : 1
+  ProxyAutoDiscoveryEnable : 1
+MACOS_SYSTEM_PROXY_SUMMARY_END
+PROXY_HOSTS_PRINTED=NO
+PROXY_CREDENTIALS_PRINTED=NO
+
+======================================================================
+ 5. HTTPS — AUTH ROOT
+======================================================================
+HTTP_CODE=403
+REMOTE_IP=2606:4700:4400::6812:29f1
+SSL_VERIFY=0
+AUTH_ROOT_CONNECTIVITY=PASS
+
+======================================================================
+ 6. HTTPS — CODEX DEVICE PAGE
+======================================================================
+HTTP_CODE=403
+REMOTE_IP=2a06:98c1:310c::ac40:920f
+SSL_VERIFY=0
+DEVICE_PAGE_CONNECTIVITY=PASS
+
+======================================================================
+ 7. DEVICE TOKEN ENDPOINT — TRANSPORT ONLY
+======================================================================
+HTTP_CODE=400
+REMOTE_IP=2606:4700:4400::6812:29f1
+SSL_VERIFY=0
+TOKEN_ENDPOINT_TRANSPORT=PASS
+NOTE=Any_nonzero_HTTP_status_confirms_transport_reachability
+
+======================================================================
+ 8. GENERAL OPENAI HTTPS CONTROL
+======================================================================
+HTTP_CODE=401
+REMOTE_IP=162.159.140.245
+SSL_VERIFY=0
+OPENAI_API_TRANSPORT=PASS
+
+======================================================================
+ 9. TAMANCARE ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+RUNTIME_3108=200
+RUNTIME_4173=200
+
+======================================================================
+ 10. SAFETY ASSERTIONS
+======================================================================
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_MUTATION=NO
+RUNTIME_RESTART=NO
+GIT_INIT=NO
+PACKAGE_INSTALLATION=NO
+CODEX_LOGIN_STARTED=NO
+CODEX_EXEC_STARTED=NO
+AUTOPILOT_STARTED=NO
+SECRET_PRINTED=NO
+DEVICE_CODE_USED=NO
+
+======================================================================
+ FINAL TRANSPORT DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+
+STATUS: CODEX AUTH TRANSPORT DIAGNOSTIC PASSED
+AUTH_TRANSPORT_READY=YES
+AUTONOMOUS_EXECUTION_AUTHORIZED=NO
+NEXT=CONTROLLED_FRESH_CODEX_LOGIN
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_codex_auth_transport_diagnostic_20260830_104505.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT LOGIN AGAIN YET
+ -> DO NOT RUN CODEX EXEC
+ -> DO NOT START AUTOPILOT
+ -> DO NOT CHANGE NETWORK SETTINGS YET
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

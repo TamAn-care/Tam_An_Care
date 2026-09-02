@@ -1,0 +1,23 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4B_R3",
+  "status": "PASSED",
+  "decision": "FRONTEND_BACKEND_WARNING_CONTRACT_ALIGNED",
+  "requestJson_method": "GET",
+  "postJson_method": "POST",
+  "read_contract": {
+    "method": "GET",
+    "endpoint": "/api/warning-reviews/:warningId"
+  },
+  "mutation_contract": {
+    "method": "POST",
+    "endpoint": "/api/warning-reviews"
+  },
+  "base_get_is_route": false,
+  "mutation_execution": false,
+  "application_source_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "created_at": "2026-08-22T05:37:12.853566+00:00"
+}

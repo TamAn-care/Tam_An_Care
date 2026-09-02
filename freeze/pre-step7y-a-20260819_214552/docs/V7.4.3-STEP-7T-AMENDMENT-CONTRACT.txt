@@ -1,0 +1,25 @@
+STEP 7T — AMENDMENT / CORRECTION CONTRACT
+
+Verified record overwrite = NO.
+
+Corrections to verified observations, responses and reviews must:
+- preserve original record
+- be append-only
+- identify human amendment actor
+- contain amendment reason
+- contain amendment timestamp
+- preserve attributable history
+
+Concurrent independent append-only amendments may both persist
+when they do not represent incompatible state transitions.
+
+Invalid amendment:
+zero business mutation
+zero audit
+
+Failed amendment:
+zero business mutation
+zero audit
+
+Original history preserved = YES
+Lost amendment history = NO

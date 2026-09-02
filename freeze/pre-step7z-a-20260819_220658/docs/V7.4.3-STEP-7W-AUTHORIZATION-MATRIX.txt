@@ -1,0 +1,81 @@
+STEP 7W — HUMAN AUTHORIZATION MATRIX
+
+GENERAL
+
+Official infection-domain mutation requires attributable HUMAN actor.
+
+
+CAREGIVER
+
+ALLOWED:
+- record factual observable symptoms
+- record resident report
+- document possible exposure context
+- perform assigned monitoring
+- request nurse / supervisor review
+
+DENIED:
+- infection diagnosis
+- antibiotic decision
+- antiviral decision
+- isolation decision
+- transfer decision
+
+
+NURSE
+
+ALLOWED:
+- verify infection observation
+- review exposure
+- create human-confirmed alert
+- perform monitoring
+- request / initiate escalation
+- document approved precautions where policy permits
+
+Medication decision remains separate.
+
+
+SUPERVISOR / CARE MANAGER
+
+ALLOWED:
+- review infection-control plan
+- activate infection-control plan
+- authorize facility-level precaution workflow where within policy
+- assign escalation reviewer
+- governance review
+
+
+AUTHORIZED HUMAN REVIEWER
+
+ALLOWED:
+- accept assigned escalation
+- perform review
+- resolve escalation
+- document follow-up
+
+
+AI / SYSTEM
+
+AI = advisory only.
+SYSTEM = infrastructure only.
+
+DENIED:
+- official diagnosis
+- official infection confirmation
+- official sepsis determination
+- antibiotic selection
+- antiviral selection
+- medication dose change
+- medication administration
+- precaution activation
+- precaution discontinuation
+- isolation decision
+- quarantine decision
+- transfer decision
+- emergency-service decision
+- escalation resolution
+- incident creation
+- care action creation
+- care task creation
+
+HUMAN ACCOUNTABILITY = REQUIRED

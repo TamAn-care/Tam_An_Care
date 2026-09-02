@@ -1,0 +1,69 @@
+TAM AN CARE V7.4.3
+STEP 7L — CARE PLAN / CARE TASK AUTHORIZATION MATRIX
+DESIGN ONLY
+
+Legend:
+ALLOW   = proposed human authority
+DENY    = prohibited
+REVIEW  = requires later policy decision
+N/A     = not applicable
+
+===========================================================
+CARE PLAN
+===========================================================
+
+ACTION                  CAREGIVER  SUPERVISOR  CARE_MANAGER  AI  SYSTEM
+
+Create Draft Proposal   REVIEW     ALLOW       ALLOW         DENY DENY
+Edit Draft Proposal     REVIEW     ALLOW       ALLOW         DENY DENY
+Activate Plan           DENY       ALLOW       ALLOW         DENY DENY
+Suspend Plan            DENY       ALLOW       ALLOW         DENY DENY
+Reactivate Plan         DENY       ALLOW       ALLOW         DENY DENY
+Complete Plan           DENY       REVIEW      ALLOW         DENY DENY
+Cancel Plan             DENY       REVIEW      ALLOW         DENY DENY
+
+===========================================================
+CARE TASK
+===========================================================
+
+ACTION                  CAREGIVER  SUPERVISOR  CARE_MANAGER  AI  SYSTEM
+
+Create Task Proposal    REVIEW     ALLOW       ALLOW         DENY DENY
+Persist Executable Task REVIEW     ALLOW       ALLOW         DENY REVIEW
+Assign Task             REVIEW     ALLOW       ALLOW         DENY DENY
+Accept Own Task         ALLOW      ALLOW       ALLOW         DENY DENY
+Start Assigned Task     ALLOW      ALLOW       ALLOW         DENY DENY
+Complete Assigned Task  ALLOW      ALLOW       ALLOW         DENY DENY
+Skip Task               REVIEW     ALLOW       ALLOW         DENY DENY
+Cancel Task             DENY       REVIEW      ALLOW         DENY DENY
+Reassign Task           DENY       ALLOW       ALLOW         DENY DENY
+
+===========================================================
+AI BOUNDARY
+===========================================================
+
+AI MAY RECOMMEND:
+- task
+- priority
+- caregiver candidate
+- timing
+- workload balancing
+- plan review
+
+AI MAY NOT:
+- activate
+- assign
+- accept responsibility
+- start
+- complete
+- skip
+- cancel
+- certify outcome
+
+AUTONOMOUS_CLINICAL_ACTION=FALSE
+
+IMPORTANT:
+
+This is a DESIGN MATRIX.
+
+REVIEW cells MUST be resolved before implementation.

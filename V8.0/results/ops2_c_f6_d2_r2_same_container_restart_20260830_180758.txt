@@ -1,0 +1,155 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D2-R2
+ SAME-CONTAINER CONTROLLED RESTART
+ NO REPROVISION / NO FUNCTIONAL POST
+======================================================================
+
+======================================================================
+ 1. R1 FORENSIC AUTHORITY
+======================================================================
+R1_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r1_repeated_runtime_exit_forensic_20260830_180601.txt
+PASS: R1 FORENSIC AUTHORITY
+
+======================================================================
+ 2. SOURCE HASH LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+
+======================================================================
+ 3. EXITED CONTAINER AUTHORITY BEFORE START
+======================================================================
+PRE_STATE=exited
+IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+CONFIG_NODE_ENV=production
+CONFIG_JWT_SECRET_LENGTH_GE_32=YES
+CONFIG_CORS_PRESENT=YES
+SECRET_VALUE_PRINTED=NO
+PASS: CONTAINER EXITED AS FORENSICALLY CAPTURED
+PASS: ACCEPTED IMAGE
+PASS: PRODUCTION MODE CONFIG
+PASS: EPHEMERAL JWT SECRET CONFIG PRESERVED
+PASS: CORS CONFIG PRESERVED
+
+======================================================================
+ 4. DATABASE PRECONDITION
+======================================================================
+PRE_DB_STATE=5|2|2|3|3|4|0
+TEST_AUTH_SESSION_TOTAL=5
+D2_TX_COUNT=0
+D2_EVENT_COUNT=0
+PASS: FIXTURE STATE
+PASS: AUTH SESSION COUNT
+PASS: D2 NAMESPACE CLEAN
+
+======================================================================
+ 5. START EXACT SAME CONTAINER
+======================================================================
+PASS: SAME CONTAINER START COMMAND COMPLETED
+POST_START_STATE=running
+HEALTH_HTTP=200
+IMAGE_ID_AFTER_START=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+PASS: SAME CONTAINER RUNNING
+PASS: HEALTH 200
+PASS: ACCEPTED IMAGE PRESERVED
+
+======================================================================
+ 6. PRODUCTION AUTH READ-ONLY SMOKE
+======================================================================
+UNAUTHENTICATED_PROTECTED_GET_HTTP=401
+PASS: PRODUCTION AUTH MIDDLEWARE ACTIVE
+
+======================================================================
+ 7. DATABASE PRESERVATION AFTER RESTART
+======================================================================
+POST_DB_STATE=5|2|2|3|3|4|0
+POST_TEST_AUTH_SESSION_TOTAL=5
+PASS: DATABASE UNCHANGED
+PASS: AUTH SESSIONS PRESERVED
+
+======================================================================
+ 8. CANONICAL RUNTIME REGRESSION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+
+======================================================================
+ 9. FINAL SOURCE HASH LOCK
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 10. R2 BOUNDARY
+======================================================================
+SAME_CONTAINER_RESTART_EXECUTED=YES
+CONTAINER_REPROVISIONED=NO
+CONTAINER_CREATED=NO
+CONTAINER_REMOVED=NO
+IMAGE_BUILD_EXECUTED=NO
+HTTP_POST_EXECUTED=NO
+FUNCTIONAL_D2_EXECUTED=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+FIXTURE_MUTATION=NO
+AUTH_SESSION_MUTATION=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CANONICAL_JWT_SECRET_CHANGED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D2-R2 DECISION
+======================================================================
+FAIL_COUNT=0
+STATUS: OPS-2-C F6-D2-R2 SAME-CONTAINER RESTART PASSED
+REPEATED_EXIT_CLASS=EXTERNAL_DOCKER_STOP_NOT_APPLICATION_CRASH
+APPLICATION_DEFECT_EVIDENCE=NO
+SOURCE_REPAIR_REQUIRED=NO
+ACCEPTED_IMAGE_PRESERVED=YES
+PRODUCTION_AUTH_MODE_READY=YES
+FIXTURES_READY=YES
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_CONTROLLED_F6_D2_POSITIVE_MATRIX_RETRY
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d2_r2_same_container_restart_20260830_180758.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING IF HEALTHY
+ -> PRESERVE CURRENT EPHEMERAL JWT SECRET
+ -> KEEP F5/F6 FIXTURES + AUTH SESSIONS
+ -> DO NOT RUN FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT REPROVISION CONTAINER
+ -> DO NOT CHANGE CANONICAL JWT_SECRET
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT DELETE FIXTURES
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

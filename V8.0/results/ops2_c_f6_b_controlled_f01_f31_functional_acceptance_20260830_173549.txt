@@ -1,0 +1,59 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-B
+ CONTROLLED F01-F31 FUNCTIONAL ACCEPTANCE
+ ISOLATED API 3111 ONLY
+ DISPOSABLE AUTH + FUNCTIONAL DATA
+ MANDATORY CLEANUP TO CLEAN BASELINE
+======================================================================
+
+======================================================================
+ 1. F6-A AUTHORITY
+======================================================================
+PASS: F6-A AUTHORITY
+
+======================================================================
+ 2. SOURCE HASH AUTHORITY
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SOURCE HASH AUTHORITY
+
+======================================================================
+ 3. FIXTURE + RUNTIME PRECONDITION
+======================================================================
+PRE_FUNCTIONAL_DB_STATE=5|2|2|3|3|4|0
+ISOLATED_STATE=running
+ISOLATED_HEALTH_HTTP=200
+PASS: FIXTURE + ISOLATED RUNTIME PRECONDITION
+
+======================================================================
+ 4. TEMPORARY AUTH SESSION PROVISIONING
+======================================================================
+BEGIN
+INSERT 0 5
+COMMIT
+TEMP_AUTH_SESSION_COUNT=5
+PASS: TEMP AUTH SESSIONS PROVISIONED
+
+======================================================================
+ 5. JWT GENERATION — SECRET + TOKENS NEVER PRINTED
+======================================================================
+
+======================================================================
+ EMERGENCY / FINAL DISPOSABLE DATA CLEANUP
+======================================================================
+BEGIN
+DELETE 0
+DELETE 0
+DELETE 5
+DELETE 4
+DELETE 3
+DELETE 3
+DELETE 2
+DELETE 1
+DELETE 4
+COMMIT
+CLEANUP_SQL_RC=0
+PASS: DISPOSABLE DATA CLEANUP SQL

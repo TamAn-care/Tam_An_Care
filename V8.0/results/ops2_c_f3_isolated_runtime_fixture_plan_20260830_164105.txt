@@ -1,0 +1,561 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F3
+ EXACT ISOLATED RUNTIME + DISPOSABLE FIXTURE PLAN
+ READ ONLY / NO BUILD / NO CONTAINER / NO DB MUTATION
+======================================================================
+
+======================================================================
+ 1. F2-R1 AUTHORITY
+======================================================================
+PASS: F2-R1 AUTHORITY
+F2_R1_ARTIFACT=ops2_c_f2_r1_staff_actor_delegation_audit_20260830_163827.txt
+
+======================================================================
+ 2. SOURCE HASH LOCK
+======================================================================
+INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: INVENTORY_CONTROLLER
+INVENTORY_MODULE=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: INVENTORY_MODULE
+RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: RESIDENT_CONSUMPTION_SERVICE
+
+======================================================================
+ 3. DOCKER BUILD AUTHORITY DISCOVERY
+======================================================================
+COMPOSE_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/docker-compose.yml
+
+DOCKERFILES:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R2-backup-20260829-033832/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R4-backup-20260829-035450/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R3-backup-20260829-035206/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/web/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R5-backup-20260829-035916/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R6-backup-20260829-040354/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R1-backup-20260829-032905/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/VW-9E-B3-B-R1-backup-20260828-121226/Dockerfile
+
+COMPOSE SERVICES:
+postgres
+api
+
+======================================================================
+ 4. EXISTING CONTAINERS — READ ONLY
+======================================================================
+NAMES                                                             IMAGE                                            STATUS                     PORTS
+nifty_williams                                                    node:22-bookworm                                 Up 6 hours                 
+tamancare_ops2b_functional                                        tamancare_ops2b_balancefix:20260830_070355       Up 10 hours                127.0.0.1:3110->3000/tcp
+tamancare_ops1e_rta2                                              tamancare_ops1e_rta2:acceptance                  Up 24 hours                0.0.0.0:3108->3000/tcp, [::]:3108->3000/tcp
+tamancare_ops1c_r1                                                tamancare-ops1c-r5:local                         Up 25 hours                127.0.0.1:3107->3107/tcp
+tamancare_ops1b_r4b_retest                                        tamancare-ops1b-r4b-r2:local                     Up 25 hours                127.0.0.1:3106->3106/tcp
+tamancare_ops1b_r4_create                                         tamancare-ops1b-r4:local                         Up 25 hours                127.0.0.1:3105->3105/tcp
+tamancare_ops1b_dev_authority                                     tamancare-ops1b-acceptance:local                 Up 26 hours                127.0.0.1:3104->3104/tcp
+tamancare_ops1b_acceptance_r3                                     tamancare-ops1b-acceptance:local                 Up 26 hours                127.0.0.1:3103->3103/tcp
+tamancare_ops1b_acceptance_r1                                     tamancare-ops1b-acceptance:local                 Up 26 hours                127.0.0.1:3102->3102/tcp
+tamancare_ops1b_acceptance                                        tamancare-ops1b-acceptance:local                 Exited (1) 26 hours ago    
+tamancare-demo-ui                                                 tamancare-full-demo-ui:v6                        Exited (0) 2 days ago      
+tamancare-demo-api                                                tamancare-full-demo-api:v1                       Exited (1) 2 days ago      
+tamancare-demo-postgres                                           postgres:16                                      Exited (0) 2 days ago      
+tamancare_v7_4_3_development-api-1                                tamancare_v7_4_3_development-api                 Up 2 days                  0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+tamancare_v7_4_3_development-postgres-1                           postgres:16                                      Up 2 days                  5432/tcp
+taman-care-v77-production-ui                                      53bf7afecf93                                     Exited (255) 6 days ago    127.0.0.1:8080->80/tcp
+taman-care-v77-production-api                                     36b1511ed4b4                                     Exited (255) 6 days ago    127.0.0.1:3100->3000/tcp
+taman-care-v75-ui                                                 cca4784a77a1                                     Exited (0) 8 days ago      
+taman-care-v743-dev-api                                           3eb6622aaa1c                                     Exited (1) 8 days ago      
+taman-care-v75-ui-pre-v76-r1-20260821_111619                      taman-care-v75-ui:release                        Exited (0) 9 days ago      
+taman-care-v75-api-pre-v76-r1-20260821_111619                     taman-care-v75-step9f-phase45-candidate:latest   Exited (1) 9 days ago      
+taman-care-v743-dev-api-pre-phase45-20260820_220421               taman-care-v75-step9f-b2-candidate:latest        Exited (1) 9 days ago      
+taman-care-v743-dev-api-pre-9fb3-20260820_173948                  taman-care-v743-step8f-c4-candidate:latest       Exited (1) 9 days ago      
+taman-care-v743-dev-api-pre-8f-c5-20260820_133027                 taman-care-v743-step8e-c2-candidate:latest       Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-8e-c3-20260820_120417                 taman-care-v743-step8d-c3-candidate:latest       Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-8d-c4-20260820_101048                 taman-care-v743-step8c-c2-r3-candidate:latest    Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-8c-c3-20260820_091609                 taman-care-v743-step8b-c2-candidate:latest       Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-8b-c3-20260820_081448                 taman-care-v743-step8a-e:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-8a-e-20260819_233303                  taman-care-v743-step7z-c0:latest                 Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7z-c0-20260819_222508                 taman-care-v743-step7z-b:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7z-b-20260819_221048                  taman-care-v743-step7y-b:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7y-b-20260819_215117                  taman-care-v743-step7x-b:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7x-b-20260819_213734                  taman-care-v743-step7w-b:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7w-b-20260819_212519                  taman-care-v743-step7v-b:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7v-b-20260819_211435                  taman-care-v743-step7u-b:latest                  Exited (1) 10 days ago     
+taman-care-v743-dev-api-pre-7u-b-20260819_155607                  taman-care-v743-step7t-b:latest                  Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7t-b-20260819_153844                  taman-care-v743-step7s-b:latest                  Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7s-b-20260819_150846                  taman-care-v743-step7r-b:latest                  Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7r-b-20260819_090105                  taman-care-v743-step7q-b-r1f1:latest             Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7q-b-r1f1-20260819_071205             taman-care-v743-step7q-b:latest                  Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7q-b-20260819_070612                  taman-care-v743-step7p-b-r2:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7p-b-r2-20260819_065137               taman-care-v743-step7o-b-r2:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7o-b-r2-20260819_061733               taman-care-v743-step7o-b-r1:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7o-b-r1-20260819_061521               taman-care-v743-step7n-b-r3:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7n-b-r3-20260819_055634               taman-care-v743-step7n-b-r1:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7n-b-r1-20260819_055314               taman-care-v743-step7n-b:latest                  Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7n-b-20260819_055101                  taman-care-v743-step7m-c-r1:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7m-c-r1-20260819_054357               taman-care-v743-step7m-b-r1:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7m-b-r1-20260819_053957               taman-care-v743-step7m-b:latest                  Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7m-b-20260819_053806                  taman-care-v743-step7l6c-r2:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7l6c-r2-20260819_052458               taman-care-v743-step7l6b-r1:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7l6b-r1-20260818_224704               taman-care-v743-step7l5r1f1:latest               Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7l5r1f1-20260818_222316               taman-care-v743-step7l4:latest                   Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7l3-20260818_215822                   taman-care-v743-step7k2r3:latest                 Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-7k2r3-20260818_212942                 taman-care-v743-step7j2r2-httpfix:latest         Exited (1) 11 days ago     
+taman-care-v743-dev-api-pre-httpfix-20260818_171740               taman-care-v743-step7j2r1:latest                 Exited (1) 11 days ago     
+taman-care-v743-dev-postgres                                      postgres:16                                      Exited (255) 6 days ago    5432/tcp
+tamancare_v7_3_2_health_trend_ai-api-1                            4c6ef5b7091e                                     Exited (1) 9 days ago      
+taman-care-v742-careaction-test                                   f457fe7d87c7                                     Exited (0) 12 days ago     
+taman-care-v7411-ui-pre-v75-20260821_065947                       taman-care-v7419-ui                              Exited (0) 9 days ago      
+tamancare_v7_3_2_health_trend_ai-api-1-pre-v742-20260818_152817   tamancare_v7_3_2_health_trend_ai-api             Exited (1) 12 days ago     
+tamancare_v7_3_2_health_trend_ai-postgres-1                       postgres:16                                      Exited (0) 9 days ago      
+tamancare_v7_3_1_seven_ai_engines-api-1                           tamancare_v7_3_1_seven_ai_engines-api            Exited (1) 13 days ago     
+tamancare_v7_3_1_seven_ai_engines-postgres-1                      postgres:16                                      Exited (255) 12 days ago   
+tamancare_v7_2_ai_gateway_governance-api-1                        tamancare_v7_2_ai_gateway_governance-api         Exited (1) 13 days ago     
+tamancare_v7_2_ai_gateway_governance-postgres-1                   postgres:16                                      Exited (0) 13 days ago     
+tamancare_v7_1_core-api-1                                         tamancare_v7_1_core-api                          Exited (1) 13 days ago     
+tamancare_v7_1_core-postgres-1                                    postgres:16                                      Exited (0) 13 days ago     
+
+======================================================================
+ 5. CANONICAL POSTGRES NETWORK AUTHORITY
+======================================================================
+CANONICAL_POSTGRES_RUNNING=true
+PASS: CANONICAL POSTGRES RUNNING
+POSTGRES_NETWORKS:
+tamancare_v7_4_3_development_default
+
+
+======================================================================
+ 6. API CONTAINER CONFIG SHAPE — SECRET SAFE
+======================================================================
+DISCOVERED_API_CONTAINER=tamancare_v7_4_3_development-api-1
+API_IMAGE=tamancare_v7_4_3_development-api
+API_NETWORKS:
+tamancare_v7_4_3_development_default
+
+API_ENVIRONMENT_KEY_NAMES:
+
+DATABASE_URL=<REDACTED>
+JWT_SECRET=<REDACTED>
+NODE_VERSION=<REDACTED>
+PATH=<REDACTED>
+PORT=<REDACTED>
+YARN_VERSION=<REDACTED>
+
+======================================================================
+ 7. FIXTURE TABLE SCHEMA — READ ONLY
+======================================================================
+table_name|ordinal_position|column_name|data_type|is_nullable|coalesce
+inventory_items|1|inventory_item_id|text|NO|NULL
+inventory_items|2|code|text|NO|NULL
+inventory_items|3|display_name_vi|text|NO|NULL
+inventory_items|4|category|text|NO|NULL
+inventory_items|5|base_unit|text|NO|NULL
+inventory_items|6|active|boolean|NO|true
+inventory_items|7|created_at|timestamp with time zone|NO|now()
+inventory_items|8|updated_at|timestamp with time zone|NO|now()
+inventory_items|9|lot_tracking_required|boolean|NO|false
+inventory_lots|1|inventory_lot_id|text|NO|NULL
+inventory_lots|2|inventory_item_id|text|NO|NULL
+inventory_lots|3|lot_code|text|YES|NULL
+inventory_lots|4|received_at|timestamp with time zone|YES|NULL
+inventory_lots|5|expiry_date|date|YES|NULL
+inventory_lots|6|supplier_reference|text|YES|NULL
+inventory_lots|7|note|text|YES|NULL
+inventory_lots|8|status|text|NO|'ACTIVE'::text
+inventory_lots|9|created_at|timestamp with time zone|NO|now()
+inventory_transactions|1|inventory_transaction_id|text|NO|NULL
+inventory_transactions|2|inventory_item_id|text|NO|NULL
+inventory_transactions|3|inventory_lot_id|text|YES|NULL
+inventory_transactions|4|transaction_type|text|NO|NULL
+inventory_transactions|5|quantity|numeric|NO|NULL
+inventory_transactions|6|unit|text|NO|NULL
+inventory_transactions|7|occurred_at|timestamp with time zone|NO|NULL
+inventory_transactions|8|performed_by|text|NO|NULL
+inventory_transactions|9|performed_by_role|text|NO|NULL
+inventory_transactions|10|source_domain|text|NO|NULL
+inventory_transactions|11|source_entity_type|text|YES|NULL
+inventory_transactions|12|source_entity_id|text|YES|NULL
+inventory_transactions|13|reason_code|text|YES|NULL
+inventory_transactions|14|note|text|YES|NULL
+inventory_transactions|15|created_at|timestamp with time zone|NO|now()
+resident_access_assignments|1|resident_access_assignment_id|text|NO|NULL
+resident_access_assignments|2|resident_id|text|NO|NULL
+resident_access_assignments|3|actor_id|text|NO|NULL
+resident_access_assignments|4|actor_role|text|NO|NULL
+resident_access_assignments|5|access_scope|text|NO|NULL
+resident_access_assignments|6|status|text|NO|NULL
+resident_access_assignments|7|effective_from|timestamp with time zone|NO|NULL
+resident_access_assignments|8|effective_to|timestamp with time zone|YES|NULL
+resident_access_assignments|9|assigned_by|text|NO|NULL
+resident_access_assignments|10|assigned_by_role|text|NO|NULL
+resident_access_assignments|11|assigned_at|timestamp with time zone|NO|NULL
+resident_access_assignments|12|revoked_by|text|YES|NULL
+resident_access_assignments|13|revoked_by_role|text|YES|NULL
+resident_access_assignments|14|revoked_at|timestamp with time zone|YES|NULL
+resident_access_assignments|15|revocation_reason|text|YES|NULL
+resident_access_assignments|16|created_at|timestamp with time zone|NO|now()
+resident_access_assignments|17|updated_at|timestamp with time zone|NO|now()
+resident_consumption_events|1|resident_consumption_event_id|text|NO|NULL
+resident_consumption_events|2|resident_id|text|NO|NULL
+resident_consumption_events|3|inventory_item_id|text|NO|NULL
+resident_consumption_events|4|inventory_lot_id|text|YES|NULL
+resident_consumption_events|5|inventory_transaction_id|text|NO|NULL
+resident_consumption_events|6|work_event_id|text|YES|NULL
+resident_consumption_events|7|quantity|numeric|NO|NULL
+resident_consumption_events|8|unit|text|NO|NULL
+resident_consumption_events|9|occurred_at|timestamp with time zone|NO|NULL
+resident_consumption_events|10|recorded_by|text|NO|NULL
+resident_consumption_events|11|recorded_by_role|text|NO|NULL
+resident_consumption_events|12|source_domain|text|NO|NULL
+resident_consumption_events|13|source_entity_type|text|YES|NULL
+resident_consumption_events|14|source_entity_id|text|YES|NULL
+resident_consumption_events|15|note|text|YES|NULL
+resident_consumption_events|16|created_at|timestamp with time zone|NO|now()
+residents|1|resident_id|text|NO|NULL
+residents|2|resident_code|text|NO|NULL
+residents|3|display_name|text|NO|NULL
+residents|4|date_of_birth|date|NO|NULL
+residents|5|gender|text|NO|NULL
+residents|6|room|text|YES|NULL
+residents|7|bed|text|YES|NULL
+residents|8|care_level|text|NO|NULL
+residents|9|active_status|boolean|NO|true
+residents|10|created_at|timestamp with time zone|NO|now()
+residents|11|updated_at|timestamp with time zone|NO|now()
+staff_actors|1|actor_id|text|NO|NULL
+staff_actors|2|staff_code|text|NO|NULL
+staff_actors|3|display_name|text|NO|NULL
+staff_actors|4|primary_operational_role|text|NO|NULL
+staff_actors|5|status|text|NO|NULL
+staff_actors|6|employment_reference|text|YES|NULL
+staff_actors|7|created_at|timestamp with time zone|NO|now()
+staff_actors|8|updated_at|timestamp with time zone|NO|now()
+(85 rows)
+
+======================================================================
+ 8. PRIMARY / UNIQUE / FOREIGN KEY AUTHORITY — READ ONLY
+======================================================================
+table_name|constraint_type|constraint_name|coalesce|coalesce|coalesce
+inventory_items|CHECK|2200_55666_1_not_null|||
+inventory_items|CHECK|2200_55666_2_not_null|||
+inventory_items|CHECK|2200_55666_3_not_null|||
+inventory_items|CHECK|2200_55666_4_not_null|||
+inventory_items|CHECK|2200_55666_5_not_null|||
+inventory_items|CHECK|2200_55666_6_not_null|||
+inventory_items|CHECK|2200_55666_7_not_null|||
+inventory_items|CHECK|2200_55666_8_not_null|||
+inventory_items|CHECK|2200_55666_9_not_null|||
+inventory_items|CHECK|inventory_items_base_unit_ck||inventory_items|base_unit
+inventory_items|CHECK|inventory_items_category_ck||inventory_items|category
+inventory_items|CHECK|inventory_items_code_ck||inventory_items|code
+inventory_items|PRIMARY KEY|inventory_items_pkey|inventory_item_id|inventory_items|inventory_item_id
+inventory_items|UNIQUE|inventory_items_code_key|code|inventory_items|code
+inventory_lots|CHECK|2200_55681_1_not_null|||
+inventory_lots|CHECK|2200_55681_2_not_null|||
+inventory_lots|CHECK|2200_55681_8_not_null|||
+inventory_lots|CHECK|2200_55681_9_not_null|||
+inventory_lots|CHECK|inventory_lots_status_ck||inventory_lots|status
+inventory_lots|FOREIGN KEY|inventory_lots_inventory_item_id_fkey|inventory_item_id|inventory_items|inventory_item_id
+inventory_lots|PRIMARY KEY|inventory_lots_pkey|inventory_lot_id|inventory_lots|inventory_lot_id
+inventory_transactions|CHECK|2200_55696_10_not_null|||
+inventory_transactions|CHECK|2200_55696_15_not_null|||
+inventory_transactions|CHECK|2200_55696_1_not_null|||
+inventory_transactions|CHECK|2200_55696_2_not_null|||
+inventory_transactions|CHECK|2200_55696_4_not_null|||
+inventory_transactions|CHECK|2200_55696_5_not_null|||
+inventory_transactions|CHECK|2200_55696_6_not_null|||
+inventory_transactions|CHECK|2200_55696_7_not_null|||
+inventory_transactions|CHECK|2200_55696_8_not_null|||
+inventory_transactions|CHECK|2200_55696_9_not_null|||
+inventory_transactions|CHECK|inventory_transactions_quantity_ck||inventory_transactions|quantity
+inventory_transactions|CHECK|inventory_transactions_role_ck||inventory_transactions|performed_by_role
+inventory_transactions|CHECK|inventory_transactions_source_ck||inventory_transactions|source_entity_type
+inventory_transactions|CHECK|inventory_transactions_source_ck||inventory_transactions|source_entity_id
+inventory_transactions|CHECK|inventory_transactions_type_ck||inventory_transactions|transaction_type
+inventory_transactions|CHECK|inventory_transactions_unit_ck||inventory_transactions|unit
+inventory_transactions|FOREIGN KEY|inventory_transactions_inventory_item_id_fkey|inventory_item_id|inventory_items|inventory_item_id
+inventory_transactions|FOREIGN KEY|inventory_transactions_inventory_lot_id_fkey|inventory_lot_id|inventory_lots|inventory_lot_id
+inventory_transactions|FOREIGN KEY|inventory_transactions_performed_by_fkey|performed_by|staff_actors|actor_id
+inventory_transactions|PRIMARY KEY|inventory_transactions_pkey|inventory_transaction_id|inventory_transactions|inventory_transaction_id
+resident_access_assignments|CHECK|2200_47370_10_not_null|||
+resident_access_assignments|CHECK|2200_47370_11_not_null|||
+resident_access_assignments|CHECK|2200_47370_16_not_null|||
+resident_access_assignments|CHECK|2200_47370_17_not_null|||
+resident_access_assignments|CHECK|2200_47370_1_not_null|||
+resident_access_assignments|CHECK|2200_47370_2_not_null|||
+resident_access_assignments|CHECK|2200_47370_3_not_null|||
+resident_access_assignments|CHECK|2200_47370_4_not_null|||
+resident_access_assignments|CHECK|2200_47370_5_not_null|||
+resident_access_assignments|CHECK|2200_47370_6_not_null|||
+resident_access_assignments|CHECK|2200_47370_7_not_null|||
+resident_access_assignments|CHECK|2200_47370_9_not_null|||
+resident_access_assignments|CHECK|resident_access_assignments_access_scope_check||resident_access_assignments|access_scope
+resident_access_assignments|CHECK|resident_access_assignments_actor_role_check||resident_access_assignments|actor_role
+resident_access_assignments|CHECK|resident_access_assignments_status_check||resident_access_assignments|status
+resident_access_assignments|CHECK|resident_access_effective_interval_check||resident_access_assignments|effective_to
+resident_access_assignments|CHECK|resident_access_effective_interval_check||resident_access_assignments|effective_from
+resident_access_assignments|CHECK|resident_access_revocation_check||resident_access_assignments|status
+resident_access_assignments|CHECK|resident_access_revocation_check||resident_access_assignments|revoked_at
+resident_access_assignments|CHECK|resident_access_role_scope_check||resident_access_assignments|access_scope
+resident_access_assignments|CHECK|resident_access_role_scope_check||resident_access_assignments|actor_role
+resident_access_assignments|FOREIGN KEY|resident_access_assignments_resident_id_fkey|resident_id|residents|resident_id
+resident_access_assignments|PRIMARY KEY|resident_access_assignments_pkey|resident_access_assignment_id|resident_access_assignments|resident_access_assignment_id
+resident_consumption_events|CHECK|2200_55724_10_not_null|||
+resident_consumption_events|CHECK|2200_55724_11_not_null|||
+resident_consumption_events|CHECK|2200_55724_12_not_null|||
+resident_consumption_events|CHECK|2200_55724_16_not_null|||
+resident_consumption_events|CHECK|2200_55724_1_not_null|||
+resident_consumption_events|CHECK|2200_55724_2_not_null|||
+resident_consumption_events|CHECK|2200_55724_3_not_null|||
+resident_consumption_events|CHECK|2200_55724_5_not_null|||
+resident_consumption_events|CHECK|2200_55724_7_not_null|||
+resident_consumption_events|CHECK|2200_55724_8_not_null|||
+resident_consumption_events|CHECK|2200_55724_9_not_null|||
+resident_consumption_events|CHECK|resident_consumption_quantity_ck||resident_consumption_events|quantity
+resident_consumption_events|CHECK|resident_consumption_role_ck||resident_consumption_events|recorded_by_role
+resident_consumption_events|CHECK|resident_consumption_source_ck||resident_consumption_events|source_entity_id
+resident_consumption_events|CHECK|resident_consumption_source_ck||resident_consumption_events|source_entity_type
+resident_consumption_events|CHECK|resident_consumption_unit_ck||resident_consumption_events|unit
+resident_consumption_events|FOREIGN KEY|resident_consumption_events_inventory_item_id_fkey|inventory_item_id|inventory_items|inventory_item_id
+resident_consumption_events|FOREIGN KEY|resident_consumption_events_inventory_lot_id_fkey|inventory_lot_id|inventory_lots|inventory_lot_id
+resident_consumption_events|FOREIGN KEY|resident_consumption_events_inventory_transaction_id_fkey|inventory_transaction_id|inventory_transactions|inventory_transaction_id
+resident_consumption_events|FOREIGN KEY|resident_consumption_events_recorded_by_fkey|recorded_by|staff_actors|actor_id
+resident_consumption_events|FOREIGN KEY|resident_consumption_events_resident_id_fkey|resident_id|residents|resident_id
+resident_consumption_events|FOREIGN KEY|resident_consumption_events_work_event_id_fkey|work_event_id|operational_work_events|work_event_id
+resident_consumption_events|PRIMARY KEY|resident_consumption_events_pkey|resident_consumption_event_id|resident_consumption_events|resident_consumption_event_id
+residents|CHECK|2200_47391_10_not_null|||
+residents|CHECK|2200_47391_11_not_null|||
+residents|CHECK|2200_47391_1_not_null|||
+residents|CHECK|2200_47391_2_not_null|||
+residents|CHECK|2200_47391_3_not_null|||
+residents|CHECK|2200_47391_4_not_null|||
+residents|CHECK|2200_47391_5_not_null|||
+residents|CHECK|2200_47391_8_not_null|||
+residents|CHECK|2200_47391_9_not_null|||
+residents|CHECK|residents_care_level_check||residents|care_level
+residents|CHECK|residents_gender_check||residents|gender
+residents|PRIMARY KEY|residents_pkey|resident_id|residents|resident_id
+residents|UNIQUE|residents_resident_code_key|resident_code|residents|resident_code
+staff_actors|CHECK|2200_47533_1_not_null|||
+staff_actors|CHECK|2200_47533_2_not_null|||
+staff_actors|CHECK|2200_47533_3_not_null|||
+staff_actors|CHECK|2200_47533_4_not_null|||
+staff_actors|CHECK|2200_47533_5_not_null|||
+staff_actors|CHECK|2200_47533_7_not_null|||
+staff_actors|CHECK|2200_47533_8_not_null|||
+staff_actors|CHECK|staff_actors_role_check||staff_actors|primary_operational_role
+staff_actors|CHECK|staff_actors_status_check||staff_actors|status
+staff_actors|PRIMARY KEY|staff_actors_pkey|actor_id|staff_actors|actor_id
+staff_actors|UNIQUE|staff_actors_staff_code_key|staff_code|staff_actors|staff_code
+(111 rows)
+
+======================================================================
+ 9. CHECK CONSTRAINT AUTHORITY — READ ONLY
+======================================================================
+table_name|conname|pg_get_constraintdef
+inventory_items|inventory_items_base_unit_ck|CHECK ((length(btrim(base_unit)) > 0))
+inventory_items|inventory_items_category_ck|CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+inventory_items|inventory_items_code_ck|CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+inventory_lots|inventory_lots_status_ck|CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'EXHAUSTED'::text, 'CLOSED'::text, 'QUARANTINED'::text])))
+inventory_transactions|inventory_transactions_quantity_ck|CHECK ((quantity > (0)::numeric))
+inventory_transactions|inventory_transactions_role_ck|CHECK ((performed_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+inventory_transactions|inventory_transactions_source_ck|CHECK ((((source_entity_type IS NULL) AND (source_entity_id IS NULL)) OR ((source_entity_type IS NOT NULL) AND (source_entity_id IS NOT NULL))))
+inventory_transactions|inventory_transactions_type_ck|CHECK ((transaction_type = ANY (ARRAY['RECEIPT'::text, 'ISSUE'::text, 'ADJUSTMENT_IN'::text, 'ADJUSTMENT_OUT'::text, 'RETURN_IN'::text, 'RETURN_OUT'::text])))
+inventory_transactions|inventory_transactions_unit_ck|CHECK ((length(btrim(unit)) > 0))
+resident_access_assignments|resident_access_assignments_access_scope_check|CHECK ((access_scope = ANY (ARRAY['DIRECT_CARE'::text, 'CLINICAL_CARE'::text])))
+resident_access_assignments|resident_access_assignments_actor_role_check|CHECK ((actor_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text])))
+resident_access_assignments|resident_access_assignments_status_check|CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'REVOKED'::text])))
+resident_access_assignments|resident_access_effective_interval_check|CHECK (((effective_to IS NULL) OR (effective_to > effective_from)))
+resident_access_assignments|resident_access_revocation_check|CHECK ((((status = 'ACTIVE'::text) AND (revoked_at IS NULL)) OR ((status = 'REVOKED'::text) AND (revoked_at IS NOT NULL))))
+resident_access_assignments|resident_access_role_scope_check|CHECK ((((actor_role = 'CAREGIVER'::text) AND (access_scope = 'DIRECT_CARE'::text)) OR ((actor_role = 'NURSE'::text) AND (access_scope = 'CLINICAL_CARE'::text))))
+resident_consumption_events|resident_consumption_quantity_ck|CHECK ((quantity > (0)::numeric))
+resident_consumption_events|resident_consumption_role_ck|CHECK ((recorded_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+resident_consumption_events|resident_consumption_source_ck|CHECK ((((source_entity_type IS NULL) AND (source_entity_id IS NULL)) OR ((source_entity_type IS NOT NULL) AND (source_entity_id IS NOT NULL))))
+resident_consumption_events|resident_consumption_unit_ck|CHECK ((length(btrim(unit)) > 0))
+residents|residents_care_level_check|CHECK ((care_level = ANY (ARRAY['INDEPENDENT'::text, 'ASSISTED'::text, 'HIGH_ASSISTANCE'::text, 'DEPENDENT'::text])))
+residents|residents_gender_check|CHECK ((gender = ANY (ARRAY['MALE'::text, 'FEMALE'::text, 'OTHER'::text, 'UNSPECIFIED'::text])))
+staff_actors|staff_actors_role_check|CHECK ((primary_operational_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'SUPERVISOR'::text, 'CARE_MANAGER'::text])))
+staff_actors|staff_actors_status_check|CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text, 'SUSPENDED'::text, 'ARCHIVED'::text])))
+(23 rows)
+
+======================================================================
+ 10. INDEX / IDEMPOTENCY AUTHORITY — READ ONLY
+======================================================================
+tablename|indexname|indexdef
+inventory_items|idx_inventory_items_active_category|CREATE INDEX idx_inventory_items_active_category ON public.inventory_items USING btree (active, category, code)
+inventory_items|inventory_items_code_key|CREATE UNIQUE INDEX inventory_items_code_key ON public.inventory_items USING btree (code)
+inventory_items|inventory_items_pkey|CREATE UNIQUE INDEX inventory_items_pkey ON public.inventory_items USING btree (inventory_item_id)
+inventory_lots|idx_inventory_lots_expiry|CREATE INDEX idx_inventory_lots_expiry ON public.inventory_lots USING btree (expiry_date) WHERE (expiry_date IS NOT NULL)
+inventory_lots|idx_inventory_lots_item|CREATE INDEX idx_inventory_lots_item ON public.inventory_lots USING btree (inventory_item_id)
+inventory_lots|idx_inventory_lots_status|CREATE INDEX idx_inventory_lots_status ON public.inventory_lots USING btree (status)
+inventory_lots|inventory_lots_pkey|CREATE UNIQUE INDEX inventory_lots_pkey ON public.inventory_lots USING btree (inventory_lot_id)
+inventory_transactions|idx_inventory_tx_item_time|CREATE INDEX idx_inventory_tx_item_time ON public.inventory_transactions USING btree (inventory_item_id, occurred_at DESC)
+inventory_transactions|idx_inventory_tx_lot_time|CREATE INDEX idx_inventory_tx_lot_time ON public.inventory_transactions USING btree (inventory_lot_id, occurred_at DESC) WHERE (inventory_lot_id IS NOT NULL)
+inventory_transactions|idx_inventory_tx_source|CREATE INDEX idx_inventory_tx_source ON public.inventory_transactions USING btree (source_domain, source_entity_type, source_entity_id) WHERE (source_entity_id IS NOT NULL)
+inventory_transactions|idx_inventory_tx_staff_time|CREATE INDEX idx_inventory_tx_staff_time ON public.inventory_transactions USING btree (performed_by, occurred_at DESC)
+inventory_transactions|inventory_transactions_pkey|CREATE UNIQUE INDEX inventory_transactions_pkey ON public.inventory_transactions USING btree (inventory_transaction_id)
+inventory_transactions|uq_inventory_tx_source_item_lot|CREATE UNIQUE INDEX uq_inventory_tx_source_item_lot ON public.inventory_transactions USING btree (source_domain, source_entity_type, source_entity_id, inventory_item_id, COALESCE(inventory_lot_id, ''::text)) WHERE (source_entity_id IS NOT NULL)
+resident_access_assignments|idx_resident_access_authorization|CREATE INDEX idx_resident_access_authorization ON public.resident_access_assignments USING btree (actor_id, actor_role, status, resident_id)
+resident_access_assignments|idx_resident_access_resident_admin|CREATE INDEX idx_resident_access_resident_admin ON public.resident_access_assignments USING btree (resident_id, status, actor_id)
+resident_access_assignments|resident_access_assignments_pkey|CREATE UNIQUE INDEX resident_access_assignments_pkey ON public.resident_access_assignments USING btree (resident_access_assignment_id)
+resident_access_assignments|uq_resident_access_active_grant|CREATE UNIQUE INDEX uq_resident_access_active_grant ON public.resident_access_assignments USING btree (resident_id, actor_id, actor_role, access_scope) WHERE (status = 'ACTIVE'::text)
+resident_consumption_events|idx_resident_consumption_item_time|CREATE INDEX idx_resident_consumption_item_time ON public.resident_consumption_events USING btree (inventory_item_id, occurred_at DESC)
+resident_consumption_events|idx_resident_consumption_resident_time|CREATE INDEX idx_resident_consumption_resident_time ON public.resident_consumption_events USING btree (resident_id, occurred_at DESC)
+resident_consumption_events|idx_resident_consumption_source|CREATE INDEX idx_resident_consumption_source ON public.resident_consumption_events USING btree (source_domain, source_entity_type, source_entity_id) WHERE (source_entity_id IS NOT NULL)
+resident_consumption_events|idx_resident_consumption_transaction|CREATE INDEX idx_resident_consumption_transaction ON public.resident_consumption_events USING btree (inventory_transaction_id)
+resident_consumption_events|idx_resident_consumption_work_event|CREATE INDEX idx_resident_consumption_work_event ON public.resident_consumption_events USING btree (work_event_id) WHERE (work_event_id IS NOT NULL)
+resident_consumption_events|resident_consumption_events_pkey|CREATE UNIQUE INDEX resident_consumption_events_pkey ON public.resident_consumption_events USING btree (resident_consumption_event_id)
+resident_consumption_events|uq_resident_consumption_source_item_lot|CREATE UNIQUE INDEX uq_resident_consumption_source_item_lot ON public.resident_consumption_events USING btree (source_domain, source_entity_type, source_entity_id, inventory_item_id, COALESCE(inventory_lot_id, ''::text)) WHERE (source_entity_id IS NOT NULL)
+(24 rows)
+
+======================================================================
+ 11. CURRENT BASELINE — READ ONLY
+======================================================================
+STAFF|RESIDENTS|ACCESS|ITEMS|LOTS|TX|CONSUMPTION_EVENTS=1|1|0|0|0|0|0
+PASS: BASELINE CAPTURED
+
+======================================================================
+ 12. DISPOSABLE FIXTURE DESIGN — PLAN ONLY
+======================================================================
+FIXTURE_NAMESPACE=ops2c-f3-*
+FIXTURE_ACTORS:
+ -> CAREGIVER
+ -> NURSE
+ -> CARE_MANAGER
+ -> optional second unauthorized CAREGIVER
+
+FIXTURE_RESIDENT:
+ -> dedicated active resident
+
+FIXTURE_ACCESS:
+ -> CAREGIVER / DIRECT_CARE / ACTIVE
+ -> NURSE / CLINICAL_CARE / ACTIVE
+ -> no access row for unauthorized actor
+
+FIXTURE_INVENTORY:
+ -> non-lot item
+ -> lot-tracked item
+ -> active unexpired lot
+ -> expired lot if schema permits deterministic fixture
+
+FIXTURE_OPENING_STOCK:
+ -> use canonical inventory_transactions ledger only
+ -> no second stock ledger
+ -> deterministic source identifiers
+
+FUNCTIONAL_ASSERTIONS_PLANNED:
+ -> caregiver authorized resident ISSUE
+ -> nurse authorized resident ISSUE
+ -> supervisor authorized active resident ISSUE
+ -> CARE_MANAGER denied new route
+ -> unauthorized resident access denied
+ -> body actorId rejected
+ -> body actorRole rejected
+ -> body transactionType rejected
+ -> unit mismatch rejected
+ -> lot required enforced
+ -> expired lot rejected
+ -> negative stock rejected
+ -> source duplicate/idempotency rejected
+ -> inventory transaction + resident event atomic
+ -> generic transaction POST remains restricted
+
+CLEANUP_ORDER_PLAN:
+ 1. resident_consumption_events test rows
+ 2. inventory_transactions test rows
+ 3. inventory_lots test rows
+ 4. inventory_items test rows
+ 5. resident_access_assignments test rows
+ 6. test staff_actors
+ 7. test resident
+
+CLEANUP_REQUIREMENT=RETURN_EXACTLY_TO_CAPTURED_BASELINE
+
+======================================================================
+ 13. ISOLATED RUNTIME PLAN — NO EXECUTION
+======================================================================
+REUSE_OPS2B_3110=NO
+MUTATE_ACCEPTED_3000=NO
+MUTATE_ACCEPTED_3108=NO
+MUTATE_FRONTEND_4173=NO
+OPS2C_NEW_IMAGE_REQUIRED=YES
+OPS2C_NEW_CONTAINER_REQUIRED=YES
+OPS2C_NEW_LOOPBACK_PORT_REQUIRED=YES
+OPS2C_SHARED_CANONICAL_TEST_DB=ONLY_WITH_DISPOSABLE_NAMESPACED_FIXTURES_AND_FULL_CLEANUP
+PRODUCTION_TARGET_AUTHORIZED=NO
+FUNCTIONAL_EXECUTION_AUTHORIZED_THIS_GATE=NO
+
+======================================================================
+ 14. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 15. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: FINAL_INVENTORY_CONTROLLER
+FINAL_INVENTORY_MODULE=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL_INVENTORY_MODULE
+FINAL_RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: FINAL_RESIDENT_CONSUMPTION_SERVICE
+
+======================================================================
+ 16. F3 BOUNDARY
+======================================================================
+APPLICATION_SOURCE_MUTATION=NO
+DATABASE_QUERY_MODE=READ_ONLY
+DATABASE_DATA_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+DOCKER_IMAGE_BUILT=NO
+CONTAINER_CREATED=NO
+CONTAINER_STARTED=NO
+CONTAINER_STOPPED=NO
+TEST_FIXTURE_CREATED=NO
+FUNCTIONAL_API_TEST_EXECUTED=NO
+RUNTIME_RESTART=NO
+FRONTEND_MUTATION=NO
+PACKAGE_MUTATION=NO
+PRODUCTION_MUTATION=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+SECOND_STOCK_LEDGER=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F3 DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+STATUS: OPS-2-C F3 ISOLATED RUNTIME AND FIXTURE PLAN PASSED
+SOURCE_REPAIR_REQUIRED=NO
+ISOLATED_RUNTIME_REQUIREMENTS_DISCOVERED=YES
+FIXTURE_SCHEMA_REQUIREMENTS_DISCOVERED=YES
+FUNCTIONAL_TEST_EXECUTED=NO
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_CONTROLLED_ISOLATED_RUNTIME_PROVISIONING
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f3_isolated_runtime_fixture_plan_20260830_164105.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT MODIFY SOURCE
+ -> DO NOT MODIFY DATABASE DATA
+ -> DO NOT RUN MIGRATION
+ -> DO NOT BUILD IMAGE OUTSIDE THE NEXT AUTHORIZED GATE
+ -> DO NOT CREATE TEST FIXTURES
+ -> DO NOT RUN FUNCTIONAL API TEST
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

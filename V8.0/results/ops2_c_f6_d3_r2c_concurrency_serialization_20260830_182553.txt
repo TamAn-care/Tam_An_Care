@@ -1,0 +1,197 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D3-R2C
+ BOUNDED CONCURRENCY SERIALIZATION ACCEPTANCE
+ EXISTING DISPOSABLE FIXTURE ONLY
+ STOCK 10 — TWO SIMULTANEOUS SUPERVISOR ISSUE REQUESTS OF 7
+ EXPECT EXACTLY ONE COMMIT + ONE INSUFFICIENT-STOCK REJECTION
+ NO CLEANUP
+======================================================================
+
+======================================================================
+ 1. R2B RECOVERY AUTHORITY
+======================================================================
+R2B_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2b_same_container_recovery_20260830_182409.txt
+PASS: R2B RECOVERY AUTHORITY
+
+======================================================================
+ 2. SOURCE + RUNTIME LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+ISOLATED_STATE=running
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+CONFIG_NODE_ENV=production
+ISOLATED_HEALTH_HTTP=200
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+PASS: ISOLATED RUNNING
+PASS: ACCEPTED IMAGE
+PASS: PRODUCTION MODE
+PASS: HEALTH 200
+
+======================================================================
+ 3. EXACT PRE-CONCURRENCY DB STATE
+======================================================================
+CONCURRENCY_ITEM_COUNT=1
+ISSUE_BEFORE=0
+EVENT_BEFORE=0
+SOURCE_STATE_BEFORE=0|0
+BALANCE_BEFORE=10.0000
+SUPERVISOR_AUTH_ACTIVE=1
+RESIDENT_ACTIVE_COUNT=1
+PASS: CONCURRENCY ITEM
+PASS: ZERO ISSUE BEFORE
+PASS: ZERO EVENT BEFORE
+PASS: SOURCE IDS UNUSED
+PASS: INITIAL BALANCE 10
+PASS: SUPERVISOR AUTH ACTIVE
+PASS: RESIDENT ACTIVE
+
+======================================================================
+ 4. GENERATE SUPERVISOR JWT
+ SECRET + TOKEN VALUES NEVER PRINTED
+======================================================================
+PASS: SUPERVISOR JWT GENERATED
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+
+======================================================================
+ 5. PREPARE TWO DISTINCT REQUESTS
+======================================================================
+PASS: TWO DISTINCT SOURCE REQUESTS PREPARED
+
+======================================================================
+ 6. SIMULTANEOUS EXECUTION
+ BARRIER RELEASES BOTH CURL PROCESSES TOGETHER
+======================================================================
+CONCURRENT_HTTP_A=409
+CONCURRENT_HTTP_B=201
+CONCURRENT_SUCCESS_COUNT=1
+CONCURRENT_400_REJECTION_COUNT=0
+PASS: EXACTLY ONE REQUEST COMMITTED
+FAIL: EXPECTED ONE HTTP 400 REJECTION
+
+======================================================================
+ 7. DATABASE SERIALIZATION PROOF
+======================================================================
+CONCURRENCY_ISSUE_COUNT=1
+CONCURRENCY_EVENT_COUNT=1
+CONCURRENCY_NON_ISSUE_COUNT=0
+CONCURRENCY_ISSUE_QUANTITY=7.0000
+CONCURRENCY_EVENT_QUANTITY=7.0000
+CONCURRENCY_ORPHAN_EVENT_COUNT=0
+CONCURRENCY_TX_EVENT_MISMATCH_COUNT=0
+CONCURRENCY_BALANCE_AFTER=3.0000
+NEGATIVE_BALANCE=NO
+PASS: EXACTLY ONE ISSUE ROW
+PASS: EXACTLY ONE EVENT ROW
+PASS: NO NON-ISSUE TX
+PASS: EXACT ISSUE QUANTITY 7
+PASS: EXACT EVENT QUANTITY 7
+PASS: NO ORPHAN EVENT
+PASS: TX EVENT ATTRIBUTION MATCH
+PASS: SERIALIZED BALANCE 10 -> 3
+PASS: NEGATIVE STOCK PREVENTED
+
+======================================================================
+ 8. EXACT WINNER / LOSER SOURCE PROOF
+======================================================================
+SOURCE_A_TX_COUNT=0
+SOURCE_A_EVENT_COUNT=0
+SOURCE_B_TX_COUNT=1
+SOURCE_B_EVENT_COUNT=1
+PASS: EXACTLY ONE SOURCE COMMITTED ATOMICALLY
+
+======================================================================
+ 9. HUMAN ACTOR ATTRIBUTION
+======================================================================
+TX_ACTOR_MATRIX=1|1
+EVENT_ACTOR_MATRIX=1|1
+PASS: TX HUMAN ACTOR ATTRIBUTION
+PASS: EVENT HUMAN ACTOR ATTRIBUTION
+
+======================================================================
+ 10. R3B ACCEPTANCE DATA STILL PRESERVED
+======================================================================
+R3B_TRANSACTION_COUNT=4
+R3B_EVENT_COUNT=4
+PASS: R3B FOUR TRANSACTIONS PRESERVED
+PASS: R3B FOUR EVENTS PRESERVED
+
+======================================================================
+ 11. FINAL RUNTIME + SOURCE REGRESSION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_3111=200
+PASS: RUNTIME 3111
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 12. F6-D3-R2C BOUNDARY
+======================================================================
+CONCURRENCY_REQUESTS_EXECUTED=YES
+CONCURRENT_REQUEST_COUNT=2
+REQUEST_QUANTITY_EACH=7
+INITIAL_STOCK=10
+EXPECTED_COMMIT_COUNT=1
+EXPECTED_INSUFFICIENT_STOCK_REJECTION_COUNT=1
+TEST_DATA_CLEANUP_EXECUTED=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+SCHEMA_MUTATION=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CANONICAL_JWT_SECRET_CHANGED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D3-R2C DECISION
+======================================================================
+PASS_COUNT=39
+FAIL_COUNT=1
+STATUS: OPS-2-C F6-D3-R2C CONCURRENCY SERIALIZATION FAILED
+SOURCE_REPAIR_AUTHORIZED=NO
+TEST_DATA_CLEANUP_AUTHORIZED=NO
+NEXT=STOP_AND_RETURN_OUTPUT_FOR_DIAGNOSIS
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2c_concurrency_serialization_20260830_182553.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING IF HEALTHY
+ -> PRESERVE CURRENT EPHEMERAL JWT SECRET
+ -> KEEP ALL F5/F6/R3B/F6-D3 TEST DATA IN PLACE
+ -> DO NOT CLEAN TEST DATA YET
+ -> DO NOT RUN ANOTHER FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT REPROVISION CONTAINER
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT CHANGE CANONICAL JWT_SECRET
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

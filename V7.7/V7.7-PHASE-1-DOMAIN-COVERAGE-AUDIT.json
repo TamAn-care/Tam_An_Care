@@ -1,0 +1,1858 @@
+{
+  "generated_at": "2026-08-21T04:24:43.604764+00:00",
+  "backend_domains": [
+    {
+      "domain": "activity-rehabilitation",
+      "typescript_files": 5,
+      "controllers": [
+        "activity-rehabilitation.controller.ts"
+      ],
+      "services": [
+        "activity-rehabilitation-authorization.service.ts",
+        "activity-rehabilitation.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/activity-rehabilitation'",
+          "route_expression": "'test/summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/activity-rehabilitation/test/summary",
+          "handler": "summary",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/activity-rehabilitation'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/activity-rehabilitation/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "activity_participation",
+        "activity_programs",
+        "activity_sessions",
+        "current",
+        "functional_assessments",
+        "functional_support_actions",
+        "rehabilitation_audit",
+        "rehabilitation_escalations",
+        "rehabilitation_plans"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "ai",
+      "typescript_files": 8,
+      "controllers": [
+        "ai-engine.controller.ts",
+        "ai-engine.controller.v7.3.3.backup.ts",
+        "ai-governance.controller.ts",
+        "early-warning.controller.ts"
+      ],
+      "services": [
+        "ai-engine.service.ts",
+        "ai-engine.service.v7.3.3.backup.ts",
+        "ai-gateway.service.ts",
+        "early-warning.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/engines",
+          "handler": "list",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "'demo-data/:engineId'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/engines/demo-data/:engineId",
+          "handler": "demoData",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "':engineId/analyze'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/engines/:engineId/analyze",
+          "handler": "analyze",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/ai/engines'",
+          "route_expression": "':engineId/demo'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/engines/:engineId/demo",
+          "handler": "demo",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/ai/governance'",
+          "route_expression": "'status'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/governance/status",
+          "handler": "status",
+          "source": "api/src/ai/ai-governance.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/ai/governance'",
+          "route_expression": "'risk-classes'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/governance/risk-classes",
+          "handler": "risk",
+          "source": "api/src/ai/ai-governance.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/ai/governance'",
+          "route_expression": "'policies'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/governance/policies",
+          "handler": "policies",
+          "source": "api/src/ai/ai-governance.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/ai/engines/health-trend'",
+          "route_expression": "'patterns'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/engines/health-trend/patterns",
+          "handler": "patterns",
+          "source": "api/src/ai/early-warning.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/ai/engines/health-trend'",
+          "route_expression": "'resident/:residentId/patterns'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+          "handler": "residentPatterns",
+          "source": "api/src/ai/early-warning.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": true,
+      "audit_evidence": false
+    },
+    {
+      "domain": "behavioral-cognitive",
+      "typescript_files": 3,
+      "controllers": [
+        "behavioral-cognitive.controller.ts"
+      ],
+      "services": [
+        "behavioral-cognitive.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/behavioral-cognitive'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/behavioral-cognitive/summary",
+          "handler": "summary",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/behavioral-cognitive'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/behavioral-cognitive/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "behavioral_audit",
+        "behavioral_episodes",
+        "behavioral_escalations",
+        "behavioral_post_reviews",
+        "behavioral_responses",
+        "behavioral_support_plans",
+        "cognitive_observations",
+        "current",
+        "wandering_events"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-action-bridge",
+      "typescript_files": 4,
+      "controllers": [
+        "care-action-bridge.controller.ts"
+      ],
+      "services": [
+        "care-action-bridge.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-action-bridge'",
+          "route_expression": "':warningId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-action-bridge/:warningId/execute",
+          "handler": "execute",
+          "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "care-actions",
+      "typescript_files": 6,
+      "controllers": [
+        "care-action.controller.ts"
+      ],
+      "services": [
+        "care-action.service.ts"
+      ],
+      "repositories": [
+        "care-action.repository.ts"
+      ],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId",
+          "handler": "getDetails",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/assign',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId/assign",
+          "handler": "assign",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/transfer',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId/transfer",
+          "handler": "transfer",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/start-review',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId/start-review",
+          "handler": "startReview",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/resolve',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId/resolve",
+          "handler": "resolve",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/reopen',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId/reopen",
+          "handler": "reopen",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-plan-authorization",
+      "typescript_files": 3,
+      "controllers": [],
+      "services": [
+        "care-plan-authorization.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-plan-governance",
+      "typescript_files": 3,
+      "controllers": [
+        "care-plan-governance.controller.ts"
+      ],
+      "services": [
+        "care-plan-governance.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-plan-governance',",
+          "route_expression": "':carePlanId/:action',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-plan-governance/:carePlanId/:action",
+          "handler": "execute",
+          "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "care_plan_audit",
+        "care_plans"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-plans",
+      "typescript_files": 4,
+      "controllers": [],
+      "services": [
+        "care-plan.service.ts"
+      ],
+      "repositories": [
+        "care-plan.repository.ts"
+      ],
+      "routes": [],
+      "tables": [
+        "care_plan_audit",
+        "care_plans"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-task-authorization",
+      "typescript_files": 3,
+      "controllers": [],
+      "services": [
+        "care-task-authorization.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-task-execution",
+      "typescript_files": 4,
+      "controllers": [
+        "care-task-execution.controller.ts"
+      ],
+      "services": [
+        "care-task-execution.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-task-execution',",
+          "route_expression": "':careTaskId/:action',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-task-execution/:careTaskId/:action",
+          "handler": "execute",
+          "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "care_task_audit",
+        "care_tasks"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "care-tasks",
+      "typescript_files": 4,
+      "controllers": [],
+      "services": [
+        "care-task.service.ts"
+      ],
+      "repositories": [
+        "care-task.repository.ts"
+      ],
+      "routes": [],
+      "tables": [
+        "care_plans",
+        "care_task_audit",
+        "care_tasks"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "clinical-observations",
+      "typescript_files": 6,
+      "controllers": [
+        "clinical.controller.ts"
+      ],
+      "services": [
+        "clinical-authorization.service.ts",
+        "clinical.service.ts"
+      ],
+      "repositories": [
+        "clinical.repository.ts"
+      ],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/clinical',",
+          "route_expression": "':aggregateType/:aggregateId/:action',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+          "handler": "mutate",
+          "source": "api/src/clinical-observations/clinical.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "abnormal_findings",
+        "care_actions",
+        "clinical_audit",
+        "clinical_escalations",
+        "clinical_observation_amendments",
+        "clinical_observations",
+        "nursing_notes"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "cross-domain-integration",
+      "typescript_files": 3,
+      "controllers": [
+        "cross-domain-integration.controller.ts"
+      ],
+      "services": [
+        "cross-domain-integration.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/integration'",
+          "route_expression": "'residents/:residentId/overview'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/integration/residents/:residentId/overview",
+          "handler": "overview",
+          "source": "api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "care_plans",
+        "care_tasks",
+        "clinical_observations",
+        "incidents",
+        "medication_administrations",
+        "medication_orders",
+        "residents"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "database",
+      "typescript_files": 2,
+      "controllers": [],
+      "services": [
+        "database.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "fall-mobility",
+      "typescript_files": 3,
+      "controllers": [
+        "fall-mobility.controller.ts"
+      ],
+      "services": [
+        "fall-mobility.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/fall-mobility'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/fall-mobility/summary",
+          "handler": "summary",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/fall-mobility'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/fall-mobility/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "fall_audit",
+        "fall_escalations",
+        "fall_events",
+        "fall_prevention_actions",
+        "fall_risk_assessments",
+        "mobility_support_plans",
+        "post_fall_observations",
+        "transfer_safety_checks"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "health",
+      "typescript_files": 1,
+      "controllers": [
+        "health.controller.ts"
+      ],
+      "services": [],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/health'",
+          "route_expression": "",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/health",
+          "handler": "get",
+          "source": "api/src/health/health.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "incidents",
+      "typescript_files": 5,
+      "controllers": [
+        "incident.controller.ts"
+      ],
+      "services": [
+        "incident-authorization.service.ts",
+        "incident.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/incidents'",
+          "route_expression": "'report'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/incidents/report",
+          "handler": "report",
+          "source": "api/src/incidents/incident.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/incidents'",
+          "route_expression": "':incidentId/:action'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/incidents/:incidentId/:action",
+          "handler": "mutate",
+          "source": "api/src/incidents/incident.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "care_actions",
+        "care_tasks",
+        "clinical_observations",
+        "incident_assignments",
+        "incident_audit",
+        "incident_escalations",
+        "incident_post_reviews",
+        "incident_responses",
+        "incident_triage",
+        "incidents",
+        "medication_administrations",
+        "residents"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "infection-control",
+      "typescript_files": 3,
+      "controllers": [
+        "infection-control.controller.ts"
+      ],
+      "services": [
+        "infection-control.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/infection-control'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/infection-control/summary",
+          "handler": "summary",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/infection-control'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/infection-control/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "exposure_events",
+        "infection_alerts",
+        "infection_audit",
+        "infection_control_plans",
+        "infection_escalations",
+        "infection_monitoring_records",
+        "infection_observations",
+        "infection_precautions"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "medication",
+      "typescript_files": 6,
+      "controllers": [
+        "medication.controller.ts"
+      ],
+      "services": [
+        "medication-authorization.service.ts",
+        "medication.service.ts"
+      ],
+      "repositories": [
+        "medication.repository.ts"
+      ],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/medication-administrations',",
+          "route_expression": "':administrationId/:action'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/medication-administrations/:administrationId/:action",
+          "handler": "mutate",
+          "source": "api/src/medication/medication.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "OF",
+        "medication_administrations",
+        "medication_audit",
+        "medication_double_checks",
+        "medication_orders"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "medication-safety",
+      "typescript_files": 3,
+      "controllers": [
+        "medication-safety.controller.ts"
+      ],
+      "services": [
+        "medication-safety.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/medication-safety'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/medication-safety/summary",
+          "handler": "summary",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/medication-safety'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/medication-safety/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "high_risk_medication_checks",
+        "medication_administration_exceptions",
+        "medication_adverse_reaction_observations",
+        "medication_order_reviews",
+        "medication_reconciliation_items",
+        "medication_reconciliations",
+        "medication_safety_audit",
+        "medication_safety_checks"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "nutrition-hydration",
+      "typescript_files": 5,
+      "controllers": [
+        "nutrition-hydration.controller.ts"
+      ],
+      "services": [
+        "nutrition-hydration-authorization.service.ts",
+        "nutrition-hydration.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/nutrition-hydration'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/nutrition-hydration/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/nutrition-hydration'",
+          "route_expression": "':residentId/summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/nutrition-hydration/:residentId/summary",
+          "handler": "summary",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "diet_orders",
+        "feeding_assistance",
+        "meal_schedules",
+        "nutrition_alerts",
+        "nutrition_audit",
+        "nutrition_escalations",
+        "nutrition_intake_records",
+        "nutrition_plans",
+        "residents"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "operational-care-view",
+      "typescript_files": 5,
+      "controllers": [
+        "operational-care-view.controller.ts",
+        "operational-dashboard.controller.ts"
+      ],
+      "services": [
+        "operational-care-view.service.ts",
+        "operational-dashboard.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/care-view'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/operations/residents/:residentId/care-view",
+          "handler": "residentCareView",
+          "source": "api/src/operational-care-view/operational-care-view.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'dashboard'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/operations/dashboard",
+          "handler": "dashboard",
+          "source": "api/src/operational-care-view/operational-dashboard.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "care_tasks",
+        "clinical_observations",
+        "incidents",
+        "medication_administrations",
+        "medication_orders",
+        "residents"
+      ],
+      "actor_header_evidence": true,
+      "unauthorized_exception_evidence": true,
+      "forbidden_exception_evidence": true,
+      "audit_evidence": false
+    },
+    {
+      "domain": "pain-comfort",
+      "typescript_files": 3,
+      "controllers": [
+        "pain-comfort.controller.ts"
+      ],
+      "services": [
+        "pain-comfort.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/pain-comfort'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/pain-comfort/summary",
+          "handler": "summary",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/pain-comfort'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/pain-comfort/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "comfort_interventions",
+        "pain_assessments",
+        "pain_audit",
+        "pain_care_plans",
+        "pain_escalations",
+        "pain_reassessments",
+        "pain_safety_alerts",
+        "symptom_observations"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "personal-care",
+      "typescript_files": 3,
+      "controllers": [
+        "personal-care.controller.ts"
+      ],
+      "services": [
+        "personal-care.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/personal-care'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/personal-care/summary",
+          "handler": "summary",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/personal-care'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/personal-care/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "OF",
+        "continence_observations",
+        "hygiene_care_plans",
+        "hygiene_care_records",
+        "hygiene_schedules",
+        "personal_care_assistance",
+        "personal_care_audit",
+        "personal_care_escalations",
+        "toileting_records"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "reopen-authorization",
+      "typescript_files": 3,
+      "controllers": [],
+      "services": [
+        "reopen-authorization.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "resident-access-administration",
+      "typescript_files": 3,
+      "controllers": [
+        "resident-access-administration.controller.ts"
+      ],
+      "services": [
+        "resident-access-administration.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'access-assignments'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/operations/access-assignments",
+          "handler": "listAssignments",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/access-assignments',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/operations/residents/:residentId/access-assignments",
+          "handler": "listResidentAssignments",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/access-assignments',\n  )\n  @HttpCode(HttpStatus.CREATED",
+          "base_resolved": true,
+          "route_resolved": false,
+          "path": null,
+          "handler": "createAssignment",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": false
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'access-assignments/:assignmentId/revoke',\n  )\n  @HttpCode(HttpStatus.OK",
+          "base_resolved": true,
+          "route_resolved": false,
+          "path": null,
+          "handler": "revokeAssignment",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "resolved": false
+        }
+      ],
+      "tables": [
+        "resident_access_assignments",
+        "residents"
+      ],
+      "actor_header_evidence": true,
+      "unauthorized_exception_evidence": true,
+      "forbidden_exception_evidence": true,
+      "audit_evidence": false
+    },
+    {
+      "domain": "resident-access-scope",
+      "typescript_files": 2,
+      "controllers": [],
+      "services": [
+        "resident-access-scope.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [
+        "resident_access_assignments",
+        "residents",
+        "staff_actors"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "residents",
+      "typescript_files": 5,
+      "controllers": [
+        "resident.controller.ts"
+      ],
+      "services": [
+        "resident.service.ts"
+      ],
+      "repositories": [
+        "resident.repository.ts"
+      ],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/residents'",
+          "route_expression": "",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/residents",
+          "handler": "listResidents",
+          "source": "api/src/residents/resident.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/residents'",
+          "route_expression": "':residentId'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/residents/:residentId",
+          "handler": "getResident",
+          "source": "api/src/residents/resident.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "residents"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "resolution-authorization",
+      "typescript_files": 3,
+      "controllers": [],
+      "services": [
+        "resolution-authorization.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "responsibility-acceptance",
+      "typescript_files": 4,
+      "controllers": [
+        "responsibility-acceptance.controller.ts"
+      ],
+      "services": [
+        "responsibility-acceptance.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/accept-responsibility',",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+          "handler": "accept",
+          "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": false
+    },
+    {
+      "domain": "safeguarding",
+      "typescript_files": 3,
+      "controllers": [
+        "safeguarding.controller.ts"
+      ],
+      "services": [
+        "safeguarding.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/safeguarding'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/safeguarding/summary",
+          "handler": "summary",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/safeguarding'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/safeguarding/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "protective_actions",
+        "safeguarding_assignments",
+        "safeguarding_audit",
+        "safeguarding_escalations",
+        "safeguarding_post_reviews",
+        "safeguarding_reports",
+        "safeguarding_reviews",
+        "safeguarding_triage"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "skin-wound",
+      "typescript_files": 3,
+      "controllers": [
+        "skin-wound.controller.ts"
+      ],
+      "services": [
+        "skin-wound.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/skin-wound'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/skin-wound/summary",
+          "handler": "summary",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/skin-wound'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/skin-wound/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "repositioning_records",
+        "skin_assessments",
+        "wound_audit",
+        "wound_care_plans",
+        "wound_escalations",
+        "wound_progress_records",
+        "wound_records",
+        "wound_treatment_records"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "sleep-rest",
+      "typescript_files": 3,
+      "controllers": [
+        "sleep-rest.controller.ts"
+      ],
+      "services": [
+        "sleep-rest.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/sleep-rest'",
+          "route_expression": "'summary'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/sleep-rest/summary",
+          "handler": "summary",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "POST",
+          "controller_expression": "'api/sleep-rest'",
+          "route_expression": "':residentId/execute'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/sleep-rest/:residentId/execute",
+          "handler": "execute",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "current",
+        "night_monitoring_checks",
+        "night_support_responses",
+        "sleep_audit",
+        "sleep_care_plans",
+        "sleep_escalations",
+        "sleep_observations",
+        "sleep_rest_events",
+        "sleep_safety_alerts"
+      ],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "staff-actors",
+      "typescript_files": 3,
+      "controllers": [
+        "staff-actor.controller.ts"
+      ],
+      "services": [
+        "staff-actor.service.ts"
+      ],
+      "repositories": [],
+      "routes": [
+        {
+          "method": "GET",
+          "controller_expression": "'api/operations/staff-actors'",
+          "route_expression": "",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/operations/staff-actors",
+          "handler": "list",
+          "source": "api/src/staff-actors/staff-actor.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/operations/staff-actors'",
+          "route_expression": "':actorId'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/operations/staff-actors/:actorId",
+          "handler": "detail",
+          "source": "api/src/staff-actors/staff-actor.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "staff_actors"
+      ],
+      "actor_header_evidence": true,
+      "unauthorized_exception_evidence": true,
+      "forbidden_exception_evidence": true,
+      "audit_evidence": false
+    },
+    {
+      "domain": "start-review-authorization",
+      "typescript_files": 3,
+      "controllers": [],
+      "services": [
+        "start-review-authorization.service.ts"
+      ],
+      "repositories": [],
+      "routes": [],
+      "tables": [],
+      "actor_header_evidence": false,
+      "unauthorized_exception_evidence": false,
+      "forbidden_exception_evidence": false,
+      "audit_evidence": true
+    },
+    {
+      "domain": "warning-reviews",
+      "typescript_files": 6,
+      "controllers": [
+        "warning-review.controller.ts"
+      ],
+      "services": [
+        "warning-review.service.ts"
+      ],
+      "repositories": [
+        "warning-review.repository.ts"
+      ],
+      "routes": [
+        {
+          "method": "POST",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/warning-reviews",
+          "handler": "review",
+          "source": "api/src/warning-reviews/warning-review.controller.ts",
+          "resolved": true
+        },
+        {
+          "method": "GET",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "':warningId'",
+          "base_resolved": true,
+          "route_resolved": true,
+          "path": "/api/warning-reviews/:warningId",
+          "handler": "get",
+          "source": "api/src/warning-reviews/warning-review.controller.ts",
+          "resolved": true
+        }
+      ],
+      "tables": [
+        "warning_reviews"
+      ],
+      "actor_header_evidence": true,
+      "unauthorized_exception_evidence": true,
+      "forbidden_exception_evidence": true,
+      "audit_evidence": false
+    }
+  ],
+  "frontend_routes": [
+    "/",
+    "/dashboard",
+    "/residents",
+    "/residents/:residentId",
+    "/residents/:residentId/care",
+    "/staff-access",
+    "/system-status",
+    "/operational-care"
+  ],
+  "frontend_features": [
+    "care-view",
+    "care-work",
+    "dashboard",
+    "residents",
+    "staff-access",
+    "system-status"
+  ],
+  "frontend_api_literals": [
+    "/api/care-actions/${encodeURIComponent(\n      residentId,\n    )}/${encodeURIComponent(patternId)}",
+    "/api/care-actions/${encodeURIComponent(\n      residentId,\n    )}/${encodeURIComponent(patternId)}/assign",
+    "/api/care-actions/${encodeURIComponent(\n      residentId,\n    )}/${encodeURIComponent(patternId)}/reopen",
+    "/api/care-actions/${encodeURIComponent(\n      residentId,\n    )}/${encodeURIComponent(patternId)}/resolve",
+    "/api/care-actions/${encodeURIComponent(\n      residentId,\n    )}/${encodeURIComponent(patternId)}/start-review",
+    "/api/care-actions/${encodeURIComponent(\n      residentId,\n    )}/${encodeURIComponent(patternId)}/transfer",
+    "/api/care-plan-governance/${encodeURIComponent(\n      carePlanId,\n    )}/${encodeURIComponent(action)}",
+    "/api/care-task-execution/${encodeURIComponent(\n      careTaskId,\n    )}/${encodeURIComponent(action)}",
+    "/api/health",
+    "/api/integration/residents/${encodeURIComponent(\n      residentId,\n    )}/overview",
+    "/api/operations/access-assignments",
+    "/api/operations/dashboard",
+    "/api/operations/residents/${\n      encodeURIComponent(input.residentId)\n    }/access-assignments",
+    "/api/operations/residents/${\n      encodeURIComponent(residentId)\n    }/care-view",
+    "/api/operations/residents/${encodeURIComponent(\n      residentId,\n    )}/care-view",
+    "/api/operations/staff-actors${\n      query ? ",
+    "/api/operations/staff-actors/${\n      encodeURIComponent(actorId)\n    }",
+    "/api/residents",
+    "/api/residents/${\n      encodeURIComponent(residentId)\n    }",
+    "/api/warning-reviews",
+    "/api/warning-reviews/${encodeURIComponent(\n      warningId,\n    )}"
+  ],
+  "coverage": [
+    {
+      "domain": "activity-rehabilitation",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "ai",
+      "route_count": 9,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "behavioral-cognitive",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "care-action-bridge",
+      "route_count": 1,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "care-actions",
+      "route_count": 6,
+      "frontend_evidence": [
+        "care-action",
+        "care-actions"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "care-plan-authorization",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "care-plan-governance",
+      "route_count": 1,
+      "frontend_evidence": [
+        "care-plan",
+        "governance"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "care-plans",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "care-task-authorization",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "care-task-execution",
+      "route_count": 1,
+      "frontend_evidence": [
+        "care-task",
+        "task-execution"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "care-tasks",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "clinical-observations",
+      "route_count": 1,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "cross-domain-integration",
+      "route_count": 1,
+      "frontend_evidence": [
+        "integration",
+        "overview"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "database",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "fall-mobility",
+      "route_count": 2,
+      "frontend_evidence": [
+        "fall"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "health",
+      "route_count": 1,
+      "frontend_evidence": [
+        "health"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "incidents",
+      "route_count": 2,
+      "frontend_evidence": [
+        "incidents"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "infection-control",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "medication",
+      "route_count": 1,
+      "frontend_evidence": [
+        "medication"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "medication-safety",
+      "route_count": 2,
+      "frontend_evidence": [
+        "medication"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "nutrition-hydration",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "operational-care-view",
+      "route_count": 2,
+      "frontend_evidence": [
+        "care-view",
+        "dashboard",
+        "operational-care"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "pain-comfort",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "personal-care",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "reopen-authorization",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "resident-access-administration",
+      "route_count": 4,
+      "frontend_evidence": [
+        "access-assignment",
+        "staff-access"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "resident-access-scope",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "residents",
+      "route_count": 2,
+      "frontend_evidence": [
+        "resident",
+        "residents"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "resolution-authorization",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "responsibility-acceptance",
+      "route_count": 1,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "safeguarding",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "skin-wound",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "sleep-rest",
+      "route_count": 2,
+      "frontend_evidence": [],
+      "classification": "NO_DIRECT_FRONTEND_EVIDENCE",
+      "backend_support_module": false
+    },
+    {
+      "domain": "staff-actors",
+      "route_count": 2,
+      "frontend_evidence": [
+        "staff-access",
+        "staff-actor"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    },
+    {
+      "domain": "start-review-authorization",
+      "route_count": 0,
+      "frontend_evidence": [],
+      "classification": "BACKEND_SUPPORT_MODULE",
+      "backend_support_module": true
+    },
+    {
+      "domain": "warning-reviews",
+      "route_count": 2,
+      "frontend_evidence": [
+        "warning-review",
+        "warning-reviews"
+      ],
+      "classification": "FRONTEND_EVIDENCE_PRESENT",
+      "backend_support_module": false
+    }
+  ],
+  "operational_care": {
+    "page_present": true,
+    "api_client_present": true,
+    "dashboard_read": true,
+    "resident_care_view": true,
+    "resident_integration": true,
+    "care_action_assign": true,
+    "care_action_transfer": true,
+    "care_action_start_review": true,
+    "care_action_resolve": true,
+    "care_action_reopen": true,
+    "warning_review": true,
+    "care_plan_governance": true,
+    "care_task_execution": true,
+    "actor_id_header": true,
+    "actor_role_header": true
+  },
+  "audit_tables": [
+    "ai_analysis_audit",
+    "behavioral_audit",
+    "care_action_audit",
+    "care_plan_audit",
+    "care_task_audit",
+    "clinical_audit",
+    "fall_audit",
+    "incident_audit",
+    "infection_audit",
+    "medication_audit",
+    "medication_safety_audit",
+    "nutrition_audit",
+    "pain_audit",
+    "personal_care_audit",
+    "rehabilitation_audit",
+    "safeguarding_audit",
+    "sleep_audit",
+    "wound_audit"
+  ],
+  "frontend_audit_reference_files": [],
+  "responsive_media_queries": [
+    "max-width: 900px",
+    "max-width: 767px",
+    "max-width: 767px",
+    "max-width: 1024px",
+    "max-width: 767px",
+    "max-width: 480px",
+    "max-width: 1024px",
+    "max-width: 767px",
+    "max-width: 480px"
+  ]
+}

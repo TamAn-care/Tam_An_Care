@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-08-21T10:26:26.298275+00:00",
+  "stage": "CONTROLLED_PRODUCTION_PROMOTION_E4_R1",
+  "status": "PASSED",
+  "production_status": "V7.7_ACTIVE",
+  "correction": {
+    "resident_ai_method": "POST",
+    "resident_ai_no_actor": "401",
+    "security_matrix": "401|401|401"
+  },
+  "v77": {
+    "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "api": {
+      "container": "taman-care-v77-production-api",
+      "container_id": "9c5685f6d7c34b1f95029a15263a59dbaf6006253fa24d3c39a962125a31c2d9",
+      "image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+      "host_port": "127.0.0.1:3100",
+      "network": "taman-care-v743-dev-network",
+      "alias": "v77-e2-api"
+    },
+    "ui": {
+      "container": "taman-care-v77-production-ui",
+      "container_id": "3b8ce413e4e6f8edea10959cf9e3453217f041132f5155b6268d415b63069bd3",
+      "image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+      "host_port": "127.0.0.1:8080",
+      "network": "taman-care-v743-dev-network",
+      "proxy": "http://v77-e2-api:3000"
+    },
+    "api_health": "200",
+    "api_security": "401|401|401",
+    "ui_matrix": "200|401|401|200",
+    "vite_assets": true
+  },
+  "database": {
+    "container": "taman-care-v743-dev-postgres",
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "migration": false,
+    "cutover_write": false,
+    "stopped": false
+  },
+  "rollback_assets": {
+    "v76_api": {
+      "container": "taman-care-v743-dev-api",
+      "image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+      "state": "exited"
+    },
+    "v76_ui": {
+      "container": "taman-care-v75-ui",
+      "image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+      "state": "exited"
+    },
+    "v76_db": {
+      "container": "taman-care-v743-dev-postgres",
+      "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+      "state": "running"
+    },
+    "preserved": true
+  },
+  "cutover": {
+    "accepted": true,
+    "rollback_performed": false,
+    "traffic_changed": true
+  }
+}

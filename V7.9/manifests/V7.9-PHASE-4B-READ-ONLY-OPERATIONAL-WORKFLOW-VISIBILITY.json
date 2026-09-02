@@ -1,0 +1,75 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4B",
+  "phase_name": "READ_ONLY_OPERATIONAL_WORKFLOW_VISIBILITY",
+  "status": "PASSED",
+  "decision": "READ_ONLY_OPERATIONAL_WORKFLOW_VISIBILITY_ACCEPTED",
+  "warning_contract_decision": "FRONTEND_BACKEND_WARNING_CONTRACT_ALIGNED",
+  "warning_read_contract": {
+    "method": "GET",
+    "endpoint": "/api/warning-reviews/:warningId"
+  },
+  "warning_mutation_contract": {
+    "method": "POST",
+    "endpoint": "/api/warning-reviews"
+  },
+  "prior_base_get_404": "EXPECTED_NON_ROUTE",
+  "read_visibility_matrix": [
+    {
+      "name": "API_HEALTH",
+      "http": "200",
+      "status": "PASS"
+    },
+    {
+      "name": "UI_ROOT",
+      "http": "200",
+      "status": "PASS"
+    },
+    {
+      "name": "STAFF_FAIL_CLOSED",
+      "http": "401",
+      "status": "PASS"
+    },
+    {
+      "name": "ACCESS_FAIL_CLOSED",
+      "http": "401",
+      "status": "PASS"
+    },
+    {
+      "name": "RESIDENTS",
+      "http": "200",
+      "status": "PASS"
+    },
+    {
+      "name": "OPERATIONS_DASHBOARD",
+      "http": "401",
+      "status": "PASS"
+    },
+    {
+      "name": "WARNING_GET_BY_ID",
+      "http": "404",
+      "status": "PASS"
+    }
+  ],
+  "ui_route_visibility": {
+    "/dashboard": true,
+    "/residents": true,
+    "/staff-access": true,
+    "/system-status": true,
+    "/operational-care": true
+  },
+  "http_methods_executed": [
+    "GET"
+  ],
+  "mutation_requests": false,
+  "application_source_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "phase4a_manifest_sha256": "50e85c632749d2ab1f71fc6f1aa2242482f286356c9398a61fce4c50ff75af72",
+  "phase4b_r1_manifest_sha256": "ad0531c838a856ddcac19901dbcc6517c81726cb8779ed191e09ba665e715f44",
+  "phase4b_r3_manifest_sha256": "b35a6076f2d3c09ebe9bed3ba7482b76c4b5554d17895e02f18be102a9347910",
+  "roadmap_sha256": "e0ea0fb11c7d6cd3bde00d3769bde039a18ce9b1d1e623e547d7721041ad4a0e",
+  "next_gate": "PHASE_4C_R1",
+  "accepted_at": "2026-08-22T05:37:12.903705+00:00"
+}

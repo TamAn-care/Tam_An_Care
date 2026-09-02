@@ -1,0 +1,34 @@
+{
+  "generated_at": "2026-08-21T10:45:56.109260+00:00",
+  "version": "V7.8",
+  "phase": "2B",
+  "production_db": {
+    "container": "taman-care-v743-dev-postgres",
+    "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+    "data_volume": "taman-care-v743-dev-postgres-data",
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+  },
+  "backup": {
+    "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/backups/TamAnCare-V7.8-Phase1-20260821T103823Z.dump",
+    "sha256": "35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9",
+    "production_restore": false,
+    "disposable_restore_test": "PASSED"
+  },
+  "restart_safety": {
+    "disposable_restart": "PASSED",
+    "sql_recovery": "PASSED",
+    "schema_survived": true,
+    "production_restart_performed": false,
+    "decision": "PRODUCTION_DB_RESTART_APPROVED_FOR_CONTROLLED_EXECUTION"
+  },
+  "production_constraints": {
+    "db_container_remove": false,
+    "db_volume_remove": false,
+    "db_restore": false,
+    "db_migration": false,
+    "business_endpoint_mutation": false,
+    "v77_source_write": false
+  }
+}

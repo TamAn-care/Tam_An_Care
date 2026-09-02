@@ -1,0 +1,28 @@
+STEP 7Z — AUDIT CONTRACT
+
+Every successful official mutation requires audit.
+
+Audit:
+- append-only
+- attributable
+- immutable
+- uniquely sequenced by entity
+- same transaction as business mutation
+
+Preserve where applicable:
+- assessor
+- verifier
+- plan owner
+- reviewer
+- fall-event reporter
+- assigned owner
+- escalation reviewer
+- prevention-action authorizer
+
+Failed mutation = zero audit.
+Unauthorized mutation = zero audit.
+Wrong-owner mutation = zero audit.
+Wrong-reviewer mutation = zero audit.
+Losing incompatible concurrent mutation = zero audit.
+
+AI / SYSTEM cannot impersonate human actor.

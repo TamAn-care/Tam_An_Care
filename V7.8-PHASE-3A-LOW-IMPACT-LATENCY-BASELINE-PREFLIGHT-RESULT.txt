@@ -1,0 +1,68 @@
+TAM AN CARE V7.8
+PHASE 3A — LOW-IMPACT LATENCY BASELINE
+PREFLIGHT
+
+STATUS=READY
+
+PHASE2_FINAL_R1_RESULT_HASH=
+a76d0ab35f7b6d5ee066a1693a223062d7719cea0e69058eb450c919e3a75dfe
+
+PHASE2_FINAL_R1_MANIFEST_HASH=
+b8468b7757045e4c45d88e9d3ceb42f7fc5b81d10d74cee2629c0a0ba52e5ee4
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+CURRENT_API_HEALTH=
+200
+
+CURRENT_API_SECURITY=
+401|401|401
+
+CURRENT_UI_MATRIX=
+200|401|401|200
+
+DATABASE_TABLE_COUNT=
+118
+
+DATABASE_FINGERPRINT=
+7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639
+
+ROLLBACK_ASSETS_PRESERVED=
+YES
+
+PHASE3A_MODE=
+LOW_IMPACT_READ_ONLY_MEASUREMENT
+
+PHASE3A_ALLOWED:
+- GET /api/health
+- GET UI /
+- GET /operational-care
+- authorization rejection probes already proven non-mutating
+- sequential latency samples
+- CPU/memory/resource capture
+- DB fingerprint before/after
+
+PHASE3A_FORBIDDEN:
+- mutating care endpoints
+- POST business workflows
+- load test
+- stress test
+- soak test
+- high concurrency
+- database write
+- schema migration
+- source modification
+- API/UI/DB restart
+
+PHASE3A_ACCEPTANCE:
+1. Production remains healthy.
+2. Zero container restart/crash.
+3. Zero database fingerprint delta.
+4. Latency distribution captured.
+5. Error rate remains zero for valid read paths.
+6. Security rejection behavior remains correct.
+7. Resource consumption remains stable.
+
+NEXT_IF_PASS=
+V7.8_PHASE_3B_CONTROLLED_READ_ONLY_CONCURRENCY

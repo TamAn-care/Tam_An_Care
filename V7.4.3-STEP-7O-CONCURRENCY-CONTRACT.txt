@@ -1,0 +1,104 @@
+TAM AN CARE V7.4.3
+STEP 7O CONCURRENCY CONTRACT
+
+DATABASE MUTATION ORDER
+
+SELECT FOR UPDATE
+-> NOT FOUND
+-> AUTHORIZATION
+-> STATE VALIDATION
+-> MUTATION
+-> AUDIT
+-> COMMIT
+
+REQUIRED STEP 7O.C TESTS
+
+RACE 1
+DOUBLE TRIAGE
+
+Expected:
+exactly one initial TRIAGE transition winner
+exactly one INCIDENT_TRIAGED audit
+
+Subsequent authorized re-triage must use explicit
+RETRIAGE operation and append history.
+
+RACE 2
+SUPERVISOR vs CARE_MANAGER ASSIGN
+
+Expected:
+exactly one assignment winner
+exactly one INCIDENT_ASSIGNED audit
+winning owner preserved
+
+RACE 3
+DOUBLE ACKNOWLEDGEMENT
+
+Expected:
+exactly one success
+exactly one INCIDENT_ACKNOWLEDGED audit
+
+RACE 4
+DOUBLE RESPONSE START
+
+Expected:
+exactly one transition to RESPONDING
+exactly one INCIDENT_RESPONSE_STARTED audit
+
+RACE 5
+CONCURRENT RESPONSE NOTES
+
+Expected:
+both authorized append-only notes preserved
+no lost history
+attributable human actors
+
+RACE 6
+DOUBLE ESCALATION
+
+Expected:
+exactly one state-transition winner
+exactly one INCIDENT_ESCALATED audit
+
+RACE 7
+ESCALATION ASSIGN
+
+SUPERVISOR vs CARE_MANAGER
+
+Expected:
+exactly one winner
+exactly one assignment audit
+winning reviewer preserved
+
+RACE 8
+DOUBLE ESCALATION ACCEPT
+
+Expected:
+exactly one success
+exactly one accept audit
+
+RACE 9
+TERMINAL INCIDENT CONCURRENCY
+
+Resolve competing with another terminal/state-changing operation.
+
+Expected:
+exactly one valid terminal/state winner
+exactly one corresponding audit
+
+RACE 10
+DOUBLE CLOSE
+
+Expected:
+exactly one close winner
+exactly one INCIDENT_CLOSED audit
+
+GENERAL
+
+No lost response note.
+No duplicate transition audit.
+No automatic Care Action.
+No automatic Care Task.
+No medication mutation.
+No AI clinical decision.
+Zero orphan records.

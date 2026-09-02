@@ -1,0 +1,39 @@
+TAM AN CARE V7.4.3
+STEP 7R CLINICAL SAFETY CONTRACT
+
+PRESSURE INJURY / WOUND SAFETY
+
+1. Official wound classification requires an authorized human.
+2. No AI-generated classification is accepted as official clinical truth.
+3. No hardcoded treatment threshold determines treatment autonomously.
+4. Treatment and dressing instructions require approved human clinical authority.
+5. Medication changes are outside Step 7R.
+6. Hospital transfer decisions are outside Step 7R autonomous scope.
+7. Emergency decisions remain human-controlled.
+8. A wound alert never automatically becomes a Care Action.
+9. A wound alert never automatically becomes a Care Task.
+10. A wound alert never automatically becomes an Incident.
+11. A wound alert never automatically creates Medication.
+12. Failed mutation causes zero business mutation.
+13. Failed mutation causes zero audit event.
+14. State mutations require transaction.
+15. State mutations require row lock where competing writers are possible.
+16. Terminal state races require exactly one winner.
+17. Human owner / reviewer identity must be preserved.
+18. autonomousClinicalAction = false.
+
+
+HIGH-RISK / INDEPENDENT CHECK
+
+When organizational policy requires independent verification:
+
+administrator / performer != independent checker
+
+Checker must be:
+authorized
+human
+independent
+auditable
+
+AI cannot satisfy independent double-check.
+SYSTEM cannot satisfy independent double-check.

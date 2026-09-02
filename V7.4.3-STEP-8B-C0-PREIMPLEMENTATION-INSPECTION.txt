@@ -1,0 +1,46 @@
+TAM AN CARE V7.4.3
+STEP 8B.C0
+PRE-IMPLEMENTATION INSPECTION
+
+BASELINE_SOURCE=c00bf2f9d3f6f870183ba1f2fd5524d16efd8b7918764376b519a3289269841a
+BASELINE_SCHEMA=839c7430f134cd40c00c85d5cc2961821e5be86ce94a2469e461de83c4e853c7
+BASELINE_IMAGE=taman-care-v743-step8a-e:latest
+INPUT_8BB_CONTRACT_HASH=51dc8adb7cdaec0f7c4dced583a39fd24201c2ac88cbbf9d8d3ec202ea2d59ef
+INPUT_8BB_RESULT_HASH=e2d907e80c39b063822bf78dc2b44a51572b830bdcfda695babda13e41a536d2
+
+APPLICATION_MODULE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/app.module.ts
+INTEGRATION_MODULE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.module.ts
+INTEGRATION_CONTROLLER=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.controller.ts
+INTEGRATION_SERVICE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/cross-domain-integration/cross-domain-integration.service.ts
+
+AUTHORIZATION_FILES=23
+
+DISCOVERED_ROLE_LITERALS:
+'AI'
+'CAREGIVER'
+'NURSE'
+'SUPERVISOR'
+'SYSTEM'
+
+IMPLEMENTATION PRINCIPLES:
+- Reuse existing module / DI conventions.
+- Reuse existing database provider.
+- Do not create new persistence.
+- Do not modify schema.sql.
+- Operational care-view remains GET-only.
+- Authorization must be server-side.
+- Redaction must be server-side.
+- AI and SYSTEM must not obtain human clinical authority.
+- Preserve resident 404 fail-closed behavior.
+- Preserve secondary-domain failure isolation.
+- Preserve bounded reads.
+- Preserve deterministic mapping.
+- No N+1.
+- No production change.
+
+NEXT_IMPLEMENTATION_TARGET:
+STEP 8B.C1
+ONE CONTROLLED SOURCE IMPLEMENTATION
++ BUILD
++ STATIC VALIDATION
++ NO CUTOVER UNTIL BUILD PASSES

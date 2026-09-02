@@ -1,0 +1,84 @@
+STEP 7U — LIFECYCLE CONTRACT
+
+SLEEP CARE PLAN
+
+DRAFT
+-> REVIEWED
+-> ACTIVE
+-> RETIRED
+
+
+SLEEP OBSERVATION
+
+RECORDED
+-> VERIFIED
+
+Verified record overwrite = NO.
+
+
+NIGHT MONITORING CHECK
+
+SCHEDULED
+-> COMPLETED
+
+or
+
+SCHEDULED
+-> MISSED
+
+or
+
+SCHEDULED
+-> HELD
+
+
+SLEEP / REST EVENT
+
+OPEN
+-> ASSIGNED
+-> ACKNOWLEDGED
+-> RESPONDING
+-> RESOLVED
+-> CLOSED
+
+
+SUPPORT RESPONSE
+
+RECORDED
+-> VERIFIED
+
+
+SAFETY ALERT
+
+OPEN
+-> ACKNOWLEDGED
+-> REVIEWED
+-> RESOLVED
+
+
+ESCALATION
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+
+STATE MUTATION CONTRACT
+
+BEGIN TRANSACTION
+-> SELECT TARGET FOR UPDATE
+-> REVALIDATE STATE
+-> VALIDATE HUMAN AUTHORITY
+-> VALIDATE OWNER / REVIEWER
+-> BUSINESS MUTATION
+-> AUDIT
+-> COMMIT
+
+Incompatible concurrent transitions are single-winner.
+
+Loser mutation = zero business mutation.
+Loser audit = zero audit.
+
+Owner preservation = required.
+Reviewer preservation = required.

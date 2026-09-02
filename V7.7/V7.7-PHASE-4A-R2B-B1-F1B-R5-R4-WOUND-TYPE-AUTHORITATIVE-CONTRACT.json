@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-08-21T06:41:33.043720+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R5-R4",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "source_proven_wound_types": [
+    "CREATE_WOUND"
+  ],
+  "selected_wound_type": "CREATE_WOUND",
+  "wound_record": {
+    "wound_record_id": "v77-woundtype-record",
+    "resident_id": "v77-woundtype-resident",
+    "wound_type": "CREATE_WOUND",
+    "anatomical_location": "LEFT_FOREARM",
+    "status": "OPEN",
+    "created_by": "v77-woundtype-supervisor",
+    "created_by_role": "SUPERVISOR"
+  },
+  "create_care_plan_payload": {
+    "action": "CREATE_CARE_PLAN",
+    "actorId": "v77-woundtype-supervisor",
+    "actorRole": "SUPERVISOR",
+    "woundRecordId": "v77-woundtype-record",
+    "careGoal": "V77_SKIN_TEST_CARE_GOAL",
+    "treatmentInstruction": "V77_SKIN_TEST_TREATMENT",
+    "dressingInstruction": "V77_SKIN_TEST_DRESSING",
+    "preventionInstruction": "V77_SKIN_TEST_PREVENTION"
+  },
+  "no_actor_http": "400",
+  "authorized_http": "201",
+  "wound_record_row": "v77-woundtype-record|v77-woundtype-resident|CREATE_WOUND|LEFT_FOREARM|OPEN|v77-woundtype-supervisor|SUPERVISOR",
+  "wound_care_plan_row": "v77-woundtype-record|v77-woundtype-resident|DRAFT|V77_SKIN_TEST_CARE_GOAL|V77_SKIN_TEST_TREATMENT|V77_SKIN_TEST_DRESSING|V77_SKIN_TEST_PREVENTION|v77-woundtype-supervisor|SUPERVISOR",
+  "audit_evidence": {
+    "wound_audit": 1
+  },
+  "autonomousClinicalAction": false,
+  "source_changed": false,
+  "production_changed": false
+}

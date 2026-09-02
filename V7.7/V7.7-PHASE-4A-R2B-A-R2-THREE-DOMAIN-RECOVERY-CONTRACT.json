@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-08-21T05:28:42.384147+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-A-R2",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "tests": [
+    {
+      "module": "behavioral-cognitive",
+      "route": "/api/behavioral-cognitive/v77-r2bar2-resident/execute",
+      "action": "CREATE_COGNITIVE_OBSERVATION",
+      "table": "cognitive_observations",
+      "audit_table": "behavioral_audit",
+      "authenticated_body": {
+        "action": "CREATE_COGNITIVE_OBSERVATION",
+        "actorId": "v77-r2bar2-supervisor",
+        "actorRole": "SUPERVISOR",
+        "observableFacts": "V77_R2B_R2_OBSERVABLE_FACTS",
+        "observationType": "COGNITIVE_OBSERVATION",
+        "baselineChange": false
+      }
+    },
+    {
+      "module": "fall-mobility",
+      "route": "/api/fall-mobility/v77-r2bar2-resident/execute",
+      "action": "CREATE_FALL_RISK_ASSESSMENT",
+      "table": "fall_risk_assessments",
+      "audit_table": "fall_audit",
+      "authenticated_body": {
+        "action": "CREATE_FALL_RISK_ASSESSMENT",
+        "actorId": "v77-r2bar2-supervisor",
+        "actorRole": "SUPERVISOR",
+        "assessmentContext": "V77_R2B_R2_HUMAN_FALL_RISK_ASSESSMENT"
+      }
+    },
+    {
+      "module": "safeguarding",
+      "route": "/api/safeguarding/v77-r2bar2-resident/execute",
+      "action": "CREATE_SAFEGUARDING_REPORT",
+      "table": "safeguarding_reports",
+      "audit_table": "safeguarding_audit",
+      "authenticated_body": {
+        "action": "CREATE_SAFEGUARDING_REPORT",
+        "actorId": "v77-r2bar2-supervisor",
+        "actorRole": "SUPERVISOR",
+        "concernCategory": "V77_R2B_R2_TEST_CONCERN",
+        "factualDescription": "V77_R2B_R2_FACTUAL_DESCRIPTION",
+        "immediateSafetyConcern": false
+      }
+    }
+  ],
+  "rules": [
+    "Only three previously unresolved routes rerun",
+    "Previously accepted six routes remain locked",
+    "First-step create actions only",
+    "No downstream entity fixture invention",
+    "Disposable PostgreSQL only",
+    "No V7.7 application source write",
+    "No V7.6 production write"
+  ]
+}

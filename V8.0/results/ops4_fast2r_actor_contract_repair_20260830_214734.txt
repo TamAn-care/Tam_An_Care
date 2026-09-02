@@ -1,0 +1,131 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-4 FAST-2R
+ KITCHEN OPERATIONS
+ ACTOR CONTRACT REPAIR + BUILD + M4 + DB ACCEPTANCE
+======================================================================
+
+----- 1. FAILURE AUTHORITY -----
+PREVIOUS_FAST2=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast2_implementation_build_schema_20260830_214419.txt
+PASS: PREVIOUS FAILURE CLASSIFIED
+CLASSIFICATION=KITCHEN_ACTOR_TYPE_CONTRACT_DEFECT
+SCHEMA_DEFECT=NO_EVIDENCE
+ARCHITECTURE_DEFECT=NO_EVIDENCE
+
+----- 2. ROLLBACK STATE -----
+FOOD_RECEIVING_EVENTS_EXISTS=0
+DATABASE_BASELINE=1|1|0|0|0|0
+PASS: ROLLBACK STATE CLEAN
+
+----- 3. ACCEPTED DEPENDENCY AUTHORITY -----
+INVENTORY_AUTHORITY=0cfb56865d0eaaad65c2738ae7caea1bc229290f34e1b42217012917fa44fabe
+PASS: INVENTORY_AUTHORITY
+INVENTORY_LEDGER=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: INVENTORY_LEDGER
+INVENTORY_TRANSACTION=9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+PASS: INVENTORY_TRANSACTION
+PASS: INVENTORY ACTOR CONTRACT
+
+----- 4. PRE-MUTATION CHECKPOINT -----
+API_TREE_BEFORE=d3655b4c45717013dfb7d7252fedb145cdd6b7e2676fe00c1e426b4c02f8b4ae
+NUTRITION_TREE_BEFORE=db23d20e90936209688757841e9d808ecb6135802861c21e48a919ca2a404280
+PASS: PRE-MUTATION CHECKPOINT
+
+----- 5. CREATE M4 MIGRATION -----
+MIGRATION_SHA256=634fbc71e962dfc55e2c966e52709689f53fd94dba2f6e5ae2e08b77c9e68b44
+PASS: M4 MIGRATION ARTIFACT
+
+----- 6. CREATE CORRECTED KITCHEN SOURCE -----
+PASS: CORRECTED KITCHEN SOURCE
+
+----- 7. APP MODULE WIRING -----
+PASS: APP MODULE WIRED
+
+----- 8. ACTOR CONTRACT REGRESSION -----
+PASS: ACTOR CONTRACT REPAIRED
+
+----- 9. API BUILD -----
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: API BUILD
+
+----- 10. APPLY M4 -----
+BEGIN
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+COMMIT
+PASS: M4 TABLE CREATED
+
+----- 11. MIGRATION REGISTRY -----
+INSERT 0 1
+M4_REGISTRY_MATCH=1
+PASS: M4 REGISTERED
+
+----- 12. SCHEMA ACCEPTANCE -----
+FOOD_RECEIVING_COLUMN_COUNT=12
+ ordinal_position |       column_name        |        data_type         | is_nullable | coalesce 
+------------------+--------------------------+--------------------------+-------------+----------
+                1 | food_receiving_event_id  | text                     | NO          | 
+                2 | inventory_transaction_id | text                     | YES         | 
+                3 | inventory_item_id        | text                     | NO          | 
+                4 | inventory_lot_id         | text                     | YES         | 
+                5 | receiving_status         | text                     | NO          | 
+                6 | quantity                 | numeric                  | NO          | 
+                7 | unit                     | text                     | NO          | 
+                8 | received_at              | timestamp with time zone | NO          | 
+                9 | received_by              | text                     | NO          | 
+               10 | received_by_role         | text                     | NO          | 
+               11 | note                     | text                     | YES         | 
+               12 | created_at               | timestamp with time zone | NO          | now()
+(12 rows)
+
+                       conname                       |                                                                                               pg_get_constraintdef                                                                                               
+-----------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ food_receiving_event_inventory_link_ck              | CHECK ((((receiving_status = 'ACCEPTED'::text) AND (inventory_transaction_id IS NOT NULL)) OR ((receiving_status = ANY (ARRAY['REJECTED'::text, 'QUARANTINED'::text])) AND (inventory_transaction_id IS NULL))))
+ food_receiving_event_transaction_unique             | UNIQUE (inventory_transaction_id)
+ food_receiving_events_inventory_item_id_fkey        | FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id)
+ food_receiving_events_inventory_lot_id_fkey         | FOREIGN KEY (inventory_lot_id) REFERENCES inventory_lots(inventory_lot_id)
+ food_receiving_events_inventory_transaction_id_fkey | FOREIGN KEY (inventory_transaction_id) REFERENCES inventory_transactions(inventory_transaction_id)
+ food_receiving_events_pkey                          | PRIMARY KEY (food_receiving_event_id)
+ food_receiving_events_quantity_check                | CHECK ((quantity > (0)::numeric))
+ food_receiving_events_received_by_fkey              | FOREIGN KEY (received_by) REFERENCES staff_actors(actor_id)
+ food_receiving_events_received_by_role_check        | CHECK ((received_by_role = ANY (ARRAY['CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+ food_receiving_events_receiving_status_check        | CHECK ((receiving_status = ANY (ARRAY['ACCEPTED'::text, 'REJECTED'::text, 'QUARANTINED'::text])))
+(10 rows)
+
+                indexname                |                                                                               indexdef                                                                                
+-----------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ food_receiving_event_transaction_unique | CREATE UNIQUE INDEX food_receiving_event_transaction_unique ON public.food_receiving_events USING btree (inventory_transaction_id)
+ food_receiving_events_pkey              | CREATE UNIQUE INDEX food_receiving_events_pkey ON public.food_receiving_events USING btree (food_receiving_event_id)
+ idx_food_receiving_events_item_time     | CREATE INDEX idx_food_receiving_events_item_time ON public.food_receiving_events USING btree (inventory_item_id, received_at DESC)
+ idx_food_receiving_events_lot_time      | CREATE INDEX idx_food_receiving_events_lot_time ON public.food_receiving_events USING btree (inventory_lot_id, received_at DESC) WHERE (inventory_lot_id IS NOT NULL)
+ idx_food_receiving_events_received_at   | CREATE INDEX idx_food_receiving_events_received_at ON public.food_receiving_events USING btree (received_at DESC)
+(5 rows)
+
+PASS: M4 CONSTRAINTS + INDEXES
+
+----- 13. TRANSACTIONAL FUNCTIONAL ACCEPTANCE -----
+BEGIN
+ERROR:  new row for relation "inventory_items" violates check constraint "inventory_items_category_ck"
+DETAIL:  Failing row contains (ops4-fast2r-item, OPS4-FAST2R, OPS4 FOOD ITEM, FOOD, KG, t, 2026-08-30 14:47:39.98125+00, 2026-08-30 14:47:39.98125+00, f).
+FAIL: TRANSACTIONAL FUNCTIONAL ACCEPTANCE FAILED
+
+----- CONTROLLED ROLLBACK -----
+DROP TABLE
+DELETE 1
+ROLLBACK_COMPLETE=YES
+
+======================================================================
+ STATUS: OPS-4 FAST-2R FAILED
+======================================================================
+REASON=TRANSACTIONAL FUNCTIONAL ACCEPTANCE FAILED
+OPS_4=NOT_CLOSED
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast2r_actor_contract_repair_20260830_214734.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

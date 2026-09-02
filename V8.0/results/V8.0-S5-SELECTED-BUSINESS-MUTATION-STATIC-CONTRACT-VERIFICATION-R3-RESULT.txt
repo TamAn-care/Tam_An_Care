@@ -1,0 +1,152 @@
+TAM_AN_CARE_VERSION=V8.0
+SERIES=08
+GATE=S5_SELECTED_BUSINESS_MUTATION_STATIC_CONTRACT_VERIFICATION_R3
+
+STATUS=PASSED
+SELECTED_MUTATION_STATIC_STATE=SELECTED_MEDICATION_MUTATION_REJECTED_NO_EXPLICIT_HUMAN_ACTOR_HEADER_CONTRACT
+SELECTED_MUTATION_CANDIDATE_ACCEPTED=NO
+
+R2_RESULT_SHA256=44750bfb87284c27d54a450270fa0df9dd2bb62499ac66d793fea740c69153b4
+R2_MANIFEST_SHA256=f64a4a5ee47fa65247b6752a069e9e6889ed0d3d391db972691484cf949ba98a
+
+CONTROLLER=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.controller.ts
+CONTROLLER_SHA256=b13846467e8cb4abc2b62afe2deda952320137bb931426bf75b018a4540ba8b6
+CONTROLLER_PREFIX=
+MUTATE_ROUTE=:administrationId/:action
+FULL_HTTP_PATH=/:administrationId/:action
+R2_SELECTED_ROUTE=/:administrationId/:action
+R2_ROUTE_RECONSTRUCTION_EXACT=YES
+
+MUTATE_POST_DECORATOR_COUNT=1
+ADMINISTRATION_ID_PARAM_COUNT=1
+ACTION_PARAM_COUNT=1
+BODY_DECORATOR_COUNT=1
+QUERY_DECORATOR_COUNT=0
+REQ_DECORATOR_COUNT=0
+
+X_ACTOR_ID_HEADER_COUNT=0
+X_ACTOR_ROLE_HEADER_COUNT=0
+X_ACTOR_ID_PROVEN=NO
+X_ACTOR_ROLE_PROVEN=NO
+METHOD_AUTHORIZATION_SIGNAL_COUNT=1
+METHOD_AUTHORIZATION_SIGNAL_PRESENT=YES
+
+SERVICE_CALL_COUNT=0
+SERVICE_CALLS_BEGIN
+SERVICE_CALLS_END
+
+METHOD_MUTATION_SIGNAL_COUNT=16
+METHOD_AUDIT_SIGNAL_COUNT=0
+METHOD_TRANSACTION_SIGNAL_COUNT=0
+
+HTTP_AUTHORIZED=NO
+BUSINESS_MUTATION_HTTP_AUTHORIZED=NO
+DATABASE_QUERY_AUTHORIZED=NO
+DATABASE_MUTATION_AUTHORIZED=NO
+DATABASE_DDL_AUTHORIZED=NO
+BOOTSTRAP_RERUN_AUTHORIZED=NO
+SECOND_BOOTSTRAP_EXECUTION_ALLOWED=NO
+S6_AUTHORIZED=NO
+
+FAIL_REASON=
+NEXT_CLASS=S5_BUSINESS_MUTATION_CANDIDATE_RESELECTION_REQUIRED
+NEXT_ACTION=S5_BUSINESS_MUTATION_CANDIDATE_RESELECTION_AFTER_SELECTED_ROUTE_REJECTION
+
+MUTATE_METHOD_SURFACE_BEGIN
+@Post(':administrationId/:action')
+  async mutate(
+    @Param('administrationId')
+    administrationId: string,
+
+    @Param('action')
+    rawAction: string,
+
+    @Body()
+    input: MedicationAdministrationInput,
+  ) {
+
+    try {
+
+      const action =
+        String(rawAction ?? '')
+          .trim()
+          .toUpperCase() as
+          MedicationAdministrationAction;
+
+      const allowed:
+        MedicationAdministrationAction[] =
+        [
+          'ASSIGN',
+          'ACCEPT',
+          'READY',
+          'DOUBLE_CHECK',
+          'ADMINISTER',
+          'MISSED',
+          'REFUSED',
+          'HELD',
+          'CANCEL',
+        ];
+
+      if (
+        !allowed.includes(action)
+      ) {
+        throw new Error(
+          'Unsupported Medication Administration action.',
+        );
+      }
+
+      const data =
+        await this.service
+          .mutateAdministration(
+            administrationId,
+            action,
+            input,
+          );
+
+      return {
+        status: 'OK',
+        data,
+      };
+
+    } catch (error) {
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Unknown error';
+
+      const businessMarkers = [
+        'required',
+        'Only a ',
+        'Only an ',
+        'not authorized',
+        'cannot mutate',
+        'can accept',
+        'can make',
+        'can administer',
+        'requires a human',
+        'different humans',
+        'must be ACTIVE',
+        'has not PASSED',
+        'does not allow',
+        'not found',
+        'Unsupported',
+      ];
+
+      if (
+        businessMarkers.some(
+          marker =>
+            message.includes(marker),
+        )
+      ) {
+        throw new BadRequestException(
+          message,
+        );
+      }
+
+      throw new InternalServerErrorException(
+        'Unable to process Medication Administration request.',
+      );
+    }
+  }
+MUTATE_METHOD_SURFACE_END

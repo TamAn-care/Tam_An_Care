@@ -1,0 +1,50 @@
+{
+  "release": "V7.6",
+  "frozen_at": "2026-08-21T04:16:24.078277+00:00",
+  "api": {
+    "container_name": "taman-care-v743-dev-api",
+    "container_id": "1bc8db1747add437fa8dc52a9fb53ccf67e99550e7b896c68b7914d0e9689dd2",
+    "image_id": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7"
+  },
+  "ui": {
+    "container_name": "taman-care-v75-ui",
+    "container_id": "c68dcf29b83bd0660456812e91ea3436c03aa9a92b5675c23ca63c4b6f673ff0",
+    "image_id": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b"
+  },
+  "database": {
+    "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "image_id": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+    "counts": "0|0|0",
+    "mounts": [
+      {
+        "type": "bind",
+        "name": "",
+        "source": "/host_mnt/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/schema.sql",
+        "destination": "/docker-entrypoint-initdb.d/001_schema.sql"
+      },
+      {
+        "type": "volume",
+        "name": "taman-care-v743-dev-postgres-data",
+        "source": "/var/lib/docker/volumes/taman-care-v743-dev-postgres-data/_data",
+        "destination": "/var/lib/postgresql/data"
+      }
+    ]
+  },
+  "rollback": {
+    "v75_api": "taman-care-v75-api-pre-v76-r1-20260821_111619",
+    "v75_ui": "taman-care-v75-ui-pre-v76-r1-20260821_111619"
+  },
+  "frontend": {
+    "index_hash": "f7e495c1b63d0bad4407641a3c95191505c03b17a827f294b7bb52ce121cdbd0",
+    "js_name": "index-BMb-tSCV.js",
+    "js_hash": "027d92e6aa6e44de11999c521eaec1b2c6a15419ea76e740b5edefb7ede27f62",
+    "css_name": "index-DlvS4Sti.css",
+    "css_hash": "2f3e27ebdf2e2e9a2df4a0883cd84e8474162aff1ca6c85c64944dd77e5c96fb"
+  },
+  "security": {
+    "staff_no_actor": 401,
+    "access_no_actor": 401,
+    "warning_no_actor": 401,
+    "warning_impersonation": 403
+  }
+}

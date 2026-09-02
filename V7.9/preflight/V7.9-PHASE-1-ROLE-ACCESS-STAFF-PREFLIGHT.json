@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-08-21T14:30:13.634730+00:00",
+  "version": "V7.9",
+  "phase": "1",
+  "title": "ROLE_ACCESS_STAFF",
+  "authorization": {
+    "phase0_final_result_hash": "e3ad208c68f1e6ce2caa69ba781fde6bf68c4ff9aeda512d9b748a8a3293449b",
+    "phase0_final_manifest_hash": "214a3918971455307e5adde3cacd333f21b60c9eabfb78af22475d4293b7dcb4"
+  },
+  "baseline_staff_access": {
+    "domain": "staff_access",
+    "route": "/staff-access",
+    "ui_route_200": true,
+    "api_signal": true,
+    "db_signal": true,
+    "classification": "COMPLETE_FOUNDATION"
+  },
+  "ordered_gates": [
+    {
+      "gate": "1A",
+      "name": "ROLE_MODEL_EXACT_CONTRACT_DISCOVERY",
+      "mode": "READ_ONLY"
+    },
+    {
+      "gate": "1B",
+      "name": "PERMISSION_MATRIX_VERIFICATION",
+      "mode": "READ_ONLY_OR_DISPOSABLE"
+    },
+    {
+      "gate": "1C",
+      "name": "STAFF_ACTOR_ASSIGNMENT_WORKFLOW",
+      "mode": "DISPOSABLE_MUTATION"
+    },
+    {
+      "gate": "1D",
+      "name": "RESIDENT_ACCESS_ASSIGNMENT_WORKFLOW",
+      "mode": "DISPOSABLE_MUTATION"
+    },
+    {
+      "gate": "1_FINAL",
+      "name": "STAFF_ACCESS_OPERATIONAL_ACCEPTANCE",
+      "mode": "READ_ONLY_CONSOLIDATION"
+    }
+  ],
+  "execution_rules": {
+    "serial_execution": true,
+    "fail_fast": true,
+    "auto_advance_on_pass": true,
+    "resumable": true,
+    "skip_accepted_gates": true,
+    "sha256_identity": true,
+    "assumed_artifact_filenames": false,
+    "real_staff_mutation": false,
+    "real_resident_mutation": false,
+    "production_database_mutation": false,
+    "production_schema_change": false,
+    "production_runtime_restart": false,
+    "production_cutover": false,
+    "v76_rollback_delete": false
+  },
+  "next": "V7.9_PHASE_1_SERIES_02"
+}

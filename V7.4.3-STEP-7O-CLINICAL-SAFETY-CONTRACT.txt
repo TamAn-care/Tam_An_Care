@@ -1,0 +1,53 @@
+TAM AN CARE V7.4.3
+STEP 7O CLINICAL SAFETY CONTRACT
+
+1. INCIDENT REPORT != DIAGNOSIS
+
+2. TRIAGE != TREATMENT ORDER
+
+3. SEVERITY CLASSIFICATION
+   uses approved organizational configuration.
+
+4. NO HARDCODED CLINICAL TREATMENT THRESHOLDS.
+
+5. FALL DETECTION
+   may raise a suspected-event alert only.
+
+6. AI / SENSOR DETECTION
+   cannot create an official incident automatically.
+
+7. EMERGENCY CLASSIFICATION
+   requires accountable human confirmation.
+
+8. HOSPITAL TRANSFER DECISION
+   cannot be made by AI.
+
+9. EMERGENCY SERVICE CONTACT DECISION
+   cannot be made autonomously by AI.
+
+10. MEDICATION MUTATION
+    prohibited from incident workflow.
+
+11. CARE ACTION AUTO-CREATION
+    prohibited.
+
+12. CARE TASK AUTO-CREATION
+    prohibited.
+
+13. EXPLICIT CROSS-DOMAIN LINKING
+    requires authorized human action.
+
+14. ORIGINAL INCIDENT RECORD
+    is never silently overwritten.
+
+15. RESPONSE NOTES
+    are append-only.
+
+16. POST-INCIDENT REVIEW
+    cannot erase original history.
+
+17. FAILED AUTHORIZATION
+    zero business mutation
+    zero audit mutation.
+
+18. autonomousClinicalAction = false

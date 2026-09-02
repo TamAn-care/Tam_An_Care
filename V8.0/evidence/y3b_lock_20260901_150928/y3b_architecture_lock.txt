@@ -1,0 +1,57 @@
+Y3B_LOCK_V1
+
+A. EXISTING AUTHORITY
+1. Admission remains authority for pre-admission and Final Admission.
+2. Resident remains the durable resident identity after Final Admission.
+3. AA active bed assignment remains accommodation occupancy authority.
+4. Existing Care Plan domain remains care-plan authority.
+5. Existing health/family reporting remains reporting authority.
+
+B. CARE PLAN UPDATE / REVISION
+1. Do not create a second care-plan model.
+2. Updating a care plan must preserve previous state/history through existing audit/version/governance mechanisms.
+3. Update requires authenticated human actor.
+4. Update must target an existing resident and existing care plan.
+5. Update must not silently rewrite historical reports/snapshots.
+6. Review/approval semantics already present remain authoritative.
+7. Concurrent/stale mutation must fail safely rather than silently overwrite.
+8. UI must expose operational care-plan update without requiring manual API work.
+
+C. DISCHARGE / END-OF-SERVICE
+1. Discharge is a lifecycle transition, never DELETE resident.
+2. Resident identity/history remains queryable after discharge.
+3. Discharge requires authenticated human actor.
+4. Required event fields: resident, effective timestamp, reason/category, actor; optional note/destination where supported.
+5. Discharge atomically ends any active bed assignment.
+6. Released bed returns to service only when its room/bed hierarchy permits it.
+7. Legacy residents.room/residents.bed projections are cleared transactionally.
+8. Clinical/care/audit/report/history records are preserved.
+9. Repeated discharge is idempotent or returns deterministic conflict; never duplicates lifecycle history.
+10. Inactive/discharged resident cannot receive a new operational bed assignment without an explicit future readmission workflow.
+11. Discharge history must be auditable and bounded/queryable.
+
+D. RESIDENT LIFECYCLE STATE
+1. Reuse residents.active_status for backward compatibility.
+2. Add structured lifecycle event/history only if existing schema cannot preserve discharge semantics.
+3. No hard resident count limit.
+4. Lists remain bounded/paginated.
+5. Existing active/inactive readers remain compatible.
+
+E. UI / OPERATIONS
+1. Resident screen must make current lifecycle state visible.
+2. Discharge action must require deliberate confirmation and reason.
+3. Care-plan update and discharge should remain within <=3 primary staff interactions where practical.
+4. Discharged residents remain searchable through inactive/all filters.
+5. Mobile/tablet operation remains supported.
+
+F. ACCEPTANCE
+1. API + frontend build PASS.
+2. Isolated migration/runtime PASS if schema change is required.
+3. Active resident discharge PASS.
+4. Active bed release during discharge PASS.
+5. History/audit preservation PASS.
+6. Duplicate discharge safety PASS.
+7. Post-discharge new bed assignment rejection PASS.
+8. Care-plan update/revision PASS.
+9. Existing Admission/Resident/AA/Care/Report regression PASS.
+10. Master DB/runtime untouched until explicit promotion gate.

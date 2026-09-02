@@ -1,0 +1,485 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-4 FAST-1
+ KITCHEN OPERATIONS
+ CONSOLIDATED CURRENT-STATE AUTHORITY
+ READ-ONLY / ZERO SOURCE OR SCHEMA MUTATION
+======================================================================
+
+----- 1. OPS-3 AUTHORITY -----
+OPS3_RESULT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_final_closeout_r1_20260830_212207.txt
+PASS: OPS-3 TECHNICAL AUTHORITY
+OPS3_HUMAN_ACCEPTANCE=CONFIRMED_BY_ROADMAP_CONTINUATION
+PASS: OPS-3 HUMAN ACCEPTANCE AUTHORITY
+
+----- 2. DATABASE AUTHORITY -----
+PASS: CANONICAL POSTGRES RUNNING
+DATABASE_BASELINE=1|1|0|0|0|0
+PASS: ACCEPTED DATABASE BASELINE
+
+----- 3. KITCHEN / NUTRITION TABLES -----
+           table_name            
+---------------------------------
+ admission_nutrition_assessments
+ diet_orders
+ meal_schedules
+ nutrition_alerts
+ nutrition_audit
+ nutrition_escalations
+ nutrition_intake_records
+ nutrition_plans
+(8 rows)
+
+
+----- TARGET COLLISION -----
+FOOD_RECEIVING_EVENTS_EXISTS=0
+PASS: TARGET COLLISION CHECK
+
+----- 4. EXACT EXISTING DOMAIN SCHEMA -----
+           table_name            | ordinal_position |            column_name            |        data_type         | is_nullable |     coalesce      
+---------------------------------+------------------+-----------------------------------+--------------------------+-------------+-------------------
+ admission_nutrition_assessments |                1 | admission_nutrition_assessment_id | text                     | NO          | 
+ admission_nutrition_assessments |                2 | admission_assessment_id           | text                     | NO          | 
+ admission_nutrition_assessments |                3 | diet_type                         | text                     | YES         | 
+ admission_nutrition_assessments |                4 | swallowing_status                 | text                     | YES         | 
+ admission_nutrition_assessments |                5 | oral_health                       | text                     | YES         | 
+ admission_nutrition_assessments |                6 | feeding_assistance_required       | boolean                  | NO          | false
+ admission_nutrition_assessments |                7 | nutrition_risk                    | text                     | YES         | 
+ admission_nutrition_assessments |                8 | hydration_observation             | text                     | YES         | 
+ admission_nutrition_assessments |                9 | notes                             | text                     | YES         | 
+ admission_nutrition_assessments |               10 | recorded_by                       | text                     | NO          | 
+ admission_nutrition_assessments |               11 | recorded_by_role                  | text                     | NO          | 
+ admission_nutrition_assessments |               12 | created_at                        | timestamp with time zone | NO          | now()
+ diet_orders                     |                1 | diet_order_id                     | text                     | NO          | 
+ diet_orders                     |                2 | nutrition_plan_id                 | text                     | NO          | 
+ diet_orders                     |                3 | resident_id                       | text                     | NO          | 
+ diet_orders                     |                4 | diet_code                         | text                     | NO          | 
+ diet_orders                     |                5 | diet_type                         | text                     | NO          | 
+ diet_orders                     |                6 | texture_requirement               | text                     | YES         | 
+ diet_orders                     |                7 | fluid_consistency                 | text                     | YES         | 
+ diet_orders                     |                8 | allergy_information               | text                     | YES         | 
+ diet_orders                     |                9 | intolerance_information           | text                     | YES         | 
+ diet_orders                     |               10 | restriction_information           | text                     | YES         | 
+ diet_orders                     |               11 | fluid_restriction_active          | boolean                  | NO          | false
+ diet_orders                     |               12 | fluid_restriction_details         | text                     | YES         | 
+ diet_orders                     |               13 | swallowing_restriction_present    | boolean                  | NO          | false
+ diet_orders                     |               14 | safety_confirmed                  | boolean                  | NO          | false
+ diet_orders                     |               15 | safety_confirmed_by               | text                     | YES         | 
+ diet_orders                     |               16 | safety_confirmed_by_role          | text                     | YES         | 
+ diet_orders                     |               17 | safety_confirmed_at               | timestamp with time zone | YES         | 
+ diet_orders                     |               18 | status                            | text                     | NO          | 'DRAFT'::text
+ diet_orders                     |               19 | ordered_by                        | text                     | NO          | 
+ diet_orders                     |               20 | ordered_by_role                   | text                     | NO          | 
+ diet_orders                     |               21 | approved_by                       | text                     | YES         | 
+ diet_orders                     |               22 | approved_by_role                  | text                     | YES         | 
+ diet_orders                     |               23 | approved_at                       | timestamp with time zone | YES         | 
+ diet_orders                     |               24 | effective_from                    | timestamp with time zone | YES         | 
+ diet_orders                     |               25 | effective_to                      | timestamp with time zone | YES         | 
+ diet_orders                     |               26 | created_at                        | timestamp with time zone | NO          | now()
+ diet_orders                     |               27 | updated_at                        | timestamp with time zone | NO          | now()
+ meal_schedules                  |                1 | meal_schedule_id                  | text                     | NO          | 
+ meal_schedules                  |                2 | nutrition_plan_id                 | text                     | NO          | 
+ meal_schedules                  |                3 | diet_order_id                     | text                     | NO          | 
+ meal_schedules                  |                4 | resident_id                       | text                     | NO          | 
+ meal_schedules                  |                5 | schedule_code                     | text                     | NO          | 
+ meal_schedules                  |                6 | event_type                        | text                     | NO          | 
+ meal_schedules                  |                7 | scheduled_at                      | timestamp with time zone | NO          | 
+ meal_schedules                  |                8 | status                            | text                     | NO          | 'SCHEDULED'::text
+ meal_schedules                  |                9 | assigned_to                       | text                     | YES         | 
+ meal_schedules                  |               10 | assigned_role                     | text                     | YES         | 
+ meal_schedules                  |               11 | assigned_at                       | timestamp with time zone | YES         | 
+ meal_schedules                  |               12 | accepted_at                       | timestamp with time zone | YES         | 
+ meal_schedules                  |               13 | ready_at                          | timestamp with time zone | YES         | 
+ meal_schedules                  |               14 | completed_at                      | timestamp with time zone | YES         | 
+ meal_schedules                  |               15 | missed_at                         | timestamp with time zone | YES         | 
+ meal_schedules                  |               16 | refused_at                        | timestamp with time zone | YES         | 
+ meal_schedules                  |               17 | held_at                           | timestamp with time zone | YES         | 
+ meal_schedules                  |               18 | cancelled_at                      | timestamp with time zone | YES         | 
+ meal_schedules                  |               19 | exception_reason                  | text                     | YES         | 
+ meal_schedules                  |               20 | created_at                        | timestamp with time zone | NO          | now()
+ meal_schedules                  |               21 | updated_at                        | timestamp with time zone | NO          | now()
+ nutrition_alerts                |                1 | nutrition_alert_id                | text                     | NO          | 
+ nutrition_alerts                |                2 | resident_id                       | text                     | NO          | 
+ nutrition_alerts                |                3 | meal_schedule_id                  | text                     | YES         | 
+ nutrition_alerts                |                4 | alert_type                        | text                     | NO          | 
+ nutrition_alerts                |                5 | source_type                       | text                     | NO          | 
+ nutrition_alerts                |                6 | severity                          | text                     | NO          | 
+ nutrition_alerts                |                7 | summary                           | text                     | NO          | 
+ nutrition_alerts                |                8 | status                            | text                     | NO          | 'OPEN'::text
+ nutrition_alerts                |                9 | created_by                        | text                     | NO          | 
+ nutrition_alerts                |               10 | created_by_role                   | text                     | NO          | 
+ nutrition_alerts                |               11 | created_at                        | timestamp with time zone | NO          | now()
+ nutrition_alerts                |               12 | acknowledged_by                   | text                     | YES         | 
+ nutrition_alerts                |               13 | acknowledged_by_role              | text                     | YES         | 
+ nutrition_alerts                |               14 | acknowledged_at                   | timestamp with time zone | YES         | 
+ nutrition_alerts                |               15 | resolved_by                       | text                     | YES         | 
+ nutrition_alerts                |               16 | resolved_by_role                  | text                     | YES         | 
+ nutrition_alerts                |               17 | resolved_at                       | timestamp with time zone | YES         | 
+ nutrition_alerts                |               18 | resolution_note                   | text                     | YES         | 
+ nutrition_audit                 |                1 | audit_id                          | text                     | NO          | 
+ nutrition_audit                 |                2 | event_sequence                    | bigint                   | NO          | 
+ nutrition_audit                 |                3 | resident_id                       | text                     | NO          | 
+ nutrition_audit                 |                4 | aggregate_type                    | text                     | NO          | 
+ nutrition_audit                 |                5 | aggregate_id                      | text                     | NO          | 
+ nutrition_audit                 |                6 | event_type                        | text                     | NO          | 
+ nutrition_audit                 |                7 | actor_id                          | text                     | YES         | 
+ nutrition_audit                 |                8 | actor_role                        | text                     | YES         | 
+ nutrition_audit                 |                9 | previous_state                    | jsonb                    | YES         | 
+ nutrition_audit                 |               10 | new_state                         | jsonb                    | YES         | 
+ nutrition_audit                 |               11 | created_at                        | timestamp with time zone | NO          | now()
+ nutrition_escalations           |                1 | nutrition_escalation_id           | text                     | NO          | 
+ nutrition_escalations           |                2 | resident_id                       | text                     | NO          | 
+ nutrition_escalations           |                3 | nutrition_alert_id                | text                     | NO          | 
+ nutrition_escalations           |                4 | reason                            | text                     | NO          | 
+ nutrition_escalations           |                5 | status                            | text                     | NO          | 'OPEN'::text
+ nutrition_escalations           |                6 | escalated_by                      | text                     | NO          | 
+ nutrition_escalations           |                7 | escalated_by_role                 | text                     | NO          | 
+ nutrition_escalations           |                8 | escalated_at                      | timestamp with time zone | NO          | now()
+ nutrition_escalations           |                9 | assigned_reviewer                 | text                     | YES         | 
+ nutrition_escalations           |               10 | assigned_reviewer_role            | text                     | YES         | 
+ nutrition_escalations           |               11 | assigned_at                       | timestamp with time zone | YES         | 
+ nutrition_escalations           |               12 | accepted_at                       | timestamp with time zone | YES         | 
+ nutrition_escalations           |               13 | resolved_by                       | text                     | YES         | 
+ nutrition_escalations           |               14 | resolved_by_role                  | text                     | YES         | 
+ nutrition_escalations           |               15 | resolved_at                       | timestamp with time zone | YES         | 
+ nutrition_escalations           |               16 | resolution_summary                | text                     | YES         | 
+ nutrition_escalations           |               17 | created_at                        | timestamp with time zone | NO          | now()
+ nutrition_escalations           |               18 | updated_at                        | timestamp with time zone | NO          | now()
+ nutrition_intake_records        |                1 | intake_record_id                  | text                     | NO          | 
+ nutrition_intake_records        |                2 | meal_schedule_id                  | text                     | NO          | 
+ nutrition_intake_records        |                3 | resident_id                       | text                     | NO          | 
+ nutrition_intake_records        |                4 | intake_type                       | text                     | NO          | 
+ nutrition_intake_records        |                5 | food_intake_percent               | integer                  | YES         | 
+ nutrition_intake_records        |                6 | fluid_amount_ml                   | integer                  | YES         | 
+ nutrition_intake_records        |                7 | intake_note                       | text                     | YES         | 
+ nutrition_intake_records        |                8 | record_status                     | text                     | NO          | 'RECORDED'::text
+ nutrition_intake_records        |                9 | recorded_by                       | text                     | NO          | 
+ nutrition_intake_records        |               10 | recorded_by_role                  | text                     | NO          | 
+ nutrition_intake_records        |               11 | recorded_at                       | timestamp with time zone | NO          | now()
+ nutrition_intake_records        |               12 | verified_by                       | text                     | YES         | 
+ nutrition_intake_records        |               13 | verified_by_role                  | text                     | YES         | 
+ nutrition_intake_records        |               14 | verified_at                       | timestamp with time zone | YES         | 
+ nutrition_intake_records        |               15 | amends_record_id                  | text                     | YES         | 
+ nutrition_intake_records        |               16 | amendment_reason                  | text                     | YES         | 
+ nutrition_intake_records        |               17 | created_at                        | timestamp with time zone | NO          | now()
+ nutrition_plans                 |                1 | nutrition_plan_id                 | text                     | NO          | 
+ nutrition_plans                 |                2 | resident_id                       | text                     | NO          | 
+ nutrition_plans                 |                3 | plan_code                         | text                     | NO          | 
+ nutrition_plans                 |                4 | title                             | text                     | NO          | 
+ nutrition_plans                 |                5 | description                       | text                     | YES         | 
+ nutrition_plans                 |                6 | status                            | text                     | NO          | 'DRAFT'::text
+ nutrition_plans                 |                7 | hydration_monitoring_required     | boolean                  | NO          | false
+ nutrition_plans                 |                8 | feeding_assistance_required       | boolean                  | NO          | false
+ nutrition_plans                 |                9 | effective_from                    | timestamp with time zone | YES         | 
+ nutrition_plans                 |               10 | effective_to                      | timestamp with time zone | YES         | 
+ nutrition_plans                 |               11 | created_by                        | text                     | NO          | 
+ nutrition_plans                 |               12 | created_by_role                   | text                     | NO          | 
+ nutrition_plans                 |               13 | approved_by                       | text                     | YES         | 
+ nutrition_plans                 |               14 | approved_by_role                  | text                     | YES         | 
+ nutrition_plans                 |               15 | approved_at                       | timestamp with time zone | YES         | 
+ nutrition_plans                 |               16 | created_at                        | timestamp with time zone | NO          | now()
+ nutrition_plans                 |               17 | updated_at                        | timestamp with time zone | NO          | now()
+(141 rows)
+
+
+----- 5. DOMAIN CONSTRAINTS -----
+           table_name            |                        constraint_name                         | constraint_type |            column_name            |        referenced_table         |         referenced_column         
+---------------------------------+----------------------------------------------------------------+-----------------+-----------------------------------+---------------------------------+-----------------------------------
+ admission_nutrition_assessments | 2200_46547_10_not_null                                         | CHECK           |                                   |                                 | 
+ admission_nutrition_assessments | 2200_46547_11_not_null                                         | CHECK           |                                   |                                 | 
+ admission_nutrition_assessments | 2200_46547_12_not_null                                         | CHECK           |                                   |                                 | 
+ admission_nutrition_assessments | 2200_46547_1_not_null                                          | CHECK           |                                   |                                 | 
+ admission_nutrition_assessments | 2200_46547_2_not_null                                          | CHECK           |                                   |                                 | 
+ admission_nutrition_assessments | 2200_46547_6_not_null                                          | CHECK           |                                   |                                 | 
+ admission_nutrition_assessments | admission_nutrition_assessments_admission_assessment_id_fkey   | FOREIGN KEY     | admission_assessment_id           | admission_assessments           | admission_assessment_id
+ admission_nutrition_assessments | admission_nutrition_assessments_pkey                           | PRIMARY KEY     | admission_nutrition_assessment_id | admission_nutrition_assessments | admission_nutrition_assessment_id
+ diet_orders                     | 2200_46751_11_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_13_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_14_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_18_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_19_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_1_not_null                                          | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_20_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_26_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_27_not_null                                         | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_2_not_null                                          | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_3_not_null                                          | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_4_not_null                                          | CHECK           |                                   |                                 | 
+ diet_orders                     | 2200_46751_5_not_null                                          | CHECK           |                                   |                                 | 
+ diet_orders                     | diet_orders_check                                              | CHECK           |                                   | diet_orders                     | effective_to
+ diet_orders                     | diet_orders_check                                              | CHECK           |                                   | diet_orders                     | effective_from
+ diet_orders                     | diet_orders_diet_code_key                                      | UNIQUE          | diet_code                         | diet_orders                     | diet_code
+ diet_orders                     | diet_orders_nutrition_plan_id_fkey                             | FOREIGN KEY     | nutrition_plan_id                 | nutrition_plans                 | nutrition_plan_id
+ diet_orders                     | diet_orders_pkey                                               | PRIMARY KEY     | diet_order_id                     | diet_orders                     | diet_order_id
+ diet_orders                     | diet_orders_resident_id_fkey                                   | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ diet_orders                     | diet_orders_status_check                                       | CHECK           |                                   | diet_orders                     | status
+ meal_schedules                  | 2200_47034_1_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_20_not_null                                         | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_21_not_null                                         | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_2_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_3_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_4_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_5_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_6_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_7_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | 2200_47034_8_not_null                                          | CHECK           |                                   |                                 | 
+ meal_schedules                  | meal_schedules_check                                           | CHECK           |                                   | meal_schedules                  | assigned_at
+ meal_schedules                  | meal_schedules_check                                           | CHECK           |                                   | meal_schedules                  | assigned_to
+ meal_schedules                  | meal_schedules_check                                           | CHECK           |                                   | meal_schedules                  | assigned_role
+ meal_schedules                  | meal_schedules_diet_order_id_fkey                              | FOREIGN KEY     | diet_order_id                     | diet_orders                     | diet_order_id
+ meal_schedules                  | meal_schedules_event_type_check                                | CHECK           |                                   | meal_schedules                  | event_type
+ meal_schedules                  | meal_schedules_nutrition_plan_id_fkey                          | FOREIGN KEY     | nutrition_plan_id                 | nutrition_plans                 | nutrition_plan_id
+ meal_schedules                  | meal_schedules_pkey                                            | PRIMARY KEY     | meal_schedule_id                  | meal_schedules                  | meal_schedule_id
+ meal_schedules                  | meal_schedules_resident_id_fkey                                | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ meal_schedules                  | meal_schedules_schedule_code_key                               | UNIQUE          | schedule_code                     | meal_schedules                  | schedule_code
+ meal_schedules                  | meal_schedules_status_check                                    | CHECK           |                                   | meal_schedules                  | status
+ nutrition_alerts                | 2200_47191_10_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_11_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_1_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_2_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_4_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_5_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_6_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_7_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_8_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | 2200_47191_9_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_alerts                | nutrition_alerts_alert_type_check                              | CHECK           |                                   | nutrition_alerts                | alert_type
+ nutrition_alerts                | nutrition_alerts_meal_schedule_id_fkey                         | FOREIGN KEY     | meal_schedule_id                  | meal_schedules                  | meal_schedule_id
+ nutrition_alerts                | nutrition_alerts_pkey                                          | PRIMARY KEY     | nutrition_alert_id                | nutrition_alerts                | nutrition_alert_id
+ nutrition_alerts                | nutrition_alerts_resident_id_fkey                              | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ nutrition_alerts                | nutrition_alerts_severity_check                                | CHECK           |                                   | nutrition_alerts                | severity
+ nutrition_alerts                | nutrition_alerts_source_type_check                             | CHECK           |                                   | nutrition_alerts                | source_type
+ nutrition_alerts                | nutrition_alerts_status_check                                  | CHECK           |                                   | nutrition_alerts                | status
+ nutrition_audit                 | 2200_47202_11_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_audit                 | 2200_47202_1_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_audit                 | 2200_47202_2_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_audit                 | 2200_47202_3_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_audit                 | 2200_47202_4_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_audit                 | 2200_47202_5_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_audit                 | 2200_47202_6_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | aggregate_type                    | nutrition_audit                 | event_sequence
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | aggregate_type                    | nutrition_audit                 | aggregate_id
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | aggregate_type                    | nutrition_audit                 | aggregate_type
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | aggregate_id                      | nutrition_audit                 | event_sequence
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | aggregate_id                      | nutrition_audit                 | aggregate_type
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | aggregate_id                      | nutrition_audit                 | aggregate_id
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | event_sequence                    | nutrition_audit                 | event_sequence
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | event_sequence                    | nutrition_audit                 | aggregate_type
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | UNIQUE          | event_sequence                    | nutrition_audit                 | aggregate_id
+ nutrition_audit                 | nutrition_audit_pkey                                           | PRIMARY KEY     | audit_id                          | nutrition_audit                 | audit_id
+ nutrition_audit                 | nutrition_audit_resident_id_fkey                               | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ nutrition_escalations           | 2200_47208_17_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_18_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_1_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_2_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_3_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_4_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_5_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_6_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_7_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | 2200_47208_8_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_escalations           | nutrition_escalations_nutrition_alert_id_fkey                  | FOREIGN KEY     | nutrition_alert_id                | nutrition_alerts                | nutrition_alert_id
+ nutrition_escalations           | nutrition_escalations_pkey                                     | PRIMARY KEY     | nutrition_escalation_id           | nutrition_escalations           | nutrition_escalation_id
+ nutrition_escalations           | nutrition_escalations_resident_id_fkey                         | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ nutrition_escalations           | nutrition_escalations_status_check                             | CHECK           |                                   | nutrition_escalations           | status
+ nutrition_intake_records        | 2200_47218_10_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_11_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_17_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_1_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_2_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_3_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_4_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_8_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | 2200_47218_9_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_intake_records        | nutrition_intake_records_amends_record_id_fkey                 | FOREIGN KEY     | amends_record_id                  | nutrition_intake_records        | intake_record_id
+ nutrition_intake_records        | nutrition_intake_records_fluid_amount_ml_check                 | CHECK           |                                   | nutrition_intake_records        | fluid_amount_ml
+ nutrition_intake_records        | nutrition_intake_records_food_intake_percent_check             | CHECK           |                                   | nutrition_intake_records        | food_intake_percent
+ nutrition_intake_records        | nutrition_intake_records_intake_type_check                     | CHECK           |                                   | nutrition_intake_records        | intake_type
+ nutrition_intake_records        | nutrition_intake_records_meal_schedule_id_fkey                 | FOREIGN KEY     | meal_schedule_id                  | meal_schedules                  | meal_schedule_id
+ nutrition_intake_records        | nutrition_intake_records_pkey                                  | PRIMARY KEY     | intake_record_id                  | nutrition_intake_records        | intake_record_id
+ nutrition_intake_records        | nutrition_intake_records_record_status_check                   | CHECK           |                                   | nutrition_intake_records        | record_status
+ nutrition_intake_records        | nutrition_intake_records_resident_id_fkey                      | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ nutrition_plans                 | 2200_47230_11_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_12_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_16_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_17_not_null                                         | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_1_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_2_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_3_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_4_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_6_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_7_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | 2200_47230_8_not_null                                          | CHECK           |                                   |                                 | 
+ nutrition_plans                 | nutrition_plans_check                                          | CHECK           |                                   | nutrition_plans                 | effective_from
+ nutrition_plans                 | nutrition_plans_check                                          | CHECK           |                                   | nutrition_plans                 | effective_to
+ nutrition_plans                 | nutrition_plans_pkey                                           | PRIMARY KEY     | nutrition_plan_id                 | nutrition_plans                 | nutrition_plan_id
+ nutrition_plans                 | nutrition_plans_plan_code_key                                  | UNIQUE          | plan_code                         | nutrition_plans                 | plan_code
+ nutrition_plans                 | nutrition_plans_resident_id_fkey                               | FOREIGN KEY     | resident_id                       | residents                       | resident_id
+ nutrition_plans                 | nutrition_plans_status_check                                   | CHECK           |                                   | nutrition_plans                 | status
+(131 rows)
+
+
+----- DOMAIN INDEXES -----
+            tablename            |                           indexname                            |                                                                                indexdef                                                                                 
+---------------------------------+----------------------------------------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ admission_nutrition_assessments | admission_nutrition_assessments_pkey                           | CREATE UNIQUE INDEX admission_nutrition_assessments_pkey ON public.admission_nutrition_assessments USING btree (admission_nutrition_assessment_id)
+ admission_nutrition_assessments | idx_admission_nutrition_assessment                             | CREATE INDEX idx_admission_nutrition_assessment ON public.admission_nutrition_assessments USING btree (admission_assessment_id)
+ diet_orders                     | diet_orders_diet_code_key                                      | CREATE UNIQUE INDEX diet_orders_diet_code_key ON public.diet_orders USING btree (diet_code)
+ diet_orders                     | diet_orders_pkey                                               | CREATE UNIQUE INDEX diet_orders_pkey ON public.diet_orders USING btree (diet_order_id)
+ diet_orders                     | idx_diet_orders_resident_status                                | CREATE INDEX idx_diet_orders_resident_status ON public.diet_orders USING btree (resident_id, status)
+ meal_schedules                  | idx_meal_schedules_assigned                                    | CREATE INDEX idx_meal_schedules_assigned ON public.meal_schedules USING btree (assigned_to, status)
+ meal_schedules                  | idx_meal_schedules_resident_status                             | CREATE INDEX idx_meal_schedules_resident_status ON public.meal_schedules USING btree (resident_id, status)
+ meal_schedules                  | meal_schedules_pkey                                            | CREATE UNIQUE INDEX meal_schedules_pkey ON public.meal_schedules USING btree (meal_schedule_id)
+ meal_schedules                  | meal_schedules_schedule_code_key                               | CREATE UNIQUE INDEX meal_schedules_schedule_code_key ON public.meal_schedules USING btree (schedule_code)
+ nutrition_alerts                | idx_nutrition_alerts_resident_status                           | CREATE INDEX idx_nutrition_alerts_resident_status ON public.nutrition_alerts USING btree (resident_id, status)
+ nutrition_alerts                | nutrition_alerts_pkey                                          | CREATE UNIQUE INDEX nutrition_alerts_pkey ON public.nutrition_alerts USING btree (nutrition_alert_id)
+ nutrition_audit                 | idx_nutrition_audit_aggregate                                  | CREATE INDEX idx_nutrition_audit_aggregate ON public.nutrition_audit USING btree (aggregate_type, aggregate_id, event_sequence)
+ nutrition_audit                 | nutrition_audit_aggregate_type_aggregate_id_event_sequence_key | CREATE UNIQUE INDEX nutrition_audit_aggregate_type_aggregate_id_event_sequence_key ON public.nutrition_audit USING btree (aggregate_type, aggregate_id, event_sequence)
+ nutrition_audit                 | nutrition_audit_pkey                                           | CREATE UNIQUE INDEX nutrition_audit_pkey ON public.nutrition_audit USING btree (audit_id)
+ nutrition_escalations           | idx_nutrition_escalations_alert                                | CREATE INDEX idx_nutrition_escalations_alert ON public.nutrition_escalations USING btree (nutrition_alert_id)
+ nutrition_escalations           | nutrition_escalations_pkey                                     | CREATE UNIQUE INDEX nutrition_escalations_pkey ON public.nutrition_escalations USING btree (nutrition_escalation_id)
+ nutrition_intake_records        | idx_nutrition_intake_meal                                      | CREATE INDEX idx_nutrition_intake_meal ON public.nutrition_intake_records USING btree (meal_schedule_id)
+ nutrition_intake_records        | idx_nutrition_intake_resident                                  | CREATE INDEX idx_nutrition_intake_resident ON public.nutrition_intake_records USING btree (resident_id)
+ nutrition_intake_records        | nutrition_intake_records_pkey                                  | CREATE UNIQUE INDEX nutrition_intake_records_pkey ON public.nutrition_intake_records USING btree (intake_record_id)
+ nutrition_plans                 | idx_nutrition_plans_resident                                   | CREATE INDEX idx_nutrition_plans_resident ON public.nutrition_plans USING btree (resident_id)
+ nutrition_plans                 | idx_nutrition_plans_status                                     | CREATE INDEX idx_nutrition_plans_status ON public.nutrition_plans USING btree (status)
+ nutrition_plans                 | nutrition_plans_pkey                                           | CREATE UNIQUE INDEX nutrition_plans_pkey ON public.nutrition_plans USING btree (nutrition_plan_id)
+ nutrition_plans                 | nutrition_plans_plan_code_key                                  | CREATE UNIQUE INDEX nutrition_plans_plan_code_key ON public.nutrition_plans USING btree (plan_code)
+(23 rows)
+
+
+----- 6. EXISTING DOMAIN VALUE CONTRACTS -----
+TABLE=nutrition_plans
+ nutrition_plan_id | resident_id | plan_code | title | description | status | hydration_monitoring_required | feeding_assistance_required | effective_from | effective_to | created_by | created_by_role | approved_by | approved_by_role | approved_at | created_at | updated_at 
+-------------------+-------------+-----------+-------+-------------+--------+-------------------------------+-----------------------------+----------------+--------------+------------+-----------------+-------------+------------------+-------------+------------+------------
+(0 rows)
+
+TABLE=diet_orders
+ diet_order_id | nutrition_plan_id | resident_id | diet_code | diet_type | texture_requirement | fluid_consistency | allergy_information | intolerance_information | restriction_information | fluid_restriction_active | fluid_restriction_details | swallowing_restriction_present | safety_confirmed | safety_confirmed_by | safety_confirmed_by_role | safety_confirmed_at | status | ordered_by | ordered_by_role | approved_by | approved_by_role | approved_at | effective_from | effective_to | created_at | updated_at 
+---------------+-------------------+-------------+-----------+-----------+---------------------+-------------------+---------------------+-------------------------+-------------------------+--------------------------+---------------------------+--------------------------------+------------------+---------------------+--------------------------+---------------------+--------+------------+-----------------+-------------+------------------+-------------+----------------+--------------+------------+------------
+(0 rows)
+
+TABLE=meal_schedules
+ meal_schedule_id | nutrition_plan_id | diet_order_id | resident_id | schedule_code | event_type | scheduled_at | status | assigned_to | assigned_role | assigned_at | accepted_at | ready_at | completed_at | missed_at | refused_at | held_at | cancelled_at | exception_reason | created_at | updated_at 
+------------------+-------------------+---------------+-------------+---------------+------------+--------------+--------+-------------+---------------+-------------+-------------+----------+--------------+-----------+------------+---------+--------------+------------------+------------+------------
+(0 rows)
+
+PASS: BOUNDED DOMAIN SAMPLE
+
+----- 7. CURRENT API DOMAIN FILES -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.module.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.types.ts
+
+----- CURRENT DOMAIN SOURCE SIGNALS -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:114:      FROM nutrition_plans
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:138:      FROM diet_orders
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:162:      FROM meal_schedules
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:283:        INSERT INTO nutrition_plans (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:356:        UPDATE nutrition_plans
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:414:        INSERT INTO diet_orders (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:506:        UPDATE diet_orders
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:584:        INSERT INTO meal_schedules (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:671:        UPDATE meal_schedules
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:737:        UPDATE meal_schedules
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:797:        UPDATE meal_schedules
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:886:        UPDATE meal_schedules
+PASS: CURRENT API SURFACE CAPTURED
+
+----- 8. ACCEPTED INVENTORY REUSE AUTHORITY -----
+inventory-ledger.service.ts=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+inventory-transaction.service.ts=9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+inventory-lot.service.ts=5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087
+inventory-kpi.service.ts=8a7dd336bafb20f061ba5d4ce2cdde1a265ddc23871f8cf204c482b3d650e699
+inventory.module.ts=eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66
+PASS: INVENTORY ENGINE REUSE AVAILABLE
+
+----- 9. HUMAN AUTHORITY REUSE -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/production-auth.middleware.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:68:      await this.staffActors.resolveActiveActorWithRole(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:228:  async resolveActiveActorWithRole(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/security.module.ts:7:  ProductionAuthMiddleware,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/security.module.ts:18:      .apply(ProductionAuthMiddleware)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/security/production-auth.middleware.ts:215:export class ProductionAuthMiddleware
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts:52:  async canAccessResident(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts:69:        .resolveActiveActorWithRole(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-scope/resident-access-scope.service.ts:140:  sqlPredicate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-kpi.service.ts:532:          .sqlPredicate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts:113:      await this.residentAccess.canAccessResident(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.service.ts:110:        .resolveActiveActorWithRole(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.service.ts:656:        .resolveActiveActorWithRole(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.service.ts:493:        .canAccessResident(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:283:        .sqlPredicate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:292:        .sqlPredicate(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.service.ts:301:        .sqlPredicate(
+PASS: HUMAN AUTHORITY SURFACE CAPTURED
+
+----- 10. MIGRATION AUTHORITY -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_001_enterprise_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_002_auth_session_lifecycle.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_003_ops_operational_work_foundation.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_004_ops_work_event_type_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_wave1_work_event_types.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_work_event_audit.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+
+----- APPLIED MIGRATIONS -----
+                 migration_id                 |                      description                      
+----------------------------------------------+-------------------------------------------------------
+ 20260829_001_enterprise_foundation           | Enterprise authentication and migration registry
+ 20260829_002_auth_session_lifecycle          | Authentication session and token revocation lifecycle
+ 20260829_003_ops_operational_work_foundation | OPS operational work foundation
+(3 rows)
+
+
+----- FOOD RECEIVING MIGRATION SIGNAL -----
+PASS: MIGRATION AUTHORITY CAPTURED
+
+----- 11. SCALABILITY AUTHORITY -----
+HARD_RESIDENT_200_SIGNALS=0
+PASS: NO HARD RESIDENT CAP 200
+
+----- 12. READ-ONLY SOURCE FINGERPRINT -----
+API_SOURCE_TREE=d3655b4c45717013dfb7d7252fedb145cdd6b7e2676fe00c1e426b4c02f8b4ae
+PASS: SOURCE FINGERPRINT CAPTURED
+
+======================================================================
+ OPS-4 FAST-1 DECISION
+======================================================================
+PASS_COUNT=12
+FAIL_COUNT=0
+STATUS: OPS-4 CONSOLIDATED AUTHORITY CAPTURE PASSED
+
+OPS_4_NAME=KITCHEN_OPERATIONS
+REUSE_NUTRITION_DOMAIN=REQUIRED
+REUSE_INVENTORY_ENGINE=REQUIRED
+FOOD_RECEIVING_EVENTS_TARGET=AUTHORIZED_ARCHITECTURAL_TARGET
+FOOD_RECEIVING_EVENTS_CURRENT_EXISTS=0
+
+KITCHEN_INVENTORY_VIEW=IN_SCOPE
+MEAL_PRODUCTION_OPERATIONAL_VIEW=IN_SCOPE
+SECOND_NUTRITION_DOMAIN=FORBIDDEN
+SECOND_INVENTORY_LEDGER=FORBIDDEN
+AI_AUTHORITATIVE_STOCK_MOVEMENT=FORBIDDEN
+
+MIGRATION_POLICY=ADDITIVE_ONLY_IF_CURRENT_SCHEMA_REQUIRES
+EXISTING_A_W_REPLACEMENT=FORBIDDEN
+HARD_RESIDENT_MAX=NONE
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+LOAD_ALL_QUERY=FORBIDDEN
+
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+DATABASE_MUTATION=NO
+
+NEXT=OPS_4_FAST_2_IMPLEMENT_BUILD_FUNCTIONAL_CLOSEOUT
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fast1_consolidated_authority_20260830_213046.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+======================================================================

@@ -1,0 +1,496 @@
+{
+  "mutation_route_count": 31,
+  "header_proven_count": 3,
+  "runtime_proof_required_count": 28,
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/api/activity-rehabilitation/:residentId/execute",
+      "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "./activity-rehabilitation-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/analyze",
+      "source": "api/src/ai/ai-engine.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": false,
+      "authorization_terms": [
+        "ForbiddenException"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/demo",
+      "source": "api/src/ai/ai-engine.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": false,
+      "authorization_terms": [
+        "ForbiddenException"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/patterns",
+      "source": "api/src/ai/early-warning.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": false,
+      "authorization_terms": [
+        "ForbiddenException"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "source": "api/src/ai/early-warning.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": false,
+      "authorization_terms": [
+        "ForbiddenException"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/behavioral-cognitive/:residentId/execute",
+      "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.module",
+        "../resolution-authorization/resolution-authorization.module",
+        "../start-review-authorization/start-review-authorization.module"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/assign",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.service",
+        "../resolution-authorization/resolution-authorization.service",
+        "../start-review-authorization/start-review-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/transfer",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.service",
+        "../resolution-authorization/resolution-authorization.service",
+        "../start-review-authorization/start-review-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/start-review",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.service",
+        "../resolution-authorization/resolution-authorization.service",
+        "../start-review-authorization/start-review-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/resolve",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.service",
+        "../resolution-authorization/resolution-authorization.service",
+        "../start-review-authorization/start-review-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/reopen",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.service",
+        "../resolution-authorization/resolution-authorization.service",
+        "../start-review-authorization/start-review-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-plan-governance/:carePlanId/:action",
+      "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../care-plan-authorization/care-plan-authorization.module",
+        "../care-plan-authorization/care-plan-authorization.service",
+        "../care-plan-authorization/care-plan-authorization.types"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-task-execution/:careTaskId/:action",
+      "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "../care-task-authorization/care-task-authorization.module",
+        "../care-task-authorization/care-task-authorization.service",
+        "../care-task-authorization/care-task-authorization.types"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+      "source": "api/src/clinical-observations/clinical.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "./clinical-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/fall-mobility/:residentId/execute",
+      "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "source": "api/src/incidents/incident.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "./incident-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "source": "api/src/incidents/incident.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "./incident-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/infection-control/:residentId/execute",
+      "source": "api/src/infection-control/infection-control.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-administrations/:administrationId/:action",
+      "source": "api/src/medication/medication.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "./medication-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-safety/:residentId/execute",
+      "source": "api/src/medication-safety/medication-safety.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/nutrition-hydration/:residentId/execute",
+      "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization",
+        "authorize"
+      ],
+      "authorization_imports": [
+        "./nutrition-hydration-authorization.service"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/pain-comfort/:residentId/execute",
+      "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/personal-care/:residentId/execute",
+      "source": "api/src/personal-care/personal-care.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/operations/residents/:residentId/access-assignments",
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+      "controller_actor_headers": true,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "ForbiddenException",
+        "UnauthorizedException",
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/operations/access-assignments/:assignmentId/revoke",
+      "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+      "controller_actor_headers": true,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "ForbiddenException",
+        "UnauthorizedException",
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+      "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorization"
+      ],
+      "authorization_imports": [
+        "../reopen-authorization/reopen-authorization.module",
+        "../resolution-authorization/resolution-authorization.module",
+        "../start-review-authorization/start-review-authorization.module"
+      ],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/safeguarding/:residentId/execute",
+      "source": "api/src/safeguarding/safeguarding.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/skin-wound/:residentId/execute",
+      "source": "api/src/skin-wound/skin-wound.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sleep-rest/:residentId/execute",
+      "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+      "controller_actor_headers": false,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "actorId",
+        "actorRole"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/warning-reviews",
+      "source": "api/src/warning-reviews/warning-review.controller.ts",
+      "controller_actor_headers": true,
+      "domain_actor_body_contract": true,
+      "authorization_terms": [
+        "ForbiddenException",
+        "UnauthorizedException",
+        "actorId",
+        "actorRole",
+        "authorize"
+      ],
+      "authorization_imports": [],
+      "requires_runtime_proof": false
+    }
+  ],
+  "decision": "No automatic backend security patch is authorized solely from static controller evidence."
+}

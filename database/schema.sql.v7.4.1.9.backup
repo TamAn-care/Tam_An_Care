@@ -1,0 +1,2 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE TABLE IF NOT EXISTS ai_analysis_audit (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), request_id text NOT NULL, engine_id text NOT NULL, subject_id text, risk_class text NOT NULL, result_status text NOT NULL, created_at timestamptz DEFAULT now());

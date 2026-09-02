@@ -1,0 +1,295 @@
+import { useState } from 'react'
+
+import {
+  getCareAction,
+  getOperationalDashboard,
+  getResidentCareView,
+  getResidentIntegrationOverview,
+  getWarningReview,
+  type HumanActor,
+} from '../../api/operational-care'
+
+function pretty(value: unknown): string {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  return JSON.stringify(value, null, 2)
+}
+
+export default function CareWorkPage() {
+  const [actorId, setActorId] = useState('')
+  const [actorRole, setActorRole] = useState('SUPERVISOR')
+  const [residentId, setResidentId] = useState('')
+  const [patternId, setPatternId] = useState('')
+  const [warningId, setWarningId] = useState('')
+
+  const [result, setResult] = useState<unknown>(null)
+  const [title, setTitle] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const actor: HumanActor | undefined =
+    actorId.trim()
+      ? {
+          actorId: actorId.trim(),
+          actorRole: actorRole.trim(),
+        }
+      : undefined
+
+  async function execute(
+    label: string,
+    action: () => Promise<unknown>,
+  ) {
+    setLoading(true)
+    setError('')
+
+    try {
+      const value = await action()
+
+      setTitle(label)
+      setResult(value)
+    } catch (caught) {
+      const err = caught as Error & {
+        status?: number
+        body?: unknown
+      }
+
+      setResult(null)
+
+      setError(
+        [
+          err.message,
+          err.status
+            ? `Status: ${err.status}`
+            : '',
+          err.body
+            ? pretty(err.body)
+            : '',
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const canResident = residentId.trim().length > 0
+
+  const canCareAction =
+    canResident &&
+    patternId.trim().length > 0
+
+  const canWarning =
+    warningId.trim().length > 0
+
+  return (
+    <main className="care-work-page">
+      <header>
+        <p>Tâm An Care V7.6</p>
+
+        <h1>
+          Operational Care Workspace
+        </h1>
+
+        <p>
+          Read-layer implementation. Protected workflow
+          mutations are added only after the exact Phase 4B
+          request contracts are locked.
+        </p>
+      </header>
+
+      <section
+        style={{
+          display: 'grid',
+          gap: 16,
+          gridTemplateColumns:
+            'repeat(auto-fit, minmax(220px, 1fr))',
+          marginBlock: 24,
+        }}
+      >
+        <label>
+          Actor ID
+          <input
+            value={actorId}
+            onChange={(event) =>
+              setActorId(event.target.value)
+            }
+          />
+        </label>
+
+        <label>
+          Actor role
+          <input
+            value={actorRole}
+            onChange={(event) =>
+              setActorRole(event.target.value)
+            }
+          />
+        </label>
+
+        <label>
+          Resident ID
+          <input
+            value={residentId}
+            onChange={(event) =>
+              setResidentId(event.target.value)
+            }
+          />
+        </label>
+
+        <label>
+          Pattern ID
+          <input
+            value={patternId}
+            onChange={(event) =>
+              setPatternId(event.target.value)
+            }
+          />
+        </label>
+
+        <label>
+          Warning ID
+          <input
+            value={warningId}
+            onChange={(event) =>
+              setWarningId(event.target.value)
+            }
+          />
+        </label>
+      </section>
+
+      <section
+        style={{
+          display: 'flex',
+          gap: 8,
+          flexWrap: 'wrap',
+        }}
+      >
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() =>
+            void execute(
+              'Operational Dashboard',
+              () =>
+                getOperationalDashboard(
+                  actor,
+                ),
+            )
+          }
+        >
+          Dashboard
+        </button>
+
+        <button
+          type="button"
+          disabled={
+            loading ||
+            !canResident
+          }
+          onClick={() =>
+            void execute(
+              'Resident Care View',
+              () =>
+                getResidentCareView(
+                  residentId.trim(),
+                  actor,
+                ),
+            )
+          }
+        >
+          Care View
+        </button>
+
+        <button
+          type="button"
+          disabled={
+            loading ||
+            !canResident
+          }
+          onClick={() =>
+            void execute(
+              'Resident Integration Overview',
+              () =>
+                getResidentIntegrationOverview(
+                  residentId.trim(),
+                  actor,
+                ),
+            )
+          }
+        >
+          Resident Overview
+        </button>
+
+        <button
+          type="button"
+          disabled={
+            loading ||
+            !canCareAction
+          }
+          onClick={() =>
+            void execute(
+              'Care Action',
+              () =>
+                getCareAction(
+                  residentId.trim(),
+                  patternId.trim(),
+                  actor,
+                ),
+            )
+          }
+        >
+          Care Action
+        </button>
+
+        <button
+          type="button"
+          disabled={
+            loading ||
+            !canWarning
+          }
+          onClick={() =>
+            void execute(
+              'Warning Review',
+              () =>
+                getWarningReview(
+                  warningId.trim(),
+                  actor,
+                ),
+            )
+          }
+        >
+          Warning Review
+        </button>
+      </section>
+
+      {loading ? (
+        <p role="status">
+          Loading…
+        </p>
+      ) : null}
+
+      {error ? (
+        <section role="alert">
+          <h2>Request error</h2>
+
+          <pre>
+            {error}
+          </pre>
+        </section>
+      ) : null}
+
+      {result !== null ? (
+        <section>
+          <h2>{title}</h2>
+
+          <pre>
+            {pretty(result)}
+          </pre>
+        </section>
+      ) : null}
+    </main>
+  )
+}

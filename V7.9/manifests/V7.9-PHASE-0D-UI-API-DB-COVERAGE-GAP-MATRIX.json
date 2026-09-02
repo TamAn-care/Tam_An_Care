@@ -1,0 +1,12 @@
+{
+  "version": "V7.9",
+  "phase": "0D",
+  "status": "PASSED",
+  "coverage_matrix": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-0D-UI-API-DB-COVERAGE-GAP-MATRIX.json",
+  "coverage_matrix_hash": "06e75cb21a281f0607db11ab41333d99f6386e9c1ad0c5d14d4bbd21ebdec059",
+  "domain_count": 5,
+  "non_complete_foundation_count": 1,
+  "production_write": false,
+  "runtime_restart": false,
+  "next": "PHASE_0_FINAL"
+}

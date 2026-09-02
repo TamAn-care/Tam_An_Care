@@ -1,0 +1,72 @@
+{
+  "version": "V7.9",
+  "series": "04",
+  "phase": "3",
+  "title": "Performance / Latency / Controlled Read-Only Concurrency",
+  "authority": {
+    "decision": "V7.8_IMMEDIATE_PREDECESSOR_PHASE3_CONTINUITY",
+    "generic_discovery": "EXISTING_PHASE3_ROADMAP_EVIDENCE_FOUND",
+    "excluded_historical_semantics": {
+      "V7.6": "Operational Care Workspace Contract Audit",
+      "V7.7": "Contract Discovery + Implementation Scope"
+    },
+    "selected_predecessor_semantics": {
+      "V7.8": "Performance / Latency / Controlled Read-Only Concurrency"
+    }
+  },
+  "depends_on": "V7.9_PHASE_2_FINAL_ACCEPTED",
+  "gates": [
+    {
+      "id": "PHASE_3A",
+      "name": "LOW_IMPACT_LATENCY_BASELINE",
+      "mode": "READ_ONLY",
+      "mutation": false
+    },
+    {
+      "id": "PHASE_3B",
+      "name": "CONTROLLED_READ_ONLY_CONCURRENCY_2",
+      "mode": "READ_ONLY",
+      "concurrency": 2,
+      "mutation": false
+    },
+    {
+      "id": "PHASE_3B_R1",
+      "name": "CONTROLLED_READ_ONLY_CONCURRENCY_5",
+      "mode": "READ_ONLY",
+      "concurrency": 5,
+      "mutation": false
+    },
+    {
+      "id": "PHASE_3C",
+      "name": "PERFORMANCE_ACCEPTANCE_AND_BOTTLENECK_REVIEW",
+      "mode": "ANALYSIS",
+      "mutation": false
+    },
+    {
+      "id": "PHASE_3_FINAL",
+      "name": "PERFORMANCE_LATENCY_CONCURRENCY_ACCEPTANCE",
+      "mode": "EVIDENCE_CONSOLIDATION",
+      "mutation": false
+    }
+  ],
+  "maximum_authorized_concurrency": 5,
+  "forbidden": [
+    "mutation endpoints",
+    "POST business workflows",
+    "production database write",
+    "production schema change",
+    "production runtime restart",
+    "V7.7 source write",
+    "V7.6 rollback deletion",
+    "concurrency above 5 without a new gate",
+    "stress testing",
+    "load testing beyond authorized read-only probes"
+  ],
+  "execution": {
+    "serial": true,
+    "fail_fast": true,
+    "resumable": true,
+    "sha256_acceptance": true,
+    "rerun_accepted_gate": false
+  }
+}

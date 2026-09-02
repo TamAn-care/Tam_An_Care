@@ -1,0 +1,145 @@
+======================================================================
+ TAMANCARE V8.0 — FULL DEMO
+ DEMO-2R2 — SAFE PORT SELECTION + RUNTIME START
+======================================================================
+
+----- 1. PRECONDITIONS -----
+PASS: DEMO COMPOSE EXISTS
+PASS: FRONTEND DIST EXISTS
+PASS: DOCKER ENGINE RUNNING
+PASS: NO EXISTING DEMO PROJECT RUNNING
+PASS: API PORT 3100 AVAILABLE
+
+----- 2. SELECT FRONTEND PORT -----
+PASS: FREE FRONTEND PORT SELECTED
+FRONTEND_PORT=4174
+
+----- 3. VERIFY DEMO API PORT -----
+CURRENT_API_BINDING=3000:3000
+PASS: DEMO-ONLY API PORT REBOUND TO 3100
+
+----- 4. START POSTGRES + API -----
+ Image tamancare_v80_full_demo-api Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 574B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 416B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:22-bookworm-slim
+#3 DONE 5.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 108B done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5
+#5 resolve docker.io/library/node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 2.11MB 0.6s done
+#6 DONE 0.7s
+
+#7 [build 2/6] WORKDIR /app
+#7 CACHED
+
+#8 [build 3/6] COPY package.json package-lock.json ./
+#8 CACHED
+
+#9 [build 4/6] RUN npm ci
+#9 CACHED
+
+#10 [build 5/6] COPY . .
+#10 DONE 0.9s
+
+#11 [build 6/6] RUN npm run build
+#11 2.780 
+#11 2.780 > taman-care-v7-health-trend@7.3.2 build
+#11 2.780 > nest build
+#11 2.780 
+#11 DONE 10.6s
+
+#12 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#12 CACHED
+
+#13 [runtime 5/5] COPY --from=build /app/dist ./dist
+#13 DONE 0.2s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 0.2s done
+#14 exporting manifest sha256:bd15bd7e4d7b279383385dd7be1f914c838db614cc695894b61b2858df919310 done
+#14 exporting config sha256:c01bb22db2c0f55d920f67254d6de56f5932c6b5aff1c060ac0e6e05edb59f8e done
+#14 exporting attestation manifest sha256:6145abe0447425d4fa7337cc60f7cfd64676a3c7ef873d1b6a13d02d3944c693 done
+#14 exporting manifest list sha256:60cb4e6274cbc5e66c29226863dd349650482907b5e0f24f535f5ff6a9f5eace done
+#14 naming to docker.io/library/tamancare_v80_full_demo-api:latest done
+#14 unpacking to docker.io/library/tamancare_v80_full_demo-api:latest 0.1s done
+#14 DONE 0.3s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.1s
+ Image tamancare_v80_full_demo-api Built 
+ Network tamancare_v80_full_demo_default Creating 
+ Network tamancare_v80_full_demo_default Created 
+ Volume tamancare_v80_full_demo_postgres_data Creating 
+ Volume tamancare_v80_full_demo_postgres_data Created 
+ Container tamancare_v80_full_demo-postgres-1 Creating 
+ Container tamancare_v80_full_demo-postgres-1 Created 
+ Container tamancare_v80_full_demo-api-1 Creating 
+ Container tamancare_v80_full_demo-api-1 Created 
+ Container tamancare_v80_full_demo-postgres-1 Starting 
+ Container tamancare_v80_full_demo-postgres-1 Started 
+ Container tamancare_v80_full_demo-api-1 Starting 
+ Container tamancare_v80_full_demo-api-1 Started 
+PASS: DEMO DOCKER STACK STARTED
+
+NAME                                 IMAGE         COMMAND                  SERVICE    CREATED         STATUS         PORTS
+tamancare_v80_full_demo-postgres-1   postgres:16   "docker-entrypoint.s…"   postgres   8 seconds ago   Up 7 seconds   5432/tcp
+RUNNING_DEMO_CONTAINER_COUNT=1
+FAIL: POSTGRES/API RUNTIME INCOMPLETE
+
+----- 5. API ACCEPTANCE -----
+API_ROOT_HTTP=000000
+API_HEALTH_HTTP=000000
+FAIL: API ROOT NOT RESPONDING
+WARN: API /health NOT 2XX
+
+----- 6. START FRONTEND -----
+FRONTEND_PID=59899
+PASS: FRONTEND PROCESS RUNNING
+FRONTEND_HTTP=200
+PASS: FRONTEND HTTP PASS
+PASS: FRONTEND APPLICATION HTML VERIFIED
+
+----- 7. RUNTIME ISOLATION -----
+DEMO_POSTGRES_CONTAINER_COUNT=1
+PASS: LOCAL DEMO POSTGRES RUNNING
+PRODUCTION_DATABASE_WRITE=NO_BY_DEMO_CONTRACT
+DEMO_DATABASE=LOCAL_ISOLATED_COMPOSE
+
+----- 8. FROZEN PARENT INTEGRITY -----
+PASS: FROZEN V8.0 SOURCE UNCHANGED
+
+======================================================================
+ V8.0 FULL DEMO — RUNTIME RESULT
+======================================================================
+PASS_COUNT=13
+WARN_COUNT=1
+FAIL_COUNT=2
+
+STATUS=V8_FULL_DEMO_RUNTIME_FAILED
+NEXT=STOP_AND_RETURN_OUTPUT
+
+FRONTEND_PID_FILE=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-frontend.pid
+FRONTEND_LOG=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-frontend-20260831_032849.log
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_full_demo_runtime_start_r2_20260831_032849.txt
+
+IMPORTANT:
+ -> DO NOT START ANOTHER DEMO INSTANCE
+ -> DO NOT RUN MIGRATIONS MANUALLY
+ -> DO NOT MODIFY FROZEN V8.0
+ -> RETURN THIS ENTIRE OUTPUT
+======================================================================

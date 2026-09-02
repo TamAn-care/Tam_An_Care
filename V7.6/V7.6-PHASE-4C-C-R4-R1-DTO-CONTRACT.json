@@ -1,0 +1,415 @@
+{
+  "generated_at": "2026-08-21T02:11:44.188766+00:00",
+  "release": "V7.6",
+  "phase": "4C-C-R4-R1",
+  "parser": "BRACE_BOUNDED_TYPESCRIPT_OBJECT_PARSER",
+  "root_cause": "Previous parser used a fixed text window and crossed DTO declaration boundaries.",
+  "r3_contract_hash": "992bb58e9dc3ccd0e0db99c105853bceefb96c917864b05303985e49890d877e",
+  "dto_contracts": {
+    "AssignCareActionInput": {
+      "file": "api/src/care-actions/care-action.types.ts",
+      "fields": [
+        {
+          "name": "assignedTo",
+          "required": true,
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": true,
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "priority",
+          "required": true,
+          "optional": false,
+          "type": "CareActionPriority"
+        },
+        {
+          "name": "dueAt",
+          "required": true,
+          "optional": false,
+          "type": "Date | null"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        }
+      ],
+      "required": [
+        "assignedTo",
+        "assignedRole",
+        "priority",
+        "dueAt",
+        "actorId",
+        "actorRole"
+      ],
+      "optional": []
+    },
+    "TransferCareActionInput": {
+      "file": "api/src/care-actions/care-action.types.ts",
+      "fields": [
+        {
+          "name": "assignedTo",
+          "required": true,
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": true,
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "priority",
+          "required": true,
+          "optional": false,
+          "type": "CareActionPriority"
+        },
+        {
+          "name": "dueAt",
+          "required": true,
+          "optional": false,
+          "type": "Date | null"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        }
+      ],
+      "required": [
+        "assignedTo",
+        "assignedRole",
+        "priority",
+        "dueAt",
+        "actorId",
+        "actorRole"
+      ],
+      "optional": []
+    },
+    "StartCareActionReviewInput": {
+      "file": "api/src/care-actions/care-action.types.ts",
+      "fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        }
+      ],
+      "required": [
+        "actorId",
+        "actorRole"
+      ],
+      "optional": []
+    },
+    "ResolveCareActionInput": {
+      "file": "api/src/care-actions/care-action.types.ts",
+      "fields": [
+        {
+          "name": "careNote",
+          "required": true,
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "resolutionReason",
+          "required": true,
+          "optional": false,
+          "type": "string"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        }
+      ],
+      "required": [
+        "careNote",
+        "resolutionReason",
+        "actorId",
+        "actorRole"
+      ],
+      "optional": []
+    },
+    "ReopenCareActionInput": {
+      "file": "api/src/care-actions/care-action.types.ts",
+      "fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "reopenReason",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        }
+      ],
+      "required": [
+        "actorId",
+        "actorRole",
+        "reopenReason"
+      ],
+      "optional": []
+    },
+    "GovernanceBody": {
+      "file": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "fields": [
+        {
+          "name": "actorId",
+          "required": false,
+          "optional": true,
+          "type": "string"
+        },
+        {
+          "name": "actorRole",
+          "required": false,
+          "optional": true,
+          "type": "string"
+        }
+      ],
+      "required": [],
+      "optional": [
+        "actorId",
+        "actorRole"
+      ]
+    },
+    "CareTaskExecutionInput": {
+      "file": "api/src/care-task-execution/care-task-execution.types.ts",
+      "fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "optional": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assigneeId",
+          "required": false,
+          "optional": true,
+          "type": "string | null"
+        },
+        {
+          "name": "assigneeRole",
+          "required": false,
+          "optional": true,
+          "type": "string | null"
+        },
+        {
+          "name": "completionNote",
+          "required": false,
+          "optional": true,
+          "type": "string | null"
+        },
+        {
+          "name": "exceptionReason",
+          "required": false,
+          "optional": true,
+          "type": "string | null"
+        }
+      ],
+      "required": [
+        "actorId",
+        "actorRole"
+      ],
+      "optional": [
+        "assigneeId",
+        "assigneeRole",
+        "completionNote",
+        "exceptionReason"
+      ]
+    }
+  },
+  "payload_coverage": {
+    "AssignCareActionInput": {
+      "required": [
+        "assignedTo",
+        "assignedRole",
+        "priority",
+        "dueAt",
+        "actorId",
+        "actorRole"
+      ],
+      "available": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "assignedToId",
+        "assignedToRole",
+        "careNote",
+        "dueAt",
+        "note",
+        "priority",
+        "reason"
+      ],
+      "missing": []
+    },
+    "TransferCareActionInput": {
+      "required": [
+        "assignedTo",
+        "assignedRole",
+        "priority",
+        "dueAt",
+        "actorId",
+        "actorRole"
+      ],
+      "available": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "assignedToId",
+        "assignedToRole",
+        "note",
+        "reason",
+        "toActorId",
+        "toAssignedRole",
+        "toAssignedTo"
+      ],
+      "missing": [
+        "priority",
+        "dueAt"
+      ]
+    },
+    "StartCareActionReviewInput": {
+      "required": [
+        "actorId",
+        "actorRole"
+      ],
+      "available": [
+        "actorId",
+        "actorRole",
+        "note",
+        "reason",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "missing": []
+    },
+    "ResolveCareActionInput": {
+      "required": [
+        "careNote",
+        "resolutionReason",
+        "actorId",
+        "actorRole"
+      ],
+      "available": [
+        "actorId",
+        "actorRole",
+        "note",
+        "reason",
+        "resolution",
+        "resolutionNote",
+        "resolutionReason"
+      ],
+      "missing": [
+        "careNote"
+      ]
+    },
+    "ReopenCareActionInput": {
+      "required": [
+        "actorId",
+        "actorRole",
+        "reopenReason"
+      ],
+      "available": [
+        "actorId",
+        "actorRole",
+        "note",
+        "reason",
+        "reopenReason"
+      ],
+      "missing": []
+    },
+    "GovernanceBody": {
+      "required": [],
+      "available": [
+        "actorId",
+        "actorRole",
+        "note",
+        "reason"
+      ],
+      "missing": []
+    },
+    "CareTaskExecutionInput": {
+      "required": [
+        "actorId",
+        "actorRole"
+      ],
+      "available": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "assignedToId",
+        "assignedToRole",
+        "completionNote",
+        "exceptionReason",
+        "note",
+        "reason"
+      ],
+      "missing": []
+    }
+  },
+  "needs_value_discovery": {
+    "TransferCareActionInput": [
+      "priority",
+      "dueAt"
+    ],
+    "ResolveCareActionInput": [
+      "careNote"
+    ]
+  },
+  "application_source_write": "NO",
+  "fixture_write": "NO",
+  "production_database_write": "NO",
+  "production_runtime_change": "NO"
+}

@@ -1,0 +1,62 @@
+TAM AN CARE V7.8
+PHASE 1 — OBSERVABILITY, LOGGING & BACKUP READINESS
+PREFLIGHT
+
+STATUS=READY
+
+V7.8_PHASE0_RESULT_HASH=
+086da31306eee0fcd5d3ca65abd5d58f7267d908c0dc9a6e319f26eb0bd22305
+
+V7.8_PHASE0_MANIFEST_HASH=
+10eaacb362ad850f1035322644459f555eb0bbb1fe60f5eda5097a994091dddf
+
+V7.8_ROADMAP_HASH=
+9ed7322812e109941c1db36cc7b3a438fb244f3cbb717d1b82f96b01a72da490
+
+PARENT_V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+PRODUCTION_API_IMAGE=
+sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7
+
+PRODUCTION_UI_IMAGE=
+sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147
+
+PRODUCTION_DB_TABLE_COUNT=
+118
+
+PRODUCTION_DB_FINGERPRINT=
+7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639
+
+PHASE 1 PURPOSE:
+
+1. Inventory current API/UI/PostgreSQL logs.
+2. Verify Docker restart policies.
+3. Verify container startup dependencies.
+4. Verify available disk capacity.
+5. Verify PostgreSQL volume identity.
+6. Verify database backup command contract.
+7. Create a backup only if safely written outside the live DB volume.
+8. Verify backup hash and non-zero size.
+9. Do NOT restore into production.
+10. Verify backup restore later only in disposable PostgreSQL.
+11. Define health-monitoring contract.
+12. Define crash/restart detection contract.
+13. Define log retention contract.
+14. Define API/UI latency measurement contract.
+15. Verify production DB fingerprint before/after.
+16. Preserve V7.6 rollback assets.
+17. Do not alter business application behavior.
+18. Do not modify frozen V7.7 source.
+
+PRODUCTION BUSINESS ENDPOINT MUTATION=
+NO
+
+DATABASE SCHEMA CHANGE=
+NO
+
+DATABASE RESTORE TO PRODUCTION=
+NO
+
+V7.7 SOURCE WRITE=
+NO

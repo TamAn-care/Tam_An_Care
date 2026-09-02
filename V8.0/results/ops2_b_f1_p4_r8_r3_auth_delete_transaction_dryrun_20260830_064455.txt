@@ -1,0 +1,138 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P4-R8-R3
+ AUTH DELETE TRANSACTION DRY-RUN
+ MODE: TRANSACTIONAL TEST + MANDATORY ROLLBACK
+======================================================================
+
+PURPOSE:
+ -> determine why R8-R2 DELETE left auth state at 1|1
+ -> exercise exact DELETE predicates inside rollback-only transaction
+ -> persist NO database mutation
+
+DO NOT:
+ -> recreate credential
+ -> login
+ -> create session
+ -> change JWT_SECRET
+ -> restart container
+ -> mutate inventory
+ -> patch source/schema
+
+======================================================================
+ 1. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: API SOURCE BASELINE
+PASS: FRONTEND SOURCE BASELINE
+
+======================================================================
+ 2. ISOLATED RUNTIME BASELINE
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME PRESERVED
+
+======================================================================
+ 3. DATABASE CONNECTION METADATA
+======================================================================
+DATABASE_NAME=taman_care
+DATABASE_USER=taman
+
+======================================================================
+ 4. CURRENT AUTH STATE BEFORE DRY-RUN
+======================================================================
+AUTH_BEFORE=1|1
+PASS: EXPECTED R8-OWNED AUTH STATE PRESENT
+
+======================================================================
+ 5. EXACT ROW METADATA BEFORE DRY-RUN
+======================================================================
+CREDENTIAL:
+hqa-supervisor-001|120000|sha256|64|48|2026-08-29 23:29:17.115252|2026-08-29 23:29:20.328425
+
+SESSION:
+hqa-supervisor-001|SUPERVISOR|2026-08-29 23:29:20.000000|2026-08-29 23:29:20.331880|NOT_REVOKED
+
+======================================================================
+ 6. EXACT PREDICATE COUNTS
+======================================================================
+CREDENTIAL_PREDICATE_MATCH=1
+SESSION_PREDICATE_MATCH=1
+PASS: BOTH DELETE PREDICATES MATCH EXACTLY ONE ROW
+
+======================================================================
+ 7. TRANSACTIONAL DELETE + RETURNING + ROLLBACK
+======================================================================
+
+
+PARSED_TX_BEFORE=
+PARSED_SESSION_DELETE_RETURNING=
+PARSED_TX_AFTER_SESSION_DELETE=
+PARSED_CREDENTIAL_DELETE_RETURNING=
+PARSED_TX_AFTER_BOTH_DELETE=
+PARSED_POST_ROLLBACK=
+FAIL: DRY-RUN TRANSACTION STARTING STATE
+FAIL: SESSION DELETE DID NOT RETURN EXACTLY ONE ROW
+FAIL: SESSION STILL PRESENT INSIDE TRANSACTION
+FAIL: CREDENTIAL DELETE DID NOT RETURN EXACTLY ONE ROW
+FAIL: AUTH STATE NOT EMPTY INSIDE TRANSACTION
+FAIL: MANDATORY ROLLBACK DID NOT RESTORE 1|1
+
+======================================================================
+ 8. PERSISTENT AUTH STATE RECONFIRMATION
+======================================================================
+PERSISTENT_AUTH_AFTER_DRYRUN=1|1
+PASS: NO PERSISTENT AUTH MUTATION
+
+======================================================================
+ 9. INVENTORY DATABASE CLEANLINESS
+======================================================================
+INVENTORY_COUNTS=0|0|0|0
+PASS: INVENTORY DATABASE CLEAN
+
+======================================================================
+ 10. FIXTURE / TOKEN STATE
+======================================================================
+FIXTURE_DIRECTORY_PRESENT=NO
+TOKEN_FILE_PRESENT=NO
+
+======================================================================
+ 11. ACCEPTED RUNTIMES PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+======================================================================
+ 12. FINAL SOURCE + ISOLATED RUNTIME RECHECK
+======================================================================
+API_SOURCE_HASH_AFTER=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+FINAL_CONTAINER_STATE=running
+FINAL_HEALTH_HTTP=200
+
+======================================================================
+ 13. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P4-R8-R3 CONTROLLED STOP
+NEXT=STOP_AND_RETURN_OUTPUT
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_r3_auth_delete_transaction_dryrun_20260830_064455.txt
+
+======================================================================
+ IMPORTANT:
+ -> AUTH STATE MUST REMAIN 1|1
+ -> DO NOT DELETE AUTH ROWS MANUALLY
+ -> DO NOT RUN R8 OR R8-R2
+ -> DO NOT TRY OR RESET PASSWORD
+ -> DO NOT CHANGE JWT_SECRET
+ -> DO NOT RESTART ISOLATED CONTAINER
+ -> DO NOT CREATE INVENTORY DATA
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START P5
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

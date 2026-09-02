@@ -1,0 +1,300 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-H-R2A
+ ORIGINAL R8-R4 AUTH FIXTURE MATERIAL FORENSIC
+ MODE: STRICT READ-ONLY / SECRET-REDACTED
+======================================================================
+
+======================================================================
+ 1. CONTINUATION AUTHORITY
+======================================================================
+P5_G_STATUS=PASS
+P5_H_STATUS=NOT_WRITTEN
+PASS: P5-H REMAINS OPEN
+
+======================================================================
+ 2. AUTH FIXTURE README EXISTS
+======================================================================
+README_EXISTS=YES
+README_SIZE=645
+README_CONTENT_RAW_PRINTED=NO
+
+======================================================================
+ 3. README STRUCTURE — VALUES REDACTED
+======================================================================
+README_REDACTED_BEGIN
+TamAnCare OPS-2-B temporary authentication fixture.
+
+Created by:
+OPS-2-B-F1-P4-R8-R4
+
+Timestamp:
+20260830_064623
+
+Actor:
+hqa-supervisor-001
+
+Role:
+SUPERVISOR
+
+Runtime:
+tamancare_ops2b_functional
+127.0.0.1:3110
+
+Sensitive retained file:
+<REDACTED_SECRET_RELATED_LINE:TOKEN>
+
+<REDACTED_SECRET_RELATED_LINE:CREDENTIAL>
+exist exclusively for OPS-2-B P5 functional acceptance.
+
+Final P5 cleanup must:
+1. delete P5 inventory test transactions
+2. delete P5 lot
+3. delete P5 item
+4. delete this actor's ephemeral auth session
+<REDACTED_SECRET_RELATED_LINE:CREDENTIAL>
+6. remove this directory
+7. verify inventory baseline =0|0|0|0
+8. verify auth baseline =0|0
+README_SECRET_VALUES_PRINTED=NO
+README_REDACTED_END
+
+======================================================================
+ 4. README MATERIAL SIGNAL CLASSIFICATION
+======================================================================
+PASSWORD_SIGNAL=NO
+CREDENTIAL_SIGNAL=YES
+TOKEN_SIGNAL=YES
+JWT_SIGNAL=NO
+R8_SIGNAL=YES
+R8_R4_SIGNAL=YES
+ACTOR_SIGNAL=YES
+LOGIN_SIGNAL=NO
+README_PASSWORD_VALUE_PRESENT=NO
+README_PASSWORD_VALUE_PRINTED=NO
+
+======================================================================
+ 5. LOCATE EXACT OPS2-B R8 / R8-R4 RESULT ARTIFACTS
+======================================================================
+R8_ARTIFACT_COUNT=6
+R8_ARTIFACTS_BEGIN
+ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_062916.txt|SHA256=6c94e6fb9bf7f4e645b187500b62007db3db5a511e1276d5781c3f089e5c8541
+ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_064114.txt|SHA256=c2db0f9f26613b77c682b1c516612315bf4b521b5a1a901b6855f5e614779753
+ops2_b_f1_p4_r8_r1_unexpected_auth_state_forensics_20260830_064219.txt|SHA256=b7988c62abaf669f79b17048705b8a090f1b988d142b9049ca05fbd80f66b691
+ops2_b_f1_p4_r8_r2_owned_fixture_recovery_20260830_064344.txt|SHA256=355e26af1e011fccc440a9a723f8c9c210a10aefb9e8b35d4787bc86bd9c3cad
+ops2_b_f1_p4_r8_r3_auth_delete_transaction_dryrun_20260830_064455.txt|SHA256=2feb935eb96529f2ecc00ad02bc659b46e18b863e16d85f73585882ec77e9984
+ops2_b_f1_p4_r8_r4_corrected_owned_fixture_recovery_20260830_064623.txt|SHA256=df7c086de6128641a0d3c3b60ae272d511741523f942216ecaefd43d316d367c
+R8_ARTIFACTS_END
+
+======================================================================
+ 6. SEARCH R8 ARTIFACTS FOR AUTH MATERIAL CONTRACT
+======================================================================
+R8_AUTH_SIGNAL_SUMMARY_BEGIN
+FILE=ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_062916.txt
+PASSWORD_REFERENCE_COUNT=2
+PASSWORD_FILE_REFERENCE_COUNT=0
+PASSWORD_ENV_REFERENCE_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+HARDCODED_PASSWORD_SIGNAL_COUNT=0
+README_REFERENCE_COUNT=0
+TOKEN_FILE_REFERENCE_COUNT=1
+LOGIN_REFERENCE_COUNT=1
+PBKDF2_REFERENCE_COUNT=3
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_064114.txt
+PASSWORD_REFERENCE_COUNT=0
+PASSWORD_FILE_REFERENCE_COUNT=0
+PASSWORD_ENV_REFERENCE_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+HARDCODED_PASSWORD_SIGNAL_COUNT=0
+README_REFERENCE_COUNT=0
+TOKEN_FILE_REFERENCE_COUNT=0
+LOGIN_REFERENCE_COUNT=1
+PBKDF2_REFERENCE_COUNT=0
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r1_unexpected_auth_state_forensics_20260830_064219.txt
+PASSWORD_REFERENCE_COUNT=2
+PASSWORD_FILE_REFERENCE_COUNT=0
+PASSWORD_ENV_REFERENCE_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+HARDCODED_PASSWORD_SIGNAL_COUNT=0
+README_REFERENCE_COUNT=1
+TOKEN_FILE_REFERENCE_COUNT=0
+LOGIN_REFERENCE_COUNT=0
+PBKDF2_REFERENCE_COUNT=0
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r2_owned_fixture_recovery_20260830_064344.txt
+PASSWORD_REFERENCE_COUNT=0
+PASSWORD_FILE_REFERENCE_COUNT=0
+PASSWORD_ENV_REFERENCE_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+HARDCODED_PASSWORD_SIGNAL_COUNT=0
+README_REFERENCE_COUNT=0
+TOKEN_FILE_REFERENCE_COUNT=0
+LOGIN_REFERENCE_COUNT=1
+PBKDF2_REFERENCE_COUNT=0
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r3_auth_delete_transaction_dryrun_20260830_064455.txt
+PASSWORD_REFERENCE_COUNT=1
+PASSWORD_FILE_REFERENCE_COUNT=0
+PASSWORD_ENV_REFERENCE_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+HARDCODED_PASSWORD_SIGNAL_COUNT=0
+README_REFERENCE_COUNT=0
+TOKEN_FILE_REFERENCE_COUNT=0
+LOGIN_REFERENCE_COUNT=0
+PBKDF2_REFERENCE_COUNT=0
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r4_corrected_owned_fixture_recovery_20260830_064623.txt
+PASSWORD_REFERENCE_COUNT=1
+PASSWORD_FILE_REFERENCE_COUNT=0
+PASSWORD_ENV_REFERENCE_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+HARDCODED_PASSWORD_SIGNAL_COUNT=0
+README_REFERENCE_COUNT=0
+TOKEN_FILE_REFERENCE_COUNT=0
+LOGIN_REFERENCE_COUNT=0
+PBKDF2_REFERENCE_COUNT=3
+SECRET_VALUES_PRINTED=NO
+R8_AUTH_SIGNAL_SUMMARY_END
+
+======================================================================
+ 7. REDACTED MATCH CONTEXT — PASSWORD CREATION/OWNERSHIP ONLY
+======================================================================
+REDACTED_CONTEXT_BEGIN
+FILE=ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_062916.txt
+LINE_7= -> exactly ONE temporary auth_credentials row
+LINE_8= -> auth_sessions only through real /api/auth/login
+LINE_31=AUTH_CREDENTIAL_BEFORE=0
+LINE_40=PASSWORD_LENGTH=<REDACTED>
+LINE_43=PBKDF2_ITERATIONS=120000
+LINE_44=PBKDF2_DIGEST=sha256
+LINE_45=PBKDF2_BYTES=32
+LINE_50= 4. CREATE EXACTLY ONE EPHEMERAL CREDENTIAL
+LINE_52=AUTH_CREDENTIAL_AFTER_INSERT=1
+LINE_53=PASS: EXACTLY ONE EPHEMERAL CREDENTIAL CREATED
+LINE_138=FIXTURE_DIRECTORY=/tmp/tamancare_ops2b_auth_fixture
+LINE_139=TOKEN_FILE=/tmp/tamancare_ops2b_auth_fixture/token
+LINE_141=PASSWORD_RETAINED=<REDACTED>
+LINE_159=EPHEMERAL_AUTH_FIXTURE=ACTIVE_FOR_P5
+LINE_163=RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_062916.txt
+LINE_168= -> KEEP /tmp/tamancare_ops2b_auth_fixture UNTIL P5 CLEANUP
+REDACTED_MATCH_COUNT_SHOWN=16
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_064114.txt
+LINE_7= -> exactly ONE temporary auth_credentials row
+LINE_8= -> auth_sessions only through real /api/auth/login
+LINE_31=AUTH_CREDENTIAL_BEFORE=1
+LINE_41=RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_064114.txt
+REDACTED_MATCH_COUNT_SHOWN=4
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r1_unexpected_auth_state_forensics_20260830_064219.txt
+LINE_8= -> R7 credential count = 0
+LINE_10= -> R8 pre-mutation credential count = 1
+LINE_36= 4. CREDENTIAL FORENSIC METADATA — NO HASH / SALT VALUES
+LINE_38=CREDENTIAL_ROW_PRESENT=YES
+LINE_39=CREDENTIAL_METADATA=hqa-supervisor-001|120000|sha256|0|NOT_LOCKED|2026-08-29 23:29:17.115252+00|2026-08-29 23:29:20.328425+00|2026-08-29 23:29:17.115252+00|2026-08-29 23:29:20.328425+00|64|48
+LINE_74=/tmp/tamancare_ops2b_auth_fixture/README|-rw-------|453 bytes|2026-08-30T06:29:21+0700
+LINE_75=/tmp/tamancare_ops2b_auth_fixture/image_name|-rw-------|42 bytes|2026-08-30T06:29:16+0700
+LINE_99=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r7_auth_fixture_mutation_preflight_20260830_062733.txt
+LINE_100=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_062916.txt
+LINE_101=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_064114.txt
+LINE_119=PASSWORD_ATTEMPT=<REDACTED>
+LINE_133= -> DO NOT DELETE THE EXISTING AUTH CREDENTIAL
+LINE_136= -> DO NOT TRY OR RESET ANY PASSWORD
+REDACTED_MATCH_COUNT_SHOWN=13
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r2_owned_fixture_recovery_20260830_064344.txt
+LINE_14= -> remove proven R8-owned auth credential
+LINE_15= -> replace with exactly one new ephemeral credential
+LINE_16= -> obtain session/token only through /api/auth/login
+LINE_51=PROVEN_R8_CREDENTIAL_COUNT=1
+REDACTED_MATCH_COUNT_SHOWN=4
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r3_auth_delete_transaction_dryrun_20260830_064455.txt
+LINE_13= -> recreate credential
+LINE_51=CREDENTIAL:
+LINE_60=CREDENTIAL_PREDICATE_MATCH=1
+LINE_72=PARSED_CREDENTIAL_DELETE_RETURNING=
+LINE_78=FAIL: CREDENTIAL DELETE DID NOT RETURN EXACTLY ONE ROW
+LINE_128= -> DO NOT TRY OR RESET PASSWORD
+REDACTED_MATCH_COUNT_SHOWN=6
+SECRET_VALUES_PRINTED=NO
+FILE=ops2_b_f1_p4_r8_r4_corrected_owned_fixture_recovery_20260830_064623.txt
+LINE_13= -> delete proven R8-owned credential/session
+LINE_14= -> create one replacement ephemeral credential
+LINE_50=OWNED_CREDENTIAL_MATCH=1
+LINE_65=CREDENTIAL_DELETED|1
+LINE_70=PARSED_CREDENTIAL_DELETED=1
+LINE_78=PASSWORD_LENGTH=<REDACTED>
+LINE_81=PBKDF2_ITERATIONS=120000
+LINE_82=PBKDF2_DIGEST=sha256
+LINE_83=PBKDF2_BYTES=32
+LINE_88= 8. INSERT EXACTLY ONE REPLACEMENT CREDENTIAL
+LINE_90=AUTH_AFTER_CREDENTIAL_INSERT=1|0
+LINE_91=PASS: ONE CREDENTIAL / ZERO SESSION BEFORE LOGIN
+LINE_127=FIXTURE_DIRECTORY=/tmp/tamancare_ops2b_auth_fixture
+LINE_170=REPLACEMENT_CREDENTIAL=PASS
+LINE_182=EPHEMERAL_AUTH_FIXTURE=ACTIVE_FOR_P5
+LINE_192= -> KEEP /tmp/tamancare_ops2b_auth_fixture
+REDACTED_MATCH_COUNT_SHOWN=16
+SECRET_VALUES_PRINTED=NO
+REDACTED_CONTEXT_END
+
+======================================================================
+ 8. SEARCH PROJECT TEMP-FIXTURE REFERENCES — NO VALUES
+======================================================================
+AUTH_FIXTURE_REFERENCE_FILE_COUNT=7
+AUTH_FIXTURE_REFERENCE_FILES_BEGIN
+V8.0/results/ops2_b_f1_p4_r8_ephemeral_auth_fixture_20260830_062916.txt
+V8.0/results/ops2_b_f1_p4_r8_r1_unexpected_auth_state_forensics_20260830_064219.txt
+V8.0/results/ops2_b_f1_p4_r8_r4_corrected_owned_fixture_recovery_20260830_064623.txt
+V8.0/results/ops2_b_f1_p5_a_authenticated_item_creation_20260830_064735.txt
+V8.0/results/ops2_b_f1_p5_b_item_mutation_immutability_20260830_064857.txt
+V8.0/results/ops2_b_f1_p5_h_r2_auth_renewal_preflight_20260830_091301.txt
+V8.0/results/ops2_b_f1_p5_h_r2a_original_auth_fixture_material_forensic_20260830_091440.txt
+AUTH_FIXTURE_REFERENCE_FILES_END
+
+======================================================================
+ 9. CLASSIFY RECOVERABILITY WITHOUT READING SECRET VALUES
+======================================================================
+README_PASSWORD_VALUE_PRESENT=NO
+DETERMINISTIC_PASSWORD_SIGNAL_COUNT=0
+RANDOM_PASSWORD_SIGNAL_COUNT=0
+PASSWORD_FILE_SIGNAL_COUNT=0
+CLASSIFICATION=PASSWORD_ORIGIN_NOT_YET_PROVEN
+NEXT=NARROW R8-R4 ARTIFACT CONTEXT REVIEW
+
+P5_H_STATUS=OPEN
+APPLICATION_INVENTORY_DEFECT=NO
+AUTH_MUTATION_THIS_GATE=NO
+INVENTORY_MUTATION_THIS_GATE=NO
+SOURCE_PATCH_THIS_GATE=NO
+SCHEMA_CHANGE_THIS_GATE=NO
+RUNTIME_RESTART_THIS_GATE=NO
+SECRET_VALUE_PRINTED=NO
+
+======================================================================
+ STATUS: OPS-2-B-F1-P5-H-R2A FORENSIC COMPLETE / STOP
+======================================================================
+
+AUTH_MUTATION=NO
+INVENTORY_MUTATION=NO
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+RUNTIME_RESTART=NO
+SECRET_VALUE_PRINTED=NO
+
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_h_r2a_original_auth_fixture_material_forensic_20260830_091440.txt
+
+IMPORTANT:
+ -> DO NOT LOGIN MANUALLY
+ -> DO NOT CREATE/REPLACE AUTH CREDENTIAL
+ -> DO NOT CREATE SESSION MANUALLY
+ -> DO NOT GENERATE JWT MANUALLY
+ -> DO NOT DELETE EXPIRED SESSION
+ -> DO NOT CLEAN INVENTORY
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START P5-I
+ -> SEND THIS ENTIRE OUTPUT BACK

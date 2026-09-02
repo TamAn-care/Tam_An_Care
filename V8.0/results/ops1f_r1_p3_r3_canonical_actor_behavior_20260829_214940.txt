@@ -1,0 +1,185 @@
+
+======================================================================
+TAMANCARE — OPS-1-F-R1-P3-R3 — CANONICAL ACTOR + READ BEHAVIOR
+======================================================================
+MODE=READ_ONLY_CONTINUATION
+RERUN_PRIOR_GATES=NO
+DB_MUTATION=NO
+SOURCE_PATCH=NO
+BUILD=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+FAKE_ACTOR=FORBIDDEN
+MASTER_3000_TOUCH=NO
+
+======================================================================
+1. SOURCE + RUNTIME LOCK
+======================================================================
+API_TREE_BEFORE=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_BEFORE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API BASELINE
+PASS: FRONTEND BASELINE
+http://127.0.0.1:4173/operations -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:3000/api/health -> 200
+
+======================================================================
+2. PROVE LIVE staff_actors SCHEMA
+======================================================================
+ ordinal_position |       column_name        |        data_type         
+------------------+--------------------------+--------------------------
+                1 | actor_id                 | text
+                2 | staff_code               | text
+                3 | display_name             | text
+                4 | primary_operational_role | text
+                5 | status                   | text
+                6 | employment_reference     | text
+                7 | created_at               | timestamp with time zone
+                8 | updated_at               | timestamp with time zone
+(8 rows)
+
+PASS: LIVE staff_actors SCHEMA READ
+ACTOR_ID_COLUMN_COUNT=1
+STATUS_COLUMN_COUNT=1
+OLD_ACTIVE_COLUMN_COUNT=0
+OLD_STAFF_ACTOR_ID_COLUMN_COUNT=0
+PASS: CANONICAL STAFF SCHEMA PROVEN
+
+======================================================================
+3. ROLE / STATUS COVERAGE
+======================================================================
+ primary_operational_role | status | actor_count 
+--------------------------+--------+-------------
+ SUPERVISOR               | ACTIVE |           1
+(1 row)
+
+
+--- ACTIVE HUMAN ACTORS ---
+      actor_id      | staff_code  | display_name | primary_operational_role | status 
+--------------------+-------------+--------------+--------------------------+--------
+ hqa-supervisor-001 | HQA-SUP-001 | Ha Quang Anh | SUPERVISOR               | ACTIVE
+(1 row)
+
+
+======================================================================
+4. RESOLVE CANONICAL ACTIVE ACTOR
+======================================================================
+CANONICAL_ACTOR_ROW=hqa-supervisor-001|SUPERVISOR|ACTIVE
+ACTOR_ID=hqa-supervisor-001
+ACTOR_ROLE=SUPERVISOR
+ACTOR_STATUS=ACTIVE
+PASS: CANONICAL ACTIVE HUMAN ACTOR
+
+======================================================================
+5. ANONYMOUS OPERATIONAL READ MUST FAIL
+======================================================================
+NO_ACTOR_HTTP=401
+{"message":"Actor context is required","error":"Unauthorized","statusCode":401}
+PASS: ANONYMOUS READ REJECTED
+
+======================================================================
+6. ACTOR-AWARE WORK EVENT TYPE LIST
+======================================================================
+TYPE_LIST_HTTP=200
+{"items":[{"work_event_type_id":"ops-wet-care-task-completion","code":"CARE_TASK_COMPLETION","display_name_vi":"Hoàn thành nhiệm vụ chăm sóc","category":"OTHER","default_unit":"lần","default_work_weight":"1.0000","resident_related":true,"inventory_link_allowed":false,"active":true,"created_at":"2026-08-29T10:05:10.831Z","updated_at":"2026-08-29T10:05:10.831Z"},{"work_event_type_id":"ops-wet-personal-care-assistance","code":"PERSONAL_CARE_ASSISTANCE","display_name_vi":"Hỗ trợ chăm sóc cá nhân","category":"PERSONAL_CARE","default_unit":"lần","default_work_weight":"1.0000","resident_related":true,"inventory_link_allowed":true,"active":true,"created_at":"2026-08-29T10:05:10.831Z","updated_at":"2026-08-29T10:05:10.831Z"},{"work_event_type_id":"ops-wet-toileting-assistance","code":"TOILETING_ASSISTANCE","display_name_vi":"Hỗ trợ đi vệ sinh","category":"PERSONAL_CARE","default_unit":"lần","default_work_weight":"1.0000","resident_related":true,"inventory_link_allowed":true,"active":true,"created_at":"2026-08-29T10:05:10.831Z","updated_at":"2026-08-29T10:05:10.831Z"}],"count":3,"limit":100}
+PASS: TYPE LIST AUTHORIZED
+TYPE_RESPONSE_KIND=dict
+TYPE_KEYS=count,items,limit
+TYPE_COUNT=3
+TYPE_LIMIT=100
+TYPE_ITEM_COUNT=3
+TYPE_ITEM=ops-wet-care-task-completion|CARE_TASK_COMPLETION|Hoàn thành nhiệm vụ chăm sóc
+TYPE_ITEM=ops-wet-personal-care-assistance|PERSONAL_CARE_ASSISTANCE|Hỗ trợ chăm sóc cá nhân
+TYPE_ITEM=ops-wet-toileting-assistance|TOILETING_ASSISTANCE|Hỗ trợ đi vệ sinh
+PASS: TYPE RESPONSE SHAPE
+
+======================================================================
+7. ACTOR-AWARE WORK EVENT LIST
+======================================================================
+EVENT_LIST_HTTP=200
+{"items":[],"count":0,"limit":50}
+PASS: EVENT LIST AUTHORIZED
+EVENT_RESPONSE_KIND=dict
+EVENT_KEYS=count,items,limit
+EVENT_COUNT=0
+EVENT_LIMIT=50
+EVENT_ITEM_COUNT=0
+PASS: EVENT RESPONSE SHAPE
+
+======================================================================
+8. MAX LIMIT CONTRACT
+======================================================================
+LIMIT_101_HTTP=400
+{"message":"limit must be an integer between 1 and 100","error":"Bad Request","statusCode":400}
+PASS: LIMIT 101 REJECTED
+
+======================================================================
+9. FILTER CONTRACT
+======================================================================
+FILTER=status=RECORDED HTTP=200
+PASS: FILTER status=RECORDED
+FILTER=sourceDomain=OPS1F_NONEXISTENT HTTP=200
+PASS: FILTER sourceDomain=OPS1F_NONEXISTENT
+FILTER=performedBy=OPS1F_NONEXISTENT HTTP=200
+PASS: FILTER performedBy=OPS1F_NONEXISTENT
+
+======================================================================
+10. DETAIL IF EXISTING EVENT
+======================================================================
+FIRST_EVENT_ID=
+INFO: NO EXISTING WORK EVENT
+INFO: DETAIL DEFERRED TO CONTROLLED FIXTURE
+
+======================================================================
+11. ACCEPTANCE BUNDLE TARGET
+======================================================================
+PASS: DIST TARGETS :3108
+
+======================================================================
+12. SOURCE + RUNTIME PRESERVATION
+======================================================================
+API_TREE_AFTER=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_AFTER=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API SOURCE UNCHANGED
+PASS: FRONTEND SOURCE UNCHANGED
+http://127.0.0.1:4173/operations -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:3000/api/health -> 200
+
+======================================================================
+13. TEMP CLEANUP
+======================================================================
+PASS: TEMP FILE CLEANUP
+
+======================================================================
+14. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-1-F-R1-P3-R3 READ-ONLY BEHAVIORAL CONTRACT PASSED
+
+PROVED:
+ -> live canonical staff schema
+ -> actor_id canonical identity
+ -> status='ACTIVE' canonical active semantics
+ -> canonical active human actor available
+ -> anonymous operational read rejected
+ -> actor-aware type list
+ -> actor-aware event list
+ -> bounded 50/100 behavior
+ -> limit 101 rejected
+ -> filter contract
+ -> detail read if existing event
+ -> acceptance bundle targets :3108
+ -> source unchanged
+ -> accepted runtimes preserved
+
+NEXT:
+ -> ONE controlled fixture lifecycle gate
+ -> create
+ -> detail
+ -> verify
+ -> amend
+ -> void
+ -> audit
+ -> exact cleanup
+
+OPS-1-G=NOT AUTHORIZED

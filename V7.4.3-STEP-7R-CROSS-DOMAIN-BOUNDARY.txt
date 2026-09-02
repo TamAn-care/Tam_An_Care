@@ -1,0 +1,69 @@
+TAM AN CARE V7.4.3
+STEP 7R CROSS-DOMAIN BOUNDARY
+
+Step 7R may reference information from other domains,
+but it must not autonomously mutate them.
+
+SKIN / WOUND -> INCIDENT
+
+Automatic Incident creation:
+NO
+
+Human may explicitly create or link an Incident when appropriate.
+
+
+SKIN / WOUND -> CARE ACTION
+
+Automatic Care Action creation:
+NO
+
+Explicit authorized human link:
+ALLOWED
+
+
+SKIN / WOUND -> CARE TASK
+
+Automatic Care Task creation:
+NO
+
+Explicit authorized human workflow:
+ALLOWED
+
+
+SKIN / WOUND -> MEDICATION
+
+Automatic Medication Order:
+NO
+
+Automatic Medication Administration:
+NO
+
+Medication mutation from wound AI:
+NO
+
+
+SKIN / WOUND -> CLINICAL OBSERVATION
+
+Automatic official Clinical Observation:
+NO
+
+Explicit human-created clinical link:
+ALLOWED
+
+
+SKIN / WOUND -> NUTRITION
+
+Automatic Nutrition Plan change:
+NO
+
+
+SKIN / WOUND -> REHABILITATION
+
+Automatic rehabilitation restriction:
+NO
+
+Human review / explicit update:
+ALLOWED
+
+
+ZERO CROSS-DOMAIN AUTONOMY REQUIRED.

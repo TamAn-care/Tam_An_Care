@@ -1,0 +1,32 @@
+STEP 7X — AUDIT CONTRACT
+
+Every successful official Step 7X governance mutation requires audit.
+
+Audit must be:
+
+- append-only
+- attributable
+- uniquely sequenced per entity
+- committed in same transaction
+- immutable history
+
+Audit must preserve:
+
+- actor identity
+- actor role
+- reviewer identity where applicable
+- first checker identity
+- second checker identity
+- related medication order / schedule / administration reference
+- event type
+- event timestamp
+
+Failed mutation = zero audit.
+
+Unauthorized mutation = zero audit.
+
+Same-person invalid independent check = zero audit.
+
+Losing concurrent mutation = zero audit.
+
+AI advisory output cannot impersonate a human reviewer or checker.

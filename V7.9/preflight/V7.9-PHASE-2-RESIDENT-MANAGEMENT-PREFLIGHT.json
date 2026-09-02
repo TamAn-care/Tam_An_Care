@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-08-22T01:15:40.618426+00:00",
+  "version": "V7.9",
+  "phase": "2",
+  "title": "RESIDENT_MANAGEMENT",
+  "authorization": {
+    "phase1_final_result_hash": "dae2d01839384b0fa51bd41687286f6d014d3266223b69bd230bba2973bc09a1",
+    "phase1_final_manifest_hash": "8cd82b190ac09749c648a6920e1eb9c0a4258434a01052f5e04a9d73c35071f9"
+  },
+  "ordered_gates": [
+    {
+      "gate": "2A",
+      "name": "RESIDENT_LIFECYCLE_EXACT_CONTRACT_DISCOVERY",
+      "mode": "READ_ONLY"
+    },
+    {
+      "gate": "2B",
+      "name": "RESIDENT_CREATE_EDIT_VIEW_DISPOSABLE_ACCEPTANCE",
+      "mode": "DISPOSABLE_MUTATION"
+    },
+    {
+      "gate": "2C",
+      "name": "RESIDENT_ASSIGNMENT_HISTORY_ACCEPTANCE",
+      "mode": "DISPOSABLE_MUTATION"
+    },
+    {
+      "gate": "2D",
+      "name": "RESIDENT_VALIDATION_AUTHORIZATION",
+      "mode": "READ_ONLY_OR_DISPOSABLE"
+    },
+    {
+      "gate": "2_FINAL",
+      "name": "RESIDENT_MANAGEMENT_OPERATIONAL_ACCEPTANCE",
+      "mode": "READ_ONLY_CONSOLIDATION"
+    }
+  ],
+  "execution_rules": {
+    "serial_execution": true,
+    "fail_fast": true,
+    "auto_advance_on_pass": true,
+    "resumable": true,
+    "skip_accepted_gates": true,
+    "sha256_identity": true,
+    "assumed_artifact_filenames": false,
+    "real_resident_mutation": false,
+    "real_staff_mutation": false,
+    "production_database_mutation": false,
+    "production_schema_change": false,
+    "production_runtime_restart": false,
+    "production_cutover": false,
+    "v76_rollback_delete": false
+  },
+  "next": "V7.9_SERIES_03_PHASE_2"
+}

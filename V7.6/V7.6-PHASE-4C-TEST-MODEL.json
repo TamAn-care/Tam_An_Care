@@ -1,0 +1,25 @@
+{
+  "release": "V7.6",
+  "phase": "4C",
+  "database": "disposable PostgreSQL",
+  "backend": "isolated exact accepted backend image",
+  "frontend": "V7.6 workspace dist",
+  "gateway": "isolated same-origin gateway",
+  "mandatory_workflows": [
+    "staff/access fail-closed",
+    "care action read",
+    "care action assign",
+    "care action transfer",
+    "care action start-review",
+    "care action resolve",
+    "care action reopen",
+    "warning review create/read",
+    "care plan governance",
+    "care task execution",
+    "actor propagation",
+    "authorization rejection",
+    "frontend same-origin delivery"
+  ],
+  "production_database": "untouched",
+  "cleanup": "destroy temporary DB/API/gateway/network"
+}

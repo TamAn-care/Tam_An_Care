@@ -1,0 +1,40 @@
+TAM AN CARE V7.4.3
+STEP 7R AUDIT CONTRACT
+
+Every successful official state-changing mutation must create
+exactly one corresponding audit event in the same database transaction.
+
+Audit fields include:
+
+audit_id
+event_sequence
+resident_id
+aggregate_type
+aggregate_id
+event_type
+actor_id
+actor_role
+previous_state
+new_state
+created_at
+
+
+AUDIT PRINCIPLES
+
+append-only
+human attributable
+ordered per aggregate
+same-transaction business mutation + audit
+no audit without successful business mutation
+no successful state mutation without audit
+
+Failed authorization:
+zero business mutation
+zero audit
+
+Lost race:
+zero business mutation
+zero audit
+
+AI advisory event may be logged separately,
+but it must never masquerade as an official human clinical mutation.

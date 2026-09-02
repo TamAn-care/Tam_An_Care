@@ -1,0 +1,21 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R6.0-R2-R3-R2",
+  "status": "PASSED",
+  "root_cause": "Phase 1D executes in module-level control flow; prior recovery incorrectly required enclosing function",
+  "patch_strategy": "AST exact disposable assignment plus exact x-actor-id/x-actor-role constant locations",
+  "table": "staff_actors",
+  "actor_id": "v79-phase1d-supervisor",
+  "staff_code": "V79-P1D-SUP-001",
+  "display_name": "V7.9 Phase 1D Supervisor",
+  "primary_operational_role": "SUPERVISOR",
+  "status_value": "ACTIVE",
+  "fixture_scope": "PHASE_1D_DISPOSABLE_DB_ONLY",
+  "runner_sha256": "d4e161cb7467ad6b1cd3bf1ba6f796a31f636ad210d81cef2f4ffd880aaa5a07",
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "v77_source_write": false,
+  "next": "RESUME_PHASE_1D"
+}

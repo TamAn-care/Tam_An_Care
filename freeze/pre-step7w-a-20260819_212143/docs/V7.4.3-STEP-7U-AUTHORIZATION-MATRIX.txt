@@ -1,0 +1,71 @@
+STEP 7U — HUMAN AUTHORIZATION MATRIX
+
+GENERAL RULE
+
+Official mutation requires attributable HUMAN actor.
+
+CAREGIVER
+
+ALLOWED:
+- record factual sleep observation
+- perform approved night monitoring
+- record night support response
+- acknowledge assigned sleep/rest event
+- escalate concern
+
+DENIED:
+- clinical diagnosis
+- medication prescription
+- sedative decision
+- restraint decision
+
+NURSE
+
+ALLOWED:
+- verify factual observation
+- human safety review
+- escalation creation
+- escalation review where assigned
+- document clinical concern for further human review
+
+SUPERVISOR / CARE MANAGER
+
+ALLOWED:
+- review sleep care plan
+- activate approved sleep care plan
+- assign event owner
+- assign escalation reviewer
+- governance review
+
+AUTHORIZED HUMAN REVIEWER
+
+ALLOWED:
+- accept assigned escalation
+- perform human review
+- resolve escalation
+- document follow-up
+
+AI / SYSTEM
+
+AI = advisory only.
+SYSTEM = infrastructure only.
+
+DENIED FROM:
+- official diagnosis
+- official clinical finding
+- sleep care plan activation
+- assignment
+- acknowledgement
+- verification
+- escalation acceptance
+- escalation resolution
+- medication mutation
+- sedative decision
+- restraint decision
+- transfer decision
+- emergency-service decision
+- official incident creation
+- care action creation
+- care task creation
+
+HUMAN ACCOUNTABILITY = REQUIRED

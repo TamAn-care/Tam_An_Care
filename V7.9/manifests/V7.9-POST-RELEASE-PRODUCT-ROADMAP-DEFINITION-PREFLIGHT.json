@@ -1,0 +1,23 @@
+{
+  "status": "PASSED",
+  "phase": "POST_V79_PRODUCT_ROADMAP_DEFINITION_PREFLIGHT",
+  "decision": "POST_V79_PRODUCT_ROADMAP_DEFINITION_AUTHORIZED",
+  "v79_release_frozen": true,
+  "successor_authority": null,
+  "implementation_authorized": false,
+  "roadmap_definition_gate_sequence": "RD1->RD2->RD3->RD4->RD_FINAL",
+  "next_gate": "RD1",
+  "next_gate_name": "POST_V79_GAP_AND_BACKLOG_DISCOVERY",
+  "manual_test_policy_locked": true,
+  "manual_appearance_test_user_required": true,
+  "manual_function_test_user_required": true,
+  "manual_ux_test_user_required": true,
+  "manual_uat_user_required": true,
+  "new_version_created": false,
+  "new_series_created": false,
+  "new_runner_created": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "application_source_write": false,
+  "created_at": "2026-08-22T07:52:44.179888+00:00"
+}

@@ -1,0 +1,21 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R6.1-R2",
+  "status": "PATCHED",
+  "authority": {
+    "actorId": "v79-phase1d-supervisor",
+    "actorRole": "SUPERVISOR"
+  },
+  "assignment_contract": {
+    "actorRole": "CAREGIVER",
+    "accessScope": "DIRECT_CARE",
+    "effectiveFrom": "REQUIRED_AND_PRESENT"
+  },
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "v77_source_write": false,
+  "runner_sha256": "a6eabddaa7253fc0ba990dcf3d04ac350696b6b16796efadd53e662391fda676",
+  "next": "RESUME_PHASE_1D"
+}

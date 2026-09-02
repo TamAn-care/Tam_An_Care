@@ -1,0 +1,90 @@
+TAM AN CARE V7.4.3
+STEP 7J — RESOLUTION FLOW
+
+Care Action
+    |
+    v
+Find action
+    |
+    +-- not found ----------------------> 404
+    |
+    v
+SELECT FOR UPDATE
+    |
+    v
+status == IN_REVIEW ?
+    |
+    +-- NO -----------------------------> 400
+    |
+    v
+assigned human owner exists ?
+    |
+    +-- NO -----------------------------> 400
+    |
+    v
+actor present ?
+    |
+    +-- NO -----------------------------> 400
+    |
+    v
+AI / SYSTEM ?
+    |
+    +-- YES ----------------------------> 400
+    |
+    v
+actor == assigned owner ?
+    |
+    +-- YES ----------------------------> AUTHORIZED
+    |
+    +-- NO
+         |
+         v
+actorRole == SUPERVISOR
+OR CARE_MANAGER ?
+         |
+         +-- NO -------------------------> 400
+         |
+         +-- YES ------------------------> AUTHORIZED
+
+AUTHORIZED
+    |
+    v
+careNote present ?
+    |
+    +-- NO -----------------------------> 400
+    |
+    v
+resolutionReason present ?
+    |
+    +-- NO -----------------------------> 400
+    |
+    v
+IN_REVIEW -> RESOLVED
+    |
+    v
+resolvedAt = now
+    |
+    v
+ownership unchanged
+    |
+    v
+no transfer
+    |
+    v
+audit RESOLVED
+    |
+    v
+COMMIT
+
+CONCURRENT REQUEST:
+
+second transaction waits
+    |
+    v
+reads RESOLVED
+    |
+    v
+fails transition
+    |
+    v
+400

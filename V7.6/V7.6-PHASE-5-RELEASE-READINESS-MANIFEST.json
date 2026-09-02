@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-08-21T04:07:07.454719+00:00",
+  "release": "V7.6",
+  "phase": "5_FULL_REGRESSION_RELEASE_READINESS",
+  "candidate": {
+    "image": "taman-care-v76-warning-auth-candidate:latest",
+    "image_id": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7"
+  },
+  "source_artifact_lock_hash": "748924b75dc5931d340721a47d6d1c63e710d1d8ca189e660fd589db6ce62914",
+  "frontend": {
+    "index_html_hash": "f7e495c1b63d0bad4407641a3c95191505c03b17a827f294b7bb52ce121cdbd0",
+    "js": {
+      "index-BMb-tSCV.js": "027d92e6aa6e44de11999c521eaec1b2c6a15419ea76e740b5edefb7ede27f62"
+    },
+    "css": {
+      "index-DlvS4Sti.css": "2f3e27ebdf2e2e9a2df4a0883cd84e8474162aff1ca6c85c64944dd77e5c96fb"
+    },
+    "contract": "PASSED"
+  },
+  "security": {
+    "staff_no_actor": 401,
+    "resident_access_no_actor": 401,
+    "staff_supervisor": 200,
+    "staff_caregiver": 403,
+    "warning_no_actor": 401,
+    "warning_supervisor": 201,
+    "warning_caregiver": 201,
+    "warning_impersonation": 403
+  },
+  "functional_acceptance": {
+    "phase4c_result_hash": "a8b10e9261f9de71c19d0037472808724476cfb5932e8278fa4101530dbae0e2",
+    "status": "PASSED_AND_LOCKED"
+  },
+  "rollback": {
+    "api_artifact_count": 2,
+    "ui_artifact_count": 1,
+    "status": "READY"
+  },
+  "production": {
+    "before": [
+      "200",
+      "200",
+      "401",
+      "401"
+    ],
+    "after": [
+      "200",
+      "200",
+      "401",
+      "401"
+    ],
+    "database_before": {
+      "available": true,
+      "query_ok": true,
+      "counts": "0|0|0"
+    },
+    "database_after": {
+      "available": true,
+      "query_ok": true,
+      "counts": "0|0|0"
+    },
+    "runtime_change": "NO",
+    "database_write": "NO"
+  },
+  "promotion": "NOT_EXECUTED"
+}

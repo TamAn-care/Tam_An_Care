@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-08-21T06:28:37.660246+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R4-R4",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "create_alert_declaration_line": 1389,
+  "method_input_fields": [
+    "sourceType",
+    "mealScheduleId",
+    "alertType",
+    "severity",
+    "summary"
+  ],
+  "required_fields": [
+    "alertType",
+    "severity",
+    "summary"
+  ],
+  "insert_columns": [
+    "nutrition_alert_id",
+    "resident_id",
+    "meal_schedule_id",
+    "alert_type",
+    "source_type",
+    "severity",
+    "summary",
+    "status",
+    "created_by",
+    "created_by_role"
+  ],
+  "route": "/api/nutrition-hydration/:residentId/execute",
+  "action": "CREATE_ALERT",
+  "payload": {
+    "action": "CREATE_ALERT",
+    "actorId": "v77-nut-r4-supervisor",
+    "actorRole": "SUPERVISOR",
+    "alertType": "LOW_INTAKE",
+    "severity": "MODERATE",
+    "summary": "PHASE4A_R2B_NUTRITION_CREATE_ALERT_TEST"
+  },
+  "alert_type_allowed": [
+    "LOW_INTAKE",
+    "LOW_FLUID_INTAKE",
+    "REPEATED_REFUSAL",
+    "REPEATED_MISSED_INTAKE",
+    "WEIGHT_TREND_CONCERN",
+    "DIET_CONFLICT",
+    "ALLERGY_CONFLICT",
+    "OTHER"
+  ],
+  "severity_allowed": [
+    "LOW",
+    "MODERATE",
+    "HIGH"
+  ],
+  "summary_contract": "REQUIRED_NONEMPTY_FREE_TEXT",
+  "no_actor_http": "400",
+  "authorized_http": "201",
+  "persisted_row": "LOW_INTAKE|MODERATE|PHASE4A_R2B_NUTRITION_CREATE_ALERT_TEST|HUMAN|OPEN|v77-nut-r4-supervisor|SUPERVISOR",
+  "audit_count": 1,
+  "application_source_change": false,
+  "production_database_change": false
+}

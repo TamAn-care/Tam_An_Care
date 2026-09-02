@@ -1,0 +1,23 @@
+STEP 7W — AUDIT CONTRACT
+
+Every successful official mutation requires audit.
+
+Audit must be:
+
+- append-only
+- human-attributable
+- uniquely sequenced per entity
+- committed in the same database transaction
+- immutable history
+
+Failed mutation = zero audit.
+
+Unauthorized mutation = zero audit.
+
+Wrong reviewer mutation = zero audit.
+
+Losing concurrent mutation = zero audit.
+
+AI advisory output cannot impersonate human clinical accountability.
+
+AI-generated signal is not an official diagnosis.

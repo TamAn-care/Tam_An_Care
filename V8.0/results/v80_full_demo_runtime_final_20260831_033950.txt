@@ -1,0 +1,70 @@
+======================================================================
+ TAMANCARE V8.0 — FULL DEMO
+ DEMO-2 FINAL — API + FRONTEND ACCEPTANCE
+======================================================================
+
+----- 1. API RUNTIME -----
+PASS: API CONTAINER RUNNING
+API_ROOT_HTTP=401
+API_HEALTH_HTTP=200
+API_LIVE_HTTP=200
+API_READY_HTTP=200
+PASS: API ROOT RESPONDING
+PASS: API HEALTH PASS
+PASS: API LIVE PASS
+PASS: API READY PASS
+
+----- 2. POSTGRES -----
+PASS: LOCAL DEMO POSTGRES READY
+
+----- 3. SELECT FRONTEND PORT -----
+PASS: FREE FRONTEND PORT SELECTED
+FRONTEND_PORT=4175
+
+----- 4. START FRONTEND ONLY -----
+FRONTEND_PID=60906
+PASS: FRONTEND PROCESS RUNNING
+FRONTEND_HTTP=200
+PASS: FRONTEND HTTP PASS
+
+----- 5. FROZEN RELEASE INTEGRITY -----
+PASS: FROZEN V8.0 SOURCE UNCHANGED
+
+======================================================================
+ V8.0 FULL DEMO — RUNTIME ACCEPTANCE
+======================================================================
+PASS_COUNT=10
+WARN_COUNT=0
+FAIL_COUNT=0
+
+STATUS=V8_FULL_DEMO_RUNTIME_ACCEPTED
+DEMO_RUNTIME=RUNNING
+API_RUNTIME=PASS
+FRONTEND_RUNTIME=PASS
+DATABASE_RUNTIME=PASS
+
+======================================================
+ TAMANCARE V8.0 FULL DEMO ACCESS
+======================================================
+ FRONTEND_URL=http://127.0.0.1:4175
+ API_URL=http://127.0.0.1:3100
+ HEALTH_URL=http://127.0.0.1:3100/api/health
+======================================================
+
+FROZEN_PARENT_MUTATION=NO
+PRODUCTION_DATABASE_WRITE=NO
+MIGRATION=NO
+REBUILD=NO
+
+NEXT=DEMO_LOGIN_AND_FULL_FUNCTIONAL_WALKTHROUGH
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_full_demo_runtime_final_20260831_033950.txt
+FRONTEND_LOG=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-final-20260831_033950.log
+FRONTEND_PID_FILE=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/frontend/v80-demo-final-20260831_033950.pid
+
+IMPORTANT:
+ -> DO NOT START ANOTHER DEMO INSTANCE
+ -> DO NOT RUN MIGRATIONS
+ -> DO NOT MODIFY FROZEN V8.0
+ -> RETURN THIS ENTIRE OUTPUT
+======================================================================

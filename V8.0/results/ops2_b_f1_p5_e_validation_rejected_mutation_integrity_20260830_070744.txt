@@ -1,0 +1,197 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-E
+ VALIDATION + REJECTED-MUTATION INTEGRITY
+======================================================================
+
+AUTHORIZED:
+ -> negative test 1: transaction unit mismatch
+ -> negative test 2: missing lot for lot-tracked item
+
+EXPECTED:
+ -> both HTTP 400
+ -> both append ZERO transaction rows
+ -> authoritative balance remains 10
+
+NOT AUTHORIZED:
+ -> valid inventory transaction
+ -> outbound movement
+ -> source patch
+ -> schema/migration change
+ -> accepted runtime restart
+
+======================================================================
+ 1. LOAD ACCEPTED P5-D CHECKPOINT
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_BASE_UNIT=UNIT
+P5_EXPECTED_BALANCE_AFTER_D=10
+P5_D_STATUS=PASS
+P5_ACCEPTED_API_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+PASS: P5-D ACCEPTANCE CHECKPOINT LOADED
+
+======================================================================
+ 2. P5-E MUST NOT ALREADY BE COMPLETE
+======================================================================
+EXISTING_P5_E_STATUS_COUNT=0
+PASS: P5-E NOT PREVIOUSLY COMPLETED
+
+======================================================================
+ 3. ACCEPTED SOURCE BASELINES
+======================================================================
+API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES
+
+======================================================================
+ 4. ISOLATED RUNTIME + AUTH
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+AUTHENTICATED_BALANCE_PROBE=200
+TOKEN_VALUE_PRINTED=NO
+PASS: AUTHENTICATED RUNTIME READY
+
+======================================================================
+ 5. DATABASE PRE-NEGATIVE-TEST BASELINE
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|1|1|0
+EXISTING_TRANSACTION=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|RECEIPT|10.0000|UNIT|hqa-supervisor-001|SUPERVISOR|OPS2B_FUNCTIONAL|P5_RECEIPT|OPS2B_P5_D_20260830_070008
+PASS: EXACT ONE ACCEPTED LEDGER ROW BEFORE NEGATIVE TESTS
+
+======================================================================
+ 6. NEGATIVE TEST A — UNIT MISMATCH
+======================================================================
+UNIT_MISMATCH_HTTP=400
+UNIT_MISMATCH_RESPONSE:
+{"message":"transaction unit must equal item base_unit","error":"Bad Request","statusCode":400}
+UNIT_MISMATCH_PERSISTED_ROWS=0
+PASS: UNIT MISMATCH REJECTED
+PASS: UNIT MISMATCH APPENDED ZERO LEDGER ROWS
+
+======================================================================
+ 7. NEGATIVE TEST B — LOT REQUIRED BUT ABSENT
+======================================================================
+MISSING_LOT_HTTP=400
+MISSING_LOT_RESPONSE:
+{"message":"inventoryLotId is required for lot-tracked item","error":"Bad Request","statusCode":400}
+MISSING_LOT_PERSISTED_ROWS=0
+PASS: LOT-TRACKED RECEIPT WITHOUT LOT REJECTED
+PASS: MISSING-LOT REQUEST APPENDED ZERO LEDGER ROWS
+
+======================================================================
+ 8. EXACT LEDGER INTEGRITY AFTER BOTH REJECTIONS
+======================================================================
+INVENTORY_COUNTS_AFTER=1|1|1|0
+EXISTING_TRANSACTION_AFTER=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|RECEIPT|10.0000|UNIT|hqa-supervisor-001|SUPERVISOR|OPS2B_FUNCTIONAL|P5_RECEIPT|OPS2B_P5_D_20260830_070008
+PASS: TRANSACTION COUNT UNCHANGED
+PASS: EXISTING RECEIPT UNCHANGED
+PASS: REJECTED REQUESTS CAUSED ZERO AUTHORITATIVE MUTATION
+
+======================================================================
+ 9. ITEM BALANCE MUST REMAIN 10
+======================================================================
+ITEM_BALANCE_HTTP=200
+ITEM_BALANCE_RESPONSE:
+{"inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":null,"unit":"UNIT","balance":"10.0000","as_of":"2026-08-30T00:07:45.741Z"}
+ITEM_BALANCE_PARSED=10.0000
+PASS: ITEM BALANCE REMAINS 10 UNIT
+
+======================================================================
+ 10. LOT BALANCE MUST REMAIN 10
+======================================================================
+LOT_BALANCE_HTTP=200
+LOT_BALANCE_RESPONSE:
+{"inventory_item_id":"inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","inventory_lot_id":"inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb","unit":"UNIT","balance":"10.0000","as_of":"2026-08-30T00:07:45.851Z"}
+LOT_BALANCE_PARSED=10.0000
+PASS: LOT BALANCE REMAINS 10 UNIT
+
+======================================================================
+ 11. DIRECT DB LEDGER BALANCE
+======================================================================
+DB_ITEM_BALANCE=10.0000
+DB_LOT_BALANCE=10.0000
+PASS: DATABASE LEDGER BALANCE REMAINS 10
+
+======================================================================
+ 12. SOURCE PRESERVATION
+======================================================================
+API_SOURCE_HASH_AFTER=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE BASELINES UNCHANGED
+
+======================================================================
+ 13. AUTH FIXTURE PRESERVATION
+======================================================================
+FINAL_AUTH_STATE=1|1
+PASS: AUTH FIXTURE PRESERVED
+
+======================================================================
+ 14. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 15. ISOLATED RUNTIME FINAL HEALTH
+======================================================================
+FINAL_ISOLATED_HEALTH=200
+PASS: ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 16. WRITE P5-E CHECKPOINT
+======================================================================
+P5_STATE_UPDATED=YES
+P5_E_STATUS=PASS
+
+======================================================================
+ 17. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P5-E VALIDATION + REJECTED-MUTATION INTEGRITY PASSED
+
+UNIT_MISMATCH_HTTP=400
+UNIT_MISMATCH_LEDGER_APPEND=NO
+
+MISSING_LOT_HTTP=400
+MISSING_LOT_LEDGER_APPEND=NO
+
+EXISTING_RECEIPT_UNCHANGED=YES
+ITEM_DERIVED_BALANCE=10
+LOT_DERIVED_BALANCE=10
+DATABASE_LEDGER_BALANCE=10
+
+INVENTORY_DATABASE=1|1|1|0
+AUTH_FIXTURE=1|1
+
+API_BASELINE=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_BASELINE=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+MIGRATION_CHANGE=NO
+ACCEPTED_RUNTIME_REGRESSION=NO
+
+P5_E_STATUS=PASS
+NEXT=OPS-2-B-F1-P5-F OUTBOUND + INSUFFICIENT STOCK
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_e_validation_rejected_mutation_integrity_20260830_070744.txt
+
+======================================================================
+ IMPORTANT:
+ -> P5-E IS CLOSED
+ -> DO NOT RERUN P5-E
+ -> KEEP EXISTING RECEIPT
+ -> KEEP BALANCE = 10 UNIT
+ -> KEEP P5 ITEM + LOT ACTIVE
+ -> KEEP P5 state.env
+ -> KEEP AUTH FIXTURE + token
+ -> DO NOT CREATE OUTBOUND TRANSACTION MANUALLY
+ -> DO NOT PATCH/DELETE inventory_transactions
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START P5-F MANUALLY
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

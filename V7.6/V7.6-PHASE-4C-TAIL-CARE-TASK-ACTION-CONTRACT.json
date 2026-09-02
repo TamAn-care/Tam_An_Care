@@ -1,0 +1,15 @@
+{
+  "generated_at": "2026-08-21T02:44:42.791180+00:00",
+  "initial_status": "PLANNED",
+  "allowed_actions": [
+    "ASSIGN",
+    "ACCEPT",
+    "START",
+    "COMPLETE",
+    "MARK_MISSED",
+    "SKIP",
+    "CANCEL"
+  ],
+  "selected_action": "ASSIGN",
+  "production_change": "NO"
+}

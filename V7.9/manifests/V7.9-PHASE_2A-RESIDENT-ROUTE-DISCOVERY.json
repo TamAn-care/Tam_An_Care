@@ -1,0 +1,13 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2_RESIDENT_MANAGEMENT",
+  "gate": "PHASE_2A",
+  "status": "PASSED",
+  "created_at": "2026-08-22T01:27:01.541076+00:00",
+  "resident_route_count": 35,
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-2A-RESIDENT-ROUTE-INVENTORY.json",
+  "inventory_sha256": "a54651568a99a62ee299aa1146011eb0780730479e0eb41fb8c9686c94efa3f6",
+  "production_mutation": "NO",
+  "runtime_restart": "NO"
+}

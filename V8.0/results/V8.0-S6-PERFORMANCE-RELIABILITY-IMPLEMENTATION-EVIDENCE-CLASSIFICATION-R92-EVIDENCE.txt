@@ -1,0 +1,119 @@
+CLASSIFICATION_MODE=SEMANTIC_STRUCTURAL_R91_EVIDENCE_ONLY
+SOURCE_RESCAN_EXECUTED=NO
+R91_RAW_SIGNAL_COUNT=341
+R91_RAW_SIGNAL_COUNT_TREATED_AS_ACCEPTANCE_EVIDENCE=NO
+STRONG_CACHE_CONTROL_COUNT=0
+STRONG_DB_POOL_ERROR_HANDLER_COUNT=4
+STRONG_DB_POOL_IMPLEMENTATION_COUNT=51
+STRONG_DB_POOL_LIFECYCLE_COUNT=18
+STRONG_EXPLICIT_TRANSACTION_BEGIN_COUNT=5
+STRONG_EXPLICIT_TRANSACTION_COMMIT_COUNT=5
+STRONG_EXPLICIT_TRANSACTION_ROLLBACK_COUNT=5
+STRONG_HEALTH_HTTP_CONTROLLER_COUNT=1
+STRONG_HEALTH_STATUS_RESPONSE_COUNT=1
+STRONG_LOAD_STRESS_TOOL_COUNT=0
+STRONG_PERFORMANCE_RUNTIME_MEASUREMENT_COUNT=0
+STRONG_RATE_LIMIT_CONTROL_COUNT=0
+STRONG_RETRY_BACKOFF_CONTROL_COUNT=0
+STRONG_TIMEOUT_CONTROL_COUNT=0
+STRONG_TRANSACTION_HELPER_COUNT=22
+DB_POOL_IMPLEMENTATION_PRESENT=YES
+DB_POOL_ERROR_HANDLER_PRESENT=YES
+DB_POOL_LIFECYCLE_PRESENT=YES
+TRANSACTION_HELPER_PRESENT=YES
+EXPLICIT_TRANSACTION_BEGIN_PRESENT=YES
+EXPLICIT_TRANSACTION_COMMIT_PRESENT=YES
+EXPLICIT_TRANSACTION_ROLLBACK_PRESENT=YES
+TRANSACTION_INTEGRITY_PRIMITIVE_PRESENT=YES
+HEALTH_ROUTE_PRESENT=YES
+HEALTH_STATUS_SIGNAL_PRESENT=YES
+HEALTH_CHECK_PRIMITIVE_PRESENT=YES
+PERFORMANCE_RUNTIME_MEASUREMENT_PRESENT=NO
+LOAD_STRESS_TOOLING_PRESENT=NO
+TIMEOUT_CONTROL_PRESENT=NO
+RETRY_BACKOFF_CONTROL_PRESENT=NO
+RATE_LIMIT_CONTROL_PRESENT=NO
+CACHE_CONTROL_PRESENT=NO
+RELIABILITY_PRIMITIVE_COUNT=5
+S6_RELIABILITY_IMPLEMENTATION_CLASS=EXISTING_RELIABILITY_PRIMITIVES_PRESENT
+S6_PERFORMANCE_IMPLEMENTATION_CLASS=NO_RUNTIME_PERFORMANCE_MEASUREMENT_CAPABILITY_PROVEN
+S6_LOAD_TOOLING_CLASS=NO_LOAD_STRESS_TOOLING_PROVEN
+S6_ACCEPTANCE_THRESHOLD_DISCOVERED=NO
+S6_ACCEPTANCE_THRESHOLD_INVENTION_ALLOWED=NO
+S6_MEASUREMENT_PRECONTRACT_REQUIRED=YES
+STRONG_EVIDENCE_BEGIN
+---- CACHE_CONTROL ----
+---- DB_POOL_ERROR_HANDLER ----
+DB_POOL_ERROR_HANDLER_1=CONCURRENCY_POOL_EVIDENCE_11=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:69|this.pool.on(
+DB_POOL_ERROR_HANDLER_2=CONCURRENCY_POOL_EVIDENCE_12=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:74|'Unexpected PostgreSQL pool error',
+DB_POOL_ERROR_HANDLER_3=DATABASE_PERFORMANCE_EVIDENCE_10=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:69|this.pool.on(
+DB_POOL_ERROR_HANDLER_4=DATABASE_PERFORMANCE_EVIDENCE_11=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:74|'Unexpected PostgreSQL pool error',
+---- DB_POOL_IMPLEMENTATION ----
+DB_POOL_IMPLEMENTATION_1=CONCURRENCY_POOL_EVIDENCE_2=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:7|import { Pool, PoolClient } from 'pg';
+DB_POOL_IMPLEMENTATION_2=CONCURRENCY_POOL_EVIDENCE_3=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:18|private readonly pool: Pool;
+DB_POOL_IMPLEMENTATION_3=CONCURRENCY_POOL_EVIDENCE_4=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:21|this.pool = new Pool({
+DB_POOL_IMPLEMENTATION_4=CONCURRENCY_POOL_EVIDENCE_7=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:22|private readonly pool: Pool;
+DB_POOL_IMPLEMENTATION_5=CONCURRENCY_POOL_EVIDENCE_9=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:30|? new Pool({
+DB_POOL_IMPLEMENTATION_6=CONCURRENCY_POOL_EVIDENCE_10=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:36|: new Pool({
+DB_POOL_IMPLEMENTATION_7=CONCURRENCY_POOL_EVIDENCE_16=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:7|import { Pool, PoolClient } from 'pg';
+DB_POOL_IMPLEMENTATION_8=CONCURRENCY_POOL_EVIDENCE_17=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:18|private readonly pool: Pool;
+DB_POOL_IMPLEMENTATION_9=CONCURRENCY_POOL_EVIDENCE_18=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:21|this.pool = new Pool({
+DB_POOL_IMPLEMENTATION_10=CONCURRENCY_POOL_EVIDENCE_20=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:7|import { Pool, PoolClient } from 'pg';
+DB_POOL_IMPLEMENTATION_11=CONCURRENCY_POOL_EVIDENCE_21=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:18|private readonly pool: Pool;
+DB_POOL_IMPLEMENTATION_12=CONCURRENCY_POOL_EVIDENCE_22=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:21|this.pool = new Pool({
+---- DB_POOL_LIFECYCLE ----
+DB_POOL_LIFECYCLE_1=CONCURRENCY_POOL_EVIDENCE_5=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:134|const client = await this.pool.connect();
+DB_POOL_LIFECYCLE_2=CONCURRENCY_POOL_EVIDENCE_14=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:104|await this.pool.connect();
+DB_POOL_LIFECYCLE_3=CONCURRENCY_POOL_EVIDENCE_15=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:146|await this.pool.end();
+DB_POOL_LIFECYCLE_4=CONCURRENCY_POOL_EVIDENCE_19=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:179|const db = await this.pool.connect();
+DB_POOL_LIFECYCLE_5=CONCURRENCY_POOL_EVIDENCE_23=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:135|const db = await this.pool.connect();
+DB_POOL_LIFECYCLE_6=CONCURRENCY_POOL_EVIDENCE_27=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:162|const db = await this.pool.connect();
+DB_POOL_LIFECYCLE_7=CONCURRENCY_POOL_EVIDENCE_31=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:135|const db = await this.pool.connect();
+DB_POOL_LIFECYCLE_8=CONCURRENCY_POOL_EVIDENCE_35=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:128|const client = await this.pool.connect();
+DB_POOL_LIFECYCLE_9=CONCURRENCY_POOL_EVIDENCE_39=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:169|const db = await this.pool.connect();
+DB_POOL_LIFECYCLE_10=DATABASE_PERFORMANCE_EVIDENCE_4=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:134|const client = await this.pool.connect();
+DB_POOL_LIFECYCLE_11=DATABASE_PERFORMANCE_EVIDENCE_13=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:104|await this.pool.connect();
+DB_POOL_LIFECYCLE_12=DATABASE_PERFORMANCE_EVIDENCE_14=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:146|await this.pool.end();
+---- EXPLICIT_TRANSACTION_BEGIN ----
+EXPLICIT_TRANSACTION_BEGIN_1=TRANSACTION_ATOMICITY_EVIDENCE_2=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:137|await client.query('BEGIN');
+EXPLICIT_TRANSACTION_BEGIN_2=TRANSACTION_ATOMICITY_EVIDENCE_18=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:108|await client.query('BEGIN');
+EXPLICIT_TRANSACTION_BEGIN_3=TRANSACTION_ATOMICITY_EVIDENCE_21=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:182|await db.query('BEGIN');
+EXPLICIT_TRANSACTION_BEGIN_4=TRANSACTION_ATOMICITY_EVIDENCE_27=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:138|await db.query('BEGIN');
+EXPLICIT_TRANSACTION_BEGIN_5=TRANSACTION_ATOMICITY_EVIDENCE_30=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:165|await db.query('BEGIN');
+---- EXPLICIT_TRANSACTION_COMMIT ----
+EXPLICIT_TRANSACTION_COMMIT_1=TRANSACTION_ATOMICITY_EVIDENCE_3=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:1337|await client.query('COMMIT');
+EXPLICIT_TRANSACTION_COMMIT_2=TRANSACTION_ATOMICITY_EVIDENCE_19=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:113|await client.query('COMMIT');
+EXPLICIT_TRANSACTION_COMMIT_3=TRANSACTION_ATOMICITY_EVIDENCE_22=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:1298|await db.query('COMMIT');
+EXPLICIT_TRANSACTION_COMMIT_4=TRANSACTION_ATOMICITY_EVIDENCE_28=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1062|await db.query('COMMIT');
+EXPLICIT_TRANSACTION_COMMIT_5=TRANSACTION_ATOMICITY_EVIDENCE_31=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:1196|await db.query('COMMIT');
+---- EXPLICIT_TRANSACTION_ROLLBACK ----
+EXPLICIT_TRANSACTION_ROLLBACK_1=TRANSACTION_ATOMICITY_EVIDENCE_4=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:1345|await client.query('ROLLBACK');
+EXPLICIT_TRANSACTION_ROLLBACK_2=TRANSACTION_ATOMICITY_EVIDENCE_20=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:119|await client.query('ROLLBACK');
+EXPLICIT_TRANSACTION_ROLLBACK_3=TRANSACTION_ATOMICITY_EVIDENCE_23=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:1311|await db.query('ROLLBACK');
+EXPLICIT_TRANSACTION_ROLLBACK_4=TRANSACTION_ATOMICITY_EVIDENCE_29=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1074|await db.query('ROLLBACK');
+EXPLICIT_TRANSACTION_ROLLBACK_5=TRANSACTION_ATOMICITY_EVIDENCE_32=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:1207|await db.query('ROLLBACK');
+---- HEALTH_HTTP_CONTROLLER ----
+HEALTH_HTTP_CONTROLLER_1=HEALTH_READINESS_EVIDENCE_32=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health/health.controller.ts:2|@Controller('api/health')
+---- HEALTH_STATUS_RESPONSE ----
+HEALTH_STATUS_RESPONSE_1=HEALTH_READINESS_EVIDENCE_33=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health/health.controller.ts:3|export class HealthController { @Get() get(){ return {status:'ok',version:'7.3.3',component:'health-trend-ai',aiEnabled:true,killSwitch:false,timestamp:new Date().toISOString()}; } }
+---- LOAD_STRESS_TOOL ----
+---- PERFORMANCE_RUNTIME_MEASUREMENT ----
+---- RATE_LIMIT_CONTROL ----
+---- RETRY_BACKOFF_CONTROL ----
+---- TIMEOUT_CONTROL ----
+---- TRANSACTION_HELPER ----
+TRANSACTION_HELPER_1=TRANSACTION_ATOMICITY_EVIDENCE_1=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:99|return this.database.withTransaction(async (client: any) => {
+TRANSACTION_HELPER_2=TRANSACTION_ATOMICITY_EVIDENCE_5=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:145|return this.db.withTransaction(
+TRANSACTION_HELPER_3=TRANSACTION_ATOMICITY_EVIDENCE_6=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:263|return this.db.withTransaction(
+TRANSACTION_HELPER_4=TRANSACTION_ATOMICITY_EVIDENCE_7=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:508|return this.db.withTransaction(
+TRANSACTION_HELPER_5=TRANSACTION_ATOMICITY_EVIDENCE_8=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:701|return this.db.withTransaction(
+TRANSACTION_HELPER_6=TRANSACTION_ATOMICITY_EVIDENCE_9=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:870|return this.db.withTransaction(
+TRANSACTION_HELPER_7=TRANSACTION_ATOMICITY_EVIDENCE_10=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-actions/care-action.service.ts:1048|return this.db.withTransaction(
+TRANSACTION_HELPER_8=TRANSACTION_ATOMICITY_EVIDENCE_11=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.service.ts:76|return this.db.withTransaction(
+TRANSACTION_HELPER_9=TRANSACTION_ATOMICITY_EVIDENCE_12=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plans/care-plan.repository.ts:73|return this.db.withTransaction(
+TRANSACTION_HELPER_10=TRANSACTION_ATOMICITY_EVIDENCE_13=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:99|return this.db.withTransaction(
+TRANSACTION_HELPER_11=TRANSACTION_ATOMICITY_EVIDENCE_14=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-tasks/care-task.repository.ts:152|return this.db.withTransaction(
+TRANSACTION_HELPER_12=TRANSACTION_ATOMICITY_EVIDENCE_16=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:72|return this.db.withTransaction(
+STRONG_EVIDENCE_END
+NEXT_CLASS=V8_SERIES_08_S6_PERFORMANCE_RELIABILITY_MEASUREMENT_AND_RELIABILITY_PRECONTRACT_STATIC_CLASSIFICATION_REQUIRED
+NEXT_ACTION=V8_SERIES_08_S6_PERFORMANCE_RELIABILITY_MEASUREMENT_AND_RELIABILITY_PRECONTRACT_STATIC_CLASSIFICATION

@@ -1,0 +1,73 @@
+TAM AN CARE V7.4.3
+FUNCTIONAL DATA FLOW
+
+Resident
+   |
+   v
+Health Observation
+   |
+   v
+AI Early Warning
+   |
+   v
+Human Review
+   |
+   +--------------------+
+   |                    |
+   | No Action          | Create Action
+   |                    |
+   v                    v
+Monitoring          Care Action
+                         |
+                         v
+                    Assignment
+                         |
+                         v
+                    Acceptance
+                         |
+                         v
+                    Start Work
+                         |
+                         v
+                    Completion
+                         |
+                         v
+                 Supervisor Review
+                         |
+                 +-------+-------+
+                 |               |
+                 v               v
+               Close           Reopen
+                                 |
+                                 v
+                            In Progress
+
+
+ACCOUNTABILITY LAYER
+--------------------
+
+Every human transition:
+
+Actor
+Role
+Timestamp
+Previous State
+New State
+Audit Event
+
+
+AI BOUNDARY
+-----------
+
+AI:
+Detect
+Recommend
+Prioritize
+
+Human:
+Decide
+Assign
+Accept
+Execute
+Complete
+Close

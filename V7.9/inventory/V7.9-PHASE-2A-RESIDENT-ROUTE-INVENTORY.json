@@ -1,0 +1,282 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/skin-wound/summary",
+    "file": "V7.9/workspace/api/src/skin-wound/skin-wound.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/skin-wound/:residentId/execute",
+    "file": "V7.9/workspace/api/src/skin-wound/skin-wound.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/sleep-rest/summary",
+    "file": "V7.9/workspace/api/src/sleep-rest/sleep-rest.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/sleep-rest/:residentId/execute",
+    "file": "V7.9/workspace/api/src/sleep-rest/sleep-rest.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/residents",
+    "file": "V7.9/workspace/api/src/residents/resident.controller.ts",
+    "resident_signal": true,
+    "body_signal": false,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/residents/:residentId",
+    "file": "V7.9/workspace/api/src/residents/resident.controller.ts",
+    "resident_signal": true,
+    "body_signal": false,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/pain-comfort/summary",
+    "file": "V7.9/workspace/api/src/pain-comfort/pain-comfort.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/pain-comfort/:residentId/execute",
+    "file": "V7.9/workspace/api/src/pain-comfort/pain-comfort.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/infection-control/summary",
+    "file": "V7.9/workspace/api/src/infection-control/infection-control.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/infection-control/:residentId/execute",
+    "file": "V7.9/workspace/api/src/infection-control/infection-control.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/personal-care/summary",
+    "file": "V7.9/workspace/api/src/personal-care/personal-care.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/personal-care/:residentId/execute",
+    "file": "V7.9/workspace/api/src/personal-care/personal-care.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/integration/residents/:residentId/overview",
+    "file": "V7.9/workspace/api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+    "resident_signal": true,
+    "body_signal": false,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warning-reviews",
+    "file": "V7.9/workspace/api/src/warning-reviews/warning-review.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/ai/engines/health-trend/patterns",
+    "file": "V7.9/workspace/api/src/ai/early-warning.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+    "file": "V7.9/workspace/api/src/ai/early-warning.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/ai/engines",
+    "file": "V7.9/workspace/api/src/ai/ai-engine.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/ai/engines/demo-data/:engineId",
+    "file": "V7.9/workspace/api/src/ai/ai-engine.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/ai/engines/:engineId/analyze",
+    "file": "V7.9/workspace/api/src/ai/ai-engine.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/ai/engines/:engineId/demo",
+    "file": "V7.9/workspace/api/src/ai/ai-engine.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/activity-rehabilitation/test/summary",
+    "file": "V7.9/workspace/api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/activity-rehabilitation/:residentId/execute",
+    "file": "V7.9/workspace/api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/safeguarding/summary",
+    "file": "V7.9/workspace/api/src/safeguarding/safeguarding.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/safeguarding/:residentId/execute",
+    "file": "V7.9/workspace/api/src/safeguarding/safeguarding.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/fall-mobility/summary",
+    "file": "V7.9/workspace/api/src/fall-mobility/fall-mobility.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/fall-mobility/:residentId/execute",
+    "file": "V7.9/workspace/api/src/fall-mobility/fall-mobility.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/medication-safety/summary",
+    "file": "V7.9/workspace/api/src/medication-safety/medication-safety.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/medication-safety/:residentId/execute",
+    "file": "V7.9/workspace/api/src/medication-safety/medication-safety.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/operations/access-assignments",
+    "file": "V7.9/workspace/api/src/resident-access-administration/resident-access-administration.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": true
+  },
+  {
+    "method": "POST",
+    "path": "/api/operations/access-assignments",
+    "file": "V7.9/workspace/api/src/resident-access-administration/resident-access-administration.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": true
+  },
+  {
+    "method": "GET",
+    "path": "/api/behavioral-cognitive/summary",
+    "file": "V7.9/workspace/api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/behavioral-cognitive/:residentId/execute",
+    "file": "V7.9/workspace/api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/nutrition-hydration/:residentId/execute",
+    "file": "V7.9/workspace/api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+    "resident_signal": true,
+    "body_signal": true,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/nutrition-hydration/:residentId/summary",
+    "file": "V7.9/workspace/api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+    "resident_signal": true,
+    "body_signal": false,
+    "actor_signal": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/operations/residents/:residentId/care-view",
+    "file": "V7.9/workspace/api/src/operational-care-view/operational-care-view.controller.ts",
+    "resident_signal": true,
+    "body_signal": false,
+    "actor_signal": true
+  }
+]

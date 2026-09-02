@@ -1,0 +1,816 @@
+{
+  "generated_at": "2026-08-21T04:20:20.975796+00:00",
+  "release": "V7.7",
+  "inherits_from": "V7.6",
+  "v76_source_tree_hash": "9923890240bd206837fb3de32f99b96a52f735ca09f60791d8b3d27275f8ae0f",
+  "v77_initial_source_tree_hash": "9923890240bd206837fb3de32f99b96a52f735ca09f60791d8b3d27275f8ae0f",
+  "v77_source_file_count": 196,
+  "production": {
+    "api_image_id": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+    "ui_image_id": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+    "database_container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "database_counts": "0|0|0"
+  },
+  "backend": {
+    "module_count": 36,
+    "modules": [
+      {
+        "module": "activity-rehabilitation",
+        "typescript_files": 5,
+        "controllers": 1,
+        "injectables": 2,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "ai",
+        "typescript_files": 8,
+        "controllers": 4,
+        "injectables": 4,
+        "route_decorators": 13,
+        "repository_files": 0
+      },
+      {
+        "module": "behavioral-cognitive",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "care-action-bridge",
+        "typescript_files": 4,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 1,
+        "repository_files": 0
+      },
+      {
+        "module": "care-actions",
+        "typescript_files": 6,
+        "controllers": 1,
+        "injectables": 2,
+        "route_decorators": 6,
+        "repository_files": 1
+      },
+      {
+        "module": "care-plan-authorization",
+        "typescript_files": 3,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "care-plan-governance",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 1,
+        "repository_files": 0
+      },
+      {
+        "module": "care-plans",
+        "typescript_files": 4,
+        "controllers": 0,
+        "injectables": 2,
+        "route_decorators": 0,
+        "repository_files": 1
+      },
+      {
+        "module": "care-task-authorization",
+        "typescript_files": 3,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "care-task-execution",
+        "typescript_files": 4,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 1,
+        "repository_files": 0
+      },
+      {
+        "module": "care-tasks",
+        "typescript_files": 4,
+        "controllers": 0,
+        "injectables": 2,
+        "route_decorators": 0,
+        "repository_files": 1
+      },
+      {
+        "module": "clinical-observations",
+        "typescript_files": 6,
+        "controllers": 1,
+        "injectables": 3,
+        "route_decorators": 1,
+        "repository_files": 1
+      },
+      {
+        "module": "cross-domain-integration",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 1,
+        "repository_files": 0
+      },
+      {
+        "module": "database",
+        "typescript_files": 2,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "fall-mobility",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "health",
+        "typescript_files": 1,
+        "controllers": 1,
+        "injectables": 0,
+        "route_decorators": 1,
+        "repository_files": 0
+      },
+      {
+        "module": "incidents",
+        "typescript_files": 5,
+        "controllers": 1,
+        "injectables": 2,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "infection-control",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "medication",
+        "typescript_files": 6,
+        "controllers": 1,
+        "injectables": 3,
+        "route_decorators": 1,
+        "repository_files": 1
+      },
+      {
+        "module": "medication-safety",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "nutrition-hydration",
+        "typescript_files": 5,
+        "controllers": 1,
+        "injectables": 2,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "operational-care-view",
+        "typescript_files": 5,
+        "controllers": 2,
+        "injectables": 2,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "pain-comfort",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "personal-care",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "reopen-authorization",
+        "typescript_files": 3,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "resident-access-administration",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 4,
+        "repository_files": 0
+      },
+      {
+        "module": "resident-access-scope",
+        "typescript_files": 2,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "residents",
+        "typescript_files": 5,
+        "controllers": 1,
+        "injectables": 2,
+        "route_decorators": 2,
+        "repository_files": 1
+      },
+      {
+        "module": "resolution-authorization",
+        "typescript_files": 3,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "responsibility-acceptance",
+        "typescript_files": 4,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 1,
+        "repository_files": 0
+      },
+      {
+        "module": "safeguarding",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "skin-wound",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "sleep-rest",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "staff-actors",
+        "typescript_files": 3,
+        "controllers": 1,
+        "injectables": 1,
+        "route_decorators": 2,
+        "repository_files": 0
+      },
+      {
+        "module": "start-review-authorization",
+        "typescript_files": 3,
+        "controllers": 0,
+        "injectables": 1,
+        "route_decorators": 0,
+        "repository_files": 0
+      },
+      {
+        "module": "warning-reviews",
+        "typescript_files": 6,
+        "controllers": 1,
+        "injectables": 2,
+        "route_decorators": 2,
+        "repository_files": 1
+      }
+    ],
+    "route_count": 59,
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/api/activity-rehabilitation/test/summary",
+        "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/activity-rehabilitation/:residentId/execute",
+        "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/ai/engines",
+        "source": "api/src/ai/ai-engine.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/ai/engines/demo-data/:engineId",
+        "source": "api/src/ai/ai-engine.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/ai/engines/:engineId/analyze",
+        "source": "api/src/ai/ai-engine.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/ai/engines/:engineId/demo",
+        "source": "api/src/ai/ai-engine.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/ai/governance/status",
+        "source": "api/src/ai/ai-governance.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/ai/governance/risk-classes",
+        "source": "api/src/ai/ai-governance.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/ai/governance/policies",
+        "source": "api/src/ai/ai-governance.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/ai/engines/health-trend/patterns",
+        "source": "api/src/ai/early-warning.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+        "source": "api/src/ai/early-warning.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/behavioral-cognitive/summary",
+        "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/behavioral-cognitive/:residentId/execute",
+        "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-action-bridge/:warningId/execute",
+        "source": "api/src/care-action-bridge/care-action-bridge.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/care-actions/:residentId/:patternId",
+        "source": "api/src/care-actions/care-action.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-actions/:residentId/:patternId/assign",
+        "source": "api/src/care-actions/care-action.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-actions/:residentId/:patternId/transfer",
+        "source": "api/src/care-actions/care-action.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-actions/:residentId/:patternId/start-review",
+        "source": "api/src/care-actions/care-action.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-actions/:residentId/:patternId/resolve",
+        "source": "api/src/care-actions/care-action.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-actions/:residentId/:patternId/reopen",
+        "source": "api/src/care-actions/care-action.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/:carePlanId/:action",
+        "source": "api/src/care-plan-governance/care-plan-governance.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/:careTaskId/:action",
+        "source": "api/src/care-task-execution/care-task-execution.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/:aggregateType/:aggregateId/:action",
+        "source": "api/src/clinical-observations/clinical.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/integration/residents/:residentId/overview",
+        "source": "api/src/cross-domain-integration/cross-domain-integration.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/fall-mobility/summary",
+        "source": "api/src/fall-mobility/fall-mobility.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/fall-mobility/:residentId/execute",
+        "source": "api/src/fall-mobility/fall-mobility.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/health",
+        "source": "api/src/health/health.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/incidents/report",
+        "source": "api/src/incidents/incident.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/incidents/:incidentId/:action",
+        "source": "api/src/incidents/incident.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/infection-control/summary",
+        "source": "api/src/infection-control/infection-control.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/infection-control/:residentId/execute",
+        "source": "api/src/infection-control/infection-control.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/:administrationId/:action",
+        "source": "api/src/medication/medication.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/medication-safety/summary",
+        "source": "api/src/medication-safety/medication-safety.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/medication-safety/:residentId/execute",
+        "source": "api/src/medication-safety/medication-safety.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/nutrition-hydration/:residentId/execute",
+        "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/nutrition-hydration/:residentId/summary",
+        "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/operations/residents/:residentId/care-view",
+        "source": "api/src/operational-care-view/operational-care-view.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/operations/dashboard",
+        "source": "api/src/operational-care-view/operational-dashboard.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/pain-comfort/summary",
+        "source": "api/src/pain-comfort/pain-comfort.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/pain-comfort/:residentId/execute",
+        "source": "api/src/pain-comfort/pain-comfort.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/personal-care/summary",
+        "source": "api/src/personal-care/personal-care.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/personal-care/:residentId/execute",
+        "source": "api/src/personal-care/personal-care.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/operations/access-assignments",
+        "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/operations/residents/:residentId/access-assignments",
+        "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/operations/residents/:residentId/access-assignments",
+        "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/operations/access-assignments/:assignmentId/revoke",
+        "source": "api/src/resident-access-administration/resident-access-administration.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/residents",
+        "source": "api/src/residents/resident.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/residents/:residentId",
+        "source": "api/src/residents/resident.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+        "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/safeguarding/summary",
+        "source": "api/src/safeguarding/safeguarding.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/safeguarding/:residentId/execute",
+        "source": "api/src/safeguarding/safeguarding.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/skin-wound/summary",
+        "source": "api/src/skin-wound/skin-wound.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/skin-wound/:residentId/execute",
+        "source": "api/src/skin-wound/skin-wound.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/sleep-rest/summary",
+        "source": "api/src/sleep-rest/sleep-rest.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/sleep-rest/:residentId/execute",
+        "source": "api/src/sleep-rest/sleep-rest.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/operations/staff-actors",
+        "source": "api/src/staff-actors/staff-actor.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/operations/staff-actors/:actorId",
+        "source": "api/src/staff-actors/staff-actor.controller.ts"
+      },
+      {
+        "method": "POST",
+        "path": "/api/warning-reviews",
+        "source": "api/src/warning-reviews/warning-review.controller.ts"
+      },
+      {
+        "method": "GET",
+        "path": "/api/warning-reviews/:warningId",
+        "source": "api/src/warning-reviews/warning-review.controller.ts"
+      }
+    ]
+  },
+  "frontend": {
+    "route_count": 8,
+    "routes": [
+      "/",
+      "/dashboard",
+      "/residents",
+      "/residents/:residentId",
+      "/residents/:residentId/care",
+      "/staff-access",
+      "/system-status",
+      "/operational-care"
+    ],
+    "feature_count": 6,
+    "features": [
+      "care-view",
+      "care-work",
+      "dashboard",
+      "residents",
+      "staff-access",
+      "system-status"
+    ]
+  },
+  "database": {
+    "schema_hash": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+    "table_count": 118,
+    "tables": [
+      "ai_analysis_audit",
+      "care_actions",
+      "care_action_transfers",
+      "care_action_audit",
+      "residents",
+      "warning_reviews",
+      "care_plans",
+      "care_tasks",
+      "care_plan_audit",
+      "care_task_audit",
+      "medication_orders",
+      "medication_schedules",
+      "medication_administrations",
+      "medication_double_checks",
+      "medication_audit",
+      "clinical_observations",
+      "clinical_observation_amendments",
+      "nursing_notes",
+      "abnormal_findings",
+      "clinical_escalations",
+      "clinical_audit",
+      "incidents",
+      "incident_triage",
+      "incident_assignments",
+      "incident_responses",
+      "incident_escalations",
+      "incident_post_reviews",
+      "incident_audit",
+      "nutrition_plans",
+      "diet_orders",
+      "meal_schedules",
+      "nutrition_intake_records",
+      "feeding_assistance",
+      "nutrition_alerts",
+      "nutrition_escalations",
+      "nutrition_audit",
+      "activity_programs",
+      "rehabilitation_plans",
+      "activity_sessions",
+      "activity_participation",
+      "functional_assessments",
+      "functional_support_actions",
+      "rehabilitation_escalations",
+      "rehabilitation_audit",
+      "skin_assessments",
+      "wound_records",
+      "wound_care_plans",
+      "wound_treatment_records",
+      "repositioning_records",
+      "wound_progress_records",
+      "wound_escalations",
+      "wound_audit",
+      "hygiene_care_plans",
+      "hygiene_schedules",
+      "hygiene_care_records",
+      "toileting_records",
+      "continence_observations",
+      "personal_care_assistance",
+      "personal_care_escalations",
+      "personal_care_audit",
+      "cognitive_observations",
+      "behavioral_support_plans",
+      "behavioral_episodes",
+      "wandering_events",
+      "behavioral_responses",
+      "behavioral_escalations",
+      "behavioral_post_reviews",
+      "behavioral_audit",
+      "sleep_care_plans",
+      "sleep_observations",
+      "night_monitoring_checks",
+      "sleep_rest_events",
+      "night_support_responses",
+      "sleep_safety_alerts",
+      "sleep_escalations",
+      "sleep_audit",
+      "pain_care_plans",
+      "pain_assessments",
+      "symptom_observations",
+      "comfort_interventions",
+      "pain_reassessments",
+      "pain_safety_alerts",
+      "pain_escalations",
+      "pain_audit",
+      "infection_control_plans",
+      "infection_observations",
+      "exposure_events",
+      "infection_precautions",
+      "infection_monitoring_records",
+      "infection_alerts",
+      "infection_escalations",
+      "infection_audit",
+      "medication_reconciliations",
+      "medication_reconciliation_items",
+      "medication_order_reviews",
+      "medication_safety_checks",
+      "high_risk_medication_checks",
+      "medication_administration_exceptions",
+      "medication_adverse_reaction_observations",
+      "medication_safety_audit",
+      "safeguarding_reports",
+      "safeguarding_triage",
+      "protective_actions",
+      "safeguarding_assignments",
+      "safeguarding_reviews",
+      "safeguarding_escalations",
+      "safeguarding_post_reviews",
+      "safeguarding_audit",
+      "fall_risk_assessments",
+      "mobility_support_plans",
+      "transfer_safety_checks",
+      "fall_events",
+      "post_fall_observations",
+      "fall_prevention_actions",
+      "fall_escalations",
+      "fall_audit",
+      "resident_access_assignments",
+      "staff_actors"
+    ],
+    "index_count": 180
+  },
+  "security_baseline": {
+    "x-actor-id": 12,
+    "x-actor-role": 12,
+    "UnauthorizedException": 10,
+    "ForbiddenException": 19,
+    "SUPERVISOR": 97,
+    "CAREGIVER": 36,
+    "audit": 327,
+    "governance": 34
+  },
+  "scope": {
+    "release": "V7.7",
+    "baseline": "Frozen stable V7.6 production release",
+    "development_model": "Isolated workspace only",
+    "production_policy": {
+      "V7.6_source": "immutable",
+      "production_database": "immutable during development/testing",
+      "production_runtime": "immutable until formal cutover",
+      "V7.5_rollbacks": "retain until V7.7 stabilization closes"
+    },
+    "phase_1_audit_domains": [
+      "Backend module completeness",
+      "API contract completeness",
+      "Frontend route and feature coverage",
+      "Operational Care workflow usability",
+      "Care Action workflow UX",
+      "Care Plan governance UX",
+      "Care Task execution UX",
+      "Warning Review workflow UX",
+      "Actor authentication and anti-impersonation",
+      "RBAC consistency",
+      "Audit trail visibility",
+      "Cross-domain resident overview",
+      "Responsive desktop/tablet/mobile behavior",
+      "Error handling and fail-closed behavior",
+      "Release / rollback readiness"
+    ],
+    "change_policy": {
+      "frontend_change": "allowed only after Phase 1/2 evidence",
+      "backend_change": "allowed only after contract audit",
+      "schema_change": "not allowed by default; requires explicit isolated schema gate",
+      "production_write": "forbidden before controlled promotion"
+    },
+    "required_acceptance_gates": [
+      "Source-baseline integrity",
+      "TypeScript/backend compile",
+      "Frontend TypeScript/Vite build",
+      "Exact API contract validation",
+      "Actor propagation",
+      "RBAC/fail-closed security",
+      "Anti-impersonation",
+      "Disposable functional workflows",
+      "Audit persistence",
+      "Same-origin frontend/API acceptance",
+      "Responsive UI acceptance",
+      "Regression",
+      "Rollback proof",
+      "Production immutability",
+      "Controlled dry-run",
+      "Controlled cutover",
+      "Post-cutover observation",
+      "Release freeze"
+    ]
+  }
+}

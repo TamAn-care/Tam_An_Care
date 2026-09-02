@@ -1,0 +1,98 @@
+{
+  "generated_at": "2026-08-21T00:25:55.068818+00:00",
+  "mutation_contracts": [
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/assign",
+      "handler": "assign",
+      "body_type": "AssignCareActionInput",
+      "controller": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/transfer",
+      "handler": "transfer",
+      "body_type": "TransferCareActionInput",
+      "controller": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/start-review",
+      "handler": "startReview",
+      "body_type": "StartCareActionReviewInput",
+      "controller": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/resolve",
+      "handler": "resolve",
+      "body_type": "ResolveCareActionInput",
+      "controller": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/reopen",
+      "handler": "reopen",
+      "body_type": "ReopenCareActionInput",
+      "controller": "api/src/care-actions/care-action.controller.ts"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-plan-governance/:carePlanId/:action",
+      "handler": "execute",
+      "body_type": "GovernanceBody",
+      "controller": "api/src/care-plan-governance/care-plan-governance.controller.ts"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-task-execution/:careTaskId/:action",
+      "handler": "execute",
+      "body_type": "CareTaskExecutionInput",
+      "controller": "api/src/care-task-execution/care-task-execution.controller.ts"
+    }
+  ],
+  "type_definitions": {
+    "AssignCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface AssignCareActionInput {\n  assignedTo: string;\n  assignedRole: string;\n\n  priority: CareActionPriority;\n  dueAt: Date | null;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface TransferCareActionInput {\n  assignedTo: string;\n  assignedRole: string;\n\n  priority: CareActionPriority;\n  dueAt: Date | null;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface StartCareActionReviewInput {\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "TransferCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface TransferCareActionInput {\n  assignedTo: string;\n  assignedRole: string;\n\n  priority: CareActionPriority;\n  dueAt: Date | null;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface StartCareActionReviewInput {\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "StartCareActionReviewInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface StartCareActionReviewInput {\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "ResolveCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "ReopenCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "GovernanceBody": [
+      {
+        "file": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+        "snippet": "interface GovernanceBody {\n  actorId?: string;\n  actorRole?: string;\n}\n\n\n@Controller(\n  'api/care-plan-governance',\n)\nexport class CarePlanGovernanceController {\n\n  constructor(\n    private readonly service:\n      CarePlanGovernanceService,\n  ) {}\n\n\n  @Post(\n    ':carePlanId/:action',\n  )\n  async execute(\n    @Param('carePlanId')\n    carePlanId: string,\n\n    @Param('action')\n    rawAction: string,\n\n    @Body()\n    body: GovernanceBody,\n  ) {\n\n    const action =\n      String(\n        rawAction ?? '',\n      )\n        .trim()\n        .toUpperCase();\n\n\n    if (\n      !CARE_PLAN_GOVERNANCE_ACTIONS\n        .includes(\n          action as\n            CarePlanGovernanceAction,\n        )\n    ) {\n      throw new BadRequestException(\n        'Unsupported Care Plan governance action.',\n      );\n    }\n\n\n    try {\n      const data =\n        await this.service\n          .execute(\n            carePlanId,\n            action as\n              CarePlanGovernanceAction,\n            String(\n              body?.actorId ?? '',\n            ),\n            String(\n              body?.actorRole ?? '',\n            ),\n          );\n\n      return {\n        status:\n          'OK',\n\n        data,\n      };\n    } catch (error) {\n\n      if (\n        error instanceof\n        HttpException\n      ) {\n        throw error;\n      }\n\n      const message =\n        error instanceof Error\n          ? error.message\n          : String(error);\n\n\n      if (\n        message.includes(\n          'not found',\n        )\n      ) {\n        throw new NotFoundException(\n          message,\n        );\n      }\n\n\n      const businessErrors = [\n        'required',\n        'cannot govern',\n        'not authorized',\n        'Only a DRAFT',\n        'Only an ACTIVE',\n        'Only a SUSPENDED',\n        'Only a DRAFT, ACTIVE, or SUSPENDED',\n        'Unsupported Care Plan governance action',\n      ];\n\n\n      if (\n        businessErrors.some(\n          term =>\n            message.includes(\n              term,\n            ),\n        )\n      ) {\n        throw new BadRequestException(\n          message,\n        );\n      }\n\n\n      throw new HttpException(\n        {\n          statusCode:\n            HttpStatus.INTERNAL_SERVER_ERROR,\n\n          error:\n            'Internal Server Error',\n\n          message:\n            'Unable to process Care Plan governance request.',\n        },\n        HttpStatus.INTERNAL_SERVER_ERROR,\n      );\n    }\n  }\n}\n"
+      }
+    ],
+    "CareTaskExecutionInput": [
+      {
+        "file": "api/src/care-task-execution/care-task-execution.types.ts",
+        "snippet": "export interface CareTaskExecutionInput {\n\n  actorId:\n    string | null;\n\n  actorRole:\n    string | null;\n\n  assigneeId?:\n    string | null;\n\n  assigneeRole?:\n    string | null;\n\n  completionNote?:\n    string | null;\n\n  exceptionReason?:\n    string | null;\n}\n"
+      }
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+STEP 7Z — CROSS-DOMAIN BOUNDARY
+
+Step 7Z may reference information from other domains.
+
+It must not autonomously mutate:
+
+- care actions
+- care tasks
+- medication
+- clinical observations
+- incidents
+- nutrition
+- rehabilitation
+- wound management
+- hygiene
+- behavioral / dementia
+- sleep
+- pain / comfort
+- infection
+- medication safety
+- safeguarding
+
+
+Example:
+
+Repeated night-time near falls
+-> AI may flag trend
+-> human review may consider sleep / mobility factors
+-> Step 7Z cannot modify sleep plan automatically.
+
+Possible dizziness around medication times
+-> may trigger human review
+-> Step 7Z cannot hold medication.
+
+Possible injury after fall
+-> may trigger human escalation
+-> Step 7Z cannot diagnose injury.
+
+ZERO CROSS-DOMAIN AUTONOMY = REQUIRED

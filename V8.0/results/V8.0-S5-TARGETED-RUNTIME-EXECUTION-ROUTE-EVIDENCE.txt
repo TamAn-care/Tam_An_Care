@@ -1,0 +1,8 @@
+TAM AN CARE V8.0 — S5 EXECUTION ROUTE EVIDENCE
+STATIC_ONLY=YES
+
+ROUTE_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|STATUS=RESOLVED|HTTP_METHOD=POST|CONTROLLER_PREFIX=/api/ai/engines/health-trend|METHOD_PATH=/patterns|FULL_PATH=/api/ai/engines/health-trend/patterns
+ROUTE_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|STATUS=RESOLVED|HTTP_METHOD=POST|CONTROLLER_PREFIX=/api/ai/engines/health-trend|METHOD_PATH=/patterns|FULL_PATH=/api/ai/engines/health-trend/patterns
+ROUTE_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|STATUS=RESOLVED|HTTP_METHOD=GET|CONTROLLER_PREFIX=/api/residents|METHOD_PATH=/|FULL_PATH=/api/residents
+ROUTE_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|STATUS=RESOLVED|HTTP_METHOD=GET|CONTROLLER_PREFIX=/api/residents|METHOD_PATH=/|FULL_PATH=/api/residents
+ROUTE_CONTRACT|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|STATUS=RESOLVED|HTTP_METHOD=POST|CONTROLLER_PREFIX=/api/warning-reviews|METHOD_PATH=/|FULL_PATH=/api/warning-reviews

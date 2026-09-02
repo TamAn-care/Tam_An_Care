@@ -1,0 +1,95 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-6 FAST-2
+ EXISTING W + OPS SOURCES
+ IMPLEMENT + BUILD + FUNCTIONAL ACCEPTANCE + CHECKPOINT
+
+ AUTHORITY:
+  EXISTING HEALTH-REPORT DOMAIN = REUSE / EXTEND
+  SECOND FAMILY REPORT MODULE = FORBIDDEN
+  M6 = NOT REQUIRED
+
+ TARGET:
+  resident_consumption_events
+              +
+  reconciled/locked resident_cost_periods
+              ↓
+       EXISTING W SNAPSHOT
+              ↓
+       HUMAN REVIEW
+              ↓
+          APPROVAL
+              ↓
+            PDF
+              ↓
+ AUTHORIZED FAMILY / GUARDIAN
+======================================================================
+
+----- 1. BASELINE LOCK -----
+SERVICE_SHA_BEFORE=8863f592ca988f10649c3d54fcce76fd38741510a280755884e1b02b14bac2ab
+DATABASE_BEFORE=1|1|0|0|0|0|0|0
+PASS: CLEAN OPS-5 HANDOFF
+
+----- 2. SOURCE CONTRACT PRECONDITION -----
+PASS: EXISTING W SOURCE ARRAY FOUND
+PASS: EXISTING W SOURCE AUTHORITY FOUND
+PASS: OPS-6 PATCH PRECONDITIONS
+
+----- 3. EXTEND EXISTING W SOURCE ARRAY -----
+PASS: OPS SOURCES ADDED TO EXISTING W
+
+----- 4. ENFORCE RECONCILED COST SOURCE POLICY -----
+PASS: RECONCILED/LOCKED COST POLICY ENFORCED
+
+----- 5. SNAPSHOT TRACEABILITY -----
+PASS: OPS SOURCE FILTER RECORDED IN MANIFEST
+
+----- 6. ARCHITECTURE ACCEPTANCE -----
+SECOND_FAMILY_REPORT_MODULE_SIGNAL=0
+PASS: NO SECOND FAMILY REPORT MODULE
+MIGRATION_FILE_COUNT=10
+OPS6_MIGRATION_CREATED=NO
+PASS: NO OPS-6 SCHEMA MIGRATION
+PASS: OPS SOURCES FEED EXISTING W SNAPSHOT
+PASS: HUMAN REVIEW FLOW PRESERVED
+PASS: APPROVAL REQUIRES FROZEN SNAPSHOT
+PASS: AUTHORIZED RECIPIENT CONTROL PRESERVED
+PASS: APPROVED SNAPSHOT PDF FLOW PRESERVED
+PASS: DELIVERY AUDIT FLOW PRESERVED
+
+----- 7. NODE22 BUILD -----
+HOST_NODE=v24.19.0
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+npm notice
+npm notice New major version of npm available! 10.9.8 -> 12.0.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.2
+npm notice To update run: npm install -g npm@12.0.2
+npm notice
+PASS: NODE22 API BUILD
+
+----- 8. DATABASE FUNCTIONAL ACCEPTANCE -----
+BEGIN
+ERROR:  new row for relation "inventory_items" violates check constraint "inventory_items_code_ck"
+DETAIL:  Failing row contains (ops6-test-item, OPS6-TEST, Vật tư kiểm thử OPS-6, OTHER, UNIT, t, 2026-08-30 19:51:50.005882+00, 2026-08-30 19:51:50.005882+00, f).
+CONTEXT:  SQL statement "INSERT INTO inventory_items (
+    inventory_item_id,
+    code,
+    display_name_vi,
+    category,
+    base_unit,
+    active,
+    lot_tracking_required
+  )
+  VALUES (
+    'ops6-test-item',
+    'OPS6-TEST',
+    'Vật tư kiểm thử OPS-6',
+    'OTHER',
+    'UNIT',
+    true,
+    false
+  )"
+PL/pgSQL function inline_code_block line 50 at SQL statement
+FAIL: DB FUNCTIONAL W SNAPSHOT INTEGRATION

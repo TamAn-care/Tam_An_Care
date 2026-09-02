@@ -1,0 +1,23 @@
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-CHECKLIST-R126-RESULT.txt:24:S8_MANUAL_ACCEPTANCE_BLOCKS_FINAL_RELEASE=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R2-EVIDENCE.txt:9:S8_MANUAL_ACCEPTANCE_BLOCKS_FINAL_RELEASE=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-EVIDENCE.txt:8:S8_MANUAL_ACCEPTANCE_BLOCKS_FINAL_RELEASE=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-EVIDENCE.txt:16:S8_LOGO_USE_AS_FINAL_PRODUCT_LOGO_REQUIRED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-EVIDENCE.txt:17:S8_LOGO_USE_AS_FINAL_PRODUCT_ICON_REQUIRED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-MASTER-SCOPE-AUTHORITY-VALIDATION-RESULT.txt:30:V80_GATE_SEQUENCE=S0>S1>S2>S3>S4>S5>S6>S7>S8>S_FINAL
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_successor_final_reconciliation_20260831_030711.txt:376:66:      "gate": "S_FINAL",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_successor_final_reconciliation_20260831_030711.txt:378:70:  "gate_sequence": "S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_successor_final_reconciliation_20260831_030711.txt:396:APPROVED_ROADMAP_NEXT_AFTER_S8=S_FINAL
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops7_successor_final_reconciliation_20260831_030711.txt:397:SUCCESSOR_CLASS=S_FINAL_FINAL_OPERATIONAL_RELEASE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/master_roadmap_post_ops6_binding_20260831_031002.txt:50:APPROVED_ROADMAP_NEXT_AFTER_S8=S_FINAL
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/master_roadmap_post_ops6_binding_20260831_031002.txt:51:SUCCESSOR_CLASS=S_FINAL_FINAL_OPERATIONAL_RELEASE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/master_roadmap_post_ops6_binding_20260831_031002.txt:79:66:      "gate": "S_FINAL",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/master_roadmap_post_ops6_binding_20260831_031002.txt:81:70:  "gate_sequence": "S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-APPROVED-ROADMAP-CONTEXT-R90-R3-R3-EVIDENCE.txt:9:  "gate_sequence": "S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL",
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-APPROVED-ROADMAP-CONTEXT-R90-R3-R3-EVIDENCE.txt:76:GATE_9_ID=S_FINAL
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S6-APPROVED-ROADMAP-CONTEXT-R90-R3-R3-EVIDENCE.txt:78:GATE_SEQUENCE=S0->S1->S2->S3->S4->S5->S6->S7->S8->S_FINAL
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-RESULT.txt:27:S8_MANUAL_ACCEPTANCE_BLOCKS_FINAL_RELEASE=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-RESULT.txt:50:S8_LOGO_USE_AS_FINAL_PRODUCT_LOGO_REQUIRED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-RESULT.txt:51:S8_LOGO_USE_AS_FINAL_PRODUCT_ICON_REQUIRED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:443:V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-RESULT.txt :: S8_LOGO_USE_AS_FINAL_PRODUCT_LOGO_REQUIRED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:444:V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-RESULT.txt :: S8_LOGO_USE_AS_FINAL_PRODUCT_ICON_REQUIRED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/manifests/V8.0-S8-MANUAL-ACCEPTANCE-EVIDENCE-DISCOVERY-SALVAGE-R125-R3-MANIFEST.txt:16:S8_MANUAL_ACCEPTANCE_BLOCKS_FINAL_RELEASE=YES

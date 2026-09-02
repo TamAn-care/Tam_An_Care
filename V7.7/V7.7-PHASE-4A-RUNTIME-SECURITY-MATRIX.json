@@ -1,0 +1,308 @@
+{
+  "generated_at": "2026-08-21T04:44:26.597116+00:00",
+  "release": "V7.7",
+  "phase": "4A",
+  "test_mode": "DISPOSABLE_POSTGRES_ISOLATED_BACKEND",
+  "candidate_image": "taman-care-v77-p4a-candidate:20260821_114419",
+  "candidate_image_id": "sha256:e4e1fbcebeadec875c23be6f7559fbb0d224dd5a5c3939606d3cf3b9910dc3fd",
+  "runtime_candidate_count": 28,
+  "proven_fail_closed_count": 0,
+  "proven_security_gap_count": 3,
+  "inconclusive_validation_count": 24,
+  "inconclusive_other_count": 1,
+  "proven_fail_closed": [],
+  "proven_security_gaps": [
+    "/api/ai/engines/:engineId/analyze",
+    "/api/ai/engines/:engineId/demo",
+    "/api/ai/engines/health-trend/patterns"
+  ],
+  "inconclusive_validation": [
+    "/api/activity-rehabilitation/:residentId/execute",
+    "/api/ai/engines/health-trend/resident/:residentId/patterns",
+    "/api/behavioral-cognitive/:residentId/execute",
+    "/api/care-action-bridge/:warningId/execute",
+    "/api/care-actions/:residentId/:patternId/assign",
+    "/api/care-actions/:residentId/:patternId/transfer",
+    "/api/care-actions/:residentId/:patternId/start-review",
+    "/api/care-actions/:residentId/:patternId/resolve",
+    "/api/care-actions/:residentId/:patternId/reopen",
+    "/api/care-plan-governance/:carePlanId/:action",
+    "/api/care-task-execution/:careTaskId/:action",
+    "/api/clinical/:aggregateType/:aggregateId/:action",
+    "/api/fall-mobility/:residentId/execute",
+    "/api/incidents/report",
+    "/api/incidents/:incidentId/:action",
+    "/api/infection-control/:residentId/execute",
+    "/api/medication-administrations/:administrationId/:action",
+    "/api/medication-safety/:residentId/execute",
+    "/api/pain-comfort/:residentId/execute",
+    "/api/personal-care/:residentId/execute",
+    "/api/care-actions/:residentId/:patternId/accept-responsibility",
+    "/api/safeguarding/:residentId/execute",
+    "/api/skin-wound/:residentId/execute",
+    "/api/sleep-rest/:residentId/execute"
+  ],
+  "inconclusive_other": [
+    "/api/nutrition-hydration/:residentId/execute"
+  ],
+  "results": [
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/activity-rehabilitation/:residentId/execute",
+      "test_path": "/api/activity-rehabilitation/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"action is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/analyze",
+      "test_path": "/api/ai/engines/health-trend/analyze",
+      "http": "201",
+      "classification": "PROVEN_SECURITY_GAP",
+      "response_excerpt": "{\"requestId\":\"14f13166-a394-4759-b622-aebd5d00a986\",\"engineId\":\"health-trend\",\"model\":{\"provider\":\"internal-rules\",\"modelId\":\"rules-engine\",\"version\":\"7.3.3\"},\"riskClass\":\"B\",\"dataPolicy\":{\"inputMinimized\":true,\"redactionApplied\":true},\"result\":{\"status\":\"ANALYSIS_COMPLETE\",\"engine\":\"health-trend\",\"analysis\":{\"engine\":\"health-trend\",\"trend\":\"INSUFFICIENT_DATA\",\"overallSeverity\":\"UNKNOWN\",\"confidence\":null,\"evidence\":[],\"prioritySignals\":[],\"recommendedReviewAreas\":[],\"explainability\":{\"reason\":\"Fewer than 3 observations were provided.\",\"evaluatedMetrics\":[\"weightKg\",\"foodFluidIntakePercent\",\"sleepHours\",\"spo2\",\"mobility\"]},\"dataPoints\":0,\"minDataPoints\":3,\"recommendation\":\"Collect at least 3 dated observations before trend interpretation.\"}},\"evidence\":[],\"confidence\":null,\"uncertainty\":{\""
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/ai/engines/:engineId/demo",
+      "test_path": "/api/ai/engines/health-trend/demo",
+      "http": "201",
+      "classification": "PROVEN_SECURITY_GAP",
+      "response_excerpt": "{\"requestId\":\"57e94fc5-5a88-455a-8e5a-3381d4de930f\",\"engineId\":\"health-trend\",\"model\":{\"provider\":\"internal-rules\",\"modelId\":\"rules-engine\",\"version\":\"7.3.3\"},\"riskClass\":\"B\",\"dataPolicy\":{\"inputMinimized\":true,\"redactionApplied\":true},\"result\":{\"status\":\"ANALYSIS_COMPLETE\",\"engine\":\"health-trend\",\"analysis\":{\"engine\":\"health-trend\",\"trend\":\"DETERIORATING\",\"overallSeverity\":\"HIGH\",\"confidence\":0.8,\"summary\":\"Multiple monitored health indicators show deterioration over the observation period.\",\"evidence\":[{\"metric\":\"weightKg\",\"direction\":\"DOWN\",\"baseline\":63,\"current\":59.8,\"changePercent\":-5.08,\"severity\":\"HIGH\"},{\"metric\":\"foodFluidIntakePercent\",\"direction\":\"DOWN\",\"baseline\":72,\"current\":55,\"changePercent\":-23.61,\"severity\":\"HIGH\"},{\"metric\":\"sleepHours\",\"direction\":\"DOWN\",\"baseline\":7,\"c"
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/patterns",
+      "test_path": "/api/ai/engines/health-trend/patterns",
+      "http": "201",
+      "classification": "PROVEN_SECURITY_GAP",
+      "response_excerpt": "{\"engine\":\"health-trend-early-warning\",\"version\":\"7.4.1\",\"status\":\"INSUFFICIENT_DATA\",\"warningLevel\":\"UNKNOWN\",\"confidence\":null,\"patterns\":[],\"recommendation\":\"Collect at least 3 dated observations before early-warning pattern analysis.\",\"dataPoints\":0,\"minDataPoints\":3,\"humanReviewRequired\":true,\"autonomousClinicalAction\":false}"
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "test_path": "/api/ai/engines/health-trend/resident/phase4a-resident/patterns",
+      "http": "404",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Resident context not found.\",\"error\":\"Not Found\",\"statusCode\":404}"
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/behavioral-cognitive/:residentId/execute",
+      "test_path": "/api/behavioral-cognitive/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "test_path": "/api/care-action-bridge/phase4a-warning/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"message\":\"actorId is required.\"}"
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/assign",
+      "test_path": "/api/care-actions/phase4a-resident/phase4a-pattern/assign",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"assignedTo is required.\"}"
+    },
+    {
+      "index": 9,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/transfer",
+      "test_path": "/api/care-actions/phase4a-resident/phase4a-pattern/transfer",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"assignedTo is required.\"}"
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/start-review",
+      "test_path": "/api/care-actions/phase4a-resident/phase4a-pattern/start-review",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/resolve",
+      "test_path": "/api/care-actions/phase4a-resident/phase4a-pattern/resolve",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"careNote is required.\"}"
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/reopen",
+      "test_path": "/api/care-actions/phase4a-resident/phase4a-pattern/reopen",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/care-plan-governance/:carePlanId/:action",
+      "test_path": "/api/care-plan-governance/phase4a-plan/ASSIGN",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Unsupported Care Plan governance action.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/care-task-execution/:careTaskId/:action",
+      "test_path": "/api/care-task-execution/phase4a-task/ASSIGN",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+      "test_path": "/api/clinical/clinical_observation/phase4a-clinical/ASSIGN",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Unsupported clinical action.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/fall-mobility/:residentId/execute",
+      "test_path": "/api/fall-mobility/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 17,
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "test_path": "/api/incidents/report",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"actorId is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "test_path": "/api/incidents/phase4a-incident/ASSIGN",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"actorId is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/infection-control/:residentId/execute",
+      "test_path": "/api/infection-control/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 20,
+      "method": "POST",
+      "path": "/api/medication-administrations/:administrationId/:action",
+      "test_path": "/api/medication-administrations/phase4a-med-admin/ASSIGN",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Medication Administration not found.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/medication-safety/:residentId/execute",
+      "test_path": "/api/medication-safety/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/nutrition-hydration/:residentId/execute",
+      "test_path": "/api/nutrition-hydration/phase4a-resident/execute",
+      "http": "500",
+      "classification": "INCONCLUSIVE_TRANSPORT_OR_SERVER",
+      "response_excerpt": "{\"message\":\"Unable to process Nutrition/Hydration request.\",\"error\":\"Internal Server Error\",\"statusCode\":500}"
+    },
+    {
+      "index": 23,
+      "method": "POST",
+      "path": "/api/pain-comfort/:residentId/execute",
+      "test_path": "/api/pain-comfort/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 24,
+      "method": "POST",
+      "path": "/api/personal-care/:residentId/execute",
+      "test_path": "/api/personal-care/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+      "test_path": "/api/care-actions/phase4a-resident/phase4a-pattern/accept-responsibility",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"statusCode\":400,\"message\":\"actorId is required.\"}"
+    },
+    {
+      "index": 26,
+      "method": "POST",
+      "path": "/api/safeguarding/:residentId/execute",
+      "test_path": "/api/safeguarding/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/skin-wound/:residentId/execute",
+      "test_path": "/api/skin-wound/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "index": 28,
+      "method": "POST",
+      "path": "/api/sleep-rest/:residentId/execute",
+      "test_path": "/api/sleep-rest/phase4a-resident/execute",
+      "http": "400",
+      "classification": "INCONCLUSIVE_PRECONDITION_OR_VALIDATION",
+      "response_excerpt": "{\"message\":\"Human actor identity required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    }
+  ],
+  "interpretation": {
+    "401_403": "PROVEN_FAIL_CLOSED",
+    "2xx": "PROVEN_SECURITY_GAP",
+    "400_404_405_409_415_422": "INCONCLUSIVE: request validation/resource/state precondition may execute before authorization proof",
+    "rule": "Never patch inconclusive endpoints. Use deterministic fixture/DTO proof first."
+  }
+}

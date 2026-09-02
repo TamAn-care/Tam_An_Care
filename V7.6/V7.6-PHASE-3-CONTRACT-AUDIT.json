@@ -1,0 +1,828 @@
+{
+  "generated_at": "2026-08-21T00:22:00.292422+00:00",
+  "recovery": "PHASE_3A_R2_TRAILING_COMMA_NORMALIZATION",
+  "source_tree_hash": "714f3a1f85dd3f093e32e9dbb45fdf8e1a592fae40518333c1c13986af407a4d",
+  "selected_modules": {
+    "care-actions": {
+      "controllers": [
+        "api/src/care-actions/care-action.controller.ts"
+      ],
+      "services": [
+        "api/src/care-actions/care-action.service.ts"
+      ],
+      "routes": [
+        {
+          "method": "GET",
+          "route": "/api/care-actions/:residentId/:patternId",
+          "resolved": true,
+          "handler": "getDetails",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 150
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/assign",
+          "resolved": true,
+          "handler": "assign",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/assign'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 209
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/transfer",
+          "resolved": true,
+          "handler": "transfer",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/transfer'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 253
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/start-review",
+          "resolved": true,
+          "handler": "startReview",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/start-review'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 297
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/resolve",
+          "resolved": true,
+          "handler": "resolve",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/resolve'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 369
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/reopen",
+          "resolved": true,
+          "handler": "reopen",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/reopen'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 413
+        }
+      ],
+      "resolved_routes": [
+        {
+          "method": "GET",
+          "route": "/api/care-actions/:residentId/:patternId",
+          "resolved": true,
+          "handler": "getDetails",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 150
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/assign",
+          "resolved": true,
+          "handler": "assign",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/assign'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 209
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/transfer",
+          "resolved": true,
+          "handler": "transfer",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/transfer'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 253
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/start-review",
+          "resolved": true,
+          "handler": "startReview",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/start-review'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 297
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/resolve",
+          "resolved": true,
+          "handler": "resolve",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/resolve'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 369
+        },
+        {
+          "method": "POST",
+          "route": "/api/care-actions/:residentId/:patternId/reopen",
+          "resolved": true,
+          "handler": "reopen",
+          "controller_expression": "'api/care-actions'",
+          "route_expression": "':residentId/:patternId/reopen'",
+          "file": "api/src/care-actions/care-action.controller.ts",
+          "line": 413
+        }
+      ],
+      "unresolved_routes": [],
+      "states": [
+        "ASSIGNED",
+        "PENDING",
+        "REOPENED",
+        "RESOLVED",
+        "REVIEW_STARTED",
+        "TRANSFERRED"
+      ],
+      "tables": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "types": [
+        {
+          "name": "AssignCareActionInput",
+          "file": "api/src/care-actions/care-action.types.ts"
+        },
+        {
+          "name": "CreateCareActionInput",
+          "file": "api/src/care-actions/care-action.types.ts"
+        },
+        {
+          "name": "InsertAuditInput",
+          "file": "api/src/care-actions/care-action.repository.ts"
+        },
+        {
+          "name": "InsertTransferInput",
+          "file": "api/src/care-actions/care-action.repository.ts"
+        },
+        {
+          "name": "ReopenCareActionInput",
+          "file": "api/src/care-actions/care-action.types.ts"
+        },
+        {
+          "name": "ResolveCareActionInput",
+          "file": "api/src/care-actions/care-action.types.ts"
+        },
+        {
+          "name": "StartCareActionReviewInput",
+          "file": "api/src/care-actions/care-action.types.ts"
+        },
+        {
+          "name": "TransferCareActionInput",
+          "file": "api/src/care-actions/care-action.types.ts"
+        }
+      ],
+      "security": {
+        "actor": 46,
+        "role": 46,
+        "authorization": 24,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    },
+    "care-plans": {
+      "controllers": [],
+      "services": [
+        "api/src/care-plans/care-plan.service.ts"
+      ],
+      "routes": [],
+      "resolved_routes": [],
+      "unresolved_routes": [],
+      "states": [
+        "ACTIVE",
+        "CANCELLED",
+        "COMPLETED",
+        "DRAFT"
+      ],
+      "tables": [
+        "care_plan_audit",
+        "care_plans"
+      ],
+      "types": [
+        {
+          "name": "CreateCarePlanInput",
+          "file": "api/src/care-plans/care-plan.types.ts"
+        }
+      ],
+      "security": {
+        "actor": 4,
+        "role": 4,
+        "authorization": 0,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    },
+    "care-plan-governance": {
+      "controllers": [
+        "api/src/care-plan-governance/care-plan-governance.controller.ts"
+      ],
+      "services": [
+        "api/src/care-plan-governance/care-plan-governance.service.ts"
+      ],
+      "routes": [
+        {
+          "method": "POST",
+          "route": "/api/care-plan-governance/:carePlanId/:action",
+          "resolved": true,
+          "handler": "execute",
+          "controller_expression": "'api/care-plan-governance'",
+          "route_expression": "':carePlanId/:action'",
+          "file": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+          "line": 39
+        }
+      ],
+      "resolved_routes": [
+        {
+          "method": "POST",
+          "route": "/api/care-plan-governance/:carePlanId/:action",
+          "resolved": true,
+          "handler": "execute",
+          "controller_expression": "'api/care-plan-governance'",
+          "route_expression": "':carePlanId/:action'",
+          "file": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+          "line": 39
+        }
+      ],
+      "unresolved_routes": [],
+      "states": [
+        "ACTIVE"
+      ],
+      "tables": [
+        "care_plan_audit",
+        "care_plans"
+      ],
+      "types": [],
+      "security": {
+        "actor": 14,
+        "role": 14,
+        "authorization": 16,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    },
+    "care-tasks": {
+      "controllers": [],
+      "services": [
+        "api/src/care-tasks/care-task.service.ts"
+      ],
+      "routes": [],
+      "resolved_routes": [],
+      "unresolved_routes": [],
+      "states": [
+        "ASSIGNED",
+        "CANCELLED",
+        "COMPLETED",
+        "IN_PROGRESS"
+      ],
+      "tables": [
+        "care_plans",
+        "care_task_audit",
+        "care_tasks"
+      ],
+      "types": [
+        {
+          "name": "CreateCareTaskInput",
+          "file": "api/src/care-tasks/care-task.types.ts"
+        }
+      ],
+      "security": {
+        "actor": 9,
+        "role": 9,
+        "authorization": 0,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    },
+    "care-task-execution": {
+      "controllers": [
+        "api/src/care-task-execution/care-task-execution.controller.ts"
+      ],
+      "services": [
+        "api/src/care-task-execution/care-task-execution.service.ts"
+      ],
+      "routes": [
+        {
+          "method": "POST",
+          "route": "/api/care-task-execution/:careTaskId/:action",
+          "resolved": true,
+          "handler": "execute",
+          "controller_expression": "'api/care-task-execution'",
+          "route_expression": "':careTaskId/:action'",
+          "file": "api/src/care-task-execution/care-task-execution.controller.ts",
+          "line": 30
+        }
+      ],
+      "resolved_routes": [
+        {
+          "method": "POST",
+          "route": "/api/care-task-execution/:careTaskId/:action",
+          "resolved": true,
+          "handler": "execute",
+          "controller_expression": "'api/care-task-execution'",
+          "route_expression": "':careTaskId/:action'",
+          "file": "api/src/care-task-execution/care-task-execution.controller.ts",
+          "line": 30
+        }
+      ],
+      "unresolved_routes": [],
+      "states": [
+        "ASSIGNED",
+        "CANCELLED",
+        "COMPLETED",
+        "IN_PROGRESS"
+      ],
+      "tables": [
+        "care_task_audit",
+        "care_tasks"
+      ],
+      "types": [
+        {
+          "name": "CareTaskExecutionInput",
+          "file": "api/src/care-task-execution/care-task-execution.types.ts"
+        }
+      ],
+      "security": {
+        "actor": 9,
+        "role": 9,
+        "authorization": 15,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    },
+    "warning-reviews": {
+      "controllers": [
+        "api/src/warning-reviews/warning-review.controller.ts"
+      ],
+      "services": [
+        "api/src/warning-reviews/warning-review.service.ts"
+      ],
+      "routes": [
+        {
+          "method": "POST",
+          "route": "/api/warning-reviews",
+          "resolved": true,
+          "handler": "review",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "",
+          "file": "api/src/warning-reviews/warning-review.controller.ts",
+          "line": 22
+        },
+        {
+          "method": "GET",
+          "route": "/api/warning-reviews/:warningId",
+          "resolved": true,
+          "handler": "get",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "':warningId'",
+          "file": "api/src/warning-reviews/warning-review.controller.ts",
+          "line": 68
+        }
+      ],
+      "resolved_routes": [
+        {
+          "method": "POST",
+          "route": "/api/warning-reviews",
+          "resolved": true,
+          "handler": "review",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "",
+          "file": "api/src/warning-reviews/warning-review.controller.ts",
+          "line": 22
+        },
+        {
+          "method": "GET",
+          "route": "/api/warning-reviews/:warningId",
+          "resolved": true,
+          "handler": "get",
+          "controller_expression": "'api/warning-reviews'",
+          "route_expression": "':warningId'",
+          "file": "api/src/warning-reviews/warning-review.controller.ts",
+          "line": 68
+        }
+      ],
+      "unresolved_routes": [],
+      "states": [],
+      "tables": [
+        "warning_reviews"
+      ],
+      "types": [
+        {
+          "name": "CreateWarningReviewInput",
+          "file": "api/src/warning-reviews/warning-review.types.ts"
+        },
+        {
+          "name": "WarningReview",
+          "file": "api/src/warning-reviews/warning-review.types.ts"
+        },
+        {
+          "name": "WarningReviewController",
+          "file": "api/src/warning-reviews/warning-review.controller.ts"
+        },
+        {
+          "name": "WarningReviewDecision",
+          "file": "api/src/warning-reviews/warning-review.types.ts"
+        },
+        {
+          "name": "WarningReviewModule",
+          "file": "api/src/warning-reviews/warning-review.module.ts"
+        },
+        {
+          "name": "WarningReviewRepository",
+          "file": "api/src/warning-reviews/warning-review.repository.ts"
+        },
+        {
+          "name": "WarningReviewRow",
+          "file": "api/src/warning-reviews/warning-review.repository.ts"
+        },
+        {
+          "name": "WarningReviewService",
+          "file": "api/src/warning-reviews/warning-review.service.ts"
+        }
+      ],
+      "security": {
+        "actor": 0,
+        "role": 0,
+        "authorization": 0,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    },
+    "operational-care-view": {
+      "controllers": [
+        "api/src/operational-care-view/operational-care-view.controller.ts",
+        "api/src/operational-care-view/operational-dashboard.controller.ts"
+      ],
+      "services": [
+        "api/src/operational-care-view/operational-care-view.service.ts",
+        "api/src/operational-care-view/operational-dashboard.service.ts"
+      ],
+      "routes": [
+        {
+          "method": "GET",
+          "route": "/api/operations/residents/:residentId/care-view",
+          "resolved": true,
+          "handler": "residentCareView",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/care-view'",
+          "file": "api/src/operational-care-view/operational-care-view.controller.ts",
+          "line": 19
+        },
+        {
+          "method": "GET",
+          "route": "/api/operations/dashboard",
+          "resolved": true,
+          "handler": "dashboard",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'dashboard'",
+          "file": "api/src/operational-care-view/operational-dashboard.controller.ts",
+          "line": 18
+        }
+      ],
+      "resolved_routes": [
+        {
+          "method": "GET",
+          "route": "/api/operations/residents/:residentId/care-view",
+          "resolved": true,
+          "handler": "residentCareView",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/care-view'",
+          "file": "api/src/operational-care-view/operational-care-view.controller.ts",
+          "line": 19
+        },
+        {
+          "method": "GET",
+          "route": "/api/operations/dashboard",
+          "resolved": true,
+          "handler": "dashboard",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'dashboard'",
+          "file": "api/src/operational-care-view/operational-dashboard.controller.ts",
+          "line": 18
+        }
+      ],
+      "unresolved_routes": [],
+      "states": [
+        "ASSIGNED",
+        "CANCELLED",
+        "CLOSED",
+        "COMPLETED",
+        "IN_PROGRESS",
+        "REJECTED",
+        "RESOLVED"
+      ],
+      "tables": [
+        "care_tasks",
+        "clinical_observations",
+        "incidents",
+        "medication_administrations",
+        "medication_orders",
+        "residents"
+      ],
+      "types": [
+        {
+          "name": "ActorInput",
+          "file": "api/src/operational-care-view/operational-care-view.service.ts"
+        },
+        {
+          "name": "OperationalCareViewController",
+          "file": "api/src/operational-care-view/operational-care-view.controller.ts"
+        },
+        {
+          "name": "OperationalCareViewModule",
+          "file": "api/src/operational-care-view/operational-care-view.module.ts"
+        },
+        {
+          "name": "OperationalCareViewService",
+          "file": "api/src/operational-care-view/operational-care-view.service.ts"
+        }
+      ],
+      "security": {
+        "actor": 26,
+        "role": 34,
+        "authorization": 24,
+        "resident_scope": 36,
+        "supervisor": 9,
+        "fail_closed": 10
+      }
+    },
+    "cross-domain-integration": {
+      "controllers": [
+        "api/src/cross-domain-integration/cross-domain-integration.controller.ts"
+      ],
+      "services": [
+        "api/src/cross-domain-integration/cross-domain-integration.service.ts"
+      ],
+      "routes": [
+        {
+          "method": "GET",
+          "route": "/api/integration/residents/:residentId/overview",
+          "resolved": true,
+          "handler": "overview",
+          "controller_expression": "'api/integration'",
+          "route_expression": "'residents/:residentId/overview'",
+          "file": "api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+          "line": 18
+        }
+      ],
+      "resolved_routes": [
+        {
+          "method": "GET",
+          "route": "/api/integration/residents/:residentId/overview",
+          "resolved": true,
+          "handler": "overview",
+          "controller_expression": "'api/integration'",
+          "route_expression": "'residents/:residentId/overview'",
+          "file": "api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+          "line": 18
+        }
+      ],
+      "unresolved_routes": [],
+      "states": [
+        "REJECTED"
+      ],
+      "tables": [
+        "care_plans",
+        "care_tasks",
+        "clinical_observations",
+        "incidents",
+        "medication_administrations",
+        "medication_orders",
+        "residents"
+      ],
+      "types": [],
+      "security": {
+        "actor": 0,
+        "role": 0,
+        "authorization": 0,
+        "resident_scope": 0,
+        "supervisor": 0,
+        "fail_closed": 0
+      }
+    }
+  },
+  "resolved_routes": [
+    {
+      "method": "GET",
+      "route": "/api/care-actions/:residentId/:patternId",
+      "resolved": true,
+      "handler": "getDetails",
+      "controller_expression": "'api/care-actions'",
+      "route_expression": "':residentId/:patternId'",
+      "file": "api/src/care-actions/care-action.controller.ts",
+      "line": 150
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/assign",
+      "resolved": true,
+      "handler": "assign",
+      "controller_expression": "'api/care-actions'",
+      "route_expression": "':residentId/:patternId/assign'",
+      "file": "api/src/care-actions/care-action.controller.ts",
+      "line": 209
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/transfer",
+      "resolved": true,
+      "handler": "transfer",
+      "controller_expression": "'api/care-actions'",
+      "route_expression": "':residentId/:patternId/transfer'",
+      "file": "api/src/care-actions/care-action.controller.ts",
+      "line": 253
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/start-review",
+      "resolved": true,
+      "handler": "startReview",
+      "controller_expression": "'api/care-actions'",
+      "route_expression": "':residentId/:patternId/start-review'",
+      "file": "api/src/care-actions/care-action.controller.ts",
+      "line": 297
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/resolve",
+      "resolved": true,
+      "handler": "resolve",
+      "controller_expression": "'api/care-actions'",
+      "route_expression": "':residentId/:patternId/resolve'",
+      "file": "api/src/care-actions/care-action.controller.ts",
+      "line": 369
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/reopen",
+      "resolved": true,
+      "handler": "reopen",
+      "controller_expression": "'api/care-actions'",
+      "route_expression": "':residentId/:patternId/reopen'",
+      "file": "api/src/care-actions/care-action.controller.ts",
+      "line": 413
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-plan-governance/:carePlanId/:action",
+      "resolved": true,
+      "handler": "execute",
+      "controller_expression": "'api/care-plan-governance'",
+      "route_expression": "':carePlanId/:action'",
+      "file": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "line": 39
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-task-execution/:careTaskId/:action",
+      "resolved": true,
+      "handler": "execute",
+      "controller_expression": "'api/care-task-execution'",
+      "route_expression": "':careTaskId/:action'",
+      "file": "api/src/care-task-execution/care-task-execution.controller.ts",
+      "line": 30
+    },
+    {
+      "method": "POST",
+      "route": "/api/warning-reviews",
+      "resolved": true,
+      "handler": "review",
+      "controller_expression": "'api/warning-reviews'",
+      "route_expression": "",
+      "file": "api/src/warning-reviews/warning-review.controller.ts",
+      "line": 22
+    },
+    {
+      "method": "GET",
+      "route": "/api/warning-reviews/:warningId",
+      "resolved": true,
+      "handler": "get",
+      "controller_expression": "'api/warning-reviews'",
+      "route_expression": "':warningId'",
+      "file": "api/src/warning-reviews/warning-review.controller.ts",
+      "line": 68
+    },
+    {
+      "method": "GET",
+      "route": "/api/operations/residents/:residentId/care-view",
+      "resolved": true,
+      "handler": "residentCareView",
+      "controller_expression": "'api/operations'",
+      "route_expression": "'residents/:residentId/care-view'",
+      "file": "api/src/operational-care-view/operational-care-view.controller.ts",
+      "line": 19
+    },
+    {
+      "method": "GET",
+      "route": "/api/operations/dashboard",
+      "resolved": true,
+      "handler": "dashboard",
+      "controller_expression": "'api/operations'",
+      "route_expression": "'dashboard'",
+      "file": "api/src/operational-care-view/operational-dashboard.controller.ts",
+      "line": 18
+    },
+    {
+      "method": "GET",
+      "route": "/api/integration/residents/:residentId/overview",
+      "resolved": true,
+      "handler": "overview",
+      "controller_expression": "'api/integration'",
+      "route_expression": "'residents/:residentId/overview'",
+      "file": "api/src/cross-domain-integration/cross-domain-integration.controller.ts",
+      "line": 18
+    }
+  ],
+  "unresolved_routes": [],
+  "security": {
+    "actor": 190,
+    "role": 207,
+    "authorization": 198,
+    "resident_scope": 64,
+    "supervisor": 30,
+    "fail_closed": 10
+  },
+  "workflow_states": [
+    "ACTIVE",
+    "ASSIGNED",
+    "CANCELLED",
+    "CLOSED",
+    "COMPLETED",
+    "DRAFT",
+    "IN_PROGRESS",
+    "PENDING",
+    "REJECTED",
+    "REOPENED",
+    "RESOLVED",
+    "REVIEW_STARTED",
+    "TRANSFERRED"
+  ],
+  "proven_modules": [
+    "care-actions",
+    "care-plan-governance",
+    "care-task-execution",
+    "warning-reviews",
+    "operational-care-view",
+    "cross-domain-integration"
+  ],
+  "gated_modules": [
+    "care-plans",
+    "care-tasks"
+  ],
+  "implementation_scope": {
+    "mandatory": [
+      "operational dashboard",
+      "resident care-view",
+      "care-action read",
+      "care-action assign",
+      "care-action transfer",
+      "care-action start-review",
+      "care-action resolve",
+      "care-action reopen",
+      "warning review create",
+      "warning review read"
+    ],
+    "conditional": [
+      "care-plan-governance",
+      "care-task-execution",
+      "cross-domain-integration"
+    ],
+    "gated": [
+      "care-plans",
+      "care-tasks"
+    ]
+  },
+  "implementation_gates": [
+    "All implementation occurs only in V7.6/workspace.",
+    "Frozen V7.5 source remains unchanged.",
+    "Production database remains unchanged.",
+    "schema.sql remains unchanged.",
+    "Frontend uses only authoritative resolved routes.",
+    "No frontend route is invented for care-plans or care-tasks service-only modules.",
+    "Human actor propagation is mandatory for protected operations.",
+    "Resident access enforcement remains backend authoritative.",
+    "Care Action full lifecycle is mandatory.",
+    "Warning Review read/create is mandatory.",
+    "Existing dashboard/care-view/staff-access remain backward compatible.",
+    "Frontend TypeScript/Vite build must pass.",
+    "Backend build/test must pass before candidate image creation.",
+    "Functional acceptance uses disposable PostgreSQL.",
+    "Production receives no test fixtures.",
+    "Responsive acceptance covers desktop/tablet/mobile/small-mobile."
+  ]
+}

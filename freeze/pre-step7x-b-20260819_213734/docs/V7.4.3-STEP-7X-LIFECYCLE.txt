@@ -1,0 +1,80 @@
+STEP 7X — LIFECYCLE CONTRACT
+
+MEDICATION RECONCILIATION
+
+DRAFT
+-> REVIEWED
+-> COMPLETED
+
+Completion does not mutate medication order.
+
+
+RECONCILIATION ITEM
+
+RECORDED
+-> VERIFIED
+-> optional APPEND-ONLY AMENDMENT
+
+
+MEDICATION ORDER REVIEW
+
+PENDING
+-> REVIEWED
+
+
+MEDICATION SAFETY CHECK
+
+RECORDED
+-> VERIFIED
+
+
+HIGH-RISK MEDICATION CHECK
+
+PENDING
+-> FIRST_CHECKED
+-> SECOND_CHECKED
+-> COMPLETE
+
+First checker and second checker MUST be different humans.
+
+
+ADMINISTRATION EXCEPTION
+
+RECORDED
+-> VERIFIED
+
+Exception may reference an existing administration context.
+
+It does not itself prescribe a medication decision.
+
+
+ADVERSE REACTION OBSERVATION
+
+RECORDED
+-> VERIFIED
+-> optional APPEND-ONLY AMENDMENT
+
+Observation != diagnosis.
+
+
+STATE MUTATION CONTRACT
+
+BEGIN TRANSACTION
+-> SELECT target FOR UPDATE
+-> re-read state
+-> verify attributable human actor
+-> verify authorization
+-> verify owner / reviewer / checker identity
+-> verify independent-check separation where required
+-> mutate Step 7X governance record
+-> same-transaction audit
+-> COMMIT
+
+Incompatible concurrent mutation = exactly one winner.
+
+Loser business mutation = zero.
+Loser audit = zero.
+
+Owner preservation = required.
+Reviewer preservation = required.
+Checker attribution preservation = required.

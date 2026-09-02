@@ -1,0 +1,22 @@
+{
+  "generated_at": "2026-08-21T05:45:42.171343+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1B-R1-R1",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "root_cause": "Previous disposable fixture populated assigned_to and assigned_role while assigned_at remained null.",
+  "database_constraint": "care_actions_assignment_consistency|CHECK ((((assigned_to IS NULL) AND (assigned_role IS NULL) AND (assigned_at IS NULL)) OR ((assigned_to IS NOT NULL) AND (assigned_role IS NOT NULL) AND (assigned_at IS NOT NULL))))\ncare_actions_priority_check|CHECK (((priority IS NULL) OR (priority = ANY (ARRAY['HIGH'::text, 'MODERATE'::text, 'LOW'::text]))))\ncare_actions_resolution_consistency|CHECK (((status <> 'RESOLVED'::text) OR (resolved_at IS NOT NULL)))\ncare_actions_status_check|CHECK ((status = ANY (ARRAY['PENDING'::text, 'IN_REVIEW'::text, 'RESOLVED'::text])))",
+  "correct_initial_state": {
+    "status": "PENDING",
+    "assigned_to": null,
+    "assigned_role": null,
+    "assigned_at": null,
+    "priority": "MODERATE"
+  },
+  "execution_rule": "Do not pre-assign the Care Action. POST /assign must perform assignment.",
+  "expected_after_assign": {
+    "assigned_to": "v77-f1b-caregiver-a",
+    "assigned_role": "CAREGIVER",
+    "assigned_at": "NON_NULL"
+  },
+  "application_source_change": false,
+  "production_database_change": false
+}

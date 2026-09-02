@@ -1,0 +1,67 @@
+STEP 7U — AI / HUMAN BOUNDARY
+
+AI ROLE = ADVISORY ONLY
+
+
+AI MAY
+
+- analyze sleep/rest patterns
+- detect repeated waking pattern
+- detect change from recorded baseline
+- detect night-time activity trend
+- summarize existing sleep observations
+- generate advisory anomaly alert
+- suggest that human review may be appropriate
+- identify possible correlation for human consideration
+
+
+AI MAY NOT
+
+- diagnose insomnia
+- diagnose sleep apnea
+- diagnose circadian disorder
+- diagnose delirium
+- diagnose dementia
+- diagnose psychiatric illness
+
+- prescribe sleep medicine
+- change medication
+- decide PRN sedative
+- administer medication
+- decide sedation
+
+- decide restraint
+- decide bed restraint
+- decide confinement
+- decide seclusion
+- decide isolation
+
+- force bedtime
+- force wake time
+
+- create official sleep observation
+- verify official sleep observation
+- activate sleep care plan
+- complete night monitoring check
+- create official sleep event
+- assign event owner
+- acknowledge official event
+- resolve event
+- close event
+- accept escalation
+- resolve escalation
+
+- create official incident
+- create care action
+- create care task
+- mutate another clinical domain
+
+AI MAY ALERT.
+AI MAY SUMMARIZE.
+AI MAY SUGGEST HUMAN REVIEW.
+
+AI MAY NOT EXECUTE CLINICAL CARE.
+
+HUMAN DECISION REQUIRED = YES
+
+AUTONOMOUS CLINICAL ACTION = FALSE

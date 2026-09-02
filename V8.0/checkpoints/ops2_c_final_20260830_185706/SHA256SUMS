@@ -1,0 +1,5 @@
+388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c  ./api/src/inventory/inventory-ledger.service.ts
+5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087  ./api/src/inventory/inventory-lot.service.ts
+1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f  ./api/src/inventory/inventory.controller.ts
+0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148  ./api/src/inventory/inventory.module.ts
+0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9  ./api/src/inventory/resident-consumption.service.ts

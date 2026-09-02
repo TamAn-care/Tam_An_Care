@@ -1,0 +1,668 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P1
+ FUNCTIONAL ACCEPTANCE PREFLIGHT
+ MODE: READ ONLY / NO TEST MUTATION / NO SCHEMA CHANGE / NO RESTART
+======================================================================
+
+S1_SECURITY_ACCEPTANCE=PASSED
+FUNCTIONAL_EXECUTION_AUTHORIZED=YES
+
+======================================================================
+ 1. ACTIVE WORKSPACE
+======================================================================
+ROOT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development
+PASS: INVENTORY SOURCE PRESENT
+PASS: RESULTS DIRECTORY PRESENT
+
+======================================================================
+ 2. SECURITY ACCEPTANCE AUTHORITY
+======================================================================
+LATEST_S1_RESULT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_s1_r2_exact_route_contract_20260830_061026.txt
+PASS: S1 SECURITY ACCEPTANCE AUTHORITY
+
+======================================================================
+ 3. INVENTORY HTTP SURFACE
+======================================================================
+23:  @Get('items')
+32:  @Get('items/:inventoryItemId/balance')
+47:  @Get('items/:inventoryItemId')
+60:  @Post('items')
+69:  @Patch('items/:inventoryItemId')
+84:  @Get('lots')
+93:  @Get('lots/:inventoryLotId')
+106:  @Post('lots')
+115:  @Patch('lots/:inventoryLotId')
+130:  @Get('transactions')
+143:  @Get('transactions/:inventoryTransactionId')
+157:  @Post('transactions')
+
+======================================================================
+ 4. CONTROLLER METHOD CONTEXT
+======================================================================
+13:import { InventoryTransactionService } from './inventory-transaction.service';
+20:    private readonly transactions: InventoryTransactionService,
+23:  @Get('items')
+25:    @Headers('x-actor-id') actorId: string | undefined,
+26:    @Headers('x-actor-role') actorRole: string | undefined,
+29:    return this.items.list(actorId, actorRole, query);
+32:  @Get('items/:inventoryItemId/balance')
+34:    @Headers('x-actor-id') actorId: string | undefined,
+35:    @Headers('x-actor-role') actorRole: string | undefined,
+36:    @Param('inventoryItemId') inventoryItemId: string,
+39:    return this.transactions.readBalance(
+40:      actorId,
+41:      actorRole,
+42:      inventoryItemId,
+47:  @Get('items/:inventoryItemId')
+49:    @Headers('x-actor-id') actorId: string | undefined,
+50:    @Headers('x-actor-role') actorRole: string | undefined,
+51:    @Param('inventoryItemId') inventoryItemId: string,
+54:      actorId,
+55:      actorRole,
+56:      inventoryItemId,
+60:  @Post('items')
+62:    @Headers('x-actor-id') actorId: string | undefined,
+63:    @Headers('x-actor-role') actorRole: string | undefined,
+66:    return this.items.create(actorId, actorRole, body);
+69:  @Patch('items/:inventoryItemId')
+71:    @Headers('x-actor-id') actorId: string | undefined,
+72:    @Headers('x-actor-role') actorRole: string | undefined,
+73:    @Param('inventoryItemId') inventoryItemId: string,
+77:      actorId,
+78:      actorRole,
+79:      inventoryItemId,
+84:  @Get('lots')
+86:    @Headers('x-actor-id') actorId: string | undefined,
+87:    @Headers('x-actor-role') actorRole: string | undefined,
+90:    return this.lots.list(actorId, actorRole, query);
+93:  @Get('lots/:inventoryLotId')
+95:    @Headers('x-actor-id') actorId: string | undefined,
+96:    @Headers('x-actor-role') actorRole: string | undefined,
+97:    @Param('inventoryLotId') inventoryLotId: string,
+100:      actorId,
+101:      actorRole,
+102:      inventoryLotId,
+106:  @Post('lots')
+108:    @Headers('x-actor-id') actorId: string | undefined,
+109:    @Headers('x-actor-role') actorRole: string | undefined,
+112:    return this.lots.create(actorId, actorRole, body);
+115:  @Patch('lots/:inventoryLotId')
+117:    @Headers('x-actor-id') actorId: string | undefined,
+118:    @Headers('x-actor-role') actorRole: string | undefined,
+119:    @Param('inventoryLotId') inventoryLotId: string,
+123:      actorId,
+124:      actorRole,
+125:      inventoryLotId,
+130:  @Get('transactions')
+132:    @Headers('x-actor-id') actorId: string | undefined,
+133:    @Headers('x-actor-role') actorRole: string | undefined,
+136:    return this.transactions.list(
+137:      actorId,
+138:      actorRole,
+143:  @Get('transactions/:inventoryTransactionId')
+144:  transactionDetail(
+145:    @Headers('x-actor-id') actorId: string | undefined,
+146:    @Headers('x-actor-role') actorRole: string | undefined,
+150:    return this.transactions.detail(
+151:      actorId,
+152:      actorRole,
+157:  @Post('transactions')
+159:    @Headers('x-actor-id') actorId: string | undefined,
+160:    @Headers('x-actor-role') actorRole: string | undefined,
+163:    return this.transactions.create(
+164:      actorId,
+165:      actorRole,
+
+======================================================================
+ 5. SERVICE FUNCTIONAL CONTRACT SIGNALS
+======================================================================
+
+---------------------------------------------------------------------
+FILE=api/src/inventory/inventory-item.service.ts
+---------------------------------------------------------------------
+2:  BadRequestException,
+3:  ConflictException,
+5:  NotFoundException,
+12:  requiredText,
+22:  async list(actorId: string | undefined, actorRole: string | undefined, query: any) {
+23:    await this.authority.requireActor(actorId, actorRole);
+31:        throw new BadRequestException('active must be true or false');
+58:      SELECT *
+74:  async detail(actorId: string | undefined, actorRole: string | undefined, id: string) {
+75:    await this.authority.requireActor(actorId, actorRole);
+79:      SELECT *
+88:      throw new NotFoundException('Inventory item not found');
+94:  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+95:    const actor = await this.authority.requireActor(actorId, actorRole);
+96:    this.authority.requireAuthority(actor);
+98:    const code = requiredText(body?.code, 'code').toUpperCase();
+99:    const displayNameVi = requiredText(
+103:    const category = requiredText(body?.category, 'category');
+104:    const baseUnit = requiredText(body?.baseUnit, 'baseUnit');
+112:      throw new BadRequestException(
+122:        INSERT INTO inventory_items (
+127:          base_unit,
+129:          lot_tracking_required
+147:        throw new ConflictException(
+155:  async update(
+161:    const actor = await this.authority.requireActor(actorId, actorRole);
+162:    this.authority.requireAuthority(actor);
+165:      throw new BadRequestException(
+170:    return this.database.withTransaction(async (client) => {
+173:        SELECT *
+183:        throw new NotFoundException('Inventory item not found');
+191:          : requiredText(body.displayNameVi, 'displayNameVi');
+196:          : requiredText(body.category, 'category');
+200:          ? previous.base_unit
+201:          : requiredText(body.baseUnit, 'baseUnit');
+210:          ? previous.lot_tracking_required
+214:        throw new BadRequestException('active must be boolean');
+218:        throw new BadRequestException(
+225:       * unit would reinterpret immutable historical quantities.
+227:      if (baseUnit !== previous.base_unit) {
+230:          SELECT 1
+239:          throw new ConflictException(
+247:        UPDATE inventory_items
+251:          base_unit = $4,
+253:          lot_tracking_required = $6,
+
+---------------------------------------------------------------------
+FILE=api/src/inventory/inventory-lot.service.ts
+---------------------------------------------------------------------
+2:  BadRequestException,
+3:  ConflictException,
+5:  NotFoundException,
+13:  requiredText,
+23:  async list(actorId: string | undefined, actorRole: string | undefined, query: any) {
+24:    await this.authority.requireActor(actorId, actorRole);
+54:      SELECT *
+70:  async detail(actorId: string | undefined, actorRole: string | undefined, id: string) {
+71:    await this.authority.requireActor(actorId, actorRole);
+75:      SELECT *
+84:      throw new NotFoundException('Inventory lot not found');
+90:  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+91:    const actor = await this.authority.requireActor(actorId, actorRole);
+92:    this.authority.requireAuthority(actor);
+94:    const inventoryItemId = requiredText(
+99:    const lotCode = requiredText(body?.lotCode, 'lotCode');
+103:        : requiredText(body.status, 'status');
+113:      throw new BadRequestException('Invalid lot status');
+118:      SELECT inventory_item_id
+127:      throw new BadRequestException('Inventory item not found');
+135:        INSERT INTO inventory_lots (
+161:        throw new ConflictException(
+169:  async update(
+175:    const actor = await this.authority.requireActor(actorId, actorRole);
+176:    this.authority.requireAuthority(actor);
+182:      throw new BadRequestException(
+187:    return this.database.withTransaction(async (client) => {
+190:        SELECT *
+200:        throw new NotFoundException('Inventory lot not found');
+208:          : requiredText(body.lotCode, 'lotCode');
+213:          : requiredText(body.status, 'status');
+223:        throw new BadRequestException('Invalid lot status');
+229:          UPDATE inventory_lots
+259:          throw new ConflictException(
+
+---------------------------------------------------------------------
+FILE=api/src/inventory/inventory-transaction.service.ts
+---------------------------------------------------------------------
+2:  BadRequestException,
+3:  ConflictException,
+5:  NotFoundException,
+15:  requiredText,
+38:  async list(actorId: string | undefined, actorRole: string | undefined, query: any) {
+39:    await this.authority.requireActor(actorId, actorRole);
+59:    add('transaction_type', query?.transactionType);
+81:      SELECT *
+97:  async detail(actorId: string | undefined, actorRole: string | undefined, id: string) {
+98:    await this.authority.requireActor(actorId, actorRole);
+102:      SELECT *
+111:      throw new NotFoundException(
+119:  async readBalance(
+125:    await this.authority.requireActor(actorId, actorRole);
+131:      async (client) => {
+134:          SELECT *
+143:          throw new NotFoundException(
+151:            SELECT inventory_lot_id
+164:            throw new NotFoundException(
+179:          unit: item.rows[0].base_unit,
+187:  async create(actorId: string | undefined, actorRole: string | undefined, body: any) {
+188:    const inventoryItemId = requiredText(
+196:    const transactionType = requiredText(
+197:      body?.transactionType,
+198:      'transactionType',
+205:      ].includes(transactionType)
+207:      throw new BadRequestException(
+208:        'Invalid transactionType',
+212:    const quantity = positiveQuantity(body?.quantity);
+213:    const unit = requiredText(body?.unit, 'unit');
+215:    const sourceDomain = requiredText(
+229:      throw new BadRequestException(
+239:        async (client) => {
+241:            await this.authority.requireActor(
+251:          this.authority.requireAuthority(actor);
+255:            SELECT *
+265:            throw new BadRequestException(
+272:          if (unit !== item.base_unit) {
+273:            throw new BadRequestException(
+274:              'transaction unit must equal item base_unit',
+279:            item.lot_tracking_required === true &&
+282:            throw new BadRequestException(
+283:              'inventoryLotId is required for lot-tracked item',
+292:              SELECT *
+305:              throw new BadRequestException(
+314:            this.outbound.includes(transactionType);
+318:              throw new BadRequestException(
+324:              transactionType === 'ISSUE' &&
+329:              throw new BadRequestException(
+356:              transactionType,
+357:              quantity,
+364:            throw new ConflictException(
+376:            INSERT INTO inventory_transactions (
+381:              quantity,
+382:              unit,
+402:              transactionType,
+403:              quantity,
+404:              unit,
+421:        throw new ConflictException(
+
+---------------------------------------------------------------------
+FILE=api/src/inventory/inventory-ledger.service.ts
+---------------------------------------------------------------------
+15:  async acquireLock(
+22:      SELECT pg_advisory_xact_lock(
+23:        hashtextextended($1::text, 0)
+35:  async balance(
+42:      SELECT COALESCE(
+50:              THEN quantity
+56:              THEN -quantity
+79:    transactionType: string,
+80:    quantity: number,
+87:      ].includes(transactionType)
+89:      return quantity;
+92:    return -quantity;
+
+---------------------------------------------------------------------
+FILE=api/src/inventory/inventory-authority.service.ts
+---------------------------------------------------------------------
+36:  async requireActor(
+46:      throw new UnauthorizedException('Actor context is required');
+50:      throw new ForbiddenException('Human operational role is required');
+59:      SELECT actor_id, primary_operational_role, status
+89:  requireAuthority(actor: InventoryActor): void {
+92:        'Care manager or supervisor authority is required',
+
+======================================================================
+ 6. INVENTORY DATABASE CONTRACT
+======================================================================
+database/migrations/20260829_003_ops_operational_work_foundation.sql
+database/migrations/20260829_004_ops_work_event_type_audit.sql
+database/migrations/20260829_005_ops_wave1_work_event_types.sql
+database/migrations/20260829_005_ops_work_event_audit.sql
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql
+database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql
+
+--- TABLE / COLUMN SIGNALS ---
+database/migrations/20260829_003_ops_operational_work_foundation.sql:69:    source_domain text NOT NULL,
+database/migrations/20260829_003_ops_operational_work_foundation.sql:89:    quantity numeric(14,4)
+database/migrations/20260829_003_ops_operational_work_foundation.sql:137:    CONSTRAINT operational_work_events_quantity_ck
+database/migrations/20260829_003_ops_operational_work_foundation.sql:139:            quantity > 0
+database/migrations/20260829_003_ops_operational_work_foundation.sql:204:        source_domain,
+database/migrations/20260829_003_ops_operational_work_foundation.sql:212:        source_domain,
+database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql:3:ALTER TABLE inventory_items
+database/migrations/20260829_007_ops_inventory_lot_tracking_required.sql:4:    ADD COLUMN lot_tracking_required boolean NOT NULL DEFAULT false;
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:3:CREATE TABLE inventory_items (
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:8:    base_unit text NOT NULL,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:13:    CONSTRAINT inventory_items_code_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:16:    CONSTRAINT inventory_items_category_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:29:    CONSTRAINT inventory_items_base_unit_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:30:        CHECK (length(btrim(base_unit)) > 0)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:33:CREATE TABLE inventory_lots (
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:37:        REFERENCES inventory_items(inventory_item_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:48:    CONSTRAINT inventory_lots_status_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:59:CREATE TABLE inventory_transactions (
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:63:        REFERENCES inventory_items(inventory_item_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:67:        REFERENCES inventory_lots(inventory_lot_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:72:    quantity numeric(14,4) NOT NULL,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:84:    source_domain text NOT NULL,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:93:    CONSTRAINT inventory_transactions_type_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:105:    CONSTRAINT inventory_transactions_quantity_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:106:        CHECK (quantity > 0),
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:108:    CONSTRAINT inventory_transactions_unit_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:111:    CONSTRAINT inventory_transactions_role_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:121:    CONSTRAINT inventory_transactions_source_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:143:        REFERENCES inventory_items(inventory_item_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:147:        REFERENCES inventory_lots(inventory_lot_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:151:        REFERENCES inventory_transactions(inventory_transaction_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:158:    quantity numeric(14,4) NOT NULL,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:170:    source_domain text NOT NULL,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:178:    CONSTRAINT resident_consumption_quantity_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:179:        CHECK (quantity > 0),
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:208:CREATE INDEX idx_inventory_items_active_category
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:209:    ON inventory_items(active, category, code);
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:211:CREATE INDEX idx_inventory_lots_item
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:212:    ON inventory_lots(inventory_item_id);
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:214:CREATE INDEX idx_inventory_lots_expiry
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:215:    ON inventory_lots(expiry_date)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:218:CREATE INDEX idx_inventory_lots_status
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:219:    ON inventory_lots(status);
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:222:    ON inventory_transactions(
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:228:    ON inventory_transactions(
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:235:    ON inventory_transactions(
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:241:    ON inventory_transactions(
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:242:        source_domain,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:249:    ON inventory_transactions(
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:250:        source_domain,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:283:        source_domain,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:291:        source_domain,
+
+======================================================================
+ 7. RUNTIME TOPOLOGY — NO RESTART
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+--- LISTENING PORTS OF INTEREST ---
+COMMAND    PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+com.docke 1478 anhha  130u  IPv6 0xb9e455670c03ee48      0t0  TCP *:3000 (LISTEN)
+com.docke 1478 anhha  140u  IPv6  0x364b417c7d6bfba      0t0  TCP *:3108 (LISTEN)
+node      3561 anhha   16u  IPv4 0x69cdeb043923dcc2      0t0  TCP 127.0.0.1:4173 (LISTEN)
+
+======================================================================
+ 8. DATABASE RUNTIME DISCOVERY — READ ONLY
+======================================================================
+--- Docker containers ---
+NAME=tamancare_ops1e_rta2 IMAGE=tamancare_ops1e_rta2:acceptance STATUS=Up 13 hours PORTS=0.0.0.0:3108->3000/tcp, [::]:3108->3000/tcp
+NAME=tamancare_ops1c_r1 IMAGE=tamancare-ops1c-r5:local STATUS=Up 14 hours PORTS=127.0.0.1:3107->3107/tcp
+NAME=tamancare_ops1b_r4b_retest IMAGE=tamancare-ops1b-r4b-r2:local STATUS=Up 15 hours PORTS=127.0.0.1:3106->3106/tcp
+NAME=tamancare_ops1b_r4_create IMAGE=tamancare-ops1b-r4:local STATUS=Up 15 hours PORTS=127.0.0.1:3105->3105/tcp
+NAME=tamancare_ops1b_dev_authority IMAGE=tamancare-ops1b-acceptance:local STATUS=Up 15 hours PORTS=127.0.0.1:3104->3104/tcp
+NAME=tamancare_ops1b_acceptance_r3 IMAGE=tamancare-ops1b-acceptance:local STATUS=Up 15 hours PORTS=127.0.0.1:3103->3103/tcp
+NAME=tamancare_ops1b_acceptance_r1 IMAGE=tamancare-ops1b-acceptance:local STATUS=Up 15 hours PORTS=127.0.0.1:3102->3102/tcp
+NAME=tamancare_v7_4_3_development-api-1 IMAGE=tamancare_v7_4_3_development-api STATUS=Up 38 hours PORTS=0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+NAME=tamancare_v7_4_3_development-postgres-1 IMAGE=postgres:16 STATUS=Up 38 hours PORTS=5432/tcp
+
+--- DATABASE ENVIRONMENT KEY NAMES ONLY ---
+
+======================================================================
+ 9. CANONICAL HUMAN ACTOR TEST EVIDENCE
+======================================================================
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-CONTRACT-RESULT.txt:84:POST_BOOTSTRAP_DATABASE_ACCEPTANCE_CONTRACT_STATE=CANONICAL_SUPERVISOR_POST_BOOTSTRAP_SINGLE_READ_ONLY_DATABASE_ACCEPTANCE_CONTRACT_PROVEN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-CONTRACT-RESULT.txt:88:NEXT_CLASS=CANONICAL_SUPERVISOR_POST_BOOTSTRAP_DATABASE_ACCEPTANCE_EXECUTION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-CONTRACT-RESULT.txt:89:NEXT_ACTION=S5_CANONICAL_SUPERVISOR_POST_BOOTSTRAP_SINGLE_READ_ONLY_DATABASE_ACCEPTANCE_QUERY_EXECUTION
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r2_current_state_forensic_20260830_052526.txt:180:29:    return this.items.list(actorId, actorRole, query);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r2_current_state_forensic_20260830_052526.txt:187:66:    return this.items.create(actorId, actorRole, body);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r2_current_state_forensic_20260830_052526.txt:191:90:    return this.lots.list(actorId, actorRole, query);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r2_current_state_forensic_20260830_052526.txt:195:112:    return this.lots.create(actorId, actorRole, body);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-OPERATIONAL-DASHBOARD-READ-ONLY-HTTP-ACCEPTANCE-EVIDENCE-SALVAGE-R3-RESULT.txt:37:SUPERVISOR_ACCESS_SEMANTICS_ACCEPTED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt:3:GATE=S5_CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_CONTRACT
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt:17:CANONICAL_HUMAN_SUPERVISOR_INTENT_PROVEN=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt:35:CANONICAL_SUPERVISOR_BOOTSTRAP_CONTRACT_STATE=CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_CONTRACT_PROVEN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt:37:NEXT_CLASS=CANONICAL_SUPERVISOR_PRE_BOOTSTRAP_DATABASE_STATE_CAPTURE_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt:38:NEXT_ACTION=S5_CANONICAL_SUPERVISOR_PRE_BOOTSTRAP_SELECT_ONLY_DATABASE_STATE_CAPTURE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-COLLECTION-SINGLE-READ-ONLY-GET-EXECUTION-RESULT.txt:17:X_ACTOR_ROLE=SUPERVISOR
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-COLLECTION-SINGLE-READ-ONLY-GET-EXECUTION-RESULT.txt:30:RESPONSE_CONTAINS_SUPERVISOR_ROLE=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-COLLECTION-SINGLE-READ-ONLY-GET-EXECUTION-RESULT.txt:33:CANONICAL_SUPERVISOR_HTTP_VISIBLE=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-COLLECTION-SINGLE-READ-ONLY-GET-EXECUTION-RESULT.txt:37:CANONICAL_SUPERVISOR_HTTP_ACCEPTED=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-COLLECTION-SINGLE-READ-ONLY-GET-EXECUTION-RESULT.txt:75:STAFF_ACTOR_COLLECTION_GET_EXECUTION_STATE=STAFF_ACTOR_COLLECTION_SINGLE_READ_ONLY_GET_EXECUTED_AND_CANONICAL_SUPERVISOR_ACCEPTED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-OPERATIONAL-DASHBOARD-REGISTRATION-EVIDENCE-SALVAGE-R4-RESULT.txt:51:FUTURE_X_ACTOR_ROLE=SUPERVISOR
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TARGETED-RUNTIME-LOCAL-HELPER-CONTRACT-EVIDENCE.txt:4:LOCAL_HELPER_CONTRACT|CONTROLLER=residents/resident.controller.ts|HELPER=authorizeSupervisor|STATUS=RESOLVED|SIGNATURE=private async authorizeSupervisor( actorIdHeader?: string, actorRoleHeader?: string, )|PARAM_COUNT=2|PARAMETERS=actorIdHeader?: string <PARAM> actorRoleHeader?: string|EXCEPTION_COUNT=2|EXCEPTIONS=ForbiddenException,UnauthorizedException|STRING_LITERAL_COUNT=5|STRING_LITERALS=,Canonical active supervisor authority required.,Human actor identity required.,SUPERVISOR,Supervisor authority required.|ROLE_LITERAL_COUNT=1|ROLE_LITERALS=SUPERVISOR|ACTOR_PARAM_SIGNAL_COUNT=4|ACTOR_PARAM_SIGNALS=actorId,actorIdHeader,actorRole,actorRoleHeader|TRIM_CALL_COUNT=0|TRIM_CALLS=NONE|UPPERCASE_CALL_COUNT=0|UPPERCASE_CALLS=NONE|PROPERTY_METHOD_CALL_COUNT=1|PROPERTY_METHOD_CALLS=staffActors.resolveActiveActorWithRole|LOCAL_CALL_COUNT=0|LOCAL_CALLS=NONE|COMPARISON_LITERAL_COUNT=1|COMPARISON_LITERALS=if (actorRole!=='SUPERVISOR'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TARGETED-RUNTIME-LOCAL-HELPER-CONTRACT-EVIDENCE.txt:5:LOCAL_HELPER_BODY=const actorId = String(actorIdHeader ?? '').trim(); const actorRole = String(actorRoleHeader ?? '') .trim() .toUpperCase(); if (!actorId <PIPE><PIPE> !actorRole) { throw new UnauthorizedException( 'Human actor identity required.', ); } if (actorRole !== 'SUPERVISOR') { throw new ForbiddenException( 'Supervisor authority required.', ); } const canonical = await this.staffActors .resolveActiveActorWithRole( actorId, 'SUPERVISOR', ); if (!canonical) { throw new ForbiddenException( 'Canonical active supervisor authority required.', ); }
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:106:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|6:READINESS|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|EXCEPTION_SIGNAL=YES|EXPLICIT_HTTP_SIGNAL=NO|READINESS=READY_FOR_RUNTIME_CONTRACT_DISCOVERY|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:107:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|7:READINESS|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|EXCEPTION_SIGNAL=YES|EXPLICIT_HTTP_SIGNAL=NO|READINESS=READY_FOR_RUNTIME_CONTRACT_DISCOVERY|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:109:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|4:FIXTURE_REQUIREMENT|TABLE=resident_access_assignments|COLUMN_COUNT=17|REQUIRED_NO_DEFAULT_COUNT=9|REQUIRED_FIELDS=resident_id,actor_id,actor_role,access_scope,status,effective_from,assigned_by,assigned_by_role,assigned_at|VALUES_ASSIGNED=NO|FIXTURE_INSERT_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:119:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|4:LOCAL_HELPER_CLASSIFICATION|CONTROLLER=residents/resident.controller.ts|HELPER=authorizeSupervisor|ACTOR_IDENTITY_SIGNAL=YES|ACTOR_ROLE_SIGNAL=YES|SUPERVISOR_LITERAL_SIGNAL=YES|UNAUTHORIZED_EXCEPTION_SIGNAL=YES|FORBIDDEN_EXCEPTION_SIGNAL=YES|DOWNSTREAM_IDENTITY_SIGNAL=YES|PROPERTY_METHOD_CALLS=staffActors.resolveActiveActorWithRole|RESOLVED_DOWNSTREAM_FILE_COUNT=1|HELPER_SEMANTIC_READINESS=LOCAL_AUTHORIZATION_SEMANTICS_DISCOVERED|DOWNSTREAM_READINESS=DOWNSTREAM_METHOD_TRACE_REQUIRED|HTTP_EXPECTATION_ASSIGNED=NO|REQUEST_VALUES_ASSIGNED=NO|FIXTURE_VALUES_ASSIGNED=NO|ACTION_VALUES_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:122:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|8:TEST_CASE|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=POST|FULL_PATH=/api/residents|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|PURPOSE=DISCOVER_VALID_ROUTE_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=RUNTIME_DISCOVERY_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:123:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|12:TEST_CASE|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=PATCH|FULL_PATH=/api/residents/:residentId|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|PURPOSE=DISCOVER_VALID_ROUTE_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=RUNTIME_DISCOVERY_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:132:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|8:EXPECTATION_GAP|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|BRANCH_SIGNALS=ForbiddenException,UnauthorizedException|BRANCH_CONDITION_COUNT=3|BRANCH_CONDITIONS=!actorId <PIPE><PIPE> !actorRole <COND> !canonical <COND> actorRole !== 'SUPERVISOR'|SUCCESS_STATUS_CONTRACT=FRAMEWORK_DEFAULT_POST_STATUS_REQUIRES_FRAMEWORK_BINDING|GAP_CLASS=FRAMEWORK_DEFAULT_SUCCESS_STATUS_BINDING_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:133:V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt :: SOURCE_MATCH|10:EXPECTATION_GAP|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|BRANCH_SIGNALS=ForbiddenException,UnauthorizedException|BRANCH_CONDITION_COUNT=3|BRANCH_CONDITIONS=!actorId <PIPE><PIPE> !actorRole <COND> !canonical <COND> actorRole !== 'SUPERVISOR'|SUCCESS_STATUS_CONTRACT=FRAMEWORK_DEFAULT_NONPOST_STATUS_REQUIRES_FRAMEWORK_BINDING|GAP_CLASS=FRAMEWORK_DEFAULT_SUCCESS_STATUS_BINDING_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:141:V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt :: NEXT_CLASS=CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:145:V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-TRANSPORT-REMEDIATION-RESULT.txt :: NEXT_ACTION=S5_CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_AUTHORITY_CLASSIFICATION_FROM_TRANSPORT_CORRECTED_PREBOOTSTRAP_BASELINE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:146:V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-CONTRACT-RESULT.txt :: NEXT_CLASS=CANONICAL_SUPERVISOR_POST_BOOTSTRAP_DATABASE_ACCEPTANCE_EXECUTION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:147:V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-CONTRACT-RESULT.txt :: NEXT_ACTION=S5_CANONICAL_SUPERVISOR_POST_BOOTSTRAP_SINGLE_READ_ONLY_DATABASE_ACCEPTANCE_QUERY_EXECUTION
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:150:V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt :: NEXT_CLASS=CANONICAL_SUPERVISOR_PRE_BOOTSTRAP_DATABASE_STATE_CAPTURE_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:151:V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-EXECUTION-CONTRACT-RESULT.txt :: NEXT_ACTION=S5_CANONICAL_SUPERVISOR_PRE_BOOTSTRAP_SELECT_ONLY_DATABASE_STATE_CAPTURE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:163:V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt :: NEXT_CLASS=CANONICAL_SUPERVISOR_PREBOOTSTRAP_DATABASE_STATE_REMEDIATION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:164:V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt :: NEXT_ACTION=STOP_AND_RETURN_OUTPUT
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:181:V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt :: NEXT_CLASS=CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-MASTER-ROADMAP-SUCCESSOR-SEMANTIC-RESOLUTION-R169-MATRIX.txt:182:V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt :: NEXT_ACTION=S5_CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_FROM_BOUNDED_STAFF_PLUS_AUDIT_INSERT_AUTHORITY
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt:3:GATE=S5_CANONICAL_SUPERVISOR_PREBOOTSTRAP_SELECT_ONLY_DATABASE_STATE_CAPTURE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt:20:ACTIVE_HUMAN_SUPERVISOR_COUNT=
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt:24:CANONICAL_SUPERVISOR_ALREADY_PRESENT=UNKNOWN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt:25:CANONICAL_SUPERVISOR_BOOTSTRAP_REQUIRED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt:34:PREBOOTSTRAP_DATABASE_STATE=CANONICAL_SUPERVISOR_PREBOOTSTRAP_DATABASE_STATE_CAPTURE_BLOCKED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-PREBOOTSTRAP-SELECT-ONLY-DATABASE-STATE-RESULT.txt:36:NEXT_CLASS=CANONICAL_SUPERVISOR_PREBOOTSTRAP_DATABASE_STATE_REMEDIATION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-AUDIT-EXISTING-DEFINITION-AUTHORITY-RECONCILIATION-RESULT.txt:60:target_actor_id|TEXT NOT NULL REFERENCES staff_actors(actor_id)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-AUDIT-EXISTING-DEFINITION-AUTHORITY-RECONCILIATION-RESULT.txt:70:target_actor_id
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-AUDIT-EXISTING-DEFINITION-AUTHORITY-RECONCILIATION-RESULT.txt:93:    target_actor_id TEXT NOT NULL
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-AUDIT-EXISTING-DEFINITION-AUTHORITY-RECONCILIATION-RESULT.txt:94:        REFERENCES staff_actors(actor_id),
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-AUTHENTICATION-HUMAN-ACTOR-AUTHORITY-CLASSIFICATION-RESULT.txt:27:SUPERVISOR_AUTH_SIGNAL_COUNT=14
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-AUTHENTICATION-HUMAN-ACTOR-AUTHORITY-CLASSIFICATION-RESULT.txt:29:SUPERVISOR_AUTHORIZATION_SURFACE_PRESENT=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TAC-S5-ASST001-DEDICATED-ASSIGNMENT-CAREGIVER-STATIC-CONTRACT-R73-RESULT.txt:44:X_ACTOR_ROLE_VALUE=SUPERVISOR
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-DETAILED-SCOPE-ANALYSIS-MATRIX.txt:74:PRIOR_CONTRACT|SUPERVISOR_AUTHORIZATION|EVIDENCE_PRESENT|COUNT=16
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:413:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:422:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:430:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:439:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:447:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:456:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:464:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:474:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:483:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:493:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:502:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:512:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:537:  | 'CARE_MANAGER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:538:  | 'SUPERVISOR';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:548:  actorId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:559:    'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:560:    'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:564:    'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:565:    'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:593:    actorId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:596:    if (!actorId || !actorRole) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:611:        actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:615:      WHERE actor_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:618:      [actorId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:629:    if (actor.status !== 'ACTIVE') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:642:      actorId: actor.actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:745:        actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:756:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:760:    await this.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:818:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:822:    await this.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:844:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:849:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1063:                actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1102:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1108:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1124:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1130:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1146:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1152:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1301:  | 'CARE_MANAGER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1302:  | 'SUPERVISOR';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1333:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1337:    actorId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1340:    const id = String(actorId || '').trim();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1355:      'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1356:      'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1372:        WHERE actor_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1380:    if (!actor || actor.status !== 'ACTIVE') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1401:      actorId: id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1499:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1505:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1510:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1511:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1578:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1583:      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1588:        'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1589:        'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1627:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1633:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1636:          'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1637:          'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1758:              actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1782:    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1789:        actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1792:          'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:1793:          'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2010:            actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2043:15-  | 'CARE_MANAGER'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2044:16-  | 'SUPERVISOR';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2054:26-  actorId: string;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2065:37-    'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2066:38-    'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2070:42-    'CARE_MANAGER',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2071:43-    'SUPERVISOR',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2099:71-    actorId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2102:74-    if (!actorId || !actorRole) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2117:89-        actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2121:93-      WHERE actor_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2124:96-      [actorId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2135:107:    if (actor.status !== 'ACTIVE') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2148:120-      actorId: actor.actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2241:223-        actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2252:234-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2256:238:    await this.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2314:296-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2318:300:    await this.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2340:322-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2345:327-      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2441:580-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2447:586-      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2463:602-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2469:608-      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2485:624-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2491:630-      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2606:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:21:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2608:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:38:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2610:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:55:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2612:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:72:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2614:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:91:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2616:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:110:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2649:/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.controller.ts:22:    @Headers('x-actor-id') actorId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2657:74-    if (!actorId || !actorRole) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2672:89-        actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2676:93-      WHERE actor_id = $1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2679:96-      [actorId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2690:107-    if (actor.status !== 'ACTIVE') {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2703:120-      actorId: actor.actor_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2806:223-        actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2817:234-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2821:238-    await this.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2879:296-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2883:300-    await this.requireActor(actorId, actorRole);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2905:322-    actorId: string | undefined,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:2910:327-      actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3088:541-                actor.actorId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3796: inventory_transactions | inventory_transactions_role_ck                | c       | CHECK ((performed_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3802: inventory_transactions | inventory_transactions_performed_by_fkey      | f       | FOREIGN KEY (performed_by) REFERENCES staff_actors(actor_id) ON DELETE RESTRICT
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3851: SUPERVISOR               | ACTIVE |           1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3904:  CARE_MANAGER
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3905:  SUPERVISOR
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3910:  CARE_MANAGER
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt:3911:  SUPERVISOR
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-CONTRACT-RECONCILIATION-RESULT.txt:13:DB_ACCEPT_RESULT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-POST-BOOTSTRAP-DATABASE-ACCEPTANCE-EXECUTION-RESULT.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-CONTRACT-RECONCILIATION-RESULT.txt:49:DETAIL_HTTP_PATH=/api/operations/staff-actors/:actorId
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-STAFF-ACTOR-FUNCTIONAL-HTTP-CONTRACT-RECONCILIATION-RESULT.txt:58:CANONICAL_ACTOR_ROLE=SUPERVISOR
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TARGETED-RUNTIME-TRIGGER-CONTRACT-BINDING-EVIDENCE.txt:4:TRIGGER_CONTRACT|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|SOURCE_CONDITION=!actorId <PIPE><PIPE> !actorRole|BOUND_HTTP=401|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TARGETED-RUNTIME-TRIGGER-CONTRACT-BINDING-EVIDENCE.txt:5:TRIGGER_CONTRACT|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|SOURCE_CONDITION=actorRole !== 'SUPERVISOR'|BOUND_HTTP=403|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TARGETED-RUNTIME-TRIGGER-CONTRACT-BINDING-EVIDENCE.txt:7:TRIGGER_CONTRACT|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|SOURCE_CONDITION=!actorId <PIPE><PIPE> !actorRole|BOUND_HTTP=401|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-TARGETED-RUNTIME-TRIGGER-CONTRACT-BINDING-EVIDENCE.txt:8:TRIGGER_CONTRACT|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|SOURCE_CONDITION=actorRole !== 'SUPERVISOR'|BOUND_HTTP=403|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:256:SOURCE_MATCH|66:STRATEGY_DISCOVERY|INDEX=53|FILE=api/src/residents/resident.controller.ts|LINE=64|SOURCE_CLASS=APPLICATION_SOURCE|SIGNAL=RESIDENT_CREATE|SNIPPET=t(':residentId') getResident( @Param('residentId') residentId: string, ) { return this.residentService.getById(residentId); } @Post() async createResident( @Headers('x-actor-id') actorId: string <PIPE> undefined, @Headers('x-actor-role') actorRole: string <PIPE> undefined, @Body() body: any, ) { await this.authorizeSupervisor( actorId, actorRole, ); return this.residentService .createR|VALUE_SELECTED=NO|FIXTURE_CREATED=NO|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:257:SOURCE_MATCH|67:STRATEGY_DISCOVERY|INDEX=54|FILE=api/src/residents/resident.controller.ts|LINE=78|SOURCE_CLASS=APPLICATION_SOURCE|SIGNAL=RESIDENT_CREATE|SNIPPET=undefined, @Body() body: any, ) { await this.authorizeSupervisor( actorId, actorRole, ); return this.residentService .createResident(body); } @Patch(':residentId') async updateResident( @Param('residentId') residentId: string, @Headers('x-actor-id') actorId: string <PIPE> undefined, @Headers('x-actor-role') actorRole: string <PIPE> undefined, @Body() body: any, ) { await this|VALUE_SELECTED=NO|FIXTURE_CREATED=NO|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:280:SOURCE_MATCH|157:TARGETED_VALUE_SOURCE|INDEX=146|FILE=frontend/src/features/staff-access/StaffAccessPage.tsx|LINE=23|SOURCE_CLASS=APPLICATION_SOURCE|SIGNAL=OBSERVATION_OBJECT_FIELDS|SNIPPET=affActor, listStaffActors, updateStaffActor, type StaffActorStatus, } from '../../api/staff-actors'; import { createResidentAccessAssignment, listResidentAccessAssignments, revokeResidentAccessAssignment, type AssignmentRole, } from '../../api/resident-access-administration'; import { useActor, } from '../../auth/ActorContext'; import { ApiError, } from '../../api/errors'; import { EmptyState, ErrorState, LoadingState, } from '../../components/feedback/FeedbackStates'; type RoleFilter = <PIPE> 'ALL' <PIPE> 'CAREGIVER' <PIPE> 'NURSE' <PIPE> 'SUPERVISOR' <PIPE> 'CARE_MANAGER'; type StatusFilter = <PIPE> 'ALL' <PIPE> StaffActorSta|VALUE_SELECTED=NO|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:281:SOURCE_MATCH|362:TARGETED_VALUE_SOURCE|INDEX=351|FILE=api/src/care-actions/care-action.repository.ts|LINE=151|SOURCE_CLASS=APPLICATION_SOURCE|SIGNAL=OBSERVATION_OBJECT_FIELDS|SNIPPET=ull; fromAssignedRole: string <PIPE> null; toAssignedTo: string; toAssignedRole: string; priority: CareActionPriority <PIPE> null; dueAt: Date <PIPE> null; actorId: string <PIPE> null; actorRole: string <PIPE> null; }; export type InsertAuditInput = { careActionId: string; residentId: string; patternId: string; eventType: CareActionEventType; actorId: string <PIPE> null; actorRole: string <PIPE> null; previousState: Record<string, unknown> <PIPE> null; newState: Record<string, unknown> <PIPE> null; }; @Injectable() export class CareActionRepository { constructor( private readonly db: DatabaseService, ) {} private execu|VALUE_SELECTED=NO|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:402:SOURCE_MATCH|6:RECOVERED_EXECUTION_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=POST|FULL_PATH=/api/residents|HTTP_CHARACTER=MUTATING_HTTP_VERB|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|SCHEMA_TABLE_SIGNALS=residents|SOURCE_EXCEPTIONS=UnauthorizedException,ForbiddenException|SOURCE_HTTP_SYMBOLS=NONE|SOURCE_NUMERIC_STATUSES=NONE|FINAL_HTTP_EXPECTATION=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|RUNTIME_ACTION_VALUES=NOT_ASSIGNED|DISCOVERY=COMPLETE|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:403:SOURCE_MATCH|7:RECOVERED_EXECUTION_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=PATCH|FULL_PATH=/api/residents/:residentId|HTTP_CHARACTER=MUTATING_HTTP_VERB|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|SCHEMA_TABLE_SIGNALS=residents|SOURCE_EXCEPTIONS=UnauthorizedException,ForbiddenException|SOURCE_HTTP_SYMBOLS=NONE|SOURCE_NUMERIC_STATUSES=NONE|FINAL_HTTP_EXPECTATION=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|RUNTIME_ACTION_VALUES=NOT_ASSIGNED|DISCOVERY=COMPLETE|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:410:SOURCE_MATCH|6:EXECUTION_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=GET|FULL_PATH=/api/residents|HTTP_CHARACTER=READ_HTTP_VERB|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|SCHEMA_TABLE_SIGNALS=residents|SOURCE_EXCEPTIONS=UnauthorizedException,ForbiddenException|SOURCE_HTTP_SYMBOLS=NONE|SOURCE_NUMERIC_STATUSES=NONE|FINAL_HTTP_EXPECTATION=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|RUNTIME_ACTION_VALUES=NOT_ASSIGNED|DISCOVERY=COMPLETE|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:411:SOURCE_MATCH|7:EXECUTION_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=GET|FULL_PATH=/api/residents|HTTP_CHARACTER=READ_HTTP_VERB|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|SCHEMA_TABLE_SIGNALS=residents|SOURCE_EXCEPTIONS=UnauthorizedException,ForbiddenException|SOURCE_HTTP_SYMBOLS=NONE|SOURCE_NUMERIC_STATUSES=NONE|FINAL_HTTP_EXPECTATION=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|RUNTIME_ACTION_VALUES=NOT_ASSIGNED|DISCOVERY=COMPLETE|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:418:SOURCE_MATCH|6:READINESS|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|EXCEPTION_SIGNAL=YES|EXPLICIT_HTTP_SIGNAL=NO|READINESS=READY_FOR_RUNTIME_CONTRACT_DISCOVERY|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:419:SOURCE_MATCH|7:READINESS|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|RESIDENT_FIXTURE_SIGNAL=YES|ACTOR_FIXTURE_SIGNAL=YES|AUDIT_SIGNAL=NO|EXCEPTION_SIGNAL=YES|EXPLICIT_HTTP_SIGNAL=NO|READINESS=READY_FOR_RUNTIME_CONTRACT_DISCOVERY|BLOCKERS=NONE
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:432:SOURCE_MATCH|4:FIXTURE_REQUIREMENT|TABLE=resident_access_assignments|COLUMN_COUNT=17|REQUIRED_NO_DEFAULT_COUNT=9|REQUIRED_FIELDS=resident_id,actor_id,actor_role,access_scope,status,effective_from,assigned_by,assigned_by_role,assigned_at|VALUES_ASSIGNED=NO|FIXTURE_INSERT_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:473:SOURCE_MATCH|4:LOCAL_HELPER_CLASSIFICATION|CONTROLLER=residents/resident.controller.ts|HELPER=authorizeSupervisor|ACTOR_IDENTITY_SIGNAL=YES|ACTOR_ROLE_SIGNAL=YES|SUPERVISOR_LITERAL_SIGNAL=YES|UNAUTHORIZED_EXCEPTION_SIGNAL=YES|FORBIDDEN_EXCEPTION_SIGNAL=YES|DOWNSTREAM_IDENTITY_SIGNAL=YES|PROPERTY_METHOD_CALLS=staffActors.resolveActiveActorWithRole|RESOLVED_DOWNSTREAM_FILE_COUNT=1|HELPER_SEMANTIC_READINESS=LOCAL_AUTHORIZATION_SEMANTICS_DISCOVERED|DOWNSTREAM_READINESS=DOWNSTREAM_METHOD_TRACE_REQUIRED|HTTP_EXPECTATION_ASSIGNED=NO|REQUEST_VALUES_ASSIGNED=NO|FIXTURE_VALUES_ASSIGNED=NO|ACTION_VALUES_ASSIGNED=NO|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:564:SOURCE_MATCH|8:TEST_CASE|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=POST|FULL_PATH=/api/residents|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|PURPOSE=DISCOVER_VALID_ROUTE_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=RUNTIME_DISCOVERY_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:565:SOURCE_MATCH|9:TEST_CASE|ID=TC06|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=POST|FULL_PATH=/api/residents|CASE_TYPE=MISSING_ACTOR|PURPOSE=DISCOVER_MISSING_ACTOR_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=SOURCE_AUTH_GUARD_PRESENT|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:566:SOURCE_MATCH|10:TEST_CASE|ID=TC07|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=POST|FULL_PATH=/api/residents|CASE_TYPE=NON_SUPERVISOR_ACTOR|PURPOSE=DISCOVER_ROLE_BOUNDARY_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=SOURCE_SUPERVISOR_GUARD_PRESENT|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:567:SOURCE_MATCH|11:TEST_CASE|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|HTTP_METHOD=POST|FULL_PATH=/api/residents|CASE_TYPE=SOURCE_EXCEPTION_PATH|PURPOSE=DISCOVER_RUNTIME_MAPPING_OF_SOURCE_EXCEPTION|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=SOURCE_EXCEPTION_SIGNAL|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:568:SOURCE_MATCH|12:TEST_CASE|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=PATCH|FULL_PATH=/api/residents/:residentId|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|PURPOSE=DISCOVER_VALID_ROUTE_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=RUNTIME_DISCOVERY_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:569:SOURCE_MATCH|13:TEST_CASE|ID=TC10|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=PATCH|FULL_PATH=/api/residents/:residentId|CASE_TYPE=MISSING_ACTOR|PURPOSE=DISCOVER_MISSING_ACTOR_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=SOURCE_AUTH_GUARD_PRESENT|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:570:SOURCE_MATCH|14:TEST_CASE|ID=TC11|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=PATCH|FULL_PATH=/api/residents/:residentId|CASE_TYPE=NON_SUPERVISOR_ACTOR|PURPOSE=DISCOVER_ROLE_BOUNDARY_RUNTIME_CONTRACT|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=SOURCE_SUPERVISOR_GUARD_PRESENT|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:571:SOURCE_MATCH|15:TEST_CASE|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|HTTP_METHOD=PATCH|FULL_PATH=/api/residents/:residentId|CASE_TYPE=SOURCE_EXCEPTION_PATH|PURPOSE=DISCOVER_RUNTIME_MAPPING_OF_SOURCE_EXCEPTION|AUTH_CLASS=EXPLICIT_SUPERVISOR_GUARD|EXPECTATION_SOURCE=SOURCE_EXCEPTION_SIGNAL|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:579:SOURCE_MATCH|10:TEST_EXPECTATION|ID=TC07|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=NON_SUPERVISOR_ACTOR|EXPECTED_HTTP=403|EXPECTATION_STRENGTH=SOURCE_PROVEN|EXPECTATION_REASON=FORBIDDEN_EXCEPTION_MAPPING|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:583:SOURCE_MATCH|14:TEST_EXPECTATION|ID=TC11|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=NON_SUPERVISOR_ACTOR|EXPECTED_HTTP=403|EXPECTATION_STRENGTH=SOURCE_PROVEN|EXPECTATION_REASON=FORBIDDEN_EXCEPTION_MAPPING|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:590:SOURCE_MATCH|8:EXPECTATION_GAP|ID=TC05|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|BRANCH_SIGNALS=ForbiddenException,UnauthorizedException|BRANCH_CONDITION_COUNT=3|BRANCH_CONDITIONS=!actorId <PIPE><PIPE> !actorRole <COND> !canonical <COND> actorRole !== 'SUPERVISOR'|SUCCESS_STATUS_CONTRACT=FRAMEWORK_DEFAULT_POST_STATUS_REQUIRES_FRAMEWORK_BINDING|GAP_CLASS=FRAMEWORK_DEFAULT_SUCCESS_STATUS_BINDING_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:591:SOURCE_MATCH|9:EXPECTATION_GAP|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|BRANCH_SIGNALS=ForbiddenException,UnauthorizedException|BRANCH_CONDITION_COUNT=3|BRANCH_CONDITIONS=!actorId <PIPE><PIPE> !actorRole <COND> !canonical <COND> actorRole !== 'SUPERVISOR'|SUCCESS_STATUS_CONTRACT=FRAMEWORK_DEFAULT_POST_STATUS_REQUIRES_FRAMEWORK_BINDING|GAP_CLASS=SOURCE_TRIGGER_CONDITION_AVAILABLE|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:592:SOURCE_MATCH|10:EXPECTATION_GAP|ID=TC09|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=BASELINE_ROUTE_BEHAVIOR|BRANCH_SIGNALS=ForbiddenException,UnauthorizedException|BRANCH_CONDITION_COUNT=3|BRANCH_CONDITIONS=!actorId <PIPE><PIPE> !actorRole <COND> !canonical <COND> actorRole !== 'SUPERVISOR'|SUCCESS_STATUS_CONTRACT=FRAMEWORK_DEFAULT_NONPOST_STATUS_REQUIRES_FRAMEWORK_BINDING|GAP_CLASS=FRAMEWORK_DEFAULT_SUCCESS_STATUS_BINDING_REQUIRED|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:593:SOURCE_MATCH|11:EXPECTATION_GAP|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|BRANCH_SIGNALS=ForbiddenException,UnauthorizedException|BRANCH_CONDITION_COUNT=3|BRANCH_CONDITIONS=!actorId <PIPE><PIPE> !actorRole <COND> !canonical <COND> actorRole !== 'SUPERVISOR'|SUCCESS_STATUS_CONTRACT=FRAMEWORK_DEFAULT_NONPOST_STATUS_REQUIRES_FRAMEWORK_BINDING|GAP_CLASS=SOURCE_TRIGGER_CONDITION_AVAILABLE|EXPECTED_HTTP=NOT_ASSIGNED|PAYLOAD_VALUES=NOT_ASSIGNED|FIXTURE_VALUES=NOT_ASSIGNED|ACTION_VALUES=NOT_ASSIGNED|RUNTIME_AUTHORIZED=NO
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:600:SOURCE_MATCH|4:TRIGGER_CONTRACT|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|SOURCE_CONDITION=!actorId <PIPE><PIPE> !actorRole|BOUND_HTTP=401|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:601:SOURCE_MATCH|5:TRIGGER_CONTRACT|ID=TC08|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|SOURCE_CONDITION=actorRole !== 'SUPERVISOR'|BOUND_HTTP=403|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:603:SOURCE_MATCH|7:TRIGGER_CONTRACT|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=UnauthorizedException|SOURCE_CONDITION=!actorId <PIPE><PIPE> !actorRole|BOUND_HTTP=401|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CONTROLLED-TEST-RESIDENT-ID-VALUE-SOURCE-SEMANTIC-BINDING-EVIDENCE.txt:604:SOURCE_MATCH|8:TRIGGER_CONTRACT|ID=TC12|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CASE_TYPE=SOURCE_EXCEPTION_PATH|SCOPE=HELPER:authorizeSupervisor|SIGNAL=ForbiddenException|SOURCE_CONDITION=actorRole !== 'SUPERVISOR'|BOUND_HTTP=403|TRIGGER_STRENGTH=SOURCE_CONDITION_BOUND|PAYLOAD_VALUE=NOT_ASSIGNED|FIXTURE_VALUE=NOT_ASSIGNED|ACTION_VALUE=NOT_ASSIGNED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:3:GATE=S5_CANONICAL_SUPERVISOR_BOOTSTRAP_BOUNDED_MUTATION_RECONCILIATION
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:28:BOOTSTRAP_MUTATION_SCOPE=INSERT_ONE_CANONICAL_SUPERVISOR_PLUS_ONE_BOOTSTRAP_AUDIT_RECORD_ONLY
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:33:ACTIVE_SUPERVISOR_TARGET_PROVEN=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:35:ZERO_SUPERVISOR_BASELINE_PROVEN=YES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:45:BOOTSTRAP_BOUNDED_MUTATION_STATE=CANONICAL_SUPERVISOR_BOOTSTRAP_BOUNDED_TWO_INSERT_MUTATION_AUTHORITY_PROVEN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:47:NEXT_CLASS=CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_REQUIRED
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/V8.0-S5-CANONICAL-SUPERVISOR-BOOTSTRAP-BOUNDED-MUTATION-RECONCILIATION-RESULT.txt:48:NEXT_ACTION=S5_CANONICAL_SUPERVISOR_BOOTSTRAP_EXECUTION_FROM_BOUNDED_STAFF_PLUS_AUDIT_INSERT_AUTHORITY
+
+======================================================================
+ 10. EXISTING INVENTORY TEST / ACCEPTANCE ASSETS
+======================================================================
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_s1_level3_security_alignment_20260830_054956.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_s1_r1_continuation_20260830_060933.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_s1_r2_exact_route_contract_20260830_061026.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_s1_r1_rebased_security_acceptance_20260830_060848.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_d1_inventory_service_api_contract_20260829_221804.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r1_source_baseline_salvage_20260830_052252.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_i1_p2_inventory_implementation_20260829_222459.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r3_authority_source_salvage_20260830_053836.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_m1_r1_lot_tracking_schema_20260829_221938.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_runtime_preflight_20260829_222731.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2b_r1_p1_r2_current_state_forensic_20260830_052526.txt
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_i1_p1_exact_implementation_preflight_20260829_222108.txt
+
+======================================================================
+ 11. PACKAGE TEST COMMANDS
+======================================================================
+API_PACKAGE=taman-care-v7-health-trend
+SCRIPTS:
+build=nest build
+start:prod=node dist/main.js
+
+======================================================================
+ 12. SOURCE IMMUTABILITY SNAPSHOT
+======================================================================
+PREFLIGHT_API_SOURCE_HASH=db4e70257f1c8dc5c0b95d194c330c48a1636bdc86933ba8ac9537f88109bb7a
+PREFLIGHT_FE_SOURCE_HASH=01b97dec0c33ac12cf82e031779ce0c17c1bf5fde8e03304da4fa54627e92832
+
+======================================================================
+ 13. PREFLIGHT CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P1 FUNCTIONAL ACCEPTANCE PREFLIGHT PASSED
+
+SOURCE_PATCH=NO
+DB_MUTATION=NO
+SCHEMA_MUTATION=NO
+RUNTIME_RESTART=NO
+
+NEXT=DESIGN EXACT ISOLATED FUNCTIONAL ACCEPTANCE
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p1_functional_acceptance_preflight_20260830_061121.txt
+
+======================================================================
+ IMPORTANT:
+ -> DO NOT CREATE INVENTORY TEST DATA YET
+ -> DO NOT MODIFY DATABASE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT PATCH SOURCE
+ -> DO NOT RESTART RUNTIMES
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

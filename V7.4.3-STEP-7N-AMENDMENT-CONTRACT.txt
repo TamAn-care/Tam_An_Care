@@ -1,0 +1,71 @@
+TAM AN CARE V7.4.3
+STEP 7N CLINICAL AMENDMENT CONTRACT
+
+
+PURPOSE
+
+Clinical records must not be silently rewritten.
+
+
+VERIFIED OBSERVATION
+
+Original verified value:
+immutable.
+
+Correction:
+new amendment record.
+
+Required:
+
+amendment reason
+human actor
+actor role
+timestamp
+previous value
+corrected value
+
+
+SIGNED NURSING NOTE
+
+Original signed note:
+immutable.
+
+Correction:
+amended / superseding note.
+
+The original remains available in history.
+
+
+VOID
+
+Void does not physically delete history.
+
+Void requires:
+
+human authorization
+reason
+audit event
+
+
+AI
+
+AI cannot:
+
+amend
+void
+sign
+verify
+rewrite historical clinical data
+
+
+CONCURRENCY
+
+Concurrent amendments:
+
+row lock original aggregate.
+
+Each allowed amendment must remain attributable.
+
+No lost update.
+
+No silent overwrite.

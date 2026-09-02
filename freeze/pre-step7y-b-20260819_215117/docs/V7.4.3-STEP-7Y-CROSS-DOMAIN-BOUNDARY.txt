@@ -1,0 +1,52 @@
+STEP 7Y — CROSS-DOMAIN BOUNDARY
+
+Step 7Y may reference other domain information for safeguarding review.
+
+Step 7Y MUST NOT autonomously mutate:
+
+- care_actions
+- care_action_transfers
+- care_tasks
+
+- medication_orders
+- medication_schedules
+- medication_administrations
+- medication_double_checks
+
+- clinical_observations
+- clinical_escalations
+
+- incidents
+- incident_triage
+- incident_assignments
+
+- nutrition domain
+- rehabilitation domain
+- wound domain
+- hygiene domain
+- behavioral / cognitive domain
+- sleep / rest domain
+- pain / comfort domain
+- infection domain
+- medication-safety domain
+
+
+Examples:
+
+Repeated unexplained bruising
+-> may generate safeguarding advisory signal
+-> cannot conclude abuse.
+
+Repeated missed care tasks
+-> may generate neglect-risk advisory signal
+-> cannot conclude neglect.
+
+Financial irregularity pattern
+-> may generate exploitation-risk advisory signal
+-> cannot accuse a person.
+
+Resident distress around a particular interaction
+-> may suggest human safeguarding review
+-> cannot impose staff discipline.
+
+ZERO CROSS-DOMAIN AUTONOMY = REQUIRED

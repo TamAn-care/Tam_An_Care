@@ -1,0 +1,83 @@
+TAM AN CARE V7.7
+CONTROLLED PRODUCTION PROMOTION
+POST-CUTOVER STABILIZATION R1 PREFLIGHT
+
+STATUS=READY
+
+E4_R1_RESULT_HASH=
+1682cccaebd0540921280e1792f70e6f636fc75bb83f776adc7b662b991d3631
+
+E4_R1_MANIFEST_HASH=
+215e8ba73121c5a54e7db1857b4bdcce77aaf62d686ff149048973879ca4ea0d
+
+PRODUCTION_STATUS=
+V7.7_ACTIVE
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+V7.7_API_IMAGE=
+sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7
+
+V7.7_UI_IMAGE=
+sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147
+
+PRODUCTION_API=
+127.0.0.1:3100
+
+PRODUCTION_UI=
+127.0.0.1:8080
+
+PRODUCTION_NETWORK=
+taman-care-v743-dev-network
+
+API_SECURITY_CONTRACT=
+GET staff -> 401
+GET access -> 401
+POST Resident AI -> 401
+
+PRODUCTION_DB_TABLE_COUNT=
+118
+
+PRODUCTION_DB_FINGERPRINT=
+7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639
+
+ROLLBACK_API=
+taman-care-v743-dev-api
+
+ROLLBACK_UI=
+taman-care-v75-ui
+
+ROLLBACK_ASSETS_PRESERVED=
+YES
+
+NEXT GATE MUST:
+
+1. Verify E4-R1 result + manifest.
+2. Verify exact V7.7 API/UI running images.
+3. Verify V7.7 source hash.
+4. Verify API health repeatedly.
+5. Verify staff GET no actor=401 repeatedly.
+6. Verify access GET no actor=401 repeatedly.
+7. Verify Resident AI POST no actor=401 repeatedly.
+8. Verify UI matrix=200|401|401|200 repeatedly.
+9. Verify /operational-care=200.
+10. Verify Vite assets remain served.
+11. Verify V7.7 containers remain running.
+12. Verify restart counts do not increase.
+13. Verify production DB container remains running.
+14. Verify production DB fingerprint unchanged.
+15. Verify V7.6 API/UI remain stopped and preserved.
+16. Perform NO mutating application endpoint calls.
+17. Perform NO DB writes.
+18. On stabilization failure, prepare controlled rollback.
+19. Only after stabilization passes prepare V7.7 release freeze.
+
+DATABASE_MIGRATION=
+NO
+
+DATABASE_WRITE=
+NO
+
+ROLLBACK_ASSET_DELETE=
+NO

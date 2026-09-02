@@ -1,0 +1,88 @@
+{
+  "release": "V7.6",
+  "phase": "4B Controlled Mutation Implementation",
+  "frontend_route": "/operational-care",
+  "rules": [
+    "Modify V7.6 workspace only.",
+    "Do not edit frozen V7.5 source.",
+    "Do not write production database.",
+    "Do not replace production runtime.",
+    "Use human actor headers for protected operations.",
+    "Do not invent fields absent from named or inline contracts.",
+    "Use disposable PostgreSQL for functional mutation testing."
+  ],
+  "operations": [
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/assign",
+      "handler": "assign",
+      "body_type": "AssignCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/transfer",
+      "handler": "transfer",
+      "body_type": "TransferCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/start-review",
+      "handler": "startReview",
+      "body_type": "StartCareActionReviewInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/resolve",
+      "handler": "resolve",
+      "body_type": "ResolveCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/reopen",
+      "handler": "reopen",
+      "body_type": "ReopenCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/warning-reviews",
+      "handler": "review",
+      "body_type": "any",
+      "contract_mode": "OPAQUE_JSON_BODY"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-plan-governance/:carePlanId/:action",
+      "handler": "execute",
+      "body_type": "GovernanceBody",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-task-execution/:careTaskId/:action",
+      "handler": "execute",
+      "body_type": "CareTaskExecutionInput",
+      "contract_mode": "NAMED_DTO"
+    }
+  ],
+  "warning_review": {
+    "mode": "OPAQUE_JSON_BODY",
+    "observed_fields": [],
+    "ui_rule": "Use JSON-object editor because backend declares the request body as any and exposes no field-level DTO."
+  },
+  "next_gates": [
+    "Implement POST helper in operational-care.ts.",
+    "Implement five Care Action lifecycle functions.",
+    "Implement Warning Review create safely.",
+    "Implement Care Plan Governance mutation.",
+    "Implement Care Task Execution mutation.",
+    "Add mutation controls to Operational Care Workspace.",
+    "TypeScript/Vite build.",
+    "Verify no frozen-source change.",
+    "Run isolated backend/database mutation acceptance."
+  ]
+}

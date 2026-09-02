@@ -1,0 +1,16 @@
+{
+  "docker_restart_command": {
+    "authoritative_signals": [
+      "same_container_id",
+      "same_image_id",
+      "started_at_changed",
+      "service_health_recovered",
+      "security_or_routing_recovered",
+      "database_unchanged"
+    ],
+    "restart_count": {
+      "classification": "INFORMATIONAL_ONLY",
+      "reason": "manual docker restart is not required to increment Docker RestartCount"
+    }
+  }
+}

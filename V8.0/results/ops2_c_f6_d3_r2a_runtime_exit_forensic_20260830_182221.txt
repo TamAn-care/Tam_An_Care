@@ -1,0 +1,310 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D3-R2A
+ ISOLATED RUNTIME EXIT FORENSIC + DB PRESERVATION
+ STRICT READ ONLY
+ NO CONTAINER RESTART
+ NO HTTP POST
+======================================================================
+
+======================================================================
+ 1. FAILED R2 AUTHORITY
+======================================================================
+R2_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2_bounded_concurrency_execution_20260830_182058.txt
+PASS: R2 PRE-FUNCTIONAL RUNTIME EXIT CAPTURED
+
+======================================================================
+ 2. SOURCE LOCK
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+
+======================================================================
+ 3. CONTAINER STATE FORENSIC
+======================================================================
+CONTAINER_EXISTS=YES
+ISOLATED_STATE=exited
+ISOLATED_RUNNING=false
+ISOLATED_EXIT_CODE=137
+ISOLATED_OOM_KILLED=false
+ISOLATED_STATE_ERROR=<EMPTY>
+ISOLATED_STARTED_AT=2026-08-30T11:07:59.542758222Z
+ISOLATED_FINISHED_AT=2026-08-30T11:20:14.332061881Z
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+ISOLATED_RESTART_POLICY=no
+PASS: ACCEPTED IMAGE PRESERVED
+PASS: NO DOCKER OOM KILL
+PASS: NO DOCKER STATE ERROR
+
+======================================================================
+ 4. CONFIG PRESERVATION
+ VALUES OF SECRET / DATABASE URL NOT PRINTED
+======================================================================
+CONFIG_NODE_ENV=production
+JWT_SECRET_PRESENT_AND_GE32=YES
+DATABASE_URL_PRESENT=YES
+CORS_CONFIG_PRESENT=YES
+JWT_SECRET_VALUE_PRINTED=NO
+DATABASE_URL_VALUE_PRINTED=NO
+PASS: PRODUCTION CONFIG PRESERVED
+PASS: EPHEMERAL JWT SECRET PRESERVED
+PASS: DATABASE URL PRESERVED
+
+======================================================================
+ 5. LAST APPLICATION LOGS
+ FORENSIC ONLY
+======================================================================
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/lots, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/lots/:inventoryLotId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/lots, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/lots/:inventoryLotId, PATCH} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/transactions, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/transactions/:inventoryTransactionId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/transactions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/inventory/resident-consumptions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mStaffActorController {/api/operations/staff-actors}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/staff-actors, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/staff-actors, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/staff-actors/:actorId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/auth}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/login, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/auth/logout, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mHealthReportController {/health-reports}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports/:healthReportId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports/:healthReportId/generate, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports/:healthReportId/start-review, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports/:healthReportId/approve, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports/:healthReportId/deliver, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/health-reports/:healthReportId/pdf, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAdmissionController {/api/admissions}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/measurements, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/contacts, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAdmissionClassificationController {/api/admissions}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/assessments, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/classification/generate, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/classification/:classificationId/approve, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/decision, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/finalize, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/admissions/:admissionCaseId/assessment-overview, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mResidentAccessAdministrationController {/api/operations}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/access-assignments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/residents/:residentId/access-assignments, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/residents/:residentId/access-assignments, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/access-assignments/:assignmentId/revoke, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOperationalCareViewController {/api/operations}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/residents/:residentId/care-view, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mOperationalDashboardController {/api/operations}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/operations/dashboard, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCrossDomainIntegrationController {/api/integration}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/integration/residents/:residentId/overview, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mFallMobilityController {/api/fall-mobility}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/fall-mobility/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/fall-mobility/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSafeguardingController {/api/safeguarding}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/safeguarding/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/safeguarding/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mMedicationSafetyController {/api/medication-safety}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/medication-safety/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/medication-safety/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mInfectionControlController {/api/infection-control}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/infection-control/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/infection-control/:residentId/execute, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPainComfortController {/api/pain-comfort}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/pain-comfort/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/pain-comfort/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSleepRestController {/api/sleep-rest}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sleep-rest/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/sleep-rest/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mBehavioralCognitiveController {/api/behavioral-cognitive}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/behavioral-cognitive/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/behavioral-cognitive/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPersonalCareController {/api/personal-care}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/personal-care/summary, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/personal-care/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSkinWoundController {/api/skin-wound}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/skin-wound/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/skin-wound/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mIncidentController {/api/incidents}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/incidents/report, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/incidents/:incidentId/:action, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mClinicalController {/api/clinical}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/clinical/:aggregateType/:aggregateId/:action, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mMedicationController {/api/medication-administrations}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/medication-administrations/:administrationId/:action, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCareTaskExecutionController {/api/care-task-execution}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/care-task-execution/:careTaskId/:action, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCarePlanGovernanceController {/api/care-plan-governance}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/care-plan-governance/:carePlanId/:action, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mResidentController {/api/residents}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/residents, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/residents, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/residents/:residentId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWarningReviewController {/api/warning-reviews}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/warning-reviews, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/warning-reviews/:warningId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCareActionBridgeController {/api/care-action-bridge}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/care-action-bridge/:warningId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mResponsibilityAcceptanceController {/api/care-actions}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/care-actions/:residentId/:patternId/accept-responsibility, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mNutritionHydrationController {/api/nutrition-hydration}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/nutrition-hydration/:residentId/execute, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/nutrition-hydration/:residentId/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mActivityRehabilitationController {/api/activity-rehabilitation}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-rehabilitation/test/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/activity-rehabilitation/:residentId/execute, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 1  - [39m08/30/2026, 11:08:02 AM [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +5ms[39m
+{"type":"http_request","timestamp":"2026-08-30T11:08:03.002Z","requestId":"e4ba788b-4882-464b-9926-cdfe2d035677","method":"GET","path":"/api/health","statusCode":200,"durationMs":9.722,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:08:03.071Z","requestId":"efdd6b8b-b7ee-4640-b844-445aed90476b","method":"GET","path":"/api/inventory/items","statusCode":401,"durationMs":1.699,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:10:51.751Z","requestId":"92af1fc7-2478-414c-863c-d961141694ec","method":"GET","path":"/api/health","statusCode":200,"durationMs":24.91,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:12:28.751Z","requestId":"aea23c92-2cfe-4137-83ed-3a196de59551","method":"GET","path":"/api/health","statusCode":200,"durationMs":5.481,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:12:33.306Z","requestId":"4f4d678d-56e2-4ef6-be6a-f799f3b4f45c","method":"GET","path":"/api/health","statusCode":200,"durationMs":3.224,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:14:33.424Z","requestId":"80429eb8-1877-47b9-ab5a-520425da8ab2","method":"GET","path":"/api/health","statusCode":200,"durationMs":5.343,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:14:35.336Z","requestId":"ea3949dd-e114-4fee-a47a-27af35949ef2","method":"POST","path":"/api/inventory/resident-consumptions","statusCode":201,"durationMs":258.528,"actorId":"ops2c-f5-caregiver"}
+{"type":"http_request","timestamp":"2026-08-30T11:14:35.361Z","requestId":"b9893bc8-6ab8-4cef-a4c0-06401f21d8c3","method":"POST","path":"/api/inventory/resident-consumptions","statusCode":201,"durationMs":10.595,"actorId":"ops2c-f5-nurse"}
+{"type":"http_request","timestamp":"2026-08-30T11:14:35.389Z","requestId":"080d2b14-7e72-4008-bc4c-aaca7cd6dd8b","method":"POST","path":"/api/inventory/resident-consumptions","statusCode":201,"durationMs":9.746,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-30T11:14:35.420Z","requestId":"a8253f9e-25d8-4da8-b1d9-20c97f7cbf6e","method":"POST","path":"/api/inventory/resident-consumptions","statusCode":201,"durationMs":14.623,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-30T11:14:35.439Z","requestId":"29390026-3403-41dc-acdf-6ec2ad9b5493","method":"POST","path":"/api/inventory/resident-consumptions","statusCode":409,"durationMs":6.443,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-30T11:14:36.836Z","requestId":"39bde71e-96b2-489e-a33c-30f538c30204","method":"GET","path":"/api/health","statusCode":200,"durationMs":2.191,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:16:22.020Z","requestId":"e8d21722-6393-484e-9003-4b9beb115fe3","method":"GET","path":"/api/health","statusCode":200,"durationMs":5.114,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:17:51.100Z","requestId":"a1abe8a6-3d0f-4430-ba33-633d8bc018ca","method":"GET","path":"/api/health","statusCode":200,"durationMs":3.727,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:19:24.187Z","requestId":"604a28e4-69ff-43fa-a537-7f493051c2a5","method":"GET","path":"/api/health","statusCode":200,"durationMs":28.4,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-30T11:19:26.182Z","requestId":"7d0c8522-57fa-4433-a398-2878ce826c92","method":"GET","path":"/api/health","statusCode":200,"durationMs":5.847,"actorId":null}
+
+======================================================================
+ 6. RECENT DOCKER EVENTS FOR THIS CONTAINER
+ FORENSIC ONLY
+======================================================================
+2026-08-30T18:20:04.079231293+07:00 container update a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:04.139244751+07:00 container kill a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, signal=15, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:14.206801798+07:00 container kill a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, signal=9, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:16.375914715+07:00 container stop a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:16.399976840+07:00 container die a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, execDuration=735, exitCode=137, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+
+======================================================================
+ 7. CONCURRENCY FIXTURE PRESERVATION
+======================================================================
+CONCURRENCY_ITEM_COUNT=1
+CONCURRENCY_SEED_COUNT=1
+CONCURRENCY_ISSUE_COUNT=0
+CONCURRENCY_EVENT_COUNT=0
+CONCURRENCY_SOURCE_TX_COUNT=0
+CONCURRENCY_SOURCE_EVENT_COUNT=0
+CONCURRENCY_BALANCE=10.0000
+PASS: CONCURRENCY ITEM PRESERVED
+PASS: CONCURRENCY SEED PRESERVED
+PASS: NO CONCURRENCY ISSUE EXECUTED
+PASS: NO CONCURRENCY EVENT EXECUTED
+PASS: CONCURRENCY TX SOURCES UNUSED
+PASS: CONCURRENCY EVENT SOURCES UNUSED
+PASS: CONCURRENCY BALANCE STILL 10
+
+======================================================================
+ 8. R3B ACCEPTANCE DATA PRESERVATION
+======================================================================
+R3B_TRANSACTION_COUNT=4
+R3B_EVENT_COUNT=4
+PASS: R3B TRANSACTIONS PRESERVED
+PASS: R3B EVENTS PRESERVED
+
+======================================================================
+ 9. TEST AUTH PRESERVATION
+======================================================================
+TEST_AUTH_SESSION_TOTAL=5
+TEST_AUTH_SESSION_ACTIVE=5
+PASS: TEST AUTH SESSIONS PRESERVED
+AUTH_ACTIVE_COUNT_INFORMATIONAL=5
+
+======================================================================
+ 10. CANONICAL RUNTIMES
+ ISOLATED 3111 IS INTENTIONALLY NOT RESTARTED
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+
+======================================================================
+ 11. FINAL SOURCE HASH
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+
+======================================================================
+ 12. FORENSIC SIGNALS
+======================================================================
+EXITED_STATE_CONFIRMED=YES
+EXIT137_WITHOUT_DOCKER_OOM=YES
+CLEAN_APPLICATION_EXIT=NO
+DOCKER_STATE_ERROR_PRESENT=NO
+RESTART_POLICY=no
+
+======================================================================
+ 13. R2A BOUNDARY
+======================================================================
+FORENSIC_ONLY=YES
+CONTAINER_RESTART_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+FUNCTIONAL_HTTP_POST_EXECUTED=NO
+CONCURRENCY_REQUEST_EXECUTED=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D3-R2A DECISION
+======================================================================
+PASS_COUNT=26
+FAIL_COUNT=0
+STATUS: OPS-2-C F6-D3-R2A RUNTIME EXIT FORENSIC PASSED
+APPLICATION_DEFECT_NOT_ESTABLISHED=YES
+SOURCE_REPAIR_REQUIRED=NO
+CONCURRENCY_FIXTURE_PRESERVED=YES
+CONCURRENCY_EXECUTION_OCCURRED=NO
+RUNTIME_RECOVERY_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_EXIT_CLASSIFICATION_AND_RECOVERY_DECISION
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2a_runtime_exit_forensic_20260830_182221.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT START OR REPROVISION tamancare_ops2c_functional YET
+ -> PRESERVE CURRENT CONTAINER CONFIG + EPHEMERAL JWT SECRET
+ -> KEEP R3B ACCEPTANCE DATA
+ -> KEEP F6-D3 CONCURRENCY FIXTURE
+ -> DO NOT RUN CONCURRENCY REQUESTS
+ -> DO NOT CLEAN TEST DATA
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

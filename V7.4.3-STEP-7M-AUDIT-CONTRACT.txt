@@ -1,0 +1,68 @@
+TAM AN CARE V7.4.3
+STEP 7M MEDICATION AUDIT CONTRACT
+
+ORDER EVENTS
+
+MED_ORDER_CREATED
+MED_ORDER_VERIFIED
+MED_ORDER_ACTIVATED
+MED_ORDER_SUSPENDED
+MED_ORDER_REACTIVATED
+MED_ORDER_COMPLETED
+MED_ORDER_CANCELLED
+
+
+SCHEDULE EVENTS
+
+MED_SCHEDULE_CREATED
+MED_SCHEDULE_ACTIVATED
+MED_SCHEDULE_SUSPENDED
+MED_SCHEDULE_COMPLETED
+MED_SCHEDULE_CANCELLED
+
+
+ADMINISTRATION EVENTS
+
+MED_ADMIN_CREATED
+MED_ADMIN_ASSIGNED
+MED_ADMIN_ACCEPTED
+MED_ADMIN_READY
+MED_ADMIN_DOUBLE_CHECKED
+MED_ADMINISTERED
+MED_ADMIN_MISSED
+MED_ADMIN_REFUSED
+MED_ADMIN_HELD
+MED_ADMIN_CANCELLED
+
+
+AUDIT REQUIREMENTS
+
+Every successful mutation creates exactly one
+corresponding audit event.
+
+Failed authorization:
+ZERO mutation
+ZERO audit
+
+Failed transition:
+ZERO mutation
+ZERO audit
+
+Concurrency loser:
+ZERO mutation
+ZERO audit
+
+Audit stores:
+
+event_sequence
+human actor
+human role
+previous_state
+new_state
+timestamp
+
+High-risk administration requires successful
+MED_ADMIN_DOUBLE_CHECKED before MED_ADMINISTERED.
+
+Audit cannot be created by AI to represent
+a clinical action AI did not perform.

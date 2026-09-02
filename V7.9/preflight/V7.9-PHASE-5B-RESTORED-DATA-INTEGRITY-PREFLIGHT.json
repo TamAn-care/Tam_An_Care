@@ -1,0 +1,127 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5B",
+  "phase_name": "RESTORED_DATA_INTEGRITY",
+  "status": "PREFLIGHT_DISCOVERY_COMPLETE",
+  "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+  "depends_on": "V7.9_PHASE_5A_ACCEPTED",
+  "phase5a_result_sha256": "ef102ba6dca3ff7edd7c15b299a2fa29e6a92fac830eb42533aa21465d28679e",
+  "phase5a_manifest_sha256": "63c90faf44bc86d1aa9da6d80aad20803dd839e593ec81a448f93abaa3f459fe",
+  "phase5a_source_table_count": 118,
+  "phase5a_restored_table_count": 118,
+  "phase5a_schema_signature": "dc4f962ec5e31d878a9f58819f7a7caf",
+  "phase5a_restore_container_destroyed": true,
+  "phase5a_backup_artifact_removed": true,
+  "integrity_contract": {
+    "signal_counts": {
+      "ROW_COUNT": 2,
+      "ROW COUNT": 0,
+      "TABLE_COUNT": 0,
+      "TABLE COUNT": 0,
+      "FINGERPRINT": 0,
+      "CHECKSUM": 0,
+      "HASH": 0,
+      "SHA256": 0,
+      "SCHEMA": 0,
+      "CONSTRAINT": 0,
+      "CONSTRAINTS": 0,
+      "FOREIGN KEY": 0,
+      "FOREIGN_KEY": 0,
+      "PRIMARY KEY": 0,
+      "PRIMARY_KEY": 0,
+      "INDEX": 0,
+      "INDEXES": 0,
+      "SEQUENCE": 0,
+      "SEQUENCES": 0,
+      "SERIAL": 0,
+      "IDENTITY": 0,
+      "NULL": 0,
+      "UNIQUE": 0,
+      "DATA INTEGRITY": 0,
+      "DATA_INTEGRITY": 0,
+      "RESTORED": 2,
+      "RESTORE": 2,
+      "BACKUP": 0,
+      "DISPOSABLE": 0,
+      "CONTAINER": 0,
+      "DATABASE": 2,
+      "PG_DUMP": 0,
+      "PG_RESTORE": 0,
+      "PSQL": 0,
+      "COUNT(*)": 0
+    },
+    "contract_lines": [
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY-RESULT.txt",
+        "line": 4,
+        "terms": [
+          "RESTORED",
+          "RESTORE"
+        ],
+        "text": "RESTORED_TABLE_SET_EQUIVALENT=YES"
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY-RESULT.txt",
+        "line": 5,
+        "terms": [
+          "ROW_COUNT",
+          "RESTORED",
+          "RESTORE"
+        ],
+        "text": "RESTORED_ROW_COUNT_DIFF_TABLES=0"
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY-RESULT.txt",
+        "line": 6,
+        "terms": [
+          "DATABASE"
+        ],
+        "text": "PRODUCTION_DATABASE_DELTA=NO"
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY.json",
+        "line": 6,
+        "terms": [
+          "ROW_COUNT"
+        ],
+        "text": "  \"row_count_difference_tables\": 0,"
+      },
+      {
+        "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-5B-RESTORED-DATA-INTEGRITY.json",
+        "line": 7,
+        "terms": [
+          "DATABASE"
+        ],
+        "text": "  \"production_database_delta\": false,"
+      }
+    ],
+    "dimensions": {
+      "row_count": true,
+      "table_count": false,
+      "fingerprint_or_checksum": false,
+      "schema": false,
+      "constraints": false,
+      "indexes": false,
+      "sequences": false,
+      "restore_operation": true,
+      "backup_operation": false,
+      "disposable_runtime": false
+    }
+  },
+  "manual_test_review": {
+    "manual_test_required": false,
+    "hits": [],
+    "scope": "EXACT_V7.8_PHASE_5B_AUTHORITY_ONLY"
+  },
+  "implementation_authorized": false,
+  "execution_authorized": false,
+  "runner_created": false,
+  "backup_executed": false,
+  "restore_executed": false,
+  "database_mutation": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "next_authorized_action": "RESOLVE_EXACT_PHASE_5B_EXECUTION_MECHANISM",
+  "created_at": "2026-08-22T06:10:32.001365+00:00"
+}

@@ -1,0 +1,86 @@
+TAM AN CARE V7.4.3
+STEP 7N ABNORMAL FINDING / ESCALATION CONTRACT
+
+
+PRINCIPLE
+
+An abnormal measurement is a signal for
+human attention.
+
+It is NOT, by itself:
+
+- a diagnosis
+- a prescription
+- a medication instruction
+- a treatment order
+- a Care Action
+
+
+THRESHOLDS
+
+Clinical thresholds are configuration.
+
+Thresholds must not be invented by AI.
+
+Threshold configuration requires:
+
+- identifiable version
+- approving human authority
+- effective period
+- units
+- observation type
+- applicable resident/context rules
+- auditability
+
+
+FLOW
+
+Observation
+-> threshold / pattern evaluation
+-> possible abnormal signal
+-> human acknowledgement
+-> human review
+-> human escalation if required
+-> optional explicit Care Action link
+
+
+AI
+
+AI may raise:
+
+POSSIBLE_ABNORMAL_TREND
+POSSIBLE_DETERIORATION
+REVIEW_RECOMMENDED
+
+AI may not change:
+
+abnormal finding lifecycle
+escalation lifecycle
+Care Action lifecycle
+Medication lifecycle
+
+
+CARE ACTION
+
+A Care Action may only be linked or created through
+a separately authorized human workflow.
+
+Observation -> Care Action automatically = NO
+
+Abnormal Finding -> Care Action automatically = NO
+
+AI -> Care Action automatically = NO
+
+
+CONCURRENCY
+
+Two humans acknowledging/reviewing the same finding:
+
+row lock required.
+
+For an exclusive transition:
+
+exactly one winner.
+
+No duplicate escalation for the same exclusive
+transition unless explicitly allowed by future design.

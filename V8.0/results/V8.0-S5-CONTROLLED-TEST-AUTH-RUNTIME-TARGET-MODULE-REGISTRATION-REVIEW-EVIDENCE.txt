@@ -1,0 +1,76 @@
+TAM AN CARE V8.0
+SERIES=SERIES_08
+PHASE=S5_TARGET_MODULE_REGISTRATION_REVIEW
+APP_MODULE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/app.module.ts
+
+===== FULL EarlyWarningController OCCURRENCES =====
+7-import {
+8-  MedicationModule,
+9-} from './medication/medication.module';
+10-import { DatabaseModule } from './database/database.module';
+11-import { CareActionRepository } from './care-actions/care-action.repository';
+12-import { CareActionService } from './care-actions/care-action.service';
+13-import { CareActionController } from './care-actions/care-action.controller';
+14-import { HealthController } from './health/health.controller';
+15-import { AiEngineController } from './ai/ai-engine.controller';
+16-import { AiEngineService } from './ai/ai-engine.service';
+17-import { AiGatewayService } from './ai/ai-gateway.service';
+18-import { AiGovernanceController } from './ai/ai-governance.controller';
+19:import { EarlyWarningController } from './ai/early-warning.controller';
+20-import { EarlyWarningService } from './ai/early-warning.service';
+21-import { ResidentModule } from './residents/resident.module';
+22-import { WarningReviewModule } from './warning-reviews/warning-review.module';
+23-import { CareActionBridgeModule } from './care-action-bridge/care-action-bridge.module';
+24-import { ResponsibilityAcceptanceModule } from './responsibility-acceptance/responsibility-acceptance.module';
+25-import { StartReviewAuthorizationModule } from './start-review-authorization/start-review-authorization.module';
+26-
+27-
+28-import {
+29-  ResolutionAuthorizationModule,
+30-} from './resolution-authorization/resolution-authorization.module';
+31-
+--
+67-    SleepRestModule,
+68-    BehavioralCognitiveModule,
+69-    PersonalCareModule,
+70-    SkinWoundModule,
+71-    IncidentModule,
+72-    ClinicalModule,
+73-    MedicationModule,
+74-    CareTaskExecutionModule,
+75-    CarePlanGovernanceModule,ResolutionAuthorizationModule,DatabaseModule,ResidentModule,WarningReviewModule,CareActionBridgeModule,ResponsibilityAcceptanceModule,StartReviewAuthorizationModule,
+76-    ReopenAuthorizationModule,
+77-  NutritionHydrationModule,
+78-  ActivityRehabilitationModule,
+79:],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService]})
+80-export class AppModule {}
+
+===== MODULE METADATA REGION =====
+53-import { SafeguardingModule } from './safeguarding/safeguarding.module';
+54-import { FallMobilityModule } from './fall-mobility/fall-mobility.module';
+55-import { CrossDomainIntegrationModule } from './cross-domain-integration/cross-domain-integration.module';
+56-import { OperationalCareViewModule } from './operational-care-view/operational-care-view.module';
+57-import { ResidentAccessAdministrationModule } from './resident-access-administration/resident-access-administration.module';
+58:@Module({imports:[
+59-    ResidentAccessAdministrationModule,
+60-    OperationalCareViewModule,
+61-    CrossDomainIntegrationModule,
+62-    FallMobilityModule,
+63-    SafeguardingModule,
+64-    MedicationSafetyModule,
+65-    InfectionControlModule,
+66-    PainComfortModule,
+67-    SleepRestModule,
+68-    BehavioralCognitiveModule,
+69-    PersonalCareModule,
+70-    SkinWoundModule,
+71-    IncidentModule,
+72-    ClinicalModule,
+73-    MedicationModule,
+74-    CareTaskExecutionModule,
+75-    CarePlanGovernanceModule,ResolutionAuthorizationModule,DatabaseModule,ResidentModule,WarningReviewModule,CareActionBridgeModule,ResponsibilityAcceptanceModule,StartReviewAuthorizationModule,
+76-    ReopenAuthorizationModule,
+77-  NutritionHydrationModule,
+78-  ActivityRehabilitationModule,
+79-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService]})
+80-export class AppModule {}

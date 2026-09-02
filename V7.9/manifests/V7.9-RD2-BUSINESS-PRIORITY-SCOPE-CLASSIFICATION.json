@@ -1,0 +1,29 @@
+{
+  "status": "PASSED",
+  "phase": "RD2",
+  "decision": "BUSINESS_PRIORITY_AND_SCOPE_CLASSIFICATION_COMPLETE",
+  "scope_decision": "NO_SOURCE_PROVEN_PRODUCT_CHANGE_SCOPE_FROM_RD1",
+  "item_count": 10,
+  "priority_counts": {
+    "MUST": 0,
+    "SHOULD": 0,
+    "COULD": 0,
+    "OUT_OF_SCOPE": 10
+  },
+  "actionable_backlog_count": 0,
+  "confirmed_gap_count": 0,
+  "remaining_review_candidate_count": 0,
+  "manual_test_required": false,
+  "manual_test_executed": false,
+  "implementation_authorized": false,
+  "target_version_assigned": false,
+  "new_version_created": false,
+  "new_series_created": false,
+  "new_runner_created": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "application_source_write": false,
+  "next_gate": "RD3",
+  "next_gate_name": "MANUAL_TEST_AND_ACCEPTANCE_GATE_MAPPING",
+  "created_at": "2026-08-22T07:56:19.510717+00:00"
+}

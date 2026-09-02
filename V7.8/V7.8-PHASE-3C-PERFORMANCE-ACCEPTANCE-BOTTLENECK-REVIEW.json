@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-08-21T13:35:09.285899+00:00",
+  "version": "V7.8",
+  "phase": "3C",
+  "status": "PASSED",
+  "decision": "PERFORMANCE_ACCEPTED_NO_FURTHER_LOAD_REQUIRED",
+  "test_policy": {
+    "new_concurrency_test": false,
+    "stress_test": false,
+    "soak_test": false,
+    "business_mutation": false,
+    "database_write": false,
+    "runtime_restart": false
+  },
+  "performance_scaling": {
+    "api_health": {
+      "c2_mean_ms": 2.718,
+      "c2_p95_ms": 9.792,
+      "c2_max_ms": 10.704,
+      "c5_mean_ms": 3.06168,
+      "c5_p95_ms": 10.305199999999997,
+      "c5_max_ms": 10.713000000000001,
+      "mean_ratio": 1.1264459161147904,
+      "p95_ratio": 1.052410130718954,
+      "absolute_class": "EXCELLENT",
+      "scaling_class": "STABLE"
+    },
+    "operational_care": {
+      "c2_mean_ms": 1.073,
+      "c2_p95_ms": 1.254,
+      "c2_max_ms": 1.278,
+      "c5_mean_ms": 1.54472,
+      "c5_p95_ms": 2.176799999999999,
+      "c5_max_ms": 2.362,
+      "mean_ratio": 1.439627213420317,
+      "p95_ratio": 1.7358851674641143,
+      "absolute_class": "EXCELLENT",
+      "scaling_class": "MODERATE_RELATIVE_INCREASE"
+    },
+    "ui_root": {
+      "c2_mean_ms": 1.223,
+      "c2_p95_ms": 3.261,
+      "c2_max_ms": 3.29,
+      "c5_mean_ms": 1.39804,
+      "c5_p95_ms": 1.7868,
+      "c5_max_ms": 1.861,
+      "mean_ratio": 1.1431234668847097,
+      "p95_ratio": 0.5479300827966881,
+      "absolute_class": "EXCELLENT",
+      "scaling_class": "STABLE"
+    }
+  },
+  "observations": [
+    "operational_care: relative latency increased but absolute latency remains excellent"
+  ],
+  "blockers": [],
+  "higher_concurrency": {
+    "required": false,
+    "authorized": false,
+    "reason": "Concurrency-5 produced zero HTTP errors, zero restart delta, zero database delta, and excellent absolute latency."
+  },
+  "production_tuning": {
+    "required": false
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+  },
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_3_FINAL"
+}

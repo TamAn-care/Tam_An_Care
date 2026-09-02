@@ -1,0 +1,657 @@
+
+======================================================================
+TAMANCARE — OPS-2-B-D1 — INVENTORY SERVICE/API CONTRACT
+======================================================================
+MODE=READ_ONLY_CONTRACT
+SOURCE_PATCH=NO
+DB_MUTATION=NO
+MIGRATION=NO
+BUILD=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+MASTER_3000_TOUCH=NO
+
+LEDGER_SOURCE_OF_TRUTH=REQUIRED
+NEGATIVE_STOCK=FORBIDDEN
+CONCURRENT_OUTBOUND_PROTECTION=REQUIRED
+SECOND_LEDGER=FORBIDDEN
+HARD_RESIDENT_CAP=FORBIDDEN
+
+======================================================================
+1. ACCEPTED BASELINE LOCK
+======================================================================
+API_TREE=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API ACCEPTED BASELINE
+PASS: FRONTEND ACCEPTED BASELINE
+PUBLIC_TABLES=148
+PASS: OPS-2 SCHEMA BASELINE=148
+
+======================================================================
+2. FOUR OPS-2 TABLES MUST EXIST
+======================================================================
+inventory_items=1
+inventory_lots=1
+inventory_transactions=1
+resident_consumption_events=1
+
+======================================================================
+3. INVENTORY ITEM EXACT SCHEMA
+======================================================================
+ ordinal_position |    column_name    |        data_type         | is_nullable | column_default 
+------------------+-------------------+--------------------------+-------------+----------------
+                1 | inventory_item_id | text                     | NO          | 
+                2 | code              | text                     | NO          | 
+                3 | display_name_vi   | text                     | NO          | 
+                4 | category          | text                     | NO          | 
+                5 | base_unit         | text                     | NO          | 
+                6 | active            | boolean                  | NO          | true
+                7 | created_at        | timestamp with time zone | NO          | now()
+                8 | updated_at        | timestamp with time zone | NO          | now()
+(8 rows)
+
+
+======================================================================
+4. LOT-TRACKING REPRESENTATION GAP
+======================================================================
+LOT_TRACKING_CONTROL_COLUMN_COUNT=0
+GAP_CONFIRMED: INVENTORY ITEM HAS NO LOT-TRACKING CONTROL
+CLASSIFICATION=SCHEMA_EXTENSION_REQUIRED_BEFORE_SERVICE_IMPLEMENTATION
+
+======================================================================
+5. EXISTING INVENTORY API/SERVICE COLLISION
+======================================================================
+--- INVENTORY SOURCE FILES ---
+
+--- INVENTORY ROUTE SIGNALS ---
+EXISTING_INVENTORY_CONTROLLER_COUNT=0
+PASS: NO DUPLICATE INVENTORY API
+
+======================================================================
+6. CANONICAL HUMAN ACTOR CONTRACT
+======================================================================
+ primary_operational_role | status | actor_count 
+--------------------------+--------+-------------
+ SUPERVISOR               | ACTIVE |           1
+(1 row)
+
+
+CANONICAL ACTOR COLUMNS:
+       column_name        | data_type 
+--------------------------+-----------
+ actor_id                 | text
+ primary_operational_role | text
+ status                   | text
+(3 rows)
+
+
+======================================================================
+7. LOCKED INVENTORY API ROUTES
+======================================================================
+
+BASE:
+  /api/inventory
+
+ITEM CATALOGUE:
+
+GET  /api/inventory/items
+GET  /api/inventory/items/:inventoryItemId
+POST /api/inventory/items
+PATCH /api/inventory/items/:inventoryItemId
+
+NO:
+  DELETE /api/inventory/items/:id
+
+LIST FILTERS:
+  active
+  category
+  q
+  limit
+
+DEFAULT LIMIT:
+  50
+
+MAX LIMIT:
+  100
+
+ITEM MUTATION AUTHORITY:
+  CARE_MANAGER
+  SUPERVISOR
+
+ITEM RULES:
+  code immutable after creation
+  base_unit canonical accounting unit
+  active=false replaces hard delete
+  no authoritative stock balance stored
+
+
+LOTS:
+
+GET  /api/inventory/lots
+GET  /api/inventory/lots/:inventoryLotId
+POST /api/inventory/lots
+PATCH /api/inventory/lots/:inventoryLotId
+
+NO:
+  DELETE /api/inventory/lots/:id
+
+LIST FILTERS:
+  inventoryItemId
+  status
+  expiryBefore
+  limit
+
+LOT CREATE/UPDATE AUTHORITY:
+  CARE_MANAGER
+  SUPERVISOR
+
+LOT RULES:
+  inventory_item_id immutable
+  lot historical identity preserved
+  status mutable under authority
+  no mutable authoritative lot balance
+
+
+TRANSACTIONS:
+
+GET  /api/inventory/transactions
+GET  /api/inventory/transactions/:inventoryTransactionId
+POST /api/inventory/transactions
+
+NO:
+  PATCH inventory transaction
+  DELETE inventory transaction
+
+LIST FILTERS:
+  inventoryItemId
+  inventoryLotId
+  performedBy
+  transactionType
+  sourceDomain
+  occurredFrom
+  occurredTo
+  limit
+
+TRANSACTION READ:
+  CAREGIVER
+  NURSE
+  CARE_MANAGER
+  SUPERVISOR
+
+DIRECT TRANSACTION CREATE IN OPS-2-B:
+  CARE_MANAGER
+  SUPERVISOR
+
+IMPORTANT:
+  caregiver/nurse resident-attributed ISSUE will NOT use
+  unrestricted generic POST directly.
+
+  It will be created atomically through the future
+  Resident Consumption service contract in OPS-2-C.
+
+
+BALANCE READ:
+
+GET /api/inventory/items/:inventoryItemId/balance
+
+Optional query:
+  inventoryLotId
+
+RETURN:
+  derived authoritative ledger balance
+
+FORBIDDEN:
+  stored mutable authoritative balance.
+
+
+======================================================================
+8. TRANSACTION TYPE AUTHORITY
+======================================================================
+
+RECEIPT:
+  CARE_MANAGER
+  SUPERVISOR
+
+ADJUSTMENT_IN:
+  CARE_MANAGER
+  SUPERVISOR
+
+ADJUSTMENT_OUT:
+  CARE_MANAGER
+  SUPERVISOR
+
+RETURN_IN:
+  CARE_MANAGER
+  SUPERVISOR
+
+RETURN_OUT:
+  CARE_MANAGER
+  SUPERVISOR
+
+DIRECT GENERIC ISSUE:
+  CARE_MANAGER
+  SUPERVISOR
+
+RESIDENT-ATTRIBUTED ISSUE:
+  future OPS-2-C atomic path
+  may authorize:
+    CAREGIVER
+    NURSE
+    CARE_MANAGER
+    SUPERVISOR
+  subject to resident/work-event contract.
+
+
+======================================================================
+9. SIGNED LEDGER CONTRACT
+======================================================================
+
+SIGNED QUANTITY:
+
+RECEIPT        = +quantity
+ADJUSTMENT_IN  = +quantity
+RETURN_IN      = +quantity
+
+ISSUE          = -quantity
+ADJUSTMENT_OUT = -quantity
+RETURN_OUT     = -quantity
+
+BALANCE(item):
+  SUM(signed transaction quantity)
+
+BALANCE(item, lot):
+  SUM(signed transaction quantity for item + lot)
+
+Inventory item/lot tables:
+  MUST NOT become alternative stock ledger.
+
+
+======================================================================
+10. OUTBOUND CONCURRENCY CONTRACT
+======================================================================
+
+PROBLEM:
+
+There is intentionally no authoritative balance row to
+SELECT ... FOR UPDATE.
+
+Therefore concurrent outbound transactions cannot safely
+use:
+
+  SELECT SUM(...)
+  IF balance sufficient
+  INSERT issue
+
+without serialization.
+
+LOCKED IMPLEMENTATION STRATEGY:
+
+Within ONE PostgreSQL transaction:
+
+1. validate canonical ACTIVE human actor
+2. validate inventory item
+3. validate lot/item relation if lot supplied
+4. validate transaction unit == item.base_unit
+5. acquire transaction-scoped PostgreSQL advisory lock
+6. calculate authoritative signed ledger balance
+7. reject outbound if resulting balance < 0
+8. INSERT immutable inventory transaction
+9. COMMIT
+
+LOCK KEY:
+
+  deterministic inventory accounting key
+
+For non-lot movement:
+  INVENTORY_ITEM:<inventory_item_id>
+
+For lot movement:
+  INVENTORY_ITEM_LOT:<inventory_item_id>:<inventory_lot_id>
+
+PostgreSQL mechanism:
+
+  pg_advisory_xact_lock(...)
+
+Requirements:
+
+  -> transaction-scoped
+  -> automatically released at commit/rollback
+  -> all outbound service paths MUST use same key contract
+  -> no application in-memory mutex
+  -> no second balance table
+  -> no race between concurrent outbound transactions
+
+
+======================================================================
+11. LOT VALIDATION CONTRACT
+======================================================================
+
+IF item.lot_tracking_required = true:
+
+  outbound inventory transaction:
+    inventory_lot_id REQUIRED
+
+  inbound receipt:
+    inventory_lot_id REQUIRED
+
+IF item.lot_tracking_required = false:
+
+  inventory_lot_id MAY be NULL
+
+IF lot supplied:
+
+  lot.inventory_item_id
+    MUST equal transaction.inventory_item_id
+
+OUTBOUND lot status:
+
+  ACTIVE required
+
+FOR NORMAL ISSUE:
+
+  expired lot forbidden
+
+QUARANTINED:
+  normal outbound resident use forbidden
+
+EXHAUSTED/CLOSED:
+  new normal outbound forbidden
+
+
+======================================================================
+12. UNIT CONTRACT
+======================================================================
+
+OPS-2-B supports NO unit conversion.
+
+Therefore:
+
+inventory_transactions.unit
+  MUST equal
+inventory_items.base_unit
+
+Examples:
+
+item base_unit = "cái"
+transaction unit must = "cái"
+
+item base_unit = "ml"
+transaction unit must = "ml"
+
+Future pack/unit conversion:
+  separate explicit contract only.
+
+
+======================================================================
+13. IDEMPOTENCY CONTRACT
+======================================================================
+
+A source-backed transaction uses:
+
+  source_domain
+  source_entity_type
+  source_entity_id
+  inventory_item_id
+  inventory_lot_id / NULL
+
+Existing migration unique index:
+  uq_inventory_tx_source_item_lot
+
+Duplicate transaction:
+  HTTP 409
+
+No silent second stock movement.
+
+Manual transaction without source entity:
+  source_entity_type = NULL
+  source_entity_id = NULL
+
+and is not covered by source idempotency index.
+
+
+======================================================================
+14. IMMUTABLE LEDGER CONTRACT
+======================================================================
+
+inventory_transactions:
+
+  INSERT = authoritative movement
+
+  UPDATE = FORBIDDEN
+  DELETE = FORBIDDEN
+
+Correction:
+
+  create explicit compensating movement.
+
+Examples:
+
+incorrect ISSUE 5:
+  compensate RETURN_IN 5
+  then create correct ISSUE quantity
+
+incorrect RECEIPT:
+  compensate ADJUSTMENT_OUT / RETURN_OUT
+  according to governance reason.
+
+Original transaction always remains historical evidence.
+
+
+======================================================================
+15. BALANCE ENDPOINT CONTRACT
+======================================================================
+
+BALANCE IS READ MODEL, NOT STORED STATE.
+
+Response candidate:
+
+{
+  "inventory_item_id": "...",
+  "inventory_lot_id": null,
+  "unit": "...",
+  "balance": "12.0000",
+  "as_of": "..."
+}
+
+Rules:
+
+  derived from inventory_transactions
+  bounded single-item query
+  indexed by item/lot
+  no full inventory history scan across all residents
+  no hard resident cap.
+
+
+======================================================================
+16. HTTP STATUS CONTRACT
+======================================================================
+
+200:
+  successful GET / PATCH
+
+201:
+  successful POST
+
+400:
+  malformed input
+  invalid quantity
+  invalid unit
+  invalid transaction type
+  lot required but absent
+  expired/quarantined/closed lot
+
+401:
+  missing actor context
+
+403:
+  actor inactive
+  actor role mismatch
+  insufficient authority
+
+404:
+  item/lot/transaction not found
+
+409:
+  duplicate source transaction
+  insufficient stock
+  immutable code conflict
+  invalid current resource state
+
+
+======================================================================
+17. SERVICE MODULE CONTRACT
+======================================================================
+
+TARGET MODULE:
+
+  InventoryModule
+
+TARGET ROUTE LAYER:
+
+  InventoryController
+
+TARGET SERVICES:
+
+  InventoryItemService
+  InventoryLotService
+  InventoryTransactionService
+
+OPTIONAL INTERNAL HELPER:
+
+  InventoryLedgerService
+
+RESPONSIBILITIES:
+
+InventoryItemService
+  catalogue validation
+  bounded listing
+  create/update/deactivate
+
+InventoryLotService
+  lot validation
+  item relation
+  expiry/status handling
+
+InventoryTransactionService
+  authority
+  idempotency
+  immutable movement
+  concurrency lock
+  negative-stock protection
+
+InventoryLedgerService
+  signed SUM balance
+  advisory-lock key
+  transaction-client-aware helper
+
+FORBIDDEN:
+  independent DB commit inside caller transaction helper.
+
+
+======================================================================
+18. OPS-2-C BOUNDARY
+======================================================================
+
+OPS-2-B DOES NOT YET IMPLEMENT:
+
+  resident_consumption_events write service
+
+  caregiver/nurse resident-attributed issue
+
+  resident/work-event consistency validation
+
+  inventory transaction + resident consumption
+  atomic dual-write
+
+Those belong to:
+
+  OPS-2-C — Resident Consumption Service/API
+
+OPS-2-B may expose the internal ledger helper required
+for OPS-2-C reuse.
+
+
+======================================================================
+19. SCHEMA GAP CLASSIFICATION
+======================================================================
+REQUIRED_SCHEMA_EXTENSION=YES
+TABLE=inventory_items
+COLUMN=lot_tracking_required
+TYPE=boolean
+NULLABLE=NO
+DEFAULT=false
+
+RATIONALE:
+ -> D2 requires deterministic lot-controlled semantics
+ -> current schema cannot represent that property
+ -> inferring lot-control from existence of lot rows is forbidden
+ -> small forward migration required before service implementation
+
+======================================================================
+20. NO AUTHORITATIVE BALANCE REGRESSION
+======================================================================
+AUTHORITATIVE_BALANCE_COLUMN_COUNT=0
+PASS: NO STORED AUTHORITATIVE BALANCE
+
+======================================================================
+21. IDEMPOTENCY INDEX PRESERVATION
+======================================================================
+IDEMPOTENCY_INDEX_COUNT=1
+PASS: INVENTORY IDEMPOTENCY INDEX
+
+======================================================================
+22. NO HARD RESIDENT CAP
+======================================================================
+PASS: NO APPLICATION HARD RESIDENT CAP
+
+======================================================================
+23. SOURCE IMMUTABILITY
+======================================================================
+API_TREE_AFTER=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_AFTER=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API SOURCE UNCHANGED
+PASS: FRONTEND SOURCE UNCHANGED
+
+======================================================================
+24. RUNTIME PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+======================================================================
+25. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-D1 SERVICE/API CONTRACT PASSED WITH REQUIRED SCHEMA EXTENSION
+
+CONTRACT LOCKED:
+ -> inventory catalogue API
+ -> inventory lot API
+ -> immutable transaction API
+ -> derived balance API
+ -> manager/supervisor direct mutation authority
+ -> future resident-consumption issue boundary
+ -> signed ledger semantics
+ -> PostgreSQL advisory transaction locking
+ -> negative-stock protection
+ -> unit equality contract
+ -> source idempotency / HTTP 409
+ -> append-only correction contract
+ -> bounded 50/100 reads
+ -> no hard resident cap
+
+REQUIRED BEFORE IMPLEMENTATION:
+ -> add inventory_items.lot_tracking_required
+ -> boolean NOT NULL DEFAULT false
+
+ROADMAP:
+ -> OPS-2-A=CLOSED / ACCEPTED
+ -> OPS-2-B-D1=PENDING REVIEW / EXPECTED CLOSE
+ -> OPS-2-B-M1-R1=NOT AUTHORIZED
+ -> OPS-2-B-I1=NOT AUTHORIZED
+ -> OPS-2-C=NOT AUTHORIZED
+
+NEXT:
+ -> RETURN THIS ENTIRE OUTPUT
+ -> DO NOT RERUN D1
+ -> DO NOT PATCH SERVICE YET

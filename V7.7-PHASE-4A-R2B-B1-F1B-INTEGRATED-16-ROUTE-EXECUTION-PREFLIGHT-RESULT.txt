@@ -1,0 +1,89 @@
+TAM AN CARE V7.7
+PHASE 4A-R2B-B1-F1B
+INTEGRATED 16-ROUTE FUNCTIONAL EXECUTION PREFLIGHT
+
+STATUS=PASSED
+
+F1A_RESULT_HASH=e53cd5540ca916e00b0204e1cacdda73b22157e821b02db21af5c1655487685b
+F1A_CONTRACT_HASH=4471dcae82241036a96803ad7b5f47784d906ff089228c121e69598036efc8a2
+
+SOURCE_HASH=bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+SECURITY_CLOSURE_S1=LOCKED
+REMAINING_ROUTE_COUNT=16
+UNRESOLVED_ACTION_COUNT=1
+
+MANDATORY F1B MODEL:
+
+1. Build exact source hash:
+   bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+2. Create ONE disposable PostgreSQL.
+
+3. Initialize exact schema once.
+
+4. Create shared:
+   - Supervisor
+   - Caregiver A
+   - Caregiver B
+   - Resident
+
+5. Run no-actor negative probes before mutation.
+
+6. AI resident route:
+   - no actor = 401
+   - valid human actor = 201
+
+7. Care Action lifecycle:
+   ASSIGN
+   TRANSFER
+   START_REVIEW
+   RESOLVE
+   REOPEN
+
+8. Care Task:
+   ASSIGN
+
+9. Activity Rehabilitation:
+   CREATE_ESCALATION
+
+10. Skin/Wound:
+    CREATE_CARE_PLAN
+
+11. Nutrition/Hydration:
+    CREATE_ALERT
+
+12. Incident:
+    report first,
+    then use returned incidentId,
+    action=ACKNOWLEDGE
+
+13. Clinical:
+    action=VERIFY_OBSERVATION
+
+14. Medication Administration:
+    action=SOURCE-RESOLVE-FIRST
+
+15. Care Action Bridge:
+    use source-proven warning fixture.
+
+16. Responsibility Acceptance:
+    use source-proven Care Action state.
+
+17. Verify persistence/audit deltas.
+
+18. Run cross-domain resident integration overview.
+
+19. Run health/read regression after all mutations.
+
+20. Verify V7.7 source unchanged.
+
+21. Destroy disposable API/database/network.
+
+22. Verify V7.6 production API/UI/database unchanged.
+
+NO PRODUCTION DATABASE WRITE.
+NO V7.6 RUNTIME CHANGE.
+
+NEXT=
+V7.7_PHASE_4A_R2B_B1_F1B_INTEGRATED_EXECUTION

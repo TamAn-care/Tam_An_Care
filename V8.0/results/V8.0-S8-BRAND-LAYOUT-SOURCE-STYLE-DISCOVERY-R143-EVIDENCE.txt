@@ -1,0 +1,104 @@
+TAM_AN_CARE_VERSION=V8.0
+SERIES=08
+GATE=S8
+STEP=R143
+
+STATUS=PASSED
+
+R142B_RESULT_SHA256=171ee668d6a3d0903e7e3d283c9565cae5fe0a0bd79315d2b78654e87ccd38ec
+R142B_EVIDENCE_SHA256=727372d25acd392d2365f9daa18727e19c12e346d876652851e26401039778b0
+R142B_MANIFEST_SHA256=4df0b7d7446487b72ddac793777d6b3b9f8ee4b6ec3f4ffed17a4ea29ddcd58d
+
+APPSHELL_SHA256=c07099b8780105e4379da252b529ee38bb1f1e9262970f442cb4b57290cd340c
+INDEX_SHA256=c20201265961989325de548b237b93d7c320cb4454065d45cbfcb713a3c8824d
+MASTER_SHA256=1499eaf3ab4511d56aacff6d21f903fa3d287f7b4bc5dc2caca0b6ef94b1db0f
+
+OFFICIAL_LOGO_SOURCE_REFERENCE_COUNT=1
+
+UAT_FINAL_DECISION=REJECT
+UAT_A01=FAIL
+UAT_C02=FAIL
+UAT_C03=FAIL
+
+SOURCE_PATCH_EXECUTED=NO
+BUILD_EXECUTED=NO
+HTTP_EXECUTED=NO
+DATABASE_CONNECTION_EXECUTED=NO
+S8_UAT_EXECUTED_IN_R143=NO
+
+NEXT_CLASS=V8_SERIES_08_S8_REJECTED_UAT_BRAND_LAYOUT_EXACT_PATCH_STATIC_CONTRACT_REQUIRED
+NEXT_ACTION=V8_SERIES_08_S8_PRIMARY_BRAND_MARK_AND_SECONDARY_LOGO_EXACT_PATCH_STATIC_CONTRACT_FROM_R143_EVIDENCE
+
+========== LOGO REFERENCES ==========
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/components/layout/AppShell.tsx:62:              src="/branding/tam-an-logo-master.png"
+
+========== BRAND STYLE SIGNALS ==========
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:48:.sidebar {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:54:.brand {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:58:.brand-title {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:63:.brand-subtitle {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:255:  .sidebar {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:261:  .brand {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:268:    overflow-x: auto;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:288:.brand {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:294:.brand-mark {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:308:.sidebar {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:313:.sidebar-footer {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:467:  .sidebar {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:471:  .sidebar.sidebar-open {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:475:  .sidebar-open .navigation {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:641:  overflow-wrap: anywhere;
+
+========== RESPONSIVE SIGNALS ==========
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:45:  grid-template-columns: 260px minmax(0, 1fr);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:89:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:105:  max-width: 1500px;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:137:  grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:170:  flex-wrap: wrap;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:214:  max-width: 600px;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:240:@media (max-width: 900px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:242:    grid-template-columns: 210px minmax(0, 1fr);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:250:@media (max-width: 767px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:268:    overflow-x: auto;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:340:  max-width: 520px;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:347:  min-width: 130px;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:462:@media (max-width: 767px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:487:    flex-wrap: wrap;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:508:  grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:520:  grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:579:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:587:  flex-wrap: wrap;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:620:  grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:628:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:676:  flex-wrap: wrap;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:696:  grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:748:@media (max-width: 1024px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:751:    grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:756:    grid-template-columns:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:761:@media (max-width: 767px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:763:    grid-template-columns: 1fr 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:767:    grid-template-columns: 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:786:    grid-template-columns: 1fr 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:790:    grid-template-columns: 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:794:@media (max-width: 480px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:796:    grid-template-columns: 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:801:    grid-template-columns: 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:817:  grid-template-columns: repeat(3, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:823:  grid-template-columns: repeat(3, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:834:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:845:  grid-template-columns: repeat(4, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:850:  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:857:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:863:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:881:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:885:  min-width: 0;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:888:@media (max-width: 1024px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:890:    grid-template-columns: repeat(2, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:894:    grid-template-columns: repeat(2, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:898:    grid-template-columns: repeat(2, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:902:    grid-template-columns: repeat(2, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:906:@media (max-width: 767px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:910:    grid-template-columns: 1fr;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:920:    grid-template-columns: repeat(2, minmax(0, 1fr));
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:931:@media (max-width: 480px) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/design/globals.css:934:    grid-template-columns: 1fr;

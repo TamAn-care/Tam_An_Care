@@ -1,0 +1,298 @@
+======================================================================
+ TAMANCARE — OPS-2-B FINALIZATION
+ RUN 3/3 — FINAL
+ RECOVER AUTH -> CLOSE P5-H -> P5-I -> P5-J -> CLOSE OPS-2-B
+======================================================================
+
+RUN-2 FAILURE CLASSIFICATION:
+ -> HARNESS DEFECT
+ -> python3 invocation omitted '-' stdin-script marker
+ -> password file was interpreted as Python source
+ -> application defect = NO
+ -> database defect = NO
+ -> inventory defect = NO
+
+======================================================================
+ 1. LOAD EXACT CONTINUATION STATE
+======================================================================
+P5_D_STATUS=PASS
+P5_E_STATUS=PASS
+P5_F_STATUS=PASS
+P5_G_STATUS=PASS
+P5_H_STATUS=NOT_WRITTEN
+P5_I_STATUS=NOT_WRITTEN
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_RECEIPT_TX_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+P5_OUTBOUND_TX_ID=inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917
+PASS: CONTINUATION STATE LOCKED
+
+======================================================================
+ 2. SOURCE IMMUTABILITY
+======================================================================
+API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES
+
+======================================================================
+ 3. RUNTIME + DATABASE
+======================================================================
+CONTAINER_STATE=running
+CONTAINER_IMAGE=tamancare_ops2b_balancefix:20260830_070355
+HEALTH_HTTP=200
+PASS: RUNTIME + DB READY
+
+======================================================================
+ 4. EXACT POST-RUN2 STATE
+======================================================================
+AUTH_PRE=1|0
+CREDENTIAL_PRE=hqa-supervisor-001|120000|sha256|1|NOT_LOCKED|48|64
+INVENTORY_PRE=1|1|2|0
+ACTOR_PRE=hqa-supervisor-001|SUPERVISOR|ACTIVE
+PASS: EXACT RUN-3 STARTING STATE
+
+======================================================================
+ 5. RECOVERY PASSWORD PRESENCE
+======================================================================
+PASSWORD_FILE_PRESENT=YES
+PASSWORD_SIZE=43
+PASSWORD_VALUE_PRINTED=NO
+PASS: RECOVERY PASSWORD EXACT
+
+======================================================================
+ 6. CAPTURE CURRENT STORED SALT
+======================================================================
+STORED_SALT_LENGTH=48
+STORED_SALT_PRINTED=NO
+PASS: STORED SALT CAPTURED
+
+======================================================================
+ 7. CORRECT PBKDF2 DERIVATION — FIXED HARNESS
+======================================================================
+PYTHON_STDIN_SCRIPT_MARKER=PASS
+PASSWORD_ENCODING=UTF8
+SALT_SEMANTICS=STORED_TEXT_UTF8
+ITERATIONS=120000
+DIGEST=sha256
+DKLEN=32
+HASH_HEX_LENGTH=64
+SECRET_VALUES_PRINTED=NO
+PASS: CORRECT AUTHSERVICE-COMPATIBLE HASH DERIVED
+
+======================================================================
+ 8. EXACT CREDENTIAL FIXTURE REPAIR
+======================================================================
+CREDENTIAL_REPAIR_RETURN_COUNT=1
+CREDENTIAL_POST_REPAIR=hqa-supervisor-001|120000|sha256|0|NOT_LOCKED|48|64
+PASS: EXACT TEST CREDENTIAL REPAIRED
+
+======================================================================
+ 9. EXACTLY ONE REAL APPLICATION LOGIN
+======================================================================
+LOGIN_REQUEST_READY=YES
+LOGIN_ACTOR=hqa-supervisor-001
+PASSWORD_PRINTED=NO
+LOGIN_REQUEST_COUNT=1
+LOGIN_HTTP=200
+LOGIN_RESPONSE_PRINTED=NO
+PASS: REAL APPLICATION LOGIN
+
+======================================================================
+ 10. APPLICATION TOKEN + SESSION
+======================================================================
+ACCESS_TOKEN_PRESENT=YES
+ACCESS_TOKEN_LENGTH=251
+ACCESS_TOKEN_PRINTED=NO
+AUTH_AFTER_LOGIN=1|1|1
+PASS: APPLICATION-CREATED ACTIVE SESSION
+
+======================================================================
+ 11. AUTHENTICATED INVENTORY PROBE
+======================================================================
+TRANSACTION_HTTP=200
+PASS: AUTH CONTINUITY RESTORED
+
+======================================================================
+ 12. P5-H AUTHENTICATED FINAL BALANCES
+======================================================================
+ITEM_BALANCE_HTTP=200
+LOT_BALANCE_HTTP=200
+ITEM_API_BALANCE=7.0000
+LOT_API_BALANCE=7.0000
+PASS: API ITEM + LOT BALANCE = 7
+
+======================================================================
+ 13. P5-H FINAL OBJECT + LEDGER COMPLETENESS
+======================================================================
+ITEM_ROW=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|OPS2B_F1_20260830_064735|HOUSEKEEPING|UNIT|t|t
+LOT_ROW=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|LOT_R3_20260830_065705_M1|OPS2B-P5-C2-20260830_065817|2026-08-29|2027-12-31|ACTIVE
+FINAL_LEDGER:
+inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf|RECEIPT|10.0000|UNIT|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|hqa-supervisor-001|SUPERVISOR|OPS2B_FUNCTIONAL|P5_RECEIPT|OPS2B_P5_D_20260830_070008
+inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917|ADJUSTMENT_OUT|3.0000|UNIT|inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4|inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb|hqa-supervisor-001|SUPERVISOR|OPS2B_FUNCTIONAL|P5_F_ADJUSTMENT_OUT|OPS2B_P5_F_OUT_20260830_071450
+LEDGER_COUNT=2
+RECEIPT_COUNT=1
+ADJUSTMENT_OUT_COUNT=1
+BAD_ACTOR_ROWS=0
+MISSING_SOURCE_ROWS=0
+RESIDENT_CONSUMPTION_ROWS=0
+PASS: P5-H FINAL COMPLETENESS
+
+======================================================================
+ 14. CLOSE P5-H
+======================================================================
+P5_H_STATUS=PASS
+STATUS: P5-H PASSED / CLOSED
+
+======================================================================
+ 15. P5-I EXACT OWNERSHIP LOCK
+======================================================================
+TRANSACTION_OWNERSHIP=2
+LOT_OWNERSHIP=1
+ITEM_OWNERSHIP=1
+PASS: P5-I OWNERSHIP LOCKED
+
+======================================================================
+ 16. P5-I ATOMIC INVENTORY CLEANUP
+======================================================================
+ INVENTORY_INSIDE_TX|0|0|0|0
+COMMIT
+INVENTORY_AFTER_P5I=0|0|0|0
+P5_I_STATUS=PASS
+STATUS: P5-I PASSED / CLOSED
+
+======================================================================
+ 17. P5-J AUTH OWNERSHIP BEFORE CLEANUP
+======================================================================
+AUTH_PRE_P5J=1|1
+PASS: P5-J AUTH FIXTURE OWNERSHIP
+
+======================================================================
+ 18. P5-J ATOMIC AUTH CLEANUP
+======================================================================
+ AUTH_INSIDE_TX|0|0
+COMMIT
+AUTH_AFTER_P5J=0|0
+P5_J_STATUS=PASS
+STATUS: P5-J DATABASE CLEANUP PASSED
+
+======================================================================
+ 19. REMOVE EPHEMERAL SECRET FILES
+======================================================================
+AUTH_FIXTURE_DIRECTORY_EXISTS=NO
+RECOVERY_PASSWORD_EXISTS=NO
+PASS: EPHEMERAL AUTH MATERIAL REMOVED
+
+======================================================================
+ 20. FINAL DATABASE CLEANLINESS
+======================================================================
+FINAL_INVENTORY=0|0|0|0
+FINAL_AUTH=0|0
+PASS: DATABASE CLEAN BASELINES RESTORED
+
+======================================================================
+ 21. CAREGIVER/NURSE DYNAMIC NEGATIVE TEST CLASSIFICATION
+======================================================================
+ACTIVE_CAREGIVER_NURSE_CREDENTIAL_FIXTURES=0
+CAREGIVER_NURSE_DYNAMIC_403_TEST=NOT_EXECUTED
+REASON=NO_EXISTING_AUTHORIZED_CREDENTIAL_FIXTURE
+NEW_ACTOR_BOOTSTRAP=FORBIDDEN
+STATIC_AUTHORIZATION_CONTRACT=PASS_FROM_S1
+OPS_2_C_CONTROLLED_PATH_BOUNDARY=PASS
+ACCEPTANCE_CLASSIFICATION=STATIC_CONTRACT_ACCEPTED_WITHOUT_UNAUTHORIZED_FIXTURE_CREATION
+
+======================================================================
+ 22. ACCEPTED RUNTIME HEALTH
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+ISOLATED_RUNTIME_HEALTH=200
+PASS: ALL RUNTIMES HEALTHY
+
+======================================================================
+ 23. FINAL SOURCE IMMUTABILITY
+======================================================================
+API_SOURCE_HASH_FINAL=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH_FINAL=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES PRESERVED
+
+======================================================================
+ 24. FINAL P5 CHECKPOINT SUMMARY
+======================================================================
+P5_D_STATUS=PASS
+P5_E_STATUS=PASS
+P5_F_STATUS=PASS
+P5_G_STATUS=PASS
+P5_H_STATUS=PASS
+P5_I_STATUS=PASS
+P5_J_STATUS=PASS
+PASS: P5-D THROUGH P5-J ALL CLOSED
+
+======================================================================
+ 25. OPS-2-B FINAL ACCEPTANCE REPORT
+======================================================================
+TAMANCARE_OPS_2_B_FINAL_ACCEPTANCE
+
+OPS_2_B_IMPLEMENTATION=PASS
+OPS_2_B_SECURITY_ACCEPTANCE=PASS
+OPS_2_B_RUNTIME_ACCEPTANCE=PASS
+OPS_2_B_ITEM_CREATE_PATCH_IMMUTABILITY=PASS
+OPS_2_B_LOT_CREATE_PATCH_RELATION_IMMUTABILITY=PASS
+OPS_2_B_RECEIPT=PASS
+OPS_2_B_ITEM_AGGREGATE_BALANCE=PASS
+OPS_2_B_LOT_BALANCE=PASS
+OPS_2_B_UNIT_VALIDATION=PASS
+OPS_2_B_LOT_REQUIRED_VALIDATION=PASS
+OPS_2_B_NEGATIVE_STOCK_PROTECTION=PASS
+OPS_2_B_OUTBOUND=PASS
+OPS_2_B_SOURCE_IDEMPOTENCY=PASS
+OPS_2_B_TRANSACTION_APPEND_ONLY=PASS
+OPS_2_B_BASE_UNIT_LOCK=PASS
+OPS_2_B_HUMAN_ACTOR_ATTRIBUTION=PASS
+OPS_2_B_OPS_2_C_BOUNDARY=PASS
+OPS_2_B_FINAL_LEDGER_VERIFICATION=PASS
+OPS_2_B_INVENTORY_CLEANUP=PASS
+OPS_2_B_AUTH_CLEANUP=PASS
+
+FINAL_INVENTORY_DATABASE=0|0|0|0
+FINAL_AUTH_DATABASE=0|0
+
+FINAL_API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FINAL_FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+
+PRODUCTION_MUTATION=NO
+SCHEMA_CHANGE_DURING_FINALIZATION=NO
+MIGRATION_CHANGE_DURING_FINALIZATION=NO
+FRONTEND_CHANGE_DURING_FINALIZATION=NO
+MANUAL_AUTH_SESSION_INSERT=NO
+MANUAL_JWT_CREATION=NO
+UNAUTHORIZED_ACTOR_BOOTSTRAP=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_NOT_HARD_MAX
+SCALABLE_RESIDENT_ARCHITECTURE_PRESERVED=YES
+
+RUN_1_OF_3=CONTROLLED_STOP_AUTH_HASH_FIXTURE_SEMANTICS
+RUN_2_OF_3=CONTROLLED_STOP_HARNESS_PYTHON_INVOCATION
+RUN_3_OF_3=PASS
+
+STATUS: OPS-2-B PASSED / CLOSED
+OPS_2_B_STATUS=PASS
+OPS_2_B_CLOSED=YES
+
+NEXT=BOUNDED AUTOPILOT SAFETY PREFLIGHT
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_run3of3_final_recovery_cleanup_closeout_20260830_092926.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> OPS-2-B IS CLOSED ONLY IF STATUS ABOVE = PASSED / CLOSED
+ -> DO NOT RERUN OPS-2-B
+ -> DO NOT RECREATE P5 FIXTURES
+ -> DO NOT PATCH ACCEPTED INVENTORY SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START AUTOPILOT YET
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

@@ -1,0 +1,204 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P4-R8-R4
+ CORRECTED OWNED AUTH FIXTURE RECOVERY
+======================================================================
+
+ROOT_CAUSE_LOCKED:
+ -> R8-R2 heredoc SQL used docker exec WITHOUT -i
+ -> R8-R3 transactional dry-run used docker exec WITHOUT -i
+ -> SQL therefore did not receive heredoc stdin
+ -> DELETE predicates themselves match exactly 1 + 1
+
+AUTHORIZED:
+ -> delete proven R8-owned credential/session
+ -> create one replacement ephemeral credential
+ -> session/token only via real application login
+
+NOT AUTHORIZED:
+ -> source patch
+ -> schema change
+ -> inventory mutation
+ -> manual JWT
+ -> manual auth_session INSERT
+ -> isolated container restart
+ -> accepted runtime restart
+
+======================================================================
+ 1. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE BASELINE PRESERVED
+
+======================================================================
+ 2. ISOLATED RUNTIME + JWT CONTRACT
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+JWT_SECRET_LENGTH=64
+PASS: CURRENT-SOURCE AUTH RUNTIME READY
+
+======================================================================
+ 3. DATABASE METADATA
+======================================================================
+DATABASE_NAME=taman_care
+DATABASE_USER=taman
+
+======================================================================
+ 4. RE-PROVE EXACT R8 OWNERSHIP
+======================================================================
+OWNED_CREDENTIAL_MATCH=1
+OWNED_SESSION_MATCH=1
+PASS: EXACT OWNERSHIP CONFIRMED
+
+======================================================================
+ 5. INVENTORY BASELINE BEFORE AUTH MUTATION
+======================================================================
+INVENTORY_BEFORE=0|0|0|0
+PASS: INVENTORY CLEAN
+
+======================================================================
+ 6. DELETE PROVEN R8 FIXTURE — CORRECTED docker exec -i
+======================================================================
+BEGIN
+SESSION_DELETED|1
+CREDENTIAL_DELETED|1
+AUTH_INSIDE_TX|0|0
+COMMIT
+
+PARSED_SESSION_DELETED=1
+PARSED_CREDENTIAL_DELETED=1
+PARSED_AUTH_INSIDE_TX=0|0
+PERSISTENT_AUTH_AFTER_DELETE=0|0
+PASS: PROVEN OLD FIXTURE REMOVED
+
+======================================================================
+ 7. PREPARE NEW EPHEMERAL AUTH MATERIAL
+======================================================================
+PASSWORD_LENGTH=48
+SALT_LENGTH=48
+SECRET_VALUES_PRINTED=NO
+PBKDF2_ITERATIONS=120000
+PBKDF2_DIGEST=sha256
+PBKDF2_BYTES=32
+DERIVED_HASH_HEX_LENGTH=64
+PASS: NEW EPHEMERAL MATERIAL READY
+
+======================================================================
+ 8. INSERT EXACTLY ONE REPLACEMENT CREDENTIAL
+======================================================================
+AUTH_AFTER_CREDENTIAL_INSERT=1|0
+PASS: ONE CREDENTIAL / ZERO SESSION BEFORE LOGIN
+
+======================================================================
+ 9. REAL APPLICATION LOGIN
+======================================================================
+LOGIN_HTTP=200
+ACCESS_TOKEN_PRESENT=YES
+ACCESS_TOKEN_LENGTH=251
+ACCESS_TOKEN_PRINTED=NO
+PASS: REAL LOGIN SUCCEEDED
+
+======================================================================
+ 10. VERIFY APPLICATION-CREATED SESSION
+======================================================================
+ACTIVE_SESSION_COUNT_AND_ROLE=1|SUPERVISOR
+PASS: REAL APPLICATION SESSION CREATED
+
+======================================================================
+ 11. AUTHENTICATED INVENTORY READ
+======================================================================
+AUTHENTICATED_INVENTORY_HTTP=200
+AUTHENTICATED_INVENTORY_BODY:
+{"items":[],"count":0,"limit":50}
+PASS: PRODUCTION AUTHENTICATED INVENTORY READ
+
+======================================================================
+ 12. TOKEN RETENTION
+======================================================================
+TOKEN_FILE_PRESENT=YES
+TOKEN_FILE_SIZE=251
+TOKEN_VALUE_PRINTED=NO
+PASS: TOKEN RETAINED FOR P5
+
+======================================================================
+ 13. WRITE OWNERSHIP MARKER
+======================================================================
+FIXTURE_DIRECTORY=/tmp/tamancare_ops2b_auth_fixture
+FIXTURE_OWNERSHIP_MARKER=YES
+
+======================================================================
+ 14. INVENTORY MUST STILL BE CLEAN
+======================================================================
+INVENTORY_AFTER=0|0|0|0
+PASS: INVENTORY DATABASE STILL CLEAN
+
+======================================================================
+ 15. SOURCE RECHECK
+======================================================================
+API_SOURCE_HASH_AFTER=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE UNCHANGED
+
+======================================================================
+ 16. ACCEPTED RUNTIMES PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIMES PRESERVED
+
+======================================================================
+ 17. FINAL ISOLATED RUNTIME
+======================================================================
+FINAL_CONTAINER_STATE=running
+FINAL_HEALTH_HTTP=200
+
+======================================================================
+ 18. FINAL AUTH STATE
+======================================================================
+FINAL_EPHEMERAL_AUTH_STATE=1|1
+
+======================================================================
+ 19. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P4-R8-R4 AUTH FIXTURE RECOVERY PASSED
+
+ROOT_CAUSE=MISSING_DOCKER_EXEC_STDIN_FLAG
+CORRECTED_DOCKER_EXEC_I=PASS
+OLD_R8_FIXTURE_REMOVED=PASS
+REPLACEMENT_CREDENTIAL=PASS
+REAL_LOGIN_FLOW=PASS
+APPLICATION_CREATED_SESSION=PASS
+AUTHENTICATED_INVENTORY_READ=PASS
+TOKEN_RETAINED_FOR_P5=YES
+JWT_SECRET_CONTRACT=PASS
+CURRENT_SOURCE_RUNTIME=PASS
+INVENTORY_DATABASE=0|0|0|0
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+CONTAINER_RESTART=NO
+ACCEPTED_RUNTIME_REGRESSION=NO
+EPHEMERAL_AUTH_FIXTURE=ACTIVE_FOR_P5
+
+P4_STATUS=PASS
+NEXT=OPS-2-B-F1-P5 FUNCTIONAL INVENTORY ACCEPTANCE
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r8_r4_corrected_owned_fixture_recovery_20260830_064623.txt
+
+======================================================================
+ IMPORTANT:
+ -> KEEP tamancare_ops2b_functional RUNNING
+ -> KEEP /tmp/tamancare_ops2b_auth_fixture
+ -> DO NOT DISPLAY OR CAT token
+ -> DO NOT DELETE AUTH FIXTURE YET
+ -> DO NOT CREATE INVENTORY DATA MANUALLY
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT RESTART ACCEPTED RUNTIMES
+ -> DO NOT RUN R8/R8-R2/R8-R3 AGAIN
+ -> DO NOT START P5 MANUALLY
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

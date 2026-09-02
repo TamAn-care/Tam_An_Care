@@ -1,0 +1,13 @@
+{
+  "version": "V7.9",
+  "phase": "0B",
+  "status": "PASSED",
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-0B-FRONTEND-INVENTORY.json",
+  "inventory_hash": "1de6b4c4696694c9545e92900d148cac8ca940120d1285e4c02784ca2ace7105",
+  "frontend_file_count": 43,
+  "tsx_file_count": 19,
+  "live_primary_route_failure_count": 0,
+  "production_write": false,
+  "runtime_restart": false,
+  "next": "PHASE_0C"
+}

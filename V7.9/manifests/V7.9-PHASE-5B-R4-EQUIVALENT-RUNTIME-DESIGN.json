@@ -1,0 +1,57 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5B-R4",
+  "status": "PASSED",
+  "decision": "PHASE5B_ONLY_EQUIVALENT_RUNTIME_RECONSTRUCTION_DESIGNED",
+  "design": {
+    "phase": "PHASE_5B",
+    "purpose": "RECONSTRUCT_PREDECESSOR_EQUIVALENT_RESTORED_RUNTIME",
+    "phase5a_rerun": false,
+    "production_source_mode": "READ_ONLY_SNAPSHOT",
+    "snapshot_command": "pg_dump",
+    "snapshot_format": "CUSTOM",
+    "snapshot_owner": false,
+    "snapshot_privileges": false,
+    "restore_target": "FRESH_DISPOSABLE_POSTGRES_ONLY",
+    "restore_target_production": false,
+    "restore_user": "restoreuser",
+    "restore_database": "restoredb",
+    "restore_runtime_must_remain_running_after_5b": true,
+    "restore_runtime_handoff_to": "PHASE_5_FINAL",
+    "temporary_snapshot_removed_after_restore": true,
+    "phase5b_checks": [
+      "RESTORED_TABLE_SET_EQUIVALENT",
+      "ROW_COUNT_FOR_EVERY_PUBLIC_BASE_TABLE",
+      "PRODUCTION_DATABASE_BEFORE_AFTER_UNCHANGED",
+      "PRODUCTION_RUNTIME_UNCHANGED"
+    ],
+    "phase5b_success_contract": {
+      "table_set_equivalent": true,
+      "row_count_difference_tables": 0,
+      "production_database_delta": false
+    },
+    "phase5_final_cleanup_responsibility": [
+      "REMOVE_PHASE5B_DISPOSABLE_RESTORE_CONTAINER",
+      "REMOVE_PHASE5B_DISPOSABLE_NETWORK"
+    ],
+    "real_resident_mutation": false,
+    "real_staff_mutation": false,
+    "application_source_write": false,
+    "production_database_mutation": false,
+    "production_runtime_restart": false,
+    "manual_test_required": false,
+    "execution_authorized": false,
+    "runner_created": false
+  },
+  "phase5a_acceptance_preserved": true,
+  "phase5a_rerun": false,
+  "runner_created": false,
+  "execution": false,
+  "manual_test_required": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "preflight_sha256": "dab2f41b85290ed67f30c22d8f171872594a474a00478a9b0efcb514c0bc9c81",
+  "next_authorized_action": "GENERATE_PHASE5B_COMPATIBILITY_EXECUTION_RUNNER_ONLY",
+  "created_at": "2026-08-22T06:15:34.434188+00:00"
+}

@@ -1,0 +1,111 @@
+TAM AN CARE V8.0
+SERIES=SERIES_08
+PHASE=S5_TARGET_AUTH_ENFORCEMENT_STATIC_CLOSURE
+TARGET_CONTROLLER=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/ai/early-warning.controller.ts
+TARGET_CONTROLLER_SHA256=28a4031a8c9daf17c8220ffc699028605a261eedf5110b8b01eb1d295d3f6cb2
+
+===== TARGET CONTROLLER =====
+     1	import {
+     2	  Body,
+     3	  Controller,
+     4	  Param,
+     5	  Post,
+     6	} from '@nestjs/common';
+     7	
+     8	import { EarlyWarningService } from './early-warning.service';
+     9	
+    10	import { ResidentService } from '../residents/resident.service';
+    11	
+    12	@Controller('api/ai/engines/health-trend')
+    13	export class EarlyWarningController {
+    14	
+    15	  constructor(
+    16	    private readonly earlyWarningService:
+    17	      EarlyWarningService,
+    18	
+    19	    private readonly residentService:
+    20	      ResidentService,
+    21	  ) {}
+    22	
+    23	
+    24	  @Post('patterns')
+    25	  patterns(
+    26	    @Body() body: any,
+    27	  ) {
+    28	    return this.earlyWarningService
+    29	      .analyze(body);
+    30	  }
+    31	
+    32	
+    33	  @Post('resident/:residentId/patterns')
+    34	  async residentPatterns(
+    35	    @Param('residentId')
+    36	    residentId: string,
+    37	
+    38	    @Body()
+    39	    body: any,
+    40	  ) {
+    41	
+    42	    const context =
+    43	      await this.residentService
+    44	        .getById(residentId);
+    45	
+    46	    const analysis =
+    47	      this.earlyWarningService
+    48	        .analyze({
+    49	          ...body,
+    50	
+    51	          residentId:
+    52	            context.resident.residentId,
+    53	        });
+    54	
+    55	    return {
+    56	      ...analysis,
+    57	
+    58	      residentId:
+    59	        context.resident.residentId,
+    60	
+    61	      residentContext: {
+    62	        residentId:
+    63	          context.resident.residentId,
+    64	
+    65	        residentCode:
+    66	          context.resident.residentCode,
+    67	
+    68	        displayName:
+    69	          context.resident.displayName,
+    70	
+    71	        room:
+    72	          context.resident.room,
+    73	
+    74	        bed:
+    75	          context.resident.bed,
+    76	
+    77	        careLevel:
+    78	          context.resident.careLevel,
+    79	
+    80	        activeStatus:
+    81	          context.resident.activeStatus,
+    82	      },
+    83	
+    84	      residentAssociation: {
+    85	        verified:
+    86	          true,
+    87	
+    88	        source:
+    89	          'POSTGRES_RESIDENT_CONTEXT',
+    90	      },
+    91	
+    92	      autonomousClinicalAction:
+    93	        false,
+    94	    };
+    95	  }
+    96	}
+
+===== APP MODULE TARGET REFERENCES =====
+19:import { EarlyWarningController } from './ai/early-warning.controller';
+79:],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService]})
+
+===== ACTIVE SOURCE AUTH ENFORCEMENT SIGNALS =====
+
+===== TARGET IDENTITY / AUTH SIGNALS =====

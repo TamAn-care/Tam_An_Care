@@ -1,0 +1,198 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D3-R2D
+ CONCURRENCY SEMANTIC CLASSIFICATION + ACCEPTANCE
+ STRICT READ ONLY
+ NO FUNCTIONAL POST / NO DB MUTATION
+======================================================================
+
+======================================================================
+ 1. R2C AUTHORITY
+======================================================================
+R2C_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2c_concurrency_serialization_20260830_182553.txt
+PASS: R2C EXACT OBSERVED CONCURRENCY EVIDENCE CAPTURED
+
+======================================================================
+ 2. PROVE R2C ONLY FAILED ON HTTP EXPECTATION
+======================================================================
+R2C_FAIL_LINE_COUNT=1
+R2C_HTTP_EXPECTATION_FAIL_COUNT=1
+PASS: R2C HAS EXACTLY ONE FAILED ASSERTION
+PASS: SOLE FAILURE IS HTTP STATUS EXPECTATION
+
+======================================================================
+ 3. SOURCE HASH AUTHORITY
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+LEDGER_SHA256=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+PASS: LEDGER HASH
+
+======================================================================
+ 4. READ-ONLY SOURCE SEMANTIC INSPECTION
+======================================================================
+--- Resident consumption stock / conflict signals ---
+2:  BadRequestException,
+3:  ConflictException,
+91:      throw new BadRequestException(
+97:      throw new BadRequestException(
+128:       * No application-memory mutex and no second stock ledger.
+130:      await this.ledger.acquireLock(
+162:        throw new BadRequestException(
+168:        throw new BadRequestException(
+177:        throw new BadRequestException(
+209:          throw new BadRequestException(
+215:          throw new BadRequestException(
+225:          throw new BadRequestException(
+233:       * transaction before stock calculation.
+258:        throw new ConflictException(
+263:      const balance =
+264:        await this.ledger.balance(
+270:      if (balance < quantity) {
+271:        throw new ConflictException(
+272:          'Inventory issue would create negative stock',
+
+--- Ledger serialization signals ---
+15:  async acquireLock(
+22:      SELECT pg_advisory_xact_lock(
+35:  async balance(
+61:      ) AS balance
+66:          OR inventory_lot_id = $2
+75:    return Number(result.rows[0]?.balance || 0);
+SERVICE_LEDGER_LOCK_CALL_COUNT=1
+SERVICE_LEDGER_BALANCE_CALL_COUNT=1
+LEDGER_ADVISORY_LOCK_SIGNAL_COUNT=1
+SERVICE_CONFLICT_EXCEPTION_SIGNAL_COUNT=3
+PASS: SERVICE USES LEDGER ACCOUNTING LOCK
+PASS: SERVICE RECHECKS LEDGER BALANCE
+PASS: LEDGER USES TRANSACTION ADVISORY LOCK
+
+======================================================================
+ 5. EXACT POST-CONCURRENCY DATABASE PROOF
+======================================================================
+CONCURRENCY_ISSUE_COUNT=1
+CONCURRENCY_EVENT_COUNT=1
+CONCURRENCY_ISSUE_QUANTITY=7.0000
+CONCURRENCY_EVENT_QUANTITY=7.0000
+SOURCE_A_MATRIX=0|0
+SOURCE_B_MATRIX=1|1
+ORPHAN_EVENT_COUNT=0
+TX_EVENT_MISMATCH_COUNT=0
+FINAL_BALANCE=3.0000
+TX_ACTOR_MATRIX=1|1
+PASS: EXACTLY ONE ISSUE COMMITTED
+PASS: EXACTLY ONE EVENT COMMITTED
+PASS: EXACT COMMITTED ISSUE QTY 7
+PASS: EXACT EVENT QTY 7
+PASS: EXACTLY ONE SOURCE COMMITTED ATOMICALLY
+PASS: NO ORPHAN EVENT
+PASS: TX EVENT MATCH
+PASS: FINAL BALANCE EXACTLY 3
+PASS: SUPERVISOR ATTRIBUTION PRESERVED
+
+======================================================================
+ 6. HTTP OUTCOME CLASSIFICATION
+======================================================================
+OBSERVED_HTTP_A=409
+OBSERVED_HTTP_B=201
+OBSERVED_SUCCESS_COUNT=1
+OBSERVED_409_COUNT=1
+PASS: EXACTLY ONE HTTP SUCCESS
+PASS: EXACTLY ONE HTTP 409 REJECTION
+
+======================================================================
+ 7. R3B ACCEPTANCE EVIDENCE
+======================================================================
+R3B_TRANSACTION_COUNT=4
+R3B_EVENT_COUNT=4
+PASS: R3B TRANSACTIONS PRESERVED
+PASS: R3B EVENTS PRESERVED
+
+======================================================================
+ 8. RUNTIME REGRESSION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_3111=000
+FAIL: RUNTIME 3111
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+
+======================================================================
+ 9. FINAL SOURCE HASH
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+FINAL_LEDGER_SHA256=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+PASS: FINAL LEDGER HASH
+
+======================================================================
+ 10. CLASSIFICATION
+======================================================================
+R2C_SERIALIZATION_BEHAVIOR=CORRECT
+R2C_DATABASE_ACCEPTANCE_EVIDENCE=PASS
+R2C_HTTP_OBSERVED_SUCCESS_PLUS_409=YES
+R2C_LOCKED_400_EXPECTATION=INCORRECT_TEST_EXPECTATION
+APPLICATION_DEFECT_EVIDENCE=NO
+TEST_EXPECTATION_DEFECT=YES
+CONCURRENCY_RETRY_REQUIRED=NO
+SOURCE_REPAIR_REQUIRED=NO
+TEST_DATA_CLEANUP_EXECUTED=NO
+DATABASE_MUTATION=NO
+FUNCTIONAL_HTTP_POST_EXECUTED=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+SCHEMA_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D3-R2D DECISION
+======================================================================
+PASS_COUNT=30
+FAIL_COUNT=1
+STATUS: OPS-2-C F6-D3-R2D CONCURRENCY CLASSIFICATION FAILED
+SOURCE_REPAIR_AUTHORIZED=NO
+CONCURRENCY_RETRY_AUTHORIZED=NO
+TEST_DATA_CLEANUP_AUTHORIZED=NO
+NEXT=STOP_AND_RETURN_OUTPUT_FOR_DIAGNOSIS
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2d_concurrency_semantic_classification_20260830_182738.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT RE-RUN CONCURRENCY REQUESTS
+ -> KEEP tamancare_ops2c_functional RUNNING IF HEALTHY
+ -> PRESERVE CURRENT EPHEMERAL JWT SECRET
+ -> KEEP ALL F5/F6/R3B/F6-D3 TEST DATA
+ -> DO NOT CLEAN TEST DATA YET
+ -> DO NOT RUN FUNCTIONAL POST MANUALLY
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT REPROVISION CONTAINER
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

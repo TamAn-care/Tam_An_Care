@@ -1,0 +1,57 @@
+{
+  "generated_at": "2026-08-21T02:42:00.932934+00:00",
+  "release": "V7.6",
+  "phase": "Governance Dependency Trace",
+  "constant_symbol": "CARE_PLAN_GOVERNANCE_ACTIONS",
+  "type_symbol": "CarePlanGovernanceAction",
+  "allowed_actions": [
+    "ACTIVATE",
+    "REACTIVATE",
+    "SUSPEND",
+    "COMPLETE",
+    "CANCEL"
+  ],
+  "initial_plan_status": "DRAFT",
+  "selected_action": "ACTIVATE",
+  "evidence": [
+    {
+      "mode": "CONST_ARRAY_AS_CONST",
+      "file": "api/src/care-plan-authorization/care-plan-authorization.types.ts",
+      "values": [
+        "ACTIVATE",
+        "REACTIVATE",
+        "SUSPEND",
+        "COMPLETE",
+        "CANCEL"
+      ]
+    },
+    {
+      "mode": "CONST_ARRAY",
+      "file": "api/src/care-plan-authorization/care-plan-authorization.types.ts",
+      "values": [
+        "ACTIVATE",
+        "REACTIVATE",
+        "SUSPEND",
+        "COMPLETE",
+        "CANCEL"
+      ]
+    },
+    {
+      "mode": "TYPEOF_CONST_NUMBER",
+      "file": "api/src/care-plan-authorization/care-plan-authorization.types.ts",
+      "const": "CARE_PLAN_GOVERNANCE_ACTIONS",
+      "values": [
+        "ACTIVATE",
+        "REACTIVATE",
+        "SUSPEND",
+        "COMPLETE",
+        "CANCEL"
+      ]
+    }
+  ],
+  "care_action_retest": "NO",
+  "governance_functional_test": "NOT_EXECUTED",
+  "test_database_created": "NO",
+  "production_database_write": "NO",
+  "production_runtime_change": "NO"
+}

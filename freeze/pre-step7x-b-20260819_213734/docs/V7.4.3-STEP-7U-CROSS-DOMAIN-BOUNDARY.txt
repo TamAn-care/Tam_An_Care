@@ -1,0 +1,49 @@
+STEP 7U — CROSS-DOMAIN BOUNDARY
+
+Step 7U may reference existing records for HUMAN review.
+
+Step 7U MUST NOT autonomously create or mutate:
+
+- care_actions
+- care_action_transfers
+- care_tasks
+- medication_orders
+- medication_schedules
+- medication_administrations
+- medication_double_checks
+- clinical_observations
+- clinical_escalations
+- incidents
+- incident_triage
+- incident_assignments
+- incident_responses
+- nutrition_plans
+- nutrition_intake_records
+- rehabilitation_plans
+- activity_sessions
+- wound_records
+- wound_care_plans
+- hygiene_care_plans
+- hygiene_schedules
+- behavioral_episodes
+- behavioral_escalations
+
+Examples:
+
+Night-time fall concern
+-> AI/system may ALERT
+-> HUMAN decides whether incident workflow is required.
+
+Repeated waking
+-> may trigger HUMAN review
+-> cannot create diagnosis.
+
+Possible medication-associated sleep change
+-> may alert HUMAN
+-> cannot modify medication.
+
+Night wandering observation
+-> may alert HUMAN
+-> cannot create behavioral episode automatically.
+
+ZERO CROSS-DOMAIN AUTONOMY = REQUIRED

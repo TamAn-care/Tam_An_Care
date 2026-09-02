@@ -1,0 +1,16 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "status": "PASSED",
+  "recovery": "PHASE2_PREFLIGHT_ARTIFACT_LOCATOR",
+  "selection_rule": "SHA256_IDENTITY_NOT_FILENAME",
+  "search_scope": "PROJECT_ROOT",
+  "accepted_phase2_result_hash": "de9c5f608f9572ed80147717ce18341d814669da555a65072de4269d4517c9bb",
+  "accepted_phase2_manifest_hash": "b141ab143e8f5797ca31fc616a5ef3425f43c4428d496d401ade9b40c892c40e",
+  "locator_sha256": "6fc997691c3fef1f56bc41a0ae0cd4da7d2be3e4265742b32878e1e36d6f45d0",
+  "runner_sha256": "4183dc9c25e44c142fbda4fc5d9845a5c53a205470ca35ca91eccd0f2597ce20",
+  "phase1_rerun": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "v77_source_write": false
+}

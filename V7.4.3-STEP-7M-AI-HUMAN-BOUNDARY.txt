@@ -1,0 +1,56 @@
+TAM AN CARE V7.4.3
+STEP 7M AI / HUMAN BOUNDARY
+
+AI ROLE = ALERT + RECOMMENDATION ONLY
+
+
+AI MAY:
+
+flag possible missed administration
+flag late administration
+flag duplicate scheduled dose
+flag unusual medication timing
+flag documented medication interaction risk
+flag high-risk medication
+flag repeated refusal pattern
+flag adherence trend
+recommend human review
+prioritize review queue
+
+
+AI MAY NOT:
+
+prescribe medication
+create a clinical medication decision
+change medication
+change dose
+change route
+change frequency
+verify medication order
+activate medication order
+suspend medication order
+cancel medication order
+assign administrator
+accept responsibility
+perform double-check
+record medication as administered
+record medication as missed
+record refusal
+place medication on hold
+remove medication hold
+cancel administration
+
+
+RULE:
+
+AI output never directly mutates medication lifecycle state.
+
+AI warning
+-> human review
+-> human decision
+-> authorized service
+-> row lock
+-> mutation
+-> audit
+
+autonomousClinicalAction = false

@@ -1,0 +1,383 @@
+{
+  "generated_at": "2026-08-21T04:24:43.606103+00:00",
+  "gap_count": 5,
+  "gaps": [
+    {
+      "id": "GAP-P1-004",
+      "severity": "CRITICAL",
+      "domain": "Security",
+      "title": "Mutation controllers exist without controller-file actor-header evidence",
+      "evidence": [
+        {
+          "method": "POST",
+          "path": "/api/activity-rehabilitation/:residentId/execute",
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/:engineId/analyze",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/:engineId/demo",
+          "source": "api/src/ai/ai-engine.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/health-trend/patterns",
+          "source": "api/src/ai/early-warning.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+          "source": "api/src/ai/early-warning.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/behavioral-cognitive/:residentId/execute",
+          "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-action-bridge/:warningId/execute",
+          "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/assign",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/transfer",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/start-review",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/resolve",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/reopen",
+          "source": "api/src/care-actions/care-action.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-plan-governance/:carePlanId/:action",
+          "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-task-execution/:careTaskId/:action",
+          "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+          "source": "api/src/clinical-observations/clinical.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/fall-mobility/:residentId/execute",
+          "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/incidents/report",
+          "source": "api/src/incidents/incident.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/incidents/:incidentId/:action",
+          "source": "api/src/incidents/incident.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/infection-control/:residentId/execute",
+          "source": "api/src/infection-control/infection-control.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/medication-administrations/:administrationId/:action",
+          "source": "api/src/medication/medication.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/medication-safety/:residentId/execute",
+          "source": "api/src/medication-safety/medication-safety.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/nutrition-hydration/:residentId/execute",
+          "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/pain-comfort/:residentId/execute",
+          "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/personal-care/:residentId/execute",
+          "source": "api/src/personal-care/personal-care.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+          "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/safeguarding/:residentId/execute",
+          "source": "api/src/safeguarding/safeguarding.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/skin-wound/:residentId/execute",
+          "source": "api/src/skin-wound/skin-wound.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        },
+        {
+          "method": "POST",
+          "path": "/api/sleep-rest/:residentId/execute",
+          "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+          "actor_id_header_evidence": false,
+          "actor_role_header_evidence": false,
+          "unauthorized_evidence": false,
+          "forbidden_evidence": false
+        }
+      ],
+      "classification": "SECURITY_REVIEW_REQUIRED",
+      "recommendation": "Do not patch automatically. Phase 2 must trace guards, interceptors, authorization services and handler semantics for every candidate before deciding whether a real fail-closed gap exists."
+    },
+    {
+      "id": "GAP-P1-001",
+      "severity": "HIGH",
+      "domain": "API Contract",
+      "title": "Some controller route expressions are not statically resolved by the Phase 1 audit parser",
+      "evidence": [
+        {
+          "method": "POST",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'residents/:residentId/access-assignments',\n  )\n  @HttpCode(HttpStatus.CREATED"
+        },
+        {
+          "method": "POST",
+          "source": "api/src/resident-access-administration/resident-access-administration.controller.ts",
+          "controller_expression": "'api/operations'",
+          "route_expression": "'access-assignments/:assignmentId/revoke',\n  )\n  @HttpCode(HttpStatus.OK"
+        }
+      ],
+      "classification": "AUDIT_CONTRACT_GAP",
+      "recommendation": "Phase 2 must resolve these routes from source imports/constants/decorator semantics before implementation."
+    },
+    {
+      "id": "GAP-P1-002",
+      "severity": "HIGH",
+      "domain": "Frontend Coverage",
+      "title": "Backend domains with public routes have no direct frontend evidence",
+      "evidence": [
+        {
+          "domain": "activity-rehabilitation",
+          "route_count": 2
+        },
+        {
+          "domain": "ai",
+          "route_count": 9
+        },
+        {
+          "domain": "behavioral-cognitive",
+          "route_count": 2
+        },
+        {
+          "domain": "care-action-bridge",
+          "route_count": 1
+        },
+        {
+          "domain": "clinical-observations",
+          "route_count": 1
+        },
+        {
+          "domain": "infection-control",
+          "route_count": 2
+        },
+        {
+          "domain": "nutrition-hydration",
+          "route_count": 2
+        },
+        {
+          "domain": "pain-comfort",
+          "route_count": 2
+        },
+        {
+          "domain": "personal-care",
+          "route_count": 2
+        },
+        {
+          "domain": "responsibility-acceptance",
+          "route_count": 1
+        },
+        {
+          "domain": "safeguarding",
+          "route_count": 2
+        },
+        {
+          "domain": "skin-wound",
+          "route_count": 2
+        },
+        {
+          "domain": "sleep-rest",
+          "route_count": 2
+        }
+      ],
+      "classification": "COVERAGE_GAP_CANDIDATE",
+      "recommendation": "Phase 2 must classify each as intentionally backend-only, dashboard-integrated, or requiring UI/workflow exposure."
+    },
+    {
+      "id": "GAP-P1-006",
+      "severity": "HIGH",
+      "domain": "Care Domain UX",
+      "title": "Specialized senior-care domains expose backend operations without direct frontend evidence",
+      "evidence": [
+        "activity-rehabilitation",
+        "behavioral-cognitive",
+        "infection-control",
+        "nutrition-hydration",
+        "pain-comfort",
+        "personal-care",
+        "safeguarding",
+        "skin-wound",
+        "sleep-rest"
+      ],
+      "classification": "CARE_DOMAIN_UI_GAP_CANDIDATE",
+      "recommendation": "Phase 2 must determine whether these belong inside Operational Care, resident care view, or dedicated workflow screens; do not create screens blindly."
+    },
+    {
+      "id": "GAP-P1-003",
+      "severity": "MEDIUM",
+      "domain": "Audit Visibility",
+      "title": "Extensive audit persistence exists but no frontend audit visibility evidence was detected",
+      "evidence": {
+        "audit_table_count": 18,
+        "frontend_audit_reference_files": []
+      },
+      "classification": "OBSERVABILITY_GAP_CANDIDATE",
+      "recommendation": "Phase 2 should determine which audit/history views are operationally required for supervisors and governance roles."
+    }
+  ]
+}

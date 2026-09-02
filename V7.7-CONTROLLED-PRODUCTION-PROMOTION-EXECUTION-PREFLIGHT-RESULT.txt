@@ -1,0 +1,77 @@
+TAM AN CARE V7.7
+CONTROLLED PRODUCTION PROMOTION EXECUTION PREFLIGHT
+
+STATUS=READY
+
+IMPORTANT:
+THIS PREFLIGHT DOES NOT EXECUTE PROMOTION.
+
+PROMOTION_DECISION_R2_RESULT_HASH=
+14815a4fd504bb537d58bec30db0e40d8c37fb657680ea33b04378c80e77239b
+
+PROMOTION_DECISION_R2_MANIFEST_HASH=
+336b1474315c8e2986640a0294eb18517bfdcd47998bd1d78c52f8023ab5246b
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+DECISION=
+PROMOTION_APPROVED_FOR_CONTROLLED_EXECUTION
+
+DATABASE:
+
+SCHEMA=
+SEMANTICALLY_EQUIVALENT
+
+MIGRATION_REQUIRED=
+NO
+
+RUNTIME ENV:
+
+DATABASE_URL
+JWT_SECRET
+PORT
+
+CURRENT FROZEN PRODUCTION:
+
+VERSION=
+V7.6
+
+API_MATRIX=
+200|401|401
+
+UI_MATRIX=
+200|401|401|200
+
+DB_COUNTS=
+0|0|0
+
+CONTROLLED EXECUTION MODEL:
+
+1. DO NOT stop V7.6 initially.
+2. DO NOT modify production database schema.
+3. Build immutable V7.7 production candidate image.
+4. Start V7.7 API in parallel on a temporary host port.
+5. Start V7.7 UI in parallel on a temporary host port if applicable.
+6. Connect candidate only through the verified compatible database contract.
+7. Run health probe.
+8. Run Staff no-actor security probe.
+9. Run Access no-actor security probe.
+10. Run Operational Care UI smoke test.
+11. Run Resident AI no-actor probe.
+12. Verify autonomousClinicalAction=false.
+13. Run non-mutating cross-domain read smoke tests.
+14. Capture candidate container/image identities.
+15. Verify V7.6 remains healthy during candidate validation.
+16. Only after candidate acceptance may traffic/ports be cut over.
+17. Preserve V7.6 containers/images as immediate rollback.
+18. Verify post-cutover API matrix.
+19. Verify post-cutover UI matrix.
+20. Verify production DB counts remain unchanged.
+21. Roll back immediately on any failed acceptance criterion.
+22. Do not delete V7.6 or V7.5 rollback assets during initial promotion.
+
+NEXT STEP IS A CONTROLLED EXECUTION SCRIPT,
+NOT A DEVELOPMENT PHASE.
+
+PRODUCTION HAS NOT YET CHANGED.

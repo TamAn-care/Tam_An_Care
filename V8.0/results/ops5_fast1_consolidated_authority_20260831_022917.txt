@@ -1,0 +1,275 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-5 FAST-1 CONSOLIDATED AUTHORITY
+ OPS-5 = COST / RESIDENT USAGE-COST
+
+ READ-ONLY AUTHORITY + CONTRACT DISCOVERY
+ NO SOURCE PATCH
+ NO SCHEMA CHANGE
+ NO MIGRATION APPLY
+ NO DATABASE MUTATION
+======================================================================
+
+----- 1. OPS-4 HANDOFF AUTHORITY -----
+OPS4_CHECKPOINT=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops4_final_20260831_022002
+PASS: OPS-4 IMMUTABLE CHECKPOINT PRESENT
+M4_TABLE=1
+M4_REGISTRY=1
+DATABASE_BASELINE=1|1|0|0|0|0|0
+PASS: OPS-4 CLOSED STATE PRESERVED
+
+----- 2. CURRENT API BUILD AUTHORITY -----
+PASS: CURRENT API BUILD
+PACKAGE_NODE_ENGINE=>=22 <23
+
+----- 3. MIGRATION AUTHORITY -----
+MIGRATION_FILES_BEGIN
+20260829_001_enterprise_foundation.sql|SHA256=0528a751ff7d80ee59487ccf6f09a292f79150c9e97ac3fd385fde4b575c0b5d
+20260829_002_auth_session_lifecycle.sql|SHA256=5b2a5cebcf739d7478a0523f3ad139721ca5fb948c836117d439e0d58d6f3527
+20260829_003_ops_operational_work_foundation.sql|SHA256=04420eb26eb67f8212819e411c740db0e184322562a7f12ff251582d59da4caa
+20260829_004_ops_work_event_type_audit.sql|SHA256=964e363895d6b2cdd2c19795334246edd6997921a4fe22ed6cfe79a7c77f8f9d
+20260829_005_ops_wave1_work_event_types.sql|SHA256=3f2c9d32024dba1f9d9ec192ef4eabd811e7845f2f0e5416bf401f0356eef1ba
+20260829_005_ops_work_event_audit.sql|SHA256=f26521e82bf984863ed872f290c8af82c93fe3274cb9142640a573bd117778e8
+20260829_006_ops_inventory_resident_consumption.sql|SHA256=2678a69de594d685a0e0986f12b99ae0eedcbd298eda51f5208c83426d8650de
+20260829_007_ops_inventory_lot_tracking_required.sql|SHA256=79e74d869bf62c91af184f0f0c630bdb60be3b4848811235341ea83a84be1b1a
+20260830_008_ops_kitchen_food_receiving.sql|SHA256=637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3
+MIGRATION_FILES_END
+
+SCHEMA_MIGRATIONS_REGISTRY_BEGIN
+                 migration_id                 |                         checksum_sha256                          |                      description                      
+----------------------------------------------+------------------------------------------------------------------+-------------------------------------------------------
+ 20260829_001_enterprise_foundation           | 0528a751ff7d80ee59487ccf6f09a292f79150c9e97ac3fd385fde4b575c0b5d | Enterprise authentication and migration registry
+ 20260829_002_auth_session_lifecycle          | 5b2a5cebcf739d7478a0523f3ad139721ca5fb948c836117d439e0d58d6f3527 | Authentication session and token revocation lifecycle
+ 20260829_003_ops_operational_work_foundation | 04420eb26eb67f8212819e411c740db0e184322562a7f12ff251582d59da4caa | OPS operational work foundation
+ 20260830_008_ops_kitchen_food_receiving      | 637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3 | OPS-4 kitchen food receiving evidence
+(4 rows)
+
+SCHEMA_MIGRATIONS_REGISTRY_END
+PASS: MIGRATION AUTHORITY CAPTURED
+
+----- 4. EXISTING COST-DOMAIN SCHEMA DISCOVERY -----
+EXISTING_COST_TABLES_BEGIN
+feeding_assistance
+EXISTING_COST_TABLES_END
+
+COST_RELATED_COLUMNS_BEGIN
+           table_name            |            column_name            |        data_type         | is_nullable | column_default 
+---------------------------------+-----------------------------------+--------------------------+-------------+----------------
+ admission_care_classifications  | suggestion_generated_at           | timestamp with time zone | YES         | 
+ admission_nutrition_assessments | feeding_assistance_required       | boolean                  | NO          | false
+ auth_credentials                | locked_until                      | timestamp with time zone | YES         | 
+ behavioral_support_plans        | reassurance_strategy              | text                     | YES         | 
+ feeding_assistance              | feeding_assistance_id             | text                     | NO          | 
+ health_reports                  | generated_at                      | timestamp with time zone | YES         | 
+ health_reports                  | generated_by                      | text                     | YES         | 
+ health_reports                  | generated_by_role                 | text                     | YES         | 
+ health_reports                  | period_end                        | timestamp with time zone | NO          | 
+ health_reports                  | period_start                      | timestamp with time zone | NO          | 
+ medication_reconciliation_items | medication_reconciliation_id      | text                     | NO          | 
+ medication_reconciliation_items | medication_reconciliation_item_id | text                     | NO          | 
+ medication_reconciliations      | medication_reconciliation_id      | text                     | NO          | 
+ medication_reconciliations      | reconciliation_context            | text                     | NO          | 
+ nutrition_intake_records        | fluid_amount_ml                   | integer                  | YES         | 
+ nutrition_plans                 | feeding_assistance_required       | boolean                  | NO          | false
+(16 rows)
+
+COST_RELATED_COLUMNS_END
+PASS: EXISTING COST-DOMAIN SCHEMA DISCOVERED
+
+----- 5. EXISTING COST-DOMAIN SOURCE DISCOVERY -----
+COST_SOURCE_FILES_BEGIN
+COST_SOURCE_FILES_END
+
+COST_SOURCE_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:34:      domain: 'MEDICATION_SAFETY_RECONCILIATION_HIGH_RISK_GOVERNANCE',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:171:        case 'CREATE_RECONCILIATION': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:178:            INSERT INTO medication_reconciliations (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:179:              medication_reconciliation_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:181:              reconciliation_context,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:195:              c.reconciliationContext ?? 'MEDICATION_LIST_REVIEW',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:203:            db,residentId,'MEDICATION_RECONCILIATION',id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:204:            'RECONCILIATION_CREATED',c,r.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:211:        case 'ADD_RECONCILIATION_ITEM': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:214:          const reconciliationId=c.medicationReconciliationId;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:219:            FROM medication_reconciliations
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:220:            WHERE medication_reconciliation_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:223:            [reconciliationId],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:227:            throw new NotFoundException('Reconciliation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:232:              'Items may be added only while reconciliation is DRAFT.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:244:            INSERT INTO medication_reconciliation_items (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:245:              medication_reconciliation_item_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:246:              medication_reconciliation_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:267:              reconciliationId,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:282:            db,residentId,'MEDICATION_RECONCILIATION_ITEM',id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:283:            'RECONCILIATION_ITEM_RECORDED',c,r.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:290:        case 'VERIFY_RECONCILIATION_ITEM': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:293:          const id=c.medicationReconciliationItemId;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:298:            FROM medication_reconciliation_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:299:            WHERE medication_reconciliation_item_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:306:            throw new NotFoundException('Reconciliation item not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:311:              'Only RECORDED reconciliation item may verify.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:317:            UPDATE medication_reconciliation_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:324:            WHERE medication_reconciliation_item_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:331:            db,residentId,'MEDICATION_RECONCILIATION_ITEM',id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:332:            'RECONCILIATION_ITEM_VERIFIED',c,r.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:339:        case 'AMEND_RECONCILIATION_ITEM': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:342:          const originalId=c.medicationReconciliationItemId;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:351:            FROM medication_reconciliation_items
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:352:            WHERE medication_reconciliation_item_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:359:            throw new NotFoundException('Reconciliation item not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:373:            INSERT INTO medication_reconciliation_items (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:374:              medication_reconciliation_item_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:375:              medication_reconciliation_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:398:              o.medication_reconciliation_id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:415:            db,residentId,'MEDICATION_RECONCILIATION_ITEM',id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:416:            'RECONCILIATION_ITEM_AMENDMENT_RECORDED',c,r.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:423:        case 'REVIEW_RECONCILIATION': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:426:          const id=c.medicationReconciliationId;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:431:            FROM medication_reconciliations
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:432:            WHERE medication_reconciliation_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:439:            throw new NotFoundException('Reconciliation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:444:              'Only DRAFT reconciliation may review.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:450:            UPDATE medication_reconciliations
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:457:            WHERE medication_reconciliation_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:464:            db,residentId,'MEDICATION_RECONCILIATION',id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:465:            'RECONCILIATION_REVIEWED',c,r.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:472:        case 'COMPLETE_RECONCILIATION': {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:475:          const id=c.medicationReconciliationId;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:480:            FROM medication_reconciliations
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:481:            WHERE medication_reconciliation_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:488:            throw new NotFoundException('Reconciliation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:493:              'Only REVIEWED reconciliation may complete.',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:499:            UPDATE medication_reconciliations
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:506:            WHERE medication_reconciliation_id=$1
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:513:            db,residentId,'MEDICATION_RECONCILIATION',id,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:514:            'RECONCILIATION_COMPLETED',c,r.rows[0],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:1174:          fluid_amount_ml,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:1194:          input.fluidAmountMl ?? null,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:1338:          fluid_amount_ml,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:1359:          input.fluidAmountMl
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.service.ts:1360:            ?? row.fluid_amount_ml,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/nutrition-hydration/nutrition-hydration.types.ts:76:  fluidAmountMl?: number;
+COST_SOURCE_SIGNALS_END
+PASS: EXISTING COST-DOMAIN SOURCE DISCOVERED
+
+----- 6. RESIDENT CONSUMPTION AUTHORITY -----
+RESIDENT_CONSUMPTION_COLUMNS_BEGIN
+ ordinal_position |          column_name          |        data_type         | is_nullable | column_default 
+------------------+-------------------------------+--------------------------+-------------+----------------
+                1 | resident_consumption_event_id | text                     | NO          | 
+                2 | resident_id                   | text                     | NO          | 
+                3 | inventory_item_id             | text                     | NO          | 
+                4 | inventory_lot_id              | text                     | YES         | 
+                5 | inventory_transaction_id      | text                     | NO          | 
+                6 | work_event_id                 | text                     | YES         | 
+                7 | quantity                      | numeric                  | NO          | 
+                8 | unit                          | text                     | NO          | 
+                9 | occurred_at                   | timestamp with time zone | NO          | 
+               10 | recorded_by                   | text                     | NO          | 
+               11 | recorded_by_role              | text                     | NO          | 
+               12 | source_domain                 | text                     | NO          | 
+               13 | source_entity_type            | text                     | YES         | 
+               14 | source_entity_id              | text                     | YES         | 
+               15 | note                          | text                     | YES         | 
+               16 | created_at                    | timestamp with time zone | NO          | now()
+(16 rows)
+
+RESIDENT_CONSUMPTION_COLUMNS_END
+
+RESIDENT_CONSUMPTION_CONSTRAINTS_BEGIN
+                          conname                          |                                                               pg_get_constraintdef                                                               
+-----------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------
+ resident_consumption_events_inventory_item_id_fkey        | FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id) ON DELETE RESTRICT
+ resident_consumption_events_inventory_lot_id_fkey         | FOREIGN KEY (inventory_lot_id) REFERENCES inventory_lots(inventory_lot_id) ON DELETE RESTRICT
+ resident_consumption_events_inventory_transaction_id_fkey | FOREIGN KEY (inventory_transaction_id) REFERENCES inventory_transactions(inventory_transaction_id) ON DELETE RESTRICT
+ resident_consumption_events_pkey                          | PRIMARY KEY (resident_consumption_event_id)
+ resident_consumption_events_recorded_by_fkey              | FOREIGN KEY (recorded_by) REFERENCES staff_actors(actor_id) ON DELETE RESTRICT
+ resident_consumption_events_resident_id_fkey              | FOREIGN KEY (resident_id) REFERENCES residents(resident_id) ON DELETE RESTRICT
+ resident_consumption_events_work_event_id_fkey            | FOREIGN KEY (work_event_id) REFERENCES operational_work_events(work_event_id) ON DELETE RESTRICT
+ resident_consumption_quantity_ck                          | CHECK ((quantity > (0)::numeric))
+ resident_consumption_role_ck                              | CHECK ((recorded_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+ resident_consumption_source_ck                            | CHECK ((((source_entity_type IS NULL) AND (source_entity_id IS NULL)) OR ((source_entity_type IS NOT NULL) AND (source_entity_id IS NOT NULL))))
+ resident_consumption_unit_ck                              | CHECK ((length(btrim(unit)) > 0))
+(11 rows)
+
+RESIDENT_CONSUMPTION_CONSTRAINTS_END
+RESIDENT_CONSUMPTION_SOURCE_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts
+RESIDENT_CONSUMPTION_SOURCE_END
+SHA256|/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts|0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: RESIDENT CONSUMPTION SOURCE AUTHORITY
+
+----- 7. INVENTORY AUTHORITY -----
+SOURCE_SHA256|inventory-ledger.service.ts|388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+SOURCE_SHA256|inventory-transaction.service.ts|9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+SOURCE_SHA256|inventory-lot.service.ts|5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087
+SOURCE_SHA256|inventory-authority.service.ts|0cfb56865d0eaaad65c2738ae7caea1bc229290f34e1b42217012917fa44fabe
+
+INVENTORY_PRICE_COST_SIGNALS_BEGIN
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:27:    const values: any[] = [];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:31:      values.push(String(query.inventoryItemId).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:32:      conditions.push(`inventory_item_id = $${values.length}`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:36:      values.push(String(query.status).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:37:      conditions.push(`status = $${values.length}`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:41:      values.push(String(query.expiryBefore).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:42:      conditions.push(`expiry_date <= $${values.length}::date`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:45:    values.push(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:58:      LIMIT $${values.length}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:60:      values,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-lot.service.ts:144:        VALUES ($1,$2,$3,$4,$5,$6,$7)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:3:export function inventoryLimit(value: any): number {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:5:    value === undefined ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:6:    value === null ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:7:    String(value).trim() === ''
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:12:  const parsed = Number(value);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:28:  value: any,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:32:    typeof value !== 'string' ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:33:    value.trim().length === 0
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:38:  return value.trim();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:41:export function optionalText(value: any): string | null {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:43:    value === undefined ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:44:    value === null ||
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:45:    String(value).trim() === ''
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:50:  return String(value).trim();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:53:export function positiveQuantity(value: any): number {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-common.ts:54:  const quantity = Number(value);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:42:    const values: any[] = [];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:45:    const add = (column: string, value: any) => {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:47:        value !== undefined &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:48:        value !== null &&
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:49:        String(value).trim() !== ''
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:51:        values.push(String(value).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:52:        conditions.push(`${column} = $${values.length}`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:63:      values.push(String(query.occurredFrom).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:64:      conditions.push(`occurred_at >= $${values.length}::timestamptz`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:68:      values.push(String(query.occurredTo).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:69:      conditions.push(`occurred_at <= $${values.length}::timestamptz`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:72:    values.push(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:85:      LIMIT $${values.length}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:87:      values,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-transaction.service.ts:392:            VALUES (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-kpi.service.ts:99:    const value =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-kpi.service.ts:102:    if (!value) {
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-kpi.service.ts:109:      new Date(value);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts:297:          VALUES (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/resident-consumption.service.ts:347:          VALUES (
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:26:    const values: any[] = [];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:33:      values.push(String(query.active) === 'true');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:34:      conditions.push(`active = $${values.length}`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:38:      values.push(String(query.category).trim());
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:39:      conditions.push(`category = $${values.length}`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:43:      values.push(`%${String(query.q).trim()}%`);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:45:        `(code ILIKE $${values.length} OR display_name_vi ILIKE $${values.length})`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:49:    values.push(limit);
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:62:      LIMIT $${values.length}
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:64:      values,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-item.service.ts:131:        VALUES ($1,$2,$3,$4,$5,true,$6)
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_004_ops_work_event_type_audit.sql:20:  previous_value jsonb,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_004_ops_work_event_type_audit.sql:21:  new_value jsonb,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_wave1_work_event_types.sql:12:VALUES
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_work_event_audit.sql:14:    previous_value jsonb,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/migrations/20260829_005_ops_work_event_audit.sql:16:    new_value jsonb,
+INVENTORY_PRICE_COST_SIGNALS_END
+PASS: INVENTORY COST-INPUT AUTHORITY INSPECTED
+
+----- 8. OPS-4 / NUTRITION HANDOFF -----
+/bin/bash: line 420: KDIR: unbound variable

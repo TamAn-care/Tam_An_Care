@@ -1,0 +1,54 @@
+{
+  "generated_at": "2026-08-21T10:49:31.450440+00:00",
+  "version": "V7.8",
+  "phase": "2B-R1",
+  "status": "PASSED",
+  "database_restart": {
+    "authorized": true,
+    "performed": true,
+    "container_id_before": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "container_id_after": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+    "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+    "volume": "taman-care-v743-dev-postgres-data",
+    "started_at_before": "2026-08-20T14:26:08.597057625Z",
+    "started_at_after": "2026-08-21T10:49:12.173929381Z",
+    "container_recreated": false,
+    "volume_changed": false,
+    "restore_performed": false,
+    "migration_performed": false
+  },
+  "api": {
+    "container_id_before": "9c5685f6d7c34b1f95029a15263a59dbaf6006253fa24d3c39a962125a31c2d9",
+    "container_id_after": "9c5685f6d7c34b1f95029a15263a59dbaf6006253fa24d3c39a962125a31c2d9",
+    "image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "started_at_before": "2026-08-21T10:42:58.92688025Z",
+    "started_at_after": "2026-08-21T10:42:58.92688025Z",
+    "manual_restart": false,
+    "automatic_db_reconnect": true,
+    "health": "200",
+    "security": "401|401|401"
+  },
+  "ui": {
+    "container_id_before": "3b8ce413e4e6f8edea10959cf9e3453217f041132f5155b6268d415b63069bd3",
+    "container_id_after": "3b8ce413e4e6f8edea10959cf9e3453217f041132f5155b6268d415b63069bd3",
+    "image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "started_at_before": "2026-08-21T10:43:11.079908006Z",
+    "started_at_after": "2026-08-21T10:43:11.079908006Z",
+    "manual_restart": false,
+    "matrix": "200|401|401|200"
+  },
+  "database_integrity": {
+    "table_count_before": 118,
+    "table_count_after": 118,
+    "fingerprint_before": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "fingerprint_after": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "row_delta": false
+  },
+  "phase1_backup": {
+    "sha256": "35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9",
+    "restored": false
+  },
+  "v76_rollback_assets_preserved": true,
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_2C_ROLLBACK_RECOVERY_ACCEPTANCE"
+}

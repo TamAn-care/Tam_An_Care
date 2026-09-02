@@ -1,0 +1,3983 @@
+
+======================================================================
+TAMANCARE — OPS-2-B-I1-P1 — EXACT IMPLEMENTATION PREFLIGHT
+======================================================================
+MODE=READ_ONLY_IMPLEMENTATION_PREFLIGHT
+SOURCE_PATCH=NO
+DB_MUTATION=NO
+MIGRATION=NO
+BUILD=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+MASTER_3000_TOUCH=NO
+LEDGER_SOURCE_OF_TRUTH=REQUIRED
+SECOND_LEDGER=FORBIDDEN
+NEGATIVE_STOCK=FORBIDDEN
+CONCURRENT_OUTBOUND_PROTECTION=REQUIRED
+
+======================================================================
+1. ACCEPTED SOURCE + SCHEMA LOCK
+======================================================================
+API_TREE_BEFORE=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_BEFORE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API BASELINE
+PASS: FRONTEND BASELINE
+PUBLIC_TABLES=148
+LOT_TRACKING_ACCEPTED=1
+PASS: M1-R1 SCHEMA PRESENT
+
+======================================================================
+2. TARGET INVENTORY MODULE COLLISION
+======================================================================
+EXISTING_INVENTORY_MODULE_COUNT=0
+PASS: NO INVENTORY MODULE COLLISION
+
+======================================================================
+3. APP MODULE REGISTRATION PATTERN
+======================================================================
+import { Module } from '@nestjs/common';
+import { SecurityModule } from './security/security.module';
+
+import {
+  ClinicalModule,
+} from './clinical-observations/clinical.module';
+
+import {
+  MedicationModule,
+} from './medication/medication.module';
+import { DatabaseModule } from './database/database.module';
+import { CareActionRepository } from './care-actions/care-action.repository';
+import { CareActionService } from './care-actions/care-action.service';
+import { CareActionController } from './care-actions/care-action.controller';
+import { HealthController } from './health/health.controller';
+import { AiEngineController } from './ai/ai-engine.controller';
+import { AiEngineService } from './ai/ai-engine.service';
+import { AiGatewayService } from './ai/ai-gateway.service';
+import { AiGovernanceController } from './ai/ai-governance.controller';
+import { EarlyWarningController } from './ai/early-warning.controller';
+import { EarlyWarningService } from './ai/early-warning.service';
+import { ResidentModule } from './residents/resident.module';
+import { WarningReviewModule } from './warning-reviews/warning-review.module';
+import { CareActionBridgeModule } from './care-action-bridge/care-action-bridge.module';
+import { ResponsibilityAcceptanceModule } from './responsibility-acceptance/responsibility-acceptance.module';
+import { StartReviewAuthorizationModule } from './start-review-authorization/start-review-authorization.module';
+
+
+import {
+  ResolutionAuthorizationModule,
+} from './resolution-authorization/resolution-authorization.module';
+
+import {
+  ReopenAuthorizationModule,
+} from './reopen-authorization/reopen-authorization.module';
+import {
+  CarePlanGovernanceModule,
+} from './care-plan-governance/care-plan-governance.module';
+
+import {
+  CareTaskExecutionModule,
+} from './care-task-execution/care-task-execution.module';
+
+import { IncidentModule } from './incidents/incident.module';
+import { NutritionHydrationModule } from './nutrition-hydration/nutrition-hydration.module';
+import { ActivityRehabilitationModule } from './activity-rehabilitation/activity-rehabilitation.module';
+import { SkinWoundModule } from './skin-wound/skin-wound.module';
+import { PersonalCareModule } from './personal-care/personal-care.module';
+import { BehavioralCognitiveModule } from './behavioral-cognitive/behavioral-cognitive.module';
+import { SleepRestModule } from './sleep-rest/sleep-rest.module';
+import { PainComfortModule } from './pain-comfort/pain-comfort.module';
+import { InfectionControlModule } from './infection-control/infection-control.module';
+import { MedicationSafetyModule } from './medication-safety/medication-safety.module';
+import { SafeguardingModule } from './safeguarding/safeguarding.module';
+import { FallMobilityModule } from './fall-mobility/fall-mobility.module';
+import { CrossDomainIntegrationModule } from './cross-domain-integration/cross-domain-integration.module';
+import { OperationalCareViewModule } from './operational-care-view/operational-care-view.module';
+import { ResidentAccessAdministrationModule } from './resident-access-administration/resident-access-administration.module';
+import { AdmissionModule } from './admissions/admission.module';
+import { HealthReportModule } from './health-reports/health-report.module';
+
+import { AuthModule } from './auth/auth.module';
+import { ObservabilityModule } from './observability/observability.module';
+import { OperationalWorkModule } from './operational-work/operational-work.module';
+@Module({imports:[
+    ObservabilityModule,
+    OperationalWorkModule,
+    AuthModule,
+    SecurityModule,
+    HealthReportModule,
+    AdmissionModule,
+    ResidentAccessAdministrationModule,
+    OperationalCareViewModule,
+    CrossDomainIntegrationModule,
+    FallMobilityModule,
+    SafeguardingModule,
+    MedicationSafetyModule,
+    InfectionControlModule,
+    PainComfortModule,
+    SleepRestModule,
+    BehavioralCognitiveModule,
+    PersonalCareModule,
+    SkinWoundModule,
+    IncidentModule,
+    ClinicalModule,
+    MedicationModule,
+    CareTaskExecutionModule,
+    CarePlanGovernanceModule,ResolutionAuthorizationModule,DatabaseModule,ResidentModule,WarningReviewModule,CareActionBridgeModule,ResponsibilityAcceptanceModule,StartReviewAuthorizationModule,
+    ReopenAuthorizationModule,
+  NutritionHydrationModule,
+  ActivityRehabilitationModule,
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService]})
+export class AppModule {}
+
+======================================================================
+4. DATABASE MODULE / CLIENT CONTRACT
+======================================================================
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.module.ts
+
+----------------------------------------------------------------------
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts
+----------------------------------------------------------------------
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+} from '@nestjs/common';
+
+import {
+  Pool,
+  PoolClient,
+  QueryResult,
+  QueryResultRow,
+} from 'pg';
+
+
+@Injectable()
+export class DatabaseService
+  implements OnModuleDestroy
+{
+  private readonly logger =
+    new Logger(DatabaseService.name);
+
+  private readonly pool: Pool;
+
+  constructor() {
+
+    const connectionString =
+      process.env.DATABASE_URL;
+
+    if (
+      process.env.NODE_ENV === 'production' &&
+      !connectionString
+    ) {
+      throw new Error(
+        'DATABASE_URL is required in production',
+      );
+    }
+
+    this.pool = connectionString
+      ? new Pool({
+          connectionString,
+          max: 10,
+          idleTimeoutMillis: 30000,
+          connectionTimeoutMillis: 5000,
+        })
+      : new Pool({
+          host:
+            process.env.DB_HOST ||
+            'postgres',
+
+          port:
+            Number(
+              process.env.DB_PORT ||
+              5432
+            ),
+
+          user:
+            process.env.POSTGRES_USER ||
+            process.env.DB_USER ||
+            'taman',
+
+          password:
+            process.env.POSTGRES_PASSWORD ||
+            process.env.DB_PASSWORD ||
+            (() => {
+              if (
+                process.env.NODE_ENV === 'production'
+              ) {
+                throw new Error(
+                  'Database password is required in production',
+                );
+              }
+              return 'taman_dev_password';
+            })(),
+
+          database:
+            process.env.POSTGRES_DB ||
+            process.env.DB_NAME ||
+            'taman_care',
+
+          max: 10,
+
+          idleTimeoutMillis: 30000,
+
+          connectionTimeoutMillis: 5000,
+        });
+
+    this.pool.on(
+      'error',
+      (error: Error) => {
+
+        this.logger.error(
+          'Unexpected PostgreSQL pool error',
+          error.stack,
+        );
+
+      },
+    );
+  }
+
+
+  async query<
+    T extends QueryResultRow = any
+  >(
+    text: string,
+    params: any[] = [],
+  ): Promise<QueryResult<T>> {
+
+    return this.pool.query<T>(
+      text,
+      params,
+    );
+
+  }
+
+
+  async withTransaction<T>(
+    operation:
+      (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+
+    const client =
+      await this.pool.connect();
+
+    try {
+
+      await client.query('BEGIN');
+
+      const result =
+        await operation(client);
+
+      await client.query('COMMIT');
+
+      return result;
+
+    } catch (error) {
+
+      await client.query('ROLLBACK');
+
+      throw error;
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+
+
+  async healthCheck(): Promise<boolean> {
+
+    const result =
+      await this.query<{ ok: number }>(
+        'SELECT 1 AS ok',
+      );
+
+    return result.rows[0]?.ok === 1;
+
+  }
+
+
+  async onModuleDestroy(): Promise<void> {
+
+    await this.pool.end();
+
+  }
+}
+
+----------------------------------------------------------------------
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.module.ts
+----------------------------------------------------------------------
+import {
+  Global,
+  Module,
+} from '@nestjs/common';
+
+import {
+  DatabaseService,
+} from './database.service';
+
+
+@Global()
+@Module({
+  providers: [
+    DatabaseService,
+  ],
+
+  exports: [
+    DatabaseService,
+  ],
+})
+export class DatabaseModule {}
+
+======================================================================
+5. ACCEPTED OPERATIONAL-WORK MODULE PATTERN
+======================================================================
+
+----------------------------------------------------------------------
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work.module.ts
+----------------------------------------------------------------------
+import { Module } from '@nestjs/common';
+
+import {
+  DatabaseModule,
+} from '../database/database.module';
+
+import {
+  OperationalWorkEventTypeController,
+} from './operational-work-event-type.controller';
+
+import {
+  OperationalWorkEventTypeService,
+} from './operational-work-event-type.service';
+
+import {
+  OperationalWorkEventController,
+} from './operational-work-event.controller';
+
+import {
+  OperationalWorkEventService,
+} from './operational-work-event.service';
+import {
+  OperationalWorkProjectionService,
+} from './operational-work-projection.service';
+
+@Module({
+  imports: [
+    DatabaseModule,
+  ],
+
+  controllers: [
+    OperationalWorkEventTypeController,
+    OperationalWorkEventController,
+  ],
+
+  providers: [
+    OperationalWorkEventTypeService,
+    OperationalWorkEventService,
+    OperationalWorkProjectionService,
+  ],
+
+  exports: [
+    OperationalWorkEventTypeService,
+    OperationalWorkEventService,
+    OperationalWorkProjectionService,
+  ],
+})
+export class OperationalWorkModule {}
+
+----------------------------------------------------------------------
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts
+----------------------------------------------------------------------
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { OperationalWorkEventService } from './operational-work-event.service';
+
+@Controller('api/operations/work-events')
+export class OperationalWorkEventController {
+  constructor(
+    private readonly service:
+      OperationalWorkEventService,
+  ) {}
+
+  @Get()
+  list(
+    @Headers('x-actor-id') actorId:
+      | string
+      | undefined,
+    @Headers('x-actor-role') actorRole:
+      | string
+      | undefined,
+    @Query() query: any,
+  ) {
+    return this.service.list(
+      actorId,
+      actorRole,
+      query,
+    );
+  }
+
+  @Get(':id')
+  detail(
+    @Headers('x-actor-id') actorId:
+      | string
+      | undefined,
+    @Headers('x-actor-role') actorRole:
+      | string
+      | undefined,
+    @Param('id') id: string,
+  ) {
+    return this.service.detail(
+      actorId,
+      actorRole,
+      id,
+    );
+  }
+
+  @Post()
+  create(
+    @Headers('x-actor-id') actorId:
+      | string
+      | undefined,
+    @Headers('x-actor-role') actorRole:
+      | string
+      | undefined,
+    @Body() body: any,
+  ) {
+    return this.service.create(
+      actorId,
+      actorRole,
+      body,
+    );
+  }
+
+  @Post(':id/verify')
+  verify(
+    @Headers('x-actor-id') actorId:
+      | string
+      | undefined,
+    @Headers('x-actor-role') actorRole:
+      | string
+      | undefined,
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    return this.service.verify(
+      actorId,
+      actorRole,
+      id,
+      body,
+    );
+  }
+
+  @Post(':id/amend')
+  amend(
+    @Headers('x-actor-id') actorId:
+      | string
+      | undefined,
+    @Headers('x-actor-role') actorRole:
+      | string
+      | undefined,
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    return this.service.amend(
+      actorId,
+      actorRole,
+      id,
+      body,
+    );
+  }
+
+  @Post(':id/void')
+  voidEvent(
+    @Headers('x-actor-id') actorId:
+      | string
+      | undefined,
+    @Headers('x-actor-role') actorRole:
+      | string
+      | undefined,
+    @Param('id') id: string,
+    @Body() body: any,
+  ) {
+    return this.service.voidEvent(
+      actorId,
+      actorRole,
+      id,
+      body,
+    );
+  }
+}
+
+----------------------------------------------------------------------
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts
+----------------------------------------------------------------------
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Pool, PoolClient } from 'pg';
+import { randomUUID } from 'crypto';
+
+type HumanRole =
+  | 'CAREGIVER'
+  | 'NURSE'
+  | 'CARE_MANAGER'
+  | 'SUPERVISOR';
+
+type EventStatus =
+  | 'RECORDED'
+  | 'VERIFIED'
+  | 'COMPLETED'
+  | 'AMENDED'
+  | 'VOIDED';
+
+interface ActorContext {
+  actorId: string;
+  actorRole: HumanRole;
+}
+
+@Injectable()
+export class OperationalWorkEventService {
+  private readonly pool: Pool;
+
+  private readonly humanRoles: HumanRole[] = [
+    'CAREGIVER',
+    'NURSE',
+    'CARE_MANAGER',
+    'SUPERVISOR',
+  ];
+
+  private readonly authorityRoles: HumanRole[] = [
+    'CARE_MANAGER',
+    'SUPERVISOR',
+  ];
+
+  constructor() {
+    this.pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
+  }
+
+  private async withTransaction<T>(
+    fn: (client: PoolClient) => Promise<T>,
+  ): Promise<T> {
+    const client = await this.pool.connect();
+
+    try {
+      await client.query('BEGIN');
+      const result = await fn(client);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  private async requireActor(
+    actorId?: string,
+    actorRole?: string,
+  ): Promise<ActorContext> {
+    if (!actorId || !actorRole) {
+      throw new UnauthorizedException('Actor context is required');
+    }
+
+    if (
+      !this.humanRoles.includes(actorRole as HumanRole)
+    ) {
+      throw new ForbiddenException(
+        'Human actor role is required',
+      );
+    }
+
+    const result = await this.pool.query(
+      `
+      SELECT
+        actor_id,
+        primary_operational_role,
+        status
+      FROM staff_actors
+      WHERE actor_id = $1
+      LIMIT 1
+      `,
+      [actorId],
+    );
+
+    if (!result.rowCount) {
+      throw new UnauthorizedException(
+        'Canonical actor not found',
+      );
+    }
+
+    const actor = result.rows[0];
+
+    if (actor.status !== 'ACTIVE') {
+      throw new ForbiddenException(
+        'Canonical actor is not active',
+      );
+    }
+
+    if (actor.primary_operational_role !== actorRole) {
+      throw new ForbiddenException(
+        'Actor role does not match canonical role',
+      );
+    }
+
+    return {
+      actorId: actor.actor_id,
+      actorRole: actor.primary_operational_role as HumanRole,
+    };
+  }
+
+  private requireAuthority(actor: ActorContext): void {
+    if (!this.authorityRoles.includes(actor.actorRole)) {
+      throw new ForbiddenException(
+        'Care manager or supervisor authority is required',
+      );
+    }
+  }
+
+  private normalizeLimit(value: any): number {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      return 50;
+    }
+
+    const parsed = Number(value);
+
+    if (
+      !Number.isInteger(parsed) ||
+      parsed < 1 ||
+      parsed > 100
+    ) {
+      throw new BadRequestException(
+        'limit must be an integer between 1 and 100',
+      );
+    }
+
+    return parsed;
+  }
+
+  private requireText(
+    value: any,
+    field: string,
+  ): string {
+    if (
+      typeof value !== 'string' ||
+      value.trim().length === 0
+    ) {
+      throw new BadRequestException(
+        `${field} is required`,
+      );
+    }
+
+    return value.trim();
+  }
+
+  private eventSnapshot(row: any): Record<string, any> {
+    return {
+      workEventId: row.work_event_id,
+      residentId: row.resident_id,
+      workEventTypeId: row.work_event_type_id,
+      sourceDomain: row.source_domain,
+      sourceEntityType: row.source_entity_type,
+      sourceEntityId: row.source_entity_id,
+      plannedClassification: row.planned_classification,
+      occurredAt: row.occurred_at,
+      startedAt: row.started_at,
+      completedAt: row.completed_at,
+      performedBy: row.performed_by,
+      performedByRole: row.performed_by_role,
+      quantity: row.quantity,
+      unit: row.unit,
+      workWeight: row.work_weight,
+      reasonCode: row.reason_code,
+      note: row.note,
+      status: row.status,
+    };
+  }
+
+  private async insertAudit(
+    client: PoolClient,
+    eventType:
+      | 'WORK_EVENT_CREATED'
+      | 'WORK_EVENT_VERIFIED'
+      | 'WORK_EVENT_AMENDED'
+      | 'WORK_EVENT_VOIDED',
+    targetWorkEventId: string,
+    actor: ActorContext,
+    previousValue: Record<string, any> | null,
+    newValue: Record<string, any>,
+  ): Promise<void> {
+    await client.query(
+      `
+      INSERT INTO operational_work_event_audit (
+        event_type,
+        target_work_event_id,
+        performed_by,
+        performed_by_role,
+        previous_value,
+        new_value
+      )
+      VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb)
+      `,
+      [
+        eventType,
+        targetWorkEventId,
+        actor.actorId,
+        actor.actorRole,
+        previousValue === null
+          ? null
+          : JSON.stringify(previousValue),
+        JSON.stringify(newValue),
+      ],
+    );
+  }
+
+  async list(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    query: any,
+  ): Promise<any> {
+    await this.requireActor(actorId, actorRole);
+
+    const limit = this.normalizeLimit(query?.limit);
+
+    const values: any[] = [];
+    const conditions: string[] = [];
+
+    const addFilter = (
+      column: string,
+      value: any,
+    ) => {
+      if (
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ''
+      ) {
+        values.push(String(value).trim());
+        conditions.push(
+          `${column} = $${values.length}`,
+        );
+      }
+    };
+
+    addFilter('resident_id', query?.residentId);
+    addFilter(
+      'work_event_type_id',
+      query?.workEventTypeId,
+    );
+    addFilter('performed_by', query?.performedBy);
+    addFilter('status', query?.status);
+    addFilter('source_domain', query?.sourceDomain);
+
+    values.push(limit);
+
+    const where =
+      conditions.length > 0
+        ? `WHERE ${conditions.join(' AND ')}`
+        : '';
+
+    const result = await this.pool.query(
+      `
+      SELECT *
+      FROM operational_work_events
+      ${where}
+      ORDER BY occurred_at DESC, work_event_id DESC
+      LIMIT $${values.length}
+      `,
+      values,
+    );
+
+    return {
+      items: result.rows,
+      count: result.rows.length,
+      limit,
+    };
+  }
+
+  async detail(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    id: string,
+  ): Promise<any> {
+    await this.requireActor(actorId, actorRole);
+
+    const result = await this.pool.query(
+      `
+      SELECT *
+      FROM operational_work_events
+      WHERE work_event_id = $1
+      LIMIT 1
+      `,
+      [id],
+    );
+
+    if (!result.rowCount) {
+      throw new NotFoundException(
+        'Work event not found',
+      );
+    }
+
+    return result.rows[0];
+  }
+
+  async create(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    body: any,
+  ): Promise<any> {
+    const actor = await this.requireActor(
+      actorId,
+      actorRole,
+    );
+
+    if (
+      body?.performedBy !== undefined ||
+      body?.performed_by !== undefined ||
+      body?.performedByRole !== undefined ||
+      body?.performed_by_role !== undefined ||
+      body?.workWeight !== undefined ||
+      body?.work_weight !== undefined ||
+      body?.unit !== undefined
+    ) {
+      throw new BadRequestException(
+        'performedBy, performedByRole, workWeight and unit are server-controlled',
+      );
+    }
+
+    const workEventTypeId = this.requireText(
+      body?.workEventTypeId,
+      'workEventTypeId',
+    );
+
+    const sourceDomain = this.requireText(
+      body?.sourceDomain,
+      'sourceDomain',
+    );
+
+    const plannedClassification =
+      this.requireText(
+        body?.plannedClassification,
+        'plannedClassification',
+      );
+
+    if (
+      ![
+        'PLANNED',
+        'ADDITIONAL',
+        'UNPLANNED',
+      ].includes(plannedClassification)
+    ) {
+      throw new BadRequestException(
+        'Invalid plannedClassification',
+      );
+    }
+
+    const requestedStatus =
+      body?.status === undefined
+        ? 'COMPLETED'
+        : this.requireText(
+            body.status,
+            'status',
+          );
+
+    if (
+      !['COMPLETED', 'RECORDED'].includes(
+        requestedStatus,
+      )
+    ) {
+      throw new BadRequestException(
+        'Initial status must be COMPLETED or RECORDED',
+      );
+    }
+
+    const sourceEntityType =
+      body?.sourceEntityType === undefined ||
+      body?.sourceEntityType === null ||
+      body?.sourceEntityType === ''
+        ? null
+        : String(body.sourceEntityType).trim();
+
+    const sourceEntityId =
+      body?.sourceEntityId === undefined ||
+      body?.sourceEntityId === null ||
+      body?.sourceEntityId === ''
+        ? null
+        : String(body.sourceEntityId).trim();
+
+    if (
+      (sourceEntityType === null) !==
+      (sourceEntityId === null)
+    ) {
+      throw new BadRequestException(
+        'sourceEntityType and sourceEntityId must both be supplied or both be null',
+      );
+    }
+
+    const quantity =
+      body?.quantity === undefined
+        ? 1
+        : Number(body.quantity);
+
+    if (
+      !Number.isFinite(quantity) ||
+      quantity <= 0
+    ) {
+      throw new BadRequestException(
+        'quantity must be greater than 0',
+      );
+    }
+
+    const occurredAt =
+      body?.occurredAt === undefined
+        ? new Date().toISOString()
+        : body.occurredAt;
+
+    const workEventId =
+      `work-event-${randomUUID()}`;
+
+    try {
+      return await this.withTransaction(
+        async (client) => {
+          const typeResult = await client.query(
+            `
+            SELECT *
+            FROM operational_work_event_types
+            WHERE work_event_type_id = $1
+              AND active = true
+            LIMIT 1
+            FOR SHARE
+            `,
+            [workEventTypeId],
+          );
+
+          if (!typeResult.rowCount) {
+            throw new BadRequestException(
+              'Active work event type not found',
+            );
+          }
+
+          const type = typeResult.rows[0];
+
+          const residentId =
+            body?.residentId === undefined ||
+            body?.residentId === null ||
+            body?.residentId === ''
+              ? null
+              : String(body.residentId).trim();
+
+          if (
+            type.resident_related === true &&
+            residentId === null
+          ) {
+            throw new BadRequestException(
+              'residentId is required for resident-related work',
+            );
+          }
+
+          if (residentId !== null) {
+            const residentResult =
+              await client.query(
+                `
+                SELECT resident_id
+                FROM residents
+                WHERE resident_id = $1
+                LIMIT 1
+                `,
+                [residentId],
+              );
+
+            if (!residentResult.rowCount) {
+              throw new BadRequestException(
+                'Resident not found',
+              );
+            }
+          }
+
+          const insertResult =
+            await client.query(
+              `
+              INSERT INTO operational_work_events (
+                work_event_id,
+                resident_id,
+                work_event_type_id,
+                source_domain,
+                source_entity_type,
+                source_entity_id,
+                planned_classification,
+                occurred_at,
+                started_at,
+                completed_at,
+                performed_by,
+                performed_by_role,
+                quantity,
+                unit,
+                work_weight,
+                reason_code,
+                note,
+                status
+              )
+              VALUES (
+                $1,$2,$3,$4,$5,$6,$7,$8,
+                $9,$10,$11,$12,$13,$14,$15,
+                $16,$17,$18
+              )
+              RETURNING *
+              `,
+              [
+                workEventId,
+                residentId,
+                workEventTypeId,
+                sourceDomain,
+                sourceEntityType,
+                sourceEntityId,
+                plannedClassification,
+                occurredAt,
+                body?.startedAt ?? null,
+                body?.completedAt ??
+                  (
+                    requestedStatus ===
+                    'COMPLETED'
+                      ? occurredAt
+                      : null
+                  ),
+                actor.actorId,
+                actor.actorRole,
+                quantity,
+                type.default_unit,
+                type.default_work_weight,
+                body?.reasonCode ?? null,
+                body?.note ?? null,
+                requestedStatus,
+              ],
+            );
+
+          const row = insertResult.rows[0];
+
+          await this.insertAudit(
+            client,
+            'WORK_EVENT_CREATED',
+            row.work_event_id,
+            actor,
+            null,
+            this.eventSnapshot(row),
+          );
+
+          return row;
+        },
+      );
+    } catch (error: any) {
+      if (
+        String(error?.code || '') === '23505'
+      ) {
+        throw new ConflictException(
+          'Work event source/type already exists',
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  async verify(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    id: string,
+    body: any,
+  ): Promise<any> {
+    const actor = await this.requireActor(
+      actorId,
+      actorRole,
+    );
+    this.requireAuthority(actor);
+
+    return this.lifecycleUpdate(
+      actor,
+      id,
+      ['RECORDED'],
+      'VERIFIED',
+      'WORK_EVENT_VERIFIED',
+      body,
+    );
+  }
+
+  async amend(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    id: string,
+    body: any,
+  ): Promise<any> {
+    const actor = await this.requireActor(
+      actorId,
+      actorRole,
+    );
+    this.requireAuthority(actor);
+
+    return this.lifecycleUpdate(
+      actor,
+      id,
+      ['VERIFIED', 'COMPLETED', 'AMENDED'],
+      'AMENDED',
+      'WORK_EVENT_AMENDED',
+      body,
+    );
+  }
+
+  async voidEvent(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    id: string,
+    body: any,
+  ): Promise<any> {
+    const actor = await this.requireActor(
+      actorId,
+      actorRole,
+    );
+    this.requireAuthority(actor);
+
+    if (
+      typeof body?.reasonCode !== 'string' ||
+      body.reasonCode.trim().length === 0
+    ) {
+      throw new BadRequestException(
+        'reasonCode is required for void',
+      );
+    }
+
+    return this.lifecycleUpdate(
+      actor,
+      id,
+      [
+        'RECORDED',
+        'VERIFIED',
+        'COMPLETED',
+        'AMENDED',
+      ],
+      'VOIDED',
+      'WORK_EVENT_VOIDED',
+      body,
+    );
+  }
+
+  private async lifecycleUpdate(
+    actor: ActorContext,
+    id: string,
+    allowedStatuses: EventStatus[],
+    nextStatus: EventStatus,
+    auditType:
+      | 'WORK_EVENT_VERIFIED'
+      | 'WORK_EVENT_AMENDED'
+      | 'WORK_EVENT_VOIDED',
+    body: any,
+  ): Promise<any> {
+    return this.withTransaction(
+      async (client) => {
+        const currentResult =
+          await client.query(
+            `
+            SELECT *
+            FROM operational_work_events
+            WHERE work_event_id = $1
+            LIMIT 1
+            FOR UPDATE
+            `,
+            [id],
+          );
+
+        if (!currentResult.rowCount) {
+          throw new NotFoundException(
+            'Work event not found',
+          );
+        }
+
+        const previous =
+          currentResult.rows[0];
+
+        if (
+          !allowedStatuses.includes(
+            previous.status,
+          )
+        ) {
+          throw new ConflictException(
+            `Invalid work event transition from ${previous.status} to ${nextStatus}`,
+          );
+        }
+
+        const quantity = Number(
+          body?.quantity === undefined
+            ? previous.quantity
+            : body.quantity,
+        );
+
+        if (
+          !Number.isFinite(quantity) ||
+          quantity <= 0
+        ) {
+          throw new BadRequestException(
+            'quantity must be greater than 0',
+          );
+        }
+
+        if (
+          body?.workWeight !== undefined ||
+          body?.work_weight !== undefined ||
+          body?.unit !== undefined ||
+          body?.performedBy !== undefined ||
+          body?.performed_by !== undefined ||
+          body?.performedByRole !== undefined ||
+          body?.performed_by_role !== undefined ||
+          body?.workEventTypeId !== undefined ||
+          body?.work_event_type_id !== undefined
+        ) {
+          throw new BadRequestException(
+            'Canonical evidence fields are immutable',
+          );
+        }
+
+        const updateResult =
+          await client.query(
+            `
+            UPDATE operational_work_events
+            SET
+              quantity = $2,
+              reason_code = $3,
+              note = $4,
+              started_at = $5,
+              completed_at = $6,
+              status = $7
+            WHERE work_event_id = $1
+            RETURNING *
+            `,
+            [
+              id,
+              quantity,
+              body?.reasonCode ??
+                previous.reason_code,
+              body?.note ??
+                previous.note,
+              body?.startedAt ??
+                previous.started_at,
+              body?.completedAt ??
+                previous.completed_at,
+              nextStatus,
+            ],
+
+----------------------------------------------------------------------
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts
+----------------------------------------------------------------------
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+import { DatabaseService } from '../database/database.service';
+
+type HumanRole =
+  | 'CAREGIVER'
+  | 'NURSE'
+  | 'CARE_MANAGER'
+  | 'SUPERVISOR';
+
+interface ActorRow {
+  primary_operational_role: HumanRole;
+  status: string;
+}
+
+export interface WorkEventTypeRecord {
+  work_event_type_id: string;
+  code: string;
+  display_name_vi: string;
+  category: string;
+  default_unit: string;
+  default_work_weight: string | number;
+  resident_related: boolean;
+  inventory_link_allowed: boolean;
+  active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+@Injectable()
+export class OperationalWorkEventTypeService {
+  private readonly defaultLimit = 50;
+  private readonly maxLimit = 100;
+
+  constructor(
+    private readonly database: DatabaseService,
+  ) {}
+
+  private async authorize(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    allowed: HumanRole[],
+  ): Promise<{
+    actorId: string;
+    actorRole: HumanRole;
+  }> {
+    const id = String(actorId || '').trim();
+    const role =
+      String(actorRole || '')
+        .trim()
+        .toUpperCase() as HumanRole;
+
+    if (!id || !role) {
+      throw new UnauthorizedException(
+        'Actor context is required',
+      );
+    }
+
+    const validRoles: HumanRole[] = [
+      'CAREGIVER',
+      'NURSE',
+      'CARE_MANAGER',
+      'SUPERVISOR',
+    ];
+
+    if (!validRoles.includes(role)) {
+      throw new ForbiddenException(
+        'Human operational role is required',
+      );
+    }
+
+    const result =
+      await this.database.query<ActorRow>(
+        `
+        SELECT
+          primary_operational_role,
+          status
+        FROM staff_actors
+        WHERE actor_id=$1
+        LIMIT 1
+        `,
+        [id],
+      );
+
+    const actor = result.rows[0];
+
+    if (!actor || actor.status !== 'ACTIVE') {
+      throw new UnauthorizedException(
+        'Canonical active human actor is required',
+      );
+    }
+
+    if (
+      actor.primary_operational_role !== role
+    ) {
+      throw new ForbiddenException(
+        'Actor role does not match canonical role',
+      );
+    }
+
+    if (!allowed.includes(role)) {
+      throw new ForbiddenException(
+        'Actor is not authorized for this operation',
+      );
+    }
+
+    return {
+      actorId: id,
+      actorRole: role,
+    };
+  }
+
+  private requiredString(
+    value: unknown,
+    field: string,
+  ): string {
+    if (
+      typeof value !== 'string' ||
+      !value.trim()
+    ) {
+      throw new BadRequestException(
+        `${field} is required`,
+      );
+    }
+
+    return value.trim();
+  }
+
+  private optionalBoolean(
+    value: unknown,
+    fallback: boolean,
+    field: string,
+  ): boolean {
+    if (
+      value === undefined ||
+      value === null
+    ) {
+      return fallback;
+    }
+
+    if (typeof value !== 'boolean') {
+      throw new BadRequestException(
+        `${field} must be boolean`,
+      );
+    }
+
+    return value;
+  }
+
+  private workWeight(
+    value: unknown,
+  ): number {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      return 1;
+    }
+
+    if (
+      typeof value !== 'number' ||
+      !Number.isFinite(value) ||
+      value <= 0
+    ) {
+      throw new BadRequestException(
+        'defaultWorkWeight must be a positive number',
+      );
+    }
+
+    return value;
+  }
+
+  boundLimit(
+    raw?: string,
+  ): number {
+    if (
+      raw === undefined ||
+      raw.trim() === ''
+    ) {
+      return this.defaultLimit;
+    }
+
+    if (!/^\d+$/.test(raw)) {
+      throw new BadRequestException(
+        'limit must be an integer',
+      );
+    }
+
+    const limit = Number(raw);
+
+    if (
+      !Number.isInteger(limit) ||
+      limit < 1 ||
+      limit > this.maxLimit
+    ) {
+      throw new BadRequestException(
+        `limit must be between 1 and ${this.maxLimit}`,
+      );
+    }
+
+    return limit;
+  }
+
+  async list(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    rawLimit?: string,
+    active?: string,
+  ) {
+    await this.authorize(
+      actorId,
+      actorRole,
+      [
+        'CAREGIVER',
+        'NURSE',
+        'CARE_MANAGER',
+        'SUPERVISOR',
+      ],
+    );
+
+    const limit = this.boundLimit(rawLimit);
+
+    let activeFilter: boolean | null = null;
+
+    if (
+      active !== undefined &&
+      active !== '' &&
+      active.toLowerCase() !== 'all'
+    ) {
+      if (
+        active.toLowerCase() !== 'true' &&
+        active.toLowerCase() !== 'false'
+      ) {
+        throw new BadRequestException(
+          'active must be true, false, or all',
+        );
+      }
+
+      activeFilter =
+        active.toLowerCase() === 'true';
+    }
+
+    const result =
+      await this.database.query<WorkEventTypeRecord>(
+        `
+        SELECT
+          work_event_type_id,
+          code,
+          display_name_vi,
+          category,
+          default_unit,
+          default_work_weight,
+          resident_related,
+          inventory_link_allowed,
+          active,
+          created_at,
+          updated_at
+        FROM operational_work_event_types
+        WHERE (
+          $1::boolean IS NULL
+          OR active=$1
+        )
+        ORDER BY
+          category ASC,
+          display_name_vi ASC,
+          code ASC,
+          work_event_type_id ASC
+        LIMIT $2
+        `,
+        [
+          activeFilter,
+          limit,
+        ],
+      );
+
+    return {
+      items: result.rows,
+      count: result.rows.length,
+      limit,
+    };
+  }
+
+  async detail(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    id: string,
+  ) {
+    await this.authorize(
+      actorId,
+      actorRole,
+      [
+        'CAREGIVER',
+        'NURSE',
+        'CARE_MANAGER',
+        'SUPERVISOR',
+      ],
+    );
+
+    const result =
+      await this.database.query<WorkEventTypeRecord>(
+        `
+        SELECT
+          work_event_type_id,
+          code,
+          display_name_vi,
+          category,
+          default_unit,
+          default_work_weight,
+          resident_related,
+          inventory_link_allowed,
+          active,
+          created_at,
+          updated_at
+        FROM operational_work_event_types
+        WHERE work_event_type_id=$1
+        LIMIT 1
+        `,
+        [id],
+      );
+
+    const row = result.rows[0];
+
+    if (!row) {
+      throw new NotFoundException(
+        'Work event type not found',
+      );
+    }
+
+    return row;
+  }
+
+  async create(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    input: Record<string, unknown>,
+  ) {
+    const actor =
+      await this.authorize(
+        actorId,
+        actorRole,
+        [
+          'CARE_MANAGER',
+          'SUPERVISOR',
+        ],
+      );
+
+    const code =
+      this.requiredString(
+        input.code,
+        'code',
+      ).toUpperCase();
+
+    const displayNameVi =
+      this.requiredString(
+        input.displayNameVi,
+        'displayNameVi',
+      );
+
+    const category =
+      this.requiredString(
+        input.category,
+        'category',
+      ).toUpperCase();
+
+    const defaultUnit =
+      this.requiredString(
+        input.defaultUnit,
+        'defaultUnit',
+      );
+
+    const defaultWorkWeight =
+      this.workWeight(
+        input.defaultWorkWeight,
+      );
+
+    const residentRelated =
+      this.optionalBoolean(
+        input.residentRelated,
+        true,
+        'residentRelated',
+      );
+
+    const inventoryLinkAllowed =
+      this.optionalBoolean(
+        input.inventoryLinkAllowed,
+        false,
+        'inventoryLinkAllowed',
+      );
+
+    const active =
+      this.optionalBoolean(
+        input.active,
+        true,
+        'active',
+      );
+
+    try {
+      return await this.database.withTransaction(
+        async (client) => {
+          const created =
+            await client.query<WorkEventTypeRecord>(
+              `
+              INSERT INTO operational_work_event_types (
+                work_event_type_id,
+                code,
+                display_name_vi,
+                category,
+                default_unit,
+                default_work_weight,
+                resident_related,
+                inventory_link_allowed,
+                active
+              )
+              VALUES (
+                'work-event-type-' ||
+                  gen_random_uuid()::text,
+                $1,$2,$3,$4,$5,$6,$7,$8
+              )
+              RETURNING *
+              `,
+              [
+                code,
+                displayNameVi,
+                category,
+                defaultUnit,
+                defaultWorkWeight,
+                residentRelated,
+                inventoryLinkAllowed,
+                active,
+              ],
+            );
+
+          const row = created.rows[0];
+
+          if (!row) {
+            throw new Error(
+              'Work event type creation returned no row',
+            );
+          }
+
+          await client.query(
+            `
+            INSERT INTO operational_work_event_type_audit (
+              event_type,
+              target_work_event_type_id,
+              performed_by,
+              performed_by_role,
+              previous_value,
+              new_value
+            )
+            VALUES (
+              'WORK_EVENT_TYPE_CREATED',
+              $3,
+              $1,
+              $2,
+              NULL,
+              jsonb_build_object(
+                'workEventTypeId', $3::text,
+                'code', $4::text
+              )
+            )
+            `,
+            [
+              actor.actorId,
+              actor.actorRole,
+              row.work_event_type_id,
+              row.code,
+            ],
+          );
+
+          return row;
+        },
+      );
+    } catch (error: any) {
+      if (
+        String(error?.code || '') === '23505'
+      ) {
+        throw new ConflictException(
+          'Work event type code already exists',
+        );
+      }
+
+      throw error;
+    }
+  }
+
+  async update(
+    actorId: string | undefined,
+    actorRole: string | undefined,
+    id: string,
+    input: Record<string, unknown>,
+  ) {
+    const actor =
+      await this.authorize(
+        actorId,
+        actorRole,
+        [
+          'CARE_MANAGER',
+          'SUPERVISOR',
+        ],
+      );
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        input,
+        'code',
+      )
+    ) {
+      throw new BadRequestException(
+        'code is immutable after creation',
+      );
+    }
+
+    const allowed = new Set([
+      'displayNameVi',
+      'category',
+      'defaultUnit',
+      'defaultWorkWeight',
+      'residentRelated',
+      'inventoryLinkAllowed',
+      'active',
+    ]);
+
+    for (const key of Object.keys(input)) {
+      if (!allowed.has(key)) {
+        throw new BadRequestException(
+          `Unsupported update field: ${key}`,
+        );
+      }
+    }
+
+    if (Object.keys(input).length === 0) {
+      throw new BadRequestException(
+        'At least one update field is required',
+      );
+    }
+
+    return this.database.withTransaction(
+      async (client) => {
+        const locked =
+          await client.query<WorkEventTypeRecord>(
+            `
+            SELECT *
+            FROM operational_work_event_types
+            WHERE work_event_type_id=$1
+            FOR UPDATE
+            `,
+            [id],
+          );
+
+        const previous = locked.rows[0];
+
+        if (!previous) {
+          throw new NotFoundException(
+            'Work event type not found',
+          );
+        }
+
+        const displayNameVi =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'displayNameVi',
+          )
+            ? this.requiredString(
+                input.displayNameVi,
+                'displayNameVi',
+              )
+            : previous.display_name_vi;
+
+        const category =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'category',
+          )
+            ? this.requiredString(
+                input.category,
+                'category',
+              ).toUpperCase()
+            : previous.category;
+
+        const defaultUnit =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'defaultUnit',
+          )
+            ? this.requiredString(
+                input.defaultUnit,
+                'defaultUnit',
+              )
+            : previous.default_unit;
+
+        const defaultWorkWeight =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'defaultWorkWeight',
+          )
+            ? this.workWeight(
+                input.defaultWorkWeight,
+              )
+            : Number(
+                previous.default_work_weight,
+              );
+
+        const residentRelated =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'residentRelated',
+          )
+            ? this.optionalBoolean(
+                input.residentRelated,
+                previous.resident_related,
+                'residentRelated',
+              )
+            : previous.resident_related;
+
+        const inventoryLinkAllowed =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'inventoryLinkAllowed',
+          )
+            ? this.optionalBoolean(
+                input.inventoryLinkAllowed,
+                previous.inventory_link_allowed,
+                'inventoryLinkAllowed',
+              )
+            : previous.inventory_link_allowed;
+
+        const active =
+          Object.prototype.hasOwnProperty.call(
+            input,
+            'active',
+          )
+            ? this.optionalBoolean(
+                input.active,
+                previous.active,
+                'active',
+              )
+            : previous.active;
+
+        const updated =
+          await client.query<WorkEventTypeRecord>(
+            `
+            UPDATE operational_work_event_types
+            SET
+              display_name_vi=$2,
+              category=$3,
+              default_unit=$4,
+              default_work_weight=$5,
+              resident_related=$6,
+              inventory_link_allowed=$7,
+              active=$8,
+              updated_at=now()
+            WHERE work_event_type_id=$1
+            RETURNING *
+            `,
+            [
+              id,
+              displayNameVi,
+              category,
+              defaultUnit,
+              defaultWorkWeight,
+              residentRelated,
+              inventoryLinkAllowed,
+              active,
+            ],
+          );
+
+        const row = updated.rows[0];
+
+        if (!row) {
+          throw new NotFoundException(
+            'Work event type not found',
+          );
+        }
+
+        await client.query(
+          `
+          INSERT INTO operational_work_event_type_audit (
+            event_type,
+            target_work_event_type_id,
+            performed_by,
+            performed_by_role,
+            previous_value,
+            new_value
+          )
+          VALUES (
+            'WORK_EVENT_TYPE_UPDATED',
+            $3,
+            $1,
+            $2,
+            jsonb_build_object(
+              'workEventTypeId', $3::text,
+              'code', $4::text,
+              'displayNameVi', $5::text,
+              'category', $6::text,
+              'defaultUnit', $7::text,
+              'defaultWorkWeight', $8::numeric,
+              'residentRelated', $9::boolean,
+              'inventoryLinkAllowed', $10::boolean,
+              'active', $11::boolean
+            ),
+            jsonb_build_object(
+              'workEventTypeId', $3::text,
+              'code', $4::text,
+              'displayNameVi', $12::text,
+              'category', $13::text,
+              'defaultUnit', $14::text,
+              'defaultWorkWeight', $15::numeric,
+              'residentRelated', $16::boolean,
+              'inventoryLinkAllowed', $17::boolean,
+              'active', $18::boolean
+            )
+          )
+          `,
+          [
+            actor.actorId,
+            actor.actorRole,
+            row.work_event_type_id,
+            row.code,
+
+            previous.display_name_vi,
+            previous.category,
+            previous.default_unit,
+            previous.default_work_weight,
+            previous.resident_related,
+            previous.inventory_link_allowed,
+            previous.active,
+
+            row.display_name_vi,
+            row.category,
+            row.default_unit,
+            row.default_work_weight,
+            row.resident_related,
+            row.inventory_link_allowed,
+            row.active,
+          ],
+        );
+
+        return row;
+      },
+    );
+  }
+}
+
+======================================================================
+6. ACTOR AUTHORITY EXACT IMPLEMENTATION
+======================================================================
+14-  | 'NURSE'
+15-  | 'CARE_MANAGER'
+16-  | 'SUPERVISOR';
+17-
+18-type EventStatus =
+19-  | 'RECORDED'
+20-  | 'VERIFIED'
+21-  | 'COMPLETED'
+22-  | 'AMENDED'
+23-  | 'VOIDED';
+24-
+25-interface ActorContext {
+26-  actorId: string;
+27-  actorRole: HumanRole;
+28-}
+29-
+30-@Injectable()
+31-export class OperationalWorkEventService {
+32-  private readonly pool: Pool;
+33-
+34:  private readonly humanRoles: HumanRole[] = [
+35-    'CAREGIVER',
+36-    'NURSE',
+37-    'CARE_MANAGER',
+38-    'SUPERVISOR',
+39-  ];
+40-
+41:  private readonly authorityRoles: HumanRole[] = [
+42-    'CARE_MANAGER',
+43-    'SUPERVISOR',
+44-  ];
+45-
+46-  constructor() {
+47-    this.pool = new Pool({
+48-      connectionString: process.env.DATABASE_URL,
+49-    });
+50-  }
+51-
+52-  private async withTransaction<T>(
+53-    fn: (client: PoolClient) => Promise<T>,
+54-  ): Promise<T> {
+55-    const client = await this.pool.connect();
+56-
+57-    try {
+58-      await client.query('BEGIN');
+59-      const result = await fn(client);
+60-      await client.query('COMMIT');
+61-      return result;
+62-    } catch (error) {
+63-      await client.query('ROLLBACK');
+64-      throw error;
+65-    } finally {
+66-      client.release();
+67-    }
+68-  }
+69-
+70:  private async requireActor(
+71-    actorId?: string,
+72-    actorRole?: string,
+73-  ): Promise<ActorContext> {
+74-    if (!actorId || !actorRole) {
+75-      throw new UnauthorizedException('Actor context is required');
+76-    }
+77-
+78-    if (
+79:      !this.humanRoles.includes(actorRole as HumanRole)
+80-    ) {
+81-      throw new ForbiddenException(
+82-        'Human actor role is required',
+83-      );
+84-    }
+85-
+86-    const result = await this.pool.query(
+87-      `
+88-      SELECT
+89-        actor_id,
+90:        primary_operational_role,
+91-        status
+92-      FROM staff_actors
+93-      WHERE actor_id = $1
+94-      LIMIT 1
+95-      `,
+96-      [actorId],
+97-    );
+98-
+99-    if (!result.rowCount) {
+100-      throw new UnauthorizedException(
+101-        'Canonical actor not found',
+102-      );
+103-    }
+104-
+105-    const actor = result.rows[0];
+106-
+107:    if (actor.status !== 'ACTIVE') {
+108-      throw new ForbiddenException(
+109-        'Canonical actor is not active',
+110-      );
+111-    }
+112-
+113:    if (actor.primary_operational_role !== actorRole) {
+114-      throw new ForbiddenException(
+115-        'Actor role does not match canonical role',
+116-      );
+117-    }
+118-
+119-    return {
+120-      actorId: actor.actor_id,
+121:      actorRole: actor.primary_operational_role as HumanRole,
+122-    };
+123-  }
+124-
+125:  private requireAuthority(actor: ActorContext): void {
+126:    if (!this.authorityRoles.includes(actor.actorRole)) {
+127-      throw new ForbiddenException(
+128-        'Care manager or supervisor authority is required',
+129-      );
+130-    }
+131-  }
+132-
+133-  private normalizeLimit(value: any): number {
+134-    if (
+135-      value === undefined ||
+136-      value === null ||
+137-      value === ''
+138-    ) {
+139-      return 50;
+140-    }
+141-
+142-    const parsed = Number(value);
+143-
+144-    if (
+145-      !Number.isInteger(parsed) ||
+146-      parsed < 1 ||
+147-      parsed > 100
+148-    ) {
+149-      throw new BadRequestException(
+150-        'limit must be an integer between 1 and 100',
+151-      );
+152-    }
+153-
+154-    return parsed;
+155-  }
+156-
+157-  private requireText(
+158-    value: any,
+159-    field: string,
+160-  ): string {
+161-    if (
+162-      typeof value !== 'string' ||
+163-      value.trim().length === 0
+164-    ) {
+165-      throw new BadRequestException(
+166-        `${field} is required`,
+167-      );
+168-    }
+169-
+170-    return value.trim();
+171-  }
+172-
+173-  private eventSnapshot(row: any): Record<string, any> {
+174-    return {
+175-      workEventId: row.work_event_id,
+176-      residentId: row.resident_id,
+177-      workEventTypeId: row.work_event_type_id,
+178-      sourceDomain: row.source_domain,
+179-      sourceEntityType: row.source_entity_type,
+180-      sourceEntityId: row.source_entity_id,
+181-      plannedClassification: row.planned_classification,
+182-      occurredAt: row.occurred_at,
+183-      startedAt: row.started_at,
+184-      completedAt: row.completed_at,
+185-      performedBy: row.performed_by,
+186-      performedByRole: row.performed_by_role,
+187-      quantity: row.quantity,
+188-      unit: row.unit,
+189-      workWeight: row.work_weight,
+190-      reasonCode: row.reason_code,
+191-      note: row.note,
+192-      status: row.status,
+193-    };
+194-  }
+195-
+196-  private async insertAudit(
+197-    client: PoolClient,
+198-    eventType:
+199-      | 'WORK_EVENT_CREATED'
+200-      | 'WORK_EVENT_VERIFIED'
+201-      | 'WORK_EVENT_AMENDED'
+202-      | 'WORK_EVENT_VOIDED',
+203-    targetWorkEventId: string,
+204-    actor: ActorContext,
+205-    previousValue: Record<string, any> | null,
+206-    newValue: Record<string, any>,
+--
+218-      VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb)
+219-      `,
+220-      [
+221-        eventType,
+222-        targetWorkEventId,
+223-        actor.actorId,
+224-        actor.actorRole,
+225-        previousValue === null
+226-          ? null
+227-          : JSON.stringify(previousValue),
+228-        JSON.stringify(newValue),
+229-      ],
+230-    );
+231-  }
+232-
+233-  async list(
+234-    actorId: string | undefined,
+235-    actorRole: string | undefined,
+236-    query: any,
+237-  ): Promise<any> {
+238:    await this.requireActor(actorId, actorRole);
+239-
+240-    const limit = this.normalizeLimit(query?.limit);
+241-
+242-    const values: any[] = [];
+243-    const conditions: string[] = [];
+244-
+245-    const addFilter = (
+246-      column: string,
+247-      value: any,
+248-    ) => {
+249-      if (
+250-        value !== undefined &&
+251-        value !== null &&
+252-        String(value).trim() !== ''
+253-      ) {
+254-        values.push(String(value).trim());
+255-        conditions.push(
+256-          `${column} = $${values.length}`,
+257-        );
+258-      }
+259-    };
+260-
+261-    addFilter('resident_id', query?.residentId);
+262-    addFilter(
+263-      'work_event_type_id',
+264-      query?.workEventTypeId,
+265-    );
+266-    addFilter('performed_by', query?.performedBy);
+267-    addFilter('status', query?.status);
+268-    addFilter('source_domain', query?.sourceDomain);
+269-
+270-    values.push(limit);
+271-
+272-    const where =
+273-      conditions.length > 0
+274-        ? `WHERE ${conditions.join(' AND ')}`
+275-        : '';
+276-
+277-    const result = await this.pool.query(
+278-      `
+279-      SELECT *
+280-      FROM operational_work_events
+281-      ${where}
+282-      ORDER BY occurred_at DESC, work_event_id DESC
+283-      LIMIT $${values.length}
+284-      `,
+285-      values,
+286-    );
+287-
+288-    return {
+289-      items: result.rows,
+290-      count: result.rows.length,
+291-      limit,
+292-    };
+293-  }
+294-
+295-  async detail(
+296-    actorId: string | undefined,
+297-    actorRole: string | undefined,
+298-    id: string,
+299-  ): Promise<any> {
+300:    await this.requireActor(actorId, actorRole);
+301-
+302-    const result = await this.pool.query(
+303-      `
+304-      SELECT *
+305-      FROM operational_work_events
+306-      WHERE work_event_id = $1
+307-      LIMIT 1
+308-      `,
+309-      [id],
+310-    );
+311-
+312-    if (!result.rowCount) {
+313-      throw new NotFoundException(
+314-        'Work event not found',
+315-      );
+316-    }
+317-
+318-    return result.rows[0];
+319-  }
+320-
+321-  async create(
+322-    actorId: string | undefined,
+323-    actorRole: string | undefined,
+324-    body: any,
+325-  ): Promise<any> {
+326:    const actor = await this.requireActor(
+327-      actorId,
+328-      actorRole,
+329-    );
+330-
+331-    if (
+332-      body?.performedBy !== undefined ||
+333-      body?.performed_by !== undefined ||
+334-      body?.performedByRole !== undefined ||
+335-      body?.performed_by_role !== undefined ||
+336-      body?.workWeight !== undefined ||
+337-      body?.work_weight !== undefined ||
+338-      body?.unit !== undefined
+339-    ) {
+340-      throw new BadRequestException(
+341-        'performedBy, performedByRole, workWeight and unit are server-controlled',
+342-      );
+343-    }
+344-
+345-    const workEventTypeId = this.requireText(
+346-      body?.workEventTypeId,
+347-      'workEventTypeId',
+348-    );
+349-
+350-    const sourceDomain = this.requireText(
+351-      body?.sourceDomain,
+352-      'sourceDomain',
+353-    );
+354-
+355-    const plannedClassification =
+356-      this.requireText(
+357-        body?.plannedClassification,
+358-        'plannedClassification',
+359-      );
+360-
+361-    if (
+362-      ![
+363-        'PLANNED',
+364-        'ADDITIONAL',
+365-        'UNPLANNED',
+366-      ].includes(plannedClassification)
+367-    ) {
+368-      throw new BadRequestException(
+369-        'Invalid plannedClassification',
+370-      );
+371-    }
+372-
+373-    const requestedStatus =
+374-      body?.status === undefined
+375-        ? 'COMPLETED'
+376-        : this.requireText(
+377-            body.status,
+378-            'status',
+379-          );
+380-
+381-    if (
+382-      !['COMPLETED', 'RECORDED'].includes(
+383-        requestedStatus,
+384-      )
+385-    ) {
+386-      throw new BadRequestException(
+387-        'Initial status must be COMPLETED or RECORDED',
+388-      );
+389-    }
+390-
+391-    const sourceEntityType =
+392-      body?.sourceEntityType === undefined ||
+393-      body?.sourceEntityType === null ||
+394-      body?.sourceEntityType === ''
+395-        ? null
+396-        : String(body.sourceEntityType).trim();
+397-
+398-    const sourceEntityId =
+399-      body?.sourceEntityId === undefined ||
+400-      body?.sourceEntityId === null ||
+401-      body?.sourceEntityId === ''
+402-        ? null
+403-        : String(body.sourceEntityId).trim();
+404-
+405-    if (
+406-      (sourceEntityType === null) !==
+--
+565-      );
+566-    } catch (error: any) {
+567-      if (
+568-        String(error?.code || '') === '23505'
+569-      ) {
+570-        throw new ConflictException(
+571-          'Work event source/type already exists',
+572-        );
+573-      }
+574-
+575-      throw error;
+576-    }
+577-  }
+578-
+579-  async verify(
+580-    actorId: string | undefined,
+581-    actorRole: string | undefined,
+582-    id: string,
+583-    body: any,
+584-  ): Promise<any> {
+585:    const actor = await this.requireActor(
+586-      actorId,
+587-      actorRole,
+588-    );
+589:    this.requireAuthority(actor);
+590-
+591-    return this.lifecycleUpdate(
+592-      actor,
+593-      id,
+594-      ['RECORDED'],
+595-      'VERIFIED',
+596-      'WORK_EVENT_VERIFIED',
+597-      body,
+598-    );
+599-  }
+600-
+601-  async amend(
+602-    actorId: string | undefined,
+603-    actorRole: string | undefined,
+604-    id: string,
+605-    body: any,
+606-  ): Promise<any> {
+607:    const actor = await this.requireActor(
+608-      actorId,
+609-      actorRole,
+610-    );
+611:    this.requireAuthority(actor);
+612-
+613-    return this.lifecycleUpdate(
+614-      actor,
+615-      id,
+616-      ['VERIFIED', 'COMPLETED', 'AMENDED'],
+617-      'AMENDED',
+618-      'WORK_EVENT_AMENDED',
+619-      body,
+620-    );
+621-  }
+622-
+623-  async voidEvent(
+624-    actorId: string | undefined,
+625-    actorRole: string | undefined,
+626-    id: string,
+627-    body: any,
+628-  ): Promise<any> {
+629:    const actor = await this.requireActor(
+630-      actorId,
+631-      actorRole,
+632-    );
+633:    this.requireAuthority(actor);
+634-
+635-    if (
+636-      typeof body?.reasonCode !== 'string' ||
+637-      body.reasonCode.trim().length === 0
+638-    ) {
+639-      throw new BadRequestException(
+640-        'reasonCode is required for void',
+641-      );
+642-    }
+643-
+644-    return this.lifecycleUpdate(
+645-      actor,
+646-      id,
+647-      [
+648-        'RECORDED',
+649-        'VERIFIED',
+650-        'COMPLETED',
+651-        'AMENDED',
+652-      ],
+653-      'VOIDED',
+654-      'WORK_EVENT_VOIDED',
+655-      body,
+656-    );
+657-  }
+658-
+659-  private async lifecycleUpdate(
+660-    actor: ActorContext,
+661-    id: string,
+662-    allowedStatuses: EventStatus[],
+663-    nextStatus: EventStatus,
+664-    auditType:
+665-      | 'WORK_EVENT_VERIFIED'
+666-      | 'WORK_EVENT_AMENDED'
+667-      | 'WORK_EVENT_VOIDED',
+668-    body: any,
+669-  ): Promise<any> {
+670-    return this.withTransaction(
+671-      async (client) => {
+672-        const currentResult =
+673-          await client.query(
+674-            `
+675-            SELECT *
+676-            FROM operational_work_events
+677-            WHERE work_event_id = $1
+678-            LIMIT 1
+679-            FOR UPDATE
+680-            `,
+681-            [id],
+682-          );
+683-
+684-        if (!currentResult.rowCount) {
+685-          throw new NotFoundException(
+686-            'Work event not found',
+687-          );
+688-        }
+689-
+690-        const previous =
+691-          currentResult.rows[0];
+692-
+693-        if (
+694-          !allowedStatuses.includes(
+695-            previous.status,
+696-          )
+697-        ) {
+698-          throw new ConflictException(
+699-            `Invalid work event transition from ${previous.status} to ${nextStatus}`,
+700-          );
+701-        }
+702-
+703-        const quantity = Number(
+704-          body?.quantity === undefined
+705-            ? previous.quantity
+706-            : body.quantity,
+707-        );
+708-
+709-        if (
+710-          !Number.isFinite(quantity) ||
+711-          quantity <= 0
+712-        ) {
+713-          throw new BadRequestException(
+
+======================================================================
+7. CONTROLLER HEADER PROPAGATION PATTERN
+======================================================================
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:257:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:260:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:346:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:349:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:409:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.controller.ts:412:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:36:        'x-actor-id and x-actor-role are required',
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:69:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:71:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:87:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:89:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:107:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:109:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:136:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:138:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:156:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:158:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:174:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:176:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:192:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:194:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:219:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.controller.ts:221:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:21:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts:24:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.controller.ts:39:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.controller.ts:42:    @Headers('x-auth-session-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:21:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:24:    @Headers('x-actor-role') actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:38:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:41:    @Headers('x-actor-role') actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:55:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:58:    @Headers('x-actor-role') actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:72:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:75:    @Headers('x-actor-role') actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:91:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:94:    @Headers('x-actor-role') actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:110:    @Headers('x-actor-id') actorId:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.controller.ts:113:    @Headers('x-actor-role') actorRole:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:25:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:28:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:47:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:50:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:65:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:68:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:83:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.controller.ts:86:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:36:      headers['x-actor-id'];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:39:      headers['x-actor-role'];
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:87:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:111:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:132:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:161:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:185:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.controller.ts:203:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:50:        headers['x-actor-id'],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:55:        headers['x-actor-role'],
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:93:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:121:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:138:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:155:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.controller.ts:175:    @Headers()
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:26:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:29:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:67:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:70:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:100:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:103:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:133:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/resident-access-administration/resident-access-administration.controller.ts:136:    @Headers('x-actor-role')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.controller.ts:22:    @Headers('x-actor-id') actorId?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-care-view.controller.ts:23:    @Headers('x-actor-role') actorRole?: string,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.controller.ts:20:    @Headers('x-actor-id')
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-care-view/operational-dashboard.controller.ts:23:    @Headers('x-actor-role')
+
+======================================================================
+8. BOUNDED QUERY IMPLEMENTATION
+======================================================================
+74-    if (!actorId || !actorRole) {
+75-      throw new UnauthorizedException('Actor context is required');
+76-    }
+77-
+78-    if (
+79-      !this.humanRoles.includes(actorRole as HumanRole)
+80-    ) {
+81-      throw new ForbiddenException(
+82-        'Human actor role is required',
+83-      );
+84-    }
+85-
+86-    const result = await this.pool.query(
+87-      `
+88-      SELECT
+89-        actor_id,
+90-        primary_operational_role,
+91-        status
+92-      FROM staff_actors
+93-      WHERE actor_id = $1
+94:      LIMIT 1
+95-      `,
+96-      [actorId],
+97-    );
+98-
+99-    if (!result.rowCount) {
+100-      throw new UnauthorizedException(
+101-        'Canonical actor not found',
+102-      );
+103-    }
+104-
+105-    const actor = result.rows[0];
+106-
+107-    if (actor.status !== 'ACTIVE') {
+108-      throw new ForbiddenException(
+109-        'Canonical actor is not active',
+110-      );
+111-    }
+112-
+113-    if (actor.primary_operational_role !== actorRole) {
+114-      throw new ForbiddenException(
+115-        'Actor role does not match canonical role',
+116-      );
+117-    }
+118-
+119-    return {
+120-      actorId: actor.actor_id,
+121-      actorRole: actor.primary_operational_role as HumanRole,
+122-    };
+123-  }
+124-
+125-  private requireAuthority(actor: ActorContext): void {
+126-    if (!this.authorityRoles.includes(actor.actorRole)) {
+127-      throw new ForbiddenException(
+128-        'Care manager or supervisor authority is required',
+129-      );
+130-    }
+131-  }
+132-
+133:  private normalizeLimit(value: any): number {
+134-    if (
+135-      value === undefined ||
+136-      value === null ||
+137-      value === ''
+138-    ) {
+139-      return 50;
+140-    }
+141-
+142-    const parsed = Number(value);
+143-
+144-    if (
+145-      !Number.isInteger(parsed) ||
+146-      parsed < 1 ||
+147-      parsed > 100
+148-    ) {
+149-      throw new BadRequestException(
+150:        'limit must be an integer between 1 and 100',
+151-      );
+152-    }
+153-
+154-    return parsed;
+155-  }
+156-
+157-  private requireText(
+158-    value: any,
+159-    field: string,
+160-  ): string {
+161-    if (
+162-      typeof value !== 'string' ||
+163-      value.trim().length === 0
+164-    ) {
+165-      throw new BadRequestException(
+166-        `${field} is required`,
+167-      );
+168-    }
+169-
+170-    return value.trim();
+171-  }
+172-
+173-  private eventSnapshot(row: any): Record<string, any> {
+174-    return {
+175-      workEventId: row.work_event_id,
+176-      residentId: row.resident_id,
+177-      workEventTypeId: row.work_event_type_id,
+178-      sourceDomain: row.source_domain,
+179-      sourceEntityType: row.source_entity_type,
+180-      sourceEntityId: row.source_entity_id,
+181-      plannedClassification: row.planned_classification,
+182-      occurredAt: row.occurred_at,
+183-      startedAt: row.started_at,
+184-      completedAt: row.completed_at,
+185-      performedBy: row.performed_by,
+186-      performedByRole: row.performed_by_role,
+187-      quantity: row.quantity,
+188-      unit: row.unit,
+189-      workWeight: row.work_weight,
+190-      reasonCode: row.reason_code,
+191-      note: row.note,
+192-      status: row.status,
+193-    };
+194-  }
+195-
+196-  private async insertAudit(
+197-    client: PoolClient,
+198-    eventType:
+199-      | 'WORK_EVENT_CREATED'
+200-      | 'WORK_EVENT_VERIFIED'
+201-      | 'WORK_EVENT_AMENDED'
+202-      | 'WORK_EVENT_VOIDED',
+203-    targetWorkEventId: string,
+204-    actor: ActorContext,
+205-    previousValue: Record<string, any> | null,
+206-    newValue: Record<string, any>,
+207-  ): Promise<void> {
+208-    await client.query(
+209-      `
+210-      INSERT INTO operational_work_event_audit (
+211-        event_type,
+212-        target_work_event_id,
+213-        performed_by,
+214-        performed_by_role,
+215-        previous_value,
+216-        new_value
+217-      )
+218-      VALUES ($1,$2,$3,$4,$5::jsonb,$6::jsonb)
+219-      `,
+220-      [
+221-        eventType,
+222-        targetWorkEventId,
+223-        actor.actorId,
+224-        actor.actorRole,
+225-        previousValue === null
+226-          ? null
+227-          : JSON.stringify(previousValue),
+228-        JSON.stringify(newValue),
+229-      ],
+230-    );
+231-  }
+232-
+233-  async list(
+234-    actorId: string | undefined,
+235-    actorRole: string | undefined,
+236-    query: any,
+237-  ): Promise<any> {
+238-    await this.requireActor(actorId, actorRole);
+239-
+240:    const limit = this.normalizeLimit(query?.limit);
+241-
+242-    const values: any[] = [];
+243-    const conditions: string[] = [];
+244-
+245-    const addFilter = (
+246-      column: string,
+247-      value: any,
+248-    ) => {
+249-      if (
+250-        value !== undefined &&
+251-        value !== null &&
+252-        String(value).trim() !== ''
+253-      ) {
+254-        values.push(String(value).trim());
+255-        conditions.push(
+256-          `${column} = $${values.length}`,
+257-        );
+258-      }
+259-    };
+260-
+261-    addFilter('resident_id', query?.residentId);
+262-    addFilter(
+263-      'work_event_type_id',
+264-      query?.workEventTypeId,
+265-    );
+266-    addFilter('performed_by', query?.performedBy);
+267-    addFilter('status', query?.status);
+268-    addFilter('source_domain', query?.sourceDomain);
+269-
+270-    values.push(limit);
+271-
+272-    const where =
+273-      conditions.length > 0
+274-        ? `WHERE ${conditions.join(' AND ')}`
+275-        : '';
+276-
+277-    const result = await this.pool.query(
+278-      `
+279-      SELECT *
+280-      FROM operational_work_events
+281-      ${where}
+282-      ORDER BY occurred_at DESC, work_event_id DESC
+283:      LIMIT $${values.length}
+284-      `,
+285-      values,
+286-    );
+287-
+288-    return {
+289-      items: result.rows,
+290-      count: result.rows.length,
+291-      limit,
+292-    };
+293-  }
+294-
+295-  async detail(
+296-    actorId: string | undefined,
+297-    actorRole: string | undefined,
+298-    id: string,
+299-  ): Promise<any> {
+300-    await this.requireActor(actorId, actorRole);
+301-
+302-    const result = await this.pool.query(
+303-      `
+304-      SELECT *
+305-      FROM operational_work_events
+306-      WHERE work_event_id = $1
+307:      LIMIT 1
+308-      `,
+309-      [id],
+310-    );
+311-
+312-    if (!result.rowCount) {
+313-      throw new NotFoundException(
+314-        'Work event not found',
+315-      );
+316-    }
+317-
+318-    return result.rows[0];
+319-  }
+320-
+321-  async create(
+322-    actorId: string | undefined,
+323-    actorRole: string | undefined,
+324-    body: any,
+325-  ): Promise<any> {
+326-    const actor = await this.requireActor(
+327-      actorId,
+328-      actorRole,
+329-    );
+330-
+331-    if (
+332-      body?.performedBy !== undefined ||
+333-      body?.performed_by !== undefined ||
+334-      body?.performedByRole !== undefined ||
+335-      body?.performed_by_role !== undefined ||
+336-      body?.workWeight !== undefined ||
+337-      body?.work_weight !== undefined ||
+338-      body?.unit !== undefined
+339-    ) {
+340-      throw new BadRequestException(
+341-        'performedBy, performedByRole, workWeight and unit are server-controlled',
+342-      );
+343-    }
+344-
+345-    const workEventTypeId = this.requireText(
+346-      body?.workEventTypeId,
+347-      'workEventTypeId',
+348-    );
+349-
+350-    const sourceDomain = this.requireText(
+351-      body?.sourceDomain,
+352-      'sourceDomain',
+353-    );
+354-
+355-    const plannedClassification =
+356-      this.requireText(
+357-        body?.plannedClassification,
+358-        'plannedClassification',
+359-      );
+360-
+361-    if (
+362-      ![
+363-        'PLANNED',
+364-        'ADDITIONAL',
+365-        'UNPLANNED',
+366-      ].includes(plannedClassification)
+367-    ) {
+368-      throw new BadRequestException(
+369-        'Invalid plannedClassification',
+370-      );
+371-    }
+372-
+373-    const requestedStatus =
+374-      body?.status === undefined
+375-        ? 'COMPLETED'
+376-        : this.requireText(
+377-            body.status,
+378-            'status',
+379-          );
+380-
+381-    if (
+382-      !['COMPLETED', 'RECORDED'].includes(
+383-        requestedStatus,
+384-      )
+385-    ) {
+386-      throw new BadRequestException(
+387-        'Initial status must be COMPLETED or RECORDED',
+--
+425-      );
+426-    }
+427-
+428-    const occurredAt =
+429-      body?.occurredAt === undefined
+430-        ? new Date().toISOString()
+431-        : body.occurredAt;
+432-
+433-    const workEventId =
+434-      `work-event-${randomUUID()}`;
+435-
+436-    try {
+437-      return await this.withTransaction(
+438-        async (client) => {
+439-          const typeResult = await client.query(
+440-            `
+441-            SELECT *
+442-            FROM operational_work_event_types
+443-            WHERE work_event_type_id = $1
+444-              AND active = true
+445:            LIMIT 1
+446-            FOR SHARE
+447-            `,
+448-            [workEventTypeId],
+449-          );
+450-
+451-          if (!typeResult.rowCount) {
+452-            throw new BadRequestException(
+453-              'Active work event type not found',
+454-            );
+455-          }
+456-
+457-          const type = typeResult.rows[0];
+458-
+459-          const residentId =
+460-            body?.residentId === undefined ||
+461-            body?.residentId === null ||
+462-            body?.residentId === ''
+463-              ? null
+464-              : String(body.residentId).trim();
+465-
+466-          if (
+467-            type.resident_related === true &&
+468-            residentId === null
+469-          ) {
+470-            throw new BadRequestException(
+471-              'residentId is required for resident-related work',
+472-            );
+473-          }
+474-
+475-          if (residentId !== null) {
+476-            const residentResult =
+477-              await client.query(
+478-                `
+479-                SELECT resident_id
+480-                FROM residents
+481-                WHERE resident_id = $1
+482:                LIMIT 1
+483-                `,
+484-                [residentId],
+485-              );
+486-
+487-            if (!residentResult.rowCount) {
+488-              throw new BadRequestException(
+489-                'Resident not found',
+490-              );
+491-            }
+492-          }
+493-
+494-          const insertResult =
+495-            await client.query(
+496-              `
+497-              INSERT INTO operational_work_events (
+498-                work_event_id,
+499-                resident_id,
+500-                work_event_type_id,
+501-                source_domain,
+502-                source_entity_type,
+503-                source_entity_id,
+504-                planned_classification,
+505-                occurred_at,
+506-                started_at,
+507-                completed_at,
+508-                performed_by,
+509-                performed_by_role,
+510-                quantity,
+511-                unit,
+512-                work_weight,
+513-                reason_code,
+514-                note,
+515-                status
+516-              )
+517-              VALUES (
+518-                $1,$2,$3,$4,$5,$6,$7,$8,
+519-                $9,$10,$11,$12,$13,$14,$15,
+520-                $16,$17,$18
+521-              )
+522-              RETURNING *
+523-              `,
+524-              [
+525-                workEventId,
+526-                residentId,
+527-                workEventTypeId,
+528-                sourceDomain,
+529-                sourceEntityType,
+530-                sourceEntityId,
+531-                plannedClassification,
+532-                occurredAt,
+533-                body?.startedAt ?? null,
+534-                body?.completedAt ??
+535-                  (
+536-                    requestedStatus ===
+537-                    'COMPLETED'
+538-                      ? occurredAt
+539-                      : null
+540-                  ),
+541-                actor.actorId,
+542-                actor.actorRole,
+543-                quantity,
+544-                type.default_unit,
+545-                type.default_work_weight,
+546-                body?.reasonCode ?? null,
+547-                body?.note ?? null,
+548-                requestedStatus,
+549-              ],
+550-            );
+551-
+552-          const row = insertResult.rows[0];
+553-
+554-          await this.insertAudit(
+555-            client,
+556-            'WORK_EVENT_CREATED',
+557-            row.work_event_id,
+558-            actor,
+559-            null,
+560-            this.eventSnapshot(row),
+561-          );
+562-
+--
+658-
+659-  private async lifecycleUpdate(
+660-    actor: ActorContext,
+661-    id: string,
+662-    allowedStatuses: EventStatus[],
+663-    nextStatus: EventStatus,
+664-    auditType:
+665-      | 'WORK_EVENT_VERIFIED'
+666-      | 'WORK_EVENT_AMENDED'
+667-      | 'WORK_EVENT_VOIDED',
+668-    body: any,
+669-  ): Promise<any> {
+670-    return this.withTransaction(
+671-      async (client) => {
+672-        const currentResult =
+673-          await client.query(
+674-            `
+675-            SELECT *
+676-            FROM operational_work_events
+677-            WHERE work_event_id = $1
+678:            LIMIT 1
+679-            FOR UPDATE
+680-            `,
+681-            [id],
+682-          );
+683-
+684-        if (!currentResult.rowCount) {
+685-          throw new NotFoundException(
+686-            'Work event not found',
+687-          );
+688-        }
+689-
+690-        const previous =
+691-          currentResult.rows[0];
+692-
+693-        if (
+694-          !allowedStatuses.includes(
+695-            previous.status,
+696-          )
+697-        ) {
+698-          throw new ConflictException(
+699-            `Invalid work event transition from ${previous.status} to ${nextStatus}`,
+700-          );
+701-        }
+702-
+703-        const quantity = Number(
+704-          body?.quantity === undefined
+705-            ? previous.quantity
+706-            : body.quantity,
+707-        );
+708-
+709-        if (
+710-          !Number.isFinite(quantity) ||
+711-          quantity <= 0
+712-        ) {
+713-          throw new BadRequestException(
+714-            'quantity must be greater than 0',
+715-          );
+716-        }
+717-
+718-        if (
+719-          body?.workWeight !== undefined ||
+720-          body?.work_weight !== undefined ||
+721-          body?.unit !== undefined ||
+722-          body?.performedBy !== undefined ||
+723-          body?.performed_by !== undefined ||
+724-          body?.performedByRole !== undefined ||
+725-          body?.performed_by_role !== undefined ||
+726-          body?.workEventTypeId !== undefined ||
+727-          body?.work_event_type_id !== undefined
+728-        ) {
+729-          throw new BadRequestException(
+730-            'Canonical evidence fields are immutable',
+731-          );
+732-        }
+733-
+734-        const updateResult =
+735-          await client.query(
+736-            `
+737-            UPDATE operational_work_events
+738-            SET
+739-              quantity = $2,
+740-              reason_code = $3,
+741-              note = $4,
+742-              started_at = $5,
+743-              completed_at = $6,
+744-              status = $7
+745-            WHERE work_event_id = $1
+746-            RETURNING *
+747-            `,
+748-            [
+749-              id,
+750-              quantity,
+751-              body?.reasonCode ??
+752-                previous.reason_code,
+753-              body?.note ??
+754-                previous.note,
+755-              body?.startedAt ??
+756-                previous.started_at,
+757-              body?.completedAt ??
+758-                previous.completed_at,
+
+======================================================================
+9. TRANSACTION / CLIENT-AWARE PATTERN
+======================================================================
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:9:  PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:118:      (client: PoolClient) => Promise<T>,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:122:      await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:126:      await client.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:131:      await client.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/database/database.service.ts:137:      await client.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:72:          await client.query<StaffActorRecord>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/staff-actors/staff-actor.service.ts:116:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:115:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:479:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:499:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-task-execution/care-task-execution.service.ts:562:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:451:          await client.query<HealthReportRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:483:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:743:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:756:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:785:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:808:          await client.query<HealthReportSnapshotRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:840:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:858:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:924:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:942:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1022:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1040:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1204:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1242:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1253:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:83:    client: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:92:    const seq = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:102:    await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:149:    const client = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:152:      await client.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:162:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:224:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:248:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:292:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:316:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:327:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:411:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:473:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:497:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:538:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:562:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:593:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:645:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:669:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:709:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:764:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:797:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:835:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:888:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:922:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:966:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1024:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1048:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1086:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1156:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1180:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1220:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1253:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1287:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1320:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1362:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1403:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1444:      await client.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1452:      await client.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:83:    db: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:134:    const db = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:137:      await db.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1214:      await db.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1222:      await db.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:84:    db: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:135:    const db = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:138:      await db.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1090:      await db.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1100:      await db.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:84:    db: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:135:    const db = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:138:      await db.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1062:      await db.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1074:      await db.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:3:import { PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:8:    client: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:44:    const actorResult = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:74:    const typeResult = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:99:    const inserted = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-projection.service.ts:176:    await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:409:            await client.query<WorkEventTypeRecord>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:449:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:549:          await client.query<WorkEventTypeRecord>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:649:          await client.query<WorkEventTypeRecord>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:684:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:9:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:53:    fn: (client: PoolClient) => Promise<T>,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:55:    const client = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:58:      await client.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:60:      await client.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:63:      await client.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:197:    client: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:208:    await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:439:          const typeResult = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:477:              await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:495:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:673:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:735:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:77:    client: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:86:    const seq = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:96:    await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:131:    const client = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:134:      await client.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:144:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:209:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:231:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:272:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:334:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:356:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:391:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:419:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:452:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:517:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:563:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:619:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:657:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:688:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:741:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:763:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:797:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:871:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:923:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:947:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:981:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1063:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1125:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1147:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1182:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1210:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1243:          const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1271:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1313:      await client.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:1321:      await client.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.service.ts:80:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.service.ts:179:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.service.ts:216:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/care-plan-governance/care-plan-governance.service.ts:256:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:36:    const seqResult = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:48:    await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:108:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:165:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:189:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:228:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:293:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:317:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:357:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:428:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:452:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:502:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:645:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:689:          const session = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:714:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:775:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:799:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:839:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:863:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:874:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:945:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1008:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1032:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1073:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1097:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1108:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1179:          const session = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1197:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1258:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1282:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1329:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1437:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1469:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1538:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1562:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1606:          const lock = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1636:            const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/activity-rehabilitation/activity-rehabilitation.service.ts:1669:          const r = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:374:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:422:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:460:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:518:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:567:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:605:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:859:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:924:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1091:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1120:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1236:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1272:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1339:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1387:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1418:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1459:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1489:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1548:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1589:          await client.query<{
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission-classification.service.ts:1641:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:554:          await client.query<AdmissionRow>(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:652:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:751:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:812:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:898:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/admissions/admission.service.ts:988:        await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:115:    db: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:169:    const db = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:172:      await db.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:1456:      await db.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/safeguarding/safeguarding.service.ts:1469:      await db.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:125:    db: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:179:    const db = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:182:      await db.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:1298:      await db.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/fall-mobility/fall-mobility.service.ts:1311:      await db.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:109:    db: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:162:    const db = await this.pool.connect();
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:165:      await db.query('BEGIN');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:1196:      await db.query('COMMIT');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication-safety/medication-safety.service.ts:1207:      await db.query('ROLLBACK');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:177:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:209:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:251:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:277:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:303:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:336:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:369:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:402:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:434:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:471:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:510:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:537:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:574:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:616:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/clinical-observations/clinical.service.ts:634:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:138:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:172:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:194:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:218:          await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:288:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:316:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:344:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:372:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/medication/medication.service.ts:400:            await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:7:import { Pool, PoolClient } from 'pg';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:83:    client: PoolClient,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:91:    const q = await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:101:    await client.query(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:134:    const client = await this.pool.connect();
+
+======================================================================
+10. ERROR / CONFLICT PATTERN
+======================================================================
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:6:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:7:  ForbiddenException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:9:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:10:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:229:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:254:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:263:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:269:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:290:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:423:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:440:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:538:        throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:692:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:773:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:779:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:917:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:997:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1015:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1103:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1154:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1177:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1317:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/health-reports/health-report.service.ts:1349:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:4:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:52:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:58:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:76:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:235:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:243:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:287:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:303:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:311:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:404:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:468:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:484:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:492:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:549:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:557:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:656:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:664:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:775:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:783:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:792:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:899:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:907:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1035:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1043:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1139:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1151:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1167:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1175:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1231:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1239:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1248:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1298:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1306:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1315:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1373:            throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1384:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1393:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/skin-wound/skin-wound.service.ts:1439:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:4:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:44:      throw new BadRequestException('Human actor identity required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:48:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:62:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:76:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:215:          if (!q.rowCount) throw new NotFoundException('Plan not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:218:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:262:          if (!q.rowCount) throw new NotFoundException('Plan not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:265:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:296:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:352:            throw new NotFoundException('Observation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:356:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:444:          if (!q.rowCount) throw new NotFoundException('Night check not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:447:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:456:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:521:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:573:            throw new BadRequestException('Human owner required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:588:          if (!q.rowCount) throw new NotFoundException('Event not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:591:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:633:          if (!q.rowCount) throw new NotFoundException('Event not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:636:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:642:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:682:          if (!ev.rowCount) throw new NotFoundException('Event not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:689:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:698:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:766:          if (!q.rowCount) throw new NotFoundException('Response not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:769:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:854:          if (!q.rowCount) throw new NotFoundException('Alert not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:857:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:891:            throw new BadRequestException('Escalation reason required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:941:            throw new BadRequestException('Human reviewer required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:956:          if (!q.rowCount) throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:959:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1009:          if (!q.rowCount) throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1012:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1018:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1059:          if (!q.rowCount) throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1062:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1068:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1116:          if (!q.rowCount) throw new NotFoundException('Event not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1123:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1132:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1176:          if (!q.rowCount) throw new NotFoundException('Event not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1179:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/sleep-rest/sleep-rest.service.ts:1209:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:3:  ForbiddenException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:5:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:6:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:31:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:37:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:48:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:86:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:92:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:102:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:119:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:137:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:225:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts:236:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:3:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:40:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:78:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:125:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:197:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/auth/auth.service.ts:220:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:4:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:45:      throw new BadRequestException('Human actor identity required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:49:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:63:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:77:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:205:          if (!q.rowCount) throw new NotFoundException('Plan not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:208:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:252:          if (!q.rowCount) throw new NotFoundException('Plan not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:255:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:351:            throw new NotFoundException('Assessment not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:355:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:400:            throw new NotFoundException('Assessment not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:404:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:410:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:474:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:534:            throw new NotFoundException('Symptom observation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:538:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:580:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:640:            throw new NotFoundException('Comfort intervention not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:644:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:737:            throw new NotFoundException('Reassessment not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:741:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:827:            throw new NotFoundException('Alert not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:831:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:864:            throw new BadRequestException('Escalation reason required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:916:            throw new BadRequestException('Human reviewer required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:932:            throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:936:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:987:            throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:991:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:997:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1039:            throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1043:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1049:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/pain-comfort/pain-comfort.service.ts:1085:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:4:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:47:      throw new BadRequestException('Human actor identity required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:51:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:65:      throw new BadRequestException('Authorized human reviewer required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:77:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:203:          if (!q.rowCount) throw new NotFoundException('Plan not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:206:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:250:          if (!q.rowCount) throw new NotFoundException('Plan not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:253:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:284:            throw new BadRequestException('Observable facts required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:342:            throw new NotFoundException('Observation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:346:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:379:            throw new BadRequestException('Exposure context required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:434:          if (!q.rowCount) throw new NotFoundException('Exposure not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:437:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:525:          if (!q.rowCount) throw new NotFoundException('Precaution not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:528:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:572:          if (!q.rowCount) throw new NotFoundException('Precaution not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:575:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:619:          if (!q.rowCount) throw new NotFoundException('Precaution not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:622:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:655:            throw new BadRequestException('Observed facts required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:713:            throw new NotFoundException('Monitoring record not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:717:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:802:          if (!q.rowCount) throw new NotFoundException('Alert not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:805:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:838:            throw new BadRequestException('Escalation reason required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:888:            throw new BadRequestException('Human reviewer required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:904:            throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:908:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:959:            throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:963:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:969:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1011:            throw new NotFoundException('Escalation not found.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1015:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1021:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/infection-control/infection-control.service.ts:1057:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:3:  ConflictException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:4:  ForbiddenException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:6:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:7:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:61:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:74:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:95:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:103:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:109:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:128:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:149:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:173:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:192:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:204:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:242:        throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:332:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:484:        String(error?.code || '') === '23505'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:486:        throw new ConflictException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:517:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:534:        throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:541:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:562:          throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event-type.service.ts:679:          throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:3:  ConflictException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:4:  ForbiddenException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:6:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:7:  UnauthorizedException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:75:      throw new UnauthorizedException('Actor context is required');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:81:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:100:      throw new UnauthorizedException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:108:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:114:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:127:      throw new ForbiddenException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:149:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:165:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:313:      throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:340:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:368:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:386:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:409:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:423:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:452:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:470:            throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:488:              throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:568:        String(error?.code || '') === '23505'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:570:        throw new ConflictException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:639:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:685:          throw new NotFoundException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:698:          throw new ConflictException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:713:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/operational-work/operational-work-event.service.ts:729:          throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:2:  BadRequestException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:4:  NotFoundException,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:46:      throw new BadRequestException('Human actor identity is required.');
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:50:      throw new BadRequestException(
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/personal-care/personal-care.service.ts:61:      throw new BadRequestException('Supervisor or Care Manager required.');
+
+======================================================================
+11. CANONICAL INVENTORY SCHEMA
+======================================================================
+       table_name       | ordinal_position |       column_name        |        data_type         | is_nullable | column_default 
+------------------------+------------------+--------------------------+--------------------------+-------------+----------------
+ inventory_items        |                1 | inventory_item_id        | text                     | NO          | 
+ inventory_items        |                2 | code                     | text                     | NO          | 
+ inventory_items        |                3 | display_name_vi          | text                     | NO          | 
+ inventory_items        |                4 | category                 | text                     | NO          | 
+ inventory_items        |                5 | base_unit                | text                     | NO          | 
+ inventory_items        |                6 | active                   | boolean                  | NO          | true
+ inventory_items        |                7 | created_at               | timestamp with time zone | NO          | now()
+ inventory_items        |                8 | updated_at               | timestamp with time zone | NO          | now()
+ inventory_items        |                9 | lot_tracking_required    | boolean                  | NO          | false
+ inventory_lots         |                1 | inventory_lot_id         | text                     | NO          | 
+ inventory_lots         |                2 | inventory_item_id        | text                     | NO          | 
+ inventory_lots         |                3 | lot_code                 | text                     | YES         | 
+ inventory_lots         |                4 | received_at              | timestamp with time zone | YES         | 
+ inventory_lots         |                5 | expiry_date              | date                     | YES         | 
+ inventory_lots         |                6 | supplier_reference       | text                     | YES         | 
+ inventory_lots         |                7 | note                     | text                     | YES         | 
+ inventory_lots         |                8 | status                   | text                     | NO          | 'ACTIVE'::text
+ inventory_lots         |                9 | created_at               | timestamp with time zone | NO          | now()
+ inventory_transactions |                1 | inventory_transaction_id | text                     | NO          | 
+ inventory_transactions |                2 | inventory_item_id        | text                     | NO          | 
+ inventory_transactions |                3 | inventory_lot_id         | text                     | YES         | 
+ inventory_transactions |                4 | transaction_type         | text                     | NO          | 
+ inventory_transactions |                5 | quantity                 | numeric                  | NO          | 
+ inventory_transactions |                6 | unit                     | text                     | NO          | 
+ inventory_transactions |                7 | occurred_at              | timestamp with time zone | NO          | 
+ inventory_transactions |                8 | performed_by             | text                     | NO          | 
+ inventory_transactions |                9 | performed_by_role        | text                     | NO          | 
+ inventory_transactions |               10 | source_domain            | text                     | NO          | 
+ inventory_transactions |               11 | source_entity_type       | text                     | YES         | 
+ inventory_transactions |               12 | source_entity_id         | text                     | YES         | 
+ inventory_transactions |               13 | reason_code              | text                     | YES         | 
+ inventory_transactions |               14 | note                     | text                     | YES         | 
+ inventory_transactions |               15 | created_at               | timestamp with time zone | NO          | now()
+(33 rows)
+
+
+======================================================================
+12. INVENTORY CONSTRAINTS
+======================================================================
+       table_name       |                    conname                    | contype |                                                                                definition                                                                                 
+------------------------+-----------------------------------------------+---------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ inventory_items        | inventory_items_base_unit_ck                  | c       | CHECK ((length(btrim(base_unit)) > 0))
+ inventory_items        | inventory_items_category_ck                   | c       | CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+ inventory_items        | inventory_items_code_ck                       | c       | CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+ inventory_items        | inventory_items_pkey                          | p       | PRIMARY KEY (inventory_item_id)
+ inventory_items        | inventory_items_code_key                      | u       | UNIQUE (code)
+ inventory_lots         | inventory_lots_status_ck                      | c       | CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'EXHAUSTED'::text, 'CLOSED'::text, 'QUARANTINED'::text])))
+ inventory_lots         | inventory_lots_inventory_item_id_fkey         | f       | FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id) ON DELETE RESTRICT
+ inventory_lots         | inventory_lots_pkey                           | p       | PRIMARY KEY (inventory_lot_id)
+ inventory_transactions | inventory_transactions_quantity_ck            | c       | CHECK ((quantity > (0)::numeric))
+ inventory_transactions | inventory_transactions_role_ck                | c       | CHECK ((performed_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+ inventory_transactions | inventory_transactions_source_ck              | c       | CHECK ((((source_entity_type IS NULL) AND (source_entity_id IS NULL)) OR ((source_entity_type IS NOT NULL) AND (source_entity_id IS NOT NULL))))
+ inventory_transactions | inventory_transactions_type_ck                | c       | CHECK ((transaction_type = ANY (ARRAY['RECEIPT'::text, 'ISSUE'::text, 'ADJUSTMENT_IN'::text, 'ADJUSTMENT_OUT'::text, 'RETURN_IN'::text, 'RETURN_OUT'::text])))
+ inventory_transactions | inventory_transactions_unit_ck                | c       | CHECK ((length(btrim(unit)) > 0))
+ inventory_transactions | inventory_transactions_inventory_item_id_fkey | f       | FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id) ON DELETE RESTRICT
+ inventory_transactions | inventory_transactions_inventory_lot_id_fkey  | f       | FOREIGN KEY (inventory_lot_id) REFERENCES inventory_lots(inventory_lot_id) ON DELETE RESTRICT
+ inventory_transactions | inventory_transactions_performed_by_fkey      | f       | FOREIGN KEY (performed_by) REFERENCES staff_actors(actor_id) ON DELETE RESTRICT
+ inventory_transactions | inventory_transactions_pkey                   | p       | PRIMARY KEY (inventory_transaction_id)
+(17 rows)
+
+
+======================================================================
+13. INVENTORY INDEX CONTRACT
+======================================================================
+       tablename        |              indexname              |                                                                                                                       indexdef                                                                                                                       
+------------------------+-------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ inventory_items        | idx_inventory_items_active_category | CREATE INDEX idx_inventory_items_active_category ON public.inventory_items USING btree (active, category, code)
+ inventory_items        | inventory_items_code_key            | CREATE UNIQUE INDEX inventory_items_code_key ON public.inventory_items USING btree (code)
+ inventory_items        | inventory_items_pkey                | CREATE UNIQUE INDEX inventory_items_pkey ON public.inventory_items USING btree (inventory_item_id)
+ inventory_lots         | idx_inventory_lots_expiry           | CREATE INDEX idx_inventory_lots_expiry ON public.inventory_lots USING btree (expiry_date) WHERE (expiry_date IS NOT NULL)
+ inventory_lots         | idx_inventory_lots_item             | CREATE INDEX idx_inventory_lots_item ON public.inventory_lots USING btree (inventory_item_id)
+ inventory_lots         | idx_inventory_lots_status           | CREATE INDEX idx_inventory_lots_status ON public.inventory_lots USING btree (status)
+ inventory_lots         | inventory_lots_pkey                 | CREATE UNIQUE INDEX inventory_lots_pkey ON public.inventory_lots USING btree (inventory_lot_id)
+ inventory_transactions | idx_inventory_tx_item_time          | CREATE INDEX idx_inventory_tx_item_time ON public.inventory_transactions USING btree (inventory_item_id, occurred_at DESC)
+ inventory_transactions | idx_inventory_tx_lot_time           | CREATE INDEX idx_inventory_tx_lot_time ON public.inventory_transactions USING btree (inventory_lot_id, occurred_at DESC) WHERE (inventory_lot_id IS NOT NULL)
+ inventory_transactions | idx_inventory_tx_source             | CREATE INDEX idx_inventory_tx_source ON public.inventory_transactions USING btree (source_domain, source_entity_type, source_entity_id) WHERE (source_entity_id IS NOT NULL)
+ inventory_transactions | idx_inventory_tx_staff_time         | CREATE INDEX idx_inventory_tx_staff_time ON public.inventory_transactions USING btree (performed_by, occurred_at DESC)
+ inventory_transactions | inventory_transactions_pkey         | CREATE UNIQUE INDEX inventory_transactions_pkey ON public.inventory_transactions USING btree (inventory_transaction_id)
+ inventory_transactions | uq_inventory_tx_source_item_lot     | CREATE UNIQUE INDEX uq_inventory_tx_source_item_lot ON public.inventory_transactions USING btree (source_domain, source_entity_type, source_entity_id, inventory_item_id, COALESCE(inventory_lot_id, ''::text)) WHERE (source_entity_id IS NOT NULL)
+(13 rows)
+
+
+======================================================================
+14. ADVISORY LOCK SUPPORT + KEY OPTIONS
+======================================================================
+        proname        |    arguments     
+-----------------------+------------------
+ pg_advisory_xact_lock | bigint
+ pg_advisory_xact_lock | integer, integer
+(2 rows)
+
+
+--- HASH FUNCTIONS AVAILABLE ---
+     proname      |  arguments   
+------------------+--------------
+ hashtext         | text
+ hashtextextended | text, bigint
+(2 rows)
+
+
+======================================================================
+15. CANONICAL ACTOR COVERAGE
+======================================================================
+ primary_operational_role | status | actor_count 
+--------------------------+--------+-------------
+ SUPERVISOR               | ACTIVE |           1
+(1 row)
+
+
+======================================================================
+16. EMPTY INVENTORY DATA BASELINE
+======================================================================
+inventory_items_ROWS=0
+inventory_lots_ROWS=0
+inventory_transactions_ROWS=0
+
+======================================================================
+17. LOCKED I1 IMPLEMENTATION TARGET
+======================================================================
+TARGET MODULE:
+  InventoryModule
+
+TARGET CONTROLLER:
+  InventoryController
+  /api/inventory
+
+TARGET SERVICES:
+  InventoryItemService
+  InventoryLotService
+  InventoryLedgerService
+  InventoryTransactionService
+
+ITEM:
+  GET    /api/inventory/items
+  GET    /api/inventory/items/:inventoryItemId
+  POST   /api/inventory/items
+  PATCH  /api/inventory/items/:inventoryItemId
+  DELETE forbidden
+
+LOT:
+  GET    /api/inventory/lots
+  GET    /api/inventory/lots/:inventoryLotId
+  POST   /api/inventory/lots
+  PATCH  /api/inventory/lots/:inventoryLotId
+  DELETE forbidden
+
+TRANSACTION:
+  GET    /api/inventory/transactions
+  GET    /api/inventory/transactions/:inventoryTransactionId
+  POST   /api/inventory/transactions
+  PATCH forbidden
+  DELETE forbidden
+
+BALANCE:
+  GET /api/inventory/items/:inventoryItemId/balance
+  optional inventoryLotId
+
+DIRECT MUTATION:
+  CARE_MANAGER
+  SUPERVISOR
+
+TRANSACTION READ:
+  CAREGIVER
+  NURSE
+  CARE_MANAGER
+  SUPERVISOR
+
+LEDGER:
+  inventory_transactions = source of truth
+  balance = derived SUM
+  no stored balance
+
+OUTBOUND:
+  one PostgreSQL transaction
+  pg_advisory_xact_lock
+  signed SUM after lock
+  reject resulting balance < 0
+  insert immutable movement
+  same lock-key contract for all outbound paths
+
+LOT:
+  lot_tracking_required=true => lot required
+  supplied lot must belong to item
+  normal outbound requires ACTIVE lot
+  normal ISSUE forbids expired lot
+
+UNIT:
+  transaction.unit == item.base_unit
+  no conversion in OPS-2-B
+
+IDEMPOTENCY:
+  source-backed duplicate => HTTP 409
+
+OPS-2-C:
+  resident_consumption_events write = NOT INCLUDED
+  caregiver/nurse resident ISSUE = NOT INCLUDED
+
+======================================================================
+18. SOURCE IMMUTABILITY
+======================================================================
+API_TREE_AFTER=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_AFTER=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API SOURCE UNCHANGED
+PASS: FRONTEND SOURCE UNCHANGED
+
+======================================================================
+19. RUNTIME PRESERVATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+======================================================================
+20. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-I1-P1 EXACT IMPLEMENTATION PREFLIGHT PASSED
+
+READY FOR:
+ -> deterministic InventoryModule implementation
+ -> exact actor authority reuse
+ -> bounded item/lot/transaction reads
+ -> immutable transaction write
+ -> derived ledger balance
+ -> PostgreSQL advisory transaction lock
+ -> negative-stock protection
+ -> source idempotency
+
+ROADMAP:
+ -> OPS-2-B-D1=CLOSED / ACCEPTED
+ -> OPS-2-B-M1-R1=CLOSED / ACCEPTED
+ -> OPS-2-B-I1-P1=PENDING REVIEW / EXPECTED CLOSE
+ -> OPS-2-B-I1-P2=NOT AUTHORIZED
+ -> OPS-2-C=NOT AUTHORIZED
+
+NEXT:
+ -> RETURN THIS ENTIRE OUTPUT
+ -> DO NOT RERUN P1
+ -> DO NOT PATCH INVENTORY SERVICE YET

@@ -1,0 +1,142 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-H-R1
+ AUTH CONTINUITY / TOKEN EXPIRY DIAGNOSTIC
+ MODE: STRICT READ-ONLY
+======================================================================
+
+PURPOSE:
+ -> diagnose the P5-H HTTP 401
+ -> determine whether token/session expired
+ -> preserve accepted inventory ledger exactly
+
+NO:
+ -> login
+ -> credential creation
+ -> session creation/revocation
+ -> inventory mutation
+ -> source/schema/runtime mutation
+
+======================================================================
+ 1. REQUIRED CHECKPOINTS
+======================================================================
+P5_G_STATUS=PASS
+P5_H_STATUS=NOT_WRITTEN
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_RECEIPT_TX_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+P5_OUTBOUND_TX_ID=inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917
+PASS: P5-H remains open after controlled stop
+
+======================================================================
+ 2. SOURCE PRESERVATION
+======================================================================
+API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE BASELINES UNCHANGED
+
+======================================================================
+ 3. ISOLATED RUNTIME HEALTH
+======================================================================
+CONTAINER_STATE=running
+CONTAINER_IMAGE=tamancare_ops2b_balancefix:20260830_070355
+HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 4. TOKEN FILE METADATA
+======================================================================
+TOKEN_FILE_EXISTS=YES
+TOKEN_FILE_SIZE=251
+TOKEN_VALUE_PRINTED=NO
+
+======================================================================
+ 5. JWT PAYLOAD TIME DIAGNOSTIC
+======================================================================
+JWT_FORMAT_VALID=YES
+JWT_PAYLOAD_DECODE=PASS
+UTC_NOW_EPOCH=1788055908
+JWT_IAT=1788047184
+JWT_EXP=1788050784
+JWT_IAT_UTC=2026-08-29T23:46:24+00:00
+JWT_EXP_UTC=2026-08-30T00:46:24+00:00
+JWT_SECONDS_REMAINING=-5124
+JWT_EXPIRED=YES
+JWT_SUB=hqa-supervisor-001
+JWT_ROLE=SUPERVISOR
+
+======================================================================
+ 6. DATABASE AUTH SESSION STATE
+======================================================================
+AUTH_CREDENTIAL_TOTAL_SESSION_ACTIVE=1|1|0
+AUTH_SESSION_STATE:
+hqa-supervisor-001|2026-08-29 23:46:24.798544+00|2026-08-30 00:46:24+00|NULL|EXPIRED
+
+======================================================================
+ 7. CANONICAL ACTOR STATE
+======================================================================
+ACTOR_STATE=hqa-supervisor-001|SUPERVISOR|ACTIVE
+PASS: CANONICAL SUPERVISOR STILL ACTIVE
+
+======================================================================
+ 8. AUTHENTICATED ENDPOINT REPRODUCTION
+======================================================================
+TRANSACTION_GET_HTTP=401
+ITEM_BALANCE_HTTP=401
+LOT_BALANCE_HTTP=401
+PASS: HTTP 401 REPRODUCED ACROSS PROTECTED INVENTORY ROUTES
+HTTP_AUTH_CLASS=ALL_PROTECTED_401
+
+======================================================================
+ 9. INVENTORY STATE MUST REMAIN UNCHANGED
+======================================================================
+INVENTORY_COUNTS=1|1|2|0
+PASS: INVENTORY STATE PRESERVED
+
+======================================================================
+ 10. SOURCE PRESERVATION FINAL
+======================================================================
+API_SOURCE_HASH_AFTER=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE UNCHANGED
+
+======================================================================
+ 11. DIAGNOSTIC CLASSIFICATION
+======================================================================
+JWT_EXPIRED_CLASS=YES
+ACTIVE_SESSION_COUNT=0
+CLASSIFICATION=JWT_EXPIRED
+APPLICATION_INVENTORY_DEFECT=NO
+
+P5_H_STATUS=OPEN
+P5_H_INVENTORY_VERIFICATION_SECTIONS_1_TO_11=PASS
+INVENTORY_DATABASE=1|1|2|0
+AUTHORITATIVE_BALANCE_EXPECTED=7
+AUTH_MUTATION_THIS_GATE=NO
+INVENTORY_MUTATION_THIS_GATE=NO
+SOURCE_PATCH_THIS_GATE=NO
+SCHEMA_CHANGE_THIS_GATE=NO
+RUNTIME_RESTART_THIS_GATE=NO
+
+======================================================================
+ STATUS: P5-H-R1 DIAGNOSTIC COMPLETE / STOP
+======================================================================
+
+INVENTORY_MUTATION=NO
+AUTH_MUTATION=NO
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+RUNTIME_RESTART=NO
+
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_h_r1_auth_continuity_diagnostic_20260830_091147.txt
+
+IMPORTANT:
+ -> DO NOT RERUN P5-H
+ -> DO NOT REFRESH TOKEN MANUALLY
+ -> DO NOT LOGIN MANUALLY
+ -> DO NOT DELETE/REVOKE AUTH SESSION
+ -> DO NOT CLEAN INVENTORY
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START P5-I
+ -> SEND THIS ENTIRE OUTPUT BACK

@@ -1,0 +1,352 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F5
+ DISPOSABLE FIXTURE SCHEMA PREFLIGHT
+ STRICT READ ONLY
+ NO FIXTURE INSERT / NO API POST / NO SOURCE OR SCHEMA MUTATION
+======================================================================
+
+======================================================================
+ 1. F4-R7E AUTHORITY
+======================================================================
+PASS: F4-R7E AUTHORITY
+F4_R7E_ARTIFACT=ops2_c_f4_r7e_canonical_runtime_mode_reprovision_20260830_172319.txt
+
+======================================================================
+ 2. ISOLATED RUNTIME AUTHORITY
+======================================================================
+ISOLATED_STATE=running
+ISOLATED_PORT_BINDING=127.0.0.1:3111
+ISOLATED_HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME READY
+
+======================================================================
+ 3. DATABASE CLEAN BASELINE — READ ONLY
+======================================================================
+DB_BASELINE=1|1|0|0|0|0|0
+PASS: DATABASE CLEAN BASELINE
+
+======================================================================
+ 4. REQUIRED TABLE EXISTENCE
+======================================================================
+TABLE_staff_actors=YES
+TABLE_residents=YES
+TABLE_resident_access_assignments=YES
+TABLE_inventory_items=YES
+TABLE_inventory_lots=YES
+TABLE_inventory_transactions=YES
+TABLE_resident_consumption_events=YES
+PASS: REQUIRED TABLES PRESENT
+
+======================================================================
+ 5. EXACT COLUMN CONTRACTS — READ ONLY
+======================================================================
+
+------------------------------------------------------------------
+TABLE=staff_actors
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|actor_id|text|NO|<NULL>
+2|staff_code|text|NO|<NULL>
+3|display_name|text|NO|<NULL>
+4|primary_operational_role|text|NO|<NULL>
+5|status|text|NO|<NULL>
+6|employment_reference|text|YES|<NULL>
+7|created_at|timestamp with time zone|NO|now()
+8|updated_at|timestamp with time zone|NO|now()
+(8 rows)
+
+------------------------------------------------------------------
+TABLE=residents
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|resident_id|text|NO|<NULL>
+2|resident_code|text|NO|<NULL>
+3|display_name|text|NO|<NULL>
+4|date_of_birth|date|NO|<NULL>
+5|gender|text|NO|<NULL>
+6|room|text|YES|<NULL>
+7|bed|text|YES|<NULL>
+8|care_level|text|NO|<NULL>
+9|active_status|boolean|NO|true
+10|created_at|timestamp with time zone|NO|now()
+11|updated_at|timestamp with time zone|NO|now()
+(11 rows)
+
+------------------------------------------------------------------
+TABLE=resident_access_assignments
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|resident_access_assignment_id|text|NO|<NULL>
+2|resident_id|text|NO|<NULL>
+3|actor_id|text|NO|<NULL>
+4|actor_role|text|NO|<NULL>
+5|access_scope|text|NO|<NULL>
+6|status|text|NO|<NULL>
+7|effective_from|timestamp with time zone|NO|<NULL>
+8|effective_to|timestamp with time zone|YES|<NULL>
+9|assigned_by|text|NO|<NULL>
+10|assigned_by_role|text|NO|<NULL>
+11|assigned_at|timestamp with time zone|NO|<NULL>
+12|revoked_by|text|YES|<NULL>
+13|revoked_by_role|text|YES|<NULL>
+14|revoked_at|timestamp with time zone|YES|<NULL>
+15|revocation_reason|text|YES|<NULL>
+16|created_at|timestamp with time zone|NO|now()
+17|updated_at|timestamp with time zone|NO|now()
+(17 rows)
+
+------------------------------------------------------------------
+TABLE=inventory_items
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|inventory_item_id|text|NO|<NULL>
+2|code|text|NO|<NULL>
+3|display_name_vi|text|NO|<NULL>
+4|category|text|NO|<NULL>
+5|base_unit|text|NO|<NULL>
+6|active|boolean|NO|true
+7|created_at|timestamp with time zone|NO|now()
+8|updated_at|timestamp with time zone|NO|now()
+9|lot_tracking_required|boolean|NO|false
+(9 rows)
+
+------------------------------------------------------------------
+TABLE=inventory_lots
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|inventory_lot_id|text|NO|<NULL>
+2|inventory_item_id|text|NO|<NULL>
+3|lot_code|text|YES|<NULL>
+4|received_at|timestamp with time zone|YES|<NULL>
+5|expiry_date|date|YES|<NULL>
+6|supplier_reference|text|YES|<NULL>
+7|note|text|YES|<NULL>
+8|status|text|NO|'ACTIVE'::text
+9|created_at|timestamp with time zone|NO|now()
+(9 rows)
+
+------------------------------------------------------------------
+TABLE=inventory_transactions
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|inventory_transaction_id|text|NO|<NULL>
+2|inventory_item_id|text|NO|<NULL>
+3|inventory_lot_id|text|YES|<NULL>
+4|transaction_type|text|NO|<NULL>
+5|quantity|numeric|NO|<NULL>
+6|unit|text|NO|<NULL>
+7|occurred_at|timestamp with time zone|NO|<NULL>
+8|performed_by|text|NO|<NULL>
+9|performed_by_role|text|NO|<NULL>
+10|source_domain|text|NO|<NULL>
+11|source_entity_type|text|YES|<NULL>
+12|source_entity_id|text|YES|<NULL>
+13|reason_code|text|YES|<NULL>
+14|note|text|YES|<NULL>
+15|created_at|timestamp with time zone|NO|now()
+(15 rows)
+
+------------------------------------------------------------------
+TABLE=resident_consumption_events
+------------------------------------------------------------------
+ordinal_position|column_name|data_type|is_nullable|coalesce
+1|resident_consumption_event_id|text|NO|<NULL>
+2|resident_id|text|NO|<NULL>
+3|inventory_item_id|text|NO|<NULL>
+4|inventory_lot_id|text|YES|<NULL>
+5|inventory_transaction_id|text|NO|<NULL>
+6|work_event_id|text|YES|<NULL>
+7|quantity|numeric|NO|<NULL>
+8|unit|text|NO|<NULL>
+9|occurred_at|timestamp with time zone|NO|<NULL>
+10|recorded_by|text|NO|<NULL>
+11|recorded_by_role|text|NO|<NULL>
+12|source_domain|text|NO|<NULL>
+13|source_entity_type|text|YES|<NULL>
+14|source_entity_id|text|YES|<NULL>
+15|note|text|YES|<NULL>
+16|created_at|timestamp with time zone|NO|now()
+(16 rows)
+
+PASS: COLUMN CONTRACTS CAPTURED
+
+======================================================================
+ 6. PRIMARY / UNIQUE / CHECK / FOREIGN-KEY CONTRACTS
+======================================================================
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=staff_actors
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+staff_actors_role_check|c|CHECK ((primary_operational_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'SUPERVISOR'::text, 'CARE_MANAGER'::text])))
+staff_actors_status_check|c|CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'INACTIVE'::text, 'SUSPENDED'::text, 'ARCHIVED'::text])))
+staff_actors_pkey|p|PRIMARY KEY (actor_id)
+staff_actors_staff_code_key|u|UNIQUE (staff_code)
+(4 rows)
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=residents
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+residents_care_level_check|c|CHECK ((care_level = ANY (ARRAY['INDEPENDENT'::text, 'ASSISTED'::text, 'HIGH_ASSISTANCE'::text, 'DEPENDENT'::text])))
+residents_gender_check|c|CHECK ((gender = ANY (ARRAY['MALE'::text, 'FEMALE'::text, 'OTHER'::text, 'UNSPECIFIED'::text])))
+residents_pkey|p|PRIMARY KEY (resident_id)
+residents_resident_code_key|u|UNIQUE (resident_code)
+(4 rows)
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=resident_access_assignments
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+resident_access_assignments_access_scope_check|c|CHECK ((access_scope = ANY (ARRAY['DIRECT_CARE'::text, 'CLINICAL_CARE'::text])))
+resident_access_assignments_actor_role_check|c|CHECK ((actor_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text])))
+resident_access_assignments_status_check|c|CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'REVOKED'::text])))
+resident_access_effective_interval_check|c|CHECK (((effective_to IS NULL) OR (effective_to > effective_from)))
+resident_access_revocation_check|c|CHECK ((((status = 'ACTIVE'::text) AND (revoked_at IS NULL)) OR ((status = 'REVOKED'::text) AND (revoked_at IS NOT NULL))))
+resident_access_role_scope_check|c|CHECK ((((actor_role = 'CAREGIVER'::text) AND (access_scope = 'DIRECT_CARE'::text)) OR ((actor_role = 'NURSE'::text) AND (access_scope = 'CLINICAL_CARE'::text))))
+resident_access_assignments_resident_id_fkey|f|FOREIGN KEY (resident_id) REFERENCES residents(resident_id)
+resident_access_assignments_pkey|p|PRIMARY KEY (resident_access_assignment_id)
+(8 rows)
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=inventory_items
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+inventory_items_base_unit_ck|c|CHECK ((length(btrim(base_unit)) > 0))
+inventory_items_category_ck|c|CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+inventory_items_code_ck|c|CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+inventory_items_pkey|p|PRIMARY KEY (inventory_item_id)
+inventory_items_code_key|u|UNIQUE (code)
+(5 rows)
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=inventory_lots
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+inventory_lots_status_ck|c|CHECK ((status = ANY (ARRAY['ACTIVE'::text, 'EXHAUSTED'::text, 'CLOSED'::text, 'QUARANTINED'::text])))
+inventory_lots_inventory_item_id_fkey|f|FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id) ON DELETE RESTRICT
+inventory_lots_pkey|p|PRIMARY KEY (inventory_lot_id)
+(3 rows)
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=inventory_transactions
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+inventory_transactions_quantity_ck|c|CHECK ((quantity > (0)::numeric))
+inventory_transactions_role_ck|c|CHECK ((performed_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+inventory_transactions_source_ck|c|CHECK ((((source_entity_type IS NULL) AND (source_entity_id IS NULL)) OR ((source_entity_type IS NOT NULL) AND (source_entity_id IS NOT NULL))))
+inventory_transactions_type_ck|c|CHECK ((transaction_type = ANY (ARRAY['RECEIPT'::text, 'ISSUE'::text, 'ADJUSTMENT_IN'::text, 'ADJUSTMENT_OUT'::text, 'RETURN_IN'::text, 'RETURN_OUT'::text])))
+inventory_transactions_unit_ck|c|CHECK ((length(btrim(unit)) > 0))
+inventory_transactions_inventory_item_id_fkey|f|FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id) ON DELETE RESTRICT
+inventory_transactions_inventory_lot_id_fkey|f|FOREIGN KEY (inventory_lot_id) REFERENCES inventory_lots(inventory_lot_id) ON DELETE RESTRICT
+inventory_transactions_performed_by_fkey|f|FOREIGN KEY (performed_by) REFERENCES staff_actors(actor_id) ON DELETE RESTRICT
+inventory_transactions_pkey|p|PRIMARY KEY (inventory_transaction_id)
+(9 rows)
+
+------------------------------------------------------------------
+CONSTRAINTS_FOR=resident_consumption_events
+------------------------------------------------------------------
+conname|contype|pg_get_constraintdef
+resident_consumption_quantity_ck|c|CHECK ((quantity > (0)::numeric))
+resident_consumption_role_ck|c|CHECK ((recorded_by_role = ANY (ARRAY['CAREGIVER'::text, 'NURSE'::text, 'CARE_MANAGER'::text, 'SUPERVISOR'::text])))
+resident_consumption_source_ck|c|CHECK ((((source_entity_type IS NULL) AND (source_entity_id IS NULL)) OR ((source_entity_type IS NOT NULL) AND (source_entity_id IS NOT NULL))))
+resident_consumption_unit_ck|c|CHECK ((length(btrim(unit)) > 0))
+resident_consumption_events_inventory_item_id_fkey|f|FOREIGN KEY (inventory_item_id) REFERENCES inventory_items(inventory_item_id) ON DELETE RESTRICT
+resident_consumption_events_inventory_lot_id_fkey|f|FOREIGN KEY (inventory_lot_id) REFERENCES inventory_lots(inventory_lot_id) ON DELETE RESTRICT
+resident_consumption_events_inventory_transaction_id_fkey|f|FOREIGN KEY (inventory_transaction_id) REFERENCES inventory_transactions(inventory_transaction_id) ON DELETE RESTRICT
+resident_consumption_events_recorded_by_fkey|f|FOREIGN KEY (recorded_by) REFERENCES staff_actors(actor_id) ON DELETE RESTRICT
+resident_consumption_events_resident_id_fkey|f|FOREIGN KEY (resident_id) REFERENCES residents(resident_id) ON DELETE RESTRICT
+resident_consumption_events_work_event_id_fkey|f|FOREIGN KEY (work_event_id) REFERENCES operational_work_events(work_event_id) ON DELETE RESTRICT
+resident_consumption_events_pkey|p|PRIMARY KEY (resident_consumption_event_id)
+(11 rows)
+
+PASS: TABLE CONSTRAINTS CAPTURED
+
+======================================================================
+ 7. INDEX CONTRACTS
+======================================================================
+
+------------------------------------------------------------------
+INDEXES_FOR=staff_actors
+------------------------------------------------------------------
+indexname|indexdef
+idx_staff_actors_role_status|CREATE INDEX idx_staff_actors_role_status ON public.staff_actors USING btree (primary_operational_role, status)
+idx_staff_actors_status|CREATE INDEX idx_staff_actors_status ON public.staff_actors USING btree (status)
+staff_actors_pkey|CREATE UNIQUE INDEX staff_actors_pkey ON public.staff_actors USING btree (actor_id)
+staff_actors_staff_code_key|CREATE UNIQUE INDEX staff_actors_staff_code_key ON public.staff_actors USING btree (staff_code)
+(4 rows)
+
+------------------------------------------------------------------
+INDEXES_FOR=residents
+------------------------------------------------------------------
+indexname|indexdef
+idx_residents_active_status|CREATE INDEX idx_residents_active_status ON public.residents USING btree (active_status)
+idx_residents_room_bed|CREATE INDEX idx_residents_room_bed ON public.residents USING btree (room, bed)
+residents_pkey|CREATE UNIQUE INDEX residents_pkey ON public.residents USING btree (resident_id)
+residents_resident_code_key|CREATE UNIQUE INDEX residents_resident_code_key ON public.residents USING btree (resident_code)
+(4 rows)
+
+------------------------------------------------------------------
+INDEXES_FOR=resident_access_assignments
+------------------------------------------------------------------
+indexname|indexdef
+idx_resident_access_authorization|CREATE INDEX idx_resident_access_authorization ON public.resident_access_assignments USING btree (actor_id, actor_role, status, resident_id)
+idx_resident_access_resident_admin|CREATE INDEX idx_resident_access_resident_admin ON public.resident_access_assignments USING btree (resident_id, status, actor_id)
+resident_access_assignments_pkey|CREATE UNIQUE INDEX resident_access_assignments_pkey ON public.resident_access_assignments USING btree (resident_access_assignment_id)
+uq_resident_access_active_grant|CREATE UNIQUE INDEX uq_resident_access_active_grant ON public.resident_access_assignments USING btree (resident_id, actor_id, actor_role, access_scope) WHERE (status = 'ACTIVE'::text)
+(4 rows)
+
+------------------------------------------------------------------
+INDEXES_FOR=inventory_items
+------------------------------------------------------------------
+indexname|indexdef
+idx_inventory_items_active_category|CREATE INDEX idx_inventory_items_active_category ON public.inventory_items USING btree (active, category, code)
+inventory_items_code_key|CREATE UNIQUE INDEX inventory_items_code_key ON public.inventory_items USING btree (code)
+inventory_items_pkey|CREATE UNIQUE INDEX inventory_items_pkey ON public.inventory_items USING btree (inventory_item_id)
+(3 rows)
+
+------------------------------------------------------------------
+INDEXES_FOR=inventory_lots
+------------------------------------------------------------------
+indexname|indexdef
+idx_inventory_lots_expiry|CREATE INDEX idx_inventory_lots_expiry ON public.inventory_lots USING btree (expiry_date) WHERE (expiry_date IS NOT NULL)
+idx_inventory_lots_item|CREATE INDEX idx_inventory_lots_item ON public.inventory_lots USING btree (inventory_item_id)
+idx_inventory_lots_status|CREATE INDEX idx_inventory_lots_status ON public.inventory_lots USING btree (status)
+inventory_lots_pkey|CREATE UNIQUE INDEX inventory_lots_pkey ON public.inventory_lots USING btree (inventory_lot_id)
+(4 rows)
+
+------------------------------------------------------------------
+INDEXES_FOR=inventory_transactions
+------------------------------------------------------------------
+indexname|indexdef
+idx_inventory_tx_item_time|CREATE INDEX idx_inventory_tx_item_time ON public.inventory_transactions USING btree (inventory_item_id, occurred_at DESC)
+idx_inventory_tx_lot_time|CREATE INDEX idx_inventory_tx_lot_time ON public.inventory_transactions USING btree (inventory_lot_id, occurred_at DESC) WHERE (inventory_lot_id IS NOT NULL)
+idx_inventory_tx_source|CREATE INDEX idx_inventory_tx_source ON public.inventory_transactions USING btree (source_domain, source_entity_type, source_entity_id) WHERE (source_entity_id IS NOT NULL)
+idx_inventory_tx_staff_time|CREATE INDEX idx_inventory_tx_staff_time ON public.inventory_transactions USING btree (performed_by, occurred_at DESC)
+inventory_transactions_pkey|CREATE UNIQUE INDEX inventory_transactions_pkey ON public.inventory_transactions USING btree (inventory_transaction_id)
+uq_inventory_tx_source_item_lot|CREATE UNIQUE INDEX uq_inventory_tx_source_item_lot ON public.inventory_transactions USING btree (source_domain, source_entity_type, source_entity_id, inventory_item_id, COALESCE(inventory_lot_id, ''::text)) WHERE (source_entity_id IS NOT NULL)
+(6 rows)
+
+------------------------------------------------------------------
+INDEXES_FOR=resident_consumption_events
+------------------------------------------------------------------
+indexname|indexdef
+idx_resident_consumption_item_time|CREATE INDEX idx_resident_consumption_item_time ON public.resident_consumption_events USING btree (inventory_item_id, occurred_at DESC)
+idx_resident_consumption_resident_time|CREATE INDEX idx_resident_consumption_resident_time ON public.resident_consumption_events USING btree (resident_id, occurred_at DESC)
+idx_resident_consumption_source|CREATE INDEX idx_resident_consumption_source ON public.resident_consumption_events USING btree (source_domain, source_entity_type, source_entity_id) WHERE (source_entity_id IS NOT NULL)
+idx_resident_consumption_transaction|CREATE INDEX idx_resident_consumption_transaction ON public.resident_consumption_events USING btree (inventory_transaction_id)
+idx_resident_consumption_work_event|CREATE INDEX idx_resident_consumption_work_event ON public.resident_consumption_events USING btree (work_event_id) WHERE (work_event_id IS NOT NULL)
+resident_consumption_events_pkey|CREATE UNIQUE INDEX resident_consumption_events_pkey ON public.resident_consumption_events USING btree (resident_consumption_event_id)
+uq_resident_consumption_source_item_lot|CREATE UNIQUE INDEX uq_resident_consumption_source_item_lot ON public.resident_consumption_events USING btree (source_domain, source_entity_type, source_entity_id, inventory_item_id, COALESCE(inventory_lot_id, ''::text)) WHERE (source_entity_id IS NOT NULL)
+(7 rows)
+
+PASS: INDEX CONTRACTS CAPTURED
+
+======================================================================
+ 8. EXISTING CANONICAL STAFF + RESIDENT SHAPE
+======================================================================
+--- STAFF ACTOR — NON-SENSITIVE STRUCTURAL FIELDS
+ERROR:  column "actor_type" does not exist
+LINE 5:         actor_type,
+                ^

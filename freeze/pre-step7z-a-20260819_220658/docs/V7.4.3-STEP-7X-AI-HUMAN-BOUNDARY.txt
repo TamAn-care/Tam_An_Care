@@ -1,0 +1,67 @@
+STEP 7X — AI / HUMAN BOUNDARY
+
+AI ROLE = ADVISORY ONLY
+
+
+AI MAY
+
+- compare medication lists
+- detect possible reconciliation discrepancy
+- detect possible duplicate therapy signal
+- detect possible interaction signal
+- detect missed-dose pattern
+- detect administration-exception trend
+- summarize medication history
+- summarize possible adverse-reaction observations
+- identify records requiring human review
+- suggest reconciliation review
+- suggest medication-safety review
+
+
+AI MAY NOT
+
+- create medication order
+- prescribe medication
+- select medication
+- select PRN medication
+- decide PRN administration
+
+- change dose
+- change route
+- change frequency
+- discontinue medication
+- resume medication
+- clinically hold medication
+
+- administer medication
+- mark medication administered
+
+- perform official reconciliation completion
+- perform official medication-order review
+- perform official medication safety check
+
+- act as first high-risk checker
+- act as second high-risk checker
+- impersonate human checker
+
+- diagnose adverse drug reaction
+- autonomously resolve medication discrepancy
+
+- create care task
+- create care action
+- create incident
+- mutate another clinical domain
+
+
+AI MAY ALERT.
+AI MAY COMPARE.
+AI MAY SUMMARIZE.
+AI MAY DETECT POSSIBLE PATTERNS.
+AI MAY RECOMMEND HUMAN REVIEW.
+
+AI MAY NOT EXECUTE MEDICATION OR CLINICAL DECISIONS.
+
+HUMAN DECISION REQUIRED = YES
+
+AUTONOMOUS MEDICATION ACTION = FALSE
+AUTONOMOUS CLINICAL ACTION = FALSE

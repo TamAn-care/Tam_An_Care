@@ -1,0 +1,70 @@
+{
+  "version": "V7.9",
+  "series": "04",
+  "phase": "3A",
+  "status": "PASSED",
+  "decision": "LOW_IMPACT_LATENCY_BASELINE_ACCEPTED",
+  "recovery": "DB_IDENTITY_FROM_LIVE_API_DATABASE_URL",
+  "mode": "READ_ONLY",
+  "concurrency": 1,
+  "sample_count_per_endpoint": 10,
+  "http_error_count": 0,
+  "latency": {
+    "API_HEALTH": {
+      "expected_http": "200",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 3.317,
+      "mean_ms": 8.7576,
+      "median_ms": 5.5815,
+      "p95_ms": 22.379499999999993,
+      "max_ms": 24.301
+    },
+    "UI_ROOT": {
+      "expected_http": "200",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 2.4290000000000003,
+      "mean_ms": 3.6558,
+      "median_ms": 3.233,
+      "p95_ms": 6.133149999999995,
+      "max_ms": 8.029
+    },
+    "STAFF_FAIL_CLOSED": {
+      "expected_http": "401",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 5.2090000000000005,
+      "mean_ms": 6.1239,
+      "median_ms": 5.612,
+      "p95_ms": 8.057599999999999,
+      "max_ms": 8.234
+    },
+    "ACCESS_FAIL_CLOSED": {
+      "expected_http": "401",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 3.677,
+      "mean_ms": 5.3306000000000004,
+      "median_ms": 5.5075,
+      "p95_ms": 6.591999999999999,
+      "max_ms": 6.916
+    }
+  },
+  "db_container": "taman-care-v743-dev-postgres",
+  "db_host": "postgres",
+  "db_user": "taman_v743_dev",
+  "db_name": "taman_care_v743_dev",
+  "database_fingerprint_before": "f81a7108cdcc21bf456748073c8e0b42",
+  "database_fingerprint_after": "f81a7108cdcc21bf456748073c8e0b42",
+  "database_fingerprint_delta": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "mutation_requests": false,
+  "load_test": false,
+  "stress_test": false,
+  "roadmap_sha256": "a217cb8f18c2038ee65b67c2789f39d424d2bfa83fb3cac642cfd9b90a3920af",
+  "next": "PHASE_3B",
+  "accepted_at": "2026-08-22T02:34:50.034841+00:00"
+}

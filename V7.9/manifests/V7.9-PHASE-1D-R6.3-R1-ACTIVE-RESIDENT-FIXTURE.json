@@ -1,0 +1,24 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R6.3-R1",
+  "status": "PATCHED",
+  "prior_http": 404,
+  "prior_error": "Resident not found.",
+  "resident_fixture": {
+    "resident_id_source": "resident_id",
+    "resident_code": "V79-P1D-RES-001",
+    "display_name": "V7.9 Phase 1D Resident",
+    "date_of_birth": "1945-01-01",
+    "gender": "UNSPECIFIED",
+    "care_level": "ASSISTED",
+    "active_status": true,
+    "scope": "PHASE_1D_DISPOSABLE_DB_ONLY"
+  },
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "v77_source_write": false,
+  "runner_sha256": "ac5f31ba37cc39d96c7d3f201fce567be3971bca897819730cae7ad56048e374",
+  "next": "RESUME_PHASE_1D"
+}

@@ -1,0 +1,37 @@
+{
+  "version": "V7.9",
+  "phase": "5",
+  "phase_name": "BACKUP_RESTORE_DATA_INTEGRITY",
+  "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+  "depends_on": "V7.9_PHASE_4_FINAL_ACCEPTED",
+  "gates": [
+    {
+      "gate": "PHASE_5A",
+      "name": "DISPOSABLE_BACKUP_RESTORE",
+      "execution_authorized": false
+    },
+    {
+      "gate": "PHASE_5B",
+      "name": "RESTORED_DATA_INTEGRITY",
+      "execution_authorized": false
+    },
+    {
+      "gate": "PHASE_5_FINAL",
+      "name": "BACKUP_DATA_INTEGRITY_ACCEPTANCE",
+      "execution_authorized": false
+    }
+  ],
+  "gate_sequence": "PHASE_5A->PHASE_5B->PHASE_5_FINAL",
+  "manual_test_review": {
+    "manual_test_required": false,
+    "hits": [],
+    "scope": "EXACT_PHASE_5_AUTHORITY_ONLY"
+  },
+  "implementation_authorized": false,
+  "next_authorized_action": "PHASE_5A_PREFLIGHT_ONLY",
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "application_source_write": false,
+  "v77_source_write": false,
+  "created_at": "2026-08-22T05:59:32.503413+00:00"
+}

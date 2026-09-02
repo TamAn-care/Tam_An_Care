@@ -1,0 +1,71 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-C1-R1
+ LOT SOURCE / SCHEMA REPAIR PREFLIGHT
+ MODE: READ ONLY
+======================================================================
+
+LOCKED FAILURE:
+ -> POST /api/inventory/lots returned HTTP 500
+ -> PostgreSQL: column received_date does not exist
+ -> inventory remained 1|0|0|0
+
+THIS GATE:
+ -> confirms canonical DB schema
+ -> confirms migration intent
+ -> enumerates exact source defect references
+ -> determines minimum repair surface
+
+NO:
+ -> source mutation
+ -> schema mutation
+ -> build
+ -> runtime restart
+ -> API mutation
+
+======================================================================
+ 1. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: API SOURCE BASELINE PRESERVED
+PASS: FRONTEND SOURCE BASELINE PRESERVED
+
+======================================================================
+ 2. DATABASE CANONICAL LOT SCHEMA
+======================================================================
+1|inventory_lot_id|text|NO|NO_DEFAULT
+2|inventory_item_id|text|NO|NO_DEFAULT
+3|lot_code|text|YES|NO_DEFAULT
+4|received_at|timestamp with time zone|YES|NO_DEFAULT
+5|expiry_date|date|YES|NO_DEFAULT
+6|supplier_reference|text|YES|NO_DEFAULT
+7|note|text|YES|NO_DEFAULT
+8|status|text|NO|'ACTIVE'::text
+9|created_at|timestamp with time zone|NO|now()
+
+LOT_RECEIVED_AT_COLUMN_COUNT=1
+LOT_RECEIVED_DATE_COLUMN_COUNT=0
+LOT_UPDATED_AT_COLUMN_COUNT=0
+PASS: DATABASE LOT SCHEMA IS CANONICAL
+
+======================================================================
+ 3. MIGRATION AUTHORITY
+======================================================================
+MIGRATION REFERENCES TO inventory_lots / received_at / received_date:
+
+database/migrations/20260829_001_enterprise_foundation.sql:41:  updated_at timestamptz
+database/migrations/20260829_003_ops_operational_work_foundation.sql:29:    updated_at timestamptz
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:11:    updated_at timestamptz NOT NULL DEFAULT now(),
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:33:CREATE TABLE inventory_lots (
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:41:    received_at timestamptz NULL,
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:48:    CONSTRAINT inventory_lots_status_ck
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:67:        REFERENCES inventory_lots(inventory_lot_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:147:        REFERENCES inventory_lots(inventory_lot_id)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:211:CREATE INDEX idx_inventory_lots_item
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:212:    ON inventory_lots(inventory_item_id);
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:214:CREATE INDEX idx_inventory_lots_expiry
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:215:    ON inventory_lots(expiry_date)
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:218:CREATE INDEX idx_inventory_lots_status
+database/migrations/20260829_006_ops_inventory_resident_consumption.sql:219:    ON inventory_lots(status);
+
+EXACT LOT COLUMN MIGRATION SIGNALS:

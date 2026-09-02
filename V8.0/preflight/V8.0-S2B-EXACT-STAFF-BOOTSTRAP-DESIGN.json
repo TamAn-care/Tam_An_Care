@@ -1,0 +1,44 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2B",
+  "status": "PASSED",
+  "decision": "EXACT_STAFF_BOOTSTRAP_DESIGN_ACCEPTED",
+  "bootstrap": {
+    "model": "ONE_TIME_ADMIN_CLI",
+    "public_http_endpoint": false,
+    "allowed_when_staff_count_zero": true,
+    "allowed_when_active_supervisor_count_zero": true,
+    "role": "SUPERVISOR",
+    "status": "ACTIVE",
+    "historical_fixture_reuse": false,
+    "transaction_required": true,
+    "audit_required": true
+  },
+  "identity": {
+    "actor_id": "IMMUTABLE",
+    "staff_code": "IMMUTABLE",
+    "display_name": "CONTROLLED_MUTABLE",
+    "employment_reference": "CONTROLLED_MUTABLE",
+    "primary_operational_role": "CONTROLLED_MUTABLE",
+    "status": "CONTROLLED_MUTABLE",
+    "hard_delete": false
+  },
+  "authority": {
+    "post_bootstrap": "CANONICAL_ACTIVE_SUPERVISOR",
+    "last_active_supervisor_guard": true
+  },
+  "implementation": {
+    "source_patch_required": true,
+    "source_patch_authorized": false,
+    "production_seed": false,
+    "production_database_mutation": false
+  },
+  "acceptance": {
+    "environment": "DISPOSABLE_DATABASE_ONLY",
+    "production_mutation": false
+  },
+  "sequence": "S2A->S2B->S2C->S2D->S2E->S2_FINAL",
+  "next_authorized_action": "S2C_SOURCE_SCHEMA_PATCH_PREFLIGHT",
+  "created_at": "2026-08-22T08:32:45.929649+00:00"
+}

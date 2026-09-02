@@ -1,0 +1,59 @@
+======================================================================
+ TAMANCARE V8.0 FULL DEMO
+ DIRECT AUTH ENABLEMENT
+======================================================================
+
+SCOPE:
+ -> ISOLATED FULL DEMO DATABASE ONLY
+ -> CANONICAL V8.0 AUTH CONTRACT
+ -> NO FROZEN SOURCE MUTATION
+ -> NO PRODUCTION DATABASE
+ -> NO PASSWORD/TOKEN OUTPUT
+
+----- 1. RUNTIME -----
+API_HEALTH_HTTP=200
+PASS: API HEALTHY
+PASS: DEMO POSTGRES FOUND
+PASS: DEMO API FOUND
+PASS: DEMO DATABASE BINDING FOUND
+
+----- 2. FIND CANONICAL auth_credentials DDL -----
+CANONICAL_DDL_CANDIDATE_COUNT=1
+CANONICAL_DDL_CANDIDATES:
+ -> /Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/database/migrations/20260829_001_enterprise_foundation.sql
+SELECTED_AUTH_DDL_SOURCE=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/database/migrations/20260829_001_enterprise_foundation.sql
+SELECTED_AUTH_DDL_SHA256=0528a751ff7d80ee59487ccf6f09a292f79150c9e97ac3fd385fde4b575c0b5d
+PASS: CANONICAL auth_credentials SOURCE SELECTED
+
+----- 3. EXTRACT EXACT CANONICAL DDL -----
+EXACT_DDL_EXTRACTED=YES
+DDL_BYTES=697
+PASS: EXACT CANONICAL DDL EXTRACTED
+PASS: DDL COLUMN PRESENT: actor_id
+PASS: DDL COLUMN PRESENT: password_hash
+PASS: DDL COLUMN PRESENT: password_salt
+PASS: DDL COLUMN PRESENT: password_iterations
+PASS: DDL COLUMN PRESENT: password_digest
+
+----- 4. AUTH TABLE STATE -----
+AUTH_CREDENTIALS_BEFORE=NO
+AUTH_SESSIONS_BEFORE=NO
+
+----- 5. AUTH SCHEMA PROVISION -----
+PASS: CANONICAL auth_credentials DDL APPLIED
+PASS: CANONICAL auth_sessions MIGRATION APPLIED
+AUTH_CREDENTIALS_AFTER=YES
+AUTH_SESSIONS_AFTER=YES
+PASS: AUTH SCHEMA READY
+
+----- 6. CANONICAL SUPERVISOR -----
+STAFF_ACTOR_COUNT=0
+SUPERVISOR_BOOTSTRAP_EXIT=1
+FAIL: CANONICAL SUPERVISOR BOOTSTRAP FAILED
+
+======================================================================
+ STATUS=STOPPED_SAFELY
+ PASS_COUNT=14
+ FAIL_COUNT=1
+ RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_demo_auth_direct_enable_20260831_040508.txt
+======================================================================

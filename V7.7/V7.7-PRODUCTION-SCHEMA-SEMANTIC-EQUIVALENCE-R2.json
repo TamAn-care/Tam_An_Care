@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-08-21T09:00:07.263147+00:00",
+  "status": "PASSED",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "schema_hash": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+  "postgres_readiness_recovery_hash": "3b88f40b7bc49c0219c1a9495f66b94e8a4d964ef0553258d0f8ae096402709d",
+  "raw_difference_context": 14,
+  "table_set_equal": true,
+  "named_column_contract_equal": true,
+  "warning_reviews": {
+    "semantic_equal": true,
+    "physical_order_equal": false,
+    "classification": "ORDINAL_POSITION_ONLY_DIFFERENCE"
+  },
+  "constraints_equal": true,
+  "care_task_audit": {
+    "semantic_equal": true,
+    "classification": "ENUM_MEMBERSHIP_ORDER_ONLY",
+    "v76_raw": "CHECK (event_type = ANY (ARRAY['TASK_CREATED'::text, 'TASK_ASSIGNED'::text, 'TASK_REASSIGNED'::text, 'TASK_ACCEPTED'::text, 'TASK_STARTED'::text, 'TASK_COMPLETED'::text, 'TASK_MISSED'::text, 'TASK_SKIPPED'::text, 'TASK_CANCELLED'::text]))",
+    "v77_raw": "CHECK (event_type = ANY (ARRAY['TASK_CREATED'::text, 'TASK_ASSIGNED'::text, 'TASK_ACCEPTED'::text, 'TASK_REASSIGNED'::text, 'TASK_STARTED'::text, 'TASK_COMPLETED'::text, 'TASK_MISSED'::text, 'TASK_SKIPPED'::text, 'TASK_CANCELLED'::text]))",
+    "v76_normalized": "CHECK (event_type = ANY (ARRAY['TASK_ACCEPTED'::text,'TASK_ASSIGNED'::text,'TASK_CANCELLED'::text,'TASK_COMPLETED'::text,'TASK_CREATED'::text,'TASK_MISSED'::text,'TASK_REASSIGNED'::text,'TASK_SKIPPED'::text,'TASK_STARTED'::text]))",
+    "v77_normalized": "CHECK (event_type = ANY (ARRAY['TASK_ACCEPTED'::text,'TASK_ASSIGNED'::text,'TASK_CANCELLED'::text,'TASK_COMPLETED'::text,'TASK_CREATED'::text,'TASK_MISSED'::text,'TASK_REASSIGNED'::text,'TASK_SKIPPED'::text,'TASK_STARTED'::text]))"
+  },
+  "indexes_equal": true,
+  "semantic_blockers": [],
+  "decision": "SEMANTICALLY_EQUIVALENT_NO_MIGRATION_REQUIRED",
+  "migration_required": false,
+  "environment_blocker": "CLEARED",
+  "production_change": false,
+  "production_database_write": false,
+  "promotion_executed": false
+}

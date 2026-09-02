@@ -1,0 +1,75 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-4 FINAL HTTP CLOSEOUT
+ KITCHEN OPERATIONS
+ SINGLE FINAL FAST-GATE
+======================================================================
+
+----- 1. CLEAN AUTHORITY -----
+TABLE_BEFORE=0
+REGISTRY_BEFORE=0
+DATABASE_BEFORE=1|1|0|0|0|0
+CANONICAL_SUPERVISOR=hqa-supervisor-001
+FIXTURE_CATEGORY=NUTRITION
+FIXTURE_CODE=OPS4FINAL
+PASS: CLEAN AUTHORITY
+
+----- 2. CREATE M4 -----
+M4_SHA256=1fd40e92068b7dd828d5697aa0a144ac0469d95984e478dd881a9be75ebd1736
+PASS: M4 CREATED
+
+----- 3. CREATE KITCHEN SOURCE -----
+PASS: KITCHEN SOURCE CREATED
+
+----- 4. BUILD -----
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: API BUILD
+
+----- 5. APPLY M4 -----
+BEGIN
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE INDEX
+COMMIT
+PASS: M4 APPLIED + REGISTERED
+
+----- 6. DB FUNCTIONAL -----
+BEGIN
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+DO
+DO
+DO
+DO
+NOTICE:  OPS4_DB_FUNCTIONAL=1|1|1
+ROLLBACK
+PASS: DB FUNCTIONAL
+
+----- 7. HTTP FIXTURE -----
+PASS: EPHEMERAL HTTP FIXTURE
+
+----- 8. AUTH TOKEN -----
+JWT_SECRET_CONFIG_KEY=DISCOVERED
+JWT_SECRET_VALUE=REDACTED
+FAIL: BEARER TOKEN GENERATION FAILED
+
+----- CONTROLLED FAILURE CLEANUP -----
+CONTROLLED_CLEANUP_COMPLETE=YES
+
+======================================================================
+ STATUS: OPS-4 FINAL CLOSEOUT FAILED
+======================================================================
+REASON=BEARER TOKEN GENERATION FAILED
+OPS_4=NOT_CLOSED
+PASS_COUNT=7
+FAIL_COUNT=1
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_final_http_closeout_20260830_220757.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT START OPS-5
+======================================================================

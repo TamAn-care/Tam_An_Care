@@ -1,0 +1,12 @@
+{
+  "version": "V7.8",
+  "phase": "5A",
+  "status": "PASSED",
+  "backup": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/backups/TamAnCare-V7.8-Phase1-20260821T103823Z.dump",
+  "backup_sha256": "35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9",
+  "restored_table_count": 118,
+  "production_restore": false,
+  "production_database_delta": false,
+  "restore_container": "taman-care-v78-p5-restore-20260821_140848",
+  "next": "PHASE_5B"
+}

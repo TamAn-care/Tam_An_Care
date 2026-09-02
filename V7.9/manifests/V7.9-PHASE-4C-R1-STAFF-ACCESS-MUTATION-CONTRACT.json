@@ -1,0 +1,175 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4C_R1",
+  "phase_name": "EXACT_STAFF_ACCESS_MUTATION_CONTRACT_RECOVERY",
+  "status": "PASSED",
+  "decision": "STAFF_ACCESS_MUTATION_CONTRACT_DISCOVERY_COMPLETE",
+  "frontend_contracts": [
+    {
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/src/api/resident-access-administration.ts",
+      "line": 47,
+      "endpoint": "/api/operations/access-assignments",
+      "helper": "UNRESOLVED",
+      "method": "UNRESOLVED"
+    }
+  ],
+  "backend_contracts": [
+    {
+      "method": "GET",
+      "path": "/api/operations/access-assignments",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.controller.ts"
+    },
+    {
+      "method": "POST",
+      "path": "/api/operations/access-assignments",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/staff-actors",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/staff-actors/staff-actor.controller.ts"
+    },
+    {
+      "method": "GET",
+      "path": "/api/operations/staff-actors/:actorId",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/staff-actors/staff-actor.controller.ts"
+    }
+  ],
+  "service_mutation_contracts": [
+    {
+      "method": "normalizeCreate",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 174,
+      "signature_context": "  private normalizeCreate(\n    input: CreateAssignmentDto,\n  ) {\n    const actorId =\n      String(input.actorId ?? '').trim();\n\n    const actorRole =\n      String(input.actorRole ?? '')\n        .trim()\n        .toUpperCase();\n\n    const accessScope =\n      String(input.accessScope ?? '')\n        .trim()\n        .toUpperCase();\n\n    if (!actorId) {\n      throw new BadRequestException("
+    },
+    {
+      "method": "normalizeRevoke",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 256,
+      "signature_context": "  private normalizeRevoke(\n    input: RevokeAssignmentDto,\n  ) {\n    const revocationReason =\n      String(\n        input.revocationReason ?? '',\n      ).trim();\n\n    if (!revocationReason) {\n      throw new BadRequestException(\n        'revocationReason is required.',\n      );\n    }\n\n    return {\n      revocationReason,\n    };\n  }"
+    },
+    {
+      "method": "mapAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 315,
+      "signature_context": "  private mapAssignment(\n    row: AssignmentRow,\n  ) {\n    return {\n      residentAccessAssignmentId:\n        row.resident_access_assignment_id,\n\n      residentId:\n        row.resident_id,\n\n      actorId:\n        row.actor_id,\n\n      actorRole:\n        row.actor_role,\n\n      accessScope:\n        row.access_scope,"
+    },
+    {
+      "method": "assignmentProjection",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 375,
+      "signature_context": "  private assignmentProjection() {\n    return `\n      resident_access_assignment_id,\n      resident_id,\n      actor_id,\n      actor_role,\n      access_scope,\n      status,\n      effective_from,\n      effective_to,\n      assigned_by,\n      assigned_by_role,\n      assigned_at,\n      revoked_by,\n      revoked_by_role,\n      revoked_at,\n      revocation_reason,\n      created_at,"
+    },
+    {
+      "method": "listAssignments",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 397,
+      "signature_context": "  async listAssignments(\n    actor: HumanActor,\n    filters: ListFilters,\n  ) {\n    const authority =\n      await this.authorizeSupervisor(actor);\n\n    const limit =\n      this.normalizeLimit(\n        filters.limit,\n      );\n\n    const status =\n      String(\n        filters.status ?? 'ALL',\n      )\n        .trim()\n        .toUpperCase();"
+    },
+    {
+      "method": "assignmentProjection",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 456,
+      "signature_context": "          ${this.assignmentProjection()}\n        FROM resident_access_assignments\n        WHERE\n          ($1 = 'ALL' OR status = $1)\n          AND (\n            $2 = ''\n            OR actor_role = $2\n          )\n          AND (\n            $3 = ''\n            OR actor_id = $3\n          )\n        ORDER BY\n          assigned_at DESC,\n          resident_access_assignment_id DESC\n        LIMIT $4\n        `,\n        ["
+    },
+    {
+      "method": "mapAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 487,
+      "signature_context": "            this.mapAssignment(row),\n        ),\n\n      meta: {\n        limit,\n        returned:\n          result.rows.length,\n      },\n\n      authority: {\n        actorId:\n          authority.actorId,\n\n        actorRole:\n          authority.actorRole,\n\n        serverAuthorized:\n          true,"
+    },
+    {
+      "method": "listResidentAssignments",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 512,
+      "signature_context": "  async listResidentAssignments(\n    residentId: string,\n    actor: HumanActor,\n    filters: ListFilters,\n  ) {\n    const authority =\n      await this.authorizeSupervisor(actor);\n\n    const normalizedResidentId =\n      String(\n        residentId ?? '',\n      ).trim();\n\n    if (!normalizedResidentId) {\n      throw new BadRequestException(\n        'residentId is required.',\n      );\n    }"
+    },
+    {
+      "method": "assignmentProjection",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 578,
+      "signature_context": "          ${this.assignmentProjection()}\n        FROM resident_access_assignments\n        WHERE\n          resident_id = $1\n          AND (\n            $2 = 'ALL'\n            OR status = $2\n          )\n        ORDER BY\n          assigned_at DESC,\n          resident_access_assignment_id DESC\n        LIMIT $3\n        `,\n        [\n          normalizedResidentId,\n          status,\n          limit,\n        ],"
+    },
+    {
+      "method": "mapAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 607,
+      "signature_context": "            this.mapAssignment(row),\n        ),\n\n      meta: {\n        limit,\n        returned:\n          result.rows.length,\n      },\n\n      authority: {\n        actorId:\n          authority.actorId,\n\n        actorRole:\n          authority.actorRole,\n\n        serverAuthorized:\n          true,"
+    },
+    {
+      "method": "createAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 632,
+      "signature_context": "  async createAssignment(\n    residentId: string,\n    actor: HumanActor,\n    input: CreateAssignmentDto,\n  ) {\n    const authority =\n      await this.authorizeSupervisor(actor);\n\n    const normalizedResidentId =\n      String(\n        residentId ?? '',\n      ).trim();\n\n    if (!normalizedResidentId) {\n      throw new BadRequestException(\n        'residentId is required.',\n      );\n    }"
+    },
+    {
+      "method": "normalizeCreate",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 652,
+      "signature_context": "      this.normalizeCreate(input);\n\n    const canonicalTarget =\n      await this.staffActors\n        .resolveActiveActorWithRole(\n          normalized.actorId,\n          normalized.actorRole,\n        );\n\n    if (!canonicalTarget) {\n      throw new NotFoundException(\n        'Staff actor not found or inactive.',\n      );\n    }\n\n\n    const assignmentId =\n      `raa-${randomUUID()}`;"
+    },
+    {
+      "method": "resident_access_assignments",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 678,
+      "signature_context": "          INSERT INTO resident_access_assignments (\n            resident_access_assignment_id,\n            resident_id,\n            actor_id,\n            actor_role,\n            access_scope,\n            status,\n            effective_from,\n            effective_to,\n            assigned_by,\n            assigned_by_role,\n            assigned_at\n          )\n          SELECT\n            $1,\n            r.resident_id,\n            $3,\n            $4,"
+    },
+    {
+      "method": "assignmentProjection",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 708,
+      "signature_context": "            ${this.assignmentProjection()}\n          `,\n          [\n            assignmentId,\n            normalizedResidentId,\n            normalized.actorId,\n            normalized.actorRole,\n            normalized.accessScope,\n            normalized.effectiveFrom,\n            normalized.effectiveTo,\n            authority.actorId,\n            now,\n          ],\n        );\n\n      if (!created.rowCount) {\n        throw new NotFoundException(\n          'Resident not found.',"
+    },
+    {
+      "method": "mapAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 733,
+      "signature_context": "          this.mapAssignment(\n            created.rows[0],\n          ),\n\n        authority: {\n          serverAuthorized:\n            true,\n\n          mutationAuthority:\n            'SUPERVISOR_ONLY',\n        },\n      };\n    } catch (error: any) {\n      if (error?.code === '23505') {\n        throw new ConflictException(\n          'Active resident access assignment already exists.',\n        );\n      }"
+    },
+    {
+      "method": "revokeAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 756,
+      "signature_context": "  async revokeAssignment(\n    assignmentId: string,\n    actor: HumanActor,\n    input: RevokeAssignmentDto,\n  ) {\n    const authority =\n      await this.authorizeSupervisor(actor);\n\n    const normalizedAssignmentId =\n      String(\n        assignmentId ?? '',\n      ).trim();\n\n    if (!normalizedAssignmentId) {\n      throw new BadRequestException(\n        'assignmentId is required.',\n      );\n    }"
+    },
+    {
+      "method": "normalizeRevoke",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 776,
+      "signature_context": "      this.normalizeRevoke(input);\n\n    const now =\n      new Date();\n\n    const updated =\n      await this.database.query<AssignmentRow>(\n        `\n        UPDATE resident_access_assignments\n        SET\n          status = 'REVOKED',\n          revoked_by = $2,\n          revoked_by_role = 'SUPERVISOR',\n          revoked_at = $3,\n          revocation_reason = $4,\n          updated_at = $3\n        WHERE\n          resident_access_assignment_id = $1"
+    },
+    {
+      "method": "assignmentProjection",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 796,
+      "signature_context": "          ${this.assignmentProjection()}\n        `,\n        [\n          normalizedAssignmentId,\n          authority.actorId,\n          now,\n          normalized.revocationReason,\n        ],\n      );\n\n    if (updated.rowCount) {\n      return {\n        status: 'OK',\n\n        data:\n          this.mapAssignment(\n            updated.rows[0],\n          ),"
+    },
+    {
+      "method": "mapAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 811,
+      "signature_context": "          this.mapAssignment(\n            updated.rows[0],\n          ),\n\n        idempotentReplay:\n          false,\n\n        authority: {\n          serverAuthorized:\n            true,\n\n          mutationAuthority:\n            'SUPERVISOR_ONLY',\n        },\n      };\n    }\n\n    const existing ="
+    },
+    {
+      "method": "assignmentProjection",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 832,
+      "signature_context": "          ${this.assignmentProjection()}\n        FROM resident_access_assignments\n        WHERE\n          resident_access_assignment_id = $1\n        LIMIT 1\n        `,\n        [\n          normalizedAssignmentId,\n        ],\n      );\n\n    if (!existing.rowCount) {\n      throw new NotFoundException(\n        'Access assignment not found.',\n      );\n    }\n\n    const row ="
+    },
+    {
+      "method": "mapAssignment",
+      "file": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+      "line": 857,
+      "signature_context": "          this.mapAssignment(row),\n\n        idempotentReplay:\n          true,\n\n        authority: {\n          serverAuthorized:\n            true,\n\n          mutationAuthority:\n            'SUPERVISOR_ONLY',\n        },\n      };\n    }\n\n    throw new ConflictException(\n      'Access assignment is not revocable.',\n    );"
+    }
+  ],
+  "http_mutation_requests": 0,
+  "database_mutation": false,
+  "application_source_write": false,
+  "production_runtime_restart": false,
+  "phase4b_manifest_sha256": "921590d126dfa5fad5b1475a5f7dff8ea1a96d11c18f40b3b8eccf2fd0b525c0",
+  "roadmap_sha256": "e0ea0fb11c7d6cd3bde00d3769bde039a18ce9b1d1e623e547d7721041ad4a0e",
+  "next_gate": "PHASE_4C",
+  "accepted_at": "2026-08-22T05:38:28.911415+00:00"
+}

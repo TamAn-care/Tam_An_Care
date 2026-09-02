@@ -1,0 +1,156 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-H-R2
+ AUTH FIXTURE RENEWAL PREFLIGHT
+ MODE: READ-ONLY / SECRET-SAFE
+======================================================================
+
+PURPOSE:
+ -> confirm R1 JWT expiry classification
+ -> inspect existing AUTH FIXTURE metadata
+ -> locate reusable credential material WITHOUT printing it
+ -> verify real application login contract
+ -> authorize or block a narrow token renewal
+
+NO:
+ -> login
+ -> credential mutation
+ -> session mutation
+ -> JWT construction
+ -> inventory mutation
+ -> source/schema/runtime mutation
+
+======================================================================
+ 1. P5-H CONTINUATION AUTHORITY
+======================================================================
+P5_G_STATUS=PASS
+P5_H_STATUS=NOT_WRITTEN
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_LOT_ID=inventory-lot-1fb06061-5172-4e7a-95c6-40c9fb0292cb
+P5_RECEIPT_TX_ID=inventory-transaction-301930d8-0391-4232-98ea-d4e95e0faecf
+P5_OUTBOUND_TX_ID=inventory-transaction-26cc1cdc-31a3-4ea8-8625-de94d9928917
+PASS: P5-H REMAINS OPEN
+
+======================================================================
+ 2. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: ACCEPTED SOURCE BASELINES
+
+======================================================================
+ 3. RUNTIME
+======================================================================
+CONTAINER_STATE=running
+CONTAINER_IMAGE=tamancare_ops2b_balancefix:20260830_070355
+HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME HEALTHY
+
+======================================================================
+ 4. AUTH FIXTURE DIRECTORY — FILENAMES/METADATA ONLY
+======================================================================
+AUTH_FIXTURE_DIRECTORY_EXISTS=YES
+AUTH_FIXTURE_DIRECTORY=/tmp/tamancare_ops2b_auth_fixture
+
+FIXTURE_FILE_METADATA_BEGIN
+README|SIZE=645|MODE=-rw-------
+token|SIZE=251|MODE=-rw-------
+FIXTURE_FILE_METADATA_END
+SECRET_FILE_CONTENT_PRINTED=NO
+
+======================================================================
+ 5. TOKEN FILE CLASSIFICATION
+======================================================================
+TOKEN_FILE_EXISTS=YES
+TOKEN_FILE_SIZE=251
+TOKEN_VALUE_PRINTED=NO
+JWT_FORMAT_VALID=YES
+JWT_SECONDS_REMAINING=-5198
+JWT_EXPIRED=YES
+JWT_SUB=hqa-supervisor-001
+JWT_ROLE=SUPERVISOR
+
+======================================================================
+ 6. DISCOVER REUSABLE CREDENTIAL-MATERIAL CANDIDATES
+======================================================================
+CREDENTIAL_MATERIAL_CANDIDATE_COUNT=0
+CREDENTIAL_VALUE_PRINTED=NO
+
+======================================================================
+ 7. EXACT LOGIN CONTRACT — STATIC SOURCE
+======================================================================
+LOGIN_ROUTE_COUNT=1
+LOGIN_ACTOR_ID_SIGNAL_COUNT=5
+LOGIN_PASSWORD_SIGNAL_COUNT=2
+PASS: REAL APPLICATION LOGIN CONTRACT PRESENT
+
+======================================================================
+ 8. LOGIN MUST BE PUBLIC AUTH ENTRYPOINT
+======================================================================
+LOGIN_EXEMPTION_SIGNAL_COUNT=1
+PASS: LOGIN ENTRYPOINT AVAILABLE WITHOUT EXISTING BEARER TOKEN
+
+======================================================================
+ 9. DATABASE AUTH STATE
+======================================================================
+AUTH_CREDENTIAL_TOTAL_SESSION_ACTIVE=1|1|0
+ACTOR_STATE=hqa-supervisor-001|SUPERVISOR|ACTIVE
+PASS: EXACT R1 EXPIRED-SESSION STATE PRESERVED
+
+======================================================================
+ 10. INVENTORY PRESERVATION
+======================================================================
+INVENTORY_COUNTS=1|1|2|0
+PASS: INVENTORY FIXTURE UNCHANGED
+
+======================================================================
+ 11. FINAL SOURCE PRESERVATION
+======================================================================
+API_SOURCE_HASH_AFTER=975b2b0a7325e2f62184360cf17527d215126517623219fbacab8001d1aec42d
+FRONTEND_SOURCE_HASH_AFTER=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE UNCHANGED
+
+======================================================================
+ 12. RENEWAL READINESS CLASSIFICATION
+======================================================================
+R1_ROOT_CAUSE=JWT_EXPIRED
+APPLICATION_INVENTORY_DEFECT=NO
+EXISTING_CREDENTIAL_ROW=YES
+EXISTING_SESSION_ACTIVE=NO
+CANONICAL_ACTOR_ACTIVE=YES
+REAL_LOGIN_ROUTE_PRESENT=YES
+REUSABLE_CREDENTIAL_MATERIAL=NOT_FOUND_BY_FILENAME
+AUTH_RENEWAL_READY=NO
+NEXT=LOCATE ORIGINAL R8-R4 FIXTURE MATERIAL WITHOUT MUTATION
+
+P5_H_STATUS=OPEN
+AUTH_MUTATION_THIS_GATE=NO
+INVENTORY_MUTATION_THIS_GATE=NO
+SOURCE_PATCH_THIS_GATE=NO
+SCHEMA_CHANGE_THIS_GATE=NO
+RUNTIME_RESTART_THIS_GATE=NO
+
+======================================================================
+ STATUS: OPS-2-B-F1-P5-H-R2 PREFLIGHT COMPLETE / STOP
+======================================================================
+
+AUTH_MUTATION=NO
+INVENTORY_MUTATION=NO
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+RUNTIME_RESTART=NO
+
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_h_r2_auth_renewal_preflight_20260830_091301.txt
+
+IMPORTANT:
+ -> DO NOT RERUN P5-H
+ -> DO NOT LOGIN MANUALLY
+ -> DO NOT CREATE OR REPLACE CREDENTIAL MANUALLY
+ -> DO NOT CREATE SESSION MANUALLY
+ -> DO NOT GENERATE JWT MANUALLY
+ -> DO NOT DELETE OLD SESSION
+ -> DO NOT CLEAN INVENTORY
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT START P5-I
+ -> SEND THIS ENTIRE OUTPUT BACK

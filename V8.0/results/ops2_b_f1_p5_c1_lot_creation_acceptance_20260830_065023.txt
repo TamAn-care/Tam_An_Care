@@ -1,0 +1,130 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P5-C1
+ LOT CREATION ACCEPTANCE
+======================================================================
+
+AUTHORIZED:
+ -> exactly ONE authenticated lot creation attempt
+
+NOT AUTHORIZED:
+ -> lot PATCH
+ -> inventory transaction
+ -> resident consumption
+ -> source patch
+ -> schema change
+ -> runtime restart
+ -> auth mutation
+
+======================================================================
+ 1. LOAD P5 CHECKPOINT
+======================================================================
+P5_ITEM_ID=inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4
+P5_TEST_CODE=OPS2B_F1_20260830_064735
+P5_BASE_UNIT=UNIT
+P5_ITEM_CATEGORY=HOUSEKEEPING
+P5_LOT_TRACKING_REQUIRED=true
+PASS: P5 CHECKPOINT READY
+
+======================================================================
+ 2. SOURCE BASELINE
+======================================================================
+API_SOURCE_HASH=dc16c8d09a359b580f78c92a58565f3e366f8c4cfd82b6436b5d22b866efd532
+FRONTEND_SOURCE_HASH=ae0beb6a7fb8bcc33d4551ee8745aafa6687010cc72e4e96a17441ec53203524
+PASS: SOURCE BASELINE PRESERVED
+
+======================================================================
+ 3. RUNTIME + AUTH
+======================================================================
+CONTAINER_STATE=running
+HEALTH_HTTP=200
+TOKEN_FILE_PRESENT=YES
+TOKEN_FILE_SIZE=251
+TOKEN_VALUE_PRINTED=NO
+AUTHENTICATED_ITEM_PROBE=200
+PASS: CURRENT AUTHENTICATED RUNTIME READY
+
+======================================================================
+ 4. DATABASE + LOT SCHEMA SNAPSHOT
+======================================================================
+INVENTORY_COUNTS_BEFORE=1|0|0|0
+
+LOT_COLUMNS:
+1|inventory_lot_id|text|NO|NO_DEFAULT
+2|inventory_item_id|text|NO|NO_DEFAULT
+3|lot_code|text|YES|NO_DEFAULT
+4|received_at|timestamp with time zone|YES|NO_DEFAULT
+5|expiry_date|date|YES|NO_DEFAULT
+6|supplier_reference|text|YES|NO_DEFAULT
+7|note|text|YES|NO_DEFAULT
+8|status|text|NO|'ACTIVE'::text
+9|created_at|timestamp with time zone|NO|now()
+
+SOURCE_COLUMN_SIGNALS:
+140:          received_date,
+233:            received_date = $4,
+236:            updated_at = now()
+247:              ? previous.received_date
+
+PASS: PRE-MUTATION EVIDENCE CAPTURED
+
+======================================================================
+ 5. LOT COLLISION CHECK
+======================================================================
+P5_LOT_CODE=LOT_20260830_065023
+PREEXISTING_LOT_COUNT=0
+PASS: UNIQUE LOT TEST IDENTIFIER
+
+======================================================================
+ 6. CREATE LOT THROUGH AUTHENTICATED REST API
+======================================================================
+CREATE_LOT_HTTP=500
+CREATE_LOT_RESPONSE:
+{"statusCode":500,"message":"Internal server error"}
+
+======================================================================
+ 7. FAILED CREATE DIAGNOSTIC — READ ONLY
+======================================================================
+POST_FAILURE_INVENTORY_COUNTS=1|0|0|0
+
+ISOLATED_RUNTIME_RECENT_LOGS:
+{"type":"http_request","timestamp":"2026-08-29T23:48:57.777Z","requestId":"5bb36a7a-1e35-4ea0-9d44-a38185c90a2e","method":"GET","path":"/api/health","statusCode":200,"durationMs":6.349,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-29T23:48:57.828Z","requestId":"24c0bb09-c059-477e-80ce-4413d94c2ec3","method":"GET","path":"/api/inventory/items/inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","statusCode":200,"durationMs":28.308,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-29T23:48:58.147Z","requestId":"0449ac91-16b0-43e8-973b-fe1742f3cf8c","method":"PATCH","path":"/api/inventory/items/inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","statusCode":200,"durationMs":7.037,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-29T23:48:58.273Z","requestId":"5d415e78-090d-4a3f-9870-b442c396f90b","method":"PATCH","path":"/api/inventory/items/inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","statusCode":400,"durationMs":2.654,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-29T23:48:58.402Z","requestId":"9cfe5d22-88f1-4804-93e2-9ca1e056ce30","method":"GET","path":"/api/inventory/items/inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","statusCode":200,"durationMs":2.116,"actorId":"hqa-supervisor-001"}
+{"type":"http_request","timestamp":"2026-08-29T23:48:58.784Z","requestId":"bd06ba6c-85d3-49cd-96d1-ee47a0ee332e","method":"GET","path":"/api/health","statusCode":200,"durationMs":0.43,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-29T23:50:23.299Z","requestId":"2ed6c55b-3add-42e0-9d50-74fb809263e3","method":"GET","path":"/api/health","statusCode":200,"durationMs":4.441,"actorId":null}
+{"type":"http_request","timestamp":"2026-08-29T23:50:23.348Z","requestId":"aebb1c05-d744-4a02-b9be-8462a53fd7a5","method":"GET","path":"/api/inventory/items/inventory-item-0abd25e1-b980-4310-9955-f2f7d325e8a4","statusCode":200,"durationMs":30.257,"actorId":"hqa-supervisor-001"}
+[31m[Nest] 1  - [39m08/29/2026, 11:50:23 PM [31m  ERROR[39m [38;5;3m[ExceptionsHandler] [39m[31mcolumn "received_date" of relation "inventory_lots" does not exist[39m
+error: column "received_date" of relation "inventory_lots" does not exist
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async InventoryLotService.create (/app/dist/inventory/inventory-lot.service.js:98:28)
+    at async /app/node_modules/@nestjs/core/router/router-execution-context.js:46:28
+    at async /app/node_modules/@nestjs/core/router/router-proxy.js:9:17
+{"type":"http_request","timestamp":"2026-08-29T23:50:23.743Z","requestId":"fe93f279-5403-4f87-9653-f64b179cc769","method":"POST","path":"/api/inventory/lots","statusCode":500,"durationMs":8.748,"actorId":"hqa-supervisor-001"}
+
+CLASSIFICATION:
+ -> EXPECTED CREATE STATUS = 201
+ -> ACTUAL CREATE STATUS = 500
+ -> APPLICATION/SOURCE-SCHEMA DEFECT POSSIBLE
+ -> NO SOURCE REPAIR AUTHORIZED IN THIS GATE
+
+======================================================================
+ STATUS: OPS-2-B-F1-P5-C1 CONTROLLED STOP
+======================================================================
+P5_ITEM_PRESERVED=YES
+AUTH_FIXTURE_PRESERVED=YES
+SOURCE_PATCH=NO
+SCHEMA_CHANGE=NO
+NEXT=STOP_AND_RETURN_OUTPUT
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p5_c1_lot_creation_acceptance_20260830_065023.txt
+
+IMPORTANT:
+ -> DO NOT RERUN P5-C1
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT DELETE THE P5 ITEM
+ -> DO NOT DELETE AUTH FIXTURE
+ -> DO NOT START P5-C2
+ -> DO NOT START CODEX AUTOPILOT

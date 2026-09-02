@@ -1,0 +1,62 @@
+TAM AN CARE V7.4.3
+STEP 7Q AMENDMENT / CORRECTION CONTRACT
+
+Verified records are never overwritten.
+
+Applies to:
+
+activity participation
+functional assessment
+other verified factual rehabilitation documentation
+
+
+CORRECTION FLOW
+
+Original VERIFIED record
+-> human amendment request
+-> row lock original
+-> validate authorization
+-> mark original AMENDED
+-> create new attributable replacement record
+-> link new record to original
+-> audit same transaction
+
+
+REQUIRED
+
+amendment_reason
+actor_id
+actor_role
+created_at
+original record reference
+
+
+PROHIBITED
+
+in-place overwrite of verified clinical /
+functional history
+
+deletion of original verified record
+
+AI amendment
+
+SYSTEM amendment
+
+silent correction
+
+history replacement without attribution
+
+
+CONCURRENCY
+
+Two amendments against the same VERIFIED source:
+
+the original row must be locked.
+
+Only a transition allowed by the active
+source state may commit.
+
+No lost history.
+
+Loser mutation = zero.
+Loser audit = zero.

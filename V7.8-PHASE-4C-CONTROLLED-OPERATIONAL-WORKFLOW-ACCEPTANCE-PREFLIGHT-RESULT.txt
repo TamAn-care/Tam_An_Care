@@ -1,0 +1,60 @@
+TAM AN CARE V7.8
+PHASE 4C — CONTROLLED OPERATIONAL WORKFLOW ACCEPTANCE
+PREFLIGHT
+
+STATUS=READY
+
+PHASE4B_RESULT_HASH=
+6adfebf5ca8819b669997c93f834a88e9e3675b793ea51724fb97422526ec91a
+
+PHASE4B_MANIFEST_HASH=
+64410e47c68a66fe3b36fe2d67b20908f37b0c82bb66e243c8361a09fb6d2021
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+DATABASE_TABLE_COUNT=
+118
+
+DATABASE_FINGERPRINT=
+7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639
+
+SELECTED_WORKFLOW=
+STAFF_ACTOR_AND_ACCESS_ASSIGNMENT
+
+SELECTED_UI_ROUTE=
+/staff-access
+
+PURPOSE:
+- prove the real user-facing staff/access workflow
+- prove actor identity selection
+- prove role visibility
+- prove resident access-assignment workflow
+- verify frontend/backend contract alignment
+- verify immediate UI visibility after controlled action
+- verify audit/persistence
+- restore test state after acceptance
+
+MANDATORY SAFETY MODEL:
+- use deterministic disposable test identity
+- use deterministic disposable resident or accepted test fixture
+- capture database fingerprint before
+- mutate only explicitly selected test records
+- verify audit
+- remove/revert test records
+- prove database returned to baseline
+- preserve frozen V7.7 source
+- preserve production runtime
+- preserve V7.6 rollback assets
+
+DO NOT USE REAL PERSON RECORDS.
+
+DO NOT USE NGUYEN VAN B OR ANY EXISTING PRODUCTION USER
+UNTIL THE CONTROLLED TEST CONTRACT IS PROVEN.
+
+CARE ACTION / CARE TASK FIELD CONTRACTS REMAIN DISTINCT:
+- Care Action = assignedTo + assignedRole + priority
+- Care Task = assigneeId + assigneeRole
+
+FIRST SUBGATE=
+V7.8_PHASE_4C_R1_EXACT_STAFF_ACCESS_MUTATION_CONTRACT_RECOVERY

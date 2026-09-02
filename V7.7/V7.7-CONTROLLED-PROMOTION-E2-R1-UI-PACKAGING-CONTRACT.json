@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-08-21T09:52:56.901752+00:00",
+  "status": "PASSED",
+  "root_cause": "SPLIT_UI_SOURCE_AND_RUNTIME_PACKAGING",
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "frontend": {
+    "source": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend",
+    "package_json": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend/package.json",
+    "build_script": "tsc -b && vite build",
+    "build_system": "VITE",
+    "selected_output": "dist",
+    "output_file_count": 3
+  },
+  "runtime": {
+    "source": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/web",
+    "dockerfile": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/web/Dockerfile",
+    "nginx_files": [
+      "nginx/default.conf"
+    ],
+    "proxy_hosts": [
+      "host.docker.internal"
+    ],
+    "docker_copy_contract": [
+      "COPY index.html /usr/share/nginx/html/index.html",
+      "COPY nginx/default.conf /etc/nginx/conf.d/default.conf"
+    ]
+  },
+  "combined_packaging": {
+    "tracked_source_change": false,
+    "temporary_context_only": true,
+    "build_passed": true,
+    "ui_image_id": "sha256:832b50660cdb340a5395b23d9d02c881c124efcec1a804dd54cbf03e931a33c6",
+    "exposed_ports": [
+      "80/tcp"
+    ]
+  },
+  "production_change": false,
+  "production_database_write": false,
+  "traffic_cutover": false
+}

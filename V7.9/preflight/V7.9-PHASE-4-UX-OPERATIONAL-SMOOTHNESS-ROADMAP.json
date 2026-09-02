@@ -1,0 +1,70 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4",
+  "phase_name": "END_TO_END_UX_OPERATIONAL_SMOOTHNESS",
+  "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+  "authority_rule": "VERSION_CONTINUITY_NO_INVENTION",
+  "cross_version_continuity": true,
+  "gate_sequence": [
+    "PHASE_4A",
+    "PHASE_4B",
+    "PHASE_4C_R1",
+    "PHASE_4C",
+    "PHASE_4_FINAL"
+  ],
+  "gates": [
+    {
+      "id": "PHASE_4A",
+      "name": "UX_ROUTE_SCREEN_BASELINE",
+      "mode": "DISCOVERY_BASELINE",
+      "production_mutation": false
+    },
+    {
+      "id": "PHASE_4B",
+      "name": "READ_ONLY_OPERATIONAL_WORKFLOW_VISIBILITY",
+      "mode": "READ_ONLY",
+      "production_mutation": false
+    },
+    {
+      "id": "PHASE_4C_R1",
+      "name": "EXACT_STAFF_ACCESS_MUTATION_CONTRACT_RECOVERY",
+      "mode": "CONTRACT_RECOVERY",
+      "production_mutation": false
+    },
+    {
+      "id": "PHASE_4C",
+      "name": "CONTROLLED_ISOLATED_OPERATIONAL_WORKFLOW_ACCEPTANCE",
+      "mode": "DISPOSABLE_ISOLATED",
+      "production_mutation": false
+    },
+    {
+      "id": "PHASE_4_FINAL",
+      "name": "END_TO_END_UX_OPERATIONAL_SMOOTHNESS_ACCEPTANCE",
+      "mode": "CONSOLIDATED_ACCEPTANCE",
+      "production_mutation": false
+    }
+  ],
+  "master_rules": {
+    "serial": true,
+    "fail_fast": true,
+    "resumable": true,
+    "sha256_acceptance": true,
+    "rerun_accepted_gate": false,
+    "invent_gate": false,
+    "production_database_mutation": false,
+    "production_runtime_restart": false,
+    "v77_source_write": false,
+    "v76_rollback_delete": false,
+    "isolated_mutation_only_when_source_proven": true
+  },
+  "authority_sha256": {
+    "4A": "bb07d3f3a95e5e0b3ca938bf7e0ac27940e2529239844ca56b4e228d9a1686f3",
+    "4B": "6adfebf5ca8819b669997c93f834a88e9e3675b793ea51724fb97422526ec91a",
+    "4C_R1": "83130ebc4b8fe4ce346f8fc8d9517e8f46573f093718e4e258f4d338e5bdccfb",
+    "4C": "a91dfede9e766922fafbdfb2dbb97a45a03a586d8b372e747199dbb25f38f0b4",
+    "4_FINAL": "d100c072d5bea33bff1e6d24cda8fb62af0168af850d46e2c9f301bcd6741311",
+    "final_manifest": "0b5899596a6bae75eacf3fe7bf8a06c72dbf18fb6dbe536e168d8123b37bf14f"
+  },
+  "created_at": "2026-08-22T04:27:32.927544+00:00"
+}

@@ -1,0 +1,13 @@
+import { apiRequest } from './client';
+import type { HumanActorSession } from '../types/actor';
+export type AccommodationItem={buildingId:string;buildingCode:string;buildingName:string;floorId:string|null;floorCode:string|null;floorName:string|null;roomId:string|null;roomCode:string|null;roomName:string|null;bedId:string|null;bedCode:string|null;bedName:string|null;bedStatus:string|null;residentId:string|null;residentName:string|null;careLevel:string|null};
+export type AccommodationOverview={summary:{total:number;occupied:number;available:number;reserved:number;unavailable:number;occupancyPercentage:number};items:AccommodationItem[]};
+export const getAccommodationOverview=(actor:HumanActorSession)=>apiRequest<AccommodationOverview>('/api/accommodation/overview',{actor});
+const post=(path:string,actor:HumanActorSession,body:any)=>apiRequest(path,{method:'POST',actor,headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+export const createBuilding=(a:HumanActorSession,b:any)=>post('/api/accommodation/buildings',a,b);
+export const createFloor=(a:HumanActorSession,b:any)=>post('/api/accommodation/floors',a,b);
+export const createRoom=(a:HumanActorSession,b:any)=>post('/api/accommodation/rooms',a,b);
+export const createBed=(a:HumanActorSession,b:any)=>post('/api/accommodation/beds',a,b);
+export const assignBed=(a:HumanActorSession,bedId:string,residentId:string)=>post(`/api/accommodation/beds/${encodeURIComponent(bedId)}/assign`,a,{residentId});
+export const transferBed=(a:HumanActorSession,residentId:string,bedId:string)=>post(`/api/accommodation/residents/${encodeURIComponent(residentId)}/transfer`,a,{bedId});
+export const releaseBed=(a:HumanActorSession,residentId:string)=>post(`/api/accommodation/residents/${encodeURIComponent(residentId)}/release`,a,{reason:'OPERATIONAL_RELEASE'});

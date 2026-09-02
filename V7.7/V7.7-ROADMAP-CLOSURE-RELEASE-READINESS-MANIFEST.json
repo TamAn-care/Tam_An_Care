@@ -1,0 +1,59 @@
+{
+  "generated_at": "2026-08-21T08:47:25.055730+00:00",
+  "release": "V7.7",
+  "status": "DEVELOPMENT_ROADMAP_CLOSED",
+  "technical_release_readiness": "READY_FOR_PROMOTION_DECISION",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "b2_result_hash": "0b64613773ef100624a73327a3d776eb5e1bd01631a1f38c0dd0d54027445042",
+  "phase_4a_r2b_closure_hash": "70d4b97e6f1b42949caddb2e98bbe74279c6645c1ebabc3d844f9cc4396d8375",
+  "roadmap_inspection_hash": "db882d6eea8ca3be17855b9688b57470f4233147ee561559dd76418ca6855e8e",
+  "roadmap": {
+    "phase_0": "CLOSED",
+    "phase_1": "CLOSED",
+    "phase_2": "CLOSED",
+    "phase_3": "CLOSED",
+    "phase_4a": "CLOSED",
+    "phase_4a_r2b": "CLOSED",
+    "phase_4b": "CLOSED",
+    "explicit_post_phase4_gate": false
+  },
+  "accepted_groups": [
+    "care_action",
+    "care_task",
+    "medication",
+    "activity_rehabilitation",
+    "skin_wound",
+    "nutrition_hydration",
+    "resident_ai"
+  ],
+  "security": {
+    "care_action_fail_closed": true,
+    "resident_ai_no_actor_http": 401,
+    "autonomousClinicalAction": false
+  },
+  "production_baseline": {
+    "version": "V7.6",
+    "api_matrix": "200|401|401",
+    "ui_matrix": "200|401|401|200",
+    "database_counts": "0|0|0",
+    "runtime_change": false,
+    "database_write": false
+  },
+  "promotion": {
+    "performed": false,
+    "authorized": false,
+    "next_required_step": "EXPLICIT_PRODUCTION_PROMOTION_DECISION"
+  },
+  "release_checks": {
+    "roadmap_defined_work_complete": true,
+    "phase_4a_r2b_closed": true,
+    "phase_4b_closed": true,
+    "seven_group_integration_passed": true,
+    "security_reacceptance_passed": true,
+    "resident_ai_fail_closed": true,
+    "autonomous_clinical_action_false": true,
+    "source_immutable": true,
+    "v76_production_healthy": true,
+    "production_database_unchanged": true
+  }
+}

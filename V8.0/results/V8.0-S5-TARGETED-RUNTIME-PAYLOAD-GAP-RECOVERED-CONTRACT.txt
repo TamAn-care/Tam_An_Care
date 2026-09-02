@@ -1,0 +1,27 @@
+TAM AN CARE V8.0 — S5 RECOVERED PAYLOAD CONTRACT
+STATIC_ONLY=YES
+
+RECOVERED_PAYLOAD_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|RESOLVED_CALL_COUNT=1|RESOLVED_METHOD_COUNT=1|TYPED_PARAM_COUNT=0|PROVEN_FIELD_COUNT=2|READINESS=CLASSIFIED|BLOCKERS=NONE
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|FIELD=longitudinalObservations
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|FIELD=observations
+RECOVERED_PAYLOAD_CONTRACT|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|RESOLVED_CALL_COUNT=2|RESOLVED_METHOD_COUNT=2|TYPED_PARAM_COUNT=1|PROVEN_FIELD_COUNT=2|READINESS=CLASSIFIED|BLOCKERS=NONE
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|FIELD=longitudinalObservations
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|FIELD=observations
+RECOVERED_PAYLOAD_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|RESOLVED_CALL_COUNT=1|RESOLVED_METHOD_COUNT=1|TYPED_PARAM_COUNT=0|PROVEN_FIELD_COUNT=2|READINESS=CLASSIFIED|BLOCKERS=NONE
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|FIELD=bed
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|FIELD=room
+RECOVERED_PAYLOAD_CONTRACT|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|RESOLVED_CALL_COUNT=1|RESOLVED_METHOD_COUNT=1|TYPED_PARAM_COUNT=1|PROVEN_FIELD_COUNT=6|READINESS=CLASSIFIED|BLOCKERS=NONE
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|FIELD=bed
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|FIELD=careLevel
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|FIELD=dateOfBirth
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|FIELD=displayName
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|FIELD=gender
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|FIELD=room
+RECOVERED_PAYLOAD_CONTRACT|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|RESOLVED_CALL_COUNT=1|RESOLVED_METHOD_COUNT=1|TYPED_PARAM_COUNT=1|PROVEN_FIELD_COUNT=7|READINESS=CLASSIFIED|BLOCKERS=NONE
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=careNote
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=decision
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=patternId
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=residentId
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=reviewerId
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=reviewerRole
+RECOVERED_PAYLOAD_FIELD|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|FIELD=warningId

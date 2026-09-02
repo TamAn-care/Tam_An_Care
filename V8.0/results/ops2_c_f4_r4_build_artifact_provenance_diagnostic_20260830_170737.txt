@@ -1,0 +1,182 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F4-R4
+ DEEP BUILD ARTIFACT PROVENANCE DIAGNOSTIC
+ STRICT READ ONLY
+ NO CLEAN / NO BUILD / NO SOURCE CHANGE / NO DB CHANGE
+======================================================================
+
+======================================================================
+ 1. F4-R3 AUTHORITY
+======================================================================
+PASS: F4-R3 AUTHORITY
+F4_R3_ARTIFACT=ops2_c_f4_r3_buildkit_cache_bypass_20260830_165043.txt
+
+======================================================================
+ 2. SOURCE CONTENT + MODE AUTHORITY
+======================================================================
+SOURCE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROL_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+SOURCE_MODE=644
+CONTROL_MODE=644
+PASS: SOURCE CONTENT + MODE AUTHORITY
+
+======================================================================
+ 3. HOST DIST EXISTENCE / PERMISSION / TIMESTAMP
+======================================================================
+--- TARGET HOST DIST
+-rw-------  1 501  20  9904 Aug 30 16:22:11 2026 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/resident-consumption.service.js
+MODE=-rw------- OCTAL=600 UID=501 GID=20 SIZE=9904 MTIME_EPOCH=1788081731 MTIME=2026-08-30T16:22:11+0700
+HOST_DIST_MODE=600
+HOST_DIST_SHA256=3db3be51e77c36ceaa83c57662eadfad4bd04f5170030828890240de83e8225f
+--- CONTROL HOST DIST
+-rw-r--r--  1 501  20  9967 Aug 30 16:24:16 2026 /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.controller.js
+MODE=-rw-r--r-- OCTAL=644 UID=501 GID=20 SIZE=9967 MTIME_EPOCH=1788081856 MTIME=2026-08-30T16:24:16+0700
+CONTROL_HOST_DIST_MODE=644
+CONTROL_HOST_DIST_SHA256=ad8d6dff5a26bb5aa47a41147f7801b35e4ea7102430bc7e94a0a685d0766501
+
+HOST_DIST_PRESENT=YES
+
+======================================================================
+ 4. SOURCE VS HOST DIST TIME RELATION
+======================================================================
+SOURCE_MTIME_EPOCH=1788081728
+DIST_MTIME_EPOCH=1788081731
+HOST_DIST_OLDER_THAN_SOURCE=NO
+
+======================================================================
+ 5. DOCKER BUILD CONTEXT EXCLUSION CONTRACT
+======================================================================
+DOCKERIGNORE_PRESENT=NO
+DOCKERIGNORE_EXCLUDES_DIST=NO
+
+======================================================================
+ 6. BUILD CONFIGURATION — READ ONLY
+======================================================================
+--- package.json BUILD SCRIPTS ---
+{
+  "build": "nest build"
+}
+
+--- tsconfig.json ---
+{"compilerOptions":{"module":"commonjs","declaration":true,"removeComments":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"allowSyntheticDefaultImports":true,"target":"ES2021","sourceMap":true,"outDir":"./dist","baseUrl":"./","incremental":true,"skipLibCheck":true,"strict":true,"strictPropertyInitialization":false},"include":["src/**/*"]}
+
+--- tsconfig.build.json ---
+
+BUILD_CONFIG_SIGNALS:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/tsconfig.json:1:{"compilerOptions":{"module":"commonjs","declaration":true,"removeComments":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"allowSyntheticDefaultImports":true,"target":"ES2021","sourceMap":true,"outDir":"./dist","baseUrl":"./","incremental":true,"skipLibCheck":true,"strict":true,"strictPropertyInitialization":false},"include":["src/**/*"]}
+
+======================================================================
+ 7. HOST DIST TREE PERMISSION OUTLIERS
+======================================================================
+HOST_DIST_FILES_NOT_WORLD_READABLE:
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/resident-consumption.service.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/resident-consumption.service.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/resident-consumption.service.js
+HOST_DIST_NON_WORLD_READABLE_COUNT=3
+
+======================================================================
+ 8. FAILED NO-CACHE IMAGE ARTIFACT COMPARISON
+======================================================================
+FAILED_IMAGE_ID=sha256:2f92eaeae7b09befa8e75bb29fee7016e516e6610a0f2931a1a497dd8b4fa8af
+IMAGE_TARGET_LINE=-rw------- 1 0 0 9904 Aug 30 09:22 /app/dist/inventory/resident-consumption.service.js
+IMAGE_TARGET_MODE=-rw-------
+IMAGE_TARGET_SHA256=3db3be51e77c36ceaa83c57662eadfad4bd04f5170030828890240de83e8225f
+HOST_DIST_IMAGE_CONTENT_IDENTICAL=YES
+
+======================================================================
+ 9. TYPESCRIPT EMIT / DIST CLEANING SIGNALS
+======================================================================
+NEST_CLI:
+{"collection":"@nestjs/schematics","sourceRoot":"src"}
+
+PACKAGE_BUILD_RELATED_SCRIPTS:
+build=nest build
+
+======================================================================
+ 10. PROVENANCE CLASSIFICATION
+======================================================================
+HOST_DIST_COPIED_INTO_BUILD_CONTEXT_RISK=YES
+HOST_DIST_MATCHES_FAILED_IMAGE_ARTIFACT=YES
+PROVISIONAL_ROOT_CAUSE=STALE_HOST_DIST_ARTIFACT_PROPAGATION
+APPLICATION_LOGIC_DEFECT_EVIDENCE=NO
+SOURCE_CONTENT_REPAIR_REQUIRED=NO
+NEXT_REPAIR_DOMAIN=BUILD_ARTIFACT_CLEANLINESS
+
+======================================================================
+ 11. DATABASE PRESERVATION
+======================================================================
+DB_BASELINE=1|1|0|0|0|0|0
+PASS: DATABASE BASELINE PRESERVED
+
+======================================================================
+ 12. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 13. FINAL SOURCE RECONFIRMATION
+======================================================================
+FINAL_SOURCE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_SOURCE_MODE=644
+PASS: SOURCE PRESERVED
+
+======================================================================
+ 14. F4-R4 BOUNDARY
+======================================================================
+APPLICATION_SOURCE_CONTENT_MUTATION=NO
+SOURCE_PERMISSION_MUTATION=NO
+HOST_DIST_MUTATION=NO
+HOST_DIST_DELETE=NO
+DOCKERFILE_MUTATION=NO
+DOCKERIGNORE_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+PERSISTENT_CONTAINER_CREATED=NO
+DATABASE_QUERY_MODE=READ_ONLY
+DATABASE_DATA_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+FUNCTIONAL_POST_EXECUTED=NO
+TEST_FIXTURE_CREATED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F4-R4 DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+STATUS: OPS-2-C F4-R4 STALE HOST DIST PROPAGATION CONFIRMED
+APPLICATION_LOGIC_DEFECT_EVIDENCE=NO
+SOURCE_CONTENT_REPAIR_REQUIRED=NO
+BUILD_ARTIFACT_CLEANLINESS_REPAIR_REQUIRED=YES
+REPAIR_AUTHORIZED=NO
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_BOUNDED_DIST_CLEAN_REBUILD
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f4_r4_build_artifact_provenance_diagnostic_20260830_170737.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT DELETE api/dist
+ -> DO NOT RUN npm build
+ -> DO NOT MODIFY SOURCE
+ -> DO NOT MODIFY DOCKERFILE OR .dockerignore
+ -> DO NOT CREATE TEST FIXTURES
+ -> DO NOT RUN FUNCTIONAL API TEST
+ -> DO NOT MODIFY DATABASE
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

@@ -1,0 +1,36 @@
+======================================================================
+ TAMANCARE — CODEX LOGIN SANITIZED RESULT
+======================================================================
+
+CODEX_EXECUTABLE=/Users/anhha/.local/bin/codex
+CODEX_VERSION=codex-cli 0.151.0
+DEVICE_AUTH_OUTPUT_PERSISTED=NO
+DEVICE_CODE_PERSISTED=NO
+DEVICE_CODE_PRINTED_IN_RESULT=NO
+PRE_LOGIN_METADATA_FILE_COUNT=1
+POST_LOGIN_METADATA_FILE_COUNT=31
+LOGIN_COMMAND_RC=1
+
+SOURCE_MUTATION=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+RUNTIME_RESTART=NO
+GIT_INIT=NO
+CODEX_EXEC_STARTED=NO
+AUTOPILOT_STARTED=NO
+
+STATUS: CODEX AUTHENTICATION NOT CONFIRMED
+CODEX_AUTH_STATUS=FAIL_OR_INCOMPLETE
+AUTONOMOUS_EXECUTION_AUTHORIZED=NO
+NEXT=STOP_AND_RETURN_OUTPUT
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/autopilot_codex_login_sanitized_20260830_102031.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT RUN CODEX EXEC YET
+ -> DO NOT START AUTOPILOT MANUALLY
+ -> SEND BACK ONLY THIS SANITIZED RESULT SECTION
+ -> DO NOT SEND THE DEVICE CODE
+======================================================================

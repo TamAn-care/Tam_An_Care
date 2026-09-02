@@ -1,0 +1,70 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G2
+ KPI SOURCE IMPLEMENTATION + BUILD
+ BOUNDED MUTATION: 1 NEW + 2 MODIFY
+ NO SCHEMA / NO DB DATA MUTATION
+======================================================================
+PASS: G1 AUTHORITY
+
+----- PRE-MUTATION SOURCE AUTHORITY -----
+CONTROLLER_BEFORE=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_BEFORE=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: MUTATION BASELINE
+./api/src/inventory/inventory.controller.ts: OK
+./api/src/inventory/inventory.module.ts: OK
+PASS: PRE-MUTATION CHECKPOINT
+PASS: KPI SERVICE CREATED
+PASS: CONTROLLER PATCHED
+PASS: MODULE PATCHED
+
+----- MUTATION SURFACE -----
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory-kpi.service.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.controller.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/inventory/inventory.module.ts
+
+KPI_SERVICE_HASH=1b43ca3141fdbe02847b8e78495904fe03052c071ad88c386170f6f4c35dc360
+CONTROLLER_HASH=fa611fe5d47fccab7b19f5faa02d9adc2459c2ba8985dd27f962329a9fc4a651
+MODULE_HASH=eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66
+PASS: PRESERVED resident-consumption.service.ts
+PASS: PRESERVED inventory-ledger.service.ts
+PASS: PRESERVED inventory-lot.service.ts
+
+----- SEMANTIC CHECKS -----
+PASS: KPI SERVICE CLASS
+PASS: STOCK AGGREGATED BY UNIT
+PASS: RESIDENT ACCESS SCOPE REUSED
+PASS: MANAGEMENT KPI ROLES
+PASS: TOP RESULT BOUNDED
+PASS: TIME WINDOW BOUNDED
+PASS: KPI SERVICE READ ONLY
+
+----- BUILD -----
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+[96msrc/inventory/inventory-kpi.service.ts[0m:[93m532[0m:[93m12[0m - [91merror[0m[90m TS2339: [0mProperty 'sqlScopeForActor' does not exist on type 'ResidentAccessScopeService'.
+
+[7m532[0m           .sqlScopeForActor(
+[7m   [0m [91m           ~~~~~~~~~~~~~~~~[0m
+[96mtsconfig.json[0m:[93m1[0m:[93m374[0m - [91merror[0m[90m TS5103: [0mInvalid value for '--ignoreDeprecations'.
+
+[7m1[0m {"compilerOptions":{"module":"commonjs","declaration":true,"removeComments":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"allowSyntheticDefaultImports":true,"target":"ES2021","sourceMap":true,"outDir":"./dist","baseUrl":"./","incremental":true,"skipLibCheck":true,"strict":true,"strictPropertyInitialization":false,"rootDir":"./src","ignoreDeprecations":"6.0"},"include":["src/**/*"]}
+[7m [0m [91m                                                                                                                                                                                                                                                                                                                                                                                     ~~~~~[0m
+
+Found 2 error(s).
+
+FAIL: API BUILD
+
+ROLLBACK_NOT_EXECUTED=YES
+CHECKPOINT_AVAILABLE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/checkpoints/ops3_g2_pre_mutation_20260830_190437
+
+======================================================================
+ STATUS: OPS-3 G2 STOPPED
+ PASS_COUNT=16
+ FAIL_COUNT=1
+ FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+ SCHEMA_MUTATION_AUTHORIZED=NO
+ RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g2_source_implementation_build_20260830_190437.txt
+ STOP_AND_RETURN_OUTPUT
+======================================================================

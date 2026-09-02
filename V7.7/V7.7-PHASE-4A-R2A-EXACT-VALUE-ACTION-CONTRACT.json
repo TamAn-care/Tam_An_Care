@@ -1,0 +1,4783 @@
+{
+  "generated_at": "2026-08-21T05:12:04.816500+00:00",
+  "release": "V7.7",
+  "phase": "4A-R2A-R1",
+  "parser_recovery": "malformed regex removed; line-based action detection used",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "total_routes": 25,
+  "runtime_ready_count": 16,
+  "unresolved_count": 9,
+  "contracts": [
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/activity-rehabilitation/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "command",
+      "body_type": "RehabCommand",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/activity-rehabilitation/activity-rehabilitation.types.ts",
+          "kind": "interface",
+          "name": "RehabCommand"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "action",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "RehabActorRole"
+        }
+      ],
+      "optional_fields": [
+        {
+          "name": "activityProgramId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "rehabilitationPlanId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "activitySessionId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "participationId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "functionalAssessmentId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "functionalSupportActionId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "rehabilitationEscalationId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "activityCategory",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "defaultSupportLevel",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "defaultLocation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "goalSummary",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "mobilityPrecautions",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "transferPrecautions",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "weightBearingRestriction",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assistiveDeviceRequirement",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "otherSafetyRestrictions",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "sessionType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "scheduledAt",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "location",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "plannedDurationMinutes",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "name": "supportLevel",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedTo",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": false,
+          "type": "RehabActorRole"
+        },
+        {
+          "name": "safetyConfirmed",
+          "required": false,
+          "type": "boolean"
+        },
+        {
+          "name": "completionNote",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "exceptionReason",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "attendanceStatus",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "participationLevel",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assistanceLevel",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "durationMinutes",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "name": "residentResponse",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "observationNote",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assessmentType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assessmentContext",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "mobilityObservation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "transferObservation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "balanceObservation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "enduranceObservation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "functionalSupportNote",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "amendmentReason",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "supportType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "supportDescription",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "reason",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "severity",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedReviewer",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedReviewerRole",
+          "required": false,
+          "type": "RehabActorRole"
+        },
+        {
+          "name": "resolutionSummary",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACCEPT_FUNCTIONAL_SUPPORT",
+        "ACCEPT_SESSION",
+        "ACTIVATE_PROGRAM",
+        "ACTIVATE_REHAB_PLAN",
+        "ACTIVE",
+        "ACTIVITIES_REHABILITATION_FUNCTIONAL_SUPPORT",
+        "ACTIVITY_PARTICIPATION",
+        "ACTIVITY_PROGRAM",
+        "ACTIVITY_PROGRAM_ACTIVATED",
+        "ACTIVITY_PROGRAM_CREATED",
+        "ACTIVITY_SESSION",
+        "AI",
+        "AMENDED",
+        "AMEND_FUNCTIONAL_ASSESSMENT",
+        "AMEND_PARTICIPATION",
+        "ASSIGNED",
+        "ASSIGN_ESCALATION",
+        "ASSIGN_FUNCTIONAL_SUPPORT",
+        "ASSIGN_SESSION",
+        "ATTENDED",
+        "CANCELLED",
+        "CANCEL_FUNCTIONAL_SUPPORT",
+        "CANCEL_SESSION",
+        "CAREGIVER",
+        "CARE_MANAGER",
+        "COMPLETED",
+        "COMPLETE_FUNCTIONAL_SUPPORT",
+        "COMPLETE_SESSION",
+        "CREATE_ESCALATION",
+        "CREATE_FUNCTIONAL_ASSESSMENT",
+        "CREATE_FUNCTIONAL_SUPPORT",
+        "CREATE_PROGRAM",
+        "CREATE_REHAB_PLAN",
+        "CREATE_SESSION",
+        "DRAFT",
+        "FUNCTIONAL_ASSESSMENT",
+        "FUNCTIONAL_ASSESSMENT_AMENDED",
+        "FUNCTIONAL_ASSESSMENT_CREATED",
+        "FUNCTIONAL_ASSESSMENT_VERIFIED",
+        "FUNCTIONAL_OBSERVATION",
+        "FUNCTIONAL_SUPPORT",
+        "FUNCTIONAL_SUPPORT_ACCEPTED",
+        "FUNCTIONAL_SUPPORT_ASSIGNED",
+        "FUNCTIONAL_SUPPORT_CANCELLED",
+        "FUNCTIONAL_SUPPORT_COMPLETED",
+        "FUNCTIONAL_SUPPORT_CREATED",
+        "FUNCTIONAL_SUPPORT_SKIPPED",
+        "FUNCTIONAL_SUPPORT_STARTED",
+        "GENERAL",
+        "HELD",
+        "HOLD_SESSION",
+        "IN_PROGRESS",
+        "MISSED",
+        "MISS_SESSION",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "PARTICIPATION_AMENDED",
+        "PARTICIPATION_RECORDED",
+        "PARTICIPATION_VERIFIED",
+        "PLANNED",
+        "READY",
+        "READY_SESSION",
+        "RECORDED",
+        "RECORD_PARTICIPATION",
+        "REFUSED",
+        "REFUSE_SESSION",
+        "REHABILITATION_PLAN",
+        "REHAB_ESCALATION",
+        "REHAB_ESCALATION_ACCEPTED",
+        "REHAB_ESCALATION_ASSIGNED",
+        "REHAB_ESCALATION_CREATED",
+        "REHAB_ESCALATION_RESOLVED",
+        "REHAB_PLAN_ACTIVATED",
+        "REHAB_PLAN_CREATED",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "SCHEDULED",
+        "SESSION_ACCEPTED",
+        "SESSION_ASSIGNED",
+        "SESSION_CANCELLED",
+        "SESSION_COMPLETED",
+        "SESSION_CREATED",
+        "SESSION_HELD",
+        "SESSION_MISSED",
+        "SESSION_READY",
+        "SESSION_REFUSED",
+        "SESSION_STARTED",
+        "SKIPPED",
+        "SKIP_FUNCTIONAL_SUPPORT",
+        "START_FUNCTIONAL_SUPPORT",
+        "START_SESSION",
+        "SUPERVISOR",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_FUNCTIONAL_ASSESSMENT",
+        "VERIFY_PARTICIPATION"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "action",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "actorId",
+          "type": "string",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "RehabActorRole",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "AI",
+            "CAREGIVER",
+            "CARE_MANAGER",
+            "NURSE",
+            "SUPERVISOR",
+            "SYSTEM"
+          ],
+          "selected_test_value": "AI"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "action",
+        "activityCategory",
+        "activityProgramId",
+        "activitySessionId",
+        "actorId",
+        "actorRole",
+        "amendmentReason",
+        "assessmentContext",
+        "assessmentType",
+        "assignedReviewer",
+        "assignedReviewerRole",
+        "assignedRole",
+        "assignedTo",
+        "assistanceLevel",
+        "assistiveDeviceRequirement",
+        "attendanceStatus",
+        "balanceObservation",
+        "completionNote",
+        "defaultLocation",
+        "defaultSupportLevel",
+        "description",
+        "durationMinutes",
+        "enduranceObservation",
+        "exceptionReason",
+        "functionalAssessmentId",
+        "functionalSupportActionId",
+        "functionalSupportNote",
+        "goalSummary",
+        "location",
+        "mobilityObservation",
+        "mobilityPrecautions",
+        "observationNote",
+        "otherSafetyRestrictions",
+        "participationId",
+        "participationLevel",
+        "plannedDurationMinutes",
+        "reason",
+        "rehabilitationEscalationId",
+        "rehabilitationPlanId",
+        "residentResponse",
+        "resolutionSummary",
+        "safetyConfirmed",
+        "scheduledAt",
+        "sessionType",
+        "severity",
+        "supportDescription",
+        "supportLevel",
+        "supportType",
+        "title",
+        "transferObservation",
+        "transferPrecautions",
+        "weightBearingRestriction"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "activity_participation",
+        "activity_programs",
+        "activity_sessions",
+        "current",
+        "functional_assessments",
+        "functional_support_actions",
+        "rehabilitation_audit",
+        "rehabilitation_escalations",
+        "rehabilitation_plans"
+      ],
+      "module_action_checks": [
+        "`Unsupported rehabilitation action: ${action}`,",
+        "action === 'CANCEL_FUNCTIONAL_SUPPORT' &&",
+        "case 'ACCEPT_ESCALATION':",
+        "case 'ACCEPT_FUNCTIONAL_SUPPORT':",
+        "case 'ACCEPT_SESSION':",
+        "case 'ACTIVATE_PROGRAM': {",
+        "case 'ACTIVATE_REHAB_PLAN': {",
+        "case 'AMEND_FUNCTIONAL_ASSESSMENT': {",
+        "case 'AMEND_PARTICIPATION': {",
+        "case 'ASSIGN_ESCALATION': {",
+        "case 'ASSIGN_FUNCTIONAL_SUPPORT': {",
+        "case 'ASSIGN_SESSION': {",
+        "case 'CANCEL_FUNCTIONAL_SUPPORT': {",
+        "case 'CANCEL_SESSION': {",
+        "case 'COMPLETE_FUNCTIONAL_SUPPORT':",
+        "case 'COMPLETE_SESSION':",
+        "case 'CREATE_ESCALATION': {",
+        "case 'CREATE_FUNCTIONAL_ASSESSMENT': {",
+        "case 'CREATE_FUNCTIONAL_SUPPORT': {",
+        "case 'CREATE_PROGRAM': {",
+        "case 'CREATE_REHAB_PLAN': {",
+        "case 'CREATE_SESSION': {",
+        "case 'HOLD_SESSION':",
+        "case 'MISS_SESSION':",
+        "case 'READY_SESSION':",
+        "case 'RECORD_PARTICIPATION': {",
+        "case 'REFUSE_SESSION':",
+        "case 'RESOLVE_ESCALATION': {",
+        "case 'SKIP_FUNCTIONAL_SUPPORT':",
+        "case 'START_FUNCTIONAL_SUPPORT':",
+        "case 'START_SESSION':",
+        "case 'VERIFY_FUNCTIONAL_ASSESSMENT': {",
+        "case 'VERIFY_PARTICIPATION': {",
+        "if (action === 'ACCEPT_ESCALATION') {",
+        "if (action === 'ACCEPT_FUNCTIONAL_SUPPORT') {",
+        "if (action === 'ACCEPT_SESSION') {",
+        "if (action === 'CANCEL_FUNCTIONAL_SUPPORT') {",
+        "if (action === 'CANCEL_SESSION') {",
+        "if (action === 'COMPLETE_FUNCTIONAL_SUPPORT') {",
+        "if (action === 'COMPLETE_SESSION') {",
+        "if (action === 'HOLD_SESSION') {",
+        "if (action === 'MISS_SESSION') {",
+        "if (action === 'READY_SESSION') {",
+        "if (action === 'REFUSE_SESSION') {",
+        "if (action === 'SKIP_FUNCTIONAL_SUPPORT') {",
+        "if (action === 'START_FUNCTIONAL_SUPPORT') {",
+        "if (action === 'START_SESSION') {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "handler": "residentPatterns",
+      "source": "api/src/ai/early-warning.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCELERATING_DECLINE",
+        "ACTIVE_LONGITUDINAL_RULES_ENGINE",
+        "ACTIVE_RULES_ENGINE",
+        "ANALYSIS_COMPLETE",
+        "ASSISTED",
+        "BETTER",
+        "DETERIORATING",
+        "DOWN",
+        "HIGH",
+        "HIGH_ASSISTANCE",
+        "IMPROVING",
+        "INDEPENDENT",
+        "INSUFFICIENT_DATA",
+        "LOW",
+        "MOBILITY_DETERIORATION",
+        "MODERATE",
+        "MULTI_SIGNAL_CONVERGENCE",
+        "NONE",
+        "NOT_REQUIRED",
+        "PENDING",
+        "PERSISTENT_DECLINE",
+        "POSITIVE",
+        "POSTGRES_RESIDENT_CONTEXT",
+        "STABLE",
+        "SUPERVISION",
+        "UNCHANGED",
+        "UNKNOWN",
+        "UP",
+        "WORSE"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "data",
+        "engineId",
+        "riskClass",
+        "subjectId",
+        "subjectType",
+        "userId"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole"
+      ],
+      "module_table_references": [],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/behavioral-cognitive/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/behavioral-cognitive/behavioral-cognitive.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": true,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGED",
+        "ACKNOWLEDGE_EPISODE",
+        "ACKNOWLEDGE_WANDERING",
+        "ACTIVATE_SUPPORT_PLAN",
+        "ACTIVE",
+        "ADVISORY_ONLY",
+        "AI",
+        "ASSIGNED",
+        "ASSIGN_EPISODE",
+        "ASSIGN_ESCALATION",
+        "BEGIN",
+        "BEHAVIORAL_COGNITIVE_DEMENTIA_SAFETY",
+        "BEHAVIORAL_EPISODE",
+        "BEHAVIORAL_EPISODE_ACKNOWLEDGED",
+        "BEHAVIORAL_EPISODE_ASSIGNED",
+        "BEHAVIORAL_EPISODE_CLOSED",
+        "BEHAVIORAL_EPISODE_CREATED",
+        "BEHAVIORAL_EPISODE_RESOLVED",
+        "BEHAVIORAL_ESCALATION",
+        "BEHAVIORAL_ESCALATION_ACCEPTED",
+        "BEHAVIORAL_ESCALATION_ASSIGNED",
+        "BEHAVIORAL_ESCALATION_CREATED",
+        "BEHAVIORAL_ESCALATION_RESOLVED",
+        "BEHAVIORAL_POST_REVIEW",
+        "BEHAVIORAL_POST_REVIEW_COMPLETED",
+        "BEHAVIORAL_POST_REVIEW_VERIFIED",
+        "BEHAVIORAL_RESPONSE",
+        "BEHAVIORAL_RESPONSE_RECORDED",
+        "BEHAVIORAL_RESPONSE_VERIFIED",
+        "BEHAVIORAL_SUPPORT_PLAN",
+        "CARE_MANAGER",
+        "CLOSED",
+        "CLOSE_EPISODE",
+        "COGNITIVE_OBSERVATION",
+        "COGNITIVE_OBSERVATION_RECORDED",
+        "COGNITIVE_OBSERVATION_VERIFIED",
+        "COMMIT",
+        "COMPLETED",
+        "CREATE_COGNITIVE_OBSERVATION",
+        "CREATE_EPISODE",
+        "CREATE_ESCALATION",
+        "CREATE_POST_REVIEW",
+        "CREATE_RESPONSE",
+        "CREATE_SUPPORT_PLAN",
+        "CREATE_WANDERING_EVENT",
+        "DRAFT",
+        "NON_PHARMACOLOGICAL_SUPPORT",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "RECORDED",
+        "RESOLVED",
+        "RESOLVE_EPISODE",
+        "RESOLVE_ESCALATION",
+        "RESPONDING",
+        "REVIEWED",
+        "REVIEW_SUPPORT_PLAN",
+        "ROLLBACK",
+        "SUPERVISOR",
+        "SUPPORT_PLAN_ACTIVATED",
+        "SUPPORT_PLAN_CREATED",
+        "SUPPORT_PLAN_REVIEWED",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_COGNITIVE_OBSERVATION",
+        "VERIFY_POST_REVIEW",
+        "VERIFY_RESPONSE",
+        "WANDERING",
+        "WANDERING_EVENT",
+        "WANDERING_EVENT_ACKNOWLEDGED",
+        "WANDERING_EVENT_CREATED"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "behavioral_audit",
+        "behavioral_episodes",
+        "behavioral_escalations",
+        "behavioral_post_reviews",
+        "behavioral_responses",
+        "behavioral_support_plans",
+        "cognitive_observations",
+        "current",
+        "wandering_events"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7T action.',",
+        "case 'ACCEPT_ESCALATION': {",
+        "case 'ACKNOWLEDGE_EPISODE': {",
+        "case 'ACKNOWLEDGE_WANDERING': {",
+        "case 'ACTIVATE_SUPPORT_PLAN': {",
+        "case 'ASSIGN_EPISODE': {",
+        "case 'ASSIGN_ESCALATION': {",
+        "case 'CLOSE_EPISODE': {",
+        "case 'CREATE_COGNITIVE_OBSERVATION': {",
+        "case 'CREATE_EPISODE': {",
+        "case 'CREATE_ESCALATION': {",
+        "case 'CREATE_POST_REVIEW': {",
+        "case 'CREATE_RESPONSE': {",
+        "case 'CREATE_SUPPORT_PLAN': {",
+        "case 'CREATE_WANDERING_EVENT': {",
+        "case 'RESOLVE_EPISODE': {",
+        "case 'RESOLVE_ESCALATION': {",
+        "case 'REVIEW_SUPPORT_PLAN': {",
+        "case 'VERIFY_COGNITIVE_OBSERVATION': {",
+        "case 'VERIFY_POST_REVIEW': {",
+        "case 'VERIFY_RESPONSE': {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "handler": "execute",
+      "source": "api/src/care-action-bridge/care-action-bridge.controller.ts",
+      "path_params": [
+        "warningId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [
+        "actorId",
+        "actorRole"
+      ],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "CARE_ACTION_CREATED",
+        "CREATE_CARE_ACTION",
+        "HUMAN_REVIEW_APPROVED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "warningId"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/assign",
+      "handler": "assign",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "path_params": [
+        "residentId",
+        "patternId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "AssignCareActionInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-actions/care-action.types.ts",
+          "kind": "interface",
+          "name": "AssignCareActionInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "assignedTo",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "priority",
+          "required": true,
+          "type": "CareActionPriority"
+        },
+        {
+          "name": "dueAt",
+          "required": true,
+          "type": "Date | null"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ASSIGNED",
+        "ASSIGNMENT",
+        "CREATED",
+        "HIGH",
+        "IN_REVIEW",
+        "LOW",
+        "MODERATE",
+        "OK",
+        "PENDING",
+        "REOPENED",
+        "RESOLVED",
+        "REVIEW_STARTED",
+        "TRANSFER",
+        "TRANSFERRED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "assignedTo",
+          "type": "string",
+          "status": "TEST_ASSIGNEE_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-caregiver"
+        },
+        {
+          "field": "assignedRole",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "priority",
+          "type": "CareActionPriority",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "HIGH",
+            "LOW",
+            "MODERATE"
+          ],
+          "selected_test_value": "HIGH"
+        },
+        {
+          "field": "dueAt",
+          "type": "Date | null",
+          "status": "TYPE_ALLOWS_NULL",
+          "allowed_values": [],
+          "selected_test_value": null
+        },
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "careActionId",
+        "careNote",
+        "dueAt",
+        "eventType",
+        "fromAssignedRole",
+        "fromAssignedTo",
+        "newState",
+        "patternId",
+        "previousState",
+        "priority",
+        "reopenReason",
+        "residentId",
+        "resolutionReason",
+        "toAssignedRole",
+        "toAssignedTo"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/transfer",
+      "handler": "transfer",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "path_params": [
+        "residentId",
+        "patternId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "TransferCareActionInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-actions/care-action.types.ts",
+          "kind": "interface",
+          "name": "TransferCareActionInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "assignedTo",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "priority",
+          "required": true,
+          "type": "CareActionPriority"
+        },
+        {
+          "name": "dueAt",
+          "required": true,
+          "type": "Date | null"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ASSIGNED",
+        "ASSIGNMENT",
+        "CREATED",
+        "HIGH",
+        "IN_REVIEW",
+        "LOW",
+        "MODERATE",
+        "OK",
+        "PENDING",
+        "REOPENED",
+        "RESOLVED",
+        "REVIEW_STARTED",
+        "TRANSFER",
+        "TRANSFERRED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "assignedTo",
+          "type": "string",
+          "status": "TEST_ASSIGNEE_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-caregiver"
+        },
+        {
+          "field": "assignedRole",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "priority",
+          "type": "CareActionPriority",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "HIGH",
+            "LOW",
+            "MODERATE"
+          ],
+          "selected_test_value": "HIGH"
+        },
+        {
+          "field": "dueAt",
+          "type": "Date | null",
+          "status": "TYPE_ALLOWS_NULL",
+          "allowed_values": [],
+          "selected_test_value": null
+        },
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "careActionId",
+        "careNote",
+        "dueAt",
+        "eventType",
+        "fromAssignedRole",
+        "fromAssignedTo",
+        "newState",
+        "patternId",
+        "previousState",
+        "priority",
+        "reopenReason",
+        "residentId",
+        "resolutionReason",
+        "toAssignedRole",
+        "toAssignedTo"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/start-review",
+      "handler": "startReview",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "path_params": [
+        "residentId",
+        "patternId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "StartCareActionReviewInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-actions/care-action.types.ts",
+          "kind": "interface",
+          "name": "StartCareActionReviewInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ASSIGNED",
+        "ASSIGNMENT",
+        "CREATED",
+        "HIGH",
+        "IN_REVIEW",
+        "LOW",
+        "MODERATE",
+        "OK",
+        "PENDING",
+        "REOPENED",
+        "RESOLVED",
+        "REVIEW_STARTED",
+        "TRANSFER",
+        "TRANSFERRED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "careActionId",
+        "careNote",
+        "dueAt",
+        "eventType",
+        "fromAssignedRole",
+        "fromAssignedTo",
+        "newState",
+        "patternId",
+        "previousState",
+        "priority",
+        "reopenReason",
+        "residentId",
+        "resolutionReason",
+        "toAssignedRole",
+        "toAssignedTo"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/resolve",
+      "handler": "resolve",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "path_params": [
+        "residentId",
+        "patternId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "ResolveCareActionInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-actions/care-action.types.ts",
+          "kind": "interface",
+          "name": "ResolveCareActionInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "careNote",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "resolutionReason",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ASSIGNED",
+        "ASSIGNMENT",
+        "CREATED",
+        "HIGH",
+        "IN_REVIEW",
+        "LOW",
+        "MODERATE",
+        "OK",
+        "PENDING",
+        "REOPENED",
+        "RESOLVED",
+        "REVIEW_STARTED",
+        "TRANSFER",
+        "TRANSFERRED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "careNote",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_NOTE"
+        },
+        {
+          "field": "resolutionReason",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_REASON"
+        },
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "careActionId",
+        "careNote",
+        "dueAt",
+        "eventType",
+        "fromAssignedRole",
+        "fromAssignedTo",
+        "newState",
+        "patternId",
+        "previousState",
+        "priority",
+        "reopenReason",
+        "residentId",
+        "resolutionReason",
+        "toAssignedRole",
+        "toAssignedTo"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 9,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/reopen",
+      "handler": "reopen",
+      "source": "api/src/care-actions/care-action.controller.ts",
+      "path_params": [
+        "residentId",
+        "patternId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "ReopenCareActionInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-actions/care-action.types.ts",
+          "kind": "interface",
+          "name": "ReopenCareActionInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "reopenReason",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ASSIGNED",
+        "ASSIGNMENT",
+        "CREATED",
+        "HIGH",
+        "IN_REVIEW",
+        "LOW",
+        "MODERATE",
+        "OK",
+        "PENDING",
+        "REOPENED",
+        "RESOLVED",
+        "REVIEW_STARTED",
+        "TRANSFER",
+        "TRANSFERRED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "reopenReason",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_REASON"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "careActionId",
+        "careNote",
+        "dueAt",
+        "eventType",
+        "fromAssignedRole",
+        "fromAssignedTo",
+        "newState",
+        "patternId",
+        "previousState",
+        "priority",
+        "reopenReason",
+        "residentId",
+        "resolutionReason",
+        "toAssignedRole",
+        "toAssignedTo"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/care-plan-governance/:carePlanId/:action",
+      "handler": "execute",
+      "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "path_params": [
+        "carePlanId",
+        "action"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "GovernanceBody",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+          "kind": "interface",
+          "name": "GovernanceBody"
+        }
+      ],
+      "required_fields": [],
+      "optional_fields": [
+        {
+          "name": "actorId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "actorRole",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "observed_body_field_usage": [
+        "actorId",
+        "actorRole"
+      ],
+      "requires_action_resolution": true,
+      "source_uppercase_literals": [
+        "ACTIVE",
+        "OK"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole"
+      ],
+      "module_table_references": [
+        "care_plan_audit",
+        "care_plans"
+      ],
+      "module_action_checks": [
+        "'Unsupported Care Plan governance action',",
+        "'Unsupported Care Plan governance action.',"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": false,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/care-task-execution/:careTaskId/:action",
+      "handler": "execute",
+      "source": "api/src/care-task-execution/care-task-execution.controller.ts",
+      "path_params": [
+        "careTaskId",
+        "action"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "input",
+      "body_type": "CareTaskExecutionInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/care-task-execution/care-task-execution.types.ts",
+          "kind": "interface",
+          "name": "CareTaskExecutionInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [
+        {
+          "name": "assigneeId",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assigneeRole",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "completionNote",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "exceptionReason",
+          "required": false,
+          "type": "string | null"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": true,
+      "source_uppercase_literals": [
+        "ACCEPT",
+        "AI",
+        "ASSIGN",
+        "ASSIGNED",
+        "CANCEL",
+        "CANCELLED",
+        "COMPLETE",
+        "COMPLETED",
+        "IN_PROGRESS",
+        "MARK_MISSED",
+        "MISSED",
+        "OK",
+        "SKIP",
+        "SKIPPED",
+        "START",
+        "SYSTEM"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [
+        "ACCEPT",
+        "ASSIGN",
+        "CANCEL",
+        "COMPLETE",
+        "MARK_MISSED",
+        "SKIP",
+        "START"
+      ],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assigneeId",
+        "assigneeRole",
+        "completionNote",
+        "exceptionReason"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "assigneeId",
+        "assigneeRole"
+      ],
+      "module_table_references": [
+        "care_task_audit",
+        "care_tasks"
+      ],
+      "module_action_checks": [
+        "'Unsupported Care Task action',",
+        "'Unsupported Care Task action.',",
+        "case 'ACCEPT':",
+        "case 'ASSIGN':",
+        "case 'CANCEL': {",
+        "case 'COMPLETE': {",
+        "case 'MARK_MISSED': {",
+        "case 'SKIP': {",
+        "case 'START':",
+        "normalizedAction ==="
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+      "handler": "mutate",
+      "source": "api/src/clinical-observations/clinical.controller.ts",
+      "path_params": [
+        "aggregateType",
+        "aggregateId",
+        "action"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "input",
+      "body_type": "ClinicalMutationInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/clinical-observations/clinical.types.ts",
+          "kind": "interface",
+          "name": "ClinicalMutationInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [
+        {
+          "name": "reason",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "correctedValue",
+          "required": false,
+          "type": "unknown"
+        },
+        {
+          "name": "reviewOutcome",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedReviewer",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedReviewerRole",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "resolutionSummary",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "linkedCareActionId",
+          "required": false,
+          "type": "string | null"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": true,
+      "source_uppercase_literals": [
+        "ABNORMAL_FINDING",
+        "ABNORMAL_FINDING_ACKNOWLEDGED",
+        "ABNORMAL_FINDING_CLOSED",
+        "ABNORMAL_FINDING_ESCALATED",
+        "ABNORMAL_FINDING_REVIEW_STARTED",
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGED",
+        "ACKNOWLEDGE_FINDING",
+        "AI",
+        "AMENDED",
+        "AMEND_OBSERVATION",
+        "ASSIGNED",
+        "ASSIGN_ESCALATION",
+        "CANCELLED",
+        "CANCEL_ESCALATION",
+        "CARE_ACTION_LINKED",
+        "CARE_MANAGER",
+        "CLINICAL_ESCALATION",
+        "CLINICAL_ESCALATION_ACCEPTED",
+        "CLINICAL_ESCALATION_ASSIGNED",
+        "CLINICAL_ESCALATION_CANCELLED",
+        "CLINICAL_ESCALATION_RESOLVED",
+        "CLINICAL_OBSERVATION",
+        "CLOSED",
+        "CLOSE_FINDING",
+        "DRAFT",
+        "ESCALATED",
+        "ESCALATE_FINDING",
+        "LINK_CARE_ACTION",
+        "NURSING_NOTE",
+        "NURSING_NOTE_SIGNED",
+        "OBSERVATION_AMENDED",
+        "OBSERVATION_VERIFIED",
+        "OBSERVATION_VOIDED",
+        "OK",
+        "OPEN",
+        "RECORDED",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "SIGNED",
+        "SIGN_NURSING_NOTE",
+        "START_FINDING_REVIEW",
+        "SUPERVISOR",
+        "SYSTEM",
+        "UNDER_REVIEW",
+        "VERIFIED",
+        "VERIFY_OBSERVATION",
+        "VOIDED",
+        "VOID_OBSERVATION"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "SOURCE_PROVEN_ROLE",
+          "allowed_values": [
+            "SUPERVISOR"
+          ],
+          "selected_test_value": "SUPERVISOR"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGE_FINDING",
+        "AMEND_OBSERVATION",
+        "ASSIGN_ESCALATION",
+        "CANCEL_ESCALATION",
+        "CLOSE_FINDING",
+        "ESCALATE_FINDING",
+        "LINK_CARE_ACTION",
+        "RESOLVE_ESCALATION",
+        "SIGN_NURSING_NOTE",
+        "START_FINDING_REVIEW",
+        "VERIFY_OBSERVATION",
+        "VOID_OBSERVATION"
+      ],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "aggregateColumn",
+        "aggregateId",
+        "assignedReviewer",
+        "assignedReviewerRole",
+        "correctedValue",
+        "eventType",
+        "linkedCareActionId",
+        "newState",
+        "previousState",
+        "reason",
+        "residentId",
+        "resolutionSummary",
+        "reviewOutcome"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole"
+      ],
+      "module_table_references": [
+        "abnormal_findings",
+        "care_actions",
+        "clinical_audit",
+        "clinical_escalations",
+        "clinical_observation_amendments",
+        "clinical_observations",
+        "nursing_notes"
+      ],
+      "module_action_checks": [
+        "'Unsupported clinical action.',",
+        "action ==="
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/fall-mobility/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/fall-mobility/fall-mobility.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": true,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_FALL_ESCALATION",
+        "ACKNOWLEDGED",
+        "ACKNOWLEDGE_FALL_EVENT",
+        "ACTIVATE_AMBULANCE",
+        "ACTIVATE_MOBILITY_PLAN",
+        "ACTIVATE_PREVENTION_ACTION",
+        "ACTIVE",
+        "ADMINISTER_MEDICATION",
+        "ADMIT_TO_HOSPITAL",
+        "ADVISORY_ONLY",
+        "AI",
+        "AMENDED",
+        "AMEND_POST_FALL_OBSERVATION",
+        "ASSIGNED",
+        "ASSIGN_FALL_ESCALATION",
+        "ASSIGN_FALL_EVENT",
+        "AUTHORIZED",
+        "AUTHORIZE_PREVENTION_ACTION",
+        "BEGIN",
+        "CARE_MANAGER",
+        "CHANGE_DOSE",
+        "CLOSED",
+        "CLOSE_FALL_EVENT",
+        "COMMIT",
+        "CREATE_CARE_ACTION",
+        "CREATE_CARE_TASK",
+        "CREATE_FALL_ESCALATION",
+        "CREATE_FALL_EVENT",
+        "CREATE_FALL_RISK_ASSESSMENT",
+        "CREATE_INCIDENT",
+        "CREATE_MEDICATION_ORDER",
+        "CREATE_MOBILITY_PLAN",
+        "CREATE_POST_FALL_OBSERVATION",
+        "CREATE_PREVENTION_ACTION",
+        "CREATE_TRANSFER_SAFETY_CHECK",
+        "DIAGNOSE_CONCUSSION",
+        "DIAGNOSE_FRACTURE",
+        "DIAGNOSE_HEAD_INJURY",
+        "DIAGNOSE_NEUROLOGICAL_INJURY",
+        "DRAFT",
+        "FALL",
+        "FALLS_MOBILITY_TRANSFER_SAFETY",
+        "FALL_ESCALATION",
+        "FALL_ESCALATION_ACCEPTED",
+        "FALL_ESCALATION_ASSIGNED",
+        "FALL_ESCALATION_CREATED",
+        "FALL_ESCALATION_RESOLVED",
+        "FALL_EVENT",
+        "FALL_EVENT_ACKNOWLEDGED",
+        "FALL_EVENT_ASSIGNED",
+        "FALL_EVENT_CLOSED",
+        "FALL_EVENT_CREATED",
+        "FALL_EVENT_RESOLVED",
+        "FALL_PREVENTION_ACTION",
+        "FALL_PREVENTION_ACTION_ACTIVATED",
+        "FALL_PREVENTION_ACTION_AUTHORIZED",
+        "FALL_PREVENTION_ACTION_CREATED",
+        "FALL_RISK_ASSESSMENT",
+        "FALL_RISK_ASSESSMENT_CREATED",
+        "FALL_RISK_ASSESSMENT_VERIFIED",
+        "HOLD_MEDICATION",
+        "INITIATE_RESTRAINT",
+        "MOBILITY_SUPPORT_PLAN",
+        "MOBILITY_SUPPORT_PLAN_ACTIVATED",
+        "MOBILITY_SUPPORT_PLAN_CREATED",
+        "MOBILITY_SUPPORT_PLAN_REVIEWED",
+        "NEAR_FALL",
+        "NON_PHARMACOLOGICAL_SUPPORT",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "POST_FALL_OBSERVATION",
+        "POST_FALL_OBSERVATION_AMENDED",
+        "POST_FALL_OBSERVATION_RECORDED",
+        "POST_FALL_OBSERVATION_VERIFIED",
+        "PRESCRIBE_IMAGING",
+        "PRESCRIBE_RESTRAINT",
+        "PROPOSED",
+        "RECORDED",
+        "RESOLVED",
+        "RESOLVE_FALL_ESCALATION",
+        "RESOLVE_FALL_EVENT",
+        "RESTRICT_MOBILITY",
+        "REVIEWED",
+        "REVIEW_MOBILITY_PLAN",
+        "ROLLBACK",
+        "SELECT_PRN",
+        "SUPERVISOR",
+        "SYSTEM",
+        "TRANSFER_SAFETY_CHECK",
+        "TRANSFER_SAFETY_CHECK_RECORDED",
+        "TRANSFER_SAFETY_CHECK_VERIFIED",
+        "TRANSFER_TO_ED",
+        "TRANSFER_TO_HOSPITAL",
+        "VERIFIED",
+        "VERIFY_FALL_RISK_ASSESSMENT",
+        "VERIFY_POST_FALL_OBSERVATION",
+        "VERIFY_TRANSFER_SAFETY_CHECK"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "fall_audit",
+        "fall_escalations",
+        "fall_events",
+        "fall_prevention_actions",
+        "fall_risk_assessments",
+        "mobility_support_plans",
+        "post_fall_observations",
+        "transfer_safety_checks"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7Z action.',",
+        "case 'ACCEPT_FALL_ESCALATION': {",
+        "case 'ACKNOWLEDGE_FALL_EVENT': {",
+        "case 'ACTIVATE_MOBILITY_PLAN': {",
+        "case 'ACTIVATE_PREVENTION_ACTION': {",
+        "case 'AMEND_POST_FALL_OBSERVATION': {",
+        "case 'ASSIGN_FALL_ESCALATION': {",
+        "case 'ASSIGN_FALL_EVENT': {",
+        "case 'AUTHORIZE_PREVENTION_ACTION': {",
+        "case 'CLOSE_FALL_EVENT': {",
+        "case 'CREATE_FALL_ESCALATION': {",
+        "case 'CREATE_FALL_EVENT': {",
+        "case 'CREATE_FALL_RISK_ASSESSMENT': {",
+        "case 'CREATE_MOBILITY_PLAN': {",
+        "case 'CREATE_POST_FALL_OBSERVATION': {",
+        "case 'CREATE_PREVENTION_ACTION': {",
+        "case 'CREATE_TRANSFER_SAFETY_CHECK': {",
+        "case 'RESOLVE_FALL_ESCALATION': {",
+        "case 'RESOLVE_FALL_EVENT': {",
+        "case 'REVIEW_MOBILITY_PLAN': {",
+        "case 'VERIFY_FALL_RISK_ASSESSMENT': {",
+        "case 'VERIFY_POST_FALL_OBSERVATION': {",
+        "case 'VERIFY_TRANSFER_SAFETY_CHECK': {",
+        "if (denied.includes(action)) {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "handler": "report",
+      "source": "api/src/incidents/incident.controller.ts",
+      "path_params": [],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "input",
+      "body_type": "ReportIncidentInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/incidents/incident.types.ts",
+          "kind": "interface",
+          "name": "ReportIncidentInput"
+        }
+      ],
+      "required_fields": [],
+      "optional_fields": [
+        {
+          "name": "residentId",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "incidentCode",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "incidentType",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "title",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "description",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "location",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "occurredAt",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorId",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": false,
+          "type": "string | null"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGE",
+        "ACKNOWLEDGED",
+        "ADD_RESPONSE",
+        "AI",
+        "ASSIGN",
+        "ASSIGNED",
+        "ASSIGN_ESCALATION",
+        "CAREGIVER",
+        "CARE_MANAGER",
+        "CLOSE",
+        "CLOSED",
+        "CRITICAL",
+        "ESCALATE",
+        "ESCALATED",
+        "HIGH",
+        "INCIDENT",
+        "INCIDENT_ACKNOWLEDGED",
+        "INCIDENT_ASSIGNED",
+        "INCIDENT_CARE_ACTION_LINKED",
+        "INCIDENT_CARE_TASK_LINKED",
+        "INCIDENT_CLINICAL_OBSERVATION_LINKED",
+        "INCIDENT_CLOSED",
+        "INCIDENT_ESCALATED",
+        "INCIDENT_ESCALATION",
+        "INCIDENT_ESCALATION_ACCEPTED",
+        "INCIDENT_ESCALATION_ASSIGNED",
+        "INCIDENT_ESCALATION_RESOLVED",
+        "INCIDENT_MEDICATION_RECORD_LINKED",
+        "INCIDENT_POST_REVIEW",
+        "INCIDENT_POST_REVIEWED",
+        "INCIDENT_REPORTED",
+        "INCIDENT_RESOLVED",
+        "INCIDENT_RESPONSE",
+        "INCIDENT_RESPONSE_RECORDED",
+        "INCIDENT_RESPONSE_STARTED",
+        "INCIDENT_TRIAGED",
+        "LINK_CARE_ACTION",
+        "LINK_CARE_TASK",
+        "LINK_CLINICAL_OBSERVATION",
+        "LINK_MEDICATION_RECORD",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "POST_REVIEW",
+        "REPORTED",
+        "RESOLVE",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "RESPONDING",
+        "START_RESPONSE",
+        "SUPERVISOR",
+        "SYSTEM",
+        "TRIAGE",
+        "TRIAGED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedReviewer",
+        "assignedReviewerRole",
+        "assignedRole",
+        "assignedTo",
+        "contributingFactors",
+        "description",
+        "escalationId",
+        "escalationType",
+        "followUpRequired",
+        "incidentCode",
+        "incidentType",
+        "linkedId",
+        "location",
+        "occurredAt",
+        "preventiveActions",
+        "reason",
+        "residentId",
+        "resolutionSummary",
+        "responseNote",
+        "responseType",
+        "reviewSummary",
+        "severity",
+        "summary",
+        "title"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "care_actions",
+        "care_tasks",
+        "clinical_observations",
+        "incident_assignments",
+        "incident_audit",
+        "incident_escalations",
+        "incident_post_reviews",
+        "incident_responses",
+        "incident_triage",
+        "incidents",
+        "medication_administrations",
+        "residents"
+      ],
+      "module_action_checks": [
+        "'Unsupported Incident action',",
+        "'Unsupported Incident action.',",
+        "action === 'ACCEPT_ESCALATION'",
+        "action === 'ACCEPT_ESCALATION' ||",
+        "action === 'ACKNOWLEDGE'",
+        "action === 'ADD_RESPONSE'",
+        "action === 'ASSIGN'",
+        "action === 'ASSIGN' ||",
+        "action === 'ASSIGN_ESCALATION'",
+        "action === 'ASSIGN_ESCALATION' ||",
+        "action === 'CLOSE'",
+        "action === 'CLOSE' ||",
+        "action === 'ESCALATE'",
+        "action === 'LINK_CARE_ACTION'",
+        "action === 'LINK_CARE_ACTION' ||",
+        "action === 'LINK_CARE_TASK'",
+        "action === 'LINK_CLINICAL_OBSERVATION'",
+        "action === 'LINK_CLINICAL_OBSERVATION' ||",
+        "action === 'LINK_MEDICATION_RECORD'",
+        "action === 'POST_REVIEW'",
+        "action === 'RESOLVE'",
+        "action === 'RESOLVE' ||",
+        "action === 'RESOLVE_ESCALATION'",
+        "action === 'RESOLVE_ESCALATION' ||",
+        "action === 'START_RESPONSE'",
+        "action === 'TRIAGE'"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "handler": "mutate",
+      "source": "api/src/incidents/incident.controller.ts",
+      "path_params": [
+        "incidentId",
+        "action"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "input",
+      "body_type": "IncidentMutationInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/incidents/incident.types.ts",
+          "kind": "interface",
+          "name": "IncidentMutationInput"
+        }
+      ],
+      "required_fields": [],
+      "optional_fields": [
+        {
+          "name": "actorId",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "severity",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "summary",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedTo",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedRole",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "responseType",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "responseNote",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "escalationType",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "reason",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "escalationId",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedReviewer",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedReviewerRole",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "resolutionSummary",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "reviewSummary",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "contributingFactors",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "preventiveActions",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "followUpRequired",
+          "required": false,
+          "type": "boolean | null"
+        },
+        {
+          "name": "linkedId",
+          "required": false,
+          "type": "string | null"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": true,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGE",
+        "ACKNOWLEDGED",
+        "ADD_RESPONSE",
+        "AI",
+        "ASSIGN",
+        "ASSIGNED",
+        "ASSIGN_ESCALATION",
+        "CAREGIVER",
+        "CARE_MANAGER",
+        "CLOSE",
+        "CLOSED",
+        "CRITICAL",
+        "ESCALATE",
+        "ESCALATED",
+        "HIGH",
+        "INCIDENT",
+        "INCIDENT_ACKNOWLEDGED",
+        "INCIDENT_ASSIGNED",
+        "INCIDENT_CARE_ACTION_LINKED",
+        "INCIDENT_CARE_TASK_LINKED",
+        "INCIDENT_CLINICAL_OBSERVATION_LINKED",
+        "INCIDENT_CLOSED",
+        "INCIDENT_ESCALATED",
+        "INCIDENT_ESCALATION",
+        "INCIDENT_ESCALATION_ACCEPTED",
+        "INCIDENT_ESCALATION_ASSIGNED",
+        "INCIDENT_ESCALATION_RESOLVED",
+        "INCIDENT_MEDICATION_RECORD_LINKED",
+        "INCIDENT_POST_REVIEW",
+        "INCIDENT_POST_REVIEWED",
+        "INCIDENT_REPORTED",
+        "INCIDENT_RESOLVED",
+        "INCIDENT_RESPONSE",
+        "INCIDENT_RESPONSE_RECORDED",
+        "INCIDENT_RESPONSE_STARTED",
+        "INCIDENT_TRIAGED",
+        "LINK_CARE_ACTION",
+        "LINK_CARE_TASK",
+        "LINK_CLINICAL_OBSERVATION",
+        "LINK_MEDICATION_RECORD",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "POST_REVIEW",
+        "REPORTED",
+        "RESOLVE",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "RESPONDING",
+        "START_RESPONSE",
+        "SUPERVISOR",
+        "SYSTEM",
+        "TRIAGE",
+        "TRIAGED"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGE",
+        "ADD_RESPONSE",
+        "ASSIGN",
+        "ASSIGN_ESCALATION",
+        "CLOSE",
+        "ESCALATE",
+        "LINK_CARE_ACTION",
+        "LINK_CARE_TASK",
+        "LINK_CLINICAL_OBSERVATION",
+        "LINK_MEDICATION_RECORD",
+        "POST_REVIEW",
+        "RESOLVE",
+        "RESOLVE_ESCALATION",
+        "START_RESPONSE",
+        "TRIAGE"
+      ],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "assignedReviewer",
+        "assignedReviewerRole",
+        "assignedRole",
+        "assignedTo",
+        "contributingFactors",
+        "description",
+        "escalationId",
+        "escalationType",
+        "followUpRequired",
+        "incidentCode",
+        "incidentType",
+        "linkedId",
+        "location",
+        "occurredAt",
+        "preventiveActions",
+        "reason",
+        "residentId",
+        "resolutionSummary",
+        "responseNote",
+        "responseType",
+        "reviewSummary",
+        "severity",
+        "summary",
+        "title"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "care_actions",
+        "care_tasks",
+        "clinical_observations",
+        "incident_assignments",
+        "incident_audit",
+        "incident_escalations",
+        "incident_post_reviews",
+        "incident_responses",
+        "incident_triage",
+        "incidents",
+        "medication_administrations",
+        "residents"
+      ],
+      "module_action_checks": [
+        "'Unsupported Incident action',",
+        "'Unsupported Incident action.',",
+        "action === 'ACCEPT_ESCALATION'",
+        "action === 'ACCEPT_ESCALATION' ||",
+        "action === 'ACKNOWLEDGE'",
+        "action === 'ADD_RESPONSE'",
+        "action === 'ASSIGN'",
+        "action === 'ASSIGN' ||",
+        "action === 'ASSIGN_ESCALATION'",
+        "action === 'ASSIGN_ESCALATION' ||",
+        "action === 'CLOSE'",
+        "action === 'CLOSE' ||",
+        "action === 'ESCALATE'",
+        "action === 'LINK_CARE_ACTION'",
+        "action === 'LINK_CARE_ACTION' ||",
+        "action === 'LINK_CARE_TASK'",
+        "action === 'LINK_CLINICAL_OBSERVATION'",
+        "action === 'LINK_CLINICAL_OBSERVATION' ||",
+        "action === 'LINK_MEDICATION_RECORD'",
+        "action === 'POST_REVIEW'",
+        "action === 'RESOLVE'",
+        "action === 'RESOLVE' ||",
+        "action === 'RESOLVE_ESCALATION'",
+        "action === 'RESOLVE_ESCALATION' ||",
+        "action === 'START_RESPONSE'",
+        "action === 'TRIAGE'"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/infection-control/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/infection-control/infection-control.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": true,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_INFECTION_ESCALATION",
+        "ACKNOWLEDGED",
+        "ACKNOWLEDGE_INFECTION_ALERT",
+        "ACTIVATE_INFECTION_PLAN",
+        "ACTIVATE_PRECAUTION",
+        "ACTIVE",
+        "ADVISORY_ONLY",
+        "AI",
+        "ASSIGNED",
+        "ASSIGN_INFECTION_ESCALATION",
+        "AUTHORIZED",
+        "AUTHORIZE_PRECAUTION",
+        "BEGIN",
+        "CARE_MANAGER",
+        "COMMIT",
+        "CREATE_EXPOSURE_EVENT",
+        "CREATE_INFECTION_ALERT",
+        "CREATE_INFECTION_ESCALATION",
+        "CREATE_INFECTION_OBSERVATION",
+        "CREATE_INFECTION_PLAN",
+        "CREATE_MONITORING_RECORD",
+        "CREATE_PRECAUTION",
+        "DISCONTINUED",
+        "DISCONTINUE_PRECAUTION",
+        "DRAFT",
+        "ENHANCED_HAND_HYGIENE",
+        "EXPOSURE_EVENT",
+        "EXPOSURE_EVENT_CREATED",
+        "EXPOSURE_EVENT_REVIEWED",
+        "GENERAL_SYMPTOM_OBSERVATION",
+        "HUMAN_REVIEW_REQUIRED",
+        "INFECTION_ALERT",
+        "INFECTION_ALERT_ACKNOWLEDGED",
+        "INFECTION_ALERT_CREATED",
+        "INFECTION_CONTROL_PLAN",
+        "INFECTION_CONTROL_PLAN_ACTIVATED",
+        "INFECTION_CONTROL_PLAN_CREATED",
+        "INFECTION_CONTROL_PLAN_REVIEWED",
+        "INFECTION_ESCALATION",
+        "INFECTION_ESCALATION_ACCEPTED",
+        "INFECTION_ESCALATION_ASSIGNED",
+        "INFECTION_ESCALATION_CREATED",
+        "INFECTION_ESCALATION_RESOLVED",
+        "INFECTION_MONITORING",
+        "INFECTION_MONITORING_RECORDED",
+        "INFECTION_MONITORING_VERIFIED",
+        "INFECTION_OBSERVATION",
+        "INFECTION_OBSERVATION_RECORDED",
+        "INFECTION_OBSERVATION_VERIFIED",
+        "INFECTION_PRECAUTION",
+        "INFECTION_PRECAUTION_ACTIVATED",
+        "INFECTION_PRECAUTION_AUTHORIZED",
+        "INFECTION_PRECAUTION_DISCONTINUED",
+        "INFECTION_PRECAUTION_PROPOSED",
+        "INFECTION_SURVEILLANCE",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "POSSIBLE_CONTACT",
+        "PROPOSED",
+        "RECORDED",
+        "RESOLVED",
+        "RESOLVE_INFECTION_ESCALATION",
+        "REVIEWED",
+        "REVIEW_EXPOSURE_EVENT",
+        "REVIEW_INFECTION_PLAN",
+        "ROLLBACK",
+        "SUPERVISOR",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_INFECTION_OBSERVATION",
+        "VERIFY_MONITORING_RECORD"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "exposure_events",
+        "infection_alerts",
+        "infection_audit",
+        "infection_control_plans",
+        "infection_escalations",
+        "infection_monitoring_records",
+        "infection_observations",
+        "infection_precautions"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7W action.',",
+        "case 'ACCEPT_INFECTION_ESCALATION': {",
+        "case 'ACKNOWLEDGE_INFECTION_ALERT': {",
+        "case 'ACTIVATE_INFECTION_PLAN': {",
+        "case 'ACTIVATE_PRECAUTION': {",
+        "case 'ASSIGN_INFECTION_ESCALATION': {",
+        "case 'AUTHORIZE_PRECAUTION': {",
+        "case 'CREATE_EXPOSURE_EVENT': {",
+        "case 'CREATE_INFECTION_ALERT': {",
+        "case 'CREATE_INFECTION_ESCALATION': {",
+        "case 'CREATE_INFECTION_OBSERVATION': {",
+        "case 'CREATE_INFECTION_PLAN': {",
+        "case 'CREATE_MONITORING_RECORD': {",
+        "case 'CREATE_PRECAUTION': {",
+        "case 'DISCONTINUE_PRECAUTION': {",
+        "case 'RESOLVE_INFECTION_ESCALATION': {",
+        "case 'REVIEW_EXPOSURE_EVENT': {",
+        "case 'REVIEW_INFECTION_PLAN': {",
+        "case 'VERIFY_INFECTION_OBSERVATION': {",
+        "case 'VERIFY_MONITORING_RECORD': {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 17,
+      "method": "POST",
+      "path": "/api/medication-administrations/:administrationId/:action",
+      "handler": "mutate",
+      "source": "api/src/medication/medication.controller.ts",
+      "path_params": [
+        "administrationId",
+        "action"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "input",
+      "body_type": "MedicationAdministrationInput",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/medication/medication.types.ts",
+          "kind": "interface",
+          "name": "MedicationAdministrationInput"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "optional_fields": [
+        {
+          "name": "assignedTo",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "assignedRole",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "checkResult",
+          "required": false,
+          "type": "'PASSED' | 'FAILED' | null"
+        },
+        {
+          "name": "checkNote",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "administrationNote",
+          "required": false,
+          "type": "string | null"
+        },
+        {
+          "name": "exceptionReason",
+          "required": false,
+          "type": "string | null"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": true,
+      "source_uppercase_literals": [
+        "ACCEPT",
+        "ACCEPTED",
+        "ACTIVE",
+        "ADMINISTER",
+        "ADMINISTERED",
+        "AI",
+        "ASSIGN",
+        "ASSIGNED",
+        "CANCEL",
+        "CANCELLED",
+        "CARE_MANAGER",
+        "DOUBLE_CHECK",
+        "FAILED",
+        "HELD",
+        "MED_ADMINISTERED",
+        "MED_ADMIN_ACCEPTED",
+        "MED_ADMIN_ASSIGNED",
+        "MED_ADMIN_CANCELLED",
+        "MED_ADMIN_DOUBLE_CHECKED",
+        "MED_ADMIN_HELD",
+        "MED_ADMIN_MISSED",
+        "MED_ADMIN_READY",
+        "MED_ADMIN_REFUSED",
+        "MISSED",
+        "OK",
+        "PASSED",
+        "READY",
+        "REFUSED",
+        "SCHEDULED",
+        "SUPERVISOR",
+        "SYSTEM"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "SOURCE_PROVEN_ROLE",
+          "allowed_values": [
+            "SUPERVISOR"
+          ],
+          "selected_test_value": "SUPERVISOR"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [
+        "ACCEPT",
+        "ADMINISTER",
+        "ASSIGN",
+        "CANCEL",
+        "DOUBLE_CHECK",
+        "HELD",
+        "MISSED",
+        "READY",
+        "REFUSED"
+      ],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "administrationNote",
+        "assignedRole",
+        "assignedTo",
+        "checkNote",
+        "checkResult",
+        "eventType",
+        "exceptionReason",
+        "medicationAdministrationId",
+        "medicationOrderId",
+        "medicationScheduleId",
+        "newState",
+        "previousState",
+        "residentId"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "OF",
+        "medication_administrations",
+        "medication_audit",
+        "medication_double_checks",
+        "medication_orders"
+      ],
+      "module_action_checks": [
+        "!allowed.includes(action)",
+        "'Unsupported Medication Administration action.',",
+        "action ===",
+        "action === 'CANCEL'",
+        "action === 'HELD' ||",
+        "action === 'MISSED' ||",
+        "action === 'REFUSED'",
+        "if (action === 'ACCEPT') {",
+        "if (action === 'ADMINISTER') {",
+        "if (action === 'ASSIGN') {",
+        "if (action === 'CANCEL') {",
+        "if (action === 'DOUBLE_CHECK') {",
+        "if (action === 'HELD') {",
+        "if (action === 'MISSED') {",
+        "if (action === 'READY') {",
+        "if (action === 'REFUSED') {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/medication-safety/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/medication-safety/medication-safety.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ADD_RECONCILIATION_ITEM",
+        "ADMINISTER_MEDICATION",
+        "ADMINISTRATION_EXCEPTION_RECORDED",
+        "ADMINISTRATION_EXCEPTION_VERIFIED",
+        "ADVERSE_REACTION_AMENDMENT_RECORDED",
+        "ADVERSE_REACTION_OBSERVATION_RECORDED",
+        "ADVERSE_REACTION_OBSERVATION_VERIFIED",
+        "ADVISORY_ONLY",
+        "AI",
+        "AMENDED",
+        "AMEND_ADVERSE_REACTION_OBSERVATION",
+        "AMEND_RECONCILIATION_ITEM",
+        "BEGIN",
+        "CARE_MANAGER",
+        "CHANGE_DOSE",
+        "CHANGE_FREQUENCY",
+        "CHANGE_ROUTE",
+        "COMMIT",
+        "COMPLETE",
+        "COMPLETED",
+        "COMPLETE_HIGH_RISK_CHECK",
+        "COMPLETE_RECONCILIATION",
+        "CREATE_ADMINISTRATION_EXCEPTION",
+        "CREATE_ADVERSE_REACTION_OBSERVATION",
+        "CREATE_HIGH_RISK_CHECK",
+        "CREATE_MEDICATION_ORDER",
+        "CREATE_ORDER_REVIEW",
+        "CREATE_RECONCILIATION",
+        "CREATE_SAFETY_CHECK",
+        "DISCONTINUE_MEDICATION",
+        "DRAFT",
+        "FIRST_CHECKED",
+        "FIRST_HIGH_RISK_CHECK",
+        "HIGH_RISK_CHECK_COMPLETED",
+        "HIGH_RISK_CHECK_CREATED",
+        "HIGH_RISK_FIRST_CHECKED",
+        "HIGH_RISK_MEDICATION_CHECK",
+        "HIGH_RISK_SECOND_CHECKED",
+        "HOLD_MEDICATION",
+        "MARK_ADMINISTERED",
+        "MEDICATION_ADMINISTRATION_EXCEPTION",
+        "MEDICATION_ADVERSE_REACTION_OBSERVATION",
+        "MEDICATION_LIST_REVIEW",
+        "MEDICATION_ORDER_GOVERNANCE_REVIEW",
+        "MEDICATION_ORDER_REVIEW",
+        "MEDICATION_RECONCILIATION",
+        "MEDICATION_RECONCILIATION_ITEM",
+        "MEDICATION_SAFETY_CHECK",
+        "NURSE",
+        "OK",
+        "ORDER_REVIEW_COMPLETED",
+        "ORDER_REVIEW_CREATED",
+        "PENDING",
+        "PRESCRIBE_MEDICATION",
+        "PRESCRIBE_PRN",
+        "RECONCILIATION_COMPLETED",
+        "RECONCILIATION_CREATED",
+        "RECONCILIATION_ITEM_AMENDMENT_RECORDED",
+        "RECONCILIATION_ITEM_RECORDED",
+        "RECONCILIATION_ITEM_VERIFIED",
+        "RECONCILIATION_REVIEWED",
+        "RECORDED",
+        "RESUME_MEDICATION",
+        "REVIEWED",
+        "REVIEW_MEDICATION_ORDER",
+        "REVIEW_RECONCILIATION",
+        "ROLLBACK",
+        "SAFETY_CHECK_RECORDED",
+        "SAFETY_CHECK_VERIFIED",
+        "SECOND_CHECKED",
+        "SECOND_HIGH_RISK_CHECK",
+        "SELECT_PRN",
+        "SUPERVISOR",
+        "SYSTEM",
+        "UPDATE_MEDICATION_ORDER",
+        "VERIFIED",
+        "VERIFY_ADMINISTRATION_EXCEPTION",
+        "VERIFY_ADVERSE_REACTION_OBSERVATION",
+        "VERIFY_RECONCILIATION_ITEM",
+        "VERIFY_SAFETY_CHECK"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole"
+      ],
+      "module_table_references": [
+        "high_risk_medication_checks",
+        "medication_administration_exceptions",
+        "medication_adverse_reaction_observations",
+        "medication_order_reviews",
+        "medication_reconciliation_items",
+        "medication_reconciliations",
+        "medication_safety_audit",
+        "medication_safety_checks"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7X action.',",
+        "case 'ADD_RECONCILIATION_ITEM': {",
+        "case 'AMEND_ADVERSE_REACTION_OBSERVATION': {",
+        "case 'AMEND_RECONCILIATION_ITEM': {",
+        "case 'COMPLETE_HIGH_RISK_CHECK': {",
+        "case 'COMPLETE_RECONCILIATION': {",
+        "case 'CREATE_ADMINISTRATION_EXCEPTION': {",
+        "case 'CREATE_ADVERSE_REACTION_OBSERVATION': {",
+        "case 'CREATE_HIGH_RISK_CHECK': {",
+        "case 'CREATE_ORDER_REVIEW': {",
+        "case 'CREATE_RECONCILIATION': {",
+        "case 'CREATE_SAFETY_CHECK': {",
+        "case 'FIRST_HIGH_RISK_CHECK': {",
+        "case 'REVIEW_MEDICATION_ORDER': {",
+        "case 'REVIEW_RECONCILIATION': {",
+        "case 'SECOND_HIGH_RISK_CHECK': {",
+        "case 'VERIFY_ADMINISTRATION_EXCEPTION': {",
+        "case 'VERIFY_ADVERSE_REACTION_OBSERVATION': {",
+        "case 'VERIFY_RECONCILIATION_ITEM': {",
+        "case 'VERIFY_SAFETY_CHECK': {",
+        "if (denied.includes(action)) {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/pain-comfort/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/pain-comfort/pain-comfort.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": true,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_PAIN_ESCALATION",
+        "ACKNOWLEDGED",
+        "ACKNOWLEDGE_PAIN_ALERT",
+        "ACTIVATE_PAIN_PLAN",
+        "ACTIVE",
+        "ADVISORY_ONLY",
+        "AI",
+        "AMENDED",
+        "AMEND_PAIN_ASSESSMENT",
+        "ASSIGNED",
+        "ASSIGN_PAIN_ESCALATION",
+        "BEGIN",
+        "CARE_MANAGER",
+        "COMFORT_INTERVENTION",
+        "COMFORT_INTERVENTION_RECORDED",
+        "COMFORT_INTERVENTION_VERIFIED",
+        "COMMIT",
+        "CREATE_COMFORT_INTERVENTION",
+        "CREATE_PAIN_ALERT",
+        "CREATE_PAIN_ASSESSMENT",
+        "CREATE_PAIN_ESCALATION",
+        "CREATE_PAIN_PLAN",
+        "CREATE_PAIN_REASSESSMENT",
+        "CREATE_SYMPTOM_OBSERVATION",
+        "DISCOMFORT",
+        "DRAFT",
+        "HUMAN_ASSESSMENT",
+        "HUMAN_REVIEW_REQUIRED",
+        "MEDICATION",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "OPIOID",
+        "PAIN_ASSESSMENT",
+        "PAIN_ASSESSMENT_AMENDMENT_RECORDED",
+        "PAIN_ASSESSMENT_RECORDED",
+        "PAIN_ASSESSMENT_VERIFIED",
+        "PAIN_CARE_PLAN",
+        "PAIN_CARE_PLAN_ACTIVATED",
+        "PAIN_CARE_PLAN_CREATED",
+        "PAIN_CARE_PLAN_REVIEWED",
+        "PAIN_COMFORT_SYMPTOM_MANAGEMENT",
+        "PAIN_ESCALATION",
+        "PAIN_ESCALATION_ACCEPTED",
+        "PAIN_ESCALATION_ASSIGNED",
+        "PAIN_ESCALATION_CREATED",
+        "PAIN_ESCALATION_RESOLVED",
+        "PAIN_REASSESSMENT",
+        "PAIN_REASSESSMENT_RECORDED",
+        "PAIN_REASSESSMENT_VERIFIED",
+        "PAIN_SAFETY_ALERT",
+        "PAIN_SAFETY_ALERT_ACKNOWLEDGED",
+        "PAIN_SAFETY_ALERT_CREATED",
+        "PRN",
+        "REASSURANCE",
+        "RECORDED",
+        "RESOLVED",
+        "RESOLVE_PAIN_ESCALATION",
+        "REVIEWED",
+        "REVIEW_PAIN_PLAN",
+        "ROLLBACK",
+        "SEDATION",
+        "SUPERVISOR",
+        "SYMPTOM_OBSERVATION",
+        "SYMPTOM_OBSERVATION_RECORDED",
+        "SYMPTOM_OBSERVATION_VERIFIED",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_COMFORT_INTERVENTION",
+        "VERIFY_PAIN_ASSESSMENT",
+        "VERIFY_PAIN_REASSESSMENT",
+        "VERIFY_SYMPTOM_OBSERVATION"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "comfort_interventions",
+        "pain_assessments",
+        "pain_audit",
+        "pain_care_plans",
+        "pain_escalations",
+        "pain_reassessments",
+        "pain_safety_alerts",
+        "symptom_observations"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7V action.',",
+        "case 'ACCEPT_PAIN_ESCALATION': {",
+        "case 'ACKNOWLEDGE_PAIN_ALERT': {",
+        "case 'ACTIVATE_PAIN_PLAN': {",
+        "case 'AMEND_PAIN_ASSESSMENT': {",
+        "case 'ASSIGN_PAIN_ESCALATION': {",
+        "case 'CREATE_COMFORT_INTERVENTION': {",
+        "case 'CREATE_PAIN_ALERT': {",
+        "case 'CREATE_PAIN_ASSESSMENT': {",
+        "case 'CREATE_PAIN_ESCALATION': {",
+        "case 'CREATE_PAIN_PLAN': {",
+        "case 'CREATE_PAIN_REASSESSMENT': {",
+        "case 'CREATE_SYMPTOM_OBSERVATION': {",
+        "case 'RESOLVE_PAIN_ESCALATION': {",
+        "case 'REVIEW_PAIN_PLAN': {",
+        "case 'VERIFY_COMFORT_INTERVENTION': {",
+        "case 'VERIFY_PAIN_ASSESSMENT': {",
+        "case 'VERIFY_PAIN_REASSESSMENT': {",
+        "case 'VERIFY_SYMPTOM_OBSERVATION': {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 20,
+      "method": "POST",
+      "path": "/api/personal-care/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/personal-care/personal-care.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACCEPT_SCHEDULE",
+        "ACTIVATE_CARE_PLAN",
+        "ACTIVE",
+        "AI",
+        "ASSIGNED",
+        "ASSIGN_ESCALATION",
+        "ASSIGN_SCHEDULE",
+        "BEGIN",
+        "CANCELLED",
+        "CANCEL_SCHEDULE",
+        "CARE_MANAGER",
+        "COMMIT",
+        "COMPLETED",
+        "COMPLETE_SCHEDULE",
+        "CONTINENCE_OBSERVATION",
+        "CONTINENCE_OBSERVATION_RECORDED",
+        "CONTINENCE_OBSERVATION_VERIFIED",
+        "CREATE_ASSISTANCE",
+        "CREATE_CARE_PLAN",
+        "CREATE_CARE_RECORD",
+        "CREATE_CONTINENCE_OBSERVATION",
+        "CREATE_ESCALATION",
+        "CREATE_SCHEDULE",
+        "CREATE_TOILETING_RECORD",
+        "DRAFT",
+        "FACTUAL_OBSERVATION",
+        "HELD",
+        "HOLD_SCHEDULE",
+        "HYGIENE_CARE_PLAN",
+        "HYGIENE_CARE_PLAN_ACTIVATED",
+        "HYGIENE_CARE_PLAN_CREATED",
+        "HYGIENE_CARE_RECORD",
+        "HYGIENE_CARE_RECORDED",
+        "HYGIENE_CARE_VERIFIED",
+        "HYGIENE_SCHEDULE",
+        "HYGIENE_SCHEDULE_ACCEPTED",
+        "HYGIENE_SCHEDULE_ASSIGNED",
+        "HYGIENE_SCHEDULE_CREATED",
+        "HYGIENE_SCHEDULE_READY",
+        "MISSED",
+        "MISS_SCHEDULE",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "PERSONAL_CARE",
+        "PERSONAL_CARE_ASSISTANCE",
+        "PERSONAL_CARE_ASSISTANCE_RECORDED",
+        "PERSONAL_CARE_ESCALATION",
+        "PERSONAL_CARE_ESCALATION_ACCEPTED",
+        "PERSONAL_CARE_ESCALATION_ASSIGNED",
+        "PERSONAL_CARE_ESCALATION_CREATED",
+        "PERSONAL_CARE_ESCALATION_RESOLVED",
+        "PERSONAL_HYGIENE_BATHING_TOILETING_CONTINENCE",
+        "READY",
+        "READY_SCHEDULE",
+        "RECORDED",
+        "REFUSED",
+        "REFUSE_SCHEDULE",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "ROLLBACK",
+        "SCHEDULED",
+        "SUPERVISOR",
+        "SYSTEM",
+        "TOILETING_RECORD",
+        "TOILETING_RECORDED",
+        "VERIFIED",
+        "VERIFY_CARE_RECORD",
+        "VERIFY_CONTINENCE_OBSERVATION"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [
+        "OF",
+        "continence_observations",
+        "hygiene_care_plans",
+        "hygiene_care_records",
+        "hygiene_schedules",
+        "personal_care_assistance",
+        "personal_care_audit",
+        "personal_care_escalations",
+        "toileting_records"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7S action.',",
+        "action !== 'COMPLETE_SCHEDULE' &&",
+        "action === 'COMPLETE_SCHEDULE' &&",
+        "case 'ACCEPT_ESCALATION': {",
+        "case 'ACCEPT_SCHEDULE': {",
+        "case 'ACTIVATE_CARE_PLAN': {",
+        "case 'ASSIGN_ESCALATION': {",
+        "case 'ASSIGN_SCHEDULE': {",
+        "case 'CANCEL_SCHEDULE': {",
+        "case 'COMPLETE_SCHEDULE':",
+        "case 'CREATE_ASSISTANCE': {",
+        "case 'CREATE_CARE_PLAN': {",
+        "case 'CREATE_CARE_RECORD': {",
+        "case 'CREATE_CONTINENCE_OBSERVATION': {",
+        "case 'CREATE_ESCALATION': {",
+        "case 'CREATE_SCHEDULE': {",
+        "case 'CREATE_TOILETING_RECORD': {",
+        "case 'HOLD_SCHEDULE':",
+        "case 'MISS_SCHEDULE':",
+        "case 'READY_SCHEDULE': {",
+        "case 'REFUSE_SCHEDULE':",
+        "case 'RESOLVE_ESCALATION': {",
+        "case 'VERIFY_CARE_RECORD': {",
+        "case 'VERIFY_CONTINENCE_OBSERVATION': {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+      "handler": "accept",
+      "source": "api/src/responsibility-acceptance/responsibility-acceptance.controller.ts",
+      "path_params": [
+        "residentId",
+        "patternId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [
+        "actorId",
+        "actorRole",
+        "dueAt",
+        "priority"
+      ],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "HIGH",
+        "LOW",
+        "MODERATE",
+        "PENDING"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "actorId",
+        "actorRole",
+        "dueAt",
+        "patternId",
+        "priority",
+        "residentId"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo"
+      ],
+      "module_table_references": [],
+      "module_action_checks": [],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/safeguarding/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/safeguarding/safeguarding.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": true,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_SAFEGUARDING_ASSIGNMENT",
+        "ACCEPT_SAFEGUARDING_ESCALATION",
+        "ACTIVATE_PROTECTIVE_ACTION",
+        "ACTIVE",
+        "ADMINISTER_MEDICATION",
+        "ADVISORY_ONLY",
+        "AI",
+        "AMENDED",
+        "AMEND_SAFEGUARDING_REVIEW",
+        "ASSIGNED",
+        "ASSIGN_SAFEGUARDING_CASE",
+        "ASSIGN_SAFEGUARDING_ESCALATION",
+        "AUTHORIZED",
+        "AUTHORIZE_PROTECTIVE_ACTION",
+        "BEGIN",
+        "CARE_MANAGER",
+        "CLOSED",
+        "CLOSE_POST_REVIEW",
+        "CLOSE_SAFEGUARDING_REPORT",
+        "COMMIT",
+        "COMPLETED",
+        "COMPLETE_SAFEGUARDING_REVIEW",
+        "CREATE_CARE_ACTION",
+        "CREATE_CARE_TASK",
+        "CREATE_INCIDENT",
+        "CREATE_MEDICATION_ORDER",
+        "CREATE_POST_REVIEW",
+        "CREATE_SAFEGUARDING_ESCALATION",
+        "CREATE_SAFEGUARDING_REPORT",
+        "CREATE_SAFEGUARDING_REVIEW",
+        "DETERMINE_ABUSE",
+        "DETERMINE_EXPLOITATION",
+        "DETERMINE_NEGLECT",
+        "DISCIPLINE_STAFF",
+        "ENDED",
+        "END_PROTECTIVE_ACTION",
+        "IDENTIFY_PERPETRATOR",
+        "IN_PROGRESS",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "PROPOSED",
+        "PROPOSE_PROTECTIVE_ACTION",
+        "PROTECTIVE_ACTION",
+        "PROTECTIVE_ACTION_ACTIVATED",
+        "PROTECTIVE_ACTION_AUTHORIZED",
+        "PROTECTIVE_ACTION_ENDED",
+        "PROTECTIVE_ACTION_PROPOSED",
+        "PROTECTIVE_ACTION_REVIEWED",
+        "REPORTED",
+        "REPORT_TO_AUTHORITY",
+        "REPORT_TO_POLICE",
+        "REPORT_TO_REGULATOR",
+        "RESOLVED",
+        "RESOLVE_SAFEGUARDING_ESCALATION",
+        "RESOLVE_SAFEGUARDING_REPORT",
+        "RESTRICT_FAMILY_CONTACT",
+        "RESTRICT_RESIDENT_COMMUNICATION",
+        "RESTRICT_RESIDENT_MOVEMENT",
+        "REVIEWED",
+        "REVIEW_POST_REVIEW",
+        "REVIEW_PROTECTIVE_ACTION",
+        "ROLLBACK",
+        "SAFEGUARDING_ASSIGNMENT",
+        "SAFEGUARDING_ASSIGNMENT_ACCEPTED",
+        "SAFEGUARDING_CASE_ASSIGNED",
+        "SAFEGUARDING_ESCALATION",
+        "SAFEGUARDING_ESCALATION_ACCEPTED",
+        "SAFEGUARDING_ESCALATION_ASSIGNED",
+        "SAFEGUARDING_ESCALATION_CREATED",
+        "SAFEGUARDING_ESCALATION_RESOLVED",
+        "SAFEGUARDING_POST_REVIEW",
+        "SAFEGUARDING_POST_REVIEW_CLOSED",
+        "SAFEGUARDING_POST_REVIEW_CREATED",
+        "SAFEGUARDING_POST_REVIEW_REVIEWED",
+        "SAFEGUARDING_REPORT",
+        "SAFEGUARDING_REPORT_CLOSED",
+        "SAFEGUARDING_REPORT_CREATED",
+        "SAFEGUARDING_REPORT_RESOLVED",
+        "SAFEGUARDING_REVIEW",
+        "SAFEGUARDING_REVIEWER",
+        "SAFEGUARDING_REVIEW_AMENDMENT_RECORDED",
+        "SAFEGUARDING_REVIEW_COMPLETED",
+        "SAFEGUARDING_REVIEW_STARTED",
+        "SAFEGUARDING_TRIAGE",
+        "SAFEGUARDING_TRIAGE_COMPLETED",
+        "SUPERVISOR",
+        "SUSPEND_STAFF",
+        "SYSTEM",
+        "TERMINATE_STAFF",
+        "TRIAGED",
+        "TRIAGE_SAFEGUARDING_REPORT",
+        "UNDER_REVIEW"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "protective_actions",
+        "safeguarding_assignments",
+        "safeguarding_audit",
+        "safeguarding_escalations",
+        "safeguarding_post_reviews",
+        "safeguarding_reports",
+        "safeguarding_reviews",
+        "safeguarding_triage"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7Y action.',",
+        "case 'ACCEPT_SAFEGUARDING_ASSIGNMENT': {",
+        "case 'ACCEPT_SAFEGUARDING_ESCALATION': {",
+        "case 'ACTIVATE_PROTECTIVE_ACTION': {",
+        "case 'AMEND_SAFEGUARDING_REVIEW': {",
+        "case 'ASSIGN_SAFEGUARDING_CASE': {",
+        "case 'ASSIGN_SAFEGUARDING_ESCALATION': {",
+        "case 'AUTHORIZE_PROTECTIVE_ACTION': {",
+        "case 'CLOSE_POST_REVIEW': {",
+        "case 'CLOSE_SAFEGUARDING_REPORT': {",
+        "case 'COMPLETE_SAFEGUARDING_REVIEW': {",
+        "case 'CREATE_POST_REVIEW': {",
+        "case 'CREATE_SAFEGUARDING_ESCALATION': {",
+        "case 'CREATE_SAFEGUARDING_REPORT': {",
+        "case 'CREATE_SAFEGUARDING_REVIEW': {",
+        "case 'END_PROTECTIVE_ACTION': {",
+        "case 'PROPOSE_PROTECTIVE_ACTION': {",
+        "case 'RESOLVE_SAFEGUARDING_ESCALATION': {",
+        "case 'RESOLVE_SAFEGUARDING_REPORT': {",
+        "case 'REVIEW_POST_REVIEW': {",
+        "case 'REVIEW_PROTECTIVE_ACTION': {",
+        "case 'TRIAGE_SAFEGUARDING_REPORT': {",
+        "if (denied.includes(action)) {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 23,
+      "method": "POST",
+      "path": "/api/skin-wound/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/skin-wound/skin-wound.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": false,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ESCALATION",
+        "ACTIVATE_CARE_PLAN",
+        "ACTIVATE_WOUND",
+        "ACTIVE",
+        "AI",
+        "AMENDED",
+        "AMEND_SKIN_ASSESSMENT",
+        "ASSIGNED",
+        "ASSIGN_ESCALATION",
+        "BEGIN",
+        "CANCELLED",
+        "CANCEL_REPOSITIONING",
+        "CARE_MANAGER",
+        "CLOSED",
+        "CLOSE_WOUND",
+        "COMMIT",
+        "COMPLETED",
+        "COMPLETE_REPOSITIONING",
+        "CREATE_CARE_PLAN",
+        "CREATE_ESCALATION",
+        "CREATE_PROGRESS",
+        "CREATE_REPOSITIONING",
+        "CREATE_SKIN_ASSESSMENT",
+        "CREATE_TREATMENT",
+        "CREATE_WOUND",
+        "DRAFT",
+        "HELD",
+        "HOLD_REPOSITIONING",
+        "MISSED",
+        "MISS_REPOSITIONING",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "RECORDED",
+        "REFUSED",
+        "REFUSE_REPOSITIONING",
+        "REPOSITIONING",
+        "REPOSITIONING_CREATED",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "RESOLVE_WOUND",
+        "ROLLBACK",
+        "SCHEDULED",
+        "SKIN_ASSESSMENT",
+        "SKIN_ASSESSMENT_AMENDED",
+        "SKIN_ASSESSMENT_CREATED",
+        "SKIN_ASSESSMENT_VERIFIED",
+        "SKIN_INTEGRITY",
+        "SKIN_INTEGRITY_WOUND_PRESSURE_INJURY",
+        "SUPERVISOR",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_PROGRESS",
+        "VERIFY_SKIN_ASSESSMENT",
+        "VERIFY_TREATMENT",
+        "VERIFY_WOUND",
+        "WOUND",
+        "WOUND_ACTIVATED",
+        "WOUND_CARE",
+        "WOUND_CARE_PLAN",
+        "WOUND_CARE_PLAN_ACTIVATED",
+        "WOUND_CARE_PLAN_CREATED",
+        "WOUND_CREATED",
+        "WOUND_ESCALATION",
+        "WOUND_ESCALATION_ACCEPTED",
+        "WOUND_ESCALATION_ASSIGNED",
+        "WOUND_ESCALATION_CREATED",
+        "WOUND_ESCALATION_RESOLVED",
+        "WOUND_PROGRESS",
+        "WOUND_PROGRESS_RECORDED",
+        "WOUND_PROGRESS_VERIFIED",
+        "WOUND_TREATMENT",
+        "WOUND_TREATMENT_RECORDED",
+        "WOUND_TREATMENT_VERIFIED",
+        "WOUND_VERIFIED"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "action",
+        "actorId",
+        "actorRole",
+        "amendmentReason",
+        "anatomicalLocation",
+        "appearanceObservation",
+        "assessmentContext",
+        "assessmentType",
+        "assignedReviewer",
+        "assignedReviewerRole",
+        "careGoal",
+        "description",
+        "dressingInstruction",
+        "dressingNote",
+        "exceptionReason",
+        "exudateObservation",
+        "humanClassification",
+        "mobilityRelatedRisk",
+        "moistureRelatedRisk",
+        "nutritionRelatedRisk",
+        "onsetOrDiscoveryAt",
+        "otherObservation",
+        "painObservation",
+        "positionOrAction",
+        "pressureAreaObservation",
+        "preventionInstruction",
+        "reason",
+        "repositioningRecordId",
+        "resolutionSummary",
+        "riskFactors",
+        "scheduledAt",
+        "severity",
+        "sizeObservation",
+        "skinAssessmentId",
+        "skinConditionSummary",
+        "supportDevice",
+        "surroundingSkinObservation",
+        "treatmentInstruction",
+        "treatmentNote",
+        "treatmentType",
+        "verificationRequired",
+        "woundCarePlanId",
+        "woundEscalationId",
+        "woundProgressRecordId",
+        "woundRecordId",
+        "woundTreatmentRecordId",
+        "woundType"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole"
+      ],
+      "module_table_references": [
+        "repositioning_records",
+        "skin_assessments",
+        "wound_audit",
+        "wound_care_plans",
+        "wound_escalations",
+        "wound_progress_records",
+        "wound_records",
+        "wound_treatment_records"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7R action.',",
+        "action === 'CLOSE_WOUND' &&",
+        "action === 'RESOLVE_WOUND'",
+        "action === 'RESOLVE_WOUND' &&",
+        "case 'ACCEPT_ESCALATION': {",
+        "case 'ACTIVATE_CARE_PLAN': {",
+        "case 'ACTIVATE_WOUND': {",
+        "case 'AMEND_SKIN_ASSESSMENT': {",
+        "case 'ASSIGN_ESCALATION': {",
+        "case 'CANCEL_REPOSITIONING': {",
+        "case 'CLOSE_WOUND': {",
+        "case 'COMPLETE_REPOSITIONING':",
+        "case 'CREATE_CARE_PLAN': {",
+        "case 'CREATE_ESCALATION': {",
+        "case 'CREATE_PROGRESS': {",
+        "case 'CREATE_REPOSITIONING': {",
+        "case 'CREATE_SKIN_ASSESSMENT': {",
+        "case 'CREATE_TREATMENT': {",
+        "case 'CREATE_WOUND': {",
+        "case 'HOLD_REPOSITIONING':",
+        "case 'MISS_REPOSITIONING':",
+        "case 'REFUSE_REPOSITIONING':",
+        "case 'RESOLVE_ESCALATION': {",
+        "case 'RESOLVE_WOUND':",
+        "case 'VERIFY_PROGRESS': {",
+        "case 'VERIFY_SKIN_ASSESSMENT': {",
+        "case 'VERIFY_TREATMENT': {",
+        "case 'VERIFY_WOUND': {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    },
+    {
+      "index": 24,
+      "method": "POST",
+      "path": "/api/sleep-rest/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/sleep-rest/sleep-rest.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": true,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "any",
+      "body_mode": "OPAQUE",
+      "dto_definition_status": "NONE",
+      "dto_definitions": [],
+      "required_fields": [],
+      "optional_fields": [],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_SLEEP_ESCALATION",
+        "ACKNOWLEDGED",
+        "ACKNOWLEDGE_SAFETY_ALERT",
+        "ACKNOWLEDGE_SLEEP_EVENT",
+        "ACTIVATE_SLEEP_PLAN",
+        "ACTIVE",
+        "ADVISORY_ONLY",
+        "AI",
+        "ASSIGNED",
+        "ASSIGN_SLEEP_ESCALATION",
+        "ASSIGN_SLEEP_EVENT",
+        "BEGIN",
+        "CARE_MANAGER",
+        "CLOSED",
+        "CLOSE_SLEEP_EVENT",
+        "COMFORT_SUPPORT",
+        "COMMIT",
+        "COMPLETED",
+        "COMPLETE_NIGHT_CHECK",
+        "CREATE_NIGHT_CHECK",
+        "CREATE_NIGHT_RESPONSE",
+        "CREATE_SAFETY_ALERT",
+        "CREATE_SLEEP_ESCALATION",
+        "CREATE_SLEEP_EVENT",
+        "CREATE_SLEEP_OBSERVATION",
+        "CREATE_SLEEP_PLAN",
+        "DRAFT",
+        "HELD",
+        "HOLD_NIGHT_CHECK",
+        "HUMAN_REVIEW_REQUIRED",
+        "MISSED",
+        "MISS_NIGHT_CHECK",
+        "NIGHT_CHECK_COMPLETED",
+        "NIGHT_CHECK_CREATED",
+        "NIGHT_CHECK_HELD",
+        "NIGHT_CHECK_MISSED",
+        "NIGHT_MONITORING_CHECK",
+        "NIGHT_SUPPORT_RESPONSE",
+        "NIGHT_SUPPORT_RESPONSE_RECORDED",
+        "NIGHT_SUPPORT_RESPONSE_VERIFIED",
+        "NIGHT_WAKEFULNESS",
+        "NURSE",
+        "OK",
+        "OPEN",
+        "RECORDED",
+        "RESOLVED",
+        "RESOLVE_SLEEP_ESCALATION",
+        "RESOLVE_SLEEP_EVENT",
+        "RESPONDING",
+        "REVIEWED",
+        "REVIEW_SLEEP_PLAN",
+        "ROLLBACK",
+        "SCHEDULED",
+        "SLEEP_CARE_PLAN",
+        "SLEEP_CARE_PLAN_ACTIVATED",
+        "SLEEP_CARE_PLAN_CREATED",
+        "SLEEP_CARE_PLAN_REVIEWED",
+        "SLEEP_ESCALATION",
+        "SLEEP_ESCALATION_ACCEPTED",
+        "SLEEP_ESCALATION_ASSIGNED",
+        "SLEEP_ESCALATION_CREATED",
+        "SLEEP_ESCALATION_RESOLVED",
+        "SLEEP_OBSERVATION",
+        "SLEEP_OBSERVATION_RECORDED",
+        "SLEEP_OBSERVATION_VERIFIED",
+        "SLEEP_REST_EVENT",
+        "SLEEP_REST_EVENT_ACKNOWLEDGED",
+        "SLEEP_REST_EVENT_ASSIGNED",
+        "SLEEP_REST_EVENT_CLOSED",
+        "SLEEP_REST_EVENT_CREATED",
+        "SLEEP_REST_EVENT_RESOLVED",
+        "SLEEP_REST_NIGHT_TIME_SAFETY",
+        "SLEEP_SAFETY_ALERT",
+        "SLEEP_SAFETY_ALERT_ACKNOWLEDGED",
+        "SLEEP_SAFETY_ALERT_CREATED",
+        "SUPERVISOR",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_NIGHT_RESPONSE",
+        "VERIFY_SLEEP_OBSERVATION"
+      ],
+      "deterministic_contract": false,
+      "blocking_reasons": [
+        "OPAQUE_BODY_WITH_NO_FIELD_USAGE_EVIDENCE"
+      ],
+      "required_field_value_contract": [],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "reviewerId",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "current",
+        "night_monitoring_checks",
+        "night_support_responses",
+        "sleep_audit",
+        "sleep_care_plans",
+        "sleep_escalations",
+        "sleep_observations",
+        "sleep_rest_events",
+        "sleep_safety_alerts"
+      ],
+      "module_action_checks": [
+        "'Unsupported Step 7U action.',",
+        ": action === 'MISS_NIGHT_CHECK'",
+        "action === 'COMPLETE_NIGHT_CHECK'",
+        "case 'ACCEPT_SLEEP_ESCALATION': {",
+        "case 'ACKNOWLEDGE_SAFETY_ALERT': {",
+        "case 'ACKNOWLEDGE_SLEEP_EVENT': {",
+        "case 'ACTIVATE_SLEEP_PLAN': {",
+        "case 'ASSIGN_SLEEP_ESCALATION': {",
+        "case 'ASSIGN_SLEEP_EVENT': {",
+        "case 'CLOSE_SLEEP_EVENT': {",
+        "case 'COMPLETE_NIGHT_CHECK':",
+        "case 'CREATE_NIGHT_CHECK': {",
+        "case 'CREATE_NIGHT_RESPONSE': {",
+        "case 'CREATE_SAFETY_ALERT': {",
+        "case 'CREATE_SLEEP_ESCALATION': {",
+        "case 'CREATE_SLEEP_EVENT': {",
+        "case 'CREATE_SLEEP_OBSERVATION': {",
+        "case 'CREATE_SLEEP_PLAN': {",
+        "case 'HOLD_NIGHT_CHECK': {",
+        "case 'MISS_NIGHT_CHECK':",
+        "case 'RESOLVE_SLEEP_ESCALATION': {",
+        "case 'RESOLVE_SLEEP_EVENT': {",
+        "case 'REVIEW_SLEEP_PLAN': {",
+        "case 'VERIFY_NIGHT_RESPONSE': {",
+        "case 'VERIFY_SLEEP_OBSERVATION': {",
+        "switch (action) {"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": false,
+      "runtime_contract_ready": false
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/nutrition-hydration/:residentId/execute",
+      "handler": "execute",
+      "source": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+      "path_params": [
+        "residentId"
+      ],
+      "actor_headers": {
+        "x-actor-id": false,
+        "x-actor-role": false
+      },
+      "actor_related_source_fields": {
+        "actorId": true,
+        "actorRole": true,
+        "reviewerId": false,
+        "reviewerRole": true,
+        "createdBy": false,
+        "createdByRole": false
+      },
+      "body_present": true,
+      "body_variable": "body",
+      "body_type": "NutritionCommand",
+      "body_mode": "NAMED_DTO",
+      "dto_definition_status": "EXACT_ONE",
+      "dto_definitions": [
+        {
+          "source": "api/src/nutrition-hydration/nutrition-hydration.types.ts",
+          "kind": "interface",
+          "name": "NutritionCommand"
+        }
+      ],
+      "required_fields": [
+        {
+          "name": "action",
+          "required": true,
+          "type": "NutritionAction"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "NutritionActorRole"
+        }
+      ],
+      "optional_fields": [
+        {
+          "name": "nutritionPlanId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "dietOrderId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "mealScheduleId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "feedingAssistanceId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "intakeRecordId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "nutritionAlertId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "nutritionEscalationId",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "dietType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "textureRequirement",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "fluidConsistency",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "allergyInformation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "intoleranceInformation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "restrictionInformation",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "fluidRestrictionActive",
+          "required": false,
+          "type": "boolean"
+        },
+        {
+          "name": "fluidRestrictionDetails",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "swallowingRestrictionPresent",
+          "required": false,
+          "type": "boolean"
+        },
+        {
+          "name": "safetyConfirmed",
+          "required": false,
+          "type": "boolean"
+        },
+        {
+          "name": "eventType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "scheduledAt",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedTo",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "exceptionReason",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assistanceLevel",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assistanceNote",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "intakeType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "foodIntakePercent",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "name": "fluidAmountMl",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "name": "intakeNote",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "amendmentReason",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "alertType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "sourceType",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "severity",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "summary",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "reason",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedReviewer",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "assignedReviewerRole",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "name": "resolutionSummary",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "observed_body_field_usage": [],
+      "requires_action_resolution": false,
+      "source_uppercase_literals": [
+        "ACCEPTED",
+        "ACCEPT_ASSISTANCE",
+        "ACCEPT_ESCALATION",
+        "ACCEPT_MEAL",
+        "ACKNOWLEDGED",
+        "ACK_ALERT",
+        "ACTIVATE_DIET_ORDER",
+        "ACTIVATE_PLAN",
+        "ACTIVE",
+        "AI",
+        "AI_ALERT",
+        "AMENDED",
+        "AMEND_INTAKE",
+        "ASSIGNED",
+        "ASSIGN_ASSISTANCE",
+        "ASSIGN_ESCALATION",
+        "ASSIGN_MEAL",
+        "CAREGIVER",
+        "CARE_MANAGER",
+        "COMPLETED",
+        "COMPLETE_ASSISTANCE",
+        "COMPLETE_MEAL",
+        "CREATE_ALERT",
+        "CREATE_ASSISTANCE",
+        "CREATE_DIET_ORDER",
+        "CREATE_MEAL",
+        "CREATE_PLAN",
+        "DIET_ORDER",
+        "DIET_ORDER_ACTIVATED",
+        "DIET_ORDER_CREATED",
+        "DRAFT",
+        "ESCALATED",
+        "ESCALATE_ALERT",
+        "FEEDING_ASSISTANCE",
+        "FEEDING_ASSISTANCE_ACCEPTED",
+        "FEEDING_ASSISTANCE_ASSIGNED",
+        "FEEDING_ASSISTANCE_COMPLETED",
+        "FEEDING_ASSISTANCE_CREATED",
+        "FEEDING_ASSISTANCE_STARTED",
+        "HELD",
+        "HOLD_MEAL",
+        "HUMAN",
+        "INTAKE_AMENDED",
+        "INTAKE_RECORD",
+        "INTAKE_RECORDED",
+        "INTAKE_VERIFIED",
+        "IN_PROGRESS",
+        "MEAL_ACCEPTED",
+        "MEAL_ASSIGNED",
+        "MEAL_COMPLETED",
+        "MEAL_HELD",
+        "MEAL_MISSED",
+        "MEAL_READY",
+        "MEAL_REFUSED",
+        "MEAL_SCHEDULE",
+        "MEAL_SCHEDULE_CREATED",
+        "MISSED",
+        "MISS_MEAL",
+        "NURSE",
+        "NUTRITION_ALERT",
+        "NUTRITION_ALERT_ACKNOWLEDGED",
+        "NUTRITION_ALERT_CREATED",
+        "NUTRITION_ESCALATION",
+        "NUTRITION_ESCALATION_ACCEPTED",
+        "NUTRITION_ESCALATION_ASSIGNED",
+        "NUTRITION_ESCALATION_CREATED",
+        "NUTRITION_ESCALATION_RESOLVED",
+        "NUTRITION_HYDRATION",
+        "NUTRITION_PLAN",
+        "NUTRITION_PLAN_ACTIVATED",
+        "NUTRITION_PLAN_CREATED",
+        "OK",
+        "OPEN",
+        "PLANNED",
+        "READY",
+        "READY_MEAL",
+        "RECORDED",
+        "RECORD_INTAKE",
+        "REFUSED",
+        "REFUSE_MEAL",
+        "RESOLVED",
+        "RESOLVE_ESCALATION",
+        "SCHEDULED",
+        "START_ASSISTANCE",
+        "SUPERVISOR",
+        "SYSTEM",
+        "VERIFIED",
+        "VERIFY_INTAKE"
+      ],
+      "deterministic_contract": true,
+      "blocking_reasons": [],
+      "required_field_value_contract": [
+        {
+          "field": "action",
+          "type": "NutritionAction",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "ACCEPT_ASSISTANCE",
+            "ACCEPT_ESCALATION",
+            "ACCEPT_MEAL",
+            "ACK_ALERT",
+            "ACTIVATE_DIET_ORDER",
+            "ACTIVATE_PLAN",
+            "AMEND_INTAKE",
+            "ASSIGN_ASSISTANCE",
+            "ASSIGN_ESCALATION",
+            "ASSIGN_MEAL",
+            "COMPLETE_ASSISTANCE",
+            "COMPLETE_MEAL",
+            "CREATE_ALERT",
+            "CREATE_ASSISTANCE",
+            "CREATE_DIET_ORDER",
+            "CREATE_MEAL",
+            "CREATE_PLAN",
+            "ESCALATE_ALERT",
+            "HOLD_MEAL",
+            "MISS_MEAL",
+            "READY_MEAL",
+            "RECORD_INTAKE",
+            "REFUSE_MEAL",
+            "RESOLVE_ESCALATION",
+            "START_ASSISTANCE",
+            "VERIFY_INTAKE"
+          ],
+          "selected_test_value": "ACCEPT_ASSISTANCE"
+        },
+        {
+          "field": "actorId",
+          "type": "string",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "NutritionActorRole",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "AI",
+            "CAREGIVER",
+            "CARE_MANAGER",
+            "NURSE",
+            "SUPERVISOR",
+            "SYSTEM"
+          ],
+          "selected_test_value": "AI"
+        }
+      ],
+      "unresolved_required_fields": [],
+      "source_proven_action_values": [],
+      "opaque_body_source_fields": [
+        "action",
+        "actorId",
+        "actorRole",
+        "alertType",
+        "allergyInformation",
+        "amendmentReason",
+        "assignedReviewer",
+        "assignedReviewerRole",
+        "assignedRole",
+        "assignedTo",
+        "assistanceLevel",
+        "assistanceNote",
+        "description",
+        "dietOrderId",
+        "dietType",
+        "eventType",
+        "exceptionReason",
+        "feedingAssistanceId",
+        "fluidAmountMl",
+        "fluidConsistency",
+        "fluidRestrictionActive",
+        "fluidRestrictionDetails",
+        "foodIntakePercent",
+        "intakeNote",
+        "intakeRecordId",
+        "intakeType",
+        "intoleranceInformation",
+        "mealScheduleId",
+        "nutritionAlertId",
+        "nutritionEscalationId",
+        "nutritionPlanId",
+        "reason",
+        "resolutionSummary",
+        "restrictionInformation",
+        "safetyConfirmed",
+        "scheduledAt",
+        "severity",
+        "sourceType",
+        "summary",
+        "swallowingRestrictionPresent",
+        "textureRequirement",
+        "title"
+      ],
+      "module_actor_references": [
+        "actorId",
+        "actorRole",
+        "assignedRole",
+        "assignedTo",
+        "reviewerRole"
+      ],
+      "module_table_references": [
+        "diet_orders",
+        "feeding_assistance",
+        "meal_schedules",
+        "nutrition_alerts",
+        "nutrition_audit",
+        "nutrition_escalations",
+        "nutrition_intake_records",
+        "nutrition_plans",
+        "residents"
+      ],
+      "module_action_checks": [
+        "case 'ACCEPT_ASSISTANCE':",
+        "case 'ACCEPT_ESCALATION':",
+        "case 'ACCEPT_MEAL':",
+        "case 'ACK_ALERT':",
+        "case 'ACTIVATE_DIET_ORDER':",
+        "case 'ACTIVATE_PLAN':",
+        "case 'AMEND_INTAKE':",
+        "case 'ASSIGN_ASSISTANCE':",
+        "case 'ASSIGN_ESCALATION':",
+        "case 'ASSIGN_MEAL':",
+        "case 'COMPLETE_ASSISTANCE':",
+        "case 'COMPLETE_MEAL':",
+        "case 'CREATE_ALERT':",
+        "case 'CREATE_ASSISTANCE':",
+        "case 'CREATE_DIET_ORDER':",
+        "case 'CREATE_MEAL':",
+        "case 'CREATE_PLAN':",
+        "case 'ESCALATE_ALERT':",
+        "case 'HOLD_MEAL':",
+        "case 'MISS_MEAL':",
+        "case 'READY_MEAL':",
+        "case 'RECORD_INTAKE':",
+        "case 'REFUSE_MEAL':",
+        "case 'RESOLVE_ESCALATION':",
+        "case 'START_ASSISTANCE':",
+        "case 'VERIFY_INTAKE':",
+        "if (input.action === 'ACCEPT_ASSISTANCE') {",
+        "if (input.action === 'ASSIGN_ASSISTANCE') {",
+        "if (input.action === 'COMPLETE_ASSISTANCE') {",
+        "if (input.action === 'START_ASSISTANCE') {",
+        "switch (input.action) {",
+        "throw new Error('Unsupported nutrition action.');"
+      ],
+      "required_values_resolved": true,
+      "action_resolved": true,
+      "opaque_body_resolved": true,
+      "runtime_contract_ready": true
+    }
+  ],
+  "rules": [
+    "No guessed request fields",
+    "No guessed enum values",
+    "No guessed action values",
+    "No production fixtures",
+    "No production database writes",
+    "No patch until runtime security defect proven"
+  ]
+}

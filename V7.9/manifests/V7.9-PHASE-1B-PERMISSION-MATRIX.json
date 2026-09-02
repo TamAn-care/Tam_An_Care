@@ -1,0 +1,10 @@
+{
+  "version": "V7.9",
+  "phase": "1B",
+  "status": "PASSED",
+  "security_matrix": "401|401|401|401",
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-1B-PERMISSION-MATRIX.json",
+  "inventory_hash": "0accc764245443724c589577bc25a5daae9ea19ca524963c76d3fb06e982aaca",
+  "production_write": false,
+  "next": "PHASE_1C"
+}

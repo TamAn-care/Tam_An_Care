@@ -1,0 +1,152 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F5-P1-R1
+ NUMERIC VERIFICATION REPAIR
+ EXISTING FIXTURE VERIFICATION ONLY
+ NO INSERT / NO UPDATE / NO DELETE / NO API POST
+======================================================================
+
+======================================================================
+ 1. F5-P1 PARTIAL AUTHORITY
+======================================================================
+PASS: F5-P1 PARTIAL AUTHORITY
+F5_P1_FAILURE_CLASS=NUMERIC_STRING_FORMAT_VERIFICATION_DEFECT
+FIXTURE_PROVISIONING_DEFECT_EVIDENCE=NO
+APPLICATION_DEFECT_EVIDENCE=NO
+
+======================================================================
+ 2. ISOLATED RUNTIME PRESERVATION
+======================================================================
+ISOLATED_STATE=running
+ISOLATED_HEALTH_HTTP=200
+PASS: ISOLATED RUNTIME PRESERVED
+
+======================================================================
+ 3. EXACT EXISTING FIXTURE COUNTS
+======================================================================
+FIXTURE_COUNTS=4|1|2|3|3|4|0
+PASS: FIXTURE COUNTS PRESERVED
+
+======================================================================
+ 4. NUMERIC STOCK VERIFICATION — SEMANTIC
+======================================================================
+NUMERIC_STOCK_SEMANTIC_RESULT=PASS
+PASS: INITIAL STOCK SEMANTICALLY EQUALS 20 EACH
+
+======================================================================
+ 5. ACCESS MATRIX RECONFIRMATION
+======================================================================
+ACCESS_MATRIX=1|1|0|0
+PASS: ACCESS MATRIX PRESERVED
+
+======================================================================
+ 6. GLOBAL FIXTURE DATABASE STATE
+======================================================================
+POST_DB_FIXTURE_STATE=5|2|2|3|3|4|0
+PASS: GLOBAL FIXTURE DATABASE STATE
+
+======================================================================
+ 7. APPEND-ONLY SEED CONTRACT
+======================================================================
+FIXTURE_SEED_TYPE_MATRIX=4|0
+PASS: APPEND-ONLY RECEIPT SEED CONTRACT
+
+======================================================================
+ 8. LOT TEST CONDITIONS
+======================================================================
+LOT_CONDITION_MATRIX=1|1|1
+PASS: LOT TEST CONDITIONS READY
+
+======================================================================
+ 9. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_3111=200
+PASS: RUNTIME 3111 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 10. F5-P1-R1 CLASSIFICATION
+======================================================================
+F5_P1_ORIGINAL_PROVISIONING=PASS
+F5_P1_ORIGINAL_FAILURE=STRING_FORMAT_ONLY
+NUMERIC_DATABASE_VALUE_DEFECT=NO
+NUMERIC_VERIFICATION_DEFECT=RESOLVED
+FIXTURE_REPROVISION_REQUIRED=NO
+FIXTURE_READY=YES
+
+======================================================================
+ 11. CLEANUP CONTRACT
+======================================================================
+CLEANUP_ORDER_1=resident_consumption_events
+CLEANUP_ORDER_2=inventory_transactions
+CLEANUP_ORDER_3=inventory_lots
+CLEANUP_ORDER_4=inventory_items
+CLEANUP_ORDER_5=resident_access_assignments
+CLEANUP_ORDER_6=residents
+CLEANUP_ORDER_7=staff_actors
+CLEANUP_NAMESPACE=ops2c-f5-*
+CANONICAL_SUPERVISOR_DELETE_AUTHORIZED=NO
+CANONICAL_RESIDENT_DELETE_AUTHORIZED=NO
+REQUIRED_FINAL_BASELINE=1|1|0|0|0|0|0
+PASS: CLEANUP CONTRACT PRESERVED
+
+======================================================================
+ 12. F5-P1-R1 BOUNDARY
+======================================================================
+DATABASE_MUTATION_EXECUTED=NO
+FIXTURE_INSERT_EXECUTED=NO
+FIXTURE_UPDATE_EXECUTED=NO
+FIXTURE_DELETE_EXECUTED=NO
+FUNCTIONAL_API_POST_EXECUTED=NO
+FUNCTIONAL_TEST_EXECUTED=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+IMAGE_BUILD_EXECUTED=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F5-P1-R1 DECISION
+======================================================================
+STATUS: OPS-2-C F5-P1-R1 NUMERIC VERIFICATION REPAIR PASSED
+FIXTURE_PROVISIONING_ACCEPTED=YES
+FIXTURE_COUNTS=4|1|2|3|3|4|0
+ACCESS_MATRIX=1|1|0|0
+LOT_CONDITION_MATRIX=1|1|1
+POST_DB_FIXTURE_STATE=5|2|2|3|3|4|0
+FIXTURE_SEED_TYPE_MATRIX=4|0
+ISOLATED_RUNTIME_READY=YES
+FIXTURE_READY=YES
+FUNCTIONAL_TEST_EXECUTED=NO
+FUNCTIONAL_EXECUTION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_F6_FUNCTIONAL_AUTHORIZATION
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f5_p1_r1_numeric_verification_repair_20260830_172941.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> KEEP tamancare_ops2c_functional RUNNING
+ -> KEEP ops2c-f5-* FIXTURES IN PLACE
+ -> DO NOT REPROVISION FIXTURES
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT RUN FUNCTIONAL API TEST YET
+ -> DO NOT DELETE FIXTURES YET
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

@@ -1,0 +1,18 @@
+{
+  "version": "V7.9",
+  "phase": "3",
+  "status": "ROADMAP_AUTHORITY_LOCKED",
+  "authority": "V7.8_IMMEDIATE_PREDECESSOR_PHASE3_CONTINUITY",
+  "depends_on": "V7.9_PHASE_2_FINAL_ACCEPTED",
+  "implementation_runner": "V7.9/runner/run_series04_phase3.py",
+  "rule": "SERIAL_FAIL_FAST_RESUMABLE_READ_ONLY",
+  "phase3_semantics": "PERFORMANCE_LATENCY_CONTROLLED_READ_ONLY_CONCURRENCY",
+  "gates": [
+    "PHASE_3A",
+    "PHASE_3B",
+    "PHASE_3B_R1",
+    "PHASE_3C",
+    "PHASE_3_FINAL"
+  ],
+  "maximum_authorized_concurrency": 5
+}

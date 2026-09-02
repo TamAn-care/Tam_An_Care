@@ -1,0 +1,52 @@
+{
+  "version": "V7.9",
+  "series": "05",
+  "phase": "4_FINAL",
+  "phase_name": "END_TO_END_UX_OPERATIONAL_SMOOTHNESS_ACCEPTANCE",
+  "status": "PASSED",
+  "decision": "END_TO_END_UX_OPERATIONAL_SMOOTHNESS_ACCEPTED",
+  "gate_sequence": [
+    "PHASE_4A",
+    "PHASE_4B",
+    "PHASE_4C_R1",
+    "PHASE_4C",
+    "PHASE_4_FINAL"
+  ],
+  "ux_route_screen_baseline": "PASSED",
+  "read_only_operational_visibility": "PASSED",
+  "staff_access_mutation_contract": "PASSED",
+  "controlled_operational_workflow": "PASSED",
+  "create_http": 201,
+  "create_persistence": true,
+  "create_read_visibility": true,
+  "revoke_http": 200,
+  "revoke_persistence": true,
+  "revoke_read_visibility": true,
+  "disposable_mutation_only": true,
+  "phase4_final_mutation_requests": 0,
+  "real_staff_mutation": false,
+  "real_resident_mutation": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "application_source_write": false,
+  "v77_source_write": false,
+  "production_runtime": {
+    "api_started": "2026-08-21T10:42:58.92688025Z",
+    "ui_started": "2026-08-21T10:43:11.079908006Z",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147"
+  },
+  "accepted_artifact_sha256": {
+    "phase4a_result": "e94d57226ea4520ef5b7b71ef5840e8771d089c7e5d6d167ad4e611499b52236",
+    "phase4a_manifest": "50e85c632749d2ab1f71fc6f1aa2242482f286356c9398a61fce4c50ff75af72",
+    "phase4b_result": "dddd8f7a039d6bfeb5186398d35d97f75ec25e4c9a2f6dbe1f7345f0a8918244",
+    "phase4b_manifest": "921590d126dfa5fad5b1475a5f7dff8ea1a96d11c18f40b3b8eccf2fd0b525c0",
+    "phase4c_r1_result": "388277101c1b168204da7e1d59d7e095f856ec2409c54bf8b4ea4a42e2961e02",
+    "phase4c_r1_manifest": "6c37fa16d22381a5c618f312fd1240f4b36c79904b298db40743f1f77a19a5b5",
+    "phase4c_result": "9640f49ba69ecdc249022699d4b11ec487ec61fa07ba1c9f606c8275bc770e2b",
+    "phase4c_manifest": "4f8882f0e3f2e636a1492e7bf05cd66f8506b1f86ea6622b5ff43dadcd72a622"
+  },
+  "final_acceptance": "PASS",
+  "accepted_at": "2026-08-22T05:55:08.914190+00:00"
+}

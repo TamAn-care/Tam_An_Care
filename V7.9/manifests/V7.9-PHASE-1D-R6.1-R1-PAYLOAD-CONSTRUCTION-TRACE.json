@@ -1,0 +1,17 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R6.1-R1",
+  "status": "DISCOVERY_COMPLETE",
+  "prior_blocker": "Invalid actorRole/accessScope combination.",
+  "source_proven_pair": {
+    "actorRole": "CAREGIVER",
+    "accessScope": "DIRECT_CARE"
+  },
+  "runner_mutation": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "v77_source_write": false,
+  "runner_sha256": "d4e161cb7467ad6b1cd3bf1ba6f796a31f636ad210d81cef2f4ffd880aaa5a07",
+  "next": "PATCH_EXACT_DISCOVERED_PAYLOAD_CONSTRUCTION_ONLY"
+}

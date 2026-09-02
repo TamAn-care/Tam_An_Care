@@ -1,0 +1,9 @@
+{
+  "version": "V7.8",
+  "phase": "5-FINAL",
+  "status": "PASSED",
+  "decision": "BACKUP_RESTORE_DATA_INTEGRITY_ACCEPTED",
+  "production_restore": false,
+  "production_database_write": false,
+  "next": "PHASE_6_FINAL_OPERATIONAL_ACCEPTANCE"
+}

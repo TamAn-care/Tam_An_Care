@@ -1,0 +1,43 @@
+TAM AN CARE V7.4.3
+STEP 7R AMENDMENT / CORRECTION CONTRACT
+
+APPLIES TO
+
+skin assessments
+wound treatment records
+repositioning records
+wound progress records
+and any other verified Step 7R clinical record
+
+
+RULES
+
+Verified record overwrite = NO
+
+Correction method:
+append-only amendment / replacement
+
+Original record:
+preserved
+
+Amendment must contain:
+original record reference
+amendment reason
+human actor
+human role
+timestamp
+
+Concurrent valid amendments:
+must not silently destroy history
+
+If business rule permits multiple independent append records:
+all legitimate records are preserved.
+
+If business rule allows only one replacement of a verified record:
+row lock + state validation creates exactly one winner.
+
+Loser mutation:
+zero
+
+Loser audit:
+zero

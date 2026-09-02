@@ -1,0 +1,81 @@
+{
+  "version": "V7.9",
+  "phase": "0-FINAL",
+  "status": "PASSED",
+  "decision": "V7_9_APPLICATION_COMPLETION_BASELINE_ACCEPTED",
+  "accepted_gates": [
+    "PHASE_0A",
+    "PHASE_0B",
+    "PHASE_0C",
+    "PHASE_0D"
+  ],
+  "production": {
+    "api_matrix": "200|401|401|401",
+    "ui_matrix": "200|401|401|200",
+    "runtime_restart": false
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "write": false,
+    "schema_change": false
+  },
+  "source": {
+    "frozen_parent_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "write": false
+  },
+  "coverage": {
+    "version": "V7.9",
+    "phase": "0D",
+    "matrix": [
+      {
+        "domain": "dashboard",
+        "route": "/dashboard",
+        "ui_route_200": true,
+        "api_signal": true,
+        "db_signal": true,
+        "classification": "COMPLETE_FOUNDATION"
+      },
+      {
+        "domain": "operational_care",
+        "route": "/operational-care",
+        "ui_route_200": true,
+        "api_signal": false,
+        "db_signal": true,
+        "classification": "PARTIAL_REQUIRES_WORKFLOW_ACCEPTANCE"
+      },
+      {
+        "domain": "resident_management",
+        "route": "/residents",
+        "ui_route_200": true,
+        "api_signal": true,
+        "db_signal": true,
+        "classification": "COMPLETE_FOUNDATION"
+      },
+      {
+        "domain": "staff_access",
+        "route": "/staff-access",
+        "ui_route_200": true,
+        "api_signal": true,
+        "db_signal": true,
+        "classification": "COMPLETE_FOUNDATION"
+      },
+      {
+        "domain": "system_status",
+        "route": "/system-status",
+        "ui_route_200": true,
+        "api_signal": true,
+        "db_signal": true,
+        "classification": "COMPLETE_FOUNDATION"
+      }
+    ],
+    "non_complete_foundation_count": 1,
+    "interpretation": {
+      "COMPLETE_FOUNDATION": "UI/API/DB foundation detected; functional acceptance may still be required.",
+      "PARTIAL_REQUIRES_WORKFLOW_ACCEPTANCE": "Relevant implementation exists but end-to-end workflow requires V7.9 validation.",
+      "UI_PRESENT_BACKEND_COVERAGE_UNRESOLVED": "Route is live but source-level backend evidence was insufficient for baseline classification.",
+      "MISSING_OR_UNAVAILABLE": "Capability unavailable at the baseline gate."
+    }
+  },
+  "next": "V7.9_PHASE_1_ROLE_ACCESS_STAFF"
+}

@@ -1,0 +1,225 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P3-R1
+ ISOLATED RUNTIME LAUNCH PREFLIGHT CONTINUATION
+ RESUME FROM SECTION 4
+ MODE: READ ONLY / NO CONTAINER CREATE / NO DB MUTATION
+======================================================================
+
+PRIOR_SECTION_1=PASS
+PRIOR_SECTION_2=PASS
+PRIOR_SECTION_3=PASS
+PRIOR_STOP_CLASSIFICATION=MACOS_AWK_PORTABILITY_DEFECT
+
+======================================================================
+ 4. API ENVIRONMENT CONTRACT — KEYS ONLY
+======================================================================
+
+DATABASE_URL=<REDACTED>
+PORT=<REDACTED>
+
+PASS: API ENVIRONMENT CONTRACT CAPTURED WITHOUT SECRET VALUES
+
+======================================================================
+ 5. API CONTAINER ENTRYPOINT / COMMAND
+======================================================================
+
+ENTRYPOINT=["docker-entrypoint.sh"] COMMAND=["npm","run","start:prod"]
+
+======================================================================
+ 6. SOURCE DOCKER BUILD CONTRACT
+======================================================================
+
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/VW-9E-B3-B-R1-backup-20260828-121226/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R1-backup-20260829-032905/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R2-backup-20260829-033832/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R3-backup-20260829-035206/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R4-backup-20260829-035450/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R5-backup-20260829-035916/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X2-A-CLOSEOUT-R6-backup-20260829-040354/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/X3-B1-backup-20260829-041510/docker-compose.yml
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/Dockerfile
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/docker-compose.yml
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/web/Dockerfile
+
+--- DOCKERFILES ---
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/Dockerfile
+FROM node:20-bookworm-slim AS build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+FROM node:20-bookworm-slim AS runtime
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+
+RUN npm ci --omit=dev \
+ && npm cache clean --force
+
+COPY --from=build /app/dist ./dist
+
+USER node
+
+CMD ["node", "dist/main.js"]
+
+--- COMPOSE CONTRACT SIGNALS ---
+
+FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/docker-compose.yml
+2:  postgres:
+3:    image: postgres:16
+4:    environment:
+5:      POSTGRES_USER: taman
+6:      POSTGRES_PASSWORD: taman_dev_password
+7:      POSTGRES_DB: taman_care
+11:  api:
+12:    build: ./api
+13:    environment:
+14:      PORT: 3000
+15:      DATABASE_URL: postgresql://taman:taman_dev_password@postgres:5432/taman_care
+17:    ports:
+19:    depends_on:
+
+======================================================================
+ 7. NETWORK RECONFIRMATION
+======================================================================
+
+API_NETWORKS:
+tamancare_v7_4_3_development_default
+
+DB_NETWORKS:
+tamancare_v7_4_3_development_default
+PASS: COMMON DEVELOPMENT NETWORK CONFIRMED
+
+======================================================================
+ 8. TEST PORT AVAILABILITY
+======================================================================
+
+PASS: PORT 3110 AVAILABLE
+
+======================================================================
+ 9. CURRENT SOURCE BUILDABILITY
+======================================================================
+
+API_SOURCE_BEFORE=db4e70257f1c8dc5c0b95d194c330c48a1636bdc86933ba8ac9537f88109bb7a
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+BUILD_RC=0
+API_SOURCE_AFTER=db4e70257f1c8dc5c0b95d194c330c48a1636bdc86933ba8ac9537f88109bb7a
+PASS: CURRENT API BUILDS
+PASS: BUILD PRESERVED API SOURCE
+
+======================================================================
+ 10. CURRENT DIST INVENTORY PRESENCE
+======================================================================
+
+PASS: COMPILED INVENTORY ARTIFACT PRESENT
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-common.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-common.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-transaction.service.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-authority.service.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-item.service.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.module.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-item.service.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-ledger.service.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.controller.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-transaction.service.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.controller.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-ledger.service.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-lot.service.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-authority.service.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-lot.service.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-common.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-lot.service.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-ledger.service.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.controller.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.module.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-transaction.service.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-item.service.d.ts
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory-authority.service.js.map
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/dist/inventory/inventory.module.js
+
+======================================================================
+ 11. CURRENT-SOURCE ROUTE SIGNAL IN DIST
+======================================================================
+
+DIST_INVENTORY_ROUTE_SIGNAL_COUNT=39
+PASS: INVENTORY ROUTE SIGNAL PRESENT IN COMPILED BUILD
+
+======================================================================
+ 12. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+
+http://127.0.0.1:3000/api/health -> 200
+PASS: ACCEPTED RUNTIME PRESERVED
+http://127.0.0.1:3108/api/health -> 200
+PASS: ACCEPTED RUNTIME PRESERVED
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIME PRESERVED
+
+======================================================================
+ 13. DATABASE CLEAN BASELINE RECONFIRMATION
+======================================================================
+
+DB_NAME=taman_care
+DB_USER=taman
+INVENTORY_BASELINE_COUNTS=0|0|0|0
+PASS: CLEAN INVENTORY DATABASE BASELINE
+
+======================================================================
+ 14. CANONICAL ACTOR RECONFIRMATION
+======================================================================
+
+CANONICAL_ACTOR=hqa-supervisor-001|SUPERVISOR|ACTIVE
+PASS: CANONICAL SUPERVISOR READY
+
+======================================================================
+ 15. NO TEST RUNTIME EXISTS YET
+======================================================================
+
+PASS: TEST CONTAINER NAME AVAILABLE
+
+======================================================================
+ 16. FINAL P3 CLASSIFICATION
+======================================================================
+
+STATUS: OPS-2-B-F1-P3 ISOLATED RUNTIME LAUNCH PREFLIGHT PASSED
+
+ISOLATED_NETWORK=tamancare_v7_4_3_development_default
+ISOLATED_TEST_PORT=3110
+CANONICAL_ACTOR=hqa-supervisor-001
+CANONICAL_ROLE=SUPERVISOR
+DATABASE_BASELINE=0|0|0|0
+
+AUTHORIZED_NEXT:
+ -> BUILD NEW IMAGE FROM CURRENT SOURCE
+ -> CREATE ONLY ONE NEW TEST CONTAINER
+ -> BIND HOST 127.0.0.1:3110
+ -> JOIN tamancare_v7_4_3_development_default
+ -> PRESERVE ALL ACCEPTED RUNTIMES
+
+NEXT=OPS-2-B-F1-P4 ISOLATED CURRENT-SOURCE RUNTIME
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p3_r1_runtime_launch_preflight_continuation_20260830_061423.txt
+
+======================================================================
+ IMPORTANT:
+ -> NO CONTAINER CREATED BY THIS BLOCK
+ -> NO CONTAINER REMOVED BY THIS BLOCK
+ -> NO EXISTING RUNTIME RESTARTED
+ -> DATABASE READ ONLY
+ -> SOURCE NOT PATCHED
+ -> DO NOT START CODEX AUTOPILOT
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

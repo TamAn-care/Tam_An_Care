@@ -1,0 +1,176 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F6-D3-R2E
+ POST-ACCEPTANCE RUNTIME RECURRENCE FORENSIC
+ STRICT READ ONLY
+ NO RESTART / NO HTTP POST / NO DB MUTATION
+======================================================================
+
+======================================================================
+ 1. R2C + R2D ACCEPTANCE AUTHORITY
+======================================================================
+R2C_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2c_concurrency_serialization_20260830_182553.txt
+R2D_RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2d_concurrency_semantic_classification_20260830_182738.txt
+PASS: R2C FUNCTIONAL ACCEPTANCE EVIDENCE
+PASS: R2D SEMANTIC CLASSIFICATION AUTHORITY
+
+======================================================================
+ 2. SOURCE CONTRACT PROOF
+======================================================================
+SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+LEDGER_SHA256=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: SERVICE HASH
+PASS: CONTROLLER HASH
+PASS: MODULE HASH
+PASS: LEDGER HASH
+INSUFFICIENT_STOCK_CONFLICT_SIGNAL=1
+NEGATIVE_STOCK_MESSAGE_SIGNAL=1
+PASS: INSUFFICIENT STOCK CONTRACT IS CONFLICT
+PASS: NEGATIVE STOCK CONFLICT MESSAGE
+
+======================================================================
+ 3. CURRENT CONTAINER FORENSIC
+======================================================================
+CONTAINER_EXISTS=YES
+PASS: CONTAINER EXISTS
+ISOLATED_STATE=exited
+ISOLATED_RUNNING=false
+ISOLATED_EXIT_CODE=137
+ISOLATED_OOM_KILLED=false
+ISOLATED_STATE_ERROR=<EMPTY>
+ISOLATED_STARTED_AT=2026-08-30T11:24:10.508077088Z
+ISOLATED_FINISHED_AT=2026-08-30T11:26:42.88794213Z
+ISOLATED_IMAGE_ID=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+PASS: ACCEPTED IMAGE PRESERVED
+PASS: R2D 3111=000 EXPLAINED BY EXITED CONTAINER
+PASS: NO DOCKER OOM
+PASS: NO DOCKER STATE ERROR
+
+======================================================================
+ 4. RECENT CONTAINER EVENTS
+ FORENSIC ONLY
+======================================================================
+2026-08-30T18:20:04.079231293+07:00 container update a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:04.139244751+07:00 container kill a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, signal=15, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:14.206801798+07:00 container kill a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, signal=9, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:16.375914715+07:00 container stop a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:20:16.399976840+07:00 container die a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, execDuration=735, exitCode=137, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:24:10.802680629+07:00 container start a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:25:56.143674595+07:00 container exec_create: node  a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, execID=31aaae05924b262cccbd1ecfb21da10bedb3dfe07f6bef399d96dfdacef43412, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:25:56.145295345+07:00 container exec_start: node  a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, execID=31aaae05924b262cccbd1ecfb21da10bedb3dfe07f6bef399d96dfdacef43412, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:25:56.420457345+07:00 container exec_die a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, execID=31aaae05924b262cccbd1ecfb21da10bedb3dfe07f6bef399d96dfdacef43412, exitCode=0, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:26:32.783594084+07:00 container update a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:26:32.835727376+07:00 container kill a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, signal=15, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:26:42.863180964+07:00 container kill a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, signal=9, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:26:43.427342589+07:00 container stop a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+2026-08-30T18:26:43.431358297+07:00 container die a2ca50a544bc580b90fec853aafead026f58a9c4140f499e57a7f690ef25bb9f (desktop.docker.io/ports.scheme=v2, desktop.docker.io/ports/3000/tcp=127.0.0.1:3111, execDuration=152, exitCode=137, image=tamancare_ops2c_umask022:20260830_171915, name=tamancare_ops2c_functional, tamancare.gate=OPS-2-C-F4-R7C, tamancare.resident-consumption.sha256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9, tamancare.umask022=true)
+RECENT_SIGTERM_COUNT=2
+RECENT_SIGKILL_COUNT=2
+RECENT_DIE137_COUNT=2
+PASS: EXTERNAL STOP SIGNATURE CONFIRMED
+
+======================================================================
+ 5. ACCEPTED CONCURRENCY DB STATE PRESERVED
+======================================================================
+CONCURRENCY_ISSUE_COUNT=1
+CONCURRENCY_EVENT_COUNT=1
+CONCURRENCY_BALANCE=3.0000
+SOURCE_A_MATRIX=0|0
+SOURCE_B_MATRIX=1|1
+PASS: ONE ISSUE PRESERVED
+PASS: ONE EVENT PRESERVED
+PASS: BALANCE 3 PRESERVED
+PASS: ATOMIC WINNER LOSER STATE PRESERVED
+
+======================================================================
+ 6. R3B PRESERVATION
+======================================================================
+R3B_TRANSACTION_COUNT=4
+R3B_EVENT_COUNT=4
+PASS: R3B TX PRESERVED
+PASS: R3B EVENT PRESERVED
+
+======================================================================
+ 7. OTHER CANONICAL RUNTIMES
+ 3111 INTENTIONALLY NOT RESTARTED
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000
+RUNTIME_3108=200
+PASS: RUNTIME 3108
+RUNTIME_4173=200
+PASS: RUNTIME 4173
+
+======================================================================
+ 8. FINAL SOURCE HASH
+======================================================================
+FINAL_SERVICE_SHA256=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+FINAL_CONTROLLER_SHA256=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+FINAL_MODULE_SHA256=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+FINAL_LEDGER_SHA256=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: FINAL SERVICE HASH
+PASS: FINAL CONTROLLER HASH
+PASS: FINAL MODULE HASH
+PASS: FINAL LEDGER HASH
+
+======================================================================
+ 9. R2E BOUNDARY
+======================================================================
+FUNCTIONAL_CONCURRENCY_RETRY_EXECUTED=NO
+FUNCTIONAL_HTTP_POST_EXECUTED=NO
+CONTAINER_RESTART_EXECUTED=NO
+CONTAINER_REPROVISION_EXECUTED=NO
+IMAGE_BUILD_EXECUTED=NO
+DATABASE_MUTATION=NO
+SCHEMA_MUTATION=NO
+SOURCE_MUTATION=NO
+DIST_MUTATION=NO
+TEST_DATA_CLEANUP_EXECUTED=NO
+JWT_SECRET_VALUE_PRINTED=NO
+JWT_TOKEN_PRINTED=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F6-D3-R2E DECISION
+======================================================================
+PASS_COUNT=27
+FAIL_COUNT=0
+STATUS: OPS-2-C F6-D3 CONCURRENCY FUNCTIONALLY PASSED
+HTTP_409_CURRENT_CONTRACT=CONFIRMED
+R2C_FAILURE_CLASS=TEST_EXPECTATION_DEFECT
+ACCOUNTING_LOCK_SERIALIZATION=PASS
+EXACTLY_ONE_CONCURRENT_COMMIT=PASS
+NEGATIVE_STOCK_PREVENTION=PASS
+ATOMIC_TRANSACTION_EVENT_COMMIT=PASS
+POST_ACCEPTANCE_RUNTIME_EXIT=EXTERNAL_DOCKER_STOP_RECURRENCE
+APPLICATION_DEFECT_EVIDENCE=NO
+SOURCE_REPAIR_REQUIRED=NO
+CONCURRENCY_RETRY_REQUIRED=NO
+ISOLATED_RUNTIME_RECOVERY_REQUIRED_BEFORE_NEXT_FUNCTIONAL_GATE=YES
+TEST_DATA_CLEANUP_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_RUNTIME_RECOVERY_THEN_NEGATIVE_VALIDATION
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f6_d3_r2e_post_acceptance_runtime_forensic_20260830_182846.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT RE-RUN CONCURRENCY
+ -> DO NOT REPROVISION THE ISOLATED CONTAINER
+ -> DO NOT CLEAN TEST DATA
+ -> DO NOT MODIFY SOURCE OR api/dist
+ -> DO NOT MODIFY DATABASE OR SCHEMA
+ -> DO NOT REBUILD IMAGE
+ -> DO NOT PRINT JWT_SECRET OR JWT TOKENS
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

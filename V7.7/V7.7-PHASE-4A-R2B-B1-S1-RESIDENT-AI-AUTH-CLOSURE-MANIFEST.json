@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-08-21T05:37:12.389063+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-S1",
+  "runtime_proven_gap": {
+    "route": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+    "previous_no_actor_http": 201
+  },
+  "patch": {
+    "file": "api/src/ai/early-warning.controller.ts",
+    "pre_hash": "9895a4f4e0c84503998d237b54a9699aaad5576da172c48ad10cc286a3106a94",
+    "post_hash": "601cde1ee04480e9fd78dfc0f3b822e909521a799f488bc1a826a1313c38b89a",
+    "security_model": {
+      "x_actor_id_required": true,
+      "x_actor_role_required": true,
+      "supervisor_only": false
+    }
+  },
+  "acceptance": {
+    "no_actor_http": "401",
+    "id_only_http": "401",
+    "role_only_http": "401",
+    "supervisor_http": "201",
+    "caregiver_http": "201",
+    "generic_patterns_no_actor_http": "401",
+    "ai_analyze_no_actor_http": "401",
+    "resident_association_verified": true,
+    "autonomous_clinical_action": false
+  },
+  "pre_patch_source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "post_patch_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "candidate_image_id": "sha256:9210c96ff997d0b393d2ad4ea7fa5d487685a480c4e6e6b4fb88c387d78567ee",
+  "production_changed": false
+}

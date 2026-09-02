@@ -1,0 +1,34 @@
+{
+  "frontend_root": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend",
+  "frontend_file_count": 43,
+  "tsx_file_count": 19,
+  "discovered_route_literals": [
+    "/",
+    "/dashboard",
+    "/operational-care",
+    "/residents",
+    "/residents/:residentId",
+    "/residents/:residentId/care",
+    "/staff-access",
+    "/system-status"
+  ],
+  "accepted_route_http": {
+    "/": "200",
+    "/dashboard": "200",
+    "/operational-care": "200",
+    "/residents": "200",
+    "/staff-access": "200",
+    "/system-status": "200"
+  },
+  "feature_directories": [
+    "src/components/feedback",
+    "src/components/layout",
+    "src/components/navigation",
+    "src/features/care-view",
+    "src/features/care-work",
+    "src/features/dashboard",
+    "src/features/residents",
+    "src/features/staff-access",
+    "src/features/system-status"
+  ]
+}

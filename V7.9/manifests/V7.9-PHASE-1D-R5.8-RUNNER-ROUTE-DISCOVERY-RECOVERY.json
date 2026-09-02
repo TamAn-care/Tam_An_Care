@@ -1,0 +1,17 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R5.8",
+  "status": "PASSED",
+  "root_cause": "Series 02 Phase 1D route discovery false negative",
+  "canonical_endpoint": "POST /api/operations/access-assignments",
+  "canonical_source": "V7.9/workspace/api/src/resident-access-administration/resident-access-administration.controller.ts",
+  "fallback_requires_source_proof": true,
+  "runner_sha256": "b8a43eafc9351bef3c2d74991110d65f5c69613d85167c5af98315d0d98a930d",
+  "controller_modified": false,
+  "accepted_gate_rerun": false,
+  "production_database_mutation": false,
+  "production_restart": false,
+  "v77_source_write": false,
+  "next": "RESUME_PHASE_1D"
+}

@@ -1,0 +1,1398 @@
+{
+  "version": "V7.9",
+  "series": "05_PREFLIGHT",
+  "phase": "4_ROADMAP_AUTHORITY_DISCOVERY",
+  "status": "DISCOVERY_COMPLETE",
+  "decision": "V7.8_PHASE4_CONTINUITY_EVIDENCE_AVAILABLE",
+  "implementation_authorized": false,
+  "authority_rule": "DO_NOT_INVENT_PHASE_4",
+  "phase3_final_sha256": "8105aab067743e9a788c164ce1e652e69f17e5955eb10d299be23641504390cb",
+  "phase4_preflight_sha256": "0a8df0d66a606cd2d9eac2e7f99945e45f3ac8ef01b8c588f78edca6306feda1",
+  "artifact_inventory_count": 193,
+  "version_inventory": {
+    "V7.6": 50,
+    "V7.7": 96,
+    "V7.8": 21,
+    "V7.9": 5,
+    "ROOT_OR_OTHER": 21
+  },
+  "authority_scores": {
+    "V7.6": 932,
+    "V7.7": 1824,
+    "V7.8": 783,
+    "V7.9": 53
+  },
+  "v78_candidates": [
+    {
+      "path": "V7.8-PHASE-4-END-TO-END-UX-OPERATIONAL-SMOOTHNESS-PREFLIGHT-RESULT.txt",
+      "score": 58,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PREFLIGHT",
+        "PHASE4_CONTENT",
+        "4A",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-PREFLIGHT-RESULT.txt",
+      "score": 58,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PREFLIGHT",
+        "PHASE4_CONTENT",
+        "4A",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt",
+      "score": 58,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PREFLIGHT",
+        "PHASE4_CONTENT",
+        "4A",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4A-UX-ROUTE-SCREEN-BASELINE-RESULT.txt",
+      "score": 52,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PHASE4_CONTENT",
+        "4A",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt",
+      "score": 52,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "FINAL",
+        "PHASE4_CONTENT",
+        "4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt",
+      "score": 48,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PHASE4_CONTENT",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt",
+      "score": 48,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PHASE4_CONTENT",
+        "4C",
+        "4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt",
+      "score": 44,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "RESULT",
+        "PHASE4_CONTENT",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-PHASE-4A-UX-ROUTE-SCREEN-BASELINE.json",
+      "score": 32,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "4A",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-3-FINAL-PERFORMANCE-ACCEPTANCE-PREFLIGHT-RESULT.txt",
+      "score": 28,
+      "reasons": [
+        "RESULT",
+        "FINAL",
+        "PREFLIGHT",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json",
+      "score": 28,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json",
+      "score": 28,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json",
+      "score": 28,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "4C",
+        "4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "score": 26,
+      "reasons": [
+        "PHASE4_CONTENT",
+        "4A",
+        "4B",
+        "4C",
+        "4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "score": 26,
+      "reasons": [
+        "PHASE4_CONTENT",
+        "4A",
+        "4B",
+        "4C",
+        "4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json",
+      "score": 24,
+      "reasons": [
+        "PHASE4_FILENAME",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8-FINAL-OPERATIONAL-RELEASE-FREEZE-RESULT.txt",
+      "score": 22,
+      "reasons": [
+        "RESULT",
+        "FINAL",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-3-FINAL-PERFORMANCE-ACCEPTANCE-RESULT.txt",
+      "score": 22,
+      "reasons": [
+        "RESULT",
+        "FINAL",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "score": 20,
+      "reasons": [
+        "FINAL",
+        "4A",
+        "4B",
+        "4C"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "score": 16,
+      "reasons": [
+        "4A",
+        "4B",
+        "4C",
+        "4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-PHASE-3-FINAL-PERFORMANCE-ACCEPTANCE.json",
+      "score": 12,
+      "reasons": [
+        "FINAL",
+        "4C"
+      ]
+    }
+  ],
+  "v78_gate_signals": [
+    {
+      "path": "V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-PREFLIGHT-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4B — READ-ONLY OPERATIONAL WORKFLOW VISIBILITY",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4B — READ-ONLY OPERATIONAL WORKFLOW VISIBILITY",
+        "PREFLIGHT"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4C — CONTROLLED OPERATIONAL WORKFLOW ACCEPTANCE",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4C — CONTROLLED OPERATIONAL WORKFLOW ACCEPTANCE",
+        "PREFLIGHT"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4A-UX-ROUTE-SCREEN-BASELINE-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4A — UX ROUTE + SCREEN BASELINE",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4A — UX ROUTE + SCREEN BASELINE",
+        "STATUS=PASSED"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4 FINAL",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4 FINAL",
+        "STATUS=PASSED",
+        "UX_OPERATIONAL_SMOOTHNESS=ACCEPTED"
+      ]
+    },
+    {
+      "path": "V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4B — READ-ONLY OPERATIONAL WORKFLOW VISIBILITY",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4B — READ-ONLY OPERATIONAL WORKFLOW VISIBILITY",
+        "STATUS=PASSED"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4C",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4C",
+        "STATUS=PASSED",
+        "STAFF_ACCESS=200"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt",
+      "line": 12,
+      "gate_line": "NEXT=PHASE_4_FINAL",
+      "context": [
+        "SOURCE_WRITE=NO",
+        "RUNTIME_RESTART=NO",
+        "NEXT=PHASE_4_FINAL"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt",
+      "line": 2,
+      "gate_line": "PHASE 4C-R1",
+      "context": [
+        "TAM AN CARE V7.8",
+        "PHASE 4C-R1",
+        "STATUS=PASSED",
+        "MUTATION_CONTRACT=RECOVERED"
+      ]
+    },
+    {
+      "path": "V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt",
+      "line": 7,
+      "gate_line": "NEXT=PHASE_4C",
+      "context": [
+        "REAL_STAFF_MUTATION=NO",
+        "PRODUCTION_DATABASE_WRITE=NO",
+        "NEXT=PHASE_4C"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-PHASE-4A-UX-ROUTE-SCREEN-BASELINE.json",
+      "line": 4,
+      "gate_line": "\"phase\": \"4A\",",
+      "context": [
+        "\"generated_at\": \"2026-08-21T13:38:53.834793+00:00\",",
+        "\"version\": \"V7.8\",",
+        "\"phase\": \"4A\",",
+        "\"status\": \"PASSED\",",
+        "\"decision\": \"UX_ROUTE_SCREEN_BASELINE_ACCEPTED\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json",
+      "line": 4,
+      "gate_line": "\"phase\": \"4B\",",
+      "context": [
+        "\"generated_at\": \"2026-08-21T13:41:16.462622+00:00\",",
+        "\"version\": \"V7.8\",",
+        "\"phase\": \"4B\",",
+        "\"status\": \"PASSED\",",
+        "\"decision\": \"READ_ONLY_OPERATIONAL_WORKFLOW_VISIBILITY_ACCEPTED\","
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json",
+      "line": 3,
+      "gate_line": "\"phase\": \"4-FINAL\",",
+      "context": [
+        "{",
+        "\"version\": \"V7.8\",",
+        "\"phase\": \"4-FINAL\",",
+        "\"status\": \"PASSED\",",
+        "\"decision\": \"PHASE_4_END_TO_END_UX_OPERATIONAL_SMOOTHNESS_ACCEPTED\","
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json",
+      "line": 3,
+      "gate_line": "\"phase\": \"4C\",",
+      "context": [
+        "{",
+        "\"version\": \"V7.8\",",
+        "\"phase\": \"4C\",",
+        "\"status\": \"PASSED\",",
+        "\"decision\": \"CONTROLLED_OPERATIONAL_WORKFLOW_ACCEPTED_WITH_ISOLATED_DATA_BOUNDARY\","
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json",
+      "line": 14,
+      "gate_line": "\"next\": \"PHASE_4_FINAL\"",
+      "context": [
+        "\"production_runtime_restart\": false,",
+        "\"source_write\": false,",
+        "\"next\": \"PHASE_4_FINAL\"",
+        "}"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 16,
+      "gate_line": "#   accepted Phase 4B",
+      "context": [
+        "#",
+        "# START:",
+        "#   accepted Phase 4B",
+        "#",
+        "# SERIES:"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 19,
+      "gate_line": "#   4C-R1 -> 4C -> 4 FINAL",
+      "context": [
+        "#",
+        "# SERIES:",
+        "#   4C-R1 -> 4C -> 4 FINAL",
+        "#   -> 5A -> 5B -> 5 FINAL",
+        "#   -> 6 -> FINAL OPERATIONAL FREEZE"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 87,
+      "gate_line": "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt\"",
+      "context": [
+        "P4B_RESULT = ROOT / (",
+        "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 91,
+      "gate_line": "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json\"",
+      "context": [
+        "P4B_MANIFEST = V78 / (",
+        "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 95,
+      "gate_line": "\"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt\"",
+      "context": [
+        "P4C_PREFLIGHT = ROOT / (",
+        "\"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 759,
+      "gate_line": "\"PASS: ACCEPTED V7.8 PHASE 4B CHECKPOINT LOCKED\"",
+      "context": [
+        "print(",
+        "\"PASS: ACCEPTED V7.8 PHASE 4B CHECKPOINT LOCKED\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 764,
+      "gate_line": "# PHASE 4C-R1",
+      "context": [
+        "# ============================================================",
+        "# PHASE 4C-R1",
+        "# EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY",
+        "# READ-ONLY"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 777,
+      "gate_line": "print(\"PASS: PHASE 4C-R1 ACCEPTED EVIDENCE PRESERVED\")",
+      "context": [
+        "print()",
+        "print(\"SKIP_ALREADY_ACCEPTED_PHASE_4C_R1=YES\")",
+        "print(\"PASS: PHASE 4C-R1 ACCEPTED EVIDENCE PRESERVED\")",
+        "else:",
+        "gate = \"PHASE_4C_R1\""
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 782,
+      "gate_line": "\"V7.8 PHASE 4C-R1 — EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY\"",
+      "context": [
+        "banner(",
+        "\"V7.8 PHASE 4C-R1 — EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 924,
+      "gate_line": "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\"",
+      "context": [
+        "p4cr1_manifest = (",
+        "MANIFESTS",
+        "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 929,
+      "gate_line": "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\"",
+      "context": [
+        "p4cr1_result = (",
+        "RESULTS",
+        "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 937,
+      "gate_line": "\"4C-R1\",",
+      "context": [
+        "\"phase\":",
+        "\"4C-R1\",",
+        "\"status\":"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 993,
+      "gate_line": "\"PHASE 4C-R1\",",
+      "context": [
+        "\"\\n\".join([",
+        "\"TAM AN CARE V7.8\",",
+        "\"PHASE 4C-R1\",",
+        "\"STATUS=PASSED\",",
+        "\"MUTATION_CONTRACT=RECOVERED\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 998,
+      "gate_line": "\"NEXT=PHASE_4C\",",
+      "context": [
+        "\"REAL_STAFF_MUTATION=NO\",",
+        "\"PRODUCTION_DATABASE_WRITE=NO\",",
+        "\"NEXT=PHASE_4C\",",
+        "])",
+        "+ \"\\n\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1021,
+      "gate_line": "# PHASE 4C",
+      "context": [
+        "# ============================================================",
+        "# PHASE 4C",
+        "# CONTROLLED OPERATIONAL WORKFLOW ACCEPTANCE",
+        "#"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1031,
+      "gate_line": "gate = \"PHASE_4C\"",
+      "context": [
+        "# ============================================================",
+        "gate = \"PHASE_4C\"",
+        "banner("
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1034,
+      "gate_line": "\"V7.8 PHASE 4C — CONTROLLED ISOLATED OPERATIONAL WORKFLOW ACCEPTANCE\"",
+      "context": [
+        "banner(",
+        "\"V7.8 PHASE 4C — CONTROLLED ISOLATED OPERATIONAL WORKFLOW ACCEPTANCE\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1292,
+      "gate_line": "# Phase 4C accepts interoperability through:",
+      "context": [
+        "# intentionally not performed by the hardening roadmap.",
+        "#",
+        "# Phase 4C accepts interoperability through:",
+        "# - exact source contract discovery",
+        "# - isolated 118-table schema"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1310,
+      "gate_line": "\"production DB changed during isolated Phase 4C\",",
+      "context": [
+        "if prod_after != prod_before:",
+        "safe_stop(",
+        "\"production DB changed during isolated Phase 4C\",",
+        "gate,",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1325,
+      "gate_line": "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\"",
+      "context": [
+        "p4c_manifest = (",
+        "MANIFESTS",
+        "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1330,
+      "gate_line": "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\"",
+      "context": [
+        "p4c_result = (",
+        "RESULTS",
+        "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1340,
+      "gate_line": "\"4C\",",
+      "context": [
+        "\"phase\":",
+        "\"4C\",",
+        "\"status\":"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1373,
+      "gate_line": "\"PHASE_4_FINAL\",",
+      "context": [
+        "\"next\":",
+        "\"PHASE_4_FINAL\",",
+        "},",
+        "indent=2,"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1384,
+      "gate_line": "\"PHASE 4C\",",
+      "context": [
+        "\"\\n\".join([",
+        "\"TAM AN CARE V7.8\",",
+        "\"PHASE 4C\",",
+        "\"STATUS=PASSED\",",
+        "\"STAFF_ACCESS=200\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1394,
+      "gate_line": "\"NEXT=PHASE_4_FINAL\",",
+      "context": [
+        "\"SOURCE_WRITE=NO\",",
+        "\"RUNTIME_RESTART=NO\",",
+        "\"NEXT=PHASE_4_FINAL\",",
+        "])",
+        "+ \"\\n\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1408,
+      "gate_line": "# PHASE 4 FINAL",
+      "context": [
+        "# ============================================================",
+        "# PHASE 4 FINAL",
+        "# END-TO-END UX + OPERATIONAL SMOOTHNESS",
+        "# ============================================================"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1412,
+      "gate_line": "gate = \"PHASE_4_FINAL\"",
+      "context": [
+        "# ============================================================",
+        "gate = \"PHASE_4_FINAL\"",
+        "banner("
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1415,
+      "gate_line": "\"V7.8 PHASE 4 FINAL — END-TO-END UX + OPERATIONAL SMOOTHNESS ACCEPTANCE\"",
+      "context": [
+        "banner(",
+        "\"V7.8 PHASE 4 FINAL — END-TO-END UX + OPERATIONAL SMOOTHNESS ACCEPTANCE\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1464,
+      "gate_line": "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\"",
+      "context": [
+        "p4f_manifest = (",
+        "MANIFESTS",
+        "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1469,
+      "gate_line": "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\"",
+      "context": [
+        "p4f_result = (",
+        "RESULTS",
+        "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1479,
+      "gate_line": "\"4-FINAL\",",
+      "context": [
+        "\"phase\":",
+        "\"4-FINAL\",",
+        "\"status\":"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 1514,
+      "gate_line": "\"PHASE 4 FINAL\",",
+      "context": [
+        "\"\\n\".join([",
+        "\"TAM AN CARE V7.8\",",
+        "\"PHASE 4 FINAL\",",
+        "\"STATUS=PASSED\",",
+        "\"UX_OPERATIONAL_SMOOTHNESS=ACCEPTED\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 2329,
+      "gate_line": "\"4A\",",
+      "context": [
+        "\"2\",",
+        "\"3\",",
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 2330,
+      "gate_line": "\"4B\",",
+      "context": [
+        "\"3\",",
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 2331,
+      "gate_line": "\"4C-R1\",",
+      "context": [
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 2332,
+      "gate_line": "\"4C\",",
+      "context": [
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\",",
+        "\"5A\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py",
+      "line": 2333,
+      "gate_line": "\"4-FINAL\",",
+      "context": [
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\",",
+        "\"5A\",",
+        "\"5B\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 16,
+      "gate_line": "#   accepted Phase 4B",
+      "context": [
+        "#",
+        "# START:",
+        "#   accepted Phase 4B",
+        "#",
+        "# SERIES:"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 19,
+      "gate_line": "#   4C-R1 -> 4C -> 4 FINAL",
+      "context": [
+        "#",
+        "# SERIES:",
+        "#   4C-R1 -> 4C -> 4 FINAL",
+        "#   -> 5A -> 5B -> 5 FINAL",
+        "#   -> 6 -> FINAL OPERATIONAL FREEZE"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 87,
+      "gate_line": "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt\"",
+      "context": [
+        "P4B_RESULT = ROOT / (",
+        "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 91,
+      "gate_line": "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json\"",
+      "context": [
+        "P4B_MANIFEST = V78 / (",
+        "\"V7.8-PHASE-4B-READ-ONLY-OPERATIONAL-WORKFLOW-VISIBILITY.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 95,
+      "gate_line": "\"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt\"",
+      "context": [
+        "P4C_PREFLIGHT = ROOT / (",
+        "\"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-ACCEPTANCE-PREFLIGHT-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 736,
+      "gate_line": "\"PASS: ACCEPTED V7.8 PHASE 4B CHECKPOINT LOCKED\"",
+      "context": [
+        "print(",
+        "\"PASS: ACCEPTED V7.8 PHASE 4B CHECKPOINT LOCKED\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 741,
+      "gate_line": "# PHASE 4C-R1",
+      "context": [
+        "# ============================================================",
+        "# PHASE 4C-R1",
+        "# EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY",
+        "# READ-ONLY"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 749,
+      "gate_line": "\"V7.8 PHASE 4C-R1 — EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY\"",
+      "context": [
+        "banner(",
+        "\"V7.8 PHASE 4C-R1 — EXACT STAFF/ACCESS MUTATION CONTRACT RECOVERY\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 891,
+      "gate_line": "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\"",
+      "context": [
+        "p4cr1_manifest = (",
+        "MANIFESTS",
+        "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 896,
+      "gate_line": "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\"",
+      "context": [
+        "p4cr1_result = (",
+        "RESULTS",
+        "/ \"V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 904,
+      "gate_line": "\"4C-R1\",",
+      "context": [
+        "\"phase\":",
+        "\"4C-R1\",",
+        "\"status\":"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 960,
+      "gate_line": "\"PHASE 4C-R1\",",
+      "context": [
+        "\"\\n\".join([",
+        "\"TAM AN CARE V7.8\",",
+        "\"PHASE 4C-R1\",",
+        "\"STATUS=PASSED\",",
+        "\"MUTATION_CONTRACT=RECOVERED\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 965,
+      "gate_line": "\"NEXT=PHASE_4C\",",
+      "context": [
+        "\"REAL_STAFF_MUTATION=NO\",",
+        "\"PRODUCTION_DATABASE_WRITE=NO\",",
+        "\"NEXT=PHASE_4C\",",
+        "])",
+        "+ \"\\n\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 987,
+      "gate_line": "# PHASE 4C",
+      "context": [
+        "# ============================================================",
+        "# PHASE 4C",
+        "# CONTROLLED OPERATIONAL WORKFLOW ACCEPTANCE",
+        "#"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 997,
+      "gate_line": "gate = \"PHASE_4C\"",
+      "context": [
+        "# ============================================================",
+        "gate = \"PHASE_4C\"",
+        "banner("
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1000,
+      "gate_line": "\"V7.8 PHASE 4C — CONTROLLED ISOLATED OPERATIONAL WORKFLOW ACCEPTANCE\"",
+      "context": [
+        "banner(",
+        "\"V7.8 PHASE 4C — CONTROLLED ISOLATED OPERATIONAL WORKFLOW ACCEPTANCE\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1270,
+      "gate_line": "# Phase 4C accepts interoperability through:",
+      "context": [
+        "# intentionally not performed by the hardening roadmap.",
+        "#",
+        "# Phase 4C accepts interoperability through:",
+        "# - exact source contract discovery",
+        "# - isolated 118-table schema"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1288,
+      "gate_line": "\"production DB changed during isolated Phase 4C\",",
+      "context": [
+        "if prod_after != prod_before:",
+        "safe_stop(",
+        "\"production DB changed during isolated Phase 4C\",",
+        "gate,",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1303,
+      "gate_line": "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\"",
+      "context": [
+        "p4c_manifest = (",
+        "MANIFESTS",
+        "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1308,
+      "gate_line": "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\"",
+      "context": [
+        "p4c_result = (",
+        "RESULTS",
+        "/ \"V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1318,
+      "gate_line": "\"4C\",",
+      "context": [
+        "\"phase\":",
+        "\"4C\",",
+        "\"status\":"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1351,
+      "gate_line": "\"PHASE_4_FINAL\",",
+      "context": [
+        "\"next\":",
+        "\"PHASE_4_FINAL\",",
+        "},",
+        "indent=2,"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1362,
+      "gate_line": "\"PHASE 4C\",",
+      "context": [
+        "\"\\n\".join([",
+        "\"TAM AN CARE V7.8\",",
+        "\"PHASE 4C\",",
+        "\"STATUS=PASSED\",",
+        "\"STAFF_ACCESS=200\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1372,
+      "gate_line": "\"NEXT=PHASE_4_FINAL\",",
+      "context": [
+        "\"SOURCE_WRITE=NO\",",
+        "\"RUNTIME_RESTART=NO\",",
+        "\"NEXT=PHASE_4_FINAL\",",
+        "])",
+        "+ \"\\n\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1386,
+      "gate_line": "# PHASE 4 FINAL",
+      "context": [
+        "# ============================================================",
+        "# PHASE 4 FINAL",
+        "# END-TO-END UX + OPERATIONAL SMOOTHNESS",
+        "# ============================================================"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1390,
+      "gate_line": "gate = \"PHASE_4_FINAL\"",
+      "context": [
+        "# ============================================================",
+        "gate = \"PHASE_4_FINAL\"",
+        "banner("
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1393,
+      "gate_line": "\"V7.8 PHASE 4 FINAL — END-TO-END UX + OPERATIONAL SMOOTHNESS ACCEPTANCE\"",
+      "context": [
+        "banner(",
+        "\"V7.8 PHASE 4 FINAL — END-TO-END UX + OPERATIONAL SMOOTHNESS ACCEPTANCE\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1442,
+      "gate_line": "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\"",
+      "context": [
+        "p4f_manifest = (",
+        "MANIFESTS",
+        "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1447,
+      "gate_line": "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\"",
+      "context": [
+        "p4f_result = (",
+        "RESULTS",
+        "/ \"V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\"",
+        ")"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1457,
+      "gate_line": "\"4-FINAL\",",
+      "context": [
+        "\"phase\":",
+        "\"4-FINAL\",",
+        "\"status\":"
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 1492,
+      "gate_line": "\"PHASE 4 FINAL\",",
+      "context": [
+        "\"\\n\".join([",
+        "\"TAM AN CARE V7.8\",",
+        "\"PHASE 4 FINAL\",",
+        "\"STATUS=PASSED\",",
+        "\"UX_OPERATIONAL_SMOOTHNESS=ACCEPTED\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 2307,
+      "gate_line": "\"4A\",",
+      "context": [
+        "\"2\",",
+        "\"3\",",
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 2308,
+      "gate_line": "\"4B\",",
+      "context": [
+        "\"3\",",
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 2309,
+      "gate_line": "\"4C-R1\",",
+      "context": [
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 2310,
+      "gate_line": "\"4C\",",
+      "context": [
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\",",
+        "\"5A\","
+      ]
+    },
+    {
+      "path": "V7.8/runner/run_remaining_v78.py.before-hang-recovery-20260821_210759",
+      "line": 2311,
+      "gate_line": "\"4-FINAL\",",
+      "context": [
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\",",
+        "\"5A\",",
+        "\"5B\","
+      ]
+    },
+    {
+      "path": "V7.8/manifests/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json",
+      "line": 3,
+      "gate_line": "\"phase\": \"4C-R1\",",
+      "context": [
+        "{",
+        "\"version\": \"V7.8\",",
+        "\"phase\": \"4C-R1\",",
+        "\"status\": \"PASSED\",",
+        "\"mode\": \"READ_ONLY_CONTRACT_RECOVERY\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "line": 11,
+      "gate_line": "\"4A\",",
+      "context": [
+        "\"2\",",
+        "\"3\",",
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "line": 12,
+      "gate_line": "\"4B\",",
+      "context": [
+        "\"3\",",
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "line": 13,
+      "gate_line": "\"4C-R1\",",
+      "context": [
+        "\"4A\",",
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "line": 14,
+      "gate_line": "\"4C\",",
+      "context": [
+        "\"4B\",",
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\",",
+        "\"5A\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-FINAL-OPERATIONAL-RELEASE-MANIFEST.json",
+      "line": 15,
+      "gate_line": "\"4-FINAL\",",
+      "context": [
+        "\"4C-R1\",",
+        "\"4C\",",
+        "\"4-FINAL\",",
+        "\"5A\",",
+        "\"5B\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 9,
+      "gate_line": "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\",",
+      "context": [
+        "\"gate\": \"PHASE_4C_R1\",",
+        "\"completed_at\": \"2026-08-21T13:48:55.752380+00:00\",",
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\",",
+        "\"result_hash\": \"83130ebc4b8fe4ce346f8fc8d9517e8f46573f093718e4e258f4d338e5bdccfb\",",
+        "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 11,
+      "gate_line": "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\",",
+      "context": [
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT-RESULT.txt\",",
+        "\"result_hash\": \"83130ebc4b8fe4ce346f8fc8d9517e8f46573f093718e4e258f4d338e5bdccfb\",",
+        "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-R1-STAFF-ACCESS-MUTATION-CONTRACT.json\",",
+        "\"manifest_hash\": \"a21422fdcbb998fb048c026083cc6c70133c835b485e49967aa478c45096520a\"",
+        "},"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 15,
+      "gate_line": "\"gate\": \"PHASE_4C\",",
+      "context": [
+        "},",
+        "{",
+        "\"gate\": \"PHASE_4C\",",
+        "\"completed_at\": \"2026-08-21T14:08:32.171786+00:00\",",
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 17,
+      "gate_line": "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\",",
+      "context": [
+        "\"gate\": \"PHASE_4C\",",
+        "\"completed_at\": \"2026-08-21T14:08:32.171786+00:00\",",
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\",",
+        "\"result_hash\": \"a91dfede9e766922fafbdfb2dbb97a45a03a586d8b372e747199dbb25f38f0b4\",",
+        "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 19,
+      "gate_line": "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\",",
+      "context": [
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW-RESULT.txt\",",
+        "\"result_hash\": \"a91dfede9e766922fafbdfb2dbb97a45a03a586d8b372e747199dbb25f38f0b4\",",
+        "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4C-CONTROLLED-OPERATIONAL-WORKFLOW.json\",",
+        "\"manifest_hash\": \"46d0e11f872165dc3027a9e4a43bfb008bb279bc7f807ab6e91670df06d49e99\"",
+        "},"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 23,
+      "gate_line": "\"gate\": \"PHASE_4_FINAL\",",
+      "context": [
+        "},",
+        "{",
+        "\"gate\": \"PHASE_4_FINAL\",",
+        "\"completed_at\": \"2026-08-21T14:08:40.863546+00:00\",",
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 25,
+      "gate_line": "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\",",
+      "context": [
+        "\"gate\": \"PHASE_4_FINAL\",",
+        "\"completed_at\": \"2026-08-21T14:08:40.863546+00:00\",",
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\",",
+        "\"result_hash\": \"d100c072d5bea33bff1e6d24cda8fb62af0168af850d46e2c9f301bcd6741311\",",
+        "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\","
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 27,
+      "gate_line": "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\",",
+      "context": [
+        "\"result\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/results/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS-RESULT.txt\",",
+        "\"result_hash\": \"d100c072d5bea33bff1e6d24cda8fb62af0168af850d46e2c9f301bcd6741311\",",
+        "\"manifest\": \"/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/manifests/V7.8-PHASE-4-FINAL-UX-OPERATIONAL-SMOOTHNESS.json\",",
+        "\"manifest_hash\": \"93a50322f2e23d7cbe43dd776cafd33676c02cef2e2e858078c46cce27ac02fc\"",
+        "},"
+      ]
+    },
+    {
+      "path": "V7.8/V7.8-EXECUTION-STATE.json",
+      "line": 64,
+      "gate_line": "\"failed_gate\": \"PHASE_4C\",",
+      "context": [
+        "],",
+        "\"status\": \"FINAL_OPERATIONAL_RELEASE_FROZEN\",",
+        "\"failed_gate\": \"PHASE_4C\",",
+        "\"reason\": \"disposable V7.8 schema initialization failed\",",
+        "\"stopped_at\": \"2026-08-21T14:07:59.825782+00:00\","
+      ]
+    }
+  ],
+  "gate_presence": {
+    "4A": true,
+    "4B": true,
+    "4C": true,
+    "4D": false,
+    "4_FINAL": true
+  },
+  "application_source_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "performance_load": false,
+  "next": "RESOLVE_EXACT_PHASE4_ROADMAP_FROM_DISCOVERED_AUTHORITY",
+  "created_at": "2026-08-22T04:16:42.805239+00:00"
+}

@@ -1,0 +1,53 @@
+TAM AN CARE V7.7
+PRODUCTION SCHEMA SEMANTIC EQUIVALENCE R2 PREFLIGHT
+
+STATUS=READY
+
+PREVIOUS SEMANTIC RUN FAILURE=
+DISPOSABLE POSTGRESQL STARTUP RACE
+
+POSTGRES_READINESS_RECOVERY_RESULT_HASH=
+3b88f40b7bc49c0219c1a9495f66b94e8a4d964ef0553258d0f8ae096402709d
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+V7.7_SCHEMA_HASH=
+5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80
+
+CORRECTED DATABASE READINESS CONTRACT=
+
+1. pg_isready must pass.
+2. SELECT 1 against target database must pass.
+3. Require three consecutive successful SQL probes.
+4. Only then load V7.7 schema.
+5. Transient startup errors may retry.
+6. Any genuine SQL/schema error must stop immediately.
+
+SEMANTIC COMPARISON CONTRACT REMAINS UNCHANGED:
+
+1. Compare 118-table sets.
+2. Compare columns by table + column name.
+3. Ignore ordinal position.
+4. Compare data type exactly.
+5. Compare nullability exactly.
+6. Compare defaults after whitespace normalization.
+7. Compare PK/FK/UNIQUE exactly.
+8. Normalize CHECK ARRAY membership ordering only.
+9. Compare indexes exactly.
+10. Specifically prove warning_reviews difference is ordinal-only.
+11. Specifically prove care_task_audit difference is enum-order-only.
+12. Do not create a migration unless a genuine semantic delta exists.
+
+KNOWN RAW DIFFERENCE SET FROM PREVIOUS RUN:
+
+warning_reviews:
+- same six named columns
+- different ordinal positions
+
+care_task_audit:
+- same TASK_* allowed membership set
+- TASK_ACCEPTED/TASK_REASSIGNED order differs
+
+PRODUCTION WRITE=NO
+V7.7 PROMOTION=NO

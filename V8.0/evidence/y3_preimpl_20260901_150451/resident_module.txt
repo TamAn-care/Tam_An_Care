@@ -1,0 +1,766 @@
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts =====
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { ResidentService } from './resident.service';
+
+@Controller('api/residents')
+export class ResidentController {
+  constructor(
+    private readonly residentService: ResidentService,
+  ) {}
+
+
+  @Post()
+  async createResident(
+    @Headers('x-actor-id')
+    actorId: string | undefined,
+
+    @Headers('x-actor-role')
+    actorRole: string | undefined,
+
+    @Body()
+    body: {
+      residentCode?: string;
+      displayName?: string;
+      dateOfBirth?: string;
+      gender?: string;
+      room?: string | null;
+      bed?: string | null;
+      careLevel?: string;
+    } = {},
+  ) {
+    await this.residentService.authorizeSupervisor(
+      actorId,
+      actorRole,
+    );
+
+    return this.residentService.create(
+      body,
+      actorId as string,
+    );
+  }
+
+  @Get()
+  listResidents(
+    @Query('limit')
+    limitRaw?: string,
+
+    @Query('offset')
+    offsetRaw?: string,
+  ) {
+    if (
+      limitRaw === undefined &&
+      offsetRaw === undefined
+    ) {
+      return this.residentService.list();
+    }
+
+    const parsedLimit =
+      Number(limitRaw ?? 50);
+
+    const parsedOffset =
+      Number(offsetRaw ?? 0);
+
+    const limit =
+      Number.isInteger(parsedLimit)
+        ? Math.min(
+            Math.max(
+              parsedLimit,
+              1,
+            ),
+            200,
+          )
+        : 50;
+
+    const offset =
+      Number.isInteger(parsedOffset)
+        ? Math.max(
+            parsedOffset,
+            0,
+          )
+        : 0;
+
+    return this.residentService
+      .listPage(
+        limit,
+        offset,
+      );
+  }
+
+  @Get(':residentId')
+  getResident(
+    @Param('residentId') residentId: string,
+  ) {
+    return this.residentService.getById(residentId);
+  }
+}
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts =====
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+
+import { ResidentRepository } from './resident.repository';
+
+import {
+  CreateResidentInput,
+  ResidentCareLevel,
+  ResidentContextResponse,
+  ResidentGender,
+} from './resident.types';
+
+@Injectable()
+export class ResidentService {
+  constructor(
+    private readonly repository:
+      ResidentRepository,
+  ) {}
+
+
+  async authorizeSupervisor(
+    actorId?: string,
+    actorRole?: string,
+  ): Promise<void> {
+    if (!actorId || !actorRole) {
+      throw new UnauthorizedException(
+        'Actor context is required',
+      );
+    }
+
+    if (actorRole !== 'SUPERVISOR') {
+      throw new ForbiddenException(
+        'Supervisor authority is required',
+      );
+    }
+
+    const valid =
+      await this.repository.resolveActiveSupervisor(
+        actorId,
+      );
+
+    if (!valid) {
+      throw new ForbiddenException(
+        'Canonical active Supervisor is required',
+      );
+    }
+  }
+
+  async create(
+    body: {
+      residentCode?: string;
+      displayName?: string;
+      dateOfBirth?: string;
+      gender?: string;
+      room?: string | null;
+      bed?: string | null;
+      careLevel?: string;
+    },
+    performedBy: string,
+  ): Promise<ResidentContextResponse> {
+    const residentCode =
+      String(body.residentCode || '').trim();
+
+    const displayName =
+      String(body.displayName || '').trim();
+
+    const dateOfBirth =
+      String(body.dateOfBirth || '').trim();
+
+    const gender =
+      String(body.gender || '')
+        .trim()
+        .toUpperCase();
+
+    const careLevel =
+      String(body.careLevel || '')
+        .trim()
+        .toUpperCase();
+
+    if (!residentCode) {
+      throw new BadRequestException(
+        'residentCode is required',
+      );
+    }
+
+    if (!displayName) {
+      throw new BadRequestException(
+        'displayName is required',
+      );
+    }
+
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(
+        dateOfBirth,
+      )
+    ) {
+      throw new BadRequestException(
+        'dateOfBirth must be YYYY-MM-DD',
+      );
+    }
+
+    const allowedGender: ResidentGender[] = [
+      'MALE',
+      'FEMALE',
+      'OTHER',
+      'UNSPECIFIED',
+    ];
+
+    if (
+      !allowedGender.includes(
+        gender as ResidentGender,
+      )
+    ) {
+      throw new BadRequestException(
+        'Invalid gender',
+      );
+    }
+
+    const allowedCareLevel:
+      ResidentCareLevel[] = [
+        'INDEPENDENT',
+        'ASSISTED',
+        'HIGH_ASSISTANCE',
+        'DEPENDENT',
+      ];
+
+    if (
+      !allowedCareLevel.includes(
+        careLevel as ResidentCareLevel,
+      )
+    ) {
+      throw new BadRequestException(
+        'Invalid careLevel',
+      );
+    }
+
+    const input: CreateResidentInput = {
+      residentCode,
+      displayName,
+      dateOfBirth,
+      gender: gender as ResidentGender,
+      room:
+        body.room == null
+          ? null
+          : String(body.room).trim() || null,
+      bed:
+        body.bed == null
+          ? null
+          : String(body.bed).trim() || null,
+      careLevel:
+        careLevel as ResidentCareLevel,
+    };
+
+    const resident =
+      await this.repository.createWithAudit(
+        input,
+        performedBy,
+        'SUPERVISOR',
+      );
+
+    return {
+      resident,
+      source:
+        'V7.4.3_DEVELOPMENT_CONTEXT',
+      clinicalRecord:
+        false,
+    };
+  }
+
+  async list():
+    Promise<ResidentContextResponse[]> {
+    const residents =
+      await this.repository.list();
+
+    return residents.map(
+      (resident) => ({
+        resident,
+        source:
+          'V7.4.3_DEVELOPMENT_CONTEXT',
+        clinicalRecord:
+          false,
+      }),
+    );
+  }
+
+
+  async listPage(
+    limit: number,
+    offset: number,
+  ) {
+    const page =
+      await this.repository.listPage(
+        limit,
+        offset,
+      );
+
+    return {
+      ...page,
+      items:
+        page.items.map(
+          (resident) => ({
+            resident,
+            source:
+              'V7.4.3_DEVELOPMENT_CONTEXT',
+            clinicalRecord:
+              false,
+          }),
+        ),
+    };
+  }
+
+
+  async getById(
+    residentId: string,
+  ): Promise<ResidentContextResponse> {
+    const normalizedResidentId =
+      String(residentId || '').trim();
+
+    if (!normalizedResidentId) {
+      throw new NotFoundException(
+        'Resident context not found.',
+      );
+    }
+
+    const resident =
+      await this.repository.findById(
+        normalizedResidentId,
+      );
+
+    if (!resident) {
+      throw new NotFoundException(
+        'Resident context not found.',
+      );
+    }
+
+    return {
+      resident,
+      source:
+        'V7.4.3_DEVELOPMENT_CONTEXT',
+      clinicalRecord:
+        false,
+    };
+  }
+}
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts =====
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
+import {
+  CreateResidentInput,
+  ResidentCareLevel,
+  ResidentContext,
+  ResidentGender,
+} from './resident.types';
+
+interface ResidentRow {
+  resident_id: string;
+  resident_code: string;
+  display_name: string;
+  date_of_birth: string | Date;
+  gender: ResidentGender;
+  room: string | null;
+  bed: string | null;
+  care_level: ResidentCareLevel;
+  active_status: boolean;
+}
+
+@Injectable()
+export class ResidentRepository {
+  constructor(
+    private readonly db: DatabaseService,
+  ) {}
+
+
+  async resolveActiveSupervisor(
+    actorId: string,
+  ): Promise<boolean> {
+    return this.db.withTransaction(
+      async (client) => {
+        const result =
+          await client.query(
+            `
+            SELECT 1
+            FROM staff_actors
+            WHERE
+              actor_id = $1
+              AND status = 'ACTIVE'
+              AND primary_operational_role = 'SUPERVISOR'
+            LIMIT 1
+            `,
+            [actorId],
+          );
+
+        return result.rows.length === 1;
+      },
+    );
+  }
+
+  async createWithAudit(
+    input: CreateResidentInput,
+    performedBy: string,
+    performedByRole: 'SUPERVISOR',
+  ): Promise<ResidentContext> {
+    return this.db.withTransaction(
+      async (client) => {
+        const created =
+          await client.query<ResidentRow>(
+            `
+            INSERT INTO residents (
+              resident_id,
+              resident_code,
+              display_name,
+              date_of_birth,
+              gender,
+              room,
+              bed,
+              care_level,
+              active_status
+            )
+            VALUES (
+              'resident-' || gen_random_uuid()::text,
+              $1,
+              $2,
+              $3,
+              $4,
+              $5,
+              $6,
+              $7,
+              true
+            )
+            RETURNING
+              resident_id,
+              resident_code,
+              display_name,
+              date_of_birth,
+              gender,
+              room,
+              bed,
+              care_level,
+              active_status
+            `,
+            [
+              input.residentCode,
+              input.displayName,
+              input.dateOfBirth,
+              input.gender,
+              input.room,
+              input.bed,
+              input.careLevel,
+            ],
+          );
+
+        const row = created.rows[0];
+
+        if (!row) {
+          throw new Error(
+            'Resident creation returned no row',
+          );
+        }
+
+        await client.query(
+          `
+          INSERT INTO resident_audit (
+            event_type,
+            target_resident_id,
+            performed_by,
+            performed_by_role,
+            previous_value,
+            new_value
+          )
+          VALUES (
+            'RESIDENT_CREATED',
+            $1,
+            $2,
+            $3,
+            NULL,
+            jsonb_build_object(
+              'residentId', $1::text,
+              'residentCode', $4::text,
+              'displayName', $5::text,
+              'dateOfBirth', $6::date,
+              'gender', $7::text,
+              'room', $8::text,
+              'bed', $9::text,
+              'careLevel', $10::text,
+              'activeStatus', true
+            )
+          )
+          `,
+          [
+            row.resident_id,
+            performedBy,
+            performedByRole,
+            row.resident_code,
+            row.display_name,
+            row.date_of_birth instanceof Date
+              ? row.date_of_birth
+                  .toISOString()
+                  .slice(0, 10)
+              : String(row.date_of_birth)
+                  .slice(0, 10),
+            row.gender,
+            row.room,
+            row.bed,
+            row.care_level,
+          ],
+        );
+
+        return this.mapResident(row);
+      },
+    );
+  }
+
+  async list(): Promise<ResidentContext[]> {
+    return this.db.withTransaction(
+      async (client) => {
+        const result =
+          await client.query<ResidentRow>(
+            `
+            SELECT
+              resident_id,
+              resident_code,
+              display_name,
+              date_of_birth,
+              gender,
+              room,
+              bed,
+              care_level,
+              active_status
+            FROM residents
+            ORDER BY
+              resident_code ASC,
+              resident_id ASC
+            `,
+          );
+
+        return result.rows.map(
+          (row) => this.mapResident(row),
+        );
+      },
+    );
+  }
+
+  async listPage(
+    limit: number,
+    offset: number,
+  ): Promise<{
+    items: ResidentContext[];
+    total: number;
+    limit: number;
+    offset: number;
+  }> {
+    return this.db.withTransaction(
+      async (client) => {
+        const countResult =
+          await client.query<{
+            total: string;
+          }>(
+            `
+            SELECT
+              COUNT(*)::text AS total
+            FROM residents
+            `,
+          );
+
+        const result =
+          await client.query<ResidentRow>(
+            `
+            SELECT
+              resident_id,
+              resident_code,
+              display_name,
+              date_of_birth,
+              gender,
+              room,
+              bed,
+              care_level,
+              active_status
+            FROM residents
+            ORDER BY
+              resident_code ASC,
+              resident_id ASC
+            LIMIT $1
+            OFFSET $2
+            `,
+            [
+              limit,
+              offset,
+            ],
+          );
+
+        return {
+          items:
+            result.rows.map(
+              (row: ResidentRow) =>
+                this.mapResident(row),
+            ),
+          total:
+            Number(
+              countResult
+                .rows[0]
+                ?.total ?? 0,
+            ),
+          limit,
+          offset,
+        };
+      },
+    );
+  }
+
+
+
+  async findById(
+    residentId: string,
+  ): Promise<ResidentContext | null> {
+    return this.db.withTransaction(
+      async (client) => {
+        const result =
+          await client.query<ResidentRow>(
+            `
+            SELECT
+              resident_id,
+              resident_code,
+              display_name,
+              date_of_birth,
+              gender,
+              room,
+              bed,
+              care_level,
+              active_status
+            FROM residents
+            WHERE resident_id = $1
+            LIMIT 1
+            `,
+            [residentId],
+          );
+
+        if (!result.rows.length) {
+          return null;
+        }
+
+        return this.mapResident(
+          result.rows[0],
+        );
+      },
+    );
+  }
+
+  private mapResident(
+    row: ResidentRow,
+  ): ResidentContext {
+    const dateOfBirth =
+      row.date_of_birth instanceof Date
+        ? row.date_of_birth
+            .toISOString()
+            .slice(0, 10)
+        : String(row.date_of_birth)
+            .slice(0, 10);
+
+    return {
+      residentId:
+        row.resident_id,
+
+      residentCode:
+        row.resident_code,
+
+      displayName:
+        row.display_name,
+
+      dateOfBirth,
+
+      gender:
+        row.gender,
+
+      room:
+        row.room,
+
+      bed:
+        row.bed,
+
+      careLevel:
+        row.care_level,
+
+      activeStatus:
+        row.active_status,
+    };
+  }
+}
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.types.ts =====
+export type ResidentGender =
+  | 'MALE'
+  | 'FEMALE'
+  | 'OTHER'
+  | 'UNSPECIFIED';
+
+export type ResidentCareLevel =
+  | 'INDEPENDENT'
+  | 'ASSISTED'
+  | 'HIGH_ASSISTANCE'
+  | 'DEPENDENT';
+
+export interface ResidentContext {
+  residentId: string;
+  residentCode: string;
+  displayName: string;
+  dateOfBirth: string;
+  gender: ResidentGender;
+  room: string | null;
+  bed: string | null;
+  careLevel: ResidentCareLevel;
+  activeStatus: boolean;
+}
+
+
+export interface CreateResidentInput {
+  residentCode: string;
+  displayName: string;
+  dateOfBirth: string;
+  gender: ResidentGender;
+  room: string | null;
+  bed: string | null;
+  careLevel: ResidentCareLevel;
+}
+
+export interface ResidentContextResponse {
+  resident: ResidentContext;
+  source: 'V7.4.3_DEVELOPMENT_CONTEXT';
+  clinicalRecord: false;
+}
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.module.ts =====
+import { Module } from '@nestjs/common';
+
+import { DatabaseModule } from '../database/database.module';
+
+import { ResidentController } from './resident.controller';
+import { ResidentRepository } from './resident.repository';
+import { ResidentService } from './resident.service';
+
+@Module({
+  imports: [
+    DatabaseModule,
+  ],
+
+  controllers: [
+    ResidentController,
+  ],
+
+  providers: [
+    ResidentRepository,
+    ResidentService,
+  ],
+
+  exports: [
+    ResidentRepository,
+    ResidentService,
+  ],
+})
+export class ResidentModule {}

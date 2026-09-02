@@ -1,0 +1,78 @@
+{
+  "generated_at": "2026-08-21T08:53:38.417454+00:00",
+  "status": "PROMOTION_BLOCKERS_REMAIN",
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "previous_promotion_decision": "PROMOTION_BLOCKED",
+  "previous_promotion_result_hash": "64f85fc6bd451e1c094ac6cae66ada1580369bed56d8b12e6824ec576c53aceb",
+  "environment_recovery": {
+    "previous_blocker": "MISSING_PRODUCTION_ENVIRONMENT_VARIABLES",
+    "minimum_runtime_environment": [
+      "DATABASE_URL",
+      "JWT_SECRET",
+      "PORT"
+    ],
+    "not_required_for_runtime_when_DATABASE_URL_present": [
+      "DB_HOST",
+      "DB_NAME",
+      "DB_PASSWORD",
+      "DB_PORT",
+      "DB_USER",
+      "POSTGRES_DB",
+      "POSTGRES_PASSWORD",
+      "POSTGRES_USER"
+    ],
+    "health_http": "200",
+    "staff_no_actor_http": "401",
+    "access_no_actor_http": "401",
+    "blocker_cleared": true
+  },
+  "schema_recovery": {
+    "v77_schema_path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/database/schema.sql",
+    "v77_schema_hash": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+    "v76_table_count": 118,
+    "v77_table_count": 118,
+    "tables_only_v76": [],
+    "tables_only_v77": [],
+    "columns_only_v76": [
+      "warning_reviews|4|decision|text|NO|<NONE>",
+      "warning_reviews|5|reviewer_id|text|NO|<NONE>",
+      "warning_reviews|6|reviewer_role|text|NO|<NONE>",
+      "warning_reviews|7|care_note|text|YES|<NONE>",
+      "warning_reviews|8|reviewed_at|timestamp with time zone|NO|now()",
+      "warning_reviews|9|pattern_id|text|NO|<NONE>"
+    ],
+    "columns_only_v77": [
+      "warning_reviews|4|pattern_id|text|NO|<NONE>",
+      "warning_reviews|5|decision|text|NO|<NONE>",
+      "warning_reviews|6|reviewer_id|text|NO|<NONE>",
+      "warning_reviews|7|reviewer_role|text|NO|<NONE>",
+      "warning_reviews|8|care_note|text|YES|<NONE>",
+      "warning_reviews|9|reviewed_at|timestamp with time zone|NO|now()"
+    ],
+    "constraints_only_v76": [
+      "public|care_task_audit|care_task_audit_event_type_check|c|CHECK (event_type = ANY (ARRAY['TASK_CREATED'::text, 'TASK_ASSIGNED'::text, 'TASK_REASSIGNED'::text, 'TASK_ACCEPTED'::text, 'TASK_STARTED'::text, 'TASK_COMPLETED'::text, 'TASK_MISSED'::text, 'TASK_SKIPPED'::text, 'TASK_CANCELLED'::text]))"
+    ],
+    "constraints_only_v77": [
+      "public|care_task_audit|care_task_audit_event_type_check|c|CHECK (event_type = ANY (ARRAY['TASK_CREATED'::text, 'TASK_ASSIGNED'::text, 'TASK_ACCEPTED'::text, 'TASK_REASSIGNED'::text, 'TASK_STARTED'::text, 'TASK_COMPLETED'::text, 'TASK_MISSED'::text, 'TASK_SKIPPED'::text, 'TASK_CANCELLED'::text]))"
+    ],
+    "indexes_only_v76": [],
+    "indexes_only_v77": [],
+    "total_difference_count": 14,
+    "compatibility": "DELTA_PRESENT",
+    "blocker_cleared": false
+  },
+  "remaining_blockers": [
+    "PRODUCTION_SCHEMA_DELTA_REQUIRES_REVIEW"
+  ],
+  "production": {
+    "api_before": "200|401|401",
+    "api_after": "200|401|401",
+    "ui_before": "200|401|401|200",
+    "ui_after": "200|401|401|200",
+    "database_before": "0|0|0",
+    "database_after": "0|0|0",
+    "runtime_change": false,
+    "database_write": false
+  },
+  "production_promotion": false
+}

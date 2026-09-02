@@ -1,0 +1,254 @@
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.controller.ts -----
+10:import { ResidentService } from './resident.service';
+12:@Controller('api/residents')
+15:    private readonly residentService: ResidentService,
+29:      residentCode?: string;
+32:      gender?: string;
+33:      room?: string | null;
+34:      bed?: string | null;
+35:      careLevel?: string;
+38:    await this.residentService.authorizeSupervisor(
+43:    return this.residentService.create(
+61:      return this.residentService.list();
+89:    return this.residentService
+96:  @Get(':residentId')
+98:    @Param('residentId') residentId: string,
+100:    return this.residentService.getById(residentId);
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.service.ts -----
+9:import { ResidentRepository } from './resident.repository';
+15:  ResidentGender,
+16:} from './resident.types';
+49:        'Canonical active Supervisor is required',
+56:      residentCode?: string;
+59:      gender?: string;
+60:      room?: string | null;
+61:      bed?: string | null;
+62:      careLevel?: string;
+66:    const residentCode =
+67:      String(body.residentCode || '').trim();
+75:    const gender =
+76:      String(body.gender || '')
+80:    const careLevel =
+81:      String(body.careLevel || '')
+85:    if (!residentCode) {
+87:        'residentCode is required',
+107:    const allowedGender: ResidentGender[] = [
+115:      !allowedGender.includes(
+116:        gender as ResidentGender,
+120:        'Invalid gender',
+134:        careLevel as ResidentCareLevel,
+138:        'Invalid careLevel',
+143:      residentCode,
+146:      gender: gender as ResidentGender,
+147:      room:
+148:        body.room == null
+150:          : String(body.room).trim() || null,
+151:      bed:
+152:        body.bed == null
+154:          : String(body.bed).trim() || null,
+155:      careLevel:
+156:        careLevel as ResidentCareLevel,
+159:    const resident =
+167:      resident,
+177:    const residents =
+180:    return residents.map(
+181:      (resident) => ({
+182:        resident,
+206:          (resident) => ({
+207:            resident,
+219:    residentId: string,
+222:      String(residentId || '').trim();
+230:    const resident =
+235:    if (!resident) {
+242:      resident,
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.repository.ts -----
+7:  ResidentGender,
+8:} from './resident.types';
+11:  resident_id: string;
+12:  resident_code: string;
+15:  gender: ResidentGender;
+16:  room: string | null;
+17:  bed: string | null;
+18:  care_level: ResidentCareLevel;
+19:  active_status: boolean;
+41:              AND status = 'ACTIVE'
+63:            INSERT INTO residents (
+64:              resident_id,
+65:              resident_code,
+68:              gender,
+69:              room,
+70:              bed,
+71:              care_level,
+72:              active_status
+75:              'resident-' || gen_random_uuid()::text,
+86:              resident_id,
+87:              resident_code,
+90:              gender,
+91:              room,
+92:              bed,
+93:              care_level,
+94:              active_status
+97:              input.residentCode,
+100:              input.gender,
+101:              input.room,
+102:              input.bed,
+103:              input.careLevel,
+117:          INSERT INTO resident_audit (
+119:            target_resident_id,
+132:              'residentId', $1::text,
+133:              'residentCode', $4::text,
+136:              'gender', $7::text,
+137:              'room', $8::text,
+138:              'bed', $9::text,
+139:              'careLevel', $10::text,
+140:              'activeStatus', true
+145:            row.resident_id,
+148:            row.resident_code,
+156:            row.gender,
+157:            row.room,
+158:            row.bed,
+159:            row.care_level,
+175:              resident_id,
+176:              resident_code,
+179:              gender,
+180:              room,
+181:              bed,
+182:              care_level,
+183:              active_status
+184:            FROM residents
+186:              resident_code ASC,
+187:              resident_id ASC
+216:            FROM residents
+224:              resident_id,
+225:              resident_code,
+228:              gender,
+229:              room,
+230:              bed,
+231:              care_level,
+232:              active_status
+233:            FROM residents
+235:              resident_code ASC,
+236:              resident_id ASC
+268:    residentId: string,
+276:              resident_id,
+277:              resident_code,
+280:              gender,
+281:              room,
+282:              bed,
+283:              care_level,
+284:              active_status
+285:            FROM residents
+286:            WHERE resident_id = $1
+289:            [residentId],
+315:      residentId:
+316:        row.resident_id,
+318:      residentCode:
+319:        row.resident_code,
+326:      gender:
+327:        row.gender,
+329:      room:
+330:        row.room,
+332:      bed:
+333:        row.bed,
+335:      careLevel:
+336:        row.care_level,
+338:      activeStatus:
+339:        row.active_status,
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/residents/resident.types.ts -----
+1:export type ResidentGender =
+14:  residentId: string;
+15:  residentCode: string;
+18:  gender: ResidentGender;
+19:  room: string | null;
+20:  bed: string | null;
+21:  careLevel: ResidentCareLevel;
+22:  activeStatus: boolean;
+27:  residentCode: string;
+30:  gender: ResidentGender;
+31:  room: string | null;
+32:  bed: string | null;
+33:  careLevel: ResidentCareLevel;
+37:  resident: ResidentContext;
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/features/residents/ResidentsPage.tsx -----
+16:} from '../../api/residents';
+36:} from './resident-ui';
+49:  const [statusFilter, setStatusFilter] =
+54:      'residents',
+62:  const residents =
+71:      return rows.filter(({ resident }) => {
+73:          statusFilter === 'ACTIVE' &&
+74:          !resident.activeStatus
+80:          statusFilter === 'INACTIVE' &&
+81:          resident.activeStatus
+91:          resident.displayName,
+92:          resident.residentCode,
+93:          resident.room ?? '',
+94:          resident.bed ?? '',
+106:      statusFilter,
+109:  const activeCount =
+111:      ({ resident }) =>
+112:        resident.activeStatus,
+135:          do backend hiện hành cung cấp.
+136:          Quyền mở hồ sơ chăm sóc được backend
+141:      <section className="resident-summary-grid">
+142:        <div className="card resident-summary-card">
+152:        <div className="card resident-summary-card">
+159:              ? activeCount
+166:        <div className="resident-toolbar">
+192:              value={statusFilter}
+215:            className="button button-subtle resident-refresh"
+246:            description="Backend hiện chưa có dữ liệu resident."
+252:        residents.length === 0 && (
+260:        residents.length > 0 && (
+262:            className="resident-list"
+265:            {residents.map(
+266:              ({ resident }) => (
+268:                  key={resident.residentId}
+269:                  className="card resident-card"
+271:                  <div className="resident-card-main">
+273:                      <div className="resident-card-heading">
+275:                          {resident.displayName}
+280:                            resident.activeStatus
+281:                              ? 'resident-status resident-status-active'
+282:                              : 'resident-status'
+285:                          {resident.activeStatus
+291:                      <div className="resident-code">
+292:                        Mã: {resident.residentCode}
+296:                    <dl className="resident-facts">
+301:                            resident.dateOfBirth,
+311:                              resident.gender
+322:                              resident.careLevel
+331:                          {resident.room ?? '—'}
+333:                          {resident.bed ?? '—'}
+339:                  <div className="resident-card-actions">
+341:                      className="button resident-open-button"
+342:                      to={`/residents/${
+344:                          resident.residentId,
+346:                      }/care`}
+357:      <div className="notice notice-info resident-authority-note">
+363:        hồ sơ chăm sóc. Backend tiếp tục quyết định
+364:        quyền truy cập cho từng resident.
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/residents.ts -----
+9:export type ResidentGender =
+22:  residentId: string;
+23:  residentCode: string;
+26:  gender: ResidentGender;
+27:  room: string | null;
+28:  bed: string | null;
+29:  careLevel: ResidentCareLevel;
+30:  activeStatus: boolean;
+34:  resident: ResidentContext;
+45:  status: 'OK';
+49:  resident: Record<string, unknown>;
+50:  carePlan: Record<string, unknown> | null;
+63:    resident: Availability;
+64:    carePlan: Availability;
+96:    residentScopeEnforcement:
+110:    '/api/residents',
+118:  residentId: string,
+122:    `/api/residents/${
+123:      encodeURIComponent(residentId)
+132:  residentId: string,
+136:    `/api/operations/residents/${
+137:      encodeURIComponent(residentId)
+138:    }/care-view`,

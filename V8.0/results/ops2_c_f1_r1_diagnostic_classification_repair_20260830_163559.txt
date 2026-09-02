@@ -1,0 +1,167 @@
+======================================================================
+ TAMANCARE V8.0
+ OPS-2-C F1-R1
+ DIAGNOSTIC CLASSIFICATION REPAIR
+ READ ONLY / APPLICATION UNCHANGED
+======================================================================
+
+======================================================================
+ 1. FAILED F1 AUTHORITY
+======================================================================
+PASS: FAILED F1 AUTHORITY
+F1_ARTIFACT=ops2_c_f1_isolated_functional_preflight_20260830_163309.txt
+
+======================================================================
+ 2. FAILURE CLASSIFICATION
+======================================================================
+PASS: FAILURE IS DIAGNOSTIC SQL COLUMN DEFECT
+APPLICATION_DEFECT_EVIDENCE=NO
+CORRECT_RESIDENT_COLUMN=active_status
+
+======================================================================
+ 3. EXACT SOURCE HASH LOCK
+======================================================================
+INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: INVENTORY_CONTROLLER
+INVENTORY_MODULE=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: INVENTORY_MODULE
+RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: RESIDENT_CONSUMPTION_SERVICE
+INVENTORY_TRANSACTION_SERVICE=9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+PASS: INVENTORY_TRANSACTION_SERVICE
+INVENTORY_LEDGER_SERVICE=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: INVENTORY_LEDGER_SERVICE
+INVENTORY_AUTHORITY_SERVICE=0cfb56865d0eaaad65c2738ae7caea1bc229290f34e1b42217012917fa44fabe
+PASS: INVENTORY_AUTHORITY_SERVICE
+RESIDENT_ACCESS_SCOPE_SERVICE=166b4f1358d2a41df7f5f00b6c23977305af35663fec67eb67de44c4fb8a7790
+PASS: RESIDENT_ACCESS_SCOPE_SERVICE
+
+======================================================================
+ 4. CANONICAL POSTGRES AUTHORITY
+======================================================================
+CANONICAL_POSTGRES_RUNNING=true
+PASS: CANONICAL POSTGRES AVAILABLE
+
+======================================================================
+ 5. CORRECTED SAFE CLASSIFICATION — READ ONLY
+======================================================================
+primary_operational_role|status|count
+SUPERVISOR|ACTIVE|1
+(1 row)
+active_status|count
+t|1
+(1 row)
+active|lot_tracking_required|count
+(0 rows)
+status|count
+(0 rows)
+SAFE_CLASSIFICATION_RC=0
+PASS: CORRECTED SAFE FIXTURE CLASSIFICATION
+
+======================================================================
+ 6. FIXTURE BASELINE — READ ONLY
+======================================================================
+FIXTURE_COUNT_QUERY_RC=0
+STAFF|RESIDENTS|ITEMS|LOTS|TX|CONSUMPTION_EVENTS=1|1|0|0|0|0
+PASS: FIXTURE BASELINE READ
+
+======================================================================
+ 7. ISOLATED TEST REQUIREMENT CLASSIFICATION
+======================================================================
+PASS: CANONICAL BASELINE MATCHES F1
+TEST_INVENTORY_FIXTURE_REQUIRED=YES
+TEST_STAFF_FIXTURE_REQUIRED=YES
+TEST_RESIDENT_ACCESS_FIXTURE_REQUIRED=YES
+TEST_DATA_CLEANUP_REQUIRED=YES
+
+======================================================================
+ 8. ISOLATED RUNTIME AUTHORITY
+======================================================================
+EXISTING_3110_OPS2B_RUNTIME_AUTHORIZED_FOR_OPS2C=NO
+CANONICAL_3000_RUNTIME_AUTHORIZED_FOR_MUTATING_TEST=NO
+CANONICAL_3108_RUNTIME_AUTHORIZED_FOR_MUTATING_TEST=NO
+NEW_OPS2C_ISOLATED_RUNTIME_AUTHORIZED_THIS_GATE=NO
+NEW_OPS2C_TEST_FIXTURE_AUTHORIZED_THIS_GATE=NO
+FUNCTIONAL_API_TEST_AUTHORIZED_THIS_GATE=NO
+
+======================================================================
+ 9. ACCEPTED RUNTIME PRESERVATION
+======================================================================
+RUNTIME_3000=200
+PASS: RUNTIME 3000 PRESERVED
+RUNTIME_3108=200
+PASS: RUNTIME 3108 PRESERVED
+RUNTIME_4173=200
+PASS: RUNTIME 4173 PRESERVED
+
+======================================================================
+ 10. FINAL SOURCE HASH RECONFIRMATION
+======================================================================
+FINAL_INVENTORY_CONTROLLER=1e4009eb742956b5be7f01357ce2ad6ced67565ae4abbc527d4f873f96b1224f
+PASS: FINAL_INVENTORY_CONTROLLER
+FINAL_INVENTORY_MODULE=0241afd1f7416d017049ce75e4ff4f2e1130085eef1bdf8f4ecd0e8bbbb81148
+PASS: FINAL_INVENTORY_MODULE
+FINAL_RESIDENT_CONSUMPTION_SERVICE=0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9
+PASS: FINAL_RESIDENT_CONSUMPTION_SERVICE
+FINAL_INVENTORY_TRANSACTION_SERVICE=9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a
+PASS: FINAL_INVENTORY_TRANSACTION_SERVICE
+FINAL_INVENTORY_LEDGER_SERVICE=388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c
+PASS: FINAL_INVENTORY_LEDGER_SERVICE
+FINAL_INVENTORY_AUTHORITY_SERVICE=0cfb56865d0eaaad65c2738ae7caea1bc229290f34e1b42217012917fa44fabe
+PASS: FINAL_INVENTORY_AUTHORITY_SERVICE
+FINAL_RESIDENT_ACCESS_SCOPE_SERVICE=166b4f1358d2a41df7f5f00b6c23977305af35663fec67eb67de44c4fb8a7790
+PASS: FINAL_RESIDENT_ACCESS_SCOPE_SERVICE
+
+======================================================================
+ 11. F1-R1 BOUNDARY
+======================================================================
+APPLICATION_SOURCE_MUTATION=NO
+DATABASE_QUERY_MODE=READ_ONLY
+DATABASE_DATA_MUTATION=NO
+SCHEMA_MUTATION=NO
+MIGRATION_EXECUTION=NO
+DOCKER_IMAGE_BUILT=NO
+CONTAINER_CREATED=NO
+CONTAINER_STARTED=NO
+CONTAINER_STOPPED=NO
+RUNTIME_RESTART=NO
+FUNCTIONAL_POST_EXECUTED=NO
+TEST_FIXTURE_CREATED=NO
+FRONTEND_MUTATION=NO
+PACKAGE_MUTATION=NO
+PRODUCTION_MUTATION=NO
+CARE_MANAGER_AUTHORIZED=NO
+OPS_3_STARTED=NO
+HARD_RESIDENT_MAX_INTRODUCED=NO
+200_CONCURRENT_RESIDENTS=CAPACITY_BASELINE_ONLY
+CODEX_USED=NO
+
+======================================================================
+ FINAL F1-R1 DECISION
+======================================================================
+FAIL_COUNT=0
+WARN_COUNT=0
+STATUS: OPS-2-C F1-R1 DIAGNOSTIC REPAIR PASSED
+F1_APPLICATION_DEFECT=NO
+FUNCTIONAL_TEST_EXECUTED=NO
+ISOLATED_TEST_TARGET_AUTHORIZED=NO
+FIXTURE_MUTATION_AUTHORIZED=NO
+NEXT=RETURN_OUTPUT_FOR_EXACT_ISOLATED_RUNTIME_AND_FIXTURE_PLAN
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_f1_r1_diagnostic_classification_repair_20260830_163559.txt
+
+======================================================================
+ IMPORTANT
+======================================================================
+ -> DO NOT MODIFY SOURCE
+ -> DO NOT MODIFY DATABASE DATA
+ -> DO NOT BUILD A NEW IMAGE YET
+ -> DO NOT CREATE OR START A NEW CONTAINER YET
+ -> DO NOT RESTART ACCEPTED RUNTIMES
+ -> DO NOT RUN FUNCTIONAL API TEST
+ -> DO NOT AUTHORIZE CARE_MANAGER
+ -> DO NOT START OPS-3
+ -> DO NOT RUN ANOTHER BLOCK
+ -> STOP HERE
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

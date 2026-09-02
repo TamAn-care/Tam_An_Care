@@ -1,0 +1,84 @@
+TAM AN CARE V7.8
+PHASE 2B-R1 — CONTROLLED PRODUCTION DATABASE RESTART
+PREFLIGHT
+
+STATUS=READY
+
+PHASE2B_RESULT_HASH=
+ccfc951af9f74f47ee304678d00c4d8825e86cf6afbf049b4e03930c1dec549a
+
+PHASE2B_MANIFEST_HASH=
+37e9e2b1cf2dc69e6c55270d18930f633a753594ec57905a5e3c54c83387ac6d
+
+PHASE2B_SAFETY_CONTRACT_HASH=
+6cfea53a1eff2d49023d3e76c5058dbe8b039fc65a787f9193d31b85474374e1
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+PRODUCTION_DB_CONTAINER_ID=
+92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e
+
+PRODUCTION_DB_IMAGE=
+sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5
+
+PRODUCTION_DB_VOLUME=
+taman-care-v743-dev-postgres-data
+
+DATABASE_TABLE_COUNT=
+118
+
+DATABASE_FINGERPRINT=
+7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639
+
+PHASE1_BACKUP_SHA256=
+35165aee7ca11563c8bfcd49fad371a202be1815ab51318158e48369b1a576e9
+
+DATABASE_RESTART_SAFETY=
+PASSED
+
+PRODUCTION_DATABASE_RESTART=
+AUTHORIZED_ONCE
+
+MANDATORY EXECUTION CONTRACT:
+
+1. Capture API/UI/DB container IDs and StartedAt.
+2. Capture exact DB fingerprint immediately before restart.
+3. Capture API/UI health before restart.
+4. Do not stop API or UI manually.
+5. Restart ONLY existing production PostgreSQL container.
+6. Do not remove/recreate DB container.
+7. Do not remove/recreate DB volume.
+8. Do not restore backup.
+9. Do not run schema migration.
+10. Observe API behavior while DB is restarting.
+11. Wait for PostgreSQL pg_isready + SELECT 1.
+12. Require three consecutive SQL-ready probes.
+13. Verify same DB container ID.
+14. Verify same DB image.
+15. Verify DB StartedAt changed.
+16. Verify API recovers without API restart.
+17. If API does not recover automatically, STOP and recover safely.
+18. Verify API health = 200.
+19. Verify API security = 401|401|401.
+20. Verify UI = 200|401|401|200.
+21. Verify exactly 118 tables.
+22. Verify exact database fingerprint.
+23. Verify API/UI image identities unchanged.
+24. Preserve V7.6 rollback assets.
+25. Automatic fail-safe recovery required.
+
+DATABASE_CONTAINER_REMOVE=
+NO
+
+DATABASE_VOLUME_CHANGE=
+NO
+
+DATABASE_RESTORE=
+NO
+
+DATABASE_MIGRATION=
+NO
+
+V7.7_SOURCE_WRITE=
+NO

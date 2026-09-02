@@ -1,0 +1,28 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "gate": "S2C_R5I_R2",
+  "status": "PASSED",
+  "decision": "SOURCE_PROVEN_ASSIGNMENT_BOUNDARY_RUNNER_PATCHED",
+  "assignment_role": [
+    "CAREGIVER",
+    "NURSE"
+  ],
+  "assignment_role_broadened": false,
+  "care_manager_staff_operational_role": true,
+  "care_manager_assignment_role": false,
+  "patch": {
+    "target": "existing StaffAccessPage assignment handler",
+    "strategy": "explicit CAREGIVER/NURSE narrowing",
+    "application_executed": false
+  },
+  "runner": {
+    "sha256": "c56272782d50ea29f769b4669a6521826c7038c368d45d6fdbd6cdd73ff1f80e",
+    "compiled": true,
+    "executed": false
+  },
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "next_authorized_action": "S2C_R5J_ASSIGNMENT_BOUNDARY_EXECUTION_PREFLIGHT",
+  "created_at": "2026-08-22T13:30:08.447092+00:00"
+}

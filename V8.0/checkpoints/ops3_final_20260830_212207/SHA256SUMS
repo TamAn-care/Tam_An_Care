@@ -1,0 +1,11 @@
+8ebb58b56b380fdfdcdb4cfa1e87df53014eb163285bc00ae17386b8e7ac9e60  ./OPS3_ACCEPTANCE.txt
+0cfb56865d0eaaad65c2738ae7caea1bc229290f34e1b42217012917fa44fabe  ./source/inventory-authority/inventory-authority.service.ts
+fa611fe5d47fccab7b19f5faa02d9adc2459c2ba8985dd27f962329a9fc4a651  ./source/inventory-controller/inventory.controller.ts
+8a7dd336bafb20f061ba5d4ce2cdde1a265ddc23871f8cf204c482b3d650e699  ./source/inventory-kpi/inventory-kpi.service.ts
+388e913128d1a8a389337a472e097e9d3955aba7215d5714f2b1bafbbae18e6c  ./source/inventory-ledger/inventory-ledger.service.ts
+5f212a99defdd41611d000f1378cc45fe4c0d8bf862d3c48c5af766354a9b087  ./source/inventory-lot/inventory-lot.service.ts
+eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66  ./source/inventory-module/inventory.module.ts
+9308de5b03f068d14333b3192efe24c80fdc52a87f75392c5421ddb9c58e018a  ./source/inventory-transaction/inventory-transaction.service.ts
+166b4f1358d2a41df7f5f00b6c23977305af35663fec67eb67de44c4fb8a7790  ./source/resident-access-scope/resident-access-scope.service.ts
+0bab7eb618bac9ce64985cca58690f5214f4b1e915f7d91f7e0a6d2026bab5c9  ./source/resident-consumption/resident-consumption.service.ts
+0a95d17ab8c1bbcd95f6a966a4d8ce71f4dd8ca324b11bfd25750736e4cffbac  ./source/staff-actor-service/staff-actor.service.ts

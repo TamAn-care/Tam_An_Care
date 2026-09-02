@@ -1,0 +1,1485 @@
+TAM AN CARE V7.4.3
+STEP 8F.A — OPERATIONAL IDENTITY / STAFF DIRECTORY
+
+STATUS=DISCOVERY_COMPLETE
+
+SOURCE=2c55018f403f578e5ac5808a561ba499cf982318af79978dda3225ebd3e488a8
+SCHEMA=23b4081109f7728875ba42651107725db3523683d07534d1d126352322506fd5
+ACTIVE_IMAGE=taman-care-v743-step8e-c2-candidate:latest
+ACTIVE_HTTP=200
+
+STEP8E_RESULT_HASH=dace3b4179f4e5a18f35998e29cbf9502279506a866673f23fdfc17ebbee991c
+STEP8E_CLOSURE_HASH=c1d49537c2fbde2dbcff8cd5b5ab0fc79ce270d00efc39e7e4aca6c8442503fc
+
+ACTOR_IDENTITY_FK_COUNT=0
+
+DECISION_STATUS=NOT_YET_MADE
+
+NEXT_DECISION=REUSE_EXISTING_OR_CREATE_MINIMAL_CANONICAL_ACTOR_REGISTRY
+
+SOURCE_CHANGE=NO
+SCHEMA_CHANGE=NO
+DATABASE_WRITE=NO
+BUILD=NO
+IMAGE_CHANGE=NO
+RUNTIME_CHANGE=NO
+PRODUCTION_CHANGE=NO
+
+=== SOURCE DISCOVERY ===
+=== TOKEN COUNTS ===
+x-actor-id=6
+x-actor-role=6
+actorId=578
+actorRole=599
+assignedBy=2
+assignedByRole=1
+recordedBy=2
+recordedByRole=1
+reportedBy=2
+reportedByRole=1
+createdBy=18
+createdByRole=9
+verifiedBy=4
+verifiedByRole=2
+CAREGIVER=21
+NURSE=32
+SUPERVISOR=77
+SYSTEM=75
+AI=173
+
+=== SOURCE HITS ===
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:20: const role = this.normalizeRole(command.actorRole);
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:22: if (role === 'AI' || role === 'SYSTEM') {
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:24: 'AI or SYSTEM cannot perform official rehabilitation mutation.',
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:32: const role = this.normalizeRole(command.actorRole);
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:34: if (!['SUPERVISOR', 'CARE_MANAGER'].includes(role)) {
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:36: 'Only SUPERVISOR or CARE_MANAGER is authorized.',
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:44: const role = this.normalizeRole(command.actorRole);
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:46: if (!['NURSE', 'SUPERVISOR', 'CARE_MANAGER'].includes(role)) {
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:63: if (!assignedTo || assignedTo !== command.actorId) {
+activity-rehabilitation/activity-rehabilitation-authorization.service.ts:76: if (!reviewer || reviewer !== command.actorId) {
+activity-rehabilitation/activity-rehabilitation.controller.ts:65: 'AI or SYSTEM',
+activity-rehabilitation/activity-rehabilitation.service.ts:71: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:72: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:134: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:135: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:203: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:204: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:262: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:263: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:332: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:333: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:417: ['AI','SYSTEM'].includes(
+activity-rehabilitation/activity-rehabilitation.service.ts:744: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:745: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:810: [id, command.actorId, command.actorRole],
+activity-rehabilitation/activity-rehabilitation.service.ts:915: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:916: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:977: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:978: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:1043: [id, command.actorId, command.actorRole],
+activity-rehabilitation/activity-rehabilitation.service.ts:1145: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:1146: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:1249: ['AI','SYSTEM'].includes(
+activity-rehabilitation/activity-rehabilitation.service.ts:1493: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:1494: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.service.ts:1529: ['AI','SYSTEM'].includes(
+activity-rehabilitation/activity-rehabilitation.service.ts:1684: command.actorId,
+activity-rehabilitation/activity-rehabilitation.service.ts:1685: command.actorRole,
+activity-rehabilitation/activity-rehabilitation.types.ts:2: | 'CAREGIVER'
+activity-rehabilitation/activity-rehabilitation.types.ts:3: | 'NURSE'
+activity-rehabilitation/activity-rehabilitation.types.ts:4: | 'SUPERVISOR'
+activity-rehabilitation/activity-rehabilitation.types.ts:6: | 'AI'
+activity-rehabilitation/activity-rehabilitation.types.ts:7: | 'SYSTEM';
+activity-rehabilitation/activity-rehabilitation.types.ts:12: actorId: string;
+activity-rehabilitation/activity-rehabilitation.types.ts:13: actorRole: RehabActorRole;
+ai/ai-engine.service.ts:4: {engineId:'risk',name:'Risk AI',riskClass:'B',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.ts:5: {engineId:'health-trend',name:'Health Trend AI',riskClass:'B',status:'ACTIVE_LONGITUDINAL_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.ts:6: {engineId:'staffing',name:'Staffing AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.ts:7: {engineId:'workload',name:'Workload AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.ts:8: {engineId:'kpi',name:'KPI AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.ts:9: {engineId:'anomaly',name:'Anomaly AI',riskClass:'B',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.ts:10: {engineId:'quality',name:'Quality AI',riskClass:'B',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false}
+ai/ai-engine.service.v7.3.3.backup.ts:4: {engineId:'risk',name:'Risk AI',riskClass:'B',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.v7.3.3.backup.ts:5: {engineId:'health-trend',name:'Health Trend AI',riskClass:'B',status:'ACTIVE_LONGITUDINAL_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.v7.3.3.backup.ts:6: {engineId:'staffing',name:'Staffing AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.v7.3.3.backup.ts:7: {engineId:'workload',name:'Workload AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.v7.3.3.backup.ts:8: {engineId:'kpi',name:'KPI AI',riskClass:'A',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.v7.3.3.backup.ts:9: {engineId:'anomaly',name:'Anomaly AI',riskClass:'B',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false},
+ai/ai-engine.service.v7.3.3.backup.ts:10: {engineId:'quality',name:'Quality AI',riskClass:'B',status:'ACTIVE_RULES_ENGINE',modelProvider:'internal-rules',productionEnabled:false}
+ai/ai-gateway.service.ts:9: if(!this.enabled || this.killSwitch) throw new ForbiddenException('AI Gateway disabled');
+behavioral-cognitive/behavioral-cognitive.service.ts:11: actorId: string;
+behavioral-cognitive/behavioral-cognitive.service.ts:12: actorRole: string;
+behavioral-cognitive/behavioral-cognitive.service.ts:41: const role = String(c.actorRole || '').toUpperCase();
+behavioral-cognitive/behavioral-cognitive.service.ts:43: if (!c.actorId || !role) {
+behavioral-cognitive/behavioral-cognitive.service.ts:47: if (role === 'AI' || role === 'SYSTEM') {
+behavioral-cognitive/behavioral-cognitive.service.ts:49: 'AI / SYSTEM cannot perform official behavioral mutation.',
+behavioral-cognitive/behavioral-cognitive.service.ts:58: !['SUPERVISOR','CARE_MANAGER'].includes(
+behavioral-cognitive/behavioral-cognitive.service.ts:59: String(c.actorRole).toUpperCase(),
+behavioral-cognitive/behavioral-cognitive.service.ts:72: !['NURSE','SUPERVISOR','CARE_MANAGER'].includes(
+behavioral-cognitive/behavioral-cognitive.service.ts:73: String(c.actorRole).toUpperCase(),
+behavioral-cognitive/behavioral-cognitive.service.ts:122: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:123: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:172: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:173: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:228: [id,c.actorId,c.actorRole],
+behavioral-cognitive/behavioral-cognitive.service.ts:279: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:280: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:335: [id,c.actorId,c.actorRole],
+behavioral-cognitive/behavioral-cognitive.service.ts:440: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:441: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:465: ['AI','SYSTEM'].includes(
+behavioral-cognitive/behavioral-cognitive.service.ts:548: if (q.rows[0].owner_id !== c.actorId) {
+behavioral-cognitive/behavioral-cognitive.service.ts:610: ep.rows[0].owner_id !== c.actorId
+behavioral-cognitive/behavioral-cognitive.service.ts:651: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:652: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:706: [id,c.actorId,c.actorRole],
+behavioral-cognitive/behavioral-cognitive.service.ts:753: c.ownerId ?? c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:754: c.ownerRole ?? c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:755: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:756: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:801: q.rows[0].owner_id !== c.actorId
+behavioral-cognitive/behavioral-cognitive.service.ts:819: [id,c.actorId],
+behavioral-cognitive/behavioral-cognitive.service.ts:860: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:861: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:885: ['AI','SYSTEM'].includes(
+behavioral-cognitive/behavioral-cognitive.service.ts:934: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:935: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:976: if (q.rows[0].reviewer_id !== c.actorId) {
+behavioral-cognitive/behavioral-cognitive.service.ts:993: [id,c.actorId],
+behavioral-cognitive/behavioral-cognitive.service.ts:1033: if (q.rows[0].reviewer_id !== c.actorId) {
+behavioral-cognitive/behavioral-cognitive.service.ts:1054: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:1055: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:1103: q.rows[0].owner_id !== c.actorId
+behavioral-cognitive/behavioral-cognitive.service.ts:1122: [id,c.actorId,c.actorRole],
+behavioral-cognitive/behavioral-cognitive.service.ts:1189: c.actorId,
+behavioral-cognitive/behavioral-cognitive.service.ts:1190: c.actorRole,
+behavioral-cognitive/behavioral-cognitive.service.ts:1244: [id,c.actorId,c.actorRole],
+behavioral-cognitive/behavioral-cognitive.service.ts:1314: [id,c.actorId,c.actorRole],
+care-action-bridge/care-action-bridge.controller.ts:35: actorId:
+care-action-bridge/care-action-bridge.controller.ts:36: body?.actorId,
+care-action-bridge/care-action-bridge.controller.ts:38: actorRole:
+care-action-bridge/care-action-bridge.controller.ts:39: body?.actorRole,
+care-action-bridge/care-action-bridge.service.ts:37: const actorId =
+care-action-bridge/care-action-bridge.service.ts:39: input.actorId ?? '',
+care-action-bridge/care-action-bridge.service.ts:42: const actorRole =
+care-action-bridge/care-action-bridge.service.ts:44: input.actorRole ?? '',
+care-action-bridge/care-action-bridge.service.ts:53: if (!actorId) {
+care-action-bridge/care-action-bridge.service.ts:55: 'actorId is required.',
+care-action-bridge/care-action-bridge.service.ts:59: if (!actorRole) {
+care-action-bridge/care-action-bridge.service.ts:61: 'actorRole is required.',
+care-action-bridge/care-action-bridge.service.ts:100: actorId,
+care-action-bridge/care-action-bridge.service.ts:101: actorRole,
+care-action-bridge/care-action-bridge.service.ts:161: actorId:
+care-action-bridge/care-action-bridge.service.ts:162: approval.actorId,
+care-action-bridge/care-action-bridge.service.ts:164: actorRole:
+care-action-bridge/care-action-bridge.service.ts:165: approval.actorRole,
+care-action-bridge/care-action-bridge.types.ts:4: actorId: string;
+care-action-bridge/care-action-bridge.types.ts:5: actorRole: string;
+care-action-bridge/care-action-bridge.types.ts:18: actorId: string;
+care-action-bridge/care-action-bridge.types.ts:19: actorRole: string;
+care-action-bridge/care-action-bridge.types.ts:34: actorId: string;
+care-action-bridge/care-action-bridge.types.ts:35: actorRole: string;
+care-actions/care-action.controller.ts:98: 'AI or SYSTEM actor cannot resolve a Care Action.'
+care-actions/care-action.controller.ts:110: 'AI or SYSTEM actor cannot reopen'
+care-actions/care-action.controller.ts:341: 'AI or SYSTEM actor cannot start Care Action review.' ||
+care-actions/care-action.repository.ts:146: actorId: string | null;
+care-actions/care-action.repository.ts:147: actorRole: string | null;
+care-actions/care-action.repository.ts:159: actorId: string | null;
+care-actions/care-action.repository.ts:160: actorRole: string | null;
+care-actions/care-action.repository.ts:289: actorId:
+care-actions/care-action.repository.ts:292: actorRole:
+care-actions/care-action.repository.ts:327: actorId:
+care-actions/care-action.repository.ts:330: actorRole:
+care-actions/care-action.repository.ts:726: input.actorId,
+care-actions/care-action.repository.ts:727: input.actorRole,
+care-actions/care-action.repository.ts:767: input.actorId,
+care-actions/care-action.repository.ts:768: input.actorRole,
+care-actions/care-action.service.ts:183: actorId:
+care-actions/care-action.service.ts:186: actorRole:
+care-actions/care-action.service.ts:250: const actorId =
+care-actions/care-action.service.ts:252: input.actorId,
+care-actions/care-action.service.ts:253: 'actorId',
+care-actions/care-action.service.ts:256: const actorRole =
+care-actions/care-action.service.ts:258: input.actorRole,
+care-actions/care-action.service.ts:259: 'actorRole',
+care-actions/care-action.service.ts:303: actorId,
+care-actions/care-action.service.ts:304: actorRole,
+care-actions/care-action.service.ts:397: actorId,
+care-actions/care-action.service.ts:398: actorRole,
+care-actions/care-action.service.ts:418: actorId,
+care-actions/care-action.service.ts:419: actorRole,
+care-actions/care-action.service.ts:495: const actorId =
+care-actions/care-action.service.ts:497: input.actorId,
+care-actions/care-action.service.ts:498: 'actorId',
+care-actions/care-action.service.ts:501: const actorRole =
+care-actions/care-action.service.ts:503: input.actorRole,
+care-actions/care-action.service.ts:504: 'actorRole',
+care-actions/care-action.service.ts:611: actorId,
+care-actions/care-action.service.ts:612: actorRole,
+care-actions/care-action.service.ts:632: actorId,
+care-actions/care-action.service.ts:633: actorRole,
+care-actions/care-action.service.ts:688: const actorId =
+care-actions/care-action.service.ts:690: input.actorId,
+care-actions/care-action.service.ts:691: 'actorId',
+care-actions/care-action.service.ts:694: const actorRole =
+care-actions/care-action.service.ts:696: input.actorRole,
+care-actions/care-action.service.ts:697: 'actorRole',
+care-actions/care-action.service.ts:727: actorId,
+care-actions/care-action.service.ts:729: actorRole,
+care-actions/care-action.service.ts:795: actorId,
+care-actions/care-action.service.ts:796: actorRole,
+care-actions/care-action.service.ts:857: const actorId =
+care-actions/care-action.service.ts:859: input.actorId,
+care-actions/care-action.service.ts:860: 'actorId',
+care-actions/care-action.service.ts:863: const actorRole =
+care-actions/care-action.service.ts:865: input.actorRole,
+care-actions/care-action.service.ts:866: 'actorRole',
+care-actions/care-action.service.ts:901: actorId,
+care-actions/care-action.service.ts:902: actorRole,
+care-actions/care-action.service.ts:969: actorId,
+care-actions/care-action.service.ts:970: actorRole,
+care-actions/care-action.service.ts:1028: const actorId =
+care-actions/care-action.service.ts:1030: input.actorId,
+care-actions/care-action.service.ts:1031: 'actorId',
+care-actions/care-action.service.ts:1034: const actorRole =
+care-actions/care-action.service.ts:1036: input.actorRole,
+care-actions/care-action.service.ts:1037: 'actorRole',
+care-actions/care-action.service.ts:1077: actorId,
+care-actions/care-action.service.ts:1078: actorRole,
+care-actions/care-action.service.ts:1151: actorId,
+care-actions/care-action.service.ts:1152: actorRole,
+care-actions/care-action.types.ts:80: actorId: string | null;
+care-actions/care-action.types.ts:81: actorRole: string | null;
+care-actions/care-action.types.ts:98: actorId: string | null;
+care-actions/care-action.types.ts:99: actorRole: string | null;
+care-actions/care-action.types.ts:124: actorId: string | null;
+care-actions/care-action.types.ts:125: actorRole: string | null;
+care-actions/care-action.types.ts:136: actorId: string | null;
+care-actions/care-action.types.ts:137: actorRole: string | null;
+care-actions/care-action.types.ts:142: actorId: string | null;
+care-actions/care-action.types.ts:143: actorRole: string | null;
+care-actions/care-action.types.ts:151: actorId: string | null;
+care-actions/care-action.types.ts:152: actorRole: string | null;
+care-actions/care-action.types.ts:157: actorId: string | null;
+care-actions/care-action.types.ts:158: actorRole: string | null;
+care-plan-authorization/care-plan-authorization.service.ts:25: const actorId =
+care-plan-authorization/care-plan-authorization.service.ts:27: input.actorId ?? '',
+care-plan-authorization/care-plan-authorization.service.ts:30: const actorRole =
+care-plan-authorization/care-plan-authorization.service.ts:32: input.actorRole ?? '',
+care-plan-authorization/care-plan-authorization.service.ts:40: if (!actorId) {
+care-plan-authorization/care-plan-authorization.service.ts:42: 'actorId is required.',
+care-plan-authorization/care-plan-authorization.service.ts:46: if (!actorRole) {
+care-plan-authorization/care-plan-authorization.service.ts:48: 'actorRole is required.',
+care-plan-authorization/care-plan-authorization.service.ts:53: actorRole === 'AI' ||
+care-plan-authorization/care-plan-authorization.service.ts:54: actorRole === 'SYSTEM'
+care-plan-authorization/care-plan-authorization.service.ts:57: 'AI or SYSTEM actor cannot govern a Care Plan.',
+care-plan-authorization/care-plan-authorization.service.ts:62: actorRole !== 'SUPERVISOR' &&
+care-plan-authorization/care-plan-authorization.service.ts:63: actorRole !== 'CARE_MANAGER'
+care-plan-authorization/care-plan-authorization.service.ts:81: actorId,
+care-plan-authorization/care-plan-authorization.service.ts:82: actorRole,
+care-plan-authorization/care-plan-authorization.service.ts:107: actorId,
+care-plan-authorization/care-plan-authorization.service.ts:108: actorRole,
+care-plan-authorization/care-plan-authorization.service.ts:133: actorId,
+care-plan-authorization/care-plan-authorization.service.ts:134: actorRole,
+care-plan-authorization/care-plan-authorization.service.ts:159: actorId,
+care-plan-authorization/care-plan-authorization.service.ts:160: actorRole,
+care-plan-authorization/care-plan-authorization.service.ts:186: actorId,
+care-plan-authorization/care-plan-authorization.service.ts:187: actorRole,
+care-plan-authorization/care-plan-authorization.types.ts:16: actorId: string;
+care-plan-authorization/care-plan-authorization.types.ts:17: actorRole: string;
+care-plan-authorization/care-plan-authorization.types.ts:23: actorId: string;
+care-plan-authorization/care-plan-authorization.types.ts:24: actorRole:
+care-plan-authorization/care-plan-authorization.types.ts:25: | 'SUPERVISOR'
+care-plan-governance/care-plan-governance.controller.ts:23: actorId?: string;
+care-plan-governance/care-plan-governance.controller.ts:24: actorRole?: string;
+care-plan-governance/care-plan-governance.controller.ts:82: body?.actorId ?? '',
+care-plan-governance/care-plan-governance.controller.ts:85: body?.actorRole ?? '',
+care-plan-governance/care-plan-governance.service.ts:38: actorId: string,
+care-plan-governance/care-plan-governance.service.ts:39: actorRole: string,
+care-plan-governance/care-plan-governance.service.ts:49: actorId ?? '',
+care-plan-governance/care-plan-governance.service.ts:54: actorRole ?? '',
+care-plan-governance/care-plan-governance.service.ts:65: 'actorId is required.',
+care-plan-governance/care-plan-governance.service.ts:71: 'actorRole is required.',
+care-plan-governance/care-plan-governance.service.ts:130: actorId:
+care-plan-governance/care-plan-governance.service.ts:133: actorRole:
+care-plan-governance/care-plan-governance.service.ts:168: decision.actorId;
+care-plan-governance/care-plan-governance.service.ts:171: decision.actorRole;
+care-plan-governance/care-plan-governance.service.ts:289: decision.actorId,
+care-plan-governance/care-plan-governance.service.ts:290: decision.actorRole,
+care-plan-governance/care-plan-governance.service.ts:314: actorId:
+care-plan-governance/care-plan-governance.service.ts:315: decision.actorId,
+care-plan-governance/care-plan-governance.service.ts:317: actorRole:
+care-plan-governance/care-plan-governance.service.ts:318: decision.actorRole,
+care-plans/care-plan.repository.ts:43: createdBy:
+care-plans/care-plan.repository.ts:45: createdByRole:
+care-plans/care-plan.repository.ts:106: input.createdBy,
+care-plans/care-plan.repository.ts:107: input.createdByRole,
+care-plans/care-plan.repository.ts:141: input.createdBy,
+care-plans/care-plan.repository.ts:142: input.createdByRole,
+care-plans/care-plan.repository.ts:240: actorId:
+care-plans/care-plan.repository.ts:242: actorRole:
+care-plans/care-plan.service.ts:71: createdBy:
+care-plans/care-plan.service.ts:73: input.createdBy,
+care-plans/care-plan.service.ts:74: 'createdBy',
+care-plans/care-plan.service.ts:77: createdByRole:
+care-plans/care-plan.service.ts:79: input.createdByRole,
+care-plans/care-plan.service.ts:80: 'createdByRole',
+care-plans/care-plan.types.ts:21: createdBy: string;
+care-plans/care-plan.types.ts:22: createdByRole: string;
+care-plans/care-plan.types.ts:38: createdBy: string;
+care-plans/care-plan.types.ts:39: createdByRole: string;
+care-plans/care-plan.types.ts:55: actorId: string | null;
+care-plans/care-plan.types.ts:56: actorRole: string | null;
+care-task-authorization/care-task-authorization.service.ts:34: const actorId =
+care-task-authorization/care-task-authorization.service.ts:36: input.actorId ?? '',
+care-task-authorization/care-task-authorization.service.ts:39: const actorRole =
+care-task-authorization/care-task-authorization.service.ts:41: input.actorRole ?? '',
+care-task-authorization/care-task-authorization.service.ts:78: if (!actorId) {
+care-task-authorization/care-task-authorization.service.ts:80: 'actorId is required.',
+care-task-authorization/care-task-authorization.service.ts:84: if (!actorRole) {
+care-task-authorization/care-task-authorization.service.ts:86: 'actorRole is required.',
+care-task-authorization/care-task-authorization.service.ts:92: actorRole === 'AI' ||
+care-task-authorization/care-task-authorization.service.ts:93: actorRole === 'SYSTEM'
+care-task-authorization/care-task-authorization.service.ts:96: 'AI or SYSTEM actor cannot mutate Care Task execution.',
+care-task-authorization/care-task-authorization.service.ts:102: actorRole === 'SUPERVISOR' ||
+care-task-authorization/care-task-authorization.service.ts:103: actorRole === 'CARE_MANAGER';
+care-task-authorization/care-task-authorization.service.ts:107: actorId === assignedTo;
+care-task-authorization/care-task-authorization.service.ts:138: actorId,
+care-task-authorization/care-task-authorization.service.ts:139: actorRole,
+care-task-authorization/care-task-authorization.service.ts:169: actorId,
+care-task-authorization/care-task-authorization.service.ts:170: actorRole,
+care-task-authorization/care-task-authorization.service.ts:200: actorId,
+care-task-authorization/care-task-authorization.service.ts:201: actorRole,
+care-task-authorization/care-task-authorization.service.ts:231: actorId,
+care-task-authorization/care-task-authorization.service.ts:232: actorRole,
+care-task-authorization/care-task-authorization.service.ts:268: actorId,
+care-task-authorization/care-task-authorization.service.ts:269: actorRole,
+care-task-authorization/care-task-authorization.service.ts:305: actorId,
+care-task-authorization/care-task-authorization.service.ts:306: actorRole,
+care-task-authorization/care-task-authorization.service.ts:342: actorId,
+care-task-authorization/care-task-authorization.service.ts:343: actorRole,
+care-task-authorization/care-task-authorization.types.ts:28: actorId:
+care-task-authorization/care-task-authorization.types.ts:31: actorRole:
+care-task-authorization/care-task-authorization.types.ts:56: actorId:
+care-task-authorization/care-task-authorization.types.ts:59: actorRole:
+care-task-execution/care-task-execution.service.ts:85: const actorId =
+care-task-execution/care-task-execution.service.ts:87: input.actorId,
+care-task-execution/care-task-execution.service.ts:88: 'actorId',
+care-task-execution/care-task-execution.service.ts:91: const actorRole =
+care-task-execution/care-task-execution.service.ts:93: input.actorRole,
+care-task-execution/care-task-execution.service.ts:94: 'actorRole',
+care-task-execution/care-task-execution.service.ts:164: * AI/SYSTEM may never become the
+care-task-execution/care-task-execution.service.ts:191: assigneeRole === 'AI' ||
+care-task-execution/care-task-execution.service.ts:192: assigneeRole === 'SYSTEM'
+care-task-execution/care-task-execution.service.ts:219: actorId,
+care-task-execution/care-task-execution.service.ts:221: actorRole,
+care-task-execution/care-task-execution.service.ts:598: actorId,
+care-task-execution/care-task-execution.service.ts:599: decision.actorRole,
+care-task-execution/care-task-execution.service.ts:664: actorId:
+care-task-execution/care-task-execution.service.ts:665: decision.actorId,
+care-task-execution/care-task-execution.service.ts:667: actorRole:
+care-task-execution/care-task-execution.service.ts:668: decision.actorRole,
+care-task-execution/care-task-execution.types.ts:3: actorId:
+care-task-execution/care-task-execution.types.ts:6: actorRole:
+care-tasks/care-task.repository.ts:283: input.actorId,
+care-tasks/care-task.repository.ts:284: input.actorRole,
+care-tasks/care-task.repository.ts:427: actorId:
+care-tasks/care-task.repository.ts:430: actorRole:
+care-tasks/care-task.service.ts:181: actorId:
+care-tasks/care-task.service.ts:183: input.actorId,
+care-tasks/care-task.service.ts:184: 'actorId',
+care-tasks/care-task.service.ts:187: actorRole:
+care-tasks/care-task.service.ts:189: input.actorRole,
+care-tasks/care-task.service.ts:190: 'actorRole',
+care-tasks/care-task.types.ts:81: actorId: string;
+care-tasks/care-task.types.ts:82: actorRole: string;
+care-tasks/care-task.types.ts:93: actorId: string | null;
+care-tasks/care-task.types.ts:94: actorRole: string | null;
+clinical-observations/clinical-authorization.service.ts:19: const actorId =
+clinical-observations/clinical-authorization.service.ts:21: input.actorId ?? '',
+clinical-observations/clinical-authorization.service.ts:24: const actorRole =
+clinical-observations/clinical-authorization.service.ts:26: input.actorRole ?? '',
+clinical-observations/clinical-authorization.service.ts:31: if (!actorId) {
+clinical-observations/clinical-authorization.service.ts:33: 'actorId is required.',
+clinical-observations/clinical-authorization.service.ts:37: if (!actorRole) {
+clinical-observations/clinical-authorization.service.ts:39: 'actorRole is required.',
+clinical-observations/clinical-authorization.service.ts:44: actorRole === 'AI' ||
+clinical-observations/clinical-authorization.service.ts:45: actorRole === 'SYSTEM'
+clinical-observations/clinical-authorization.service.ts:48: 'AI or SYSTEM cannot mutate the clinical record.',
+clinical-observations/clinical-authorization.service.ts:53: actorRole === 'CARE_MANAGER' ||
+clinical-observations/clinical-authorization.service.ts:54: actorRole === 'SUPERVISOR';
+clinical-observations/clinical-authorization.service.ts:365: actorId
+clinical-observations/clinical-authorization.service.ts:392: actorId
+clinical-observations/clinical.repository.ts:147: actorId: string;
+clinical-observations/clinical.repository.ts:148: actorRole: string;
+clinical-observations/clinical.repository.ts:202: input.actorId,
+clinical-observations/clinical.repository.ts:203: input.actorRole,
+clinical-observations/clinical.service.ts:54: const actorId =
+clinical-observations/clinical.service.ts:56: input.actorId ?? '',
+clinical-observations/clinical.service.ts:59: const actorRole =
+clinical-observations/clinical.service.ts:61: input.actorRole ?? '',
+clinical-observations/clinical.service.ts:191: actorId,
+clinical-observations/clinical.service.ts:192: actorRole,
+clinical-observations/clinical.service.ts:245: actorId,
+clinical-observations/clinical.service.ts:246: actorRole,
+clinical-observations/clinical.service.ts:317: actorId,
+clinical-observations/clinical.service.ts:318: actorRole,
+clinical-observations/clinical.service.ts:350: actorId,
+clinical-observations/clinical.service.ts:351: actorRole,
+clinical-observations/clinical.service.ts:383: actorId,
+clinical-observations/clinical.service.ts:384: actorRole,
+clinical-observations/clinical.service.ts:452: actorId,
+clinical-observations/clinical.service.ts:453: actorRole,
+clinical-observations/clinical.service.ts:555: actorId,
+clinical-observations/clinical.service.ts:556: actorRole,
+clinical-observations/clinical.service.ts:592: actorId,
+clinical-observations/clinical.service.ts:593: actorRole,
+clinical-observations/clinical.service.ts:670: actorId,
+clinical-observations/clinical.service.ts:671: actorRole,
+clinical-observations/clinical.service.ts:694: actorId,
+clinical-observations/clinical.service.ts:695: actorRole,
+clinical-observations/clinical.types.ts:17: actorId: string | null;
+clinical-observations/clinical.types.ts:18: actorRole: string | null;
+clinical-observations/clinical.types.ts:41: actorId: string;
+clinical-observations/clinical.types.ts:42: actorRole: string;
+cross-domain-integration/cross-domain-integration.service.ts:11: | 'AVAILABLE'
+cross-domain-integration/cross-domain-integration.service.ts:18: error?: 'READ_FAILED';
+cross-domain-integration/cross-domain-integration.service.ts:46: error: 'READ_FAILED',
+cross-domain-integration/cross-domain-integration.service.ts:53: ? 'AVAILABLE'
+cross-domain-integration/cross-domain-integration.service.ts:213: ? 'AVAILABLE'
+cross-domain-integration/cross-domain-integration.service.ts:244: resident: 'AVAILABLE',
+fall-mobility/fall-mobility.service.ts:11: actorId: string;
+fall-mobility/fall-mobility.service.ts:12: actorRole: string;
+fall-mobility/fall-mobility.service.ts:45: const role = String(c.actorRole || '').toUpperCase();
+fall-mobility/fall-mobility.service.ts:47: if (!c.actorId || !role) {
+fall-mobility/fall-mobility.service.ts:51: if (role === 'AI' || role === 'SYSTEM') {
+fall-mobility/fall-mobility.service.ts:53: 'AI / SYSTEM cannot perform official Step 7Z mutation.',
+fall-mobility/fall-mobility.service.ts:63: 'NURSE',
+fall-mobility/fall-mobility.service.ts:64: 'SUPERVISOR',
+fall-mobility/fall-mobility.service.ts:66: ].includes(String(c.actorRole).toUpperCase())
+fall-mobility/fall-mobility.service.ts:79: 'SUPERVISOR',
+fall-mobility/fall-mobility.service.ts:81: ].includes(String(c.actorRole).toUpperCase())
+fall-mobility/fall-mobility.service.ts:97: 'PRESCRIBE_RESTRAINT',
+fall-mobility/fall-mobility.service.ts:98: 'INITIATE_RESTRAINT',
+fall-mobility/fall-mobility.service.ts:164: c.actorId,
+fall-mobility/fall-mobility.service.ts:165: c.actorRole,
+fall-mobility/fall-mobility.service.ts:217: c.actorId,
+fall-mobility/fall-mobility.service.ts:218: c.actorRole,
+fall-mobility/fall-mobility.service.ts:268: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:315: c.actorId,
+fall-mobility/fall-mobility.service.ts:316: c.actorRole,
+fall-mobility/fall-mobility.service.ts:362: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:407: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:450: c.actorId,
+fall-mobility/fall-mobility.service.ts:451: c.actorRole,
+fall-mobility/fall-mobility.service.ts:496: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:546: c.actorId,
+fall-mobility/fall-mobility.service.ts:547: c.actorRole,
+fall-mobility/fall-mobility.service.ts:603: c.actorId,
+fall-mobility/fall-mobility.service.ts:604: c.actorRole,
+fall-mobility/fall-mobility.service.ts:636: if (q.rows[0].owner_id !== c.actorId) {
+fall-mobility/fall-mobility.service.ts:653: [id,c.actorId],
+fall-mobility/fall-mobility.service.ts:696: c.actorId,
+fall-mobility/fall-mobility.service.ts:697: c.actorRole,
+fall-mobility/fall-mobility.service.ts:742: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:845: c.actorId,
+fall-mobility/fall-mobility.service.ts:846: c.actorRole,
+fall-mobility/fall-mobility.service.ts:899: c.actorId,
+fall-mobility/fall-mobility.service.ts:900: c.actorRole,
+fall-mobility/fall-mobility.service.ts:946: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:991: [id,c.actorId,c.actorRole],
+fall-mobility/fall-mobility.service.ts:1026: c.actorId,
+fall-mobility/fall-mobility.service.ts:1027: c.actorRole,
+fall-mobility/fall-mobility.service.ts:1079: c.actorId,
+fall-mobility/fall-mobility.service.ts:1080: c.actorRole,
+fall-mobility/fall-mobility.service.ts:1112: if (q.rows[0].reviewer_id !== c.actorId) {
+fall-mobility/fall-mobility.service.ts:1129: [id,c.actorId],
+fall-mobility/fall-mobility.service.ts:1160: if (q.rows[0].reviewer_id !== c.actorId) {
+fall-mobility/fall-mobility.service.ts:1181: c.actorId,
+fall-mobility/fall-mobility.service.ts:1182: c.actorRole,
+fall-mobility/fall-mobility.service.ts:1232: c.actorId,
+fall-mobility/fall-mobility.service.ts:1233: c.actorRole,
+fall-mobility/fall-mobility.service.ts:1280: [id,c.actorId,c.actorRole],
+incidents/incident-authorization.service.ts:23: actorId: string | null | undefined,
+incidents/incident-authorization.service.ts:24: actorRole: string | null | undefined,
+incidents/incident-authorization.service.ts:26: actorId: string;
+incidents/incident-authorization.service.ts:27: actorRole: string;
+incidents/incident-authorization.service.ts:32: actorId ?? '',
+incidents/incident-authorization.service.ts:37: actorRole,
+incidents/incident-authorization.service.ts:42: 'actorId is required.',
+incidents/incident-authorization.service.ts:48: 'actorRole is required.',
+incidents/incident-authorization.service.ts:53: role === 'AI' ||
+incidents/incident-authorization.service.ts:54: role === 'SYSTEM'
+incidents/incident-authorization.service.ts:57: 'AI or SYSTEM cannot mutate an official Incident record.',
+incidents/incident-authorization.service.ts:63: 'CAREGIVER',
+incidents/incident-authorization.service.ts:64: 'NURSE',
+incidents/incident-authorization.service.ts:65: 'SUPERVISOR',
+incidents/incident-authorization.service.ts:75: actorId: id,
+incidents/incident-authorization.service.ts:76: actorRole: role,
+incidents/incident-authorization.service.ts:83: actorId: string | null | undefined,
+incidents/incident-authorization.service.ts:84: actorRole: string | null | undefined,
+incidents/incident-authorization.service.ts:86: actorId: string;
+incidents/incident-authorization.service.ts:87: actorRole: string;
+incidents/incident-authorization.service.ts:92: actorId,
+incidents/incident-authorization.service.ts:93: actorRole,
+incidents/incident-authorization.service.ts:97: actor.actorRole;
+incidents/incident-authorization.service.ts:105: 'NURSE',
+incidents/incident-authorization.service.ts:106: 'SUPERVISOR',
+incidents/incident-authorization.service.ts:126: 'SUPERVISOR',
+incidents/incident-authorization.service.ts:145: 'NURSE',
+incidents/incident-authorization.service.ts:146: 'SUPERVISOR',
+incidents/incident-authorization.service.ts:163: 'NURSE',
+incidents/incident-authorization.service.ts:164: 'SUPERVISOR',
+incidents/incident.service.ts:63: actorId: string | null,
+incidents/incident.service.ts:64: actorRole: string | null,
+incidents/incident.service.ts:122: actorId,
+incidents/incident.service.ts:123: actorRole,
+incidents/incident.service.ts:146: input.actorId,
+incidents/incident.service.ts:147: input.actorRole,
+incidents/incident.service.ts:251: actor.actorId,
+incidents/incident.service.ts:252: actor.actorRole,
+incidents/incident.service.ts:266: actor.actorId,
+incidents/incident.service.ts:267: actor.actorRole,
+incidents/incident.service.ts:323: input.actorId,
+incidents/incident.service.ts:324: input.actorRole,
+incidents/incident.service.ts:460: actor.actorId,
+incidents/incident.service.ts:461: actor.actorRole,
+incidents/incident.service.ts:489: actor.actorId,
+incidents/incident.service.ts:490: actor.actorRole,
+incidents/incident.service.ts:533: assignedRole === 'AI' ||
+incidents/incident.service.ts:534: assignedRole === 'SYSTEM'
+incidents/incident.service.ts:543: 'CAREGIVER',
+incidents/incident.service.ts:544: 'NURSE',
+incidents/incident.service.ts:545: 'SUPERVISOR',
+incidents/incident.service.ts:596: actor.actorId,
+incidents/incident.service.ts:597: actor.actorRole,
+incidents/incident.service.ts:628: actor.actorId,
+incidents/incident.service.ts:629: actor.actorRole,
+incidents/incident.service.ts:662: actor.actorId ||
+incidents/incident.service.ts:666: actor.actorRole
+incidents/incident.service.ts:696: actor.actorId,
+incidents/incident.service.ts:697: actor.actorRole,
+incidents/incident.service.ts:728: actor.actorId ||
+incidents/incident.service.ts:732: actor.actorRole
+incidents/incident.service.ts:762: actor.actorId,
+incidents/incident.service.ts:763: actor.actorRole,
+incidents/incident.service.ts:853: actor.actorId,
+incidents/incident.service.ts:854: actor.actorRole,
+incidents/incident.service.ts:865: actor.actorId,
+incidents/incident.service.ts:866: actor.actorRole,
+incidents/incident.service.ts:880: actorId:
+incidents/incident.service.ts:881: actor.actorId,
+incidents/incident.service.ts:882: actorRole:
+incidents/incident.service.ts:883: actor.actorRole,
+incidents/incident.service.ts:960: actor.actorId,
+incidents/incident.service.ts:961: actor.actorRole,
+incidents/incident.service.ts:987: actor.actorId,
+incidents/incident.service.ts:988: actor.actorRole,
+incidents/incident.service.ts:1074: 'NURSE',
+incidents/incident.service.ts:1075: 'SUPERVISOR',
+incidents/incident.service.ts:1111: actor.actorId,
+incidents/incident.service.ts:1112: actor.actorRole,
+incidents/incident.service.ts:1153: actor.actorId ||
+incidents/incident.service.ts:1157: actor.actorRole
+incidents/incident.service.ts:1185: actor.actorId,
+incidents/incident.service.ts:1186: actor.actorRole,
+incidents/incident.service.ts:1224: actor.actorId &&
+incidents/incident.service.ts:1226: actor.actorRole;
+incidents/incident.service.ts:1230: 'SUPERVISOR',
+incidents/incident.service.ts:1233: actor.actorRole,
+incidents/incident.service.ts:1265: actor.actorId,
+incidents/incident.service.ts:1266: actor.actorRole,
+incidents/incident.service.ts:1278: actor.actorId,
+incidents/incident.service.ts:1279: actor.actorRole,
+incidents/incident.service.ts:1349: actor.actorId,
+incidents/incident.service.ts:1350: actor.actorRole,
+incidents/incident.service.ts:1442: actor.actorId,
+incidents/incident.service.ts:1443: actor.actorRole,
+incidents/incident.service.ts:1454: actor.actorId,
+incidents/incident.service.ts:1455: actor.actorRole,
+incidents/incident.service.ts:1544: actor.actorId,
+incidents/incident.service.ts:1545: actor.actorRole,
+incidents/incident.service.ts:1733: actor.actorId,
+incidents/incident.service.ts:1734: actor.actorRole,
+incidents/incident.service.ts:1762: actorId: string;
+incidents/incident.service.ts:1763: actorRole: string;
+incidents/incident.service.ts:1800: actorId:
+incidents/incident.service.ts:1801: actor.actorId,
+incidents/incident.service.ts:1803: actorRole:
+incidents/incident.service.ts:1804: actor.actorRole,
+incidents/incident.types.ts:27: actorId?: string | null;
+incidents/incident.types.ts:28: actorRole?: string | null;
+incidents/incident.types.ts:32: actorId?: string | null;
+incidents/incident.types.ts:33: actorRole?: string | null;
+infection-control/infection-control.service.ts:11: actorId: string;
+infection-control/infection-control.service.ts:12: actorRole: string;
+infection-control/infection-control.service.ts:44: const role = String(c.actorRole || '').toUpperCase();
+infection-control/infection-control.service.ts:46: if (!c.actorId || !role) {
+infection-control/infection-control.service.ts:50: if (role === 'AI' || role === 'SYSTEM') {
+infection-control/infection-control.service.ts:52: 'AI / SYSTEM cannot perform official infection-domain mutation.',
+infection-control/infection-control.service.ts:61: !['NURSE','SUPERVISOR','CARE_MANAGER'].includes(
+infection-control/infection-control.service.ts:62: String(c.actorRole).toUpperCase(),
+infection-control/infection-control.service.ts:73: !['SUPERVISOR','CARE_MANAGER'].includes(
+infection-control/infection-control.service.ts:74: String(c.actorRole).toUpperCase(),
+infection-control/infection-control.service.ts:123: c.actorId,
+infection-control/infection-control.service.ts:124: c.actorRole,
+infection-control/infection-control.service.ts:174: c.actorId,
+infection-control/infection-control.service.ts:175: c.actorRole,
+infection-control/infection-control.service.ts:223: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:312: c.actorId,
+infection-control/infection-control.service.ts:313: c.actorRole,
+infection-control/infection-control.service.ts:363: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:405: c.actorId,
+infection-control/infection-control.service.ts:406: c.actorRole,
+infection-control/infection-control.service.ts:454: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:496: c.actorId,
+infection-control/infection-control.service.ts:497: c.actorRole,
+infection-control/infection-control.service.ts:545: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:592: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:639: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:683: c.actorId,
+infection-control/infection-control.service.ts:684: c.actorRole,
+infection-control/infection-control.service.ts:733: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:775: c.actorId,
+infection-control/infection-control.service.ts:776: c.actorRole,
+infection-control/infection-control.service.ts:822: [id,c.actorId,c.actorRole],
+infection-control/infection-control.service.ts:866: c.actorId,
+infection-control/infection-control.service.ts:867: c.actorRole,
+infection-control/infection-control.service.ts:886: ['AI','SYSTEM'].includes(String(c.reviewerRole).toUpperCase())
+infection-control/infection-control.service.ts:931: c.actorId,
+infection-control/infection-control.service.ts:932: c.actorRole,
+infection-control/infection-control.service.ts:968: if (q.rows[0].reviewer_id !== c.actorId) {
+infection-control/infection-control.service.ts:985: [id,c.actorId],
+infection-control/infection-control.service.ts:1020: if (q.rows[0].reviewer_id !== c.actorId) {
+infection-control/infection-control.service.ts:1041: c.actorId,
+infection-control/infection-control.service.ts:1042: c.actorRole,
+main.ts:9: const config = new DocumentBuilder().setTitle('Tâm An Care V7.3.3 API').setDescription('Health Trend AI upgrade with AI Gateway governance').setVersion('7.3.3').addTag('AI').build();
+medication/medication-authorization.service.ts:19: const actorId =
+medication/medication-authorization.service.ts:20: String(input.actorId ?? '').trim();
+medication/medication-authorization.service.ts:22: const actorRole =
+medication/medication-authorization.service.ts:23: String(input.actorRole ?? '')
+medication/medication-authorization.service.ts:27: if (!actorId) {
+medication/medication-authorization.service.ts:29: 'actorId is required.',
+medication/medication-authorization.service.ts:33: if (!actorRole) {
+medication/medication-authorization.service.ts:35: 'actorRole is required.',
+medication/medication-authorization.service.ts:40: actorRole === 'AI' ||
+medication/medication-authorization.service.ts:41: actorRole === 'SYSTEM'
+medication/medication-authorization.service.ts:44: 'AI or SYSTEM cannot mutate Medication Administration.',
+medication/medication-authorization.service.ts:60: actorRole !==
+medication/medication-authorization.service.ts:62: actorRole !==
+medication/medication-authorization.service.ts:63: 'SUPERVISOR'
+medication/medication-authorization.service.ts:95: assignedRole === 'AI' ||
+medication/medication-authorization.service.ts:96: assignedRole === 'SYSTEM'
+medication/medication-authorization.service.ts:119: actorId
+medication/medication-authorization.service.ts:142: actorId
+medication/medication-authorization.service.ts:164: actorRole !==
+medication/medication-authorization.service.ts:166: actorRole !==
+medication/medication-authorization.service.ts:167: 'SUPERVISOR'
+medication/medication-authorization.service.ts:176: actorId
+medication/medication-authorization.service.ts:187: 'FAILED'
+medication/medication-authorization.service.ts:210: actorId
+medication/medication-authorization.service.ts:250: actorId;
+medication/medication-authorization.service.ts:253: actorRole ===
+medication/medication-authorization.service.ts:255: actorRole ===
+medication/medication-authorization.service.ts:256: 'SUPERVISOR';
+medication/medication-authorization.service.ts:297: actorRole !==
+medication/medication-authorization.service.ts:299: actorRole !==
+medication/medication-authorization.service.ts:300: 'SUPERVISOR'
+medication/medication.repository.ts:102: actorId: string;
+medication/medication.repository.ts:103: actorRole: string;
+medication/medication.repository.ts:143: input.actorId,
+medication/medication.repository.ts:144: input.actorRole,
+medication/medication.service.ts:63: const actorId =
+medication/medication.service.ts:65: input.actorId ?? '',
+medication/medication.service.ts:68: const actorRole =
+medication/medication.service.ts:70: input.actorRole ?? '',
+medication/medication.service.ts:241: actorId,
+medication/medication.service.ts:242: actorRole,
+medication/medication.service.ts:479: actorId,
+medication/medication.service.ts:480: actorRole,
+medication/medication.service.ts:526: actorId,
+medication/medication.service.ts:527: actorRole,
+medication/medication.types.ts:13: actorId: string | null;
+medication/medication.types.ts:14: actorRole: string | null;
+medication/medication.types.ts:19: checkResult?: 'PASSED' | 'FAILED' | null;
+medication/medication.types.ts:44: actorId: string;
+medication/medication.types.ts:45: actorRole: string;
+medication-safety/medication-safety.service.ts:11: actorId: string;
+medication-safety/medication-safety.service.ts:12: actorRole: string;
+medication-safety/medication-safety.service.ts:43: const role = String(c.actorRole || '').toUpperCase();
+medication-safety/medication-safety.service.ts:45: if (!c.actorId || !role) {
+medication-safety/medication-safety.service.ts:49: if (role === 'AI' || role === 'SYSTEM') {
+medication-safety/medication-safety.service.ts:51: 'AI / SYSTEM cannot perform official medication-safety mutation.',
+medication-safety/medication-safety.service.ts:60: !['NURSE','SUPERVISOR','CARE_MANAGER'].includes(
+medication-safety/medication-safety.service.ts:61: String(c.actorRole).toUpperCase(),
+medication-safety/medication-safety.service.ts:74: !['SUPERVISOR','CARE_MANAGER'].includes(
+medication-safety/medication-safety.service.ts:75: String(c.actorRole).toUpperCase(),
+medication-safety/medication-safety.service.ts:148: c.actorId,
+medication-safety/medication-safety.service.ts:149: c.actorRole,
+medication-safety/medication-safety.service.ts:197: c.actorId,
+medication-safety/medication-safety.service.ts:198: c.actorRole,
+medication-safety/medication-safety.service.ts:276: c.actorId,
+medication-safety/medication-safety.service.ts:277: c.actorRole,
+medication-safety/medication-safety.service.ts:327: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:407: c.actorId,
+medication-safety/medication-safety.service.ts:408: c.actorRole,
+medication-safety/medication-safety.service.ts:460: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:509: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:549: c.actorId,
+medication-safety/medication-safety.service.ts:550: c.actorRole,
+medication-safety/medication-safety.service.ts:600: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:653: c.actorId,
+medication-safety/medication-safety.service.ts:654: c.actorRole,
+medication-safety/medication-safety.service.ts:703: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:747: c.actorId,
+medication-safety/medication-safety.service.ts:748: c.actorRole,
+medication-safety/medication-safety.service.ts:798: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:835: if (q.rows[0].first_checker_id === c.actorId) {
+medication-safety/medication-safety.service.ts:853: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:912: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:960: c.actorId,
+medication-safety/medication-safety.service.ts:961: c.actorRole,
+medication-safety/medication-safety.service.ts:1010: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:1054: c.actorId,
+medication-safety/medication-safety.service.ts:1055: c.actorRole,
+medication-safety/medication-safety.service.ts:1105: [id,c.actorId,c.actorRole],
+medication-safety/medication-safety.service.ts:1174: c.actorId,
+medication-safety/medication-safety.service.ts:1175: c.actorRole,
+nutrition-hydration/nutrition-hydration-authorization.service.ts:10: const actorId = String(input.actorId ?? '').trim();
+nutrition-hydration/nutrition-hydration-authorization.service.ts:11: const actorRole = (
+nutrition-hydration/nutrition-hydration-authorization.service.ts:12: String(input.actorRole ?? '').trim().toUpperCase()
+nutrition-hydration/nutrition-hydration-authorization.service.ts:15: if (!actorId) {
+nutrition-hydration/nutrition-hydration-authorization.service.ts:16: throw new Error('actorId is required.');
+nutrition-hydration/nutrition-hydration-authorization.service.ts:19: if (!actorRole) {
+nutrition-hydration/nutrition-hydration-authorization.service.ts:20: throw new Error('actorRole is required.');
+nutrition-hydration/nutrition-hydration-authorization.service.ts:23: return { actorId, actorRole };
+nutrition-hydration/nutrition-hydration-authorization.service.ts:30: actor.actorRole === 'AI' ||
+nutrition-hydration/nutrition-hydration-authorization.service.ts:31: actor.actorRole === 'SYSTEM'
+nutrition-hydration/nutrition-hydration-authorization.service.ts:34: 'AI or SYSTEM cannot perform official nutrition mutation.',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:40: 'CAREGIVER',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:41: 'NURSE',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:42: 'SUPERVISOR',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:44: ].includes(actor.actorRole)
+nutrition-hydration/nutrition-hydration-authorization.service.ts:57: 'NURSE',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:58: 'SUPERVISOR',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:60: ].includes(actor.actorRole)
+nutrition-hydration/nutrition-hydration-authorization.service.ts:75: 'SUPERVISOR',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:77: ].includes(actor.actorRole)
+nutrition-hydration/nutrition-hydration-authorization.service.ts:90: if (actor.actorRole === 'SYSTEM') {
+nutrition-hydration/nutrition-hydration-authorization.service.ts:92: 'SYSTEM cannot create official nutrition alert.',
+nutrition-hydration/nutrition-hydration-authorization.service.ts:96: if (actor.actorRole === 'AI') {
+nutrition-hydration/nutrition-hydration-authorization.service.ts:99: !== 'AI_ALERT'
+nutrition-hydration/nutrition-hydration-authorization.service.ts:102: 'AI may create suspected alert only as AI_ALERT.',
+nutrition-hydration/nutrition-hydration.controller.ts:46: 'AI or SYSTEM',
+nutrition-hydration/nutrition-hydration.controller.ts:47: 'SYSTEM cannot',
+nutrition-hydration/nutrition-hydration.controller.ts:48: 'AI may',
+nutrition-hydration/nutrition-hydration.service.ts:53: actorId: string | null,
+nutrition-hydration/nutrition-hydration.service.ts:54: actorRole: string | null,
+nutrition-hydration/nutrition-hydration.service.ts:93: actorId,
+nutrition-hydration/nutrition-hydration.service.ts:94: actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:179: actorId: string,
+nutrition-hydration/nutrition-hydration.service.ts:180: actorRole: string,
+nutrition-hydration/nutrition-hydration.service.ts:183: row.assigned_to !== actorId ||
+nutrition-hydration/nutrition-hydration.service.ts:184: row.assigned_role !== actorRole
+nutrition-hydration/nutrition-hydration.service.ts:308: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:309: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:319: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:320: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:366: [id, actor.actorId, actor.actorRole],
+nutrition-hydration/nutrition-hydration.service.ts:375: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:376: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:452: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:453: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:463: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:464: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:520: [id, actor.actorId, actor.actorRole],
+nutrition-hydration/nutrition-hydration.service.ts:529: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:530: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:616: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:617: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:662: ['AI','SYSTEM'].includes(assignedRole)
+nutrition-hydration/nutrition-hydration.service.ts:690: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:691: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:731: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:732: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:754: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:755: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:791: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:792: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:814: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:815: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:880: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:881: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:908: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:909: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:972: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:973: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1036: if (['AI','SYSTEM'].includes(assignedRole)) {
+nutrition-hydration/nutrition-hydration.service.ts:1062: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1063: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1076: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1077: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1090: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1091: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1122: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1123: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1196: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1197: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1207: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1208: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1262: [id, actor.actorId, actor.actorRole],
+nutrition-hydration/nutrition-hydration.service.ts:1271: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1272: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1363: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1364: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1376: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1377: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1401: actor.actorRole === 'AI'
+nutrition-hydration/nutrition-hydration.service.ts:1402: ? 'AI_ALERT'
+nutrition-hydration/nutrition-hydration.service.ts:1443: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1444: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1454: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1455: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1461: actor.actorRole === 'AI',
+nutrition-hydration/nutrition-hydration.service.ts:1514: [id, actor.actorId, actor.actorRole],
+nutrition-hydration/nutrition-hydration.service.ts:1523: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1524: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1591: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1592: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1611: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1612: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1681: 'NURSE',
+nutrition-hydration/nutrition-hydration.service.ts:1682: 'SUPERVISOR',
+nutrition-hydration/nutrition-hydration.service.ts:1712: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1713: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1749: row.assigned_reviewer !== actor.actorId ||
+nutrition-hydration/nutrition-hydration.service.ts:1750: row.assigned_reviewer_role !== actor.actorRole
+nutrition-hydration/nutrition-hydration.service.ts:1776: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1777: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1810: ['SUPERVISOR','CARE_MANAGER']
+nutrition-hydration/nutrition-hydration.service.ts:1811: .includes(actor.actorRole);
+nutrition-hydration/nutrition-hydration.service.ts:1814: row.assigned_reviewer === actor.actorId &&
+nutrition-hydration/nutrition-hydration.service.ts:1815: row.assigned_reviewer_role === actor.actorRole;
+nutrition-hydration/nutrition-hydration.service.ts:1843: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1844: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1862: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1863: actor.actorRole,
+nutrition-hydration/nutrition-hydration.service.ts:1874: actor.actorId,
+nutrition-hydration/nutrition-hydration.service.ts:1875: actor.actorRole,
+nutrition-hydration/nutrition-hydration.types.ts:2: | 'CAREGIVER'
+nutrition-hydration/nutrition-hydration.types.ts:3: | 'NURSE'
+nutrition-hydration/nutrition-hydration.types.ts:4: | 'SUPERVISOR'
+nutrition-hydration/nutrition-hydration.types.ts:6: | 'AI'
+nutrition-hydration/nutrition-hydration.types.ts:7: | 'SYSTEM';
+nutrition-hydration/nutrition-hydration.types.ts:40: actorId: string;
+nutrition-hydration/nutrition-hydration.types.ts:41: actorRole: NutritionActorRole;
+operational-care-view/operational-care-view.controller.ts:22: @Headers('x-actor-id') actorId?: string,
+operational-care-view/operational-care-view.controller.ts:23: @Headers('x-actor-role') actorRole?: string,
+operational-care-view/operational-care-view.controller.ts:28: actorId,
+operational-care-view/operational-care-view.controller.ts:29: actorRole,
+operational-care-view/operational-care-view.service.ts:17: actorId?: string;
+operational-care-view/operational-care-view.service.ts:18: actorRole?: string;
+operational-care-view/operational-care-view.service.ts:22: | 'CAREGIVER'
+operational-care-view/operational-care-view.service.ts:23: | 'NURSE'
+operational-care-view/operational-care-view.service.ts:24: | 'SUPERVISOR';
+operational-care-view/operational-care-view.service.ts:29: | 'SUPERVISORY';
+operational-care-view/operational-care-view.service.ts:32: | 'AVAILABLE'
+operational-care-view/operational-care-view.service.ts:34: | 'UNAVAILABLE';
+operational-care-view/operational-care-view.service.ts:49: actorId: string;
+operational-care-view/operational-care-view.service.ts:50: actorRole: HumanRole;
+operational-care-view/operational-care-view.service.ts:53: const actorId =
+operational-care-view/operational-care-view.service.ts:54: String(actor.actorId ?? '').trim();
+operational-care-view/operational-care-view.service.ts:57: String(actor.actorRole ?? '')
+operational-care-view/operational-care-view.service.ts:61: if (!actorId || !normalizedRole) {
+operational-care-view/operational-care-view.service.ts:68: normalizedRole === 'AI'
+operational-care-view/operational-care-view.service.ts:69: || normalizedRole === 'SYSTEM'
+operational-care-view/operational-care-view.service.ts:72: 'AI or SYSTEM cannot obtain human care-view authority.',
+operational-care-view/operational-care-view.service.ts:77: normalizedRole !== 'CAREGIVER'
+operational-care-view/operational-care-view.service.ts:78: && normalizedRole !== 'NURSE'
+operational-care-view/operational-care-view.service.ts:79: && normalizedRole !== 'SUPERVISOR'
+operational-care-view/operational-care-view.service.ts:86: const actorRole =
+operational-care-view/operational-care-view.service.ts:90: actorRole === 'SUPERVISOR'
+operational-care-view/operational-care-view.service.ts:91: ? 'SUPERVISORY'
+operational-care-view/operational-care-view.service.ts:92: : actorRole === 'NURSE'
+operational-care-view/operational-care-view.service.ts:97: actorId,
+operational-care-view/operational-care-view.service.ts:98: actorRole,
+operational-care-view/operational-care-view.service.ts:106: if (source === 'AVAILABLE') {
+operational-care-view/operational-care-view.service.ts:107: return 'AVAILABLE';
+operational-care-view/operational-care-view.service.ts:114: return 'UNAVAILABLE';
+operational-care-view/operational-care-view.service.ts:173: role === 'CAREGIVER'
+operational-care-view/operational-care-view.service.ts:208: createdBy:
+operational-care-view/operational-care-view.service.ts:210: createdByRole:
+operational-care-view/operational-care-view.service.ts:291: if (role === 'CAREGIVER') {
+operational-care-view/operational-care-view.service.ts:301: recordedBy:
+operational-care-view/operational-care-view.service.ts:303: recordedByRole:
+operational-care-view/operational-care-view.service.ts:305: verifiedBy:
+operational-care-view/operational-care-view.service.ts:307: verifiedByRole:
+operational-care-view/operational-care-view.service.ts:345: if (role === 'CAREGIVER') {
+operational-care-view/operational-care-view.service.ts:365: verifiedBy:
+operational-care-view/operational-care-view.service.ts:367: verifiedByRole:
+operational-care-view/operational-care-view.service.ts:411: if (role === 'CAREGIVER') {
+operational-care-view/operational-care-view.service.ts:465: if (role === 'CAREGIVER') {
+operational-care-view/operational-care-view.service.ts:473: reportedBy:
+operational-care-view/operational-care-view.service.ts:475: reportedByRole:
+operational-care-view/operational-care-view.service.ts:494: actor.actorId,
+operational-care-view/operational-care-view.service.ts:495: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:515: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:584: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:594: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:603: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:613: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:625: === 'UNAVAILABLE'
+operational-care-view/operational-care-view.service.ts:626: ? 'UNAVAILABLE'
+operational-care-view/operational-care-view.service.ts:628: ? 'AVAILABLE'
+operational-care-view/operational-care-view.service.ts:634: === 'UNAVAILABLE'
+operational-care-view/operational-care-view.service.ts:635: ? 'UNAVAILABLE'
+operational-care-view/operational-care-view.service.ts:637: ? 'AVAILABLE'
+operational-care-view/operational-care-view.service.ts:655: 'AVAILABLE' as const,
+operational-care-view/operational-care-view.service.ts:788: actorRole:
+operational-care-view/operational-care-view.service.ts:789: actor.actorRole,
+operational-care-view/operational-care-view.service.ts:798: actor.actorRole
+operational-care-view/operational-care-view.service.ts:799: === 'CAREGIVER',
+operational-care-view/operational-dashboard.controller.ts:20: @Headers('x-actor-id')
+operational-care-view/operational-dashboard.controller.ts:21: actorId?: string,
+operational-care-view/operational-dashboard.controller.ts:23: @Headers('x-actor-role')
+operational-care-view/operational-dashboard.controller.ts:24: actorRole?: string,
+operational-care-view/operational-dashboard.controller.ts:27: actorId,
+operational-care-view/operational-dashboard.controller.ts:28: actorRole,
+operational-care-view/operational-dashboard.service.ts:16: | 'CAREGIVER'
+operational-care-view/operational-dashboard.service.ts:17: | 'NURSE'
+operational-care-view/operational-dashboard.service.ts:18: | 'SUPERVISOR';
+operational-care-view/operational-dashboard.service.ts:21: actorId: string;
+operational-care-view/operational-dashboard.service.ts:22: actorRole: HumanRole;
+operational-care-view/operational-dashboard.service.ts:26: | 'AVAILABLE'
+operational-care-view/operational-dashboard.service.ts:28: | 'UNAVAILABLE';
+operational-care-view/operational-dashboard.service.ts:50: actorIdInput?: string,
+operational-care-view/operational-dashboard.service.ts:51: actorRoleInput?: string,
+operational-care-view/operational-dashboard.service.ts:53: const actorId =
+operational-care-view/operational-dashboard.service.ts:54: String(actorIdInput ?? '').trim();
+operational-care-view/operational-dashboard.service.ts:57: String(actorRoleInput ?? '')
+operational-care-view/operational-dashboard.service.ts:61: if (!actorId || !normalizedRole) {
+operational-care-view/operational-dashboard.service.ts:68: normalizedRole === 'AI'
+operational-care-view/operational-dashboard.service.ts:69: || normalizedRole === 'SYSTEM'
+operational-care-view/operational-dashboard.service.ts:72: 'AI / SYSTEM cannot obtain human operational authority.',
+operational-care-view/operational-dashboard.service.ts:77: normalizedRole !== 'CAREGIVER'
+operational-care-view/operational-dashboard.service.ts:78: && normalizedRole !== 'NURSE'
+operational-care-view/operational-dashboard.service.ts:79: && normalizedRole !== 'SUPERVISOR'
+operational-care-view/operational-dashboard.service.ts:87: actorId,
+operational-care-view/operational-dashboard.service.ts:88: actorRole:
+operational-care-view/operational-dashboard.service.ts:99: availability: 'UNAVAILABLE',
+operational-care-view/operational-dashboard.service.ts:121: ? 'AVAILABLE'
+operational-care-view/operational-dashboard.service.ts:269: actorIdInput?: string,
+operational-care-view/operational-dashboard.service.ts:270: actorRoleInput?: string,
+operational-care-view/operational-dashboard.service.ts:274: actorIdInput,
+operational-care-view/operational-dashboard.service.ts:275: actorRoleInput,
+operational-care-view/operational-dashboard.service.ts:285: actor.actorId,
+operational-care-view/operational-dashboard.service.ts:286: actor.actorRole,
+operational-care-view/operational-dashboard.service.ts:294: actor.actorId,
+operational-care-view/operational-dashboard.service.ts:295: actor.actorRole,
+operational-care-view/operational-dashboard.service.ts:303: actor.actorId,
+operational-care-view/operational-dashboard.service.ts:304: actor.actorRole,
+operational-care-view/operational-dashboard.service.ts:1154: === 'UNAVAILABLE'
+operational-care-view/operational-dashboard.service.ts:1156: === 'UNAVAILABLE'
+operational-care-view/operational-dashboard.service.ts:1158: === 'UNAVAILABLE'
+operational-care-view/operational-dashboard.service.ts:1160: === 'UNAVAILABLE'
+operational-care-view/operational-dashboard.service.ts:1161: ? 'UNAVAILABLE'
+operational-care-view/operational-dashboard.service.ts:1163: ? 'AVAILABLE'
+operational-care-view/operational-dashboard.service.ts:1239: actorId:
+operational-care-view/operational-dashboard.service.ts:1240: actor.actorId,
+operational-care-view/operational-dashboard.service.ts:1241: actorRole:
+operational-care-view/operational-dashboard.service.ts:1242: actor.actorRole,
+operational-care-view/operational-dashboard.service.ts:1244: actor.actorRole
+operational-care-view/operational-dashboard.service.ts:1245: === 'SUPERVISOR'
+operational-care-view/operational-dashboard.service.ts:1246: ? 'SUPERVISORY'
+operational-care-view/operational-dashboard.service.ts:1247: : actor.actorRole
+operational-care-view/operational-dashboard.service.ts:1248: === 'NURSE'
+operational-care-view/operational-dashboard.service.ts:1253: actor.actorRole
+operational-care-view/operational-dashboard.service.ts:1254: === 'CAREGIVER',
+pain-comfort/pain-comfort.service.ts:11: actorId: string;
+pain-comfort/pain-comfort.service.ts:12: actorRole: string;
+pain-comfort/pain-comfort.service.ts:34: domain: 'PAIN_COMFORT_SYMPTOM_MANAGEMENT',
+pain-comfort/pain-comfort.service.ts:42: const role = String(c.actorRole || '').toUpperCase();
+pain-comfort/pain-comfort.service.ts:44: if (!c.actorId || !role) {
+pain-comfort/pain-comfort.service.ts:48: if (role === 'AI' || role === 'SYSTEM') {
+pain-comfort/pain-comfort.service.ts:50: 'AI / SYSTEM cannot perform official pain/comfort mutation.',
+pain-comfort/pain-comfort.service.ts:59: !['NURSE','SUPERVISOR','CARE_MANAGER'].includes(
+pain-comfort/pain-comfort.service.ts:60: String(c.actorRole).toUpperCase(),
+pain-comfort/pain-comfort.service.ts:73: !['SUPERVISOR','CARE_MANAGER'].includes(
+pain-comfort/pain-comfort.service.ts:74: String(c.actorRole).toUpperCase(),
+pain-comfort/pain-comfort.service.ts:123: c.actorId,
+pain-comfort/pain-comfort.service.ts:124: c.actorRole,
+pain-comfort/pain-comfort.service.ts:144: case 'CREATE_PAIN_PLAN': {
+pain-comfort/pain-comfort.service.ts:176: c.actorId,
+pain-comfort/pain-comfort.service.ts:177: c.actorRole,
+pain-comfort/pain-comfort.service.ts:182: db,residentId,'PAIN_CARE_PLAN',id,
+pain-comfort/pain-comfort.service.ts:183: 'PAIN_CARE_PLAN_CREATED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:190: case 'REVIEW_PAIN_PLAN': {
+pain-comfort/pain-comfort.service.ts:225: [id,c.actorId,c.actorRole],
+pain-comfort/pain-comfort.service.ts:229: db,residentId,'PAIN_CARE_PLAN',id,
+pain-comfort/pain-comfort.service.ts:230: 'PAIN_CARE_PLAN_REVIEWED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:237: case 'ACTIVATE_PAIN_PLAN': {
+pain-comfort/pain-comfort.service.ts:274: db,residentId,'PAIN_CARE_PLAN',id,
+pain-comfort/pain-comfort.service.ts:275: 'PAIN_CARE_PLAN_ACTIVATED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:282: case 'CREATE_PAIN_ASSESSMENT': {
+pain-comfort/pain-comfort.service.ts:321: c.actorId,
+pain-comfort/pain-comfort.service.ts:322: c.actorRole,
+pain-comfort/pain-comfort.service.ts:327: db,residentId,'PAIN_ASSESSMENT',id,
+pain-comfort/pain-comfort.service.ts:328: 'PAIN_ASSESSMENT_RECORDED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:335: case 'VERIFY_PAIN_ASSESSMENT': {
+pain-comfort/pain-comfort.service.ts:372: [id,c.actorId,c.actorRole],
+pain-comfort/pain-comfort.service.ts:376: db,residentId,'PAIN_ASSESSMENT',id,
+pain-comfort/pain-comfort.service.ts:377: 'PAIN_ASSESSMENT_VERIFIED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:384: case 'AMEND_PAIN_ASSESSMENT': {
+pain-comfort/pain-comfort.service.ts:454: c.actorId,
+pain-comfort/pain-comfort.service.ts:455: c.actorRole,
+pain-comfort/pain-comfort.service.ts:462: db,residentId,'PAIN_ASSESSMENT',id,
+pain-comfort/pain-comfort.service.ts:463: 'PAIN_ASSESSMENT_AMENDMENT_RECORDED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:504: c.actorId,
+pain-comfort/pain-comfort.service.ts:505: c.actorRole,
+pain-comfort/pain-comfort.service.ts:555: [id,c.actorId,c.actorRole],
+pain-comfort/pain-comfort.service.ts:610: c.actorId,
+pain-comfort/pain-comfort.service.ts:611: c.actorRole,
+pain-comfort/pain-comfort.service.ts:660: [id,c.actorId,c.actorRole],
+pain-comfort/pain-comfort.service.ts:672: case 'CREATE_PAIN_REASSESSMENT': {
+pain-comfort/pain-comfort.service.ts:707: c.actorId,
+pain-comfort/pain-comfort.service.ts:708: c.actorRole,
+pain-comfort/pain-comfort.service.ts:713: db,residentId,'PAIN_REASSESSMENT',id,
+pain-comfort/pain-comfort.service.ts:714: 'PAIN_REASSESSMENT_RECORDED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:721: case 'VERIFY_PAIN_REASSESSMENT': {
+pain-comfort/pain-comfort.service.ts:757: [id,c.actorId,c.actorRole],
+pain-comfort/pain-comfort.service.ts:761: db,residentId,'PAIN_REASSESSMENT',id,
+pain-comfort/pain-comfort.service.ts:762: 'PAIN_REASSESSMENT_VERIFIED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:769: case 'CREATE_PAIN_ALERT': {
+pain-comfort/pain-comfort.service.ts:795: c.sourceType ?? 'PAIN_ASSESSMENT',
+pain-comfort/pain-comfort.service.ts:799: c.actorId,
+pain-comfort/pain-comfort.service.ts:800: c.actorRole,
+pain-comfort/pain-comfort.service.ts:805: db,residentId,'PAIN_SAFETY_ALERT',id,
+pain-comfort/pain-comfort.service.ts:806: 'PAIN_SAFETY_ALERT_CREATED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:813: case 'ACKNOWLEDGE_PAIN_ALERT': {
+pain-comfort/pain-comfort.service.ts:848: [id,c.actorId,c.actorRole],
+pain-comfort/pain-comfort.service.ts:852: db,residentId,'PAIN_SAFETY_ALERT',id,
+pain-comfort/pain-comfort.service.ts:853: 'PAIN_SAFETY_ALERT_ACKNOWLEDGED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:860: case 'CREATE_PAIN_ESCALATION': {
+pain-comfort/pain-comfort.service.ts:889: c.sourceType ?? 'PAIN_ASSESSMENT',
+pain-comfort/pain-comfort.service.ts:892: c.actorId,
+pain-comfort/pain-comfort.service.ts:893: c.actorRole,
+pain-comfort/pain-comfort.service.ts:898: db,residentId,'PAIN_ESCALATION',id,
+pain-comfort/pain-comfort.service.ts:899: 'PAIN_ESCALATION_CREATED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:906: case 'ASSIGN_PAIN_ESCALATION': {
+pain-comfort/pain-comfort.service.ts:912: ['AI','SYSTEM'].includes(
+pain-comfort/pain-comfort.service.ts:959: c.actorId,
+pain-comfort/pain-comfort.service.ts:960: c.actorRole,
+pain-comfort/pain-comfort.service.ts:965: db,residentId,'PAIN_ESCALATION',id,
+pain-comfort/pain-comfort.service.ts:966: 'PAIN_ESCALATION_ASSIGNED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:973: case 'ACCEPT_PAIN_ESCALATION': {
+pain-comfort/pain-comfort.service.ts:996: if (q.rows[0].reviewer_id !== c.actorId) {
+pain-comfort/pain-comfort.service.ts:1013: [id,c.actorId],
+pain-comfort/pain-comfort.service.ts:1017: db,residentId,'PAIN_ESCALATION',id,
+pain-comfort/pain-comfort.service.ts:1018: 'PAIN_ESCALATION_ACCEPTED',c,r.rows[0],
+pain-comfort/pain-comfort.service.ts:1025: case 'RESOLVE_PAIN_ESCALATION': {
+pain-comfort/pain-comfort.service.ts:1048: if (q.rows[0].reviewer_id !== c.actorId) {
+pain-comfort/pain-comfort.service.ts:1069: c.actorId,
+pain-comfort/pain-comfort.service.ts:1070: c.actorRole,
+pain-comfort/pain-comfort.service.ts:1076: db,residentId,'PAIN_ESCALATION',id,
+pain-comfort/pain-comfort.service.ts:1077: 'PAIN_ESCALATION_RESOLVED',c,r.rows[0],
+personal-care/personal-care.service.ts:11: actorId: string;
+personal-care/personal-care.service.ts:12: actorRole: string;
+personal-care/personal-care.service.ts:40: const role = String(c.actorRole || '').toUpperCase();
+personal-care/personal-care.service.ts:42: if (!c.actorId || !role) {
+personal-care/personal-care.service.ts:46: if (role === 'AI' || role === 'SYSTEM') {
+personal-care/personal-care.service.ts:48: 'AI / SYSTEM cannot perform official personal-care mutation.',
+personal-care/personal-care.service.ts:55: const role = String(c.actorRole).toUpperCase();
+personal-care/personal-care.service.ts:57: if (!['SUPERVISOR','CARE_MANAGER'].includes(role)) {
+personal-care/personal-care.service.ts:64: const role = String(c.actorRole).toUpperCase();
+personal-care/personal-care.service.ts:66: if (!['NURSE','SUPERVISOR','CARE_MANAGER'].includes(role)) {
+personal-care/personal-care.service.ts:116: c.actorId,
+personal-care/personal-care.service.ts:117: c.actorRole,
+personal-care/personal-care.service.ts:181: c.actorId,
+personal-care/personal-care.service.ts:182: c.actorRole,
+personal-care/personal-care.service.ts:240: [id,c.actorId,c.actorRole],
+personal-care/personal-care.service.ts:294: c.actorId,
+personal-care/personal-care.service.ts:295: c.actorRole,
+personal-care/personal-care.service.ts:320: ['AI','SYSTEM'].includes(
+personal-care/personal-care.service.ts:410: if (before.assigned_to !== c.actorId) {
+personal-care/personal-care.service.ts:474: if (before.assigned_to !== c.actorId) {
+personal-care/personal-care.service.ts:596: before.assigned_to !== c.actorId &&
+personal-care/personal-care.service.ts:597: !['SUPERVISOR','CARE_MANAGER'].includes(
+personal-care/personal-care.service.ts:598: String(c.actorRole).toUpperCase(),
+personal-care/personal-care.service.ts:678: schedule.assigned_to !== c.actorId
+personal-care/personal-care.service.ts:713: c.actorId,
+personal-care/personal-care.service.ts:714: c.actorRole,
+personal-care/personal-care.service.ts:771: [id,c.actorId,c.actorRole],
+personal-care/personal-care.service.ts:823: c.actorId,
+personal-care/personal-care.service.ts:824: c.actorRole,
+personal-care/personal-care.service.ts:875: c.actorId,
+personal-care/personal-care.service.ts:876: c.actorRole,
+personal-care/personal-care.service.ts:935: [id,c.actorId,c.actorRole],
+personal-care/personal-care.service.ts:987: c.actorId,
+personal-care/personal-care.service.ts:988: c.actorRole,
+personal-care/personal-care.service.ts:1043: c.actorId,
+personal-care/personal-care.service.ts:1044: c.actorRole,
+personal-care/personal-care.service.ts:1069: ['AI','SYSTEM'].includes(
+personal-care/personal-care.service.ts:1159: if (before.assigned_reviewer !== c.actorId) {
+personal-care/personal-care.service.ts:1220: if (before.assigned_reviewer !== c.actorId) {
+personal-care/personal-care.service.ts:1241: c.actorId,
+personal-care/personal-care.service.ts:1242: c.actorRole,
+reopen-authorization/reopen-authorization.service.ts:22: const actorId =
+reopen-authorization/reopen-authorization.service.ts:24: input.actorId ?? '',
+reopen-authorization/reopen-authorization.service.ts:27: const actorRole =
+reopen-authorization/reopen-authorization.service.ts:29: input.actorRole ?? '',
+reopen-authorization/reopen-authorization.service.ts:54: if (!actorId) {
+reopen-authorization/reopen-authorization.service.ts:56: 'actorId is required.',
+reopen-authorization/reopen-authorization.service.ts:60: if (!actorRole) {
+reopen-authorization/reopen-authorization.service.ts:62: 'actorRole is required.',
+reopen-authorization/reopen-authorization.service.ts:73: actorRole.toUpperCase();
+reopen-authorization/reopen-authorization.service.ts:76: normalizedRole === 'AI' ||
+reopen-authorization/reopen-authorization.service.ts:77: normalizedRole === 'SYSTEM'
+reopen-authorization/reopen-authorization.service.ts:80: 'AI or SYSTEM actor cannot reopen a Care Action.',
+reopen-authorization/reopen-authorization.service.ts:86: 'SUPERVISOR'
+reopen-authorization/reopen-authorization.service.ts:90: actorId,
+reopen-authorization/reopen-authorization.service.ts:91: actorRole:
+reopen-authorization/reopen-authorization.service.ts:94: 'SUPERVISOR_REOPEN',
+reopen-authorization/reopen-authorization.service.ts:106: actorId,
+reopen-authorization/reopen-authorization.service.ts:107: actorRole:
+reopen-authorization/reopen-authorization.types.ts:10: actorId: string;
+reopen-authorization/reopen-authorization.types.ts:12: actorRole: string;
+reopen-authorization/reopen-authorization.types.ts:20: actorId: string;
+reopen-authorization/reopen-authorization.types.ts:22: actorRole: string;
+reopen-authorization/reopen-authorization.types.ts:25: | 'SUPERVISOR_REOPEN'
+resident-access-administration/resident-access-administration.controller.ts:26: @Headers('x-actor-id')
+resident-access-administration/resident-access-administration.controller.ts:27: actorId?: string,
+resident-access-administration/resident-access-administration.controller.ts:29: @Headers('x-actor-role')
+resident-access-administration/resident-access-administration.controller.ts:30: actorRole?: string,
+resident-access-administration/resident-access-administration.controller.ts:35: @Query('actorRole')
+resident-access-administration/resident-access-administration.controller.ts:38: @Query('actorId')
+resident-access-administration/resident-access-administration.controller.ts:46: actorId,
+resident-access-administration/resident-access-administration.controller.ts:47: actorRole,
+resident-access-administration/resident-access-administration.controller.ts:51: actorRole:
+resident-access-administration/resident-access-administration.controller.ts:53: actorId:
+resident-access-administration/resident-access-administration.controller.ts:67: @Headers('x-actor-id')
+resident-access-administration/resident-access-administration.controller.ts:68: actorId?: string,
+resident-access-administration/resident-access-administration.controller.ts:70: @Headers('x-actor-role')
+resident-access-administration/resident-access-administration.controller.ts:71: actorRole?: string,
+resident-access-administration/resident-access-administration.controller.ts:82: actorId,
+resident-access-administration/resident-access-administration.controller.ts:83: actorRole,
+resident-access-administration/resident-access-administration.controller.ts:100: @Headers('x-actor-id')
+resident-access-administration/resident-access-administration.controller.ts:101: actorId?: string,
+resident-access-administration/resident-access-administration.controller.ts:103: @Headers('x-actor-role')
+resident-access-administration/resident-access-administration.controller.ts:104: actorRole?: string,
+resident-access-administration/resident-access-administration.controller.ts:108: actorId?: string;
+resident-access-administration/resident-access-administration.controller.ts:109: actorRole?: string;
+resident-access-administration/resident-access-administration.controller.ts:118: actorId,
+resident-access-administration/resident-access-administration.controller.ts:119: actorRole,
+resident-access-administration/resident-access-administration.controller.ts:133: @Headers('x-actor-id')
+resident-access-administration/resident-access-administration.controller.ts:134: actorId?: string,
+resident-access-administration/resident-access-administration.controller.ts:136: @Headers('x-actor-role')
+resident-access-administration/resident-access-administration.controller.ts:137: actorRole?: string,
+resident-access-administration/resident-access-administration.controller.ts:147: actorId,
+resident-access-administration/resident-access-administration.controller.ts:148: actorRole,
+resident-access-administration/resident-access-administration.service.ts:19: actorId?: string;
+resident-access-administration/resident-access-administration.service.ts:20: actorRole?: string;
+resident-access-administration/resident-access-administration.service.ts:24: actorId?: string;
+resident-access-administration/resident-access-administration.service.ts:25: actorRole?: string;
+resident-access-administration/resident-access-administration.service.ts:57: actorRole?: string;
+resident-access-administration/resident-access-administration.service.ts:58: actorId?: string;
+resident-access-administration/resident-access-administration.service.ts:71: actorId: string;
+resident-access-administration/resident-access-administration.service.ts:72: actorRole: 'SUPERVISOR';
+resident-access-administration/resident-access-administration.service.ts:74: const actorId =
+resident-access-administration/resident-access-administration.service.ts:75: String(actor.actorId ?? '').trim();
+resident-access-administration/resident-access-administration.service.ts:77: const actorRole =
+resident-access-administration/resident-access-administration.service.ts:78: String(actor.actorRole ?? '')
+resident-access-administration/resident-access-administration.service.ts:82: if (!actorId || !actorRole) {
+resident-access-administration/resident-access-administration.service.ts:89: actorRole === 'AI' ||
+resident-access-administration/resident-access-administration.service.ts:90: actorRole === 'SYSTEM'
+resident-access-administration/resident-access-administration.service.ts:97: if (actorRole !== 'SUPERVISOR') {
+resident-access-administration/resident-access-administration.service.ts:104: actorId,
+resident-access-administration/resident-access-administration.service.ts:105: actorRole: 'SUPERVISOR',
+resident-access-administration/resident-access-administration.service.ts:158: const actorId =
+resident-access-administration/resident-access-administration.service.ts:159: String(input.actorId ?? '').trim();
+resident-access-administration/resident-access-administration.service.ts:161: const actorRole =
+resident-access-administration/resident-access-administration.service.ts:162: String(input.actorRole ?? '')
+resident-access-administration/resident-access-administration.service.ts:171: if (!actorId) {
+resident-access-administration/resident-access-administration.service.ts:173: 'actorId is required.',
+resident-access-administration/resident-access-administration.service.ts:179: actorRole === 'CAREGIVER' &&
+resident-access-administration/resident-access-administration.service.ts:183: actorRole === 'NURSE' &&
+resident-access-administration/resident-access-administration.service.ts:189: 'Invalid actorRole/accessScope combination.',
+resident-access-administration/resident-access-administration.service.ts:229: actorId,
+resident-access-administration/resident-access-administration.service.ts:230: actorRole,
+resident-access-administration/resident-access-administration.service.ts:306: actorId:
+resident-access-administration/resident-access-administration.service.ts:309: actorRole:
+resident-access-administration/resident-access-administration.service.ts:327: assignedBy:
+resident-access-administration/resident-access-administration.service.ts:330: assignedByRole:
+resident-access-administration/resident-access-administration.service.ts:397: const actorRole =
+resident-access-administration/resident-access-administration.service.ts:399: filters.actorRole ?? '',
+resident-access-administration/resident-access-administration.service.ts:404: const actorId =
+resident-access-administration/resident-access-administration.service.ts:406: filters.actorId ?? '',
+resident-access-administration/resident-access-administration.service.ts:422: actorRole &&
+resident-access-administration/resident-access-administration.service.ts:424: 'CAREGIVER',
+resident-access-administration/resident-access-administration.service.ts:425: 'NURSE',
+resident-access-administration/resident-access-administration.service.ts:426: ].includes(actorRole)
+resident-access-administration/resident-access-administration.service.ts:429: 'actorRole must be CAREGIVER or NURSE.',
+resident-access-administration/resident-access-administration.service.ts:456: actorRole,
+resident-access-administration/resident-access-administration.service.ts:457: actorId,
+resident-access-administration/resident-access-administration.service.ts:478: actorId:
+resident-access-administration/resident-access-administration.service.ts:479: authority.actorId,
+resident-access-administration/resident-access-administration.service.ts:481: actorRole:
+resident-access-administration/resident-access-administration.service.ts:482: authority.actorRole,
+resident-access-administration/resident-access-administration.service.ts:488: 'SUPERVISOR_ONLY',
+resident-access-administration/resident-access-administration.service.ts:598: actorId:
+resident-access-administration/resident-access-administration.service.ts:599: authority.actorId,
+resident-access-administration/resident-access-administration.service.ts:601: actorRole:
+resident-access-administration/resident-access-administration.service.ts:602: authority.actorRole,
+resident-access-administration/resident-access-administration.service.ts:608: 'SUPERVISOR_ONLY',
+resident-access-administration/resident-access-administration.service.ts:668: 'SUPERVISOR',
+resident-access-administration/resident-access-administration.service.ts:680: normalized.actorId,
+resident-access-administration/resident-access-administration.service.ts:681: normalized.actorRole,
+resident-access-administration/resident-access-administration.service.ts:685: authority.actorId,
+resident-access-administration/resident-access-administration.service.ts:709: 'SUPERVISOR_ONLY',
+resident-access-administration/resident-access-administration.service.ts:755: revoked_by_role = 'SUPERVISOR',
+resident-access-administration/resident-access-administration.service.ts:767: authority.actorId,
+resident-access-administration/resident-access-administration.service.ts:790: 'SUPERVISOR_ONLY',
+resident-access-administration/resident-access-administration.service.ts:834: 'SUPERVISOR_ONLY',
+resident-access-scope/resident-access-scope.service.ts:10: | 'CAREGIVER'
+resident-access-scope/resident-access-scope.service.ts:11: | 'NURSE'
+resident-access-scope/resident-access-scope.service.ts:12: | 'SUPERVISOR';
+resident-access-scope/resident-access-scope.service.ts:20: | 'SUPERVISORY_ALL_ACTIVE_RESIDENTS';
+resident-access-scope/resident-access-scope.service.ts:30: actorRole: ResidentAccessHumanRole,
+resident-access-scope/resident-access-scope.service.ts:36: if (actorRole === 'CAREGIVER') {
+resident-access-scope/resident-access-scope.service.ts:40: if (actorRole === 'NURSE') {
+resident-access-scope/resident-access-scope.service.ts:48: actorIdInput: string,
+resident-access-scope/resident-access-scope.service.ts:49: actorRole: ResidentAccessHumanRole,
+resident-access-scope/resident-access-scope.service.ts:52: const actorId =
+resident-access-scope/resident-access-scope.service.ts:53: String(actorIdInput ?? '').trim();
+resident-access-scope/resident-access-scope.service.ts:58: if (!actorId || !residentId) {
+resident-access-scope/resident-access-scope.service.ts:62: if (actorRole === 'SUPERVISOR') {
+resident-access-scope/resident-access-scope.service.ts:82: this.scopeForRole(actorRole);
+resident-access-scope/resident-access-scope.service.ts:115: actorId,
+resident-access-scope/resident-access-scope.service.ts:116: actorRole,
+resident-access-scope/resident-access-scope.service.ts:126: actorIdInput: string,
+resident-access-scope/resident-access-scope.service.ts:127: actorRole: ResidentAccessHumanRole,
+resident-access-scope/resident-access-scope.service.ts:133: const actorId =
+resident-access-scope/resident-access-scope.service.ts:134: String(actorIdInput ?? '').trim();
+resident-access-scope/resident-access-scope.service.ts:146: if (!actorId) {
+resident-access-scope/resident-access-scope.service.ts:155: if (actorRole === 'SUPERVISOR') {
+resident-access-scope/resident-access-scope.service.ts:161: 'SUPERVISORY_ALL_ACTIVE_RESIDENTS',
+resident-access-scope/resident-access-scope.service.ts:166: this.scopeForRole(actorRole);
+resident-access-scope/resident-access-scope.service.ts:177: const actorIdParameter =
+resident-access-scope/resident-access-scope.service.ts:180: const actorRoleParameter =
+resident-access-scope/resident-access-scope.service.ts:195: $${actorIdParameter}
+resident-access-scope/resident-access-scope.service.ts:197: $${actorRoleParameter}
+resident-access-scope/resident-access-scope.service.ts:209: actorId,
+resident-access-scope/resident-access-scope.service.ts:210: actorRole,
+resolution-authorization/resolution-authorization.service.ts:32: const actorId =
+resolution-authorization/resolution-authorization.service.ts:34: input.actorId ?? '',
+resolution-authorization/resolution-authorization.service.ts:37: const actorRole =
+resolution-authorization/resolution-authorization.service.ts:39: input.actorRole ?? '',
+resolution-authorization/resolution-authorization.service.ts:77: if (!actorId) {
+resolution-authorization/resolution-authorization.service.ts:79: 'actorId is required.',
+resolution-authorization/resolution-authorization.service.ts:83: if (!actorRole) {
+resolution-authorization/resolution-authorization.service.ts:85: 'actorRole is required.',
+resolution-authorization/resolution-authorization.service.ts:102: actorRole.toUpperCase();
+resolution-authorization/resolution-authorization.service.ts:105: normalizedRole === 'AI' ||
+resolution-authorization/resolution-authorization.service.ts:106: normalizedRole === 'SYSTEM'
+resolution-authorization/resolution-authorization.service.ts:109: 'AI or SYSTEM actor cannot resolve a Care Action.',
+resolution-authorization/resolution-authorization.service.ts:114: actorId === assignedTo
+resolution-authorization/resolution-authorization.service.ts:118: actorId,
+resolution-authorization/resolution-authorization.service.ts:119: actorRole,
+resolution-authorization/resolution-authorization.service.ts:129: 'SUPERVISOR'
+resolution-authorization/resolution-authorization.service.ts:133: actorId,
+resolution-authorization/resolution-authorization.service.ts:134: actorRole,
+resolution-authorization/resolution-authorization.service.ts:136: 'SUPERVISOR_OVERRIDE',
+resolution-authorization/resolution-authorization.service.ts:148: actorId,
+resolution-authorization/resolution-authorization.service.ts:149: actorRole,
+resolution-authorization/resolution-authorization.types.ts:9: actorId: string;
+resolution-authorization/resolution-authorization.types.ts:10: actorRole: string;
+resolution-authorization/resolution-authorization.types.ts:19: actorId: string;
+resolution-authorization/resolution-authorization.types.ts:20: actorRole: string;
+resolution-authorization/resolution-authorization.types.ts:24: | 'SUPERVISOR_OVERRIDE'
+responsibility-acceptance/responsibility-acceptance.controller.ts:43: actorId:
+responsibility-acceptance/responsibility-acceptance.controller.ts:44: body?.actorId,
+responsibility-acceptance/responsibility-acceptance.controller.ts:46: actorRole:
+responsibility-acceptance/responsibility-acceptance.controller.ts:47: body?.actorRole,
+responsibility-acceptance/responsibility-acceptance.service.ts:118: const actorId =
+responsibility-acceptance/responsibility-acceptance.service.ts:120: input.actorId,
+responsibility-acceptance/responsibility-acceptance.service.ts:121: 'actorId',
+responsibility-acceptance/responsibility-acceptance.service.ts:124: const actorRole =
+responsibility-acceptance/responsibility-acceptance.service.ts:126: input.actorRole,
+responsibility-acceptance/responsibility-acceptance.service.ts:127: 'actorRole',
+responsibility-acceptance/responsibility-acceptance.service.ts:176: * AI cannot provide or substitute
+responsibility-acceptance/responsibility-acceptance.service.ts:186: actorId,
+responsibility-acceptance/responsibility-acceptance.service.ts:189: actorRole,
+responsibility-acceptance/responsibility-acceptance.service.ts:195: actorId,
+responsibility-acceptance/responsibility-acceptance.service.ts:196: actorRole,
+responsibility-acceptance/responsibility-acceptance.service.ts:201: assigned.assignedTo !== actorId ||
+responsibility-acceptance/responsibility-acceptance.service.ts:202: assigned.assignedRole !== actorRole
+responsibility-acceptance/responsibility-acceptance.service.ts:223: actorId,
+responsibility-acceptance/responsibility-acceptance.service.ts:226: actorRole,
+responsibility-acceptance/responsibility-acceptance.types.ts:9: actorId: string;
+responsibility-acceptance/responsibility-acceptance.types.ts:10: actorRole: string;
+safeguarding/safeguarding.service.ts:11: actorId: string;
+safeguarding/safeguarding.service.ts:12: actorRole: string;
+safeguarding/safeguarding.service.ts:46: const role = String(c.actorRole || '').toUpperCase();
+safeguarding/safeguarding.service.ts:48: if (!c.actorId || !role) {
+safeguarding/safeguarding.service.ts:52: if (role === 'AI' || role === 'SYSTEM') {
+safeguarding/safeguarding.service.ts:54: 'AI / SYSTEM cannot perform official safeguarding mutation.',
+safeguarding/safeguarding.service.ts:63: !['NURSE','SUPERVISOR','CARE_MANAGER','SAFEGUARDING_REVIEWER']
+safeguarding/safeguarding.service.ts:64: .includes(String(c.actorRole).toUpperCase())
+safeguarding/safeguarding.service.ts:76: !['SUPERVISOR','CARE_MANAGER']
+safeguarding/safeguarding.service.ts:77: .includes(String(c.actorRole).toUpperCase())
+safeguarding/safeguarding.service.ts:154: c.actorId,
+safeguarding/safeguarding.service.ts:155: c.actorRole,
+safeguarding/safeguarding.service.ts:214: c.actorId,
+safeguarding/safeguarding.service.ts:215: c.actorRole,
+safeguarding/safeguarding.service.ts:292: c.actorId,
+safeguarding/safeguarding.service.ts:293: c.actorRole,
+safeguarding/safeguarding.service.ts:385: c.actorId,
+safeguarding/safeguarding.service.ts:386: c.actorRole,
+safeguarding/safeguarding.service.ts:436: [id,c.actorId,c.actorRole],
+safeguarding/safeguarding.service.ts:485: [id,c.actorId,c.actorRole],
+safeguarding/safeguarding.service.ts:534: [id,c.actorId,c.actorRole],
+safeguarding/safeguarding.service.ts:583: [id,c.actorId,c.actorRole],
+safeguarding/safeguarding.service.ts:603: ['AI','SYSTEM'].includes(
+safeguarding/safeguarding.service.ts:607: throw new BadRequestException('AI / SYSTEM cannot own case.');
+safeguarding/safeguarding.service.ts:674: c.actorId,
+safeguarding/safeguarding.service.ts:675: c.actorRole,
+safeguarding/safeguarding.service.ts:711: if (q.rows[0].owner_id !== c.actorId) {
+safeguarding/safeguarding.service.ts:728: [id,c.actorId],
+safeguarding/safeguarding.service.ts:769: if (assignment.rows[0].owner_id !== c.actorId) {
+safeguarding/safeguarding.service.ts:814: c.actorId,
+safeguarding/safeguarding.service.ts:815: c.actorRole,
+safeguarding/safeguarding.service.ts:863: if (q.rows[0].reviewer_id !== c.actorId) {
+safeguarding/safeguarding.service.ts:961: c.actorId,
+safeguarding/safeguarding.service.ts:962: c.actorRole,
+safeguarding/safeguarding.service.ts:1007: c.actorId,
+safeguarding/safeguarding.service.ts:1008: c.actorRole,
+safeguarding/safeguarding.service.ts:1027: ['AI','SYSTEM'].includes(
+safeguarding/safeguarding.service.ts:1074: c.actorId,
+safeguarding/safeguarding.service.ts:1075: c.actorRole,
+safeguarding/safeguarding.service.ts:1111: if (q.rows[0].reviewer_id !== c.actorId) {
+safeguarding/safeguarding.service.ts:1128: [id,c.actorId],
+safeguarding/safeguarding.service.ts:1163: if (q.rows[0].reviewer_id !== c.actorId) {
+safeguarding/safeguarding.service.ts:1184: c.actorId,
+safeguarding/safeguarding.service.ts:1185: c.actorRole,
+safeguarding/safeguarding.service.ts:1234: c.actorId,
+safeguarding/safeguarding.service.ts:1235: c.actorRole,
+safeguarding/safeguarding.service.ts:1285: [id,c.actorId,c.actorRole],
+safeguarding/safeguarding.service.ts:1334: [id,c.actorId,c.actorRole],
+safeguarding/safeguarding.service.ts:1386: c.actorId,
+safeguarding/safeguarding.service.ts:1387: c.actorRole,
+safeguarding/safeguarding.service.ts:1438: [id,c.actorId,c.actorRole],
+skin-wound/skin-wound.service.ts:11: actorId: string;
+skin-wound/skin-wound.service.ts:12: actorRole: string;
+skin-wound/skin-wound.service.ts:49: const role = String(c.actorRole || '').toUpperCase();
+skin-wound/skin-wound.service.ts:51: if (!c.actorId || !role) {
+skin-wound/skin-wound.service.ts:57: if (role === 'AI' || role === 'SYSTEM') {
+skin-wound/skin-wound.service.ts:59: 'AI / SYSTEM cannot perform official wound mutation.',
+skin-wound/skin-wound.service.ts:67: const role = String(c.actorRole).toUpperCase();
+skin-wound/skin-wound.service.ts:71: 'NURSE',
+skin-wound/skin-wound.service.ts:72: 'SUPERVISOR',
+skin-wound/skin-wound.service.ts:127: command.actorId,
+skin-wound/skin-wound.service.ts:128: command.actorRole,
+skin-wound/skin-wound.service.ts:199: command.actorId,
+skin-wound/skin-wound.service.ts:200: command.actorRole,
+skin-wound/skin-wound.service.ts:261: command.actorId,
+skin-wound/skin-wound.service.ts:262: command.actorRole,
+skin-wound/skin-wound.service.ts:372: command.actorId,
+skin-wound/skin-wound.service.ts:373: command.actorRole,
+skin-wound/skin-wound.service.ts:442: command.actorId,
+skin-wound/skin-wound.service.ts:443: command.actorRole,
+skin-wound/skin-wound.service.ts:513: command.actorId,
+skin-wound/skin-wound.service.ts:514: command.actorRole,
+skin-wound/skin-wound.service.ts:620: command.actorId,
+skin-wound/skin-wound.service.ts:621: command.actorRole,
+skin-wound/skin-wound.service.ts:684: command.actorId,
+skin-wound/skin-wound.service.ts:685: command.actorRole,
+skin-wound/skin-wound.service.ts:737: command.actorId,
+skin-wound/skin-wound.service.ts:738: command.actorRole,
+skin-wound/skin-wound.service.ts:790: before.performed_by === command.actorId
+skin-wound/skin-wound.service.ts:810: command.actorId,
+skin-wound/skin-wound.service.ts:811: command.actorRole,
+skin-wound/skin-wound.service.ts:940: command.actorId,
+skin-wound/skin-wound.service.ts:941: command.actorRole,
+skin-wound/skin-wound.service.ts:998: command.actorId,
+skin-wound/skin-wound.service.ts:999: command.actorRole,
+skin-wound/skin-wound.service.ts:1061: command.actorId,
+skin-wound/skin-wound.service.ts:1062: command.actorRole,
+skin-wound/skin-wound.service.ts:1109: command.actorId,
+skin-wound/skin-wound.service.ts:1110: command.actorRole,
+skin-wound/skin-wound.service.ts:1145: ['AI','SYSTEM'].includes(
+skin-wound/skin-wound.service.ts:1152: 'AI / SYSTEM reviewer denied.',
+skin-wound/skin-wound.service.ts:1246: command.actorId
+skin-wound/skin-wound.service.ts:1313: command.actorId
+skin-wound/skin-wound.service.ts:1335: command.actorId,
+skin-wound/skin-wound.service.ts:1336: command.actorRole,
+sleep-rest/sleep-rest.service.ts:11: actorId: string;
+sleep-rest/sleep-rest.service.ts:12: actorRole: string;
+sleep-rest/sleep-rest.service.ts:41: const role = String(c.actorRole || '').toUpperCase();
+sleep-rest/sleep-rest.service.ts:43: if (!c.actorId || !role) {
+sleep-rest/sleep-rest.service.ts:47: if (role === 'AI' || role === 'SYSTEM') {
+sleep-rest/sleep-rest.service.ts:49: 'AI / SYSTEM cannot perform official sleep/rest mutation.',
+sleep-rest/sleep-rest.service.ts:58: !['NURSE','SUPERVISOR','CARE_MANAGER'].includes(
+sleep-rest/sleep-rest.service.ts:59: String(c.actorRole).toUpperCase(),
+sleep-rest/sleep-rest.service.ts:72: !['SUPERVISOR','CARE_MANAGER'].includes(
+sleep-rest/sleep-rest.service.ts:73: String(c.actorRole).toUpperCase(),
+sleep-rest/sleep-rest.service.ts:122: c.actorId,
+sleep-rest/sleep-rest.service.ts:123: c.actorRole,
+sleep-rest/sleep-rest.service.ts:181: c.actorId,
+sleep-rest/sleep-rest.service.ts:182: c.actorRole,
+sleep-rest/sleep-rest.service.ts:235: [id,c.actorId,c.actorRole],
+sleep-rest/sleep-rest.service.ts:322: c.actorId,
+sleep-rest/sleep-rest.service.ts:323: c.actorRole,
+sleep-rest/sleep-rest.service.ts:373: [id,c.actorId,c.actorRole],
+sleep-rest/sleep-rest.service.ts:413: c.assignedTo ?? c.actorId,
+sleep-rest/sleep-rest.service.ts:414: c.assignedRole ?? c.actorRole,
+sleep-rest/sleep-rest.service.ts:415: c.actorId,
+sleep-rest/sleep-rest.service.ts:416: c.actorRole,
+sleep-rest/sleep-rest.service.ts:454: q.rows[0].assigned_to !== c.actorId
+sleep-rest/sleep-rest.service.ts:502: c.actorId,
+sleep-rest/sleep-rest.service.ts:503: c.actorRole,
+sleep-rest/sleep-rest.service.ts:549: c.actorId,
+sleep-rest/sleep-rest.service.ts:550: c.actorRole,
+sleep-rest/sleep-rest.service.ts:569: ['AI','SYSTEM'].includes(
+sleep-rest/sleep-rest.service.ts:641: if (q.rows[0].owner_id !== c.actorId) {
+sleep-rest/sleep-rest.service.ts:696: ev.rows[0].owner_id !== c.actorId
+sleep-rest/sleep-rest.service.ts:737: c.actorId,
+sleep-rest/sleep-rest.service.ts:738: c.actorRole,
+sleep-rest/sleep-rest.service.ts:785: [id,c.actorId,c.actorRole],
+sleep-rest/sleep-rest.service.ts:827: c.actorId,
+sleep-rest/sleep-rest.service.ts:828: c.actorRole,
+sleep-rest/sleep-rest.service.ts:873: [id,c.actorId],
+sleep-rest/sleep-rest.service.ts:917: c.actorId,
+sleep-rest/sleep-rest.service.ts:918: c.actorRole,
+sleep-rest/sleep-rest.service.ts:937: ['AI','SYSTEM'].includes(
+sleep-rest/sleep-rest.service.ts:982: c.actorId,
+sleep-rest/sleep-rest.service.ts:983: c.actorRole,
+sleep-rest/sleep-rest.service.ts:1017: if (q.rows[0].reviewer_id !== c.actorId) {
+sleep-rest/sleep-rest.service.ts:1034: [id,c.actorId],
+sleep-rest/sleep-rest.service.ts:1067: if (q.rows[0].reviewer_id !== c.actorId) {
+sleep-rest/sleep-rest.service.ts:1088: c.actorId,
+sleep-rest/sleep-rest.service.ts:1089: c.actorRole,
+sleep-rest/sleep-rest.service.ts:1130: q.rows[0].owner_id !== c.actorId
+sleep-rest/sleep-rest.service.ts:1149: [id,c.actorId,c.actorRole],
+sleep-rest/sleep-rest.service.ts:1196: [id,c.actorId,c.actorRole],
+start-review-authorization/start-review-authorization.service.ts:15: 'SUPERVISOR',
+start-review-authorization/start-review-authorization.service.ts:46: 'actorRole',
+start-review-authorization/start-review-authorization.service.ts:65: const actorId =
+start-review-authorization/start-review-authorization.service.ts:67: input.actorId,
+start-review-authorization/start-review-authorization.service.ts:68: 'actorId',
+start-review-authorization/start-review-authorization.service.ts:71: const actorRole =
+start-review-authorization/start-review-authorization.service.ts:73: input.actorRole,
+start-review-authorization/start-review-authorization.service.ts:77: actorRole === 'AI' ||
+start-review-authorization/start-review-authorization.service.ts:78: actorRole === 'SYSTEM'
+start-review-authorization/start-review-authorization.service.ts:81: 'AI or SYSTEM actor cannot start Care Action review.',
+start-review-authorization/start-review-authorization.service.ts:104: actorId ===
+start-review-authorization/start-review-authorization.service.ts:110: actorRole,
+start-review-authorization/start-review-authorization.service.ts:125: : 'SUPERVISOR_OVERRIDE' as const;
+start-review-authorization/start-review-authorization.service.ts:148: actorId,
+start-review-authorization/start-review-authorization.service.ts:150: actorRole,
+start-review-authorization/start-review-authorization.types.ts:6: actorId: string;
+start-review-authorization/start-review-authorization.types.ts:7: actorRole: string;
+start-review-authorization/start-review-authorization.types.ts:12: | 'SUPERVISOR_OVERRIDE';
+start-review-authorization/start-review-authorization.types.ts:30: actorId: string;
+start-review-authorization/start-review-authorization.types.ts:32: actorRole: string;
+start-review-authorization/start-review-authorization.types.ts:46: actorId: string;
+start-review-authorization/start-review-authorization.types.ts:48: actorRole: string;

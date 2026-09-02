@@ -1,0 +1,18 @@
+{
+  "version": "V7.9",
+  "phase": "1C",
+  "recovery": "R2",
+  "status": "PASSED",
+  "decision": "STAFF_DIRECTORY_AUTHORIZATION_ACCEPTED",
+  "resource_model": "READ_ONLY_DIRECTORY_SELECTION",
+  "authorization_model": "PERSISTED_ACTOR_IDENTITY_PLUS_ROLE",
+  "auth_contract": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-1C-R2-STAFF-DIRECTORY-AUTH-CONTRACT.json",
+  "auth_contract_hash": "ba511290feec53960d15e846100d2fa09a78b72af1c2e77a8c6cad18b1e20648",
+  "no_actor_http": 401,
+  "authorized_actor_http": 200,
+  "staff_mutation_endpoint_required": false,
+  "real_staff_mutation": false,
+  "real_resident_mutation": false,
+  "production_database_mutation": false,
+  "next": "PHASE_1D"
+}

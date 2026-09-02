@@ -1,0 +1,50 @@
+{
+  "version": "V7.9",
+  "phase": "PHASE_6",
+  "phase_name": "FINAL_OPERATIONAL_ACCEPTANCE",
+  "status": "PREFLIGHT_COMPLETE",
+  "authority": "V7.8_IMMEDIATE_PREDECESSOR",
+  "phase5_final_manifest_sha256": "75e034d20e33f16bf68fc09f271ee01df5f610e341bcb2fb8146d86e2611f2b5",
+  "manual_semantic_manifest_sha256": "f8d2f69892d635b96099ef95157e8a6df883e46b2561db26b1db76ddedc2625d",
+  "authority_runner_sha256": "c5ed5fbfbbd53b97acefcc6c3334c587761e67178063690d55136031f0c03714",
+  "contract": {
+    "phase_name": "FINAL_OPERATIONAL_ACCEPTANCE",
+    "gate": "PHASE_6",
+    "mode": "READ_ONLY_ACCEPTANCE_AND_RELEASE_FREEZE",
+    "manual_test_required": false,
+    "acceptance": {
+      "production_health": true,
+      "source_integrity": true,
+      "database_integrity": true,
+      "runtime_identity_preserved": true,
+      "rollback_assets_preserved": true,
+      "ui_routes_http_200": [
+        "/",
+        "/dashboard",
+        "/operational-care",
+        "/residents",
+        "/staff-access",
+        "/system-status"
+      ],
+      "phase3_performance": "ACCEPTED",
+      "phase4_operational_smoothness": "ACCEPTED",
+      "phase5_backup_restore": "ACCEPTED",
+      "production_restore": false,
+      "production_database_write": false,
+      "v77_source_write": false,
+      "real_person_test_mutation": false
+    },
+    "release": {
+      "status": "FINAL_OPERATIONAL_RELEASE_FROZEN",
+      "next_roadmap_step": null
+    },
+    "series07_runner_creation_authorized": false,
+    "phase6_execution_authorized": false
+  },
+  "manual_test_required": false,
+  "implementation_authorized": false,
+  "runner_creation_authorized": false,
+  "execution_authorized": false,
+  "next_authorized_action": "GENERATE_PHASE6_FINAL_OPERATIONAL_ACCEPTANCE_RUNNER_ONLY",
+  "created_at": "2026-08-22T06:48:39.311604+00:00"
+}

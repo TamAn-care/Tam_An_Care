@@ -1,0 +1,145 @@
+{
+  "generated_at": "2026-08-21T13:31:12.292485+00:00",
+  "version": "V7.8",
+  "phase": "3B",
+  "status": "PASSED",
+  "decision": "CONTROLLED_READ_ONLY_CONCURRENCY_2_ACCEPTED",
+  "mode": {
+    "concurrency": 2,
+    "requests_per_target": 20,
+    "read_only": true,
+    "business_mutation": false,
+    "stress_test": false,
+    "soak_test": false
+  },
+  "targets": {
+    "api_health": {
+      "count": 20,
+      "min_ms": 1.227,
+      "mean_ms": 2.7178,
+      "median_ms": 1.7315,
+      "p95_ms": 9.792,
+      "max_ms": 10.704,
+      "expected_http": "200",
+      "concurrency": 2,
+      "request_count": 20,
+      "p95_threshold_ms": 1000.0
+    },
+    "ui_root": {
+      "count": 20,
+      "min_ms": 0.867,
+      "mean_ms": 1.22275,
+      "median_ms": 0.9755,
+      "p95_ms": 3.2615,
+      "max_ms": 3.29,
+      "expected_http": "200",
+      "concurrency": 2,
+      "request_count": 20,
+      "p95_threshold_ms": 1500.0
+    },
+    "operational_care": {
+      "count": 20,
+      "min_ms": 0.795,
+      "mean_ms": 1.07255,
+      "median_ms": 1.0695000000000001,
+      "p95_ms": 1.2542499999999999,
+      "max_ms": 1.278,
+      "expected_http": "200",
+      "concurrency": 2,
+      "request_count": 20,
+      "p95_threshold_ms": 1500.0
+    }
+  },
+  "security": {
+    "matrix": "401|401|401",
+    "concurrent_security_post": false
+  },
+  "production": {
+    "api_health": "200",
+    "ui_matrix": "200|401|401|200"
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "delta": false,
+    "write": false
+  },
+  "runtime": {
+    "api_restart": false,
+    "ui_restart": false,
+    "api_recreated": false,
+    "ui_recreated": false
+  },
+  "resources_before": {
+    "api": {
+      "BlockIO": "0B / 4.1kB",
+      "CPUPerc": "0.04%",
+      "Container": "taman-care-v77-production-api",
+      "ID": "9c5685f6d7c3",
+      "MemPerc": "1.03%",
+      "MemUsage": "40.41MiB / 3.826GiB",
+      "Name": "taman-care-v77-production-api",
+      "NetIO": "80.8kB / 94.9kB",
+      "PIDs": "18"
+    },
+    "ui": {
+      "BlockIO": "0B / 4.1kB",
+      "CPUPerc": "0.00%",
+      "Container": "taman-care-v77-production-ui",
+      "ID": "3b8ce413e4e6",
+      "MemPerc": "0.19%",
+      "MemUsage": "7.574MiB / 3.826GiB",
+      "Name": "taman-care-v77-production-ui",
+      "NetIO": "70.6kB / 89.5kB",
+      "PIDs": "9"
+    },
+    "db": {
+      "BlockIO": "0B / 623kB",
+      "CPUPerc": "0.01%",
+      "Container": "taman-care-v743-dev-postgres",
+      "ID": "92b707d3886f",
+      "MemPerc": "0.67%",
+      "MemUsage": "26.1MiB / 3.826GiB",
+      "Name": "taman-care-v743-dev-postgres",
+      "NetIO": "1.02kB / 126B",
+      "PIDs": "6"
+    }
+  },
+  "resources_after": {
+    "api": {
+      "BlockIO": "0B / 4.1kB",
+      "CPUPerc": "0.03%",
+      "Container": "taman-care-v77-production-api",
+      "ID": "9c5685f6d7c3",
+      "MemPerc": "1.04%",
+      "MemUsage": "40.8MiB / 3.826GiB",
+      "Name": "taman-care-v77-production-api",
+      "NetIO": "92.2kB / 110kB",
+      "PIDs": "18"
+    },
+    "ui": {
+      "BlockIO": "0B / 4.1kB",
+      "CPUPerc": "0.00%",
+      "Container": "taman-care-v77-production-ui",
+      "ID": "3b8ce413e4e6",
+      "MemPerc": "0.19%",
+      "MemUsage": "7.598MiB / 3.826GiB",
+      "Name": "taman-care-v77-production-ui",
+      "NetIO": "92.8kB / 132kB",
+      "PIDs": "9"
+    },
+    "db": {
+      "BlockIO": "0B / 623kB",
+      "CPUPerc": "1.58%",
+      "Container": "taman-care-v743-dev-postgres",
+      "ID": "92b707d3886f",
+      "MemPerc": "0.67%",
+      "MemUsage": "26.11MiB / 3.826GiB",
+      "Name": "taman-care-v743-dev-postgres",
+      "NetIO": "1.02kB / 126B",
+      "PIDs": "6"
+    }
+  },
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_3B_R1_CONCURRENCY_5_READ_ONLY"
+}

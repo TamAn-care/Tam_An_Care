@@ -1,0 +1,106 @@
+{
+  "generated_at": "2026-08-21T05:24:11.532862+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-A-R1",
+  "root_cause": "duplicate disposable staff_code",
+  "fixture_recovery": {
+    "supervisor_staff_code": "V77R2BA-SUP-001",
+    "caregiver_staff_code": "V77R2BA-CG-001"
+  },
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "test_image_id": "sha256:fceb2a0d318dfcdb2321594e6b4de85d8d1ec48465f49f1b14d4148c28a42dd6",
+  "domain_results": [
+    {
+      "module": "behavioral-cognitive",
+      "route": "/api/behavioral-cognitive/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "500",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "BUSINESS_OR_FIXTURE_VALIDATION",
+      "human_response": "{\"statusCode\":500,\"message\":\"Internal server error\"}"
+    },
+    {
+      "module": "fall-mobility",
+      "route": "/api/fall-mobility/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "500",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "BUSINESS_OR_FIXTURE_VALIDATION",
+      "human_response": "{\"statusCode\":500,\"message\":\"Internal server error\"}"
+    },
+    {
+      "module": "infection-control",
+      "route": "/api/infection-control/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"infection_alert_id\":\"1c5bdc7c-6a5d-4dc6-8ce3-b7b14e0fa8fe\",\"resident_id\":\"v77-r2ba-resident\",\"source_type\":\"INFECTION_OBSERVATION\",\"source_id\":null,\"alert_type\":\"HUMAN_REVIEW_REQUIRED\",\"alert_notes\":null,\"state\":\"OPEN\",\"created_by\":\"v77-r2ba-supervisor\",\"created_by_role\":\"SUPERVISOR\",\"acknowledged_by\":null,\"acknowledged_by_role\":null,\"acknowledged_at\":null,\"reviewed_by\":null,\"reviewed_by_role\":null,\"reviewed_at\":null,\"resolved_by\":null,\"resolved_by_role\":null,\"resolved_at\":null,\"created_at\":\"2026-08-21T05:24:10.856Z\",\"updated_at\":\"2026-08-21T05:24:10.856Z\"},\"autonomousDiagnosis\":false,\"autonomousPrecaution\":false,\"autonomousMedication\":false,\"autonomousClinicalAction\":false}"
+    },
+    {
+      "module": "medication-safety",
+      "route": "/api/medication-safety/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"medication_order_review_id\":\"484b412e-debf-477c-b8a3-b483f757bc76\",\"resident_id\":\"v77-r2ba-resident\",\"medication_order_ref\":null,\"review_context\":\"MEDICATION_ORDER_GOVERNANCE_REVIEW\",\"review_notes\":null,\"state\":\"PENDING\",\"created_by\":\"v77-r2ba-supervisor\",\"created_by_role\":\"SUPERVISOR\",\"reviewed_by\":null,\"reviewed_by_role\":null,\"reviewed_at\":null,\"created_at\":\"2026-08-21T05:24:10.896Z\",\"updated_at\":\"2026-08-21T05:24:10.896Z\"},\"existingMedicationDomainPreserved\":true,\"autonomousMedicationAction\":false,\"autonomousClinicalAction\":false}"
+    },
+    {
+      "module": "pain-comfort",
+      "route": "/api/pain-comfort/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"comfort_intervention_id\":\"dad6d723-9f78-4e74-8f36-ae957a912f71\",\"resident_id\":\"v77-r2ba-resident\",\"pain_assessment_id\":null,\"symptom_observation_id\":null,\"intervention_type\":\"REASSURANCE\",\"intervention_notes\":null,\"performed_by\":\"v77-r2ba-supervisor\",\"performed_by_role\":\"SUPERVISOR\",\"performed_at\":\"2026-08-21T05:24:10.931Z\",\"state\":\"RECORDED\",\"verified_by\":null,\"verified_by_role\":null,\"verified_at\":null,\"created_at\":\"2026-08-21T05:24:10.931Z\"},\"painScoreAutoTreatment\":false,\"autonomousClinicalAction\":false}"
+    },
+    {
+      "module": "personal-care",
+      "route": "/api/personal-care/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"personal_care_assistance_id\":\"09ec3b19-7266-491f-a03c-2a56e59edef2\",\"resident_id\":\"v77-r2ba-resident\",\"hygiene_schedule_id\":null,\"assistance_type\":\"PERSONAL_CARE\",\"assistance_level\":null,\"mobility_support\":null,\"transfer_support\":null,\"equipment_used\":null,\"performed_by\":\"v77-r2ba-supervisor\",\"performed_by_role\":\"SUPERVISOR\",\"performed_at\":\"2026-08-21T05:24:10.966Z\",\"status\":\"RECORDED\",\"exception_reason\":null,\"created_at\":\"2026-08-21T05:24:10.966Z\"},\"autonomousClinicalAction\":false}"
+    },
+    {
+      "module": "safeguarding",
+      "route": "/api/safeguarding/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "500",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "BUSINESS_OR_FIXTURE_VALIDATION",
+      "human_response": "{\"statusCode\":500,\"message\":\"Internal server error\"}"
+    },
+    {
+      "module": "sleep-rest",
+      "route": "/api/sleep-rest/v77-r2ba-resident/execute",
+      "no_actor_http": "400",
+      "human_http": "201",
+      "ai_http": "400",
+      "system_http": "400",
+      "classification": "FAIL_CLOSED_CONFIRMED",
+      "human_response": "{\"status\":\"OK\",\"data\":{\"night_check_id\":\"b6daf3cb-8294-4ac2-a64e-c1129ce6a228\",\"resident_id\":\"v77-r2ba-resident\",\"sleep_care_plan_id\":null,\"scheduled_at\":\"2026-08-21T05:24:11.034Z\",\"performed_at\":null,\"observation\":null,\"resident_state\":null,\"mobility_observation\":null,\"environmental_observation\":null,\"state\":\"SCHEDULED\",\"assigned_to\":\"v77-r2ba-supervisor\",\"assigned_role\":\"SUPERVISOR\",\"performed_by\":null,\"performed_by_role\":null,\"exception_reason\":null,\"created_by\":\"v77-r2ba-supervisor\",\"created_by_role\":\"SUPERVISOR\",\"created_at\":\"2026-08-21T05:24:11.034Z\",\"updated_at\":\"2026-08-21T05:24:11.034Z\"},\"autonomousClinicalAction\":false}"
+    }
+  ],
+  "governance": {
+    "no_actor_http": "400",
+    "human_http": "201",
+    "status_after": "ACTIVE",
+    "classification": "FAIL_CLOSED_CONFIRMED"
+  },
+  "summary": {
+    "proven_security_gap_count": 0,
+    "fail_closed_confirmed_count": 6,
+    "fixture_recovery_count": 3
+  },
+  "production_changed": false,
+  "source_changed": false
+}

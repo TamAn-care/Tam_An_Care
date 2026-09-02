@@ -1,0 +1,22 @@
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/app.module.ts -----
+22:import { ResidentModule } from './residents/resident.module';
+37:  CarePlanGovernanceModule,
+38:} from './care-plan-governance/care-plan-governance.module';
+58:import { ResidentAccessAdministrationModule } from './resident-access-administration/resident-access-administration.module';
+59:import { AdmissionModule } from './admissions/admission.module';
+67:import { ResidentCostModule } from './resident-cost/resident-cost.module';
+68:import { AccommodationModule } from './accommodation/accommodation.module';
+70:    AccommodationModule,
+71:    ResidentCostModule,
+79:    AdmissionModule,
+80:    ResidentAccessAdministrationModule,
+96:    CarePlanGovernanceModule,ResolutionAuthorizationModule,DatabaseModule,ResidentModule,WarningReviewModule,CareActionBridgeModule,ResponsibilityAcceptanceModule,StartReviewAuthorizationModule,
+----- FILE: /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/components/navigation/AppNavigation.tsx -----
+3:} from 'react-router-dom';
+27:    key: 'residents',
+28:    to: '/residents',
+76:    <nav
+77:      className="navigation"
+87:              ? 'nav-link active'
+88:              : 'nav-link'
+94:    </nav>

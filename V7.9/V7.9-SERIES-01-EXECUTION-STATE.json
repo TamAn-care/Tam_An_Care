@@ -1,0 +1,55 @@
+{
+  "version": "V7.9",
+  "series": "01",
+  "roadmap": "APPLICATION_COMPLETION_REAL_OPERATIONAL_READINESS",
+  "started_at": "2026-08-21T14:28:42.811806+00:00",
+  "parent_release": "V7.8_FINAL_OPERATIONAL_RELEASE_FROZEN",
+  "completed": [
+    {
+      "gate": "PHASE_0A",
+      "completed_at": "2026-08-21T14:29:31.729607+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-0A-FROZEN-V78-BASELINE-RESULT.txt",
+      "result_hash": "085c420ce524c51d6b314f95e60cee950758671fe22ce2677f976eb3365ec3b6",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-0A-FROZEN-V78-BASELINE.json",
+      "manifest_hash": "86c3c8efcc5249b24e0751167a67df1caf5de15417a52f063d88731164ca6301"
+    },
+    {
+      "gate": "PHASE_0B",
+      "completed_at": "2026-08-21T14:29:40.126074+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-0B-APPLICATION-MODULE-ROUTE-INVENTORY-RESULT.txt",
+      "result_hash": "38002fd0447bc0554c6167507385c29f8976433a19e5606e06fc51bb2213fda6",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-0B-APPLICATION-MODULE-ROUTE-INVENTORY.json",
+      "manifest_hash": "c854f0b1c0a50ec16ef17a73cbb7d6fef86677c19ebda7d9ddaf7a70a8b0579f"
+    },
+    {
+      "gate": "PHASE_0C",
+      "completed_at": "2026-08-21T14:29:48.694899+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-0C-API-DB-CAPABILITY-INVENTORY-RESULT.txt",
+      "result_hash": "e3d84611e2f603b735ad330bf734e5cc804ac2edc2e657eae0a54b82c7d51029",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-0C-API-DB-CAPABILITY-INVENTORY.json",
+      "manifest_hash": "57dc5db9a07a0863af678b8fcc34426b641d5632ff9befe05fbaf1ed95839793"
+    },
+    {
+      "gate": "PHASE_0D",
+      "completed_at": "2026-08-21T14:29:57.055316+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-0D-UI-API-DB-COVERAGE-GAP-MATRIX-RESULT.txt",
+      "result_hash": "1a95e6e2f1b67b841bf1f052b734d06ed0b5fa496ab8960636bc758293b0d3dd",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-0D-UI-API-DB-COVERAGE-GAP-MATRIX.json",
+      "manifest_hash": "b29b5cde4c119b8d299b1afbd4c1ead33beb5f1fe0b3d0207af0474764403c50"
+    },
+    {
+      "gate": "PHASE_0_FINAL",
+      "completed_at": "2026-08-21T14:30:13.633278+00:00",
+      "result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/results/V7.9-PHASE-0-FINAL-APPLICATION-COMPLETION-BASELINE-RESULT.txt",
+      "result_hash": "e3ad208c68f1e6ce2caa69ba781fde6bf68c4ff9aeda512d9b748a8a3293449b",
+      "manifest": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/manifests/V7.9-PHASE-0-FINAL-APPLICATION-COMPLETION-BASELINE.json",
+      "manifest_hash": "214a3918971455307e5adde3cacd333f21b60c9eabfb78af22475d4293b7dcb4"
+    }
+  ],
+  "status": "SERIES_01_PASSED",
+  "series_01_completed_at": "2026-08-21T14:30:13.636039+00:00",
+  "phase1_preflight": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-PHASE-1-ROLE-ACCESS-STAFF-PREFLIGHT.json",
+  "phase1_preflight_hash": "90e35b28cfd176ddc3c7e43b0cc08607a098bd7cea6864dc7a008e3255f2e3b2",
+  "phase1_preflight_result": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9-PHASE-1-ROLE-ACCESS-STAFF-PREFLIGHT-RESULT.txt",
+  "phase1_preflight_result_hash": "ff1d9a6e33f52daa3b73bdda99f452d329d262162cd3cb4088ae8c46b7f278b7"
+}

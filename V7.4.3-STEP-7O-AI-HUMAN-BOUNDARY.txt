@@ -1,0 +1,71 @@
+TAM AN CARE V7.4.3
+STEP 7O AI / HUMAN BOUNDARY
+
+AI MAY
+
+- analyze sensor data
+- detect possible fall patterns
+- detect possible emergency patterns
+- detect anomaly
+- raise suspected incident alert
+- prioritize alert visibility
+- summarize existing incident history
+- identify overdue acknowledgement
+- identify overdue response
+- suggest that human review is needed
+- suggest possible post-incident factors for human review
+
+AI MAY NOT
+
+- create official incident record
+- confirm that a fall occurred
+- assign incident severity autonomously
+- triage resident
+- diagnose
+- decide treatment
+- prescribe
+- change medication
+- administer medication
+- decide emergency transfer
+- decide hospital transfer
+- autonomously call emergency services
+- assign staff
+- acknowledge incident responsibility
+- start response
+- resolve incident
+- close incident
+- sign post-incident review
+- create Care Action
+- create Care Task
+- mutate Clinical Observation
+- satisfy human authorization
+
+AI ALERT FLOW
+
+AI / SENSOR
+-> SUSPECTED_INCIDENT_ALERT
+-> HUMAN REVIEW
+
+Then, only if a human explicitly decides:
+
+HUMAN
+-> REPORT_INCIDENT
+
+AI alert and human incident are separate records/concepts.
+
+AI output must include:
+
+autonomousClinicalAction = false
+
+SYSTEM actor has same mutation restrictions
+unless a future separately-approved non-clinical
+technical maintenance operation is designed.
+
+FAIL CLOSED
+
+If actorRole = AI or SYSTEM
+for an official Incident mutation:
+
+DENY
+ZERO BUSINESS MUTATION
+ZERO INCIDENT AUDIT

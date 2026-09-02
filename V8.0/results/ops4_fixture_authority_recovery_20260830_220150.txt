@@ -1,0 +1,60 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-4 FIXTURE AUTHORITY RECOVERY
+ SELF-DISCOVERING FIXTURE CONTRACT
+ NO APPLICATION / SCHEMA MUTATION
+======================================================================
+
+----- 1. CURRENT SAFE STATE -----
+FOOD_RECEIVING_EVENTS_EXISTS=0
+M4_REGISTRY_EXISTS=0
+DATABASE_BASELINE=1|1|0|0|0|0
+PASS: ROLLBACK STATE CLEAN
+
+----- 2. INVENTORY ITEM CONSTRAINT AUTHORITY -----
+           conname            |                                                                           pg_get_constraintdef                                                                            
+------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ inventory_items_base_unit_ck | CHECK ((length(btrim(base_unit)) > 0))
+ inventory_items_category_ck  | CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+ inventory_items_code_ck      | CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+ inventory_items_code_key     | UNIQUE (code)
+ inventory_items_pkey         | PRIMARY KEY (inventory_item_id)
+(5 rows)
+
+CODE_CONTRACT=CHECK ((code ~ '^[A-Z][A-Z0-9_]*$'::text))
+CATEGORY_CONTRACT=CHECK ((category = ANY (ARRAY['PERSONAL_CARE'::text, 'HOUSEKEEPING'::text, 'LAUNDRY'::text, 'NUTRITION'::text, 'MEDICAL_SUPPLY'::text, 'GENERAL'::text, 'OTHER'::text])))
+PASS: CODE CONTRACT DISCOVERED
+PASS: NUTRITION CATEGORY AUTHORIZED
+
+----- 3. DISCOVER VALID FIXTURE CODE -----
+VALID_FIXTURE_CODE=OPS4FINAL
+PASS: VALID FIXTURE CODE PROVEN BY DATABASE
+PROBE_RESIDUE=0
+PASS: PROBE CLEAN
+
+======================================================================
+ OPS-4 FIXTURE AUTHORITY DECISION
+======================================================================
+
+PASS_COUNT=5
+FAIL_COUNT=0
+
+STATUS: OPS-4 FIXTURE AUTHORITY RECOVERED
+
+APPLICATION_DEFECT=NO_EVIDENCE
+M4_SCHEMA_DEFECT=NO_EVIDENCE
+
+FIXTURE_CATEGORY=NUTRITION
+FIXTURE_CODE=OPS4FINAL
+
+SOURCE_MUTATION=NO
+SCHEMA_MUTATION=NO
+PERSISTENT_DATABASE_MUTATION=NO
+
+NEXT=OPS_4_SINGLE_FINAL_REPLAY_AND_CLOSEOUT
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops4_fixture_authority_recovery_20260830_220150.txt
+
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN ANOTHER BLOCK
+DO NOT START OPS-5
+======================================================================

@@ -1,0 +1,805 @@
+import { useMemo, useState } from 'react'
+
+import {
+  assignCareAction,
+  createWarningReview,
+  executeCarePlanGovernance,
+  executeCareTaskAction,
+  getCareAction,
+  getOperationalDashboard,
+  getResidentCareView,
+  getResidentIntegrationOverview,
+  getWarningReview,
+  reopenCareAction,
+  resolveCareAction,
+  startCareActionReview,
+  transferCareAction,
+  type HumanActor,
+  type JsonObject,
+} from '../../api/operational-care'
+
+type MutationKind =
+  | 'assign'
+  | 'transfer'
+  | 'start-review'
+  | 'resolve'
+  | 'reopen'
+  | 'warning-review'
+  | 'care-plan-governance'
+  | 'care-task-execution'
+
+type MutationDefinition = {
+  label: string
+  bodyType: string
+  help: string
+}
+
+const mutationDefinitions: Record<
+  MutationKind,
+  MutationDefinition
+> = {
+  assign: {
+    label: 'Assign Care Action',
+    bodyType: 'AssignCareActionInput',
+    help:
+      'Assign responsibility for a care action.',
+  },
+
+  transfer: {
+    label: 'Transfer Care Action',
+    bodyType: 'TransferCareActionInput',
+    help:
+      'Transfer an existing care-action responsibility.',
+  },
+
+  'start-review': {
+    label: 'Start Care Action Review',
+    bodyType: 'StartCareActionReviewInput',
+    help:
+      'Move a care action into review.',
+  },
+
+  resolve: {
+    label: 'Resolve Care Action',
+    bodyType: 'ResolveCareActionInput',
+    help:
+      'Resolve the selected care action.',
+  },
+
+  reopen: {
+    label: 'Reopen Care Action',
+    bodyType: 'ReopenCareActionInput',
+    help:
+      'Reopen a previously resolved care action.',
+  },
+
+  'warning-review': {
+    label: 'Create Warning Review',
+    bodyType: 'Opaque JSON body (backend: any)',
+    help:
+      'Backend exposes no field-level DTO. '
+      + 'Only a valid JSON object is accepted here.',
+  },
+
+  'care-plan-governance': {
+    label: 'Care Plan Governance',
+    bodyType: 'GovernanceBody',
+    help:
+      'Execute a proven governance action for a care plan.',
+  },
+
+  'care-task-execution': {
+    label: 'Care Task Execution',
+    bodyType: 'CareTaskExecutionInput',
+    help:
+      'Execute a proven action for a care task.',
+  },
+}
+
+function pretty(value: unknown): string {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  return JSON.stringify(value, null, 2)
+}
+
+function parseJsonObject(
+  value: string,
+): JsonObject {
+  let parsed: unknown
+
+  try {
+    parsed = JSON.parse(value)
+  } catch {
+    throw new Error(
+      'Mutation body must be valid JSON.',
+    )
+  }
+
+  if (
+    parsed === null
+    || typeof parsed !== 'object'
+    || Array.isArray(parsed)
+  ) {
+    throw new Error(
+      'Mutation body must be a JSON object.',
+    )
+  }
+
+  return parsed as JsonObject
+}
+
+export default function CareWorkPage() {
+  const [actorId, setActorId] = useState('')
+  const [actorRole, setActorRole] =
+    useState('SUPERVISOR')
+
+  const [residentId, setResidentId] =
+    useState('')
+
+  const [patternId, setPatternId] =
+    useState('')
+
+  const [warningId, setWarningId] =
+    useState('')
+
+  const [carePlanId, setCarePlanId] =
+    useState('')
+
+  const [careTaskId, setCareTaskId] =
+    useState('')
+
+  const [governanceAction, setGovernanceAction] =
+    useState('')
+
+  const [taskAction, setTaskAction] =
+    useState('')
+
+  const [mutationKind, setMutationKind] =
+    useState<MutationKind>('assign')
+
+  const [mutationBody, setMutationBody] =
+    useState('{}')
+
+  const [title, setTitle] = useState('')
+  const [result, setResult] =
+    useState<unknown>(null)
+
+  const [error, setError] =
+    useState('')
+
+  const [loading, setLoading] =
+    useState(false)
+
+  const actor = useMemo<
+    HumanActor | undefined
+  >(
+    () =>
+      actorId.trim()
+        ? {
+            actorId: actorId.trim(),
+            actorRole: actorRole.trim(),
+          }
+        : undefined,
+    [
+      actorId,
+      actorRole,
+    ],
+  )
+
+  const mutationDefinition =
+    mutationDefinitions[mutationKind]
+
+  async function execute(
+    label: string,
+    fn: () => Promise<unknown>,
+  ) {
+    setLoading(true)
+    setError('')
+
+    try {
+      const value = await fn()
+
+      setTitle(label)
+      setResult(value)
+    } catch (caught) {
+      const err = caught as Error & {
+        status?: number
+        body?: unknown
+      }
+
+      setResult(null)
+
+      setError(
+        [
+          err.message,
+          err.status
+            ? `Status: ${err.status}`
+            : '',
+          err.body
+            ? pretty(err.body)
+            : '',
+        ]
+          .filter(Boolean)
+          .join('\n'),
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function executeMutation() {
+    if (!actor) {
+      throw new Error(
+        'Actor ID is required for mutations.',
+      )
+    }
+
+    const payload =
+      parseJsonObject(mutationBody)
+
+    switch (mutationKind) {
+      case 'assign':
+        if (
+          !residentId.trim()
+          || !patternId.trim()
+        ) {
+          throw new Error(
+            'Resident ID and Pattern ID are required.',
+          )
+        }
+
+        return assignCareAction(
+          residentId.trim(),
+          patternId.trim(),
+          payload,
+          actor,
+        )
+
+      case 'transfer':
+        if (
+          !residentId.trim()
+          || !patternId.trim()
+        ) {
+          throw new Error(
+            'Resident ID and Pattern ID are required.',
+          )
+        }
+
+        return transferCareAction(
+          residentId.trim(),
+          patternId.trim(),
+          payload,
+          actor,
+        )
+
+      case 'start-review':
+        if (
+          !residentId.trim()
+          || !patternId.trim()
+        ) {
+          throw new Error(
+            'Resident ID and Pattern ID are required.',
+          )
+        }
+
+        return startCareActionReview(
+          residentId.trim(),
+          patternId.trim(),
+          payload,
+          actor,
+        )
+
+      case 'resolve':
+        if (
+          !residentId.trim()
+          || !patternId.trim()
+        ) {
+          throw new Error(
+            'Resident ID and Pattern ID are required.',
+          )
+        }
+
+        return resolveCareAction(
+          residentId.trim(),
+          patternId.trim(),
+          payload,
+          actor,
+        )
+
+      case 'reopen':
+        if (
+          !residentId.trim()
+          || !patternId.trim()
+        ) {
+          throw new Error(
+            'Resident ID and Pattern ID are required.',
+          )
+        }
+
+        return reopenCareAction(
+          residentId.trim(),
+          patternId.trim(),
+          payload,
+          actor,
+        )
+
+      case 'warning-review':
+        return createWarningReview(
+          payload,
+          actor,
+        )
+
+      case 'care-plan-governance':
+        if (
+          !carePlanId.trim()
+          || !governanceAction.trim()
+        ) {
+          throw new Error(
+            'Care Plan ID and governance action are required.',
+          )
+        }
+
+        return executeCarePlanGovernance(
+          carePlanId.trim(),
+          governanceAction.trim(),
+          payload,
+          actor,
+        )
+
+      case 'care-task-execution':
+        if (
+          !careTaskId.trim()
+          || !taskAction.trim()
+        ) {
+          throw new Error(
+            'Care Task ID and task action are required.',
+          )
+        }
+
+        return executeCareTaskAction(
+          careTaskId.trim(),
+          taskAction.trim(),
+          payload,
+          actor,
+        )
+    }
+  }
+
+  return (
+    <main
+      style={{
+        maxWidth: 1180,
+        margin: '0 auto',
+        padding: '24px 16px 48px',
+      }}
+    >
+      <header>
+        <p>
+          Tâm An Care V7.6
+        </p>
+
+        <h1>
+          Operational Care Workspace
+        </h1>
+
+        <p>
+          Read operations and controlled
+          care-work mutations.
+        </p>
+      </header>
+
+      <section
+        style={{
+          display: 'grid',
+          gap: 12,
+          gridTemplateColumns:
+            'repeat(auto-fit,minmax(210px,1fr))',
+          marginBlock: 24,
+        }}
+      >
+        <label>
+          Actor ID
+          <input
+            value={actorId}
+            onChange={(event) =>
+              setActorId(
+                event.target.value,
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Actor role
+          <input
+            value={actorRole}
+            onChange={(event) =>
+              setActorRole(
+                event.target.value,
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Resident ID
+          <input
+            value={residentId}
+            onChange={(event) =>
+              setResidentId(
+                event.target.value,
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Pattern ID
+          <input
+            value={patternId}
+            onChange={(event) =>
+              setPatternId(
+                event.target.value,
+              )
+            }
+          />
+        </label>
+
+        <label>
+          Warning ID
+          <input
+            value={warningId}
+            onChange={(event) =>
+              setWarningId(
+                event.target.value,
+              )
+            }
+          />
+        </label>
+      </section>
+
+      <section>
+        <h2>
+          Read operations
+        </h2>
+
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 8,
+          }}
+        >
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() =>
+              void execute(
+                'Dashboard',
+                () =>
+                  getOperationalDashboard(
+                    actor,
+                  ),
+              )
+            }
+          >
+            Dashboard
+          </button>
+
+          <button
+            type="button"
+            disabled={
+              loading
+              || !residentId.trim()
+            }
+            onClick={() =>
+              void execute(
+                'Resident Care View',
+                () =>
+                  getResidentCareView(
+                    residentId.trim(),
+                    actor,
+                  ),
+              )
+            }
+          >
+            Care View
+          </button>
+
+          <button
+            type="button"
+            disabled={
+              loading
+              || !residentId.trim()
+            }
+            onClick={() =>
+              void execute(
+                'Resident Integration Overview',
+                () =>
+                  getResidentIntegrationOverview(
+                    residentId.trim(),
+                    actor,
+                  ),
+              )
+            }
+          >
+            Resident Overview
+          </button>
+
+          <button
+            type="button"
+            disabled={
+              loading
+              || !residentId.trim()
+              || !patternId.trim()
+            }
+            onClick={() =>
+              void execute(
+                'Care Action',
+                () =>
+                  getCareAction(
+                    residentId.trim(),
+                    patternId.trim(),
+                    actor,
+                  ),
+              )
+            }
+          >
+            Care Action
+          </button>
+
+          <button
+            type="button"
+            disabled={
+              loading
+              || !warningId.trim()
+            }
+            onClick={() =>
+              void execute(
+                'Warning Review',
+                () =>
+                  getWarningReview(
+                    warningId.trim(),
+                    actor,
+                  ),
+              )
+            }
+          >
+            Warning Review
+          </button>
+        </div>
+      </section>
+
+      <section
+        style={{
+          marginTop: 32,
+          borderTop:
+            '1px solid currentColor',
+          paddingTop: 24,
+        }}
+      >
+        <h2>
+          Controlled mutation
+        </h2>
+
+        <p>
+          Protected mutations require a
+          human actor. The JSON request must
+          match the backend contract shown below.
+        </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gap: 12,
+            gridTemplateColumns:
+              'repeat(auto-fit,minmax(230px,1fr))',
+          }}
+        >
+          <label>
+            Operation
+            <select
+              value={mutationKind}
+              onChange={(event) =>
+                setMutationKind(
+                  event.target.value
+                  as MutationKind,
+                )
+              }
+            >
+              {(
+                Object.keys(
+                  mutationDefinitions,
+                ) as MutationKind[]
+              ).map((kind) => (
+                <option
+                  key={kind}
+                  value={kind}
+                >
+                  {
+                    mutationDefinitions[
+                      kind
+                    ].label
+                  }
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Care Plan ID
+            <input
+              value={carePlanId}
+              onChange={(event) =>
+                setCarePlanId(
+                  event.target.value,
+                )
+              }
+            />
+          </label>
+
+          <label>
+            Governance action
+            <input
+              value={governanceAction}
+              onChange={(event) =>
+                setGovernanceAction(
+                  event.target.value,
+                )
+              }
+            />
+          </label>
+
+          <label>
+            Care Task ID
+            <input
+              value={careTaskId}
+              onChange={(event) =>
+                setCareTaskId(
+                  event.target.value,
+                )
+              }
+            />
+          </label>
+
+          <label>
+            Task action
+            <input
+              value={taskAction}
+              onChange={(event) =>
+                setTaskAction(
+                  event.target.value,
+                )
+              }
+            />
+          </label>
+        </div>
+
+        <div
+          style={{
+            marginTop: 16,
+          }}
+        >
+          <strong>
+            {
+              mutationDefinition.label
+            }
+          </strong>
+
+          <p>
+            {
+              mutationDefinition.help
+            }
+          </p>
+
+          <p>
+            Backend body contract:{' '}
+            <code>
+              {
+                mutationDefinition.bodyType
+              }
+            </code>
+          </p>
+
+          <label
+            style={{
+              display: 'block',
+            }}
+          >
+            Request body — JSON object
+            <textarea
+              value={mutationBody}
+              onChange={(event) =>
+                setMutationBody(
+                  event.target.value,
+                )
+              }
+              rows={12}
+              spellCheck={false}
+              style={{
+                boxSizing: 'border-box',
+                display: 'block',
+                marginTop: 8,
+                width: '100%',
+                fontFamily:
+                  'ui-monospace, SFMono-Regular, Menlo, monospace',
+              }}
+            />
+          </label>
+
+          <button
+            type="button"
+            disabled={
+              loading
+              || !actor
+            }
+            style={{
+              marginTop: 12,
+            }}
+            onClick={() =>
+              void execute(
+                mutationDefinition.label,
+                executeMutation,
+              )
+            }
+          >
+            Execute mutation
+          </button>
+        </div>
+      </section>
+
+      {loading ? (
+        <p role="status">
+          Loading…
+        </p>
+      ) : null}
+
+      {error ? (
+        <section
+          role="alert"
+          style={{
+            marginTop: 24,
+          }}
+        >
+          <h2>
+            Request error
+          </h2>
+
+          <pre
+            style={{
+              whiteSpace:
+                'pre-wrap',
+            }}
+          >
+            {error}
+          </pre>
+        </section>
+      ) : null}
+
+      {result !== null ? (
+        <section
+          style={{
+            marginTop: 24,
+          }}
+        >
+          <h2>
+            {title}
+          </h2>
+
+          <pre
+            style={{
+              whiteSpace:
+                'pre-wrap',
+              overflowX:
+                'auto',
+            }}
+          >
+            {pretty(result)}
+          </pre>
+        </section>
+      ) : null}
+    </main>
+  )
+}

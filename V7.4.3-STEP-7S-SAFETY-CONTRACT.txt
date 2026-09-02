@@ -1,0 +1,53 @@
+TAM AN CARE V7.4.3
+STEP 7S SAFETY / DIGNITY CONTRACT
+
+DIGNITY
+
+1. Personal privacy is mandatory.
+2. Resident dignity must be preserved.
+3. Resident refusal must not be silently converted into completion.
+4. Consent / cooperation must not be fabricated.
+5. Personal-care records must be attributable to a human.
+
+
+BATHING / TRANSFER / FALL SAFETY
+
+6. Required mobility support must be available before care proceeds.
+7. Required transfer support must be available before care proceeds.
+8. Applicable fall precautions must be considered.
+9. Unsafe conditions must fail closed or be escalated.
+10. AI does not declare transfer safety.
+11. AI does not declare bathing safety.
+
+
+TOILETING / CONTINENCE SAFETY
+
+12. Continence observation is factual observation, not autonomous diagnosis.
+13. AI does not diagnose urinary infection.
+14. AI does not diagnose bowel disease.
+15. AI does not diagnose incontinence type.
+16. AI does not prescribe continence medication.
+17. AI does not prescribe bowel medication.
+18. AI does not autonomously change hydration or nutrition plans.
+
+
+SKIN SAFETY
+
+19. Skin observation may be recorded factually by humans.
+20. Suspected skin integrity problem may be explicitly escalated.
+21. Personal-care domain does not autonomously create wound records.
+
+
+FAILURE ATOMICITY
+
+22. State mutation requires database transaction.
+23. Competing state mutation requires row lock.
+24. Failed mutation = zero business mutation.
+25. Failed mutation = zero audit.
+26. Losing concurrency request = zero mutation + zero audit.
+27. Exactly one incompatible terminal state may win.
+
+
+AUTONOMOUS CLINICAL ACTION
+
+autonomousClinicalAction = false

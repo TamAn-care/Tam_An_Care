@@ -1,0 +1,134 @@
+TAM AN CARE V8.0 — S5 TARGETED RUNTIME ROUTE CONTRACT
+PREFLIGHT_ONLY=YES
+
+ROUTE|CONTROLLER=ai/early-warning.controller.ts|HTTP=POST|PATH=/api/ai/engines/health-trend/patterns|HANDLER=patterns|BODY=YES|PARAM=NO|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+ROUTE|CONTROLLER=ai/early-warning.controller.ts|HTTP=POST|PATH=/api/ai/engines/health-trend/resident/:residentId/patterns|HANDLER=residentPatterns|BODY=YES|PARAM=YES|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+ROUTE|CONTROLLER=care-plan-governance/care-plan-governance.controller.ts|HTTP=POST|PATH=/api/care-plan-governance',
+)
+export class CarePlanGovernanceController {
+
+  constructor(
+    private readonly service:
+      CarePlanGovernanceService,
+  ) {}
+
+
+  @Post(
+    ':carePlanId/:action',
+  )
+  async execute(
+    @Param('carePlanId/:carePlanId/:action',
+  )
+  async execute(
+    @Param('carePlanId|HANDLER=Param|BODY=YES|PARAM=YES|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=care-task-execution/care-task-execution.controller.ts|HTTP=POST|PATH=/api/care-task-execution',
+)
+export class CareTaskExecutionController {
+
+  constructor(
+    private readonly service:
+      CareTaskExecutionService,
+  ) {}
+
+
+  @Post(
+    ':careTaskId/:action',
+  )
+  async execute(
+    @Param('careTaskId/:careTaskId/:action',
+  )
+  async execute(
+    @Param('careTaskId|HANDLER=Param|BODY=YES|PARAM=YES|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+ROUTE|CONTROLLER=incidents/incident.controller.ts|HTTP=POST|PATH=/api/incidents/report|HANDLER=report|BODY=YES|PARAM=NO|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+ROUTE|CONTROLLER=incidents/incident.controller.ts|HTTP=POST|PATH=/api/incidents/:incidentId/:action|HANDLER=mutate|BODY=YES|PARAM=YES|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+ROUTE|CONTROLLER=medication/medication.controller.ts|HTTP=POST|PATH=/api/medication-administrations',
+)
+export class MedicationController {
+
+  constructor(
+    private readonly service:
+      MedicationService,
+  ) {}
+
+
+  @Post(':administrationId/:action/:administrationId/:action|HANDLER=mutate|BODY=YES|PARAM=YES|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+ROUTE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HTTP=POST|PATH=/api/operations/residents/:residentId/access-assignments',
+  )
+  @HttpCode(HttpStatus.CREATED)
+  createAssignment(
+    @Param('residentId|HANDLER=Headers|BODY=YES|PARAM=NO|QUERY=NO|HEADER=YES|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HTTP=POST|PATH=/api/operations/access-assignments/:assignmentId/revoke',
+  )
+  @HttpCode(HttpStatus.OK)
+  revokeAssignment(
+    @Param('assignmentId|HANDLER=Headers|BODY=YES|PARAM=NO|QUERY=NO|HEADER=YES|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HTTP=POST|PATH=/api/operations/access-assignments|HANDLER=createPublicAccessAssignment|BODY=YES|PARAM=NO|QUERY=NO|HEADER=YES|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=residents/resident.controller.ts|HTTP=POST|PATH=/api/residents|HANDLER=createResident|BODY=YES|PARAM=NO|QUERY=NO|HEADER=YES|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=residents/resident.controller.ts|HTTP=PATCH|PATH=/api/residents/:residentId|HANDLER=updateResident|BODY=YES|PARAM=YES|QUERY=NO|HEADER=YES|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=residents/resident.controller.ts|HTTP=POST|PATH=/api/residents/:residentId/deactivate|HANDLER=deactivateResident|BODY=NO|PARAM=YES|QUERY=NO|HEADER=YES|ACTOR_SIGNAL=YES
+ROUTE|CONTROLLER=warning-reviews/warning-review.controller.ts|HTTP=POST|PATH=/api/warning-reviews|HANDLER=review|BODY=YES|PARAM=YES|QUERY=NO|HEADER=NO|ACTOR_SIGNAL=NO
+TARGET_CONTROLLER_COUNT=8
+TARGET_MUTATING_ROUTE_COUNT=14
+
+SERVICE DELEGATION
+DELEGATION|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|PROPERTY=service|CLASS=ResidentAccessAdministrationService|METHOD=listAssignments|FILE=resident-access-administration/resident-access-administration.service.ts
+DELEGATION|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|PROPERTY=service|CLASS=ResidentAccessAdministrationService|METHOD=listResidentAssignments|FILE=resident-access-administration/resident-access-administration.service.ts
+DELEGATION|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|PROPERTY=service|CLASS=ResidentAccessAdministrationService|METHOD=createAssignment|FILE=resident-access-administration/resident-access-administration.service.ts
+DELEGATION|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|PROPERTY=service|CLASS=ResidentAccessAdministrationService|METHOD=revokeAssignment|FILE=resident-access-administration/resident-access-administration.service.ts
+DELEGATION|CONTROLLER=residents/resident.controller.ts|PROPERTY=residentService|CLASS=ResidentService|METHOD=list|FILE=residents/resident.service.ts
+DELEGATION|CONTROLLER=residents/resident.controller.ts|PROPERTY=residentService|CLASS=ResidentService|METHOD=getById|FILE=residents/resident.service.ts
+
+AUTHORIZATION SIGNALS
+AUTH_TARGET|ai/early-warning.controller.ts|SIGNALS=FORBIDDEN,AI
+AUTH_TARGET|care-plan-governance/care-plan-governance.controller.ts|SIGNALS=ACTOR_ID,ACTOR_ROLE
+AUTH_TARGET|care-task-execution/care-task-execution.controller.ts|SIGNALS=ACTOR_ID,ACTOR_ROLE,AI,SYSTEM
+AUTH_TARGET|incidents/incident.controller.ts|SIGNALS=ACTOR_ID,ACTOR_ROLE,SUPERVISOR,CAREGIVER,NURSE,CARE_MANAGER,AI,SYSTEM
+AUTH_TARGET|medication/medication.controller.ts|SIGNALS=ACTOR_ID,ACTOR_ROLE,SUPERVISOR,CARE_MANAGER,AI,SYSTEM
+AUTH_TARGET|resident-access-administration/resident-access-administration.controller.ts|SIGNALS=UNAUTHORIZED,FORBIDDEN,ACTOR_ID,ACTOR_ROLE,SUPERVISOR,CAREGIVER,NURSE,AI,SYSTEM,RESIDENT_SCOPE
+AUTH_TARGET|residents/resident.controller.ts|SIGNALS=UNAUTHORIZED,FORBIDDEN,ACTOR_ID,ACTOR_ROLE,SUPERVISOR
+AUTH_TARGET|warning-reviews/warning-review.controller.ts|SIGNALS=NONE
+
+AUDIT STORAGE CANDIDATES
+AUDIT_TARGET|ai/early-warning.controller.ts|CANDIDATES=ai_analysis_audit,pain_audit
+AUDIT_TARGET|care-plan-governance/care-plan-governance.controller.ts|CANDIDATES=care_plan_audit
+AUDIT_TARGET|care-task-execution/care-task-execution.controller.ts|CANDIDATES=care_task_audit
+AUDIT_TARGET|incidents/incident.controller.ts|CANDIDATES=incident_audit
+AUDIT_TARGET|medication/medication.controller.ts|CANDIDATES=medication_audit,medication_safety_audit
+AUDIT_TARGET|resident-access-administration/resident-access-administration.controller.ts|CANDIDATES=NONE
+AUDIT_TARGET|residents/resident.controller.ts|CANDIDATES=NONE
+AUDIT_TARGET|warning-reviews/warning-review.controller.ts|CANDIDATES=NONE
+
+RUNTIME TEST OBJECTIVES
+RUNTIME_OBJECTIVE|ai/early-warning.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|care-plan-governance/care-plan-governance.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|care-task-execution/care-task-execution.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|incidents/incident.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|medication/medication.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|resident-access-administration/resident-access-administration.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|residents/resident.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+RUNTIME_OBJECTIVE|warning-reviews/warning-review.controller.ts|VALID_HUMAN_ACTOR_SUCCESS_OR_DOMAIN_VALID_RESPONSE,MISSING_ACTOR_REJECTED,AI_REJECTED,SYSTEM_REJECTED,PRODUCTION_UNCHANGED,ROLE_BOUNDARY_EXPLICITLY_TESTED,NON_AUTHORIZED_HUMAN_ROLE_REJECTED,TARGET_MUTATION_AUDIT_BEHAVIOR_OBSERVED,AUDIT_ACTOR_PROVENANCE_OBSERVED_IF_APPLICABLE
+
+RUNTIME SAFETY MODEL
+
+TEST_DATABASE=DISPOSABLE_ONLY
+TEST_API=ISOLATED_ONLY
+REAL_DATA=NO
+PRODUCTION_MUTATION=NO
+PRODUCTION_RUNTIME_RESTART=NO
+
+MUTATING_HTTP_ALLOWED_IN_THIS_PREFLIGHT=NO
+FUNCTIONAL_EXECUTION_ALLOWED_IN_THIS_PREFLIGHT=NO
+
+FUTURE_RUNTIME_RULE_1=TEST_ONLY_AGAINST_DISPOSABLE_DATABASE
+FUTURE_RUNTIME_RULE_2=DO_NOT_POINT_TEST_API_TO_PRODUCTION_DATABASE
+FUTURE_RUNTIME_RULE_3=VERIFY_DATABASE_IDENTITY_BEFORE_FIRST_MUTATING_REQUEST
+FUTURE_RUNTIME_RULE_4=VERIFY_PRODUCTION_BASELINE_BEFORE_AND_AFTER
+FUTURE_RUNTIME_RULE_5=CAPTURE_TARGET_TABLE_COUNTS_BEFORE_AND_AFTER
+FUTURE_RUNTIME_RULE_6=CAPTURE_AUDIT_TABLE_COUNTS_BEFORE_AND_AFTER
+FUTURE_RUNTIME_RULE_7=TEST_MISSING_ACTOR
+FUTURE_RUNTIME_RULE_8=TEST_AI_ACTOR
+FUTURE_RUNTIME_RULE_9=TEST_SYSTEM_ACTOR
+FUTURE_RUNTIME_RULE_10=TEST_AUTHORIZED_HUMAN_ACTOR
+FUTURE_RUNTIME_RULE_11=TEST_NON_AUTHORIZED_HUMAN_ROLE_WHERE_ROLE_CONTRACT_EXISTS
+FUTURE_RUNTIME_RULE_12=CLEAN_ALL_TEST_RUNTIME_AFTER_EXECUTION
+FUTURE_RUNTIME_RULE_13=DO_NOT_RERUN_PATH_ONCE_ACCEPTED_UNLESS_NEW_EVIDENCE_REQUIRES_IT

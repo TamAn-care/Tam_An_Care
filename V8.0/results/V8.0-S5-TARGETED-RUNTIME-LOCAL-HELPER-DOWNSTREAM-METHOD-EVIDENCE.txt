@@ -1,0 +1,5 @@
+TAM AN CARE V8.0 — S5 LOCAL HELPER DOWNSTREAM METHOD EVIDENCE
+STATIC_ONLY=YES
+
+STAFF_ACTOR_METHOD_CONTRACT|FILE=staff-actors/staff-actor.service.ts|METHOD=resolveActiveActorWithRole|STATUS=RESOLVED|SIGNATURE=async resolveActiveActorWithRole( actorId: string, claimedRole: string, ): Promise<StaffActorRecord <PIPE> null>|PARAM_COUNT=2|PARAMETERS=actorId: string <PARAM> claimedRole: string|STRING_LITERAL_COUNT=1|STRING_LITERALS=|UPPERCASE_LITERAL_COUNT=0|UPPERCASE_LITERALS=NONE|PROPERTY_METHOD_CALL_COUNT=0|PROPERTY_METHOD_CALLS=NONE|LOCAL_CALL_COUNT=1|LOCAL_CALLS=resolveActiveActor|RETURN_EXPR_COUNT=3|RETURN_EXPRS=null <RETURN> null <RETURN> actor|AWAIT_EXPR_COUNT=1|AWAIT_EXPRS=this.resolveActiveActor(actorId)|COMPARISON_LITERAL_COUNT=0|COMPARISON_LITERALS=NONE
+STAFF_ACTOR_METHOD_BODY=const actor = await this.resolveActiveActor(actorId); if (!actor) { return null; } const role = String(claimedRole <PIPE><PIPE> '') .trim() .toUpperCase(); if ( actor.primary_operational_role !== role ) { return null; } return actor;

@@ -1,0 +1,968 @@
+{
+  "generated_at": "2026-08-21T05:32:40.286419+00:00",
+  "release": "V7.7",
+  "phase": "4A-R2B-B0",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "accepted_nine_routes": {
+    "status": "LOCKED_NOT_RERUN",
+    "result_hash": "884ab5a2b7ea1a4aa72ce7392273b571b4673126a2a64b63e06332b867f7367a",
+    "manifest_hash": "bd7c335c75c2a1647b740d6eb06efa3ca0304005d51f669684c4e78d944626e4"
+  },
+  "remaining_route_count": 16,
+  "execution_groups": [
+    {
+      "group": "CARE_ACTION_LIFECYCLE",
+      "execution_order": [
+        "/api/care-actions/:residentId/:patternId/assign",
+        "/api/care-actions/:residentId/:patternId/transfer",
+        "/api/care-actions/:residentId/:patternId/start-review",
+        "/api/care-actions/:residentId/:patternId/resolve",
+        "/api/care-actions/:residentId/:patternId/reopen"
+      ],
+      "shared_fixture": true,
+      "notes": "One care action fixture; execute ASSIGN -> TRANSFER -> START_REVIEW -> RESOLVE -> REOPEN."
+    },
+    {
+      "group": "CARE_TASK_EXECUTION",
+      "routes": [
+        "/api/care-task-execution/:careTaskId/:action"
+      ],
+      "shared_fixture": true
+    },
+    {
+      "group": "CLINICAL_WORKFLOW",
+      "routes": [
+        "/api/clinical/:aggregateType/:aggregateId/:action"
+      ],
+      "shared_fixture": true
+    },
+    {
+      "group": "INCIDENT_WORKFLOW",
+      "execution_order": [
+        "/api/incidents/report",
+        "/api/incidents/:incidentId/:action"
+      ],
+      "shared_fixture": true,
+      "notes": "Report incident first; then mutate returned incidentId."
+    },
+    {
+      "group": "MEDICATION_WORKFLOW",
+      "routes": [
+        "/api/medication-administrations/:administrationId/:action"
+      ],
+      "shared_fixture": true
+    },
+    {
+      "group": "CARE_ACTION_BRIDGES",
+      "routes": [
+        "/api/care-action-bridge/:warningId/execute",
+        "/api/care-actions/:residentId/:patternId/accept-responsibility"
+      ],
+      "shared_fixture": true
+    },
+    {
+      "group": "DOMAIN_FIRST_STEP_CREATES",
+      "routes": [
+        "/api/activity-rehabilitation/:residentId/execute",
+        "/api/skin-wound/:residentId/execute",
+        "/api/nutrition-hydration/:residentId/execute"
+      ],
+      "shared_fixture": false
+    },
+    {
+      "group": "AI_PATTERN_WRITE",
+      "routes": [
+        "/api/ai/engines/health-trend/resident/:residentId/patterns"
+      ],
+      "shared_fixture": true
+    }
+  ],
+  "route_plans": [
+    {
+      "method": "POST",
+      "path": "/api/activity-rehabilitation/:residentId/execute",
+      "body_mode": "NAMED_DTO",
+      "body_type": "RehabCommand",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "action",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "RehabActorRole"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "action",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "actorId",
+          "type": "string",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "RehabActorRole",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "AI",
+            "CAREGIVER",
+            "CARE_MANAGER",
+            "NURSE",
+            "SUPERVISOR",
+            "SYSTEM"
+          ],
+          "selected_test_value": "AI"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "activity_participation",
+        "activity_programs",
+        "activity_sessions",
+        "current",
+        "functional_assessments",
+        "functional_support_actions",
+        "rehabilitation_audit",
+        "rehabilitation_escalations",
+        "rehabilitation_plans"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/engines/health-trend/resident/:residentId/patterns",
+      "body_mode": "OPAQUE",
+      "body_type": "any",
+      "security_mode": "ACTOR_HEADERS",
+      "required_fields": [],
+      "field_value_contract": [],
+      "source_proven_actions": [],
+      "table_dependencies": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-action-bridge/:warningId/execute",
+      "body_mode": "OPAQUE",
+      "body_type": "any",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [],
+      "field_value_contract": [],
+      "source_proven_actions": [],
+      "table_dependencies": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/assign",
+      "body_mode": "NAMED_DTO",
+      "body_type": "AssignCareActionInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "assignedTo",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "priority",
+          "required": true,
+          "type": "CareActionPriority"
+        },
+        {
+          "name": "dueAt",
+          "required": true,
+          "type": "Date | null"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "assignedTo",
+          "type": "string",
+          "status": "TEST_ASSIGNEE_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-caregiver"
+        },
+        {
+          "field": "assignedRole",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "priority",
+          "type": "CareActionPriority",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "HIGH",
+            "LOW",
+            "MODERATE"
+          ],
+          "selected_test_value": "HIGH"
+        },
+        {
+          "field": "dueAt",
+          "type": "Date | null",
+          "status": "TYPE_ALLOWS_NULL",
+          "allowed_values": [],
+          "selected_test_value": null
+        },
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/transfer",
+      "body_mode": "NAMED_DTO",
+      "body_type": "TransferCareActionInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "assignedTo",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "assignedRole",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "priority",
+          "required": true,
+          "type": "CareActionPriority"
+        },
+        {
+          "name": "dueAt",
+          "required": true,
+          "type": "Date | null"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "assignedTo",
+          "type": "string",
+          "status": "TEST_ASSIGNEE_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-caregiver"
+        },
+        {
+          "field": "assignedRole",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "priority",
+          "type": "CareActionPriority",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "HIGH",
+            "LOW",
+            "MODERATE"
+          ],
+          "selected_test_value": "HIGH"
+        },
+        {
+          "field": "dueAt",
+          "type": "Date | null",
+          "status": "TYPE_ALLOWS_NULL",
+          "allowed_values": [],
+          "selected_test_value": null
+        },
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/start-review",
+      "body_mode": "NAMED_DTO",
+      "body_type": "StartCareActionReviewInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/resolve",
+      "body_mode": "NAMED_DTO",
+      "body_type": "ResolveCareActionInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "careNote",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "resolutionReason",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "careNote",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_NOTE"
+        },
+        {
+          "field": "resolutionReason",
+          "type": "string",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_REASON"
+        },
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/reopen",
+      "body_mode": "NAMED_DTO",
+      "body_type": "ReopenCareActionInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "reopenReason",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        },
+        {
+          "field": "reopenReason",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_REASON"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "care_action_audit",
+        "care_action_transfers",
+        "care_actions"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-task-execution/:careTaskId/:action",
+      "body_mode": "NAMED_DTO",
+      "body_type": "CareTaskExecutionInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "PRIMITIVE_STRING",
+          "allowed_values": [],
+          "selected_test_value": "V77_R2_TEST_VALUE"
+        }
+      ],
+      "source_proven_actions": [
+        "ACCEPT",
+        "ASSIGN",
+        "CANCEL",
+        "COMPLETE",
+        "MARK_MISSED",
+        "SKIP",
+        "START"
+      ],
+      "table_dependencies": [
+        "care_task_audit",
+        "care_tasks"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/clinical/:aggregateType/:aggregateId/:action",
+      "body_mode": "NAMED_DTO",
+      "body_type": "ClinicalMutationInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "SOURCE_PROVEN_ROLE",
+          "allowed_values": [
+            "SUPERVISOR"
+          ],
+          "selected_test_value": "SUPERVISOR"
+        }
+      ],
+      "source_proven_actions": [
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGE_FINDING",
+        "AMEND_OBSERVATION",
+        "ASSIGN_ESCALATION",
+        "CANCEL_ESCALATION",
+        "CLOSE_FINDING",
+        "ESCALATE_FINDING",
+        "LINK_CARE_ACTION",
+        "RESOLVE_ESCALATION",
+        "SIGN_NURSING_NOTE",
+        "START_FINDING_REVIEW",
+        "VERIFY_OBSERVATION",
+        "VOID_OBSERVATION"
+      ],
+      "table_dependencies": [
+        "abnormal_findings",
+        "care_actions",
+        "clinical_audit",
+        "clinical_escalations",
+        "clinical_observation_amendments",
+        "clinical_observations",
+        "nursing_notes"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/report",
+      "body_mode": "NAMED_DTO",
+      "body_type": "ReportIncidentInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [],
+      "field_value_contract": [],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "care_actions",
+        "care_tasks",
+        "clinical_observations",
+        "incident_assignments",
+        "incident_audit",
+        "incident_escalations",
+        "incident_post_reviews",
+        "incident_responses",
+        "incident_triage",
+        "incidents",
+        "medication_administrations",
+        "residents"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/incidents/:incidentId/:action",
+      "body_mode": "NAMED_DTO",
+      "body_type": "IncidentMutationInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [],
+      "field_value_contract": [],
+      "source_proven_actions": [
+        "ACCEPT_ESCALATION",
+        "ACKNOWLEDGE",
+        "ADD_RESPONSE",
+        "ASSIGN",
+        "ASSIGN_ESCALATION",
+        "CLOSE",
+        "ESCALATE",
+        "LINK_CARE_ACTION",
+        "LINK_CARE_TASK",
+        "LINK_CLINICAL_OBSERVATION",
+        "LINK_MEDICATION_RECORD",
+        "POST_REVIEW",
+        "RESOLVE",
+        "RESOLVE_ESCALATION",
+        "START_RESPONSE",
+        "TRIAGE"
+      ],
+      "table_dependencies": [
+        "care_actions",
+        "care_tasks",
+        "clinical_observations",
+        "incident_assignments",
+        "incident_audit",
+        "incident_escalations",
+        "incident_post_reviews",
+        "incident_responses",
+        "incident_triage",
+        "incidents",
+        "medication_administrations",
+        "residents"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/medication-administrations/:administrationId/:action",
+      "body_mode": "NAMED_DTO",
+      "body_type": "MedicationAdministrationInput",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string | null"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "string | null"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "actorId",
+          "type": "string | null",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "string | null",
+          "status": "SOURCE_PROVEN_ROLE",
+          "allowed_values": [
+            "SUPERVISOR"
+          ],
+          "selected_test_value": "SUPERVISOR"
+        }
+      ],
+      "source_proven_actions": [
+        "ACCEPT",
+        "ADMINISTER",
+        "ASSIGN",
+        "CANCEL",
+        "DOUBLE_CHECK",
+        "HELD",
+        "MISSED",
+        "READY",
+        "REFUSED"
+      ],
+      "table_dependencies": [
+        "OF",
+        "medication_administrations",
+        "medication_audit",
+        "medication_double_checks",
+        "medication_orders"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/care-actions/:residentId/:patternId/accept-responsibility",
+      "body_mode": "OPAQUE",
+      "body_type": "any",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [],
+      "field_value_contract": [],
+      "source_proven_actions": [],
+      "table_dependencies": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/skin-wound/:residentId/execute",
+      "body_mode": "OPAQUE",
+      "body_type": "any",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [],
+      "field_value_contract": [],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "repositioning_records",
+        "skin_assessments",
+        "wound_audit",
+        "wound_care_plans",
+        "wound_escalations",
+        "wound_progress_records",
+        "wound_records",
+        "wound_treatment_records"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/nutrition-hydration/:residentId/execute",
+      "body_mode": "NAMED_DTO",
+      "body_type": "NutritionCommand",
+      "security_mode": "BODY_ACTOR",
+      "required_fields": [
+        {
+          "name": "action",
+          "required": true,
+          "type": "NutritionAction"
+        },
+        {
+          "name": "actorId",
+          "required": true,
+          "type": "string"
+        },
+        {
+          "name": "actorRole",
+          "required": true,
+          "type": "NutritionActorRole"
+        }
+      ],
+      "field_value_contract": [
+        {
+          "field": "action",
+          "type": "NutritionAction",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "ACCEPT_ASSISTANCE",
+            "ACCEPT_ESCALATION",
+            "ACCEPT_MEAL",
+            "ACK_ALERT",
+            "ACTIVATE_DIET_ORDER",
+            "ACTIVATE_PLAN",
+            "AMEND_INTAKE",
+            "ASSIGN_ASSISTANCE",
+            "ASSIGN_ESCALATION",
+            "ASSIGN_MEAL",
+            "COMPLETE_ASSISTANCE",
+            "COMPLETE_MEAL",
+            "CREATE_ALERT",
+            "CREATE_ASSISTANCE",
+            "CREATE_DIET_ORDER",
+            "CREATE_MEAL",
+            "CREATE_PLAN",
+            "ESCALATE_ALERT",
+            "HOLD_MEAL",
+            "MISS_MEAL",
+            "READY_MEAL",
+            "RECORD_INTAKE",
+            "REFUSE_MEAL",
+            "RESOLVE_ESCALATION",
+            "START_ASSISTANCE",
+            "VERIFY_INTAKE"
+          ],
+          "selected_test_value": "ACCEPT_ASSISTANCE"
+        },
+        {
+          "field": "actorId",
+          "type": "string",
+          "status": "TEST_ACTOR_IDENTITY",
+          "allowed_values": [],
+          "selected_test_value": "v77-r2-test-supervisor"
+        },
+        {
+          "field": "actorRole",
+          "type": "NutritionActorRole",
+          "status": "SOURCE_PROVEN_DOMAIN_VALUES",
+          "allowed_values": [
+            "AI",
+            "CAREGIVER",
+            "CARE_MANAGER",
+            "NURSE",
+            "SUPERVISOR",
+            "SYSTEM"
+          ],
+          "selected_test_value": "AI"
+        }
+      ],
+      "source_proven_actions": [],
+      "table_dependencies": [
+        "diet_orders",
+        "feeding_assistance",
+        "meal_schedules",
+        "nutrition_alerts",
+        "nutrition_audit",
+        "nutrition_escalations",
+        "nutrition_intake_records",
+        "nutrition_plans",
+        "residents"
+      ]
+    }
+  ],
+  "domain_first_step_plans": {
+    "activity-rehabilitation": {
+      "route": "/api/activity-rehabilitation/:residentId/execute",
+      "controller": "api/src/activity-rehabilitation/activity-rehabilitation.controller.ts",
+      "services": [
+        "api/src/activity-rehabilitation/activity-rehabilitation-authorization.service.ts",
+        "api/src/activity-rehabilitation/activity-rehabilitation.service.ts"
+      ],
+      "selected_action": "CREATE_ESCALATION",
+      "required_fields": [],
+      "dependency_ids": [],
+      "insert_tables": [
+        "rehabilitation_escalations"
+      ],
+      "candidate_count": 6
+    },
+    "skin-wound": {
+      "route": "/api/skin-wound/:residentId/execute",
+      "controller": "api/src/skin-wound/skin-wound.controller.ts",
+      "services": [
+        "api/src/skin-wound/skin-wound.service.ts"
+      ],
+      "selected_action": "CREATE_CARE_PLAN",
+      "required_fields": [],
+      "dependency_ids": [],
+      "insert_tables": [
+        "wound_care_plans"
+      ],
+      "candidate_count": 7
+    },
+    "nutrition-hydration": {
+      "route": "/api/nutrition-hydration/:residentId/execute",
+      "controller": "api/src/nutrition-hydration/nutrition-hydration.controller.ts",
+      "services": [
+        "api/src/nutrition-hydration/nutrition-hydration-authorization.service.ts",
+        "api/src/nutrition-hydration/nutrition-hydration.service.ts"
+      ],
+      "selected_action": "CREATE_ALERT",
+      "required_fields": [],
+      "dependency_ids": [],
+      "insert_tables": [],
+      "candidate_count": 5
+    }
+  },
+  "shared_fixture_model": {
+    "actors": {
+      "supervisor": {
+        "actorId": "v77-r2bb-supervisor",
+        "role": "SUPERVISOR"
+      },
+      "caregiverA": {
+        "actorId": "v77-r2bb-caregiver-a",
+        "role": "CAREGIVER"
+      },
+      "caregiverB": {
+        "actorId": "v77-r2bb-caregiver-b",
+        "role": "CAREGIVER"
+      }
+    },
+    "resident": {
+      "residentId": "v77-r2bb-resident"
+    },
+    "careAction": {
+      "patternId": "v77-r2bb-pattern",
+      "priority": "MODERATE",
+      "dueAt": null
+    },
+    "carePlan": {
+      "carePlanId": "v77-r2bb-plan"
+    },
+    "careTask": {
+      "careTaskId": "v77-r2bb-task"
+    },
+    "principle": "All compatible tests share one resident inside one disposable PostgreSQL instance."
+  },
+  "integration_invariants": [
+    "Every negative security probe must be executed before the authorized mutation for that fixture.",
+    "A rejected request must not change the target table or corresponding audit count.",
+    "Authorized lifecycle operations must use identities returned/persisted by previous steps.",
+    "Care Action lifecycle must execute sequentially on one care action.",
+    "Incident action must use incidentId returned by incident report.",
+    "No domain test may overwrite or invalidate another domain's fixture.",
+    "All mutations must remain inside the single disposable R2B-B PostgreSQL database.",
+    "After all 16 routes pass individually, read endpoints must still return HTTP success.",
+    "V7.7 source hash must remain unchanged throughout functional execution.",
+    "V7.6 API/UI/database container identities and database counts must remain unchanged."
+  ],
+  "execution_strategy": [
+    "Create one disposable PostgreSQL database.",
+    "Initialize exact schema once.",
+    "Create common actor/resident fixtures once.",
+    "Run security negatives before valid mutation.",
+    "Execute care-action lifecycle sequentially.",
+    "Execute incident report before incident action.",
+    "Use first-step create actions for complex domains.",
+    "Verify row/audit deltas after each mutation.",
+    "Run cross-domain read compatibility after all mutations.",
+    "Destroy disposable infrastructure.",
+    "Verify frozen V7.6 production immutability."
+  ]
+}

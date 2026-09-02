@@ -1,0 +1,75 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-4 DEPENDENCY-ALIGNED FINAL CLOSEOUT
+ CURRENT SOURCE + CURRENT PACKAGE LOCK + CANONICAL DOCKER NETWORK
+ NO APPLICATION PATCH
+ NO MIGRATION REPLAY
+ NO DB-FUNCTIONAL REPLAY
+======================================================================
+
+----- 1. PRESERVED OPS-4 STATE -----
+M4_TABLE=1
+M4_REGISTRY=1
+M4_SHA256=637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3
+DATABASE=1|1|0|0|0|0|0
+PASS: OPS-4 IMPLEMENTATION + M4 + REGISTRY PRESERVED
+
+----- 2. CURRENT DEPENDENCY AUTHORITY -----
+PDF_LIB_PACKAGE_DECLARED=YES
+PDF_LIB_LOCK_ENTRY=1
+PASS: pdf-lib PRESENT IN CURRENT PACKAGE AUTHORITY
+
+----- 3. CANONICAL RUNTIME AUTHORITY -----
+DOCKER_NETWORK=tamancare_v7_4_3_development_default
+POSTGRES_NETWORK_ALIAS=postgres
+API_ENV_AUTHORITY=tamancare_v7_4_3_development-api-1
+PASS: CANONICAL RUNTIME AUTHORITY
+
+----- 4. BUILD DEPENDENCY-ALIGNED TEST IMAGE -----
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.ops4
+#1 transferring dockerfile: 217B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/node:20-bookworm-slim
+#2 DONE 5.9s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 108B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0
+#4 resolve docker.io/library/node:20-bookworm-slim@sha256:2cf067cfed83d5ea958367df9f966191a942351a2df77d6f0193e162b5febfc0 0.0s done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 72B 0.2s done
+#5 DONE 0.3s
+
+#6 [2/5] WORKDIR /app
+#6 CACHED
+
+#7 [3/5] COPY package.json package-lock.json ./
+#7 CACHED
+
+#8 [4/5] RUN npm ci
+#8 CACHED
+
+#9 [5/5] COPY dist ./dist
+#9 ERROR: failed to calculate checksum of ref emiwfxsp7lvruqes0rv1ctf6v::syu85ujh7u66usk6kgdpxrjf9: "/dist": not found
+------
+ > [5/5] COPY dist ./dist:
+------
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - CopyIgnoredFile: Attempting to Copy file "dist" that is excluded by .dockerignore (line 9)
+Dockerfile.ops4:9
+--------------------
+   7 |     RUN npm ci
+   8 |     
+   9 | >>> COPY dist ./dist
+  10 |     
+  11 |     ENV NODE_ENV=test
+--------------------
+ERROR: failed to build: failed to solve: failed to compute cache key: failed to calculate checksum of ref emiwfxsp7lvruqes0rv1ctf6v::syu85ujh7u66usk6kgdpxrjf9: "/dist": not found
+FAIL: TEST IMAGE BUILD FAILED

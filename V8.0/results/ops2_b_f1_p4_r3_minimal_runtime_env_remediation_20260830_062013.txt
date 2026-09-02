@@ -1,0 +1,143 @@
+======================================================================
+ TAMANCARE — OPS-2-B-F1-P4-R3
+ MINIMAL ISOLATED RUNTIME ENVIRONMENT REMEDIATION
+======================================================================
+
+AUTHORIZED_CHANGE:
+ -> REMOVE ONLY FAILED ISOLATED CONTAINER
+ -> REUSE EXACT SAME CURRENT-SOURCE IMAGE
+ -> ADD CORS_ALLOWED_ORIGINS FOR LOCAL TEST ORIGIN
+ -> CREATE ONLY ISOLATED :3110 CONTAINER
+
+SOURCE_PATCH=NO
+IMAGE_REBUILD=NO
+SCHEMA_CHANGE=NO
+INVENTORY_TEST_DATA=NO
+
+======================================================================
+ 1. VERIFY FAILED FORENSIC CONTAINER
+======================================================================
+OLD_CONTAINER_STATE=exited
+OLD_CONTAINER_EXIT_CODE=1
+SOURCE_IMAGE=tamancare_ops2b_functional:20260830_061518
+PASS: FAILED CONTAINER STATE CONFIRMED
+PASS: EXPECTED EXIT CODE CONFIRMED
+
+======================================================================
+ 2. VERIFY SAME IMAGE STILL EXISTS
+======================================================================
+IMAGE=tamancare_ops2b_functional:20260830_061518
+IMAGE_ID=sha256:42a55b7690e07cd5382c0155b3978a523b23a8d1558712674359fa97c9178fa5
+PASS: CURRENT-SOURCE IMAGE PRESERVED
+
+======================================================================
+ 3. ACCEPTED RUNTIMES BEFORE REMEDIATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+http://127.0.0.1:3108/api/health -> 200
+http://127.0.0.1:4173/operations -> 200
+
+======================================================================
+ 4. DATABASE CLEANLINESS BEFORE REMEDIATION
+======================================================================
+INVENTORY_COUNTS_BEFORE=0|0|0|0
+PASS: INVENTORY DATABASE CLEAN
+
+======================================================================
+ 5. CAPTURE ENVIRONMENT FOR REPLACEMENT — VALUES NOT PRINTED
+======================================================================
+PASS: REPLACEMENT ENVIRONMENT PREPARED
+NODE_ENV=production
+CORS_ALLOWED_ORIGINS=http://127.0.0.1:4173
+OTHER_VALUES=REDACTED
+
+======================================================================
+ 6. REMOVE ONLY FAILED ISOLATED CONTAINER
+======================================================================
+tamancare_ops2b_functional
+PASS: ONLY FAILED ISOLATED CONTAINER REMOVED
+
+======================================================================
+ 7. RECREATE FROM EXACT SAME IMAGE
+======================================================================
+DOCKER_RUN_RC=0
+CONTAINER_ID=e757335747495fc5341f123c644fda413fe579abf4c0d8b5678dbab8cf39def3
+PASS: REPLACEMENT ISOLATED CONTAINER CREATED
+
+======================================================================
+ 8. WAIT FOR HEALTH
+======================================================================
+HEALTH_ATTEMPT=1 HTTP=000
+HEALTH_ATTEMPT=2 HTTP=200
+PASS: ISOLATED CURRENT-SOURCE RUNTIME HEALTHY
+
+======================================================================
+ 9. INVENTORY ROUTE — NO ACTOR
+======================================================================
+INVENTORY_NO_ACTOR_HTTP=401
+BODY:
+{"message":"Production authentication is not configured","error":"Unauthorized","statusCode":401}
+PASS: INVENTORY ROUTE PRESENT
+
+======================================================================
+ 10. INVENTORY ROUTE — CANONICAL SUPERVISOR
+======================================================================
+INVENTORY_SUPERVISOR_HTTP=401
+BODY:
+{"message":"Production authentication is not configured","error":"Unauthorized","statusCode":401}
+FAIL: CANONICAL SUPERVISOR INVENTORY READ
+
+======================================================================
+ 11. SAME IMAGE VERIFICATION
+======================================================================
+EXPECTED_IMAGE=tamancare_ops2b_functional:20260830_061518
+RUNNING_IMAGE=tamancare_ops2b_functional:20260830_061518
+EXPECTED_IMAGE_ID=sha256:42a55b7690e07cd5382c0155b3978a523b23a8d1558712674359fa97c9178fa5
+RUNNING_IMAGE_ID=sha256:42a55b7690e07cd5382c0155b3978a523b23a8d1558712674359fa97c9178fa5
+PASS: EXACT SAME CURRENT-SOURCE IMAGE REUSED
+
+======================================================================
+ 12. DATABASE CLEANLINESS AFTER READ-ONLY PROBES
+======================================================================
+INVENTORY_COUNTS_AFTER=0|0|0|0
+PASS: DATABASE REMAINS CLEAN
+
+======================================================================
+ 13. ACCEPTED RUNTIMES AFTER REMEDIATION
+======================================================================
+http://127.0.0.1:3000/api/health -> 200
+PASS: ACCEPTED RUNTIME PRESERVED
+http://127.0.0.1:3108/api/health -> 200
+PASS: ACCEPTED RUNTIME PRESERVED
+http://127.0.0.1:4173/operations -> 200
+PASS: ACCEPTED RUNTIME PRESERVED
+
+======================================================================
+ 14. FINAL ISOLATED CONTAINER STATE
+======================================================================
+NAME=tamancare_ops2b_functional IMAGE=tamancare_ops2b_functional:20260830_061518 STATUS=Up 1 second PORTS=127.0.0.1:3110->3000/tcp
+FINAL_CONTAINER_STATE=running
+
+======================================================================
+ 15. FINAL CLASSIFICATION
+======================================================================
+STATUS: OPS-2-B-F1-P4-R3 CONTROLLED STOP
+NEXT=STOP_AND_RETURN_OUTPUT
+
+IMPORTANT:
+ -> DO NOT REMOVE THE NEW CONTAINER
+ -> PRESERVE IT FOR DIAGNOSIS
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_b_f1_p4_r3_minimal_runtime_env_remediation_20260830_062013.txt
+
+======================================================================
+ STOP HERE
+======================================================================
+ -> DO NOT CREATE INVENTORY TEST DATA YET
+ -> DO NOT REMOVE HEALTHY ISOLATED CONTAINER
+ -> DO NOT PATCH SOURCE
+ -> DO NOT MODIFY SCHEMA
+ -> DO NOT RESTART ACCEPTED RUNTIMES
+ -> DO NOT START CODEX AUTOPILOT
+ -> SEND THIS ENTIRE OUTPUT BACK
+======================================================================

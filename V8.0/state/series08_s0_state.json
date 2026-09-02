@@ -1,0 +1,18 @@
+{
+  "version": "V8.0",
+  "series": "SERIES_08",
+  "status": "READY",
+  "completed": [
+    "S0",
+    "S1",
+    "S2",
+    "S3"
+  ],
+  "failed_gate": null,
+  "next_gate": "S4",
+  "manual_gate": {
+    "gate": "S8",
+    "status": "DEFERRED_NOT_PASSED",
+    "owner": "USER"
+  }
+}

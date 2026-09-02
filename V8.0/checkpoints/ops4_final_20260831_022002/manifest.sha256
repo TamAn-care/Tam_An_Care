@@ -1,0 +1,6 @@
+59260a60f541e487d292adedb1ca53c7c70e6919b7c3172bec5268fa9b155950  ./acceptance-result.txt
+637a0fea65d163363830a5ba06c4fa65c2f091f4394abb3362dbe4a0fc3471d3  ./database/migrations/20260830_008_ops_kitchen_food_receiving.sql
+6562cdc16e3759a3136451d7b60e1c620a009d8a97849310ca35fa24d44dc73d  ./api/src/kitchen-operations/kitchen-operations.service.ts
+973cb05764a8733ffeb375b89656b52b752e6f5e33a18daedd0c840c9f5d9a8a  ./api/src/kitchen-operations/kitchen-operations.controller.ts
+aed874d9eda502df6e067d2724534d674a6355d9279adb447fc6e3676999e6bb  ./api/src/app.module.ts
+f90bdd5076a58bdd2223b48b45e73810e3afcff4de390512cc63a79411ce97eb  ./api/src/kitchen-operations/kitchen-operations.module.ts

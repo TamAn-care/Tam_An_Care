@@ -1,0 +1,29 @@
+{
+  "generated_at": "2026-08-21T05:01:12.634964+00:00",
+  "phase": "V7.7 Phase 4B-R1",
+  "recovery": "npm ci executed from correct API working directory",
+  "source_files_changed": [
+    "api/src/ai/ai-engine.controller.ts",
+    "api/src/ai/early-warning.controller.ts"
+  ],
+  "ai_controller_hash": "ec1e5322ef328c9dc3d017572166fc59c5559bfc1800efe5b87f366635d302b6",
+  "early_warning_controller_hash": "9895a4f4e0c84503998d237b54a9699aaad5576da172c48ad10cc286a3106a94",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "candidate_image": "taman-care-v77-p4b-r1-security:20260821_120056",
+  "candidate_image_id": "sha256:0d7036cd3b26b485f328cb7ad20d544ae58e59ac957da224fd94f738c4a08865",
+  "security_acceptance": {
+    "analyze_no_actor": 401,
+    "analyze_authorized": 201,
+    "analyze_impersonation": 403,
+    "demo_no_actor": 401,
+    "demo_authorized": 201,
+    "demo_impersonation": 403,
+    "patterns_no_actor": 401,
+    "patterns_authorized": 201,
+    "staff_no_actor": 401,
+    "access_no_actor": 401
+  },
+  "supervisor_only_added": false,
+  "autonomous_clinical_action_added": false,
+  "production_changed": false
+}

@@ -1,0 +1,72 @@
+TAM AN CARE V7.4.3
+STEP 7O INCIDENT AUDIT CONTRACT
+
+REQUIRED EVENTS
+
+INCIDENT_REPORTED
+
+INCIDENT_TRIAGED
+INCIDENT_RETRIAGED
+
+INCIDENT_ASSIGNED
+INCIDENT_REASSIGNED
+
+INCIDENT_ACKNOWLEDGED
+
+INCIDENT_RESPONSE_STARTED
+INCIDENT_RESPONSE_RECORDED
+
+INCIDENT_ESCALATED
+
+INCIDENT_ESCALATION_ASSIGNED
+INCIDENT_ESCALATION_ACCEPTED
+INCIDENT_ESCALATION_RESOLVED
+
+INCIDENT_RESOLVED
+
+INCIDENT_POST_REVIEWED
+
+INCIDENT_CLOSED
+
+INCIDENT_VOIDED
+
+INCIDENT_CARE_ACTION_LINKED
+INCIDENT_CARE_TASK_LINKED
+INCIDENT_CLINICAL_OBSERVATION_LINKED
+INCIDENT_MEDICATION_RECORD_LINKED
+
+AUDIT REQUIREMENTS
+
+Every successful mutation:
+
+exactly one corresponding audit event
+inside the same database transaction.
+
+FAILED MUTATION
+
+business mutation = ZERO
+audit event = ZERO
+
+AUDIT FIELDS
+
+audit_id
+event_sequence
+incident_id
+resident_id
+aggregate_type
+aggregate_id
+event_type
+actor_id
+actor_role
+previous_state
+new_state
+created_at
+
+event_sequence is monotonic within aggregate.
+
+AI-generated alert is not an INCIDENT_* business audit event.
+
+If retained, AI alert uses AI governance / alert audit,
+separate from official incident mutation history.
+
+Audit history is immutable.

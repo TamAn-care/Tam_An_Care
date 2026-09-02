@@ -1,0 +1,39 @@
+TAM AN CARE V7.7
+PHASE 4A-R2A-R2 — TARGETED UNRESOLVED CONTRACT TRACE PREFLIGHT
+
+STATUS=PASSED
+
+PHASE4A_R2A_RESULT_HASH=9abb2a9352c5f0a9481d7a341142415170bd5601d1a2e9381a4080fb5d898cd2
+PARSER_RECOVERY_RESULT_HASH=7c680f22d7260c2978e0709dfa2873e96b7c90987d74468649a8f48faca2680c
+VALUE_CONTRACT_HASH=9171f49044a068c30d22c70eb10913c1a178e8f3184741f44c55dae932d1c4d2
+OPAQUE_TRACE_HASH=79c7ed630b53ed8d595105bde707072fc18480ae68c1cbe1e81cf413820bcee5
+
+SOURCE_HASH=699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020
+
+READY_ROUTE_COUNT=16
+UNRESOLVED_ROUTE_COUNT=9
+
+UNRESOLVED_ROUTES=
+POST /api/behavioral-cognitive/:residentId/execute | OPAQUE_BODY
+POST /api/care-plan-governance/:carePlanId/:action | ACTION_VALUES
+POST /api/fall-mobility/:residentId/execute | OPAQUE_BODY
+POST /api/infection-control/:residentId/execute | OPAQUE_BODY
+POST /api/medication-safety/:residentId/execute | OPAQUE_BODY
+POST /api/pain-comfort/:residentId/execute | OPAQUE_BODY
+POST /api/personal-care/:residentId/execute | OPAQUE_BODY
+POST /api/safeguarding/:residentId/execute | OPAQUE_BODY
+POST /api/sleep-rest/:residentId/execute | OPAQUE_BODY
+
+NEXT TRACE RULES:
+- inspect imported symbols
+- inspect controller -> service -> repository
+- inspect validation helpers
+- inspect exact action constants/unions/enums
+- inspect DB constraints/table dependencies
+- no mutation execution yet for unresolved routes
+- no guessed payload fields
+- no source security patch yet
+- no production database write
+
+NEXT=
+V7.7_PHASE_4A_R2A_R2_TARGETED_UNRESOLVED_CONTRACT_TRACE

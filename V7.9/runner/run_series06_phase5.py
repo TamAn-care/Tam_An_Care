@@ -1,0 +1,1121 @@
+#!/usr/bin/env python3
+
+import hashlib
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+ROOT = Path(
+    "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development"
+)
+
+V79 = ROOT / "V7.9"
+
+STATE = (
+    V79
+    / "state"
+    / "series06_phase5_state.json"
+)
+
+PREFLIGHT_RESULT = (
+    V79
+    / "results"
+    / "V7.9-PHASE-5A-PREFLIGHT-RESULT.txt"
+)
+
+PREFLIGHT_MANIFEST = (
+    V79
+    / "manifests"
+    / "V7.9-PHASE-5A-PREFLIGHT.json"
+)
+
+RESULT = (
+    V79
+    / "results"
+    / "V7.9-PHASE-5A-DISPOSABLE-BACKUP-RESTORE-RESULT.txt"
+)
+
+MANIFEST = (
+    V79
+    / "manifests"
+    / "V7.9-PHASE-5A-DISPOSABLE-BACKUP-RESTORE.json"
+)
+
+BACKUP_DIR = V79 / "backups"
+
+EXPECTED_PREFLIGHT_RESULT_SHA256 = "6ac8f9debe45b85eac59e2b94078ff5dfe8ab4a2d6119eb7e8e3549ab609a27c"
+EXPECTED_PREFLIGHT_MANIFEST_SHA256 = "c8231ebad9a1463326ddec1ee0d427c108d5e35b0a650cc2c612abb4f8965ed1"
+
+
+def now():
+    return datetime.now(
+        timezone.utc
+    ).isoformat()
+
+
+def sha256(path):
+    return hashlib.sha256(
+        Path(path).read_bytes()
+    ).hexdigest()
+
+
+def run(
+    args,
+    *,
+    check=False,
+    input_bytes=None,
+):
+    p = subprocess.run(
+        args,
+        input=input_bytes,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+
+    text = p.stdout.decode(
+        "utf-8",
+        errors="replace",
+    )
+
+    if check and p.returncode:
+        print(text)
+        raise RuntimeError(
+            "command failed: "
+            + " ".join(args)
+        )
+
+    return p.returncode, text
+
+
+def docker_inspect_env(
+    container,
+    key,
+):
+    rc, out = run([
+        "docker",
+        "inspect",
+        container,
+        "--format",
+        "{{range .Config.Env}}{{println .}}{{end}}",
+    ])
+
+    if rc:
+        raise RuntimeError(
+            "cannot inspect "
+            + container
+        )
+
+    prefix = key + "="
+
+    for line in out.splitlines():
+        if line.startswith(prefix):
+            return line[len(prefix):]
+
+    return None
+
+
+def production_health():
+    probes = [
+        (
+            "API_HEALTH",
+            [
+                "curl",
+                "-sS",
+                "-o",
+                "/dev/null",
+                "-w",
+                "%{http_code}",
+                "http://127.0.0.1:3100/api/health",
+            ],
+            "200",
+        ),
+        (
+            "UI_HEALTH",
+            [
+                "curl",
+                "-sS",
+                "-o",
+                "/dev/null",
+                "-w",
+                "%{http_code}",
+                "http://127.0.0.1:8080/",
+            ],
+            "200",
+        ),
+        (
+            "STAFF_NO_ACTOR",
+            [
+                "curl",
+                "-sS",
+                "-o",
+                "/dev/null",
+                "-w",
+                "%{http_code}",
+                "http://127.0.0.1:3100/api/operations/staff-actors",
+            ],
+            "401",
+        ),
+        (
+            "ACCESS_NO_ACTOR",
+            [
+                "curl",
+                "-sS",
+                "-o",
+                "/dev/null",
+                "-w",
+                "%{http_code}",
+                "http://127.0.0.1:3100/api/operations/access-assignments",
+            ],
+            "401",
+        ),
+    ]
+
+    for name, cmd, expected in probes:
+        rc, out = run(cmd)
+
+        value = out.strip()
+
+        print(
+            name
+            + "="
+            + value
+        )
+
+        if rc or value != expected:
+            raise RuntimeError(
+                "production protection check failed: "
+                + name
+            )
+
+
+def save_state(data):
+    STATE.write_text(
+        json.dumps(
+            data,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def safe_stop(
+    state,
+    reason,
+):
+    state["status"] = "STOPPED_SAFELY"
+    state["failed_gate"] = "PHASE_5A"
+    state["next_gate"] = "PHASE_5A"
+    state["reason"] = reason
+    state["updated_at"] = now()
+
+    save_state(state)
+
+    print()
+    print(
+        "=" * 78
+    )
+    print(
+        " TAM AN CARE V7.9 SERIES 06 STOPPED SAFELY"
+    )
+    print(
+        "=" * 78
+    )
+    print(
+        "GATE=PHASE_5A"
+    )
+    print(
+        "REASON="
+        + reason
+    )
+    print(
+        "PRODUCTION_DATABASE_MUTATION=NO"
+    )
+    print(
+        "PRODUCTION_RUNTIME_RESTART=NO"
+    )
+    print(
+        "RESTORE_TARGET_PRODUCTION=NO"
+    )
+    print(
+        "DO NOT RERUN ACCEPTED GATES."
+    )
+
+    sys.exit(1)
+
+
+def sql_value(
+    container,
+    user,
+    database,
+    sql,
+):
+    rc, out = run([
+        "docker",
+        "exec",
+        container,
+        "psql",
+        "-X",
+        "-U",
+        user,
+        "-d",
+        database,
+        "-At",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        sql,
+    ])
+
+    if rc:
+        raise RuntimeError(
+            out[-4000:]
+        )
+
+    lines = [
+        x.strip()
+        for x in out.splitlines()
+        if x.strip()
+    ]
+
+    return lines[-1] if lines else ""
+
+
+def resolve_source_db(
+    preflight,
+):
+    d = preflight[
+        "source_database"
+    ]
+
+    return (
+        d["container"],
+        d["user"],
+        d["database"],
+    )
+
+
+def main():
+    print(
+        "=" * 78
+    )
+    print(
+        " TAM AN CARE V7.9 — SERIES 06"
+    )
+    print(
+        " PHASE 5A"
+    )
+    print(
+        " DISPOSABLE BACKUP + RESTORE ACCEPTANCE"
+    )
+    print(
+        "=" * 78
+    )
+
+    state = json.loads(
+        STATE.read_text(
+            encoding="utf-8"
+        )
+    )
+
+    if state.get(
+        "next_gate"
+    ) != "PHASE_5A":
+        safe_stop(
+            state,
+            "PHASE_5A is not the current authorized gate",
+        )
+
+    if (
+        sha256(
+            PREFLIGHT_RESULT
+        )
+        != EXPECTED_PREFLIGHT_RESULT_SHA256
+    ):
+        safe_stop(
+            state,
+            "Phase 5A preflight result hash mismatch",
+        )
+
+    if (
+        sha256(
+            PREFLIGHT_MANIFEST
+        )
+        != EXPECTED_PREFLIGHT_MANIFEST_SHA256
+    ):
+        safe_stop(
+            state,
+            "Phase 5A preflight manifest hash mismatch",
+        )
+
+    preflight = json.loads(
+        PREFLIGHT_MANIFEST.read_text(
+            encoding="utf-8"
+        )
+    )
+
+    if preflight.get(
+        "status"
+    ) != "PASSED":
+        safe_stop(
+            state,
+            "Phase 5A preflight not accepted",
+        )
+
+    if preflight.get(
+        "manual_test_required"
+    ):
+        safe_stop(
+            state,
+            "manual test gate became active",
+        )
+
+    production_health()
+
+    api = "taman-care-v77-production-api"
+
+    api_id_before = run([
+        "docker",
+        "inspect",
+        api,
+        "--format",
+        "{{.Id}}",
+    ])[1].strip()
+
+    api_started_before = run([
+        "docker",
+        "inspect",
+        api,
+        "--format",
+        "{{.State.StartedAt}}",
+    ])[1].strip()
+
+    api_image_before = run([
+        "docker",
+        "inspect",
+        api,
+        "--format",
+        "{{.Image}}",
+    ])[1].strip()
+
+    (
+        source_container,
+        source_user,
+        source_db,
+    ) = resolve_source_db(
+        preflight
+    )
+
+    expected_table_count = int(
+        preflight[
+            "source_table_count"
+        ]
+    )
+
+    expected_schema_signature = (
+        preflight[
+            "source_schema_signature"
+        ]
+    )
+
+    source_table_before = int(
+        sql_value(
+            source_container,
+            source_user,
+            source_db,
+            """
+            SELECT count(*)
+            FROM information_schema.tables
+            WHERE table_schema='public'
+              AND table_type='BASE TABLE';
+            """,
+        )
+    )
+
+    source_schema_before = sql_value(
+        source_container,
+        source_user,
+        source_db,
+        """
+        SELECT md5(
+            string_agg(
+                table_name || ':' ||
+                column_name || ':' ||
+                data_type || ':' ||
+                is_nullable,
+                '|' ORDER BY table_name, ordinal_position
+            )
+        )
+        FROM information_schema.columns
+        WHERE table_schema='public';
+        """,
+    )
+
+    print(
+        "SOURCE_TABLE_COUNT_BEFORE="
+        + str(source_table_before)
+    )
+    print(
+        "SOURCE_SCHEMA_SIGNATURE_BEFORE="
+        + source_schema_before
+    )
+
+    if (
+        source_table_before
+        != expected_table_count
+    ):
+        safe_stop(
+            state,
+            "source table count changed since preflight",
+        )
+
+    if (
+        source_schema_before
+        != expected_schema_signature
+    ):
+        safe_stop(
+            state,
+            "source schema signature changed since preflight",
+        )
+
+    stamp = datetime.now(
+        timezone.utc
+    ).strftime(
+        "%Y%m%dT%H%M%SZ"
+    )
+
+    BACKUP_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    backup = (
+        BACKUP_DIR
+        / (
+            "TamAnCare-V7.9-Phase5A-"
+            + stamp
+            + ".dump"
+        )
+    )
+
+    network = (
+        "taman-care-v79-p5a-"
+        + stamp.lower()
+    )
+
+    restore_container = (
+        network
+        + "-restore"
+    )
+
+    restore_user = (
+        "taman_v79_p5a_restore"
+    )
+
+    restore_password = (
+        "v79-phase5a-disposable-only"
+    )
+
+    restore_db = (
+        "taman_v79_p5a_restore"
+    )
+
+    cleanup_done = False
+
+    def cleanup():
+        nonlocal cleanup_done
+
+        run([
+            "docker",
+            "rm",
+            "-f",
+            restore_container,
+        ])
+
+        run([
+            "docker",
+            "network",
+            "rm",
+            network,
+        ])
+
+        cleanup_done = True
+
+    try:
+        print(
+            "BACKUP_SOURCE_MODE=READ_ONLY"
+        )
+
+        dump_process = subprocess.run(
+            [
+                "docker",
+                "exec",
+                source_container,
+                "pg_dump",
+                "-U",
+                source_user,
+                "-d",
+                source_db,
+                "-Fc",
+                "--no-owner",
+                "--no-privileges",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+
+        if dump_process.returncode:
+            raise RuntimeError(
+                "pg_dump failed\\n"
+                + dump_process.stderr.decode(
+                    "utf-8",
+                    errors="replace",
+                )[-4000:]
+            )
+
+        backup.write_bytes(
+            dump_process.stdout
+        )
+
+        if (
+            not backup.exists()
+            or backup.stat().st_size <= 0
+        ):
+            raise RuntimeError(
+                "backup artifact empty"
+            )
+
+        backup_hash = sha256(
+            backup
+        )
+
+        backup_size = (
+            backup.stat().st_size
+        )
+
+        print(
+            "BACKUP="
+            + str(backup)
+        )
+        print(
+            "BACKUP_SIZE="
+            + str(
+                backup_size
+            )
+        )
+        print(
+            "BACKUP_SHA256="
+            + backup_hash
+        )
+
+        rc, _ = run([
+            "docker",
+            "network",
+            "create",
+            network,
+        ])
+
+        if rc:
+            raise RuntimeError(
+                "unable to create disposable network"
+            )
+
+        rc, out = run([
+            "docker",
+            "run",
+            "-d",
+            "--name",
+            restore_container,
+            "--network",
+            network,
+            "-e",
+            "POSTGRES_USER="
+            + restore_user,
+            "-e",
+            "POSTGRES_PASSWORD="
+            + restore_password,
+            "-e",
+            "POSTGRES_DB="
+            + restore_db,
+            "postgres:16",
+        ])
+
+        if rc:
+            raise RuntimeError(
+                "unable to create disposable restore container\n"
+                + out
+            )
+
+        ready = False
+
+        for i in range(
+            1,
+            31
+        ):
+            rc, _ = run([
+                "docker",
+                "exec",
+                restore_container,
+                "pg_isready",
+                "-U",
+                restore_user,
+                "-d",
+                restore_db,
+            ])
+
+            if rc == 0:
+                print(
+                    "RESTORE_DB_READY_"
+                    + str(i)
+                    + "=PASS"
+                )
+                ready = True
+                break
+
+            print(
+                "RESTORE_DB_READY_"
+                + str(i)
+                + "=WAIT"
+            )
+
+            time.sleep(1)
+
+        if not ready:
+            raise RuntimeError(
+                "disposable PostgreSQL server not ready"
+            )
+
+        database_exists = sql_value(
+            restore_container,
+            restore_user,
+            "postgres",
+            """
+            SELECT count(*)
+            FROM pg_database
+            WHERE datname = 'taman_v79_p5a_restore';
+            """,
+        )
+
+        print(
+            "RESTORE_TARGET_DATABASE_EXISTS="
+            + (
+                "YES"
+                if database_exists == "1"
+                else "NO"
+            )
+        )
+
+        if database_exists != "1":
+            rc, out = run([
+                "docker",
+                "exec",
+                restore_container,
+                "psql",
+                "-X",
+                "-U",
+                restore_user,
+                "-d",
+                "postgres",
+                "-v",
+                "ON_ERROR_STOP=1",
+                "-c",
+                "CREATE DATABASE taman_v79_p5a_restore;",
+            ])
+
+            if rc:
+                raise RuntimeError(
+                    "unable to create disposable restore database\\n"
+                    + out[-4000:]
+                )
+
+            print(
+                "RESTORE_TARGET_DATABASE_CREATED=YES"
+            )
+        else:
+            print(
+                "RESTORE_TARGET_DATABASE_CREATED=NO"
+            )
+
+        verified_database_exists = sql_value(
+            restore_container,
+            restore_user,
+            "postgres",
+            """
+            SELECT count(*)
+            FROM pg_database
+            WHERE datname = 'taman_v79_p5a_restore';
+            """,
+        )
+
+        if verified_database_exists != "1":
+            raise RuntimeError(
+                "disposable restore database existence verification failed"
+            )
+
+        print(
+            "RESTORE_TARGET_DATABASE_VERIFIED=YES"
+        )
+
+        with backup.open(
+            "rb"
+        ) as fh:
+            rc, out = run(
+                [
+                    "docker",
+                    "exec",
+                    "-i",
+                    restore_container,
+                    "pg_restore",
+                    "-U",
+                    restore_user,
+                    "-d",
+                    restore_db,
+                    "--no-owner",
+                    "--no-privileges",
+                    "--exit-on-error",
+                ],
+                input_bytes=fh.read(),
+            )
+
+        if rc:
+            raise RuntimeError(
+                "pg_restore failed\n"
+                + out[-5000:]
+            )
+
+        restored_table_count = int(
+            sql_value(
+                restore_container,
+                restore_user,
+                restore_db,
+                """
+                SELECT count(*)
+                FROM information_schema.tables
+                WHERE table_schema='public'
+                  AND table_type='BASE TABLE';
+                """,
+            )
+        )
+
+        restored_schema_signature = (
+            sql_value(
+                restore_container,
+                restore_user,
+                restore_db,
+                """
+                SELECT md5(
+                    string_agg(
+                        table_name || ':' ||
+                        column_name || ':' ||
+                        data_type || ':' ||
+                        is_nullable,
+                        '|' ORDER BY table_name, ordinal_position
+                    )
+                )
+                FROM information_schema.columns
+                WHERE table_schema='public';
+                """,
+            )
+        )
+
+        print(
+            "RESTORED_TABLE_COUNT="
+            + str(
+                restored_table_count
+            )
+        )
+
+        print(
+            "RESTORED_SCHEMA_SIGNATURE="
+            + restored_schema_signature
+        )
+
+        if (
+            restored_table_count
+            != source_table_before
+        ):
+            raise RuntimeError(
+                "restored table count mismatch"
+            )
+
+        if (
+            restored_schema_signature
+            != source_schema_before
+        ):
+            raise RuntimeError(
+                "restored schema signature mismatch"
+            )
+
+        source_table_after = int(
+            sql_value(
+                source_container,
+                source_user,
+                source_db,
+                """
+                SELECT count(*)
+                FROM information_schema.tables
+                WHERE table_schema='public'
+                  AND table_type='BASE TABLE';
+                """,
+            )
+        )
+
+        source_schema_after = (
+            sql_value(
+                source_container,
+                source_user,
+                source_db,
+                """
+                SELECT md5(
+                    string_agg(
+                        table_name || ':' ||
+                        column_name || ':' ||
+                        data_type || ':' ||
+                        is_nullable,
+                        '|' ORDER BY table_name, ordinal_position
+                    )
+                )
+                FROM information_schema.columns
+                WHERE table_schema='public';
+                """,
+            )
+        )
+
+        print(
+            "SOURCE_TABLE_COUNT_AFTER="
+            + str(
+                source_table_after
+            )
+        )
+
+        print(
+            "SOURCE_SCHEMA_SIGNATURE_AFTER="
+            + source_schema_after
+        )
+
+        if (
+            source_table_after
+            != source_table_before
+        ):
+            raise RuntimeError(
+                "production source table count changed"
+            )
+
+        if (
+            source_schema_after
+            != source_schema_before
+        ):
+            raise RuntimeError(
+                "production source schema changed"
+            )
+
+        cleanup()
+
+        api_id_after = run([
+            "docker",
+            "inspect",
+            api,
+            "--format",
+            "{{.Id}}",
+        ])[1].strip()
+
+        api_started_after = run([
+            "docker",
+            "inspect",
+            api,
+            "--format",
+            "{{.State.StartedAt}}",
+        ])[1].strip()
+
+        api_image_after = run([
+            "docker",
+            "inspect",
+            api,
+            "--format",
+            "{{.Image}}",
+        ])[1].strip()
+
+        if (
+            api_id_after
+            != api_id_before
+            or
+            api_started_after
+            != api_started_before
+            or
+            api_image_after
+            != api_image_before
+        ):
+            raise RuntimeError(
+                "production API runtime identity changed"
+            )
+
+        production_health()
+
+        if backup.exists():
+            backup.unlink()
+
+        if backup.exists():
+            raise RuntimeError(
+                "temporary backup artifact cleanup failed"
+            )
+
+        print(
+            "BACKUP_ARTIFACT_REMOVED=YES"
+        )
+
+        manifest_data = {
+            "version":
+                "V7.9",
+
+            "series":
+                "06",
+
+            "phase":
+                "5A",
+
+            "status":
+                "PASSED",
+
+            "decision":
+                "DISPOSABLE_BACKUP_RESTORE_ACCEPTED",
+
+            "backup":
+                str(backup),
+
+            "backup_sha256":
+                backup_hash,
+
+            "backup_size":
+                backup_size,
+
+            "backup_artifact_removed":
+                True,
+
+            "source_table_count":
+                source_table_before,
+
+            "restored_table_count":
+                restored_table_count,
+
+            "source_schema_signature":
+                source_schema_before,
+
+            "restored_schema_signature":
+                restored_schema_signature,
+
+            "production_restore":
+                False,
+
+            "production_database_delta":
+                False,
+
+            "production_runtime_restart":
+                False,
+
+            "restore_container_destroyed":
+                cleanup_done,
+
+            "manual_test_required":
+                False,
+
+            "next":
+                "PHASE_5B",
+
+            "accepted_at":
+                now(),
+        }
+
+        MANIFEST.write_text(
+            json.dumps(
+                manifest_data,
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        RESULT.write_text(
+            "\n".join([
+                "TAM AN CARE V7.9",
+                "SERIES=06",
+                "PHASE=5A",
+                "STATUS=PASSED",
+                "DECISION=DISPOSABLE_BACKUP_RESTORE_ACCEPTED",
+                "BACKUP="
+                + str(backup),
+                "BACKUP_SHA256="
+                + backup_hash,
+                "BACKUP_SIZE="
+                + str(
+                    backup_size
+                ),
+                "BACKUP_ARTIFACT_REMOVED=YES",
+                "SOURCE_TABLE_COUNT="
+                + str(source_table_before),
+                "RESTORED_TABLE_COUNT="
+                + str(restored_table_count),
+                "SOURCE_SCHEMA_SIGNATURE="
+                + source_schema_before,
+                "RESTORED_SCHEMA_SIGNATURE="
+                + restored_schema_signature,
+                "PRODUCTION_RESTORE=NO",
+                "PRODUCTION_DATABASE_DELTA=NO",
+                "PRODUCTION_RUNTIME_RESTART=NO",
+                "RESTORE_CONTAINER_DESTROYED=YES",
+                "MANUAL_TEST_REQUIRED=NO",
+                "NEXT=PHASE_5B",
+            ])
+            + "\n",
+            encoding="utf-8",
+        )
+
+        state["status"] = "READY"
+        state["completed"] = [
+            "PHASE_5A"
+        ]
+        state["failed_gate"] = None
+        state["next_gate"] = "PHASE_5B"
+        state["reason"] = None
+        state["updated_at"] = now()
+
+        save_state(state)
+
+        print(
+            "PHASE5A_RESULT_SHA256="
+            + sha256(RESULT)
+        )
+
+        print(
+            "PHASE5A_MANIFEST_SHA256="
+            + sha256(MANIFEST)
+        )
+
+        print(
+            "PASS: PHASE 5A CLOSED"
+        )
+
+        print(
+            "NEXT_GATE=PHASE_5B"
+        )
+
+    except Exception as exc:
+        cleanup()
+
+        if backup.exists():
+            backup.unlink()
+
+        safe_stop(
+            state,
+            str(exc),
+        )
+
+
+if __name__ == "__main__":
+    main()

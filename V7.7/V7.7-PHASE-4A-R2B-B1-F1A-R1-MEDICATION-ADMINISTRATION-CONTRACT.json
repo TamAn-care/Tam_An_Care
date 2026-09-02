@@ -1,0 +1,956 @@
+{
+  "generated_at": "2026-08-21T05:40:58.746001+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-F1A-R1",
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "route_files": [
+    "api/src/medication/medication.controller.ts"
+  ],
+  "dependency_files": [
+    "api/src/database/database.service.ts",
+    "api/src/medication/medication-authorization.service.ts",
+    "api/src/medication/medication.controller.ts",
+    "api/src/medication/medication.repository.ts",
+    "api/src/medication/medication.service.ts",
+    "api/src/medication/medication.types.ts"
+  ],
+  "route": "/api/medication-administrations/:administrationId/:action",
+  "actions": [
+    "ACCEPT",
+    "ACCEPTED",
+    "ADMINISTER",
+    "ADMINISTERED",
+    "ASSIGN",
+    "ASSIGNED",
+    "CANCEL",
+    "CANCELLED",
+    "MED_ADMINISTERED",
+    "MED_ADMIN_ACCEPTED",
+    "MED_ADMIN_ASSIGNED",
+    "MED_ADMIN_CANCELLED",
+    "MED_ADMIN_MISSED",
+    "MED_ADMIN_REFUSED",
+    "MISSED",
+    "REFUSED"
+  ],
+  "selected_action": "ASSIGN",
+  "security_mode": "BODY_ACTOR",
+  "body_fields": [
+    "actorId",
+    "actorRole",
+    "administrationNote",
+    "assignedRole",
+    "assignedTo",
+    "checkNote",
+    "checkResult",
+    "eventType",
+    "exceptionReason",
+    "medicationAdministrationId",
+    "medicationOrderId",
+    "medicationScheduleId",
+    "newState",
+    "previousState",
+    "residentId"
+  ],
+  "required_field_evidence": [
+    "actorId",
+    "actorRole",
+    "administrationNote",
+    "assignedRole",
+    "assignedTo",
+    "exceptionReason"
+  ],
+  "table_references": [
+    "OF",
+    "medication_administrations",
+    "medication_audit",
+    "medication_double_checks",
+    "medication_orders"
+  ],
+  "medication_administrations_schema": {
+    "table": "medication_administrations",
+    "columns": [
+      {
+        "name": "medication_administration_id",
+        "definition": "TEXT PRIMARY KEY",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "medication_schedule_id",
+        "definition": "TEXT NOT NULL",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "REFERENCES",
+        "definition": "medication_schedules(medication_schedule_id)",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "medication_order_id",
+        "definition": "TEXT NOT NULL",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "REFERENCES",
+        "definition": "medication_orders(medication_order_id)",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "resident_id",
+        "definition": "TEXT NOT NULL",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "REFERENCES",
+        "definition": "residents(resident_id)",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "administration_code",
+        "definition": "TEXT NOT NULL UNIQUE",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "status",
+        "definition": "TEXT NOT NULL",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "status",
+        "definition": "IN (",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "scheduled_at",
+        "definition": "TIMESTAMPTZ NOT NULL",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "assigned_to",
+        "definition": "TEXT",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "assigned_role",
+        "definition": "TEXT",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "assigned_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "accepted_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "ready_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "administered_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "missed_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "refused_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "held_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "cancelled_at",
+        "definition": "TIMESTAMPTZ",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "administration_note",
+        "definition": "TEXT",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "exception_reason",
+        "definition": "TEXT",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "created_at",
+        "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+        "not_null": true,
+        "has_default": true,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "updated_at",
+        "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+        "not_null": true,
+        "has_default": true,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "assigned_to",
+        "definition": "IS NULL",
+        "not_null": false,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      },
+      {
+        "name": "assigned_to",
+        "definition": "IS NOT NULL",
+        "not_null": true,
+        "has_default": false,
+        "identity": false,
+        "serial": false
+      }
+    ],
+    "required_insert_columns": [
+      "medication_schedule_id",
+      "medication_order_id",
+      "resident_id",
+      "administration_code",
+      "status",
+      "scheduled_at",
+      "assigned_to"
+    ]
+  },
+  "supporting_schema": {
+    "medication_orders": {
+      "table": "medication_orders",
+      "columns": [
+        {
+          "name": "medication_order_id",
+          "definition": "TEXT PRIMARY KEY",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "resident_id",
+          "definition": "TEXT NOT NULL REFERENCES residents(resident_id)",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "order_code",
+          "definition": "TEXT NOT NULL UNIQUE",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "medication_name",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "generic_name",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "strength",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "dose",
+          "definition": "NUMERIC",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "dose_unit",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "route",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "frequency",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "instructions",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "indication",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "prescriber_name",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "prescriber_reference",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "prescribed_at",
+          "definition": "TIMESTAMPTZ NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "effective_from",
+          "definition": "TIMESTAMPTZ",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "effective_to",
+          "definition": "TIMESTAMPTZ",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "high_risk",
+          "definition": "BOOLEAN NOT NULL DEFAULT FALSE",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "double_check_required",
+          "definition": "BOOLEAN NOT NULL DEFAULT FALSE",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "status",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "status",
+          "definition": "IN (",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "verified_by",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "verified_by_role",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "verified_at",
+          "definition": "TIMESTAMPTZ",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "created_at",
+          "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "updated_at",
+          "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "effective_to",
+          "definition": "IS NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "verified_by",
+          "definition": "IS NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "verified_by",
+          "definition": "IS NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        }
+      ],
+      "required_insert_columns": [
+        "resident_id",
+        "order_code",
+        "medication_name",
+        "route",
+        "frequency",
+        "prescriber_name",
+        "prescribed_at",
+        "status",
+        "verified_by"
+      ]
+    },
+    "medication_schedules": {
+      "table": "medication_schedules",
+      "columns": [
+        {
+          "name": "medication_schedule_id",
+          "definition": "TEXT PRIMARY KEY",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "medication_order_id",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "REFERENCES",
+          "definition": "medication_orders(medication_order_id)",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "resident_id",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "REFERENCES",
+          "definition": "residents(resident_id)",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "schedule_code",
+          "definition": "TEXT NOT NULL UNIQUE",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "scheduled_at",
+          "definition": "TIMESTAMPTZ NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "administration_window_start",
+          "definition": "TIMESTAMPTZ",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "administration_window_end",
+          "definition": "TIMESTAMPTZ",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "status",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "status",
+          "definition": "IN (",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "created_at",
+          "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "updated_at",
+          "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "administration_window_end",
+          "definition": "IS NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        }
+      ],
+      "required_insert_columns": [
+        "medication_order_id",
+        "resident_id",
+        "schedule_code",
+        "scheduled_at",
+        "status"
+      ]
+    },
+    "residents": {
+      "table": "residents",
+      "columns": [
+        {
+          "name": "resident_id",
+          "definition": "text PRIMARY KEY",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "resident_code",
+          "definition": "text",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "display_name",
+          "definition": "text",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "date_of_birth",
+          "definition": "date",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "gender",
+          "definition": "text",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "gender",
+          "definition": "IN (",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "room",
+          "definition": "text",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "bed",
+          "definition": "text",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "care_level",
+          "definition": "text",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "care_level",
+          "definition": "IN (",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "active_status",
+          "definition": "boolean",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL DEFAULT true",
+          "not_null": false,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "created_at",
+          "definition": "timestamptz",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL DEFAULT now()",
+          "not_null": false,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "updated_at",
+          "definition": "timestamptz",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "NOT",
+          "definition": "NULL DEFAULT now()",
+          "not_null": false,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        }
+      ],
+      "required_insert_columns": []
+    },
+    "staff_actors": {
+      "table": "staff_actors",
+      "columns": [
+        {
+          "name": "actor_id",
+          "definition": "TEXT PRIMARY KEY",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "staff_code",
+          "definition": "TEXT NOT NULL UNIQUE",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "display_name",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "primary_operational_role",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "primary_operational_role",
+          "definition": "IN (",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "status",
+          "definition": "TEXT NOT NULL",
+          "not_null": true,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "status",
+          "definition": "IN (",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "employment_reference",
+          "definition": "TEXT",
+          "not_null": false,
+          "has_default": false,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "created_at",
+          "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        },
+        {
+          "name": "updated_at",
+          "definition": "TIMESTAMPTZ NOT NULL DEFAULT now()",
+          "not_null": true,
+          "has_default": true,
+          "identity": false,
+          "serial": false
+        }
+      ],
+      "required_insert_columns": [
+        "staff_code",
+        "display_name",
+        "primary_operational_role",
+        "status"
+      ]
+    }
+  },
+  "fixture_model": {
+    "residentId": "v77-f1b-resident",
+    "supervisorId": "v77-f1b-supervisor",
+    "caregiverId": "v77-f1b-caregiver-a",
+    "medicationOrderId": "v77-f1b-medication-order",
+    "medicationScheduleId": "v77-f1b-medication-schedule",
+    "administrationId": "v77-f1b-medication-administration",
+    "administrationCode": "V77-F1B-MED-ADM-001",
+    "selectedAction": "ASSIGN"
+  },
+  "execution_rules": [
+    "No-actor security probe before authorized medication mutation.",
+    "Create medication order/schedule/administration only in disposable F1B DB.",
+    "Use source-proven selected action only.",
+    "Authorized action must create expected status/audit transition.",
+    "Rejected security probes must create zero persistence delta.",
+    "V7.6 production remains frozen."
+  ]
+}

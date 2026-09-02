@@ -1,0 +1,15 @@
+{
+  "version": "V7.9",
+  "phase": "0C",
+  "status": "PASSED",
+  "backend_file_count": 138,
+  "controller_count": 31,
+  "endpoint_count": 50,
+  "db_table_count": 118,
+  "db_column_count": 1971,
+  "inventory": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/inventory/V7.9-PHASE-0C-API-DB-CAPABILITY-INVENTORY.json",
+  "inventory_hash": "d68cef24b1019ef55e676587c36a43bf0a1f4a1829a1fc98b18777992621a02e",
+  "production_write": false,
+  "runtime_restart": false,
+  "next": "PHASE_0D"
+}

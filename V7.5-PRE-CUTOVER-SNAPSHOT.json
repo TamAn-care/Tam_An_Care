@@ -1,0 +1,55 @@
+{
+  "api": {
+    "container": "taman-care-v743-dev-api",
+    "environment": [
+      "DATABASE_URL=<REDACTED>",
+      "JWT_SECRET=<REDACTED>",
+      "NODE_VERSION=20.20.2",
+      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "PORT=3000",
+      "YARN_VERSION=1.22.22"
+    ],
+    "image": "taman-care-v75-step9f-phase45-candidate:latest",
+    "image_id": "sha256:7aab2a9359481b2057225d968a26217461472e397ddb14c036052273787ac069",
+    "networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "ports": {
+      "3000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "3100"
+        }
+      ]
+    },
+    "state": "running"
+  },
+  "created_at_utc": "2026-08-20T23:57:51.203629+00:00",
+  "database": {
+    "container": "taman-care-v743-dev-postgres",
+    "data_volume": {
+      "destination": "/var/lib/postgresql/data",
+      "name": "taman-care-v743-dev-postgres-data",
+      "source": "/var/lib/docker/volumes/taman-care-v743-dev-postgres-data/_data"
+    },
+    "image": "postgres:16",
+    "image_id": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+    "logical_counts": "0|0|0",
+    "networks": [
+      "taman-care-v743-dev-network"
+    ],
+    "state": "running"
+  },
+  "frontend": {
+    "css": "index-DlvS4Sti.css",
+    "css_hash": "2f3e27ebdf2e2e9a2df4a0883cd84e8474162aff1ca6c85c64944dd77e5c96fb",
+    "index_html_hash": "4e09ce3070d31e48552e178f083531f2fae5ed07b57f70677761d8e4b7485796",
+    "js": "index-fyHixorA.js",
+    "js_hash": "ca42f8b9c913feafd79815353d072f736a5e899d4074f2cd65bc89860f8bbcf7"
+  },
+  "ui_strategy": {
+    "historical_state": "exited",
+    "strategy": "fresh V7.5 static delivery container",
+    "target_port": "127.0.0.1:8080"
+  }
+}

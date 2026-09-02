@@ -1,0 +1,41 @@
+{
+  "version": "V7.8",
+  "phase": "4C-R1",
+  "status": "PASSED",
+  "mode": "READ_ONLY_CONTRACT_RECOVERY",
+  "frontend_files": [
+    "V7.7/workspace/frontend/src/api/staff-actors.ts",
+    "V7.7/workspace/frontend/src/api/resident-access-administration.ts",
+    "V7.7/workspace/frontend/src/features/staff-access/StaffAccessPage.tsx"
+  ],
+  "backend_files": [
+    "V7.7/workspace/api/src/staff-actors/staff-actor.controller.ts",
+    "V7.7/workspace/api/src/staff-actors/staff-actor.module.ts",
+    "V7.7/workspace/api/src/resident-access-scope/resident-access-scope.module.ts",
+    "V7.7/workspace/api/src/resident-access-scope/resident-access-scope.service.ts",
+    "V7.7/workspace/api/src/resident-access-administration/resident-access-administration.module.ts",
+    "V7.7/workspace/api/src/resident-access-administration/resident-access-administration.service.ts",
+    "V7.7/workspace/api/src/resident-access-administration/resident-access-administration.controller.ts"
+  ],
+  "http_methods_found": [
+    "Get",
+    "Post"
+  ],
+  "operation_endpoints": [
+    "/api/operations/access-assignments",
+    "/api/operations/residents/${\n      encodeURIComponent(input.residentId)\n    }/access-assignments",
+    "/api/operations/staff-actors${\n      query ? ",
+    "/api/operations/staff-actors/${\n      encodeURIComponent(actorId)\n    }"
+  ],
+  "signals": {
+    "staff_actors": true,
+    "access_assignments": true,
+    "actor_id": true,
+    "actor_role": true,
+    "resident": true,
+    "role": true
+  },
+  "real_staff_mutation": false,
+  "production_database_write": false,
+  "next": "PHASE_4C_ISOLATED_CONTROLLED_WORKFLOW"
+}

@@ -1,0 +1,242 @@
+======================================================================
+ TAMANCARE V8.0 — FULL DEMO
+ DEMO-1 — ISOLATED RUNTIME CREATION
+ SOURCE = FROZEN V8.0 FINAL OPERATIONAL RELEASE
+======================================================================
+
+FROZEN_PARENT:
+ S_FINAL=CLOSED / HUMAN ACCEPTED
+ V8.0=FINAL_OPERATIONAL_RELEASE_FROZEN
+ SOURCE_SHA256=01273a27c188c2bd93193d731a4ced009db2f1cc79a800c9f3667520c41b13b1
+
+----- 1. VERIFY FROZEN RELEASE -----
+PASS: CANONICAL SOURCE EXISTS
+PASS: S_FINAL FROZEN CHECKPOINT EXISTS
+PASS: S_FINAL SOURCE MANIFEST EXISTS
+
+----- 2. DEMO DESTINATION SAFETY -----
+PASS: DEMO DESTINATION IS CLEAN
+
+----- 3. CREATE ISOLATED FULL DEMO COPY -----
+PASS: APPLICATION COPIED TO ISOLATED DEMO
+PASS: DEMO API SOURCE EXISTS
+PASS: DEMO FRONTEND SOURCE EXISTS
+
+----- 4. VERIFY DEMO SOURCE AGAINST FROZEN RELEASE -----
+DEMO_SOURCE_SET_SHA256=01273a27c188c2bd93193d731a4ced009db2f1cc79a800c9f3667520c41b13b1
+FROZEN_SOURCE_FILE_COUNT=228
+DEMO_SOURCE_FILE_COUNT=228
+MISSING_FILE_COUNT=0
+EXTRA_FILE_COUNT=0
+CHANGED_FILE_COUNT=0
+FROZEN_SOURCE_EQUIVALENCE=PASS
+PASS: DEMO SOURCE EXACTLY MATCHES FROZEN V8.0
+
+----- 5. INSTALL DEMO DEPENDENCIES -----
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'taman-care-v7-health-trend@7.3.2',
+npm warn EBADENGINE   required: { node: '>=22 <23' },
+npm warn EBADENGINE   current: { node: 'v24.19.0', npm: '11.17.0' }
+npm warn EBADENGINE }
+
+added 223 packages, and audited 224 packages in 4s
+
+69 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+npm warn allow-scripts   @scarf/scarf@1.4.0 (postinstall: node ./report.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+PASS: DEMO API DEPENDENCIES READY
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'taman-care-v75-frontend@7.5.0',
+npm warn EBADENGINE   required: { node: '>=20 <23' },
+npm warn EBADENGINE   current: { node: 'v24.19.0', npm: '11.17.0' }
+npm warn EBADENGINE }
+
+added 77 packages, and audited 78 packages in 3s
+
+12 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm warn allow-scripts 2 packages have install scripts not yet covered by allowScripts:
+npm warn allow-scripts   esbuild@0.25.12 (postinstall: node install.js)
+npm warn allow-scripts   fsevents@2.3.3 (install: (install scripts present))
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+PASS: DEMO FRONTEND DEPENDENCIES READY
+
+----- 6. BUILD FULL DEMO -----
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: DEMO API BUILD
+
+> taman-care-v75-frontend@7.5.0 build
+> tsc -b && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 118 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.79 kB │ gzip:   0.39 kB
+dist/assets/index-4_LYDINe.css   14.13 kB │ gzip:   3.16 kB
+dist/assets/index-yiFNlMKK.js   351.62 kB │ gzip: 106.58 kB
+✓ built in 1.69s
+PASS: DEMO FRONTEND BUILD
+
+----- 7. EXISTING RUNTIME CONTRACT -----
+
+API_PACKAGE_SCRIPTS:
+{
+  "build": "nest build",
+  "start:prod": "node dist/main.js"
+}
+
+FRONTEND_PACKAGE_SCRIPTS:
+{
+  "dev": "vite",
+  "build": "tsc -b && vite build",
+  "preview": "vite preview"
+}
+
+RUNTIME_ENV_FILES:
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B2-R1-backup-20260829-041811/production/docker-compose.production.yml
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B2-R1-backup-20260829-041811/production/.env.example
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/deploy/production/docker-compose.production.yml
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/deploy/production/.env.example
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B1-backup-20260829-041510/docker-compose.yml
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B2-R2-backup-20260829-042018/production/docker-compose.production.yml
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B2-R2-backup-20260829-042018/production/.env.example
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B2-backup-20260829-041640/production/docker-compose.production.yml
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/X3-B2-backup-20260829-041640/production/.env.example
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/docker-compose.yml
+
+DATABASE_RUNTIME_SIGNALS:
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:27:      process.env.DATABASE_URL;
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:34:        'DATABASE_URL is required in production',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:39:      ? new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:45:      : new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:47:            process.env.DB_HOST ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:48:            'postgres',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:52:              process.env.DB_PORT ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:57:            process.env.POSTGRES_USER ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:62:            process.env.POSTGRES_PASSWORD ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:76:            process.env.POSTGRES_DB ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:77:            process.env.DB_NAME ||
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/database/database.service.ts:92:          'Unexpected PostgreSQL pool error',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/staff-actors/staff-bootstrap.ts:74:      process.env.DATABASE_URL || '',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/staff-actors/staff-bootstrap.ts:79:      'DATABASE_URL must be explicitly supplied',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/staff-actors/staff-bootstrap.ts:85:  const pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:22:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:23:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:24:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:25:      port: process.env.DB_PORT
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:26:        ? Number(process.env.DB_PORT)
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:30:        process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:33:        process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:35:        process.env.DB_NAME ??
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/skin-wound/skin-wound.service.ts:36:        process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/sleep-rest/sleep-rest.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/pain-comfort/pain-comfort.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/infection-control/infection-control.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/operational-work/operational-work-event.service.ts:47:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/operational-work/operational-work-event.service.ts:48:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:24:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:25:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:26:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:27:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:28:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:29:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/personal-care/personal-care.service.ts:30:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/care-tasks/care-task.repository.ts:158:         * PostgreSQL independently protects:
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/ai/early-warning.controller.ts:89:          'POSTGRES_RESIDENT_CONTEXT',
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/safeguarding/safeguarding.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/fall-mobility/fall-mobility.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/medication-safety/medication-safety.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:21:    this.pool = new Pool({
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:22:      connectionString: process.env.DATABASE_URL,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:23:      host: process.env.DB_HOST,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:24:      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:25:      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:26:      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
+/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo/api/src/behavioral-cognitive/behavioral-cognitive.service.ts:27:      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
+
+----- 8. FROZEN PARENT INTEGRITY -----
+PASS: FROZEN V8.0 SOURCE REMAINS UNCHANGED
+
+----- 9. FULL DEMO SCOPE -----
+PASS: FULL DEMO SCOPE RECORDED
+
+======================================================================
+ DEMO-1 RESULT
+======================================================================
+PASS_COUNT=14
+WARN_COUNT=0
+FAIL_COUNT=0
+
+STATUS=V8_FULL_DEMO_STAGE_1_PASSED
+DEMO_SOURCE=FROZEN_V8_EQUIVALENT
+DEMO_BUILD=PASS
+FROZEN_PARENT_MUTATION=NO
+
+DEMO_ROOT=/Users/anhha/Downloads/TamAnCare_V8_0_Full_Demo
+NEXT=DEMO_2_START_RUNTIME_AND_FULL_SMOKE_ACCEPTANCE
+
+PRODUCTION_DATABASE_WRITE=NO
+PRODUCTION_DATABASE_MUTATION=NO
+PRODUCTION_RUNTIME_RESTART=NO
+FROZEN_RELEASE_MODIFIED=NO
+OPS_7_STARTED=NO
+OPS_8_STARTED=NO
+X3_B5_STARTED=NO
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_full_demo_stage1_20260831_032422.txt
+
+IMPORTANT:
+ -> DO NOT MODIFY THE FROZEN V8.0 PARENT
+ -> DO NOT START THE API MANUALLY YET
+ -> DO NOT START THE FRONTEND MANUALLY YET
+ -> RETURN THIS ENTIRE OUTPUT
+======================================================================

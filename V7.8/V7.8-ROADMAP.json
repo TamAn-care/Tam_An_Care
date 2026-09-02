@@ -1,0 +1,65 @@
+{
+  "version": "V7.8",
+  "title": "Production Hardening & Smooth Operation",
+  "parent_release": {
+    "version": "V7.7",
+    "status": "FINAL_PRODUCTION_RELEASE_FROZEN",
+    "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+    "freeze_result_hash": "4d4ffb236f1c5f6426328fb5bd85317c0ae0fcb3ecacf59450a2dd0af9db7b57",
+    "release_manifest_hash": "e4af4cb3c812a9ab35eafc9b8a61d326b75a47fd22969ce304732ed395d2e9c9"
+  },
+  "principles": [
+    "Do not modify frozen V7.7 baseline.",
+    "Production safety before feature expansion.",
+    "Fail closed for security-sensitive actions.",
+    "Human-in-the-loop remains mandatory for clinical AI.",
+    "No destructive database migration.",
+    "Every runtime-mutating gate must have rollback.",
+    "Use disposable infrastructure for destructive/recovery tests.",
+    "Evidence and hashes required before advancing gates."
+  ],
+  "phases": [
+    {
+      "phase": "0",
+      "name": "Production Operations Baseline",
+      "status": "IN_PROGRESS",
+      "goal": "Lock V7.7 parent and production operational baseline."
+    },
+    {
+      "phase": "1",
+      "name": "Observability, Logging & Backup Readiness",
+      "status": "PLANNED",
+      "goal": "Make faults visible and ensure backup readiness before restart/recovery testing."
+    },
+    {
+      "phase": "2",
+      "name": "Controlled Restart, Recovery & Rollback",
+      "status": "PLANNED",
+      "goal": "Prove graceful API/UI restart, DB reconnect, startup ordering and rollback."
+    },
+    {
+      "phase": "3",
+      "name": "Performance, Latency & Concurrency",
+      "status": "PLANNED",
+      "goal": "Measure API/UI responsiveness and concurrent read workload without compromising safety."
+    },
+    {
+      "phase": "4",
+      "name": "End-to-End UX & Operational Smoothness",
+      "status": "PLANNED",
+      "goal": "Validate core workflows, navigation, responsiveness, browser/mobile behavior and user-facing error handling."
+    },
+    {
+      "phase": "5",
+      "name": "Backup Restore & Data Integrity Acceptance",
+      "status": "PLANNED",
+      "goal": "Prove backup restoration only on disposable infrastructure and validate complete data integrity."
+    },
+    {
+      "phase": "6",
+      "name": "Final Operational Acceptance & V7.8 Freeze",
+      "status": "PLANNED",
+      "goal": "Run integrated acceptance, stabilization and freeze V7.8."
+    }
+  ]
+}

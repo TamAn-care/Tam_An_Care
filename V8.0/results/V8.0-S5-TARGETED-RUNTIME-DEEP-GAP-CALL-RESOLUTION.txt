@@ -1,0 +1,11 @@
+TAM AN CARE V8.0 — S5 DEEP GAP CALL RESOLUTION
+STATIC_ONLY=YES
+
+CALL_RESOLUTION|CONTROLLER=ai/early-warning.controller.ts|HANDLER=patterns|CLASS=NO_CALL_TARGET_RESOLVED|OBJECT=NONE|METHOD=NONE|TARGET=NONE
+CALL_RESOLUTION|CONTROLLER=ai/early-warning.controller.ts|HANDLER=residentPatterns|CLASS=NO_CALL_TARGET_RESOLVED|OBJECT=NONE|METHOD=NONE|TARGET=NONE
+CALL_RESOLUTION|CONTROLLER=residents/resident.controller.ts|HANDLER=createResident|CLASS=LOCAL_METHOD|OBJECT=this|METHOD=authorizeSupervisor|TARGET=residents/resident.controller.ts
+CALL_RESOLUTION|CONTROLLER=residents/resident.controller.ts|HANDLER=updateResident|CLASS=LOCAL_METHOD|OBJECT=this|METHOD=authorizeSupervisor|TARGET=residents/resident.controller.ts
+CALL_RESOLUTION|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CLASS=VARIABLE_METHOD|OBJECT=message|METHOD=includes|TARGET=error instanceof Error ? error.message : 'Warning review failed.'
+CALL_RESOLUTION|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CLASS=VARIABLE_METHOD|OBJECT=message|METHOD=includes|TARGET=error instanceof Error ? error.message : 'Warning review failed.'
+CALL_RESOLUTION|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CLASS=VARIABLE_METHOD|OBJECT=message|METHOD=includes|TARGET=error instanceof Error ? error.message : 'Warning review failed.'
+CALL_RESOLUTION|CONTROLLER=warning-reviews/warning-review.controller.ts|HANDLER=review|CLASS=VARIABLE_METHOD|OBJECT=message|METHOD=includes|TARGET=error instanceof Error ? error.message : 'Warning review failed.'

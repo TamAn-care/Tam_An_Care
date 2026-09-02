@@ -1,0 +1,17 @@
+{
+  "version": "V8.0",
+  "gate": "S0",
+  "status": "PASSED",
+  "decision": "V8_0_CONTROLLED_WORKSPACE_INITIALIZED",
+  "parent": "V7.9",
+  "frontend_source": "V7.7/workspace/frontend",
+  "api_source": "V7.9/workspace/api",
+  "schema_source": "database/schema.sql",
+  "frontend_sha256": "fb145df50849da824a8c9ba239adb9b574e11864afafa4bfdeb41059c53f11e3",
+  "api_sha256": "3c9c6d3532d2c96f2f6de378a8238c4c014a253e618ca2942079a5c16ec99d90",
+  "schema_sha256": "5152940949816807f4452718bdb9d2d0bc40e57ecd88c36afffe9834ba4ecc80",
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "next_gate": "S1",
+  "created_at": "2026-08-22T08:28:04.174415+00:00"
+}

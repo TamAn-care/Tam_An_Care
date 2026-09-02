@@ -1,0 +1,51 @@
+TAM AN CARE V7.4.3
+STEP 7S CONCURRENCY CONTRACT
+
+STATE-CHANGING MUTATIONS USE
+
+database transaction
+SELECT ... FOR UPDATE
+current-state revalidation
+authorization
+safety validation
+business mutation
+same-transaction audit
+
+
+REQUIRED SINGLE-WINNER RACES
+
+double schedule assignment
+double acceptance
+double READY
+COMPLETED vs MISSED
+COMPLETED vs REFUSED
+COMPLETED vs HELD
+double care-record verification
+double continence-observation verification
+escalation assignment race
+double escalation acceptance
+double escalation resolution
+
+
+TERMINAL CONTRACT
+
+Exactly one incompatible terminal mutation may win.
+
+Winner:
+one state mutation
+one winning audit event
+
+Loser:
+zero business mutation
+zero audit
+
+
+APPEND-ONLY HISTORY
+
+Multiple legitimate toileting observations may coexist.
+
+Multiple legitimate continence observations may coexist.
+
+Multiple legitimate factual assistance records may coexist.
+
+No legitimate append-only history may be lost.

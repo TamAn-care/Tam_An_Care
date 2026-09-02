@@ -1,0 +1,77 @@
+STEP 7Y — LIFECYCLE CONTRACT
+
+SAFEGUARDING REPORT
+
+REPORTED
+-> TRIAGED
+-> UNDER_REVIEW
+-> RESOLVED
+-> CLOSED
+
+
+SAFEGUARDING TRIAGE
+
+PENDING
+-> COMPLETED
+
+
+PROTECTIVE ACTION
+
+PROPOSED
+-> AUTHORIZED
+-> ACTIVE
+-> REVIEWED
+-> ENDED
+
+Protective action does not establish guilt.
+
+
+SAFEGUARDING ASSIGNMENT
+
+ASSIGNED
+-> ACCEPTED
+-> RELEASED
+
+
+SAFEGUARDING REVIEW
+
+OPEN
+-> IN_PROGRESS
+-> COMPLETED
+
+
+SAFEGUARDING ESCALATION
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+
+POST-EVENT REVIEW
+
+OPEN
+-> REVIEWED
+-> CLOSED
+
+
+STATE MUTATION CONTRACT
+
+BEGIN TRANSACTION
+-> SELECT target FOR UPDATE
+-> reload state
+-> verify attributable human actor
+-> verify authorization
+-> verify owner / reviewer
+-> verify rights / dignity boundary
+-> mutate
+-> same-transaction audit
+-> COMMIT
+
+Incompatible concurrent mutation = exactly one winner.
+
+Loser business mutation = zero.
+Loser audit = zero.
+
+Owner preservation = required.
+Reviewer preservation = required.

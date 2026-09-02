@@ -1,0 +1,155 @@
+======================================================================
+ TAMANCARE V8.0 — FULL DEMO
+ DEMO-2R3 — EXISTING RUNTIME RECONCILIATION
+======================================================================
+
+----- 1. BASIC SAFETY -----
+PASS: DEMO COMPOSE EXISTS
+PASS: DOCKER ENGINE RUNNING
+PASS: FRONTEND DIST EXISTS
+
+----- 2. CURRENT DEMO PROJECT -----
+tamancare_v80_full_demo-api-1|Exited (1) 2 minutes ago|
+tamancare_v80_full_demo-postgres-1|Up 2 minutes|5432/tcp
+PASS: EXISTING DEMO PROJECT FOUND
+
+IMPORTANT: NO NON-DEMO CONTAINER WILL BE TOUCHED
+
+----- 3. API PORT CONTRACT -----
+API_BINDING=3100:3000
+PASS: API PORT CONTRACT 3100 -> 3000
+
+----- 4. EXISTING API REUSE CHECK -----
+EXISTING_API_HTTP=000000
+RUNTIME_ACTION=RECONCILE_DEMO_PROJECT
+
+Stopping stale/incomplete DEMO project only...
+ Container tamancare_v80_full_demo-api-1 Stopping 
+ Container tamancare_v80_full_demo-api-1 Stopped 
+ Container tamancare_v80_full_demo-api-1 Removing 
+ Container tamancare_v80_full_demo-api-1 Removed 
+ Container tamancare_v80_full_demo-postgres-1 Stopping 
+ Container tamancare_v80_full_demo-postgres-1 Stopped 
+ Container tamancare_v80_full_demo-postgres-1 Removing 
+ Container tamancare_v80_full_demo-postgres-1 Removed 
+ Network tamancare_v80_full_demo_default Removing 
+ Network tamancare_v80_full_demo_default Removed 
+PASS: STALE DEMO PROJECT STOPPED
+
+Starting isolated demo stack...
+ Image tamancare_v80_full_demo-api Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 574B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 416B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:22-bookworm-slim
+#3 DONE 4.5s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 108B done
+#4 DONE 0.0s
+
+#5 [build 1/6] FROM docker.io/library/node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5
+#5 resolve docker.io/library/node:22-bookworm-slim@sha256:83f487e0a63425e5b4d146fb5e5be574bcbe1b7b843d3ebafdd95eaf7767a7e5 0.0s done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 16.00kB 0.0s done
+#6 DONE 0.0s
+
+#7 [build 4/6] RUN npm ci
+#7 CACHED
+
+#8 [build 2/6] WORKDIR /app
+#8 CACHED
+
+#9 [build 3/6] COPY package.json package-lock.json ./
+#9 CACHED
+
+#10 [runtime 4/5] RUN npm ci --omit=dev  && npm cache clean --force
+#10 CACHED
+
+#11 [build 5/6] COPY . .
+#11 CACHED
+
+#12 [build 6/6] RUN npm run build
+#12 CACHED
+
+#13 [runtime 5/5] COPY --from=build /app/dist ./dist
+#13 CACHED
+
+#14 exporting to image
+#14 exporting layers done
+#14 exporting manifest sha256:bd15bd7e4d7b279383385dd7be1f914c838db614cc695894b61b2858df919310 done
+#14 exporting config sha256:c01bb22db2c0f55d920f67254d6de56f5932c6b5aff1c060ac0e6e05edb59f8e done
+#14 exporting attestation manifest sha256:57eb811d799791bf5ceaadf6be0ac3abf31c573c0356b8cd907fc95efbf39456
+#14 exporting attestation manifest sha256:57eb811d799791bf5ceaadf6be0ac3abf31c573c0356b8cd907fc95efbf39456 0.0s done
+#14 exporting manifest list sha256:d4124432000ca458174576bee03c7e3a2960ca8e518ac98dce9c80ac82833608 0.0s done
+#14 naming to docker.io/library/tamancare_v80_full_demo-api:latest 0.0s done
+#14 unpacking to docker.io/library/tamancare_v80_full_demo-api:latest 0.0s done
+#14 DONE 0.3s
+
+#15 resolving provenance for metadata file
+#15 DONE 0.0s
+ Image tamancare_v80_full_demo-api Built 
+ Network tamancare_v80_full_demo_default Creating 
+ Network tamancare_v80_full_demo_default Created 
+ Container tamancare_v80_full_demo-postgres-1 Creating 
+ Container tamancare_v80_full_demo-postgres-1 Created 
+ Container tamancare_v80_full_demo-api-1 Creating 
+ Container tamancare_v80_full_demo-api-1 Created 
+ Container tamancare_v80_full_demo-postgres-1 Starting 
+ Container tamancare_v80_full_demo-postgres-1 Started 
+ Container tamancare_v80_full_demo-api-1 Starting 
+ Container tamancare_v80_full_demo-api-1 Started 
+PASS: DEMO POSTGRES + API STARTED
+
+----- 5. FINAL CONTAINER STATE -----
+NAMES                                STATUS         PORTS
+tamancare_v80_full_demo-postgres-1   Up 9 seconds   5432/tcp
+RUNNING_DEMO_CONTAINER_COUNT=1
+FAIL: DEMO CONTAINER SET INCOMPLETE
+
+----- 6. API FINAL ACCEPTANCE -----
+API_ROOT_HTTP=000000
+API_HEALTH_HTTP=000000
+FAIL: API HTTP NOT RESPONDING
+WARN: API HEALTH ENDPOINT NOT 2XX
+
+----- 7. FRONTEND PORT -----
+PASS: FREE FRONTEND PORT FOUND
+FRONTEND_PORT=4175
+
+----- 8. FRONTEND PROCESS -----
+WARN: PIDFILE POINTS TO NON-DEMO PROCESS — LEFT UNTOUCHED
+
+----- 10. DATABASE ISOLATION -----
+LOCAL_POSTGRES_COUNT=1
+PASS: LOCAL ISOLATED POSTGRES VERIFIED
+PRODUCTION_DATABASE_WRITE=NO_BY_DEMO_CONTRACT
+
+----- 11. FROZEN PARENT -----
+PASS: FROZEN V8.0 SOURCE UNCHANGED
+
+======================================================================
+ V8.0 FULL DEMO — FINAL RUNTIME RESULT
+======================================================================
+PASS_COUNT=10
+WARN_COUNT=2
+FAIL_COUNT=2
+
+STATUS=V8_FULL_DEMO_RUNTIME_FAILED
+NEXT=STOP_AND_RETURN_OUTPUT
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/v80_full_demo_runtime_reconcile_20260831_033149.txt
+
+IMPORTANT:
+ -> DO NOT START ANOTHER DEMO INSTANCE
+ -> DO NOT RUN MIGRATIONS MANUALLY
+ -> DO NOT MODIFY FROZEN V8.0
+ -> RETURN THIS ENTIRE OUTPUT
+======================================================================

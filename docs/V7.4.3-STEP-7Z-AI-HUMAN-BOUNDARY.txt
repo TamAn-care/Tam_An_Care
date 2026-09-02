@@ -1,0 +1,68 @@
+STEP 7Z — AI / HUMAN BOUNDARY
+
+AI ROLE = ADVISORY ONLY
+
+
+AI MAY
+
+- detect fall-frequency trend
+- detect near-fall trend
+- detect recurrent transfer-assistance pattern
+- detect time-of-day pattern
+- detect location pattern
+- detect possible mobility decline pattern
+- summarize fall timeline
+- summarize factual post-fall observations
+- flag possible mismatch between support plan and observations
+- suggest human fall-risk reassessment
+- suggest human review
+- suggest human escalation
+
+
+AI MAY NOT
+
+- verify official fall-risk assessment
+- change fall-risk classification
+- change mobility plan
+- change transfer-assistance level
+- change assistive-device prescription
+
+- diagnose fracture
+- diagnose head injury
+- diagnose concussion
+- diagnose neurological injury
+
+- prescribe imaging
+- prescribe treatment
+- prescribe medication
+- select PRN
+- hold medication
+- administer medication
+
+- prescribe restraint
+- initiate restraint
+- restrict resident mobility
+
+- decide ambulance activation
+- decide emergency-department transfer
+- decide hospital admission
+
+- resolve fall event
+- close fall event
+- resolve escalation
+
+- mutate another clinical domain
+
+
+AI MAY FLAG RISK.
+AI MAY SUMMARIZE.
+AI MAY SUGGEST HUMAN REVIEW.
+
+AI DOES NOT MAKE CLINICAL OR RIGHTS-RESTRICTING DECISIONS.
+
+HUMAN DECISION REQUIRED = YES
+
+AUTONOMOUS RESTRAINT = FALSE
+AUTONOMOUS MEDICATION ACTION = FALSE
+AUTONOMOUS HOSPITAL TRANSFER = FALSE
+AUTONOMOUS CLINICAL ACTION = FALSE

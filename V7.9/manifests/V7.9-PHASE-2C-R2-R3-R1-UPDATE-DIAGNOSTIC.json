@@ -1,0 +1,16 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2C-R2-R3-R1",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "create_http": 201,
+  "update_http": 500,
+  "direct_sql_exit": 0,
+  "root_cause": "APPLICATION_UPDATE_QUERY_OR_MAPPING_FAILURE_DATE_CONVERSION",
+  "method_sha256": "fe81de9ad3d230f2a31b88f239409088a56c42fb481e77e3d9eaa713e19ee487",
+  "api_log_sha256": "1d04b83de696c8c081745dc7ebac884576c89ba153f1fd6388b6e6103eee70f5",
+  "source_write": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "v77_source_write": false
+}

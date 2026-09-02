@@ -1,0 +1,41 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5B-R3",
+  "status": "PASSED",
+  "decision": "V79_RUNTIME_HANDOFF_INCOMPATIBLE_WITH_PREDECESSOR",
+  "predecessor_mechanism": "REUSE_PHASE5A_RESTORED_RUNTIME",
+  "source_proof": {
+    "decision": "REUSE_PHASE5A_RESTORED_RUNTIME",
+    "signals": {
+      "reads_phase5_restore_container": true,
+      "inspects_existing_container": true,
+      "requires_running_container": true,
+      "pg_dump_inside_5b": false,
+      "pg_restore_inside_5b": false,
+      "docker_run_inside_5b": false,
+      "compares_table_identity": true,
+      "compares_all_table_row_counts": true,
+      "production_fingerprint_before_after": true,
+      "runtime_guard": true,
+      "cleanup_restore_called": false,
+      "phase5_restore_state_removed": false,
+      "phase5_backup_state_removed": false
+    }
+  },
+  "acceptance_contract": {
+    "table_set_equivalent": true,
+    "row_count_difference_tables": 0,
+    "production_database_delta": false
+  },
+  "v79_phase5a_runtime_available": false,
+  "v79_phase5a_backup_available": false,
+  "phase5a_acceptance_preserved": true,
+  "phase5a_rerun_authorized": false,
+  "phase5b_execution_authorized": false,
+  "manual_test_required": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "next_authorized_action": "DESIGN_PHASE5B_ONLY_EQUIVALENT_DISPOSABLE_RUNTIME_RECONSTRUCTION",
+  "created_at": "2026-08-22T06:14:12.059652+00:00"
+}

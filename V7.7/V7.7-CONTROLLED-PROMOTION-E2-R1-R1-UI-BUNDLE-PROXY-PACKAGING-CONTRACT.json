@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-08-21T09:55:01.961798+00:00",
+  "stage": "CONTROLLED_PROMOTION_E2_R1_R1",
+  "status": "PASSED",
+  "correction": {
+    "prior_image_final_acceptance": false,
+    "prior_issue": "EXISTING_DOCKERFILE_COPIED_ONLY_WEB_INDEX_HTML",
+    "new_model": "TEMPORARY_UNTRACKED_DOCKERFILE_PACKAGES_FULL_VITE_DIST"
+  },
+  "v77_source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "frontend": {
+    "source": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.7/workspace/frontend",
+    "build_system": "VITE",
+    "output": "dist",
+    "dist_file_count": 3,
+    "dist_files": {
+      "assets/index-BMb-tSCV.js": "027d92e6aa6e44de11999c521eaec1b2c6a15419ea76e740b5edefb7ede27f62",
+      "assets/index-DlvS4Sti.css": "2f3e27ebdf2e2e9a2df4a0883cd84e8474162aff1ca6c85c64944dd77e5c96fb",
+      "index.html": "f7e495c1b63d0bad4407641a3c95191505c03b17a827f294b7bb52ce121cdbd0"
+    }
+  },
+  "runtime": {
+    "base_image": "nginx:alpine",
+    "html_copy": "COPY dist/ /usr/share/nginx/html/",
+    "nginx_config_source": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/web/nginx/default.conf",
+    "candidate_proxy": "http://v77-e2-api:3000",
+    "tracked_nginx_modified": false,
+    "tracked_dockerfile_created": false,
+    "temporary_build_context_only": true
+  },
+  "authoritative_ui_image": {
+    "tag": "taman-care-v77-e2r1r1-ui:20260821_165444",
+    "image_id": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "complete_dist_packaged": true,
+    "js_present": true,
+    "css_present": true,
+    "candidate_proxy_present": true
+  },
+  "accepted_api_image_id": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+  "v76_change": false,
+  "production_database_write": false,
+  "traffic_cutover": false
+}

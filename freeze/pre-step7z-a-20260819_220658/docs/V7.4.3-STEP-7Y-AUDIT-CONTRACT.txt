@@ -1,0 +1,36 @@
+STEP 7Y — AUDIT CONTRACT
+
+Every successful official safeguarding mutation requires audit.
+
+Audit must be:
+
+- append-only
+- attributable
+- immutable history
+- uniquely sequenced per entity
+- committed in same transaction
+
+Audit must preserve where applicable:
+
+- reporter identity
+- actor identity
+- owner identity
+- reviewer identity
+- protective-action authorizer
+- escalation reviewer
+- event type
+- timestamp
+
+Failed mutation = zero audit.
+
+Unauthorized mutation = zero audit.
+
+Wrong reviewer mutation = zero audit.
+
+Losing concurrent mutation = zero audit.
+
+AI advisory output cannot impersonate:
+- reporter
+- reviewer
+- investigator
+- decision-maker

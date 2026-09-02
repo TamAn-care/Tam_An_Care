@@ -1,0 +1,39 @@
+======================================================================
+ TAMANCARE OPS-2-C — FAST AUTH PROBE 2
+ 1 AUTH GET + 1 AUTH NEGATIVE POST
+ NO SOURCE / SCHEMA / CLEANUP / CONCURRENCY
+======================================================================
+CONTAINER_STATE=running
+IMAGE=sha256:7724367e3398ea1238ab54d012e5b02bf243ce12163117da7a12e4fe9a1d6296
+SUPERVISOR_SESSION_ACTIVE=1
+
+----- REAL REQUEST EXECUTION -----
+AUTH_GET_HTTP=500
+AUTH_GET_BODY={"statusCode":500,"message":"Internal server error"}
+AUTH_NEGATIVE_POST_HTTP=500
+AUTH_NEGATIVE_POST_BODY={"statusCode":500,"message":"Internal server error"}
+RUNNER_EXIT_CODE=0
+PROBE_DB_WRITES=0|0
+
+======================================================================
+ FAST AUTH PROBE 2 — DECISION
+======================================================================
+PROBE_DB_MUTATION=NO
+
+EXPECTED:
+ AUTH_GET_HTTP = 200
+ AUTH_NEGATIVE_POST_HTTP = 400
+ PROBE_DB_WRITES = 0|0
+
+INTERPRETATION:
+ 200 + 400 => AUTH + RESIDENT VALIDATION HEALTHY
+ 500 + 500 => COMMON AUTH PATH FAILURE
+ 200 + 500 => RESIDENT-CONSUMPTION PATH FAILURE
+ OTHER      => CLASSIFY EXACT OUTPUT
+
+SOURCE_REPAIR_AUTHORIZED=NO
+CLEANUP_AUTHORIZED=NO
+OPS_3_AUTHORIZED=NO
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops2_c_fast_auth_probe2_20260830_185421.txt
+STOP — SEND THIS ENTIRE OUTPUT BACK
+======================================================================

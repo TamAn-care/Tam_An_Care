@@ -1,0 +1,194 @@
+{
+  "generated_at": "2026-08-21T01:42:56.763805+00:00",
+  "phase": "V7.6 Phase 4B",
+  "recovery": "R1_INLINE_ANY_BODY",
+  "phase4a_result_hash": "63a3c794326b427486a3a9d58ac3903a03774f34729394ca5943f5f275636110",
+  "mutation_contracts": [
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/assign",
+      "handler": "assign",
+      "body_type": "AssignCareActionInput",
+      "body_variable": "body",
+      "controller": "api/src/care-actions/care-action.controller.ts",
+      "method_evidence": "\n  async assign(\n    @Param('residentId')\n    residentId: string,\n\n    @Param('patternId')\n    patternId: string,\n\n    @Body()\n    body: AssignCareActionInput,\n  ) {\n\n    try {\n\n      const action =\n        await this.service.assign(\n          residentId,\n          patternId,\n          body,\n        );\n\n\n      return {\n        status:\n          'OK',\n\n        data:\n          action,\n      };\n\n\n    } catch (error) {\n\n      return this.handleError(\n        error,\n      );\n\n    }\n\n  }"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/transfer",
+      "handler": "transfer",
+      "body_type": "TransferCareActionInput",
+      "body_variable": "body",
+      "controller": "api/src/care-actions/care-action.controller.ts",
+      "method_evidence": "\n  async transfer(\n    @Param('residentId')\n    residentId: string,\n\n    @Param('patternId')\n    patternId: string,\n\n    @Body()\n    body: TransferCareActionInput,\n  ) {\n\n    try {\n\n      const action =\n        await this.service.transfer(\n          residentId,\n          patternId,\n          body,\n        );\n\n\n      return {\n        status:\n          'OK',\n\n        data:\n          action,\n      };\n\n\n    } catch (error) {\n\n      return this.handleError(\n        error,\n      );\n\n    }\n\n  }"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/start-review",
+      "handler": "startReview",
+      "body_type": "StartCareActionReviewInput",
+      "body_variable": "body",
+      "controller": "api/src/care-actions/care-action.controller.ts",
+      "method_evidence": "\n  async startReview(\n    @Param('residentId')\n    residentId: string,\n\n    @Param('patternId')\n    patternId: string,\n\n    @Body()\n    body:\n      StartCareActionReviewInput,\n  ) {\n\n    try {\n\n      const action =\n        await this.service.startReview(\n          residentId,\n          patternId,\n          body,\n        );\n\n\n      return {\n        status:\n          'OK',\n\n        data:\n          action,\n      };\n\n\n    } catch (error) {\n\n      if (\n        error instanceof Error &&\n        (\n          error.message ===\n            'Care Action must have an assigned human owner before review can start.' ||\n          error.message ===\n            'Care Action must be assigned before review starts.' ||\n          error.message ===\n            'AI or SYSTEM actor cannot start Care Action review.' ||\n          error.message ===\n            'Actor is not authorized to start review for this Care Action.' ||\n          error.message ===\n            'Only a PENDING Care Action can start review.'\n        )\n      ) {\n\n        throw new HttpException(\n          {\n            statusCode: 400,\n            error: 'Bad Request',\n            message: error.message,\n          },\n          400,\n        );\n\n      }\n\n      return this.handleError(\n        error,\n      );\n\n    }\n\n  }"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/resolve",
+      "handler": "resolve",
+      "body_type": "ResolveCareActionInput",
+      "body_variable": "body",
+      "controller": "api/src/care-actions/care-action.controller.ts",
+      "method_evidence": "\n  async resolve(\n    @Param('residentId')\n    residentId: string,\n\n    @Param('patternId')\n    patternId: string,\n\n    @Body()\n    body: ResolveCareActionInput,\n  ) {\n\n    try {\n\n      const action =\n        await this.service.resolve(\n          residentId,\n          patternId,\n          body,\n        );\n\n\n      return {\n        status:\n          'OK',\n\n        data:\n          action,\n      };\n\n\n    } catch (error) {\n\n      return this.handleError(\n        error,\n      );\n\n    }\n\n  }"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/reopen",
+      "handler": "reopen",
+      "body_type": "ReopenCareActionInput",
+      "body_variable": "body",
+      "controller": "api/src/care-actions/care-action.controller.ts",
+      "method_evidence": "\n  async reopen(\n    @Param('residentId')\n    residentId: string,\n\n    @Param('patternId')\n    patternId: string,\n\n    @Body()\n    body: ReopenCareActionInput,\n  ) {\n\n    try {\n\n      const action =\n        await this.service.reopen(\n          residentId,\n          patternId,\n          body,\n        );\n\n\n      return {\n        status:\n          'OK',\n\n        data:\n          action,\n      };\n\n\n    } catch (error) {\n\n      return this.handleError(\n        error,\n      );\n\n    }\n\n  }\n\n}\n"
+    },
+    {
+      "method": "POST",
+      "route": "/api/warning-reviews",
+      "handler": "review",
+      "body_type": "any",
+      "body_variable": "body",
+      "controller": "api/src/warning-reviews/warning-review.controller.ts",
+      "method_evidence": "\n  async review(\n    @Body() body: any,\n  ) {\n\n    try {\n\n      return await this.service\n        .review(body);\n\n    } catch (error) {\n\n      const message =\n        error instanceof Error\n          ? error.message\n          : 'Warning review failed.';\n\n      if (\n        message.includes(\n          'Resident context not found',\n        )\n      ) {\n        throw new HttpException(\n          message,\n          HttpStatus.NOT_FOUND,\n        );\n      }\n\n      if (\n        message.includes('required') ||\n        message.includes('Invalid') ||\n        message.includes(\n          'already been reviewed',\n        )\n      ) {\n        throw new HttpException(\n          message,\n          HttpStatus.BAD_REQUEST,\n        );\n      }\n\n      throw error;\n    }\n  }"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-plan-governance/:carePlanId/:action",
+      "handler": "execute",
+      "body_type": "GovernanceBody",
+      "body_variable": "body",
+      "controller": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+      "method_evidence": "\n  async execute(\n    @Param('carePlanId')\n    carePlanId: string,\n\n    @Param('action')\n    rawAction: string,\n\n    @Body()\n    body: GovernanceBody,\n  ) {\n\n    const action =\n      String(\n        rawAction ?? '',\n      )\n        .trim()\n        .toUpperCase();\n\n\n    if (\n      !CARE_PLAN_GOVERNANCE_ACTIONS\n        .includes(\n          action as\n            CarePlanGovernanceAction,\n        )\n    ) {\n      throw new BadRequestException(\n        'Unsupported Care Plan governance action.',\n      );\n    }\n\n\n    try {\n      const data =\n        await this.service\n          .execute(\n            carePlanId,\n            action as\n              CarePlanGovernanceAction,\n            String(\n              body?.actorId ?? '',\n            ),\n            String(\n              body?.actorRole ?? '',\n            ),\n          );\n\n      return {\n        status:\n          'OK',\n\n        data,\n      };\n    } catch (error) {\n\n      if (\n        error instanceof\n        HttpException\n      ) {\n        throw error;\n      }\n\n      const message =\n        error instanceof Error\n          ? error.message\n          : String(error);\n\n\n      if (\n        message.includes(\n          'not found',\n        )\n      ) {\n        throw new NotFoundException(\n          message,\n        );\n      }\n\n\n      const businessErrors = [\n        'required',\n        'cannot govern',\n        'not authorized',\n        'Only a DRAFT',\n        'Only an ACTIVE',\n        'Only a SUSPENDED',\n        'Only a DRAFT, ACTIVE, or SUSPENDED',\n        'Unsupported Care Plan governance action',\n      ];\n\n\n      if (\n        businessErrors.some(\n          term =>\n            message.includes(\n              term,\n            ),\n        )\n      ) {\n        throw new BadRequestException(\n          message,\n        );\n      }\n\n\n      throw new HttpException(\n        {\n          statusCode:\n            HttpStatus.INTERNAL_SERVER_ERROR,\n\n          error:\n            'Internal Server Error',\n\n          message:\n            'Unable to process Care Plan governance request.',\n        },\n        HttpStatus.INTERNAL_SERVER_ERROR,\n      );\n    }\n  }\n}\n"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-task-execution/:careTaskId/:action",
+      "handler": "execute",
+      "body_type": "CareTaskExecutionInput",
+      "body_variable": "input",
+      "controller": "api/src/care-task-execution/care-task-execution.controller.ts",
+      "method_evidence": "\n  async execute(\n    @Param('careTaskId')\n    careTaskId:\n      string,\n\n    @Param('action')\n    action:\n      string,\n\n    @Body()\n    input:\n      CareTaskExecutionInput,\n  ) {\n\n    try {\n\n      const data =\n        await this.service\n          .execute(\n            careTaskId,\n            action,\n            input,\n          );\n\n      return {\n        status:\n          'OK',\n\n        data,\n      };\n\n    } catch (\n      error:\n        unknown\n    ) {\n\n      if (\n        error instanceof\n        HttpException\n      ) {\n        throw error;\n      }\n\n      const message =\n        error instanceof\n          Error\n          ? error.message\n          : String(error);\n\n\n      if (\n        message.includes(\n          'not found',\n        )\n      ) {\n        throw new HttpException(\n          {\n            statusCode:\n              HttpStatus.NOT_FOUND,\n\n            error:\n              'Not Found',\n\n            message,\n          },\n\n          HttpStatus.NOT_FOUND,\n        );\n      }\n\n\n      const businessTerms = [\n        'required',\n        'Only a ',\n        'Only an ',\n        'not authorized',\n        'cannot mutate',\n        'human owner',\n        'already been accepted',\n        'must be accepted',\n        'Unsupported Care Task action',\n      ];\n\n\n      if (\n        businessTerms.some(\n          term =>\n            message.includes(\n              term,\n            ),\n        )\n      ) {\n        throw new HttpException(\n          {\n            statusCode:\n              HttpStatus.BAD_REQUEST,\n\n            error:\n              'Bad Request',\n\n            message,\n          },\n\n          HttpStatus.BAD_REQUEST,\n        );\n      }\n\n\n      throw new HttpException(\n        {\n          statusCode:\n            HttpStatus.INTERNAL_SERVER_ERROR,\n\n          error:\n            'Internal Server Error',\n\n          message:\n            'Unable to process Care Task request.',\n        },\n\n        HttpStatus.INTERNAL_SERVER_ERROR,\n      );\n    }\n  }\n}\n"
+    }
+  ],
+  "named_dto_definitions": {
+    "AssignCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface AssignCareActionInput {\n  assignedTo: string;\n  assignedRole: string;\n\n  priority: CareActionPriority;\n  dueAt: Date | null;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface TransferCareActionInput {\n  assignedTo: string;\n  assignedRole: string;\n\n  priority: CareActionPriority;\n  dueAt: Date | null;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface StartCareActionReviewInput {\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "TransferCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface TransferCareActionInput {\n  assignedTo: string;\n  assignedRole: string;\n\n  priority: CareActionPriority;\n  dueAt: Date | null;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface StartCareActionReviewInput {\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "StartCareActionReviewInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface StartCareActionReviewInput {\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "ResolveCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface ResolveCareActionInput {\n  careNote: string;\n  resolutionReason: string;\n\n  actorId: string | null;\n  actorRole: string | null;\n}\n\n\nexport interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "ReopenCareActionInput": [
+      {
+        "file": "api/src/care-actions/care-action.types.ts",
+        "snippet": "export interface ReopenCareActionInput {\n  actorId: string | null;\n  actorRole: string | null;\n\n  reopenReason: string | null;\n}\n\nexport interface CareActionDetails {\n  action: CareAction;\n\n  transferHistory:\n    CareActionTransfer[];\n\n  auditTrail:\n    CareActionAuditEvent[];\n}\n\n"
+      }
+    ],
+    "GovernanceBody": [
+      {
+        "file": "api/src/care-plan-governance/care-plan-governance.controller.ts",
+        "snippet": "interface GovernanceBody {\n  actorId?: string;\n  actorRole?: string;\n}\n\n\n@Controller(\n  'api/care-plan-governance',\n)\nexport class CarePlanGovernanceController {\n\n  constructor(\n    private readonly service:\n      CarePlanGovernanceService,\n  ) {}\n\n\n  @Post(\n    ':carePlanId/:action',\n  )\n  async execute(\n    @Param('carePlanId')\n    carePlanId: string,\n\n    @Param('action')\n    rawAction: string,\n\n    @Body()\n    body: GovernanceBody,\n  ) {\n\n    const action =\n      String(\n        rawAction ?? '',\n      )\n        .trim()\n        .toUpperCase();\n\n\n    if (\n      !CARE_PLAN_GOVERNANCE_ACTIONS\n        .includes(\n          action as\n            CarePlanGovernanceAction,\n        )\n    ) {\n      throw new BadRequestException(\n        'Unsupported Care Plan governance action.',\n      );\n    }\n\n\n    try {\n      const data =\n        await this.service\n          .execute(\n            carePlanId,\n            action as\n              CarePlanGovernanceAction,\n            String(\n              body?.actorId ?? '',\n            ),\n            String(\n              body?.actorRole ?? '',\n            ),\n          );\n\n      return {\n        status:\n          'OK',\n\n        data,\n      };\n    } catch (error) {\n\n      if (\n        error instanceof\n        HttpException\n      ) {\n        throw error;\n      }\n\n      const message =\n        error instanceof Error\n          ? error.message\n          : String(error);\n\n\n      if (\n        message.includes(\n          'not found',\n        )\n      ) {\n        throw new NotFoundException(\n          message,\n        );\n      }\n\n\n      const businessErrors = [\n        'required',\n        'cannot govern',\n        'not authorized',\n        'Only a DRAFT',\n        'Only an ACTIVE',\n        'Only a SUSPENDED',\n        'Only a DRAFT, ACTIVE, or SUSPENDED',\n        'Unsupported Care Plan governance action',\n      ];\n\n\n      if (\n        businessErrors.some(\n          term =>\n            message.includes(\n              term,\n            ),\n        )\n      ) {\n        throw new BadRequestException(\n          message,\n        );\n      }\n\n\n      throw new HttpException(\n        {\n          statusCode:\n            HttpStatus.INTERNAL_SERVER_ERROR,\n\n          error:\n            'Internal Server Error',\n\n          message:\n            'Unable to process Care Plan governance request.',\n        },\n        HttpStatus.INTERNAL_SERVER_ERROR,\n      );\n    }\n  }\n}\n"
+      }
+    ],
+    "CareTaskExecutionInput": [
+      {
+        "file": "api/src/care-task-execution/care-task-execution.types.ts",
+        "snippet": "export interface CareTaskExecutionInput {\n\n  actorId:\n    string | null;\n\n  actorRole:\n    string | null;\n\n  assigneeId?:\n    string | null;\n\n  assigneeRole?:\n    string | null;\n\n  completionNote?:\n    string | null;\n\n  exceptionReason?:\n    string | null;\n}\n"
+      }
+    ]
+  },
+  "warning_review_inline_contract": {
+    "route": "/api/warning-reviews",
+    "method": "POST",
+    "body_type": "any",
+    "body_variable": "body",
+    "fields_directly_observed": [],
+    "controller": "api/src/warning-reviews/warning-review.controller.ts",
+    "method_evidence": "\n  async review(\n    @Body() body: any,\n  ) {\n\n    try {\n\n      return await this.service\n        .review(body);\n\n    } catch (error) {\n\n      const message =\n        error instanceof Error\n          ? error.message\n          : 'Warning review failed.';\n\n      if (\n        message.includes(\n          'Resident context not found',\n        )\n      ) {\n        throw new HttpException(\n          message,\n          HttpStatus.NOT_FOUND,\n        );\n      }\n\n      if (\n        message.includes('required') ||\n        message.includes('Invalid') ||\n        message.includes(\n          'already been reviewed',\n        )\n      ) {\n        throw new HttpException(\n          message,\n          HttpStatus.BAD_REQUEST,\n        );\n      }\n\n      throw error;\n    }\n  }",
+    "contract_mode": "OPAQUE_JSON_BODY"
+  },
+  "implementation_contracts": [
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/assign",
+      "handler": "assign",
+      "body_type": "AssignCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/transfer",
+      "handler": "transfer",
+      "body_type": "TransferCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/start-review",
+      "handler": "startReview",
+      "body_type": "StartCareActionReviewInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/resolve",
+      "handler": "resolve",
+      "body_type": "ResolveCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-actions/:residentId/:patternId/reopen",
+      "handler": "reopen",
+      "body_type": "ReopenCareActionInput",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/warning-reviews",
+      "handler": "review",
+      "body_type": "any",
+      "contract_mode": "OPAQUE_JSON_BODY"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-plan-governance/:carePlanId/:action",
+      "handler": "execute",
+      "body_type": "GovernanceBody",
+      "contract_mode": "NAMED_DTO"
+    },
+    {
+      "method": "POST",
+      "route": "/api/care-task-execution/:careTaskId/:action",
+      "handler": "execute",
+      "body_type": "CareTaskExecutionInput",
+      "contract_mode": "NAMED_DTO"
+    }
+  ],
+  "expected_mutation_count": 8,
+  "production_change": "NO"
+}

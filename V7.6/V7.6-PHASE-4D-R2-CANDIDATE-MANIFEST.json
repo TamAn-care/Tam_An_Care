@@ -1,0 +1,21 @@
+{
+  "generated_at": "2026-08-21T03:51:09.785443+00:00",
+  "release": "V7.6",
+  "phase": "4D-R2",
+  "controller_backup_hash": "48a46b24b75c99ba15e680d9dcf7dd1be8c3ee57f5d4811a46f3887840c562d5",
+  "patched_controller_hash": "73f7b8c9be4f33b6a4c0bceb4ac6d9b73a5c23d9c69b323fb6c86d17c3dcc66c",
+  "candidate_image": "taman-care-v76-warning-auth-candidate:latest",
+  "candidate_image_id": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+  "warning_security": {
+    "no_actor": 401,
+    "supervisor": 201,
+    "caregiver": 201,
+    "impersonation": 403,
+    "persisted_rows": 2
+  },
+  "existing_security": {
+    "staff_no_actor": 401,
+    "access_no_actor": 401
+  },
+  "production_change": "NO"
+}

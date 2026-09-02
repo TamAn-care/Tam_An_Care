@@ -1,0 +1,95 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-3 G2-R2
+ MINIMAL KPI REPAIR + DEPENDENCY RECOVERY + BUILD
+ NO TSCONFIG / SCHEMA / DATABASE MUTATION
+======================================================================
+PASS: G2-R1 AUTHORITY
+
+----- PRE-REPAIR AUTHORITY -----
+KPI_SERVICE_BEFORE=1b43ca3141fdbe02847b8e78495904fe03052c071ad88c386170f6f4c35dc360
+CONTROLLER_BEFORE=fa611fe5d47fccab7b19f5faa02d9adc2459c2ba8985dd27f962329a9fc4a651
+MODULE_BEFORE=eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66
+TSCONFIG_BEFORE=7ec543c24bb3ed6721aec14f896079f652e21e8e3290dc13d4400b69c7e9815a
+PASS: EXACT G2 FAILED STATE
+
+----- MINIMAL KPI REPAIR -----
+KPI_SERVICE_AFTER=8a7dd336bafb20f061ba5d4ce2cdde1a265ddc23871f8cf204c482b3d650e699
+PASS: KPI SERVICE MINIMALLY REPAIRED
+PASS: OBSOLETE METHOD REMOVED
+PASS: CANONICAL SQL PREDICATE REUSED
+PASS: RESIDENT ALIAS AVAILABLE TO PREDICATE
+PASS: CONTROLLER PRESERVED
+PASS: MODULE PRESERVED
+PASS: TSCONFIG PRESERVED
+
+----- DEPENDENCY AUTHORITY -----
+PACKAGE_TYPESCRIPT=6.0.2
+LOCK_TYPESCRIPT=6.0.2
+LOCAL_TYPESCRIPT_BEFORE=5.9.3
+PASS: LOCKFILE TYPESCRIPT AUTHORITY
+DEPENDENCY_DRIFT=YES
+DEPENDENCY_RECOVERY=npm_ci
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 'taman-care-v7-health-trend@7.3.2',
+npm warn EBADENGINE   required: { node: '>=22 <23' },
+npm warn EBADENGINE   current: { node: 'v24.19.0', npm: '11.17.0' }
+npm warn EBADENGINE }
+
+added 223 packages, and audited 224 packages in 6s
+
+69 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm warn allow-scripts 1 package has install scripts not yet covered by allowScripts:
+npm warn allow-scripts   @scarf/scarf@1.4.0 (postinstall: node ./report.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+PASS: NPM CI DEPENDENCY RECOVERY
+LOCAL_TYPESCRIPT_AFTER=6.0.2
+PASS: LOCAL TYPESCRIPT MATCHES LOCKFILE
+
+----- BUILD -----
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: API BUILD
+
+----- SOURCE REGRESSION -----
+PASS: PRESERVED resident-consumption.service.ts
+PASS: PRESERVED inventory-ledger.service.ts
+PASS: PRESERVED inventory-lot.service.ts
+PASS: TSCONFIG UNCHANGED
+
+----- DATABASE IMMUTABILITY -----
+DATABASE_BASELINE=1|1|0|0|0|0
+PASS: DATABASE UNCHANGED
+
+======================================================================
+ OPS-3 G2-R2 DECISION
+======================================================================
+PASS_COUNT=18
+FAIL_COUNT=0
+KPI_SERVICE_FINAL_HASH=8a7dd336bafb20f061ba5d4ce2cdde1a265ddc23871f8cf204c482b3d650e699
+CONTROLLER_FINAL_HASH=fa611fe5d47fccab7b19f5faa02d9adc2459c2ba8985dd27f962329a9fc4a651
+MODULE_FINAL_HASH=eaff159ed49bda57425e20e3b19dca77933ea5bc255ca18f14e0070e29dfbe66
+TSCONFIG_FINAL_HASH=7ec543c24bb3ed6721aec14f896079f652e21e8e3290dc13d4400b69c7e9815a
+
+STATUS: OPS-3 G2 SOURCE IMPLEMENTATION + BUILD PASSED
+ROOT_CAUSE_1=INVALID_ASSUMED_RESIDENT_SCOPE_METHOD
+REPAIR_1=CANONICAL_SQL_PREDICATE_REUSED
+ROOT_CAUSE_2=LOCAL_TYPESCRIPT_DEPENDENCY_DRIFT
+REPAIR_2=LOCKFILE_DEPENDENCY_RECOVERY
+TSCONFIG_REPAIR=NO
+SCHEMA_MIGRATION=NO
+DATABASE_MUTATION=NO
+SECOND_LEDGER=NO
+HARD_RESIDENT_MAX=NONE
+G2=PASS_CLOSED
+NEXT=OPS_3_G3_FUNCTIONAL_ACCEPTANCE
+
+RESULT_FILE=/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V8.0/results/ops3_g2_r2_minimal_repair_build_20260830_190656.txt
+STOP — SEND THIS ENTIRE OUTPUT BACK
+DO NOT RUN G3 YET
+======================================================================

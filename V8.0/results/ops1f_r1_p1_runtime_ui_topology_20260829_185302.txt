@@ -1,0 +1,361 @@
+
+======================================================================
+TAMANCARE — OPS-1-F-R1-P1 — RUNTIME UI TOPOLOGY DISCOVERY
+======================================================================
+MODE=READ_ONLY
+SOURCE_PATCH=NO
+DB_MUTATION=NO
+NPM_INSTALL=NO
+RUNTIME_RESTART=NO
+MASTER_3000_TOUCH=NO
+
+======================================================================
+1. ACCEPTED SOURCE LOCK
+======================================================================
+API_TREE=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API BASELINE
+PASS: FRONTEND BASELINE
+
+======================================================================
+2. ACCEPTED BACKEND RUNTIMES
+======================================================================
+HEALTH_3000=200
+HEALTH_3103=200
+HEALTH_3104=200
+HEALTH_3105=200
+HEALTH_3106=200
+HEALTH_3107=200
+HEALTH_3108=200
+
+======================================================================
+3. LISTENING TCP PORTS
+======================================================================
+--- LSOF LISTEN ---
+COMMAND    PID  USER   FD   TYPE             DEVICE SIZE/OFF NODE NAME
+ControlCe  443 anhha    8u  IPv4 0xaa6e794b1a1c3af2      0t0  TCP *:7000 (LISTEN)
+ControlCe  443 anhha    9u  IPv6 0xfb9796024e11382e      0t0  TCP *:7000 (LISTEN)
+ControlCe  443 anhha   10u  IPv4 0x8be9ba283920073d      0t0  TCP *:5000 (LISTEN)
+ControlCe  443 anhha   11u  IPv6 0x1ca42b9875c937b4      0t0  TCP *:5000 (LISTEN)
+rapportd   454 anhha    9u  IPv4 0x13def2e1f41120b2      0t0  TCP *:54769 (LISTEN)
+rapportd   454 anhha   10u  IPv6  0x521ad4834827e6b      0t0  TCP *:54769 (LISTEN)
+com.docke 1478 anhha   98u  IPv4 0x4fe6eddddfd9b539      0t0  TCP 127.0.0.1:3103 (LISTEN)
+com.docke 1478 anhha  101u  IPv4 0xb9dc93761d70a044      0t0  TCP 127.0.0.1:3104 (LISTEN)
+com.docke 1478 anhha  120u  IPv4 0x15f9817514e58eba      0t0  TCP 127.0.0.1:3107 (LISTEN)
+com.docke 1478 anhha  124u  IPv4 0x47d5404f7f33e78d      0t0  TCP 127.0.0.1:3105 (LISTEN)
+com.docke 1478 anhha  130u  IPv6 0xb9e455670c03ee48      0t0  TCP *:3000 (LISTEN)
+com.docke 1478 anhha  131u  IPv4 0xfbdb242e676401b2      0t0  TCP 127.0.0.1:3102 (LISTEN)
+com.docke 1478 anhha  132u  IPv4 0xc962f863da071afe      0t0  TCP 127.0.0.1:3106 (LISTEN)
+com.docke 1478 anhha  140u  IPv6  0x364b417c7d6bfba      0t0  TCP *:3108 (LISTEN)
+
+======================================================================
+4. NODE / VITE / STATIC SERVER PROCESSES
+======================================================================
+--- PROCESS DISCOVERY ---
+_windowserver      184  17.9  0.7 413980976  60608   ??  Ss   Fri03PM 115:52.20 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer -daemon
+_appleevents       317   0.1  0.1 426951200   4544   ??  Ss   Fri03PM   0:00.59 /System/Library/CoreServices/appleeventsd --server
+anhha             3669   0.1  0.3 1595695872  26992   ??  S    Fri06PM   1:35.59 /Applications/Zalo.app/Contents/Frameworks/Zalo Helper (Renderer).app/Contents/MacOS/Zalo Helper (Renderer) --type=renderer --user-data-dir=/Users/anhha/Library/Application Support/ZaloData --app-path=/Applications/Zalo.app/Contents/Resources/app.asar --no-sandbox --no-zygote --node-integration-in-worker --lang=en-US --num-raster-threads=4 --enable-zero-copy --enable-gpu-memory-buffer-compositor-resources --enable-main-frame-before-activation --renderer-client-id=6 --time-ticks-at-unix-epoch=-1787913223140979 --launch-time-ticks=2340471876 --shared-files --field-trial-handle=1718379636,r,1817400857134150255,4969788063357326319,131072 --enable-features=JXL --disable-features=SpareRendererForSitePerProcess
+root              2562   0.0  0.0 426949568   4096   ??  Ss    6:49PM   0:00.14 /System/Library/CoreServices/osanalyticshelper server-init
+anhha             3670   0.0  0.2 1587265360  13024   ??  S    Fri06PM   0:04.64 /Applications/Zalo.app/Contents/Frameworks/Zalo Helper.app/Contents/MacOS/Zalo Helper --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --user-data-dir=/Users/anhha/Library/Application Support/ZaloData --shared-files --field-trial-handle=1718379636,r,1817400857134150255,4969788063357326319,131072 --enable-features=JXL --disable-features=SpareRendererForSitePerProcess
+anhha             1707   0.0  0.0 412117952   1408   ??  S    Fri04PM   0:05.45 /Applications/Docker.app/Contents/Resources/cli-plugins/docker-agent serve api --listen unix:///Users/anhha/Library/Containers/com.docker.docker/Data/docker-agent.sock --data-dir /Users/anhha/Library/Containers/com.docker.docker/Data/cagent --models-gateway https://ai-backend-service.docker.com/proxy/gordon-light?origin=desktop&desktopVersion=4.86.0&gordonTag=v11-light --mcp-oauth-redirect-uri https://ai-backend-service.docker.com/gordon/mcp-oauth/callback https://ai-backend-service.docker.com/proxy/gordon-agent?gordonTag=v11-light&desktopVersion=4.86.0&origin=desktop --pull-interval 60
+root              1330   0.0  0.1 426950112   5072   ??  Ss   Fri03PM   0:00.28 /System/Library/CoreServices/SubmitDiagInfo server-init
+root               847   0.0  0.0 426916000   2400   ??  Ss   Fri03PM   0:00.04 /System/Library/CoreServices/CrashReporterSupportHelper server-init
+anhha              502   0.0  0.1 426952192   6192   ??  S    Fri03PM   0:01.17 /usr/libexec/ContinuityCaptureAgent server
+_windowserver      228   0.0  0.0 426916496   1184   ??  S    Fri03PM   0:01.80 /usr/sbin/distnoted agent
+anhha             3117   0.0  0.0 410734416   1648 s000  S+    6:53PM   0:00.00 grep -E [n]ode|[v]ite|[n]pm|[p]ython.*http.server|[s]erve
+root              3058   0.0  0.1 426964992   9680   ??  Ss    6:53PM   0:00.07 /usr/sbin/systemsoundserverd
+
+======================================================================
+5. DOCKER RUNTIME TOPOLOGY
+======================================================================
+NAMES                                     IMAGE                              PORTS                                         STATUS
+tamancare_ops1e_rta2                      tamancare_ops1e_rta2:acceptance    0.0.0.0:3108->3000/tcp, [::]:3108->3000/tcp   Up 2 hours
+tamancare_ops1c_r1                        tamancare-ops1c-r5:local           127.0.0.1:3107->3107/tcp                      Up 3 hours
+tamancare_ops1b_r4b_retest                tamancare-ops1b-r4b-r2:local       127.0.0.1:3106->3106/tcp                      Up 3 hours
+tamancare_ops1b_r4_create                 tamancare-ops1b-r4:local           127.0.0.1:3105->3105/tcp                      Up 3 hours
+tamancare_ops1b_dev_authority             tamancare-ops1b-acceptance:local   127.0.0.1:3104->3104/tcp                      Up 4 hours
+tamancare_ops1b_acceptance_r3             tamancare-ops1b-acceptance:local   127.0.0.1:3103->3103/tcp                      Up 4 hours
+tamancare_ops1b_acceptance_r1             tamancare-ops1b-acceptance:local   127.0.0.1:3102->3102/tcp                      Up 4 hours
+tamancare_v7_4_3_development-api-1        tamancare_v7_4_3_development-api   0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   Up 27 hours
+tamancare_v7_4_3_development-postgres-1   postgres:16                        5432/tcp                                      Up 27 hours
+
+======================================================================
+6. FRONTEND CONFIGURATION
+======================================================================
+
+----- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/vite.config.ts -----
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    host: '127.0.0.1'
+  },
+  preview: {
+    host: '127.0.0.1'
+  }
+});
+
+----- /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/vite.config.js -----
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+export default defineConfig({
+    plugins: [react()],
+    server: {
+        host: '127.0.0.1'
+    },
+    preview: {
+        host: '127.0.0.1'
+    }
+});
+
+======================================================================
+7. API CLIENT BASE URL CONTRACT
+======================================================================
+import type {
+  HumanActorSession,
+} from '../types/actor';
+
+import {
+  ApiError,
+  vietnameseApiMessage,
+} from './errors';
+
+const DEFAULT_API_BASE =
+  'http://127.0.0.1:3100';
+
+export const API_BASE_URL =
+  (
+    import.meta.env
+      .VITE_API_BASE_URL as string |
+      undefined
+  )?.replace(/\/$/, '') ||
+  DEFAULT_API_BASE;
+
+export interface RequestOptions
+  extends RequestInit {
+  actor?: HumanActorSession | null;
+  timeoutMs?: number;
+}
+
+export async function apiRequest<T>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<T> {
+  const {
+    actor,
+    timeoutMs = 10000,
+    headers,
+    ...init
+  } = options;
+
+  const controller =
+    new AbortController();
+
+  const timeout =
+    window.setTimeout(
+      () => controller.abort(),
+      timeoutMs,
+    );
+
+  try {
+    const requestHeaders =
+      new Headers(headers);
+
+    requestHeaders.set(
+      'Accept',
+      'application/json',
+    );
+
+    if (
+      init.body &&
+      !requestHeaders.has('Content-Type')
+    ) {
+      requestHeaders.set(
+        'Content-Type',
+        'application/json',
+      );
+    }
+
+    if (actor) {
+      requestHeaders.set(
+        'x-actor-id',
+        actor.actorId,
+      );
+
+      requestHeaders.set(
+        'x-actor-role',
+        actor.actorRole,
+      );
+    }
+
+    const response =
+      await fetch(
+        `${API_BASE_URL}${path}`,
+        {
+          ...init,
+          headers: requestHeaders,
+          signal: controller.signal,
+        },
+      );
+
+    if (!response.ok) {
+      throw new ApiError(
+        response.status,
+        vietnameseApiMessage(
+          response.status,
+        ),
+      );
+    }
+
+    const contentType =
+      response.headers.get(
+        'content-type',
+      );
+
+    if (
+      contentType?.includes(
+        'application/json',
+      )
+    ) {
+      return await response.json() as T;
+    }
+
+    return undefined as T;
+  } catch (error) {
+    if (
+      error instanceof ApiError
+    ) {
+      throw error;
+    }
+
+    if (
+      error instanceof DOMException &&
+      error.name === 'AbortError'
+    ) {
+      throw new Error(
+        'Yêu cầu tới hệ thống đã quá thời gian chờ.',
+      );
+    }
+
+    throw new Error(
+      'Không thể kết nối tới hệ thống. Vui lòng kiểm tra kết nối.',
+    );
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/features/health-reports/healthReportsApi.ts:6:  API_BASE_URL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/features/health-reports/healthReportsApi.ts:149:    `${API_BASE_URL}/health-reports/${encodeURIComponent(id)}/pdf`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/features/system-status/SystemStatusPage.tsx:2:  API_BASE_URL,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/features/system-status/SystemStatusPage.tsx:20:        <p>{API_BASE_URL}</p>
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/client.ts:10:const DEFAULT_API_BASE =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/client.ts:11:  'http://127.0.0.1:3100';
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/client.ts:13:export const API_BASE_URL =
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/client.ts:16:      .VITE_API_BASE_URL as string |
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/client.ts:19:  DEFAULT_API_BASE;
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/src/api/client.ts:80:        `${API_BASE_URL}${path}`,
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/vite.config.js:6:        host: '127.0.0.1'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/vite.config.js:9:        host: '127.0.0.1'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/vite.config.ts:7:    host: '127.0.0.1'
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/vite.config.ts:10:    host: '127.0.0.1'
+
+======================================================================
+8. CURRENT HTTP SURFACE PROBE
+======================================================================
+PORT_3000_ROOT=404
+PORT_3000_OPERATIONS=404
+PORT_3103_ROOT=401
+PORT_3103_OPERATIONS=401
+PORT_3104_ROOT=404
+PORT_3104_OPERATIONS=404
+PORT_3105_ROOT=404
+PORT_3105_OPERATIONS=404
+PORT_3106_ROOT=404
+PORT_3106_OPERATIONS=404
+PORT_3107_ROOT=404
+PORT_3107_OPERATIONS=404
+PORT_3108_ROOT=404
+PORT_3108_OPERATIONS=404
+PORT_4173_ROOT=000
+PORT_4173_OPERATIONS=000
+PORT_5173_ROOT=000
+PORT_5173_OPERATIONS=000
+PORT_8080_ROOT=000
+PORT_8080_OPERATIONS=000
+
+======================================================================
+9. DIST ACCEPTANCE
+======================================================================
+PASS: dist/index.html EXISTS
+
+--- DIST TOP LEVEL ---
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/assets/index-4_LYDINe.css
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/assets/index-BTzJ8x1q.js
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/branding/tam-an-logo-master.png
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/favicon.png
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/icons/tam-an-192.png
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/icons/tam-an-512.png
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/icons/tam-an-apple-touch-icon.png
+/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/frontend/dist/index.html
+
+--- BUILT OPERATIONS SIGNALS ---
+PASS: DIST SIGNAL = Công việc vận hành
+PASS: DIST SIGNAL = Vận hành chăm sóc
+PASS: DIST SIGNAL = Ghi nhận công việc
+PASS: DIST SIGNAL = Chi tiết
+PASS: DIST SIGNAL = CARE_TASK_COMPLETION
+PASS: DIST SIGNAL = MANUAL_OPERATION
+
+======================================================================
+10. NO-DEPENDENCY STATIC SERVING OPTIONS
+======================================================================
+python3=/usr/bin/python3
+node=/usr/local/bin/node
+npm=/usr/local/bin/npm
+npx=/usr/local/bin/npx
+
+NOTE:
+ -> this gate does NOT start a frontend server
+ -> this gate only determines safest isolated runtime method
+
+======================================================================
+11. FINAL SOURCE IMMUTABILITY
+======================================================================
+API_TREE_AFTER=d62ada9f1ef95e11257b8178e0659e424a83a1af990f5d9cd2e5b813d3e803be
+FE_TREE_AFTER=371fc01dfd89b4f9993cb93cf87b3b695fc5acd26f0517767356aafd110b8abf
+PASS: API UNCHANGED
+PASS: FRONTEND UNCHANGED
+
+======================================================================
+12. FINAL RUNTIME PRESERVATION
+======================================================================
+HEALTH_3000_AFTER=200
+HEALTH_3103_AFTER=200
+HEALTH_3104_AFTER=200
+HEALTH_3105_AFTER=200
+HEALTH_3106_AFTER=200
+HEALTH_3107_AFTER=200
+HEALTH_3108_AFTER=200
+
+======================================================================
+13. CLASSIFICATION
+======================================================================
+STATUS: OPS-1-F-R1-P1 RUNTIME UI TOPOLOGY DISCOVERY PASSED
+
+NEXT:
+ -> review actual frontend/backend topology
+ -> choose isolated UI runtime without replacing accepted runtimes
+ -> verify /operations
+ -> verify actor propagation
+ -> verify bounded GET/list/detail
+ -> then controlled mutation acceptance
+
+DO NOT:
+ -> start random frontend port
+ -> restart :3000
+ -> restart :3108
+ -> npm install
+ -> start OPS-1-G

@@ -1,0 +1,12 @@
+{
+  "generated_at": "2026-08-21T02:47:02.492429+00:00",
+  "release": "V7.6",
+  "field": "careNote",
+  "typescript_string_proof": true,
+  "body_use_proof": false,
+  "parameter_use_proof": true,
+  "text_validation_proof": true,
+  "test_value": "PHASE4C_WARNING_REVIEW_CARE_NOTE",
+  "production_database_write": "NO",
+  "production_runtime_change": "NO"
+}

@@ -1,0 +1,157 @@
+{
+  "version": "V7.9",
+  "series": "04",
+  "phase": "3B",
+  "status": "PASSED",
+  "decision": "CONTROLLED_READ_ONLY_CONCURRENCY_2_ACCEPTED",
+  "mode": "READ_ONLY",
+  "concurrency": 2,
+  "rounds_per_endpoint": 10,
+  "requests_per_endpoint": 20,
+  "http_error_count": 0,
+  "transport_error_count": 0,
+  "phase3a_result_sha256": "fdf85044b65b831bd0d346e6c0602c6da17d7ea892b99619e66bdbd60cd83f91",
+  "phase3a_manifest_sha256": "19c6f1a121ee0e83a0cf08ec385670ccde1f65689887be0ec9b668b23533e639",
+  "baseline": {
+    "API_HEALTH": {
+      "expected_http": "200",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 3.317,
+      "mean_ms": 8.7576,
+      "median_ms": 5.5815,
+      "p95_ms": 22.379499999999993,
+      "max_ms": 24.301
+    },
+    "UI_ROOT": {
+      "expected_http": "200",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 2.4290000000000003,
+      "mean_ms": 3.6558,
+      "median_ms": 3.233,
+      "p95_ms": 6.133149999999995,
+      "max_ms": 8.029
+    },
+    "STAFF_FAIL_CLOSED": {
+      "expected_http": "401",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 5.2090000000000005,
+      "mean_ms": 6.1239,
+      "median_ms": 5.612,
+      "p95_ms": 8.057599999999999,
+      "max_ms": 8.234
+    },
+    "ACCESS_FAIL_CLOSED": {
+      "expected_http": "401",
+      "sample_count": 10,
+      "http_error_count": 0,
+      "min_ms": 3.677,
+      "mean_ms": 5.3306000000000004,
+      "median_ms": 5.5075,
+      "p95_ms": 6.591999999999999,
+      "max_ms": 6.916
+    }
+  },
+  "concurrency2": {
+    "API_HEALTH": {
+      "expected_http": "200",
+      "concurrency": 2,
+      "rounds": 10,
+      "sample_count": 20,
+      "transport_error_count": 0,
+      "http_error_count": 0,
+      "min_ms": 2.661,
+      "mean_ms": 6.3949,
+      "median_ms": 5.8875,
+      "p95_ms": 13.14765,
+      "max_ms": 15.155
+    },
+    "UI_ROOT": {
+      "expected_http": "200",
+      "concurrency": 2,
+      "rounds": 10,
+      "sample_count": 20,
+      "transport_error_count": 0,
+      "http_error_count": 0,
+      "min_ms": 1.6139999999999999,
+      "mean_ms": 3.9216,
+      "median_ms": 3.6639999999999997,
+      "p95_ms": 6.32965,
+      "max_ms": 6.38
+    },
+    "STAFF_FAIL_CLOSED": {
+      "expected_http": "401",
+      "concurrency": 2,
+      "rounds": 10,
+      "sample_count": 20,
+      "transport_error_count": 0,
+      "http_error_count": 0,
+      "min_ms": 4.944999999999999,
+      "mean_ms": 6.9112,
+      "median_ms": 6.6425,
+      "p95_ms": 9.685250000000002,
+      "max_ms": 10.602
+    },
+    "ACCESS_FAIL_CLOSED": {
+      "expected_http": "401",
+      "concurrency": 2,
+      "rounds": 10,
+      "sample_count": 20,
+      "transport_error_count": 0,
+      "http_error_count": 0,
+      "min_ms": 5.308,
+      "mean_ms": 6.7066,
+      "median_ms": 6.685,
+      "p95_ms": 8.14795,
+      "max_ms": 8.166
+    }
+  },
+  "comparison": {
+    "ACCESS_FAIL_CLOSED": {
+      "baseline_mean_ms": 5.3306000000000004,
+      "concurrency2_mean_ms": 6.7066,
+      "mean_ratio": 1.25813229280006,
+      "baseline_p95_ms": 6.591999999999999,
+      "concurrency2_p95_ms": 8.14795,
+      "p95_ratio": 1.2360361043689323
+    },
+    "API_HEALTH": {
+      "baseline_mean_ms": 8.7576,
+      "concurrency2_mean_ms": 6.3949,
+      "mean_ratio": 0.7302114734630493,
+      "baseline_p95_ms": 22.379499999999993,
+      "concurrency2_p95_ms": 13.14765,
+      "p95_ratio": 0.5874863156013318
+    },
+    "STAFF_FAIL_CLOSED": {
+      "baseline_mean_ms": 6.1239,
+      "concurrency2_mean_ms": 6.9112,
+      "mean_ratio": 1.1285618641715247,
+      "baseline_p95_ms": 8.057599999999999,
+      "concurrency2_p95_ms": 9.685250000000002,
+      "p95_ratio": 1.2020018367752188
+    },
+    "UI_ROOT": {
+      "baseline_mean_ms": 3.6558,
+      "concurrency2_mean_ms": 3.9216,
+      "mean_ratio": 1.072706384375513,
+      "baseline_p95_ms": 6.133149999999995,
+      "concurrency2_p95_ms": 6.32965,
+      "p95_ratio": 1.0320390011657965
+    }
+  },
+  "database_fingerprint_before": "f81a7108cdcc21bf456748073c8e0b42",
+  "database_fingerprint_after": "f81a7108cdcc21bf456748073c8e0b42",
+  "database_fingerprint_delta": false,
+  "production_database_mutation": false,
+  "production_runtime_restart": false,
+  "production_image_change": false,
+  "mutation_requests": false,
+  "concurrency5_executed": false,
+  "stress_test": false,
+  "roadmap_sha256": "a217cb8f18c2038ee65b67c2789f39d424d2bfa83fb3cac642cfd9b90a3920af",
+  "next": "PHASE_3B_R1",
+  "accepted_at": "2026-08-22T02:38:09.556396+00:00"
+}

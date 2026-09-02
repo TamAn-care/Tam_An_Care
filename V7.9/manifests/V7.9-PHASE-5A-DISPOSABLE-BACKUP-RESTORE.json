@@ -1,0 +1,22 @@
+{
+  "version": "V7.9",
+  "series": "06",
+  "phase": "5A",
+  "status": "PASSED",
+  "decision": "DISPOSABLE_BACKUP_RESTORE_ACCEPTED",
+  "backup": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/backups/TamAnCare-V7.9-Phase5A-20260822T060905Z.dump",
+  "backup_sha256": "ed48e8f614f30a13576d58d41f92cfb8314d91af45b6c2179270b1ad3b91fcc8",
+  "backup_size": 413928,
+  "backup_artifact_removed": true,
+  "source_table_count": 118,
+  "restored_table_count": 118,
+  "source_schema_signature": "dc4f962ec5e31d878a9f58819f7a7caf",
+  "restored_schema_signature": "dc4f962ec5e31d878a9f58819f7a7caf",
+  "production_restore": false,
+  "production_database_delta": false,
+  "production_runtime_restart": false,
+  "restore_container_destroyed": true,
+  "manual_test_required": false,
+  "next": "PHASE_5B",
+  "accepted_at": "2026-08-22T06:09:10.850033+00:00"
+}

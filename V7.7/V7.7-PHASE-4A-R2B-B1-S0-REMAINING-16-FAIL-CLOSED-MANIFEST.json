@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-08-21T05:35:04.500404+00:00",
+  "phase": "V7.7-PHASE-4A-R2B-B1-S0",
+  "source_hash": "699dc2633bfa1a66f68c18bfef189999dc05fbe4d7bf6981a0f3d0c27aadd020",
+  "candidate_image_id": "sha256:4eb3443a87d81258dc219890b5cece7820ffc82ee90c766bd8b0f1ad2c45dc79",
+  "authorized_mutations_executed": false,
+  "security_probe_count": 16,
+  "results": [
+    {
+      "name": "activity-rehabilitation",
+      "path": "/api/activity-rehabilitation/v77-b1s0-resident/execute",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"Authorized human clinical reviewer required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "name": "ai-resident-patterns",
+      "path": "/api/ai/engines/health-trend/resident/v77-b1s0-resident/patterns",
+      "http": "201",
+      "classification": "PROVEN_SECURITY_GAP",
+      "response": "{\"engine\":\"health-trend-early-warning\",\"version\":\"7.4.1\",\"status\":\"INSUFFICIENT_DATA\",\"warningLevel\":\"UNKNOWN\",\"confidence\":null,\"patterns\":[],\"recommendation\":\"Collect at least 3 dated observations before early-warning pattern analysis.\",\"dataPoints\":0,\"minDataPoints\":3,\"humanReviewRequired\":true,\"autonomousClinicalAction\":false,\"residentId\":\"v77-b1s0-resident\",\"residentContext\":{\"residentId\":\"v77-b1s0-resident\",\"residentCode\":\"V77B1S0-RES-001\",\"displayName\":\"V7.7 B1 S0 Resident\",\"room\":null,\"bed\":null,\"careLevel\":\"INDEPENDENT\",\"activeStatus\":true},\"residentAssociation\":{\"verified\":true,\"source\":\"POSTGRES_RESIDENT_CONTEXT\"}}"
+    },
+    {
+      "name": "care-action-bridge",
+      "path": "/api/care-action-bridge/v77-b1s0-warning/execute",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "care-action-assign",
+      "path": "/api/care-actions/v77-b1s0-resident/v77-b1s0-pattern/assign",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "care-action-transfer",
+      "path": "/api/care-actions/v77-b1s0-resident/v77-b1s0-pattern/transfer",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "care-action-start-review",
+      "path": "/api/care-actions/v77-b1s0-resident/v77-b1s0-pattern/start-review",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "care-action-resolve",
+      "path": "/api/care-actions/v77-b1s0-resident/v77-b1s0-pattern/resolve",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "care-action-reopen",
+      "path": "/api/care-actions/v77-b1s0-resident/v77-b1s0-pattern/reopen",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "care-task-execution",
+      "path": "/api/care-task-execution/v77-b1s0-task/ASSIGN",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"error\":\"Bad Request\",\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "clinical",
+      "path": "/api/clinical/observation/v77-b1s0-observation/VERIFY_OBSERVATION",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"Clinical aggregate not found.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "name": "incident-report",
+      "path": "/api/incidents/report",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"actorId is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "name": "incident-mutation",
+      "path": "/api/incidents/v77-b1s0-incident/ACKNOWLEDGE",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"actorId is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "name": "medication-administration",
+      "path": "/api/medication-administrations/v77-b1s0-medication/ASSIGN",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"Medication Administration not found.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "name": "accept-responsibility",
+      "path": "/api/care-actions/v77-b1s0-resident/v77-b1s0-pattern/accept-responsibility",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"statusCode\":400,\"message\":\"actorId is required.\"}"
+    },
+    {
+      "name": "skin-wound",
+      "path": "/api/skin-wound/v77-b1s0-resident/execute",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"Human actor identity is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    },
+    {
+      "name": "nutrition-hydration",
+      "path": "/api/nutrition-hydration/v77-b1s0-resident/execute",
+      "http": "400",
+      "classification": "FAIL_CLOSED_OR_BUSINESS_REJECTION",
+      "response": "{\"message\":\"actorId is required.\",\"error\":\"Bad Request\",\"statusCode\":400}"
+    }
+  ],
+  "summary": {
+    "proven_security_gap_count": 1,
+    "no_actor_rejected_count": 15
+  },
+  "production_changed": false,
+  "source_changed": false
+}

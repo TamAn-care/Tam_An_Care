@@ -1,0 +1,22 @@
+{
+  "version": "V7.8",
+  "phase": "4-FINAL",
+  "status": "PASSED",
+  "decision": "PHASE_4_END_TO_END_UX_OPERATIONAL_SMOOTHNESS_ACCEPTED",
+  "routes": {
+    "/": "200",
+    "/dashboard": "200",
+    "/operational-care": "200",
+    "/residents": "200",
+    "/staff-access": "200",
+    "/system-status": "200"
+  },
+  "production_db": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639"
+  },
+  "production_database_write": false,
+  "runtime_restart": false,
+  "source_write": false,
+  "next": "PHASE_5A_BACKUP_RESTORE"
+}

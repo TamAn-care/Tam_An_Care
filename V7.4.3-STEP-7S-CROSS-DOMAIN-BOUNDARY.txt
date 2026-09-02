@@ -1,0 +1,67 @@
+TAM AN CARE V7.4.3
+STEP 7S CROSS-DOMAIN BOUNDARY
+
+PERSONAL CARE -> SKIN / WOUND
+
+Automatic wound record creation:
+NO
+
+Explicit authorized human escalation / link:
+ALLOWED
+
+
+PERSONAL CARE -> INCIDENT
+
+Automatic incident creation:
+NO
+
+Explicit human incident workflow:
+ALLOWED
+
+
+PERSONAL CARE -> MEDICATION
+
+Automatic medication order:
+NO
+
+Automatic medication administration:
+NO
+
+Automatic bowel / continence medication change:
+NO
+
+
+PERSONAL CARE -> NUTRITION / HYDRATION
+
+Automatic nutrition plan change:
+NO
+
+Automatic hydration plan change:
+NO
+
+
+PERSONAL CARE -> CLINICAL OBSERVATION
+
+Automatic official clinical observation:
+NO
+
+
+PERSONAL CARE -> CARE TASK
+
+Automatic care task creation:
+NO
+
+
+PERSONAL CARE -> CARE ACTION
+
+Automatic care action creation:
+NO
+
+
+PERSONAL CARE -> REHABILITATION
+
+Automatic mobility / rehabilitation restriction:
+NO
+
+
+ZERO CROSS-DOMAIN AUTONOMY REQUIRED.

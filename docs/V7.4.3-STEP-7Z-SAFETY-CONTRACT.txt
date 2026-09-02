@@ -1,0 +1,79 @@
+STEP 7Z — FALL / MOBILITY / TRANSFER SAFETY CONTRACT
+
+FALL != INJURY DIAGNOSIS
+
+A fall event may trigger human assessment.
+
+It does not automatically establish:
+
+- fracture
+- head injury
+- concussion
+- neurological injury
+- internal injury
+
+
+NEAR FALL != FALL
+
+Near-fall history must remain distinguishable from confirmed fall history.
+
+
+MOBILITY RIGHTS / DIGNITY
+
+Fall prevention must not automatically remove mobility rights.
+
+No automatic:
+- bed confinement
+- chair confinement
+- physical restraint
+- chemical restraint
+- family restriction
+- activity restriction
+
+
+TRANSFER SAFETY
+
+Transfer-assistance requirements must be human-defined.
+
+AI may flag possible mismatch but cannot change official assistance level.
+
+
+POST-FALL SAFETY
+
+Post-fall factual observation may include observable facts.
+
+Diagnosis and treatment remain human clinical decisions.
+
+
+MEDICATION BOUNDARY
+
+Step 7Z cannot:
+- create medication order
+- alter dose
+- select PRN
+- hold medication
+- administer medication
+
+
+TRANSFER-TO-HOSPITAL BOUNDARY
+
+Step 7Z cannot autonomously decide:
+- ambulance activation
+- emergency department transfer
+- hospital admission
+
+
+FAIL-CLOSED
+
+Unauthorized mutation:
+zero business mutation
+zero audit
+
+Wrong owner / reviewer:
+zero business mutation
+zero audit
+
+AUTONOMOUS RESTRAINT = FALSE
+AUTONOMOUS MEDICATION ACTION = FALSE
+AUTONOMOUS HOSPITAL TRANSFER = FALSE
+AUTONOMOUS CLINICAL ACTION = FALSE

@@ -1,0 +1,15 @@
+{
+  "version": "V7.9",
+  "series": "02",
+  "phase": "1D-R5.7",
+  "status": "PASSED",
+  "endpoint": "POST /api/operations/access-assignments",
+  "resident_id_source": "body.residentId",
+  "actor_source": "x-actor-id + x-actor-role",
+  "service_method": "createAssignment(residentId, actor, input)",
+  "controller_sha256": "d0f8d672119302608c00be70b26b1e172fe14f8606cc32da0c5542a67352a062",
+  "production_database_mutation": false,
+  "production_restart": false,
+  "v77_source_write": false,
+  "next": "RESUME_SERIES_02_PHASE_1D"
+}

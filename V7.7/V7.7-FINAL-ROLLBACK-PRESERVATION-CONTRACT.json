@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-08-21T10:31:02.718765+00:00",
+  "release": "V7.7",
+  "status": "PRESERVED",
+  "rollback_assets": {
+    "API": {
+      "container": "taman-care-v743-dev-api",
+      "container_id": "1bc8db1747add437fa8dc52a9fb53ccf67e99550e7b896c68b7914d0e9689dd2",
+      "image": "sha256:3eb6622aaa1cfdda702fe3a43ca83f5f3d48fc42498d5e9f2b50fc20cdacdca7",
+      "state": "exited"
+    },
+    "UI": {
+      "container": "taman-care-v75-ui",
+      "container_id": "c68dcf29b83bd0660456812e91ea3436c03aa9a92b5675c23ca63c4b6f673ff0",
+      "image": "sha256:cca4784a77a1c5957eb3c0b6a5c9733793fb768e12ee36cd7fd81890f9d8235b",
+      "state": "exited"
+    },
+    "DB": {
+      "container": "taman-care-v743-dev-postgres",
+      "container_id": "92b707d3886f8fee2fb2dc875a2dde467fd9933f830f7b36e8617a7a36ba660e",
+      "image": "sha256:e17e86066e5ef83e0952a9347f5c792b7ece00972e2aa787a6986f471b3dd3d5",
+      "state": "running"
+    }
+  },
+  "rules": {
+    "remove_v76_api": false,
+    "remove_v76_ui": false,
+    "remove_v76_db": false,
+    "modify_database": false,
+    "automatic_cleanup_authorized": false
+  }
+}

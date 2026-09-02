@@ -1,0 +1,22 @@
+{
+  "version": "V7.9",
+  "phase": "1D",
+  "status": "PASSED",
+  "isolated": true,
+  "route": "/api/operations/access-assignments",
+  "method": "POST",
+  "payload_fields": [
+    "accessScope",
+    "actorId",
+    "actorRole",
+    "assignedRole",
+    "effectiveFrom",
+    "residentId"
+  ],
+  "http": "201",
+  "persistence_delta": {
+    "resident_access_assignments": 1
+  },
+  "real_resident_mutation": false,
+  "production_mutation": false
+}

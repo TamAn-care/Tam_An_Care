@@ -1,0 +1,339 @@
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/accommodation/accommodation.controller.ts =====
+192-    @Body() body?: any,
+193-  ) {
+194-    this.rejectBodyActor(body);
+195-    return this.service.assign(
+196-      this.actor(actorId, actorRole),
+197-      bedId,
+198-      body?.residentId,
+199-    );
+200-  }
+201-
+202-  @Post('residents/:residentId/transfer')
+203-  transfer(
+204-    @Headers('x-actor-id') actorId?: string,
+205-    @Headers('x-actor-role') actorRole?: string,
+206-    @Param('residentId') residentId?: string,
+207-    @Body() body?: any,
+208-  ) {
+209-    this.rejectBodyActor(body);
+210-    return this.service.transfer(
+211-      this.actor(actorId, actorRole),
+212-      residentId,
+213-      body?.bedId,
+214-    );
+215-  }
+216-
+217:  @Post('residents/:residentId/release')
+218:  release(
+219-    @Headers('x-actor-id') actorId?: string,
+220-    @Headers('x-actor-role') actorRole?: string,
+221-    @Param('residentId') residentId?: string,
+222-    @Body() body?: any,
+223-  ) {
+224-    this.rejectBodyActor(body);
+225:    return this.service.release(
+226-      this.actor(actorId, actorRole),
+227-      residentId,
+228-      body?.reason,
+229-    );
+230-  }
+231-
+232-  @Get('residents/:residentId/history')
+233-  history(
+234-    @Headers('x-actor-id') actorId?: string,
+235-    @Headers('x-actor-role') actorRole?: string,
+236-    @Param('residentId') residentId?: string,
+237-    @Query('limit') limit?: string,
+238-    @Query('offset') offset?: string,
+239-  ) {
+240-    return this.service.history(
+241-      this.actor(actorId, actorRole),
+242-      residentId,
+243-      limit,
+244-      offset,
+245-    );
+246-  }
+247-}
+===== /Users/anhha/Downloads/TamAnCare_V7_4_3_Development/api/src/accommodation/accommodation.service.ts =====
+1-import { BadRequestException,ConflictException,ForbiddenException,Injectable,NotFoundException,UnauthorizedException } from '@nestjs/common';
+2-import { randomUUID } from 'crypto';
+3-import { PoolClient } from 'pg';
+4-import { DatabaseService } from '../database/database.service';
+5-type Actor={actorId:string;actorRole:string};
+6-const HUMAN=new Set(['CAREGIVER','NURSE','CARE_MANAGER','SUPERVISOR']); const MGMT=new Set(['CARE_MANAGER','SUPERVISOR']);
+7-@Injectable()
+8-export class AccommodationService{
+9-  constructor(private readonly db:DatabaseService){}
+10-  private req(v:any,n:string){const x=String(v??'').trim();if(!x)throw new BadRequestException(`${n} is required`);return x;}
+11-  private page(l?:string,o?:string){const limit=l?Number(l):50,offset=o?Number(o):0;if(!Number.isInteger(limit)||limit<1||limit>100)throw new BadRequestException('limit must be between 1 and 100');if(!Number.isInteger(offset)||offset<0)throw new BadRequestException('offset must be non-negative');return{limit,offset};}
+12-  private async auth(a:Actor,m=false){if(!a.actorId||!a.actorRole)throw new UnauthorizedException('Authenticated human actor context is required');if(!HUMAN.has(a.actorRole))throw new ForbiddenException('Authorized human actor is required');if(m&&!MGMT.has(a.actorRole))throw new ForbiddenException('Care Manager or Supervisor authority is required');const q=await this.db.query(`SELECT primary_operational_role,status FROM staff_actors WHERE actor_id=$1 LIMIT 1`,[a.actorId]);const x=q.rows[0];if(!x||x.status!=='ACTIVE'||x.primary_operational_role!==a.actorRole)throw new ForbiddenException('Canonical active staff actor is required');}
+13-  private async audit(c:PoolClient,e:string,t:string,id:string,res:string|null,a:Actor,prev:any,next:any){await c.query(`INSERT INTO accommodation_audit_events(audit_event_id,event_type,aggregate_type,aggregate_id,resident_id,actor_id,actor_role,previous_state,new_state) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,[`aa-audit-${randomUUID()}`,e,t,id,res,a.actorId,a.actorRole,prev==null?null:JSON.stringify(prev),next==null?null:JSON.stringify(next)]);}
+14:  async overview(a:Actor){await this.auth(a);const s=await this.db.query(`SELECT COUNT(*)::int total,COUNT(x.assignment_id)::int occupied,COUNT(*) FILTER(WHERE b.status='RESERVED' AND x.assignment_id IS NULL)::int reserved,COUNT(*) FILTER(WHERE b.status IN('TEMPORARILY_UNAVAILABLE','MAINTENANCE','INACTIVE'))::int unavailable FROM accommodation_beds b LEFT JOIN bed_assignments x ON x.bed_id=b.bed_id AND x.ended_at IS NULL`);const h=await this.db.query(`SELECT bu.building_id "buildingId",bu.code "buildingCode",bu.name "buildingName",f.floor_id "floorId",f.code "floorCode",f.name "floorName",r.room_id "roomId",r.code "roomCode",r.name "roomName",b.bed_id "bedId",b.code "bedCode",b.name "bedName",CASE WHEN x.assignment_id IS NOT NULL THEN 'OCCUPIED' ELSE b.status END "bedStatus",x.resident_id "residentId",res.display_name "residentName",res.care_level "careLevel" FROM accommodation_buildings bu LEFT JOIN accommodation_floors f ON f.building_id=bu.building_id LEFT JOIN accommodation_rooms r ON r.floor_id=f.floor_id LEFT JOIN accommodation_beds b ON b.room_id=r.room_id LEFT JOIN bed_assignments x ON x.bed_id=b.bed_id AND x.ended_at IS NULL LEFT JOIN residents res ON res.resident_id=x.resident_id ORDER BY bu.sort_order,bu.code,f.sort_order,f.floor_number NULLS LAST,f.code,r.sort_order,r.code,b.sort_order,b.code`);const z=s.rows[0]??{total:0,occupied:0,reserved:0,unavailable:0};return{summary:{...z,available:Math.max(0,z.total-z.occupied-z.reserved-z.unavailable),occupancyPercentage:z.total?Math.round(z.occupied/z.total*10000)/100:0},items:h.rows};}
+15-  async overviewPaged(
+16-    a: Actor,
+17-    buildingId?: string,
+18-    floorId?: string,
+19-    roomId?: string,
+20-    status?: string,
+21-    search?: string,
+22-    limit?: string,
+23-    offset?: string,
+24-  ) {
+25-    await this.auth(a);
+26-    const p = this.page(limit, offset);
+27-    const st =
+28-      status && status !== 'ALL'
+29-        ? status.toUpperCase()
+30-        : null;
+31-    const q = search?.trim() || null;
+32-
+33-    const summary = await this.db.query(`
+34-      SELECT
+35-        COUNT(*)::int total,
+36-        COUNT(x.assignment_id)::int occupied,
+37-        COUNT(*) FILTER(
+38-          WHERE b.status='RESERVED'
+39-            AND x.assignment_id IS NULL
+40-        )::int reserved,
+41-        COUNT(*) FILTER(
+42-          WHERE b.status IN(
+43-            'TEMPORARILY_UNAVAILABLE',
+44-            'MAINTENANCE',
+45-            'INACTIVE'
+46-          )
+47-        )::int unavailable
+48-      FROM accommodation_beds b
+49:      LEFT JOIN bed_assignments x
+50-        ON x.bed_id=b.bed_id
+51:       AND x.ended_at IS NULL
+52-    `);
+53-
+54-    const rows = await this.db.query(`
+55-      SELECT
+56-        bu.building_id "buildingId",
+57-        bu.code "buildingCode",
+58-        bu.name "buildingName",
+59-        f.floor_id "floorId",
+60-        f.code "floorCode",
+61-        f.name "floorName",
+62-        f.floor_number "floorNumber",
+63-        r.room_id "roomId",
+64-        r.code "roomCode",
+65-        r.name "roomName",
+66-        r.room_type "roomType",
+67-        b.bed_id "bedId",
+68-        b.code "bedCode",
+69-        b.name "bedName",
+70-        CASE
+71-          WHEN x.assignment_id IS NOT NULL THEN 'OCCUPIED'
+72-          ELSE b.status
+73-        END "bedStatus",
+74-        x.assignment_id "assignmentId",
+75-        x.resident_id "residentId",
+76-        res.display_name "residentName",
+77-        res.care_level "careLevel",
+78-        x.assigned_at "assignedAt",
+79-        COUNT(*) OVER()::int "totalCount"
+80-      FROM accommodation_beds b
+81-      JOIN accommodation_rooms r
+82-        ON r.room_id=b.room_id
+83-      JOIN accommodation_floors f
+84-        ON f.floor_id=r.floor_id
+85-      JOIN accommodation_buildings bu
+86-        ON bu.building_id=f.building_id
+87:      LEFT JOIN bed_assignments x
+88-        ON x.bed_id=b.bed_id
+89:       AND x.ended_at IS NULL
+90-      LEFT JOIN residents res
+91-        ON res.resident_id=x.resident_id
+92-      WHERE
+93-        ($1::text IS NULL OR bu.building_id=$1)
+94-        AND ($2::text IS NULL OR f.floor_id=$2)
+95-        AND ($3::text IS NULL OR r.room_id=$3)
+96-        AND (
+97-          $4::text IS NULL
+98-          OR
+99-          CASE
+100-            WHEN x.assignment_id IS NOT NULL THEN 'OCCUPIED'
+101-            ELSE b.status
+102-          END=$4
+103-        )
+104-        AND (
+105-          $5::text IS NULL
+106-          OR LOWER(
+107-            CONCAT_WS(
+108-              ' ',
+109-              bu.name,bu.code,
+110-              f.name,f.code,
+111-              r.name,r.code,
+112-              b.name,b.code,
+113-              res.display_name
+114-            )
+115-          ) LIKE LOWER('%'||$5||'%')
+116-        )
+117-      ORDER BY
+118-        bu.sort_order,
+119-        bu.code,
+120-        f.sort_order,
+121-        f.floor_number NULLS LAST,
+122-        f.code,
+123-        r.sort_order,
+124-        r.code,
+125-        b.sort_order,
+126-        b.code
+127-      LIMIT $6 OFFSET $7
+128-    `,[
+129-      buildingId || null,
+130-      floorId || null,
+131-      roomId || null,
+132-      st,
+133-      q,
+134-      p.limit,
+135-      p.offset,
+136-    ]);
+137-
+138-    const z = summary.rows[0] ?? {
+139-      total: 0,
+140-      occupied: 0,
+141-      reserved: 0,
+142-      unavailable: 0,
+143-    };
+144-
+145-    return {
+146-      summary: {
+147-        ...z,
+148-        available: Math.max(
+149-          0,
+150-          z.total-z.occupied-z.reserved-z.unavailable,
+151-        ),
+152-        occupancyPercentage:
+153-          z.total
+154-            ? Math.round(z.occupied/z.total*10000)/100
+155-            : 0,
+156-      },
+157-      items: rows.rows,
+158-      limit: p.limit,
+159-      offset: p.offset,
+160-      total: rows.rows[0]?.totalCount ?? 0,
+161-    };
+162-  }
+163-
+164-  async listBuildings(a:Actor){await this.auth(a);return(await this.db.query(`SELECT building_id "buildingId",code,name,status,sort_order "sortOrder" FROM accommodation_buildings ORDER BY sort_order,code`)).rows;}
+165-  async createBuilding(a:Actor,b:any){await this.auth(a,true);const code=this.req(b?.code,'code').toUpperCase(),name=this.req(b?.name,'name');return this.db.withTransaction(async c=>{const q=await c.query(`INSERT INTO accommodation_buildings(building_id,code,name) VALUES($1,$2,$3) RETURNING building_id "buildingId",code,name,status`,[`building-${randomUUID()}`,code,name]);const x=q.rows[0];await this.audit(c,'BUILDING_CREATED','BUILDING',x.buildingId,null,a,null,x);return x;});}
+166-  async listFloors(a:Actor,b?:string){await this.auth(a);return(await this.db.query(`SELECT floor_id "floorId",building_id "buildingId",code,name,floor_number "floorNumber",status FROM accommodation_floors WHERE($1::text IS NULL OR building_id=$1) ORDER BY sort_order,floor_number NULLS LAST,code`,[b||null])).rows;}
+167-  async createFloor(a:Actor,b:any){await this.auth(a,true);const p=this.req(b?.buildingId,'buildingId'),code=this.req(b?.code,'code').toUpperCase(),name=this.req(b?.name,'name');return this.db.withTransaction(async c=>{const z=await c.query(`SELECT status FROM accommodation_buildings WHERE building_id=$1 FOR UPDATE`,[p]);if(z.rowCount!==1)throw new NotFoundException('Building not found');if(z.rows[0].status!=='ACTIVE')throw new ConflictException('Inactive building');const q=await c.query(`INSERT INTO accommodation_floors(floor_id,building_id,code,name,floor_number) VALUES($1,$2,$3,$4,$5) RETURNING floor_id "floorId",building_id "buildingId",code,name,status`,[`floor-${randomUUID()}`,p,code,name,b?.floorNumber??null]);const x=q.rows[0];await this.audit(c,'FLOOR_CREATED','FLOOR',x.floorId,null,a,null,x);return x;});}
+168-  async listRooms(a:Actor,f?:string,l?:string,o?:string){await this.auth(a);const p=this.page(l,o),q=await this.db.query(`SELECT room_id "roomId",floor_id "floorId",code,name,room_type "roomType",status,COUNT(*) OVER()::int "totalCount" FROM accommodation_rooms WHERE($1::text IS NULL OR floor_id=$1) ORDER BY sort_order,code LIMIT $2 OFFSET $3`,[f||null,p.limit,p.offset]);return{items:q.rows,limit:p.limit,offset:p.offset,total:q.rows[0]?.totalCount??0};}
+169-  async createRoom(a:Actor,b:any){await this.auth(a,true);const p=this.req(b?.floorId,'floorId'),code=this.req(b?.code,'code').toUpperCase(),name=this.req(b?.name,'name');return this.db.withTransaction(async c=>{const z=await c.query(`SELECT f.status fs,bu.status bs FROM accommodation_floors f JOIN accommodation_buildings bu ON bu.building_id=f.building_id WHERE f.floor_id=$1 FOR UPDATE OF f,bu`,[p]);if(z.rowCount!==1)throw new NotFoundException('Floor not found');if(z.rows[0].fs!=='ACTIVE'||z.rows[0].bs!=='ACTIVE')throw new ConflictException('Inactive hierarchy');const q=await c.query(`INSERT INTO accommodation_rooms(room_id,floor_id,code,name,room_type) VALUES($1,$2,$3,$4,$5) RETURNING room_id "roomId",floor_id "floorId",code,name,status`,[`room-${randomUUID()}`,p,code,name,b?.roomType??null]);const x=q.rows[0];await this.audit(c,'ROOM_CREATED','ROOM',x.roomId,null,a,null,x);return x;});}
+170:  async listBeds(a:Actor,r?:string,s?:string,l?:string,o?:string){await this.auth(a);const p=this.page(l,o),st=s&&s!=='ALL'?s.toUpperCase():null,q=await this.db.query(`SELECT b.bed_id "bedId",b.room_id "roomId",b.code,b.name,CASE WHEN x.assignment_id IS NOT NULL THEN 'OCCUPIED' ELSE b.status END status,x.resident_id "residentId",res.display_name "residentName",res.care_level "careLevel",COUNT(*) OVER()::int "totalCount" FROM accommodation_beds b LEFT JOIN bed_assignments x ON x.bed_id=b.bed_id AND x.ended_at IS NULL LEFT JOIN residents res ON res.resident_id=x.resident_id WHERE($1::text IS NULL OR b.room_id=$1) AND($2::text IS NULL OR CASE WHEN x.assignment_id IS NOT NULL THEN 'OCCUPIED' ELSE b.status END=$2) ORDER BY b.sort_order,b.code LIMIT $3 OFFSET $4`,[r||null,st,p.limit,p.offset]);return{items:q.rows,limit:p.limit,offset:p.offset,total:q.rows[0]?.totalCount??0};}
+171-  async createBed(a:Actor,b:any){await this.auth(a,true);const p=this.req(b?.roomId,'roomId'),code=this.req(b?.code,'code').toUpperCase(),name=this.req(b?.name,'name');return this.db.withTransaction(async c=>{const z=await c.query(`SELECT r.status rs,f.status fs,bu.status bs FROM accommodation_rooms r JOIN accommodation_floors f ON f.floor_id=r.floor_id JOIN accommodation_buildings bu ON bu.building_id=f.building_id WHERE r.room_id=$1 FOR UPDATE OF r,f,bu`,[p]);if(z.rowCount!==1)throw new NotFoundException('Room not found');if(z.rows[0].rs!=='AVAILABLE'||z.rows[0].fs!=='ACTIVE'||z.rows[0].bs!=='ACTIVE')throw new ConflictException('Unavailable hierarchy');const q=await c.query(`INSERT INTO accommodation_beds(bed_id,room_id,code,name) VALUES($1,$2,$3,$4) RETURNING bed_id "bedId",room_id "roomId",code,name,status`,[`bed-${randomUUID()}`,p,code,name]);const x=q.rows[0];await this.audit(c,'BED_CREATED','BED',x.bedId,null,a,null,x);return x;});}
+172:  private async resident(c:PoolClient,id:string){const q=await c.query(`SELECT resident_id,room,bed FROM residents WHERE resident_id=$1 FOR UPDATE`,[id]);if(q.rowCount!==1)throw new NotFoundException('Resident not found');return q.rows[0];}
+173:  private async target(c:PoolClient,id:string){const q=await c.query(`SELECT b.bed_id,b.code bed_code,b.status bed_status,r.code room_code,r.status room_status,f.status floor_status,bu.status building_status FROM accommodation_beds b JOIN accommodation_rooms r ON r.room_id=b.room_id JOIN accommodation_floors f ON f.floor_id=r.floor_id JOIN accommodation_buildings bu ON bu.building_id=f.building_id WHERE b.bed_id=$1 FOR UPDATE OF b,r,f,bu`,[id]);if(q.rowCount!==1)throw new NotFoundException('Bed not found');const x=q.rows[0];if(x.building_status!=='ACTIVE'||x.floor_status!=='ACTIVE'||x.room_status!=='AVAILABLE'||x.bed_status!=='AVAILABLE')throw new ConflictException('Bed is not available');const o=await c.query(`SELECT assignment_id FROM bed_assignments WHERE bed_id=$1 AND ended_at IS NULL FOR UPDATE`,[id]);if(o.rowCount)throw new ConflictException('Bed is already occupied');return x;}
+174-  async setBedStatus(
+175-    a: Actor,
+176-    bid?: string,
+177-    rawStatus?: string,
+178-  ) {
+179-    await this.auth(a, true);
+180-    const bed = this.req(bid, 'bedId');
+181-    const status = this.req(rawStatus, 'status').toUpperCase();
+182-
+183-    const allowed = new Set([
+184-      'AVAILABLE',
+185-      'TEMPORARILY_UNAVAILABLE',
+186-      'MAINTENANCE',
+187-      'INACTIVE',
+188-    ]);
+189-
+190-    if (!allowed.has(status)) {
+191-      throw new BadRequestException(
+192-        'Unsupported operational bed status',
+193-      );
+194-    }
+195-
+196-    return this.db.withTransaction(async c => {
+197-      const q = await c.query(`
+198-        SELECT
+199-          b.bed_id,
+200-          b.status bed_status,
+201-          r.status room_status,
+202-          f.status floor_status,
+203-          bu.status building_status
+204-        FROM accommodation_beds b
+205-        JOIN accommodation_rooms r
+206-          ON r.room_id=b.room_id
+207-        JOIN accommodation_floors f
+208-          ON f.floor_id=r.floor_id
+209-        JOIN accommodation_buildings bu
+210-          ON bu.building_id=f.building_id
+211-        WHERE b.bed_id=$1
+212-        FOR UPDATE OF b,r,f,bu
+213-      `,[bed]);
+214-
+215-      if (q.rowCount !== 1) {
+216-        throw new NotFoundException('Bed not found');
+217-      }
+218-
+219-      const current = q.rows[0];
+220-
+221-      const active = await c.query(`
+222-        SELECT assignment_id
+223:        FROM bed_assignments
+224-        WHERE bed_id=$1
+225:          AND ended_at IS NULL
+226-        FOR UPDATE
+227-      `,[bed]);
+228-
+229-      if (active.rowCount) {
+230-        throw new ConflictException(
+231-          'Occupied bed status cannot be changed',
+232-        );
+233-      }
+234-
+235-      if (
+236-        status === 'AVAILABLE' &&
+237-        (
+238-          current.room_status !== 'AVAILABLE' ||
+239-          current.floor_status !== 'ACTIVE' ||
+240-          current.building_status !== 'ACTIVE'
+241-        )
+242-      ) {
+243-        throw new ConflictException(
+244-          'Parent hierarchy is unavailable',
+245-        );
+246-      }
+247-
+248-      const updated = await c.query(`
+249-        UPDATE accommodation_beds
+250-        SET status=$2,updated_at=now()
+251-        WHERE bed_id=$1
+252-        RETURNING
+253-          bed_id "bedId",
+254-          room_id "roomId",
+255-          code,
+256-          name,
+257-          status
+258-      `,[bed,status]);
+259-
+260-      const next=updated.rows[0];
+261-
+262-      await this.audit(
+263-        c,
+264-        'BED_STATUS_CHANGED',
+265-        'BED',
+266-        bed,
+267-        null,
+268-        a,
+269-        {status:current.bed_status},
+270-        next,
+271-      );
+272-
+273-      return next;
+274-    });
+275-  }
+276-
+277:  async assign(a:Actor,bid?:string,rid?:string){await this.auth(a);const bed=this.req(bid,'bedId'),res=this.req(rid,'residentId');return this.db.withTransaction(async c=>{const old=await this.resident(c,res);const ex=await c.query(`SELECT assignment_id FROM bed_assignments WHERE resident_id=$1 AND ended_at IS NULL FOR UPDATE`,[res]);if(ex.rowCount)throw new ConflictException('Resident already has active bed');const t=await this.target(c,bed),id=`assignment-${randomUUID()}`;await c.query(`INSERT INTO bed_assignments(assignment_id,bed_id,resident_id,assigned_by,assigned_by_role) VALUES($1,$2,$3,$4,$5)`,[id,bed,res,a.actorId,a.actorRole]);await c.query(`UPDATE accommodation_beds SET status='OCCUPIED',updated_at=now() WHERE bed_id=$1`,[bed]);await c.query(`UPDATE residents SET room=$2,bed=$3 WHERE resident_id=$1`,[res,t.room_code,t.bed_code]);const next={assignmentId:id,bedId:bed,residentId:res,room:t.room_code,bed:t.bed_code};await this.audit(c,'BED_ASSIGNED','BED_ASSIGNMENT',id,res,a,{room:old.room,bed:old.bed},next);return next;});}
+278:  async transfer(a:Actor,rid?:string,bid?:string){await this.auth(a);const res=this.req(rid,'residentId'),bed=this.req(bid,'bedId');return this.db.withTransaction(async c=>{const oldRes=await this.resident(c,res),q=await c.query(`SELECT assignment_id,bed_id FROM bed_assignments WHERE resident_id=$1 AND ended_at IS NULL FOR UPDATE`,[res]);if(q.rowCount!==1)throw new ConflictException('Resident has no active bed');const old=q.rows[0];if(old.bed_id===bed)throw new ConflictException('Resident already in this bed');const t=await this.target(c,bed);await c.query(`UPDATE bed_assignments SET ended_at=now(),ended_by=$2,ended_by_role=$3,end_reason='TRANSFER' WHERE assignment_id=$1`,[old.assignment_id,a.actorId,a.actorRole]);await c.query(`UPDATE accommodation_beds SET status='AVAILABLE',updated_at=now() WHERE bed_id=$1`,[old.bed_id]);const id=`assignment-${randomUUID()}`;await c.query(`INSERT INTO bed_assignments(assignment_id,bed_id,resident_id,assigned_by,assigned_by_role) VALUES($1,$2,$3,$4,$5)`,[id,bed,res,a.actorId,a.actorRole]);await c.query(`UPDATE accommodation_beds SET status='OCCUPIED',updated_at=now() WHERE bed_id=$1`,[bed]);await c.query(`UPDATE residents SET room=$2,bed=$3 WHERE resident_id=$1`,[res,t.room_code,t.bed_code]);const next={assignmentId:id,residentId:res,bedId:bed,room:t.room_code,bed:t.bed_code};await this.audit(c,'BED_TRANSFERRED','BED_ASSIGNMENT',id,res,a,{assignmentId:old.assignment_id,bedId:old.bed_id,room:oldRes.room,bed:oldRes.bed},next);return next;});}
+279:  async release(a:Actor,rid?:string,reason?:string){await this.auth(a);const res=this.req(rid,'residentId'),why=String(reason??'RELEASED').trim().slice(0,200)||'RELEASED';return this.db.withTransaction(async c=>{const oldRes=await this.resident(c,res),q=await c.query(`SELECT assignment_id,bed_id FROM bed_assignments WHERE resident_id=$1 AND ended_at IS NULL FOR UPDATE`,[res]);if(q.rowCount!==1)throw new ConflictException('Resident has no active bed');const old=q.rows[0];await c.query(`UPDATE bed_assignments SET ended_at=now(),ended_by=$2,ended_by_role=$3,end_reason=$4 WHERE assignment_id=$1`,[old.assignment_id,a.actorId,a.actorRole,why]);await c.query(`UPDATE accommodation_beds SET status='AVAILABLE',updated_at=now() WHERE bed_id=$1`,[old.bed_id]);await c.query(`UPDATE residents SET room=NULL,bed=NULL WHERE resident_id=$1`,[res]);const next={residentId:res,released:true,reason:why};await this.audit(c,'BED_RELEASED','BED_ASSIGNMENT',old.assignment_id,res,a,{bedId:old.bed_id,room:oldRes.room,bed:oldRes.bed},next);return next;});}
+280:  async history(a:Actor,rid?:string,l?:string,o?:string){await this.auth(a);const res=this.req(rid,'residentId'),p=this.page(l,o),q=await this.db.query(`SELECT x.assignment_id "assignmentId",x.resident_id "residentId",x.bed_id "bedId",b.code "bedCode",r.code "roomCode",f.code "floorCode",bu.code "buildingCode",x.assigned_at "assignedAt",x.assigned_by "assignedBy",x.assigned_by_role "assignedByRole",x.ended_at "endedAt",x.ended_by "endedBy",x.ended_by_role "endedByRole",x.end_reason "endReason",COUNT(*) OVER()::int "totalCount" FROM bed_assignments x JOIN accommodation_beds b ON b.bed_id=x.bed_id JOIN accommodation_rooms r ON r.room_id=b.room_id JOIN accommodation_floors f ON f.floor_id=r.floor_id JOIN accommodation_buildings bu ON bu.building_id=f.building_id WHERE x.resident_id=$1 ORDER BY x.assigned_at DESC LIMIT $2 OFFSET $3`,[res,p.limit,p.offset]);return{items:q.rows,limit:p.limit,offset:p.offset,total:q.rows[0]?.totalCount??0};}
+281-}

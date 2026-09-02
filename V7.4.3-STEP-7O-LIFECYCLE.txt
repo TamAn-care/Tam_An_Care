@@ -1,0 +1,121 @@
+TAM AN CARE V7.4.3
+STEP 7O INCIDENT LIFECYCLE
+
+MAIN INCIDENT STATES
+
+REPORTED
+TRIAGED
+ASSIGNED
+ACKNOWLEDGED
+RESPONDING
+ESCALATED
+RESOLVED
+CLOSED
+
+OPTIONAL ADMINISTRATIVE TERMINAL STATE
+
+VOIDED
+
+VOIDED is only for duplicate / erroneous record governance.
+It must never erase audit history.
+
+CANONICAL FLOW
+
+REPORTED
+-> TRIAGED
+-> ASSIGNED
+-> ACKNOWLEDGED
+-> RESPONDING
+-> RESOLVED
+-> CLOSED
+
+OPTIONAL ESCALATION
+
+RESPONDING
+-> ESCALATED
+-> RESPONDING
+
+or
+
+RESPONDING
+-> ESCALATED
+-> RESOLVED
+-> CLOSED
+
+TRIAGE
+
+REPORTED -> TRIAGED
+
+Re-triage does not overwrite history.
+
+Every re-triage adds an append-only incident_triage record.
+
+ASSIGNMENT
+
+TRIAGED -> ASSIGNED
+
+Exactly one concurrent assignment may establish current owner.
+
+ACKNOWLEDGEMENT
+
+ASSIGNED -> ACKNOWLEDGED
+
+Only assigned human owner may acknowledge.
+
+RESPONSE
+
+ACKNOWLEDGED -> RESPONDING
+
+Response notes are append-only.
+
+ESCALATION
+
+RESPONDING -> ESCALATED
+
+Escalation does not autonomously trigger:
+
+Care Action
+Care Task
+Medication
+Diagnosis
+Hospital transfer
+Emergency service call
+
+RESOLUTION
+
+RESPONDING -> RESOLVED
+
+or
+
+ESCALATED -> RESOLVED
+
+Human authorization required.
+
+CLOSURE
+
+RESOLVED -> CLOSED
+
+Closure requires human governance review.
+
+For configured high-severity incident classes:
+
+post-incident review must exist before CLOSED.
+
+No hardcoded clinical threshold.
+
+POST-INCIDENT REVIEW
+
+Post-review is append-only.
+
+It cannot rewrite the original incident history.
+
+TERMINAL SAFETY
+
+CLOSED cannot return to active workflow
+without a separately designed reopen governance process.
+
+No reopen is part of STEP 7O.A.
+
+VOIDED records remain auditable.
+
+ROW LOCK REQUIRED FOR EVERY STATE MUTATION.

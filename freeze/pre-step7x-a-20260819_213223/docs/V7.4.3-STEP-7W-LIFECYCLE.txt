@@ -1,0 +1,76 @@
+STEP 7W — LIFECYCLE CONTRACT
+
+INFECTION CONTROL PLAN
+
+DRAFT
+-> REVIEWED
+-> ACTIVE
+-> RETIRED
+
+
+INFECTION OBSERVATION
+
+RECORDED
+-> VERIFIED
+-> optional APPEND-ONLY AMENDMENT
+
+
+EXPOSURE EVENT
+
+OPEN
+-> REVIEWED
+-> CLOSED
+
+
+INFECTION PRECAUTION
+
+PROPOSED
+-> AUTHORIZED
+-> ACTIVE
+-> DISCONTINUED
+
+AI cannot perform any transition.
+
+
+MONITORING RECORD
+
+RECORDED
+-> VERIFIED
+-> optional APPEND-ONLY AMENDMENT
+
+
+INFECTION ALERT
+
+OPEN
+-> ACKNOWLEDGED
+-> REVIEWED
+-> RESOLVED
+
+
+INFECTION ESCALATION
+
+OPEN
+-> ASSIGNED
+-> ACCEPTED
+-> RESOLVED
+
+
+STATE MUTATION CONTRACT
+
+BEGIN TRANSACTION
+-> SELECT target FOR UPDATE
+-> reload current state
+-> verify human actor
+-> verify authority
+-> verify owner / reviewer where applicable
+-> mutate
+-> same-transaction audit
+-> COMMIT
+
+Incompatible concurrent mutation = exactly one winner.
+
+Loser business mutation = zero.
+Loser audit = zero.
+
+Owner preservation = required.
+Reviewer preservation = required.

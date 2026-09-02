@@ -1,0 +1,4 @@
+TAM AN CARE V8.0 — S5 TARGETED RUNTIME STORAGE CONTRACT
+STATIC_ONLY=YES
+
+STORAGE_TRACE|CONTROLLER=resident-access-administration/resident-access-administration.controller.ts|HANDLER=createPublicAccessAssignment|SERVICE_FILE=resident-access-administration/resident-access-administration.service.ts|SECURITY_SIGNALS=UNAUTHORIZED,FORBIDDEN,ACTOR_ID,ACTOR_ROLE,SUPERVISOR,CAREGIVER,NURSE,AI,SYSTEM,RESIDENT_SCOPE|AUDIT_SIGNALS=NONE|SQL_WRITE=YES|WRITE_TABLES=resident_access_assignments

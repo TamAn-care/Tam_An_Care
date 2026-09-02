@@ -1,0 +1,85 @@
+TAM AN CARE V7.4.3
+STEP 7N AI / HUMAN BOUNDARY
+
+
+AI ALLOWED
+
+trend analysis
+
+anomaly detection
+
+possible deterioration pattern detection
+
+measurement consistency warning
+
+missing-observation warning
+
+non-binding prioritization
+
+human-review recommendation
+
+draft explanatory summary clearly labeled as AI-generated
+
+
+AI NOT ALLOWED
+
+diagnosis
+
+medical prescription
+
+medication decision
+
+dose change
+
+treatment selection
+
+clinical threshold invention
+
+clinical threshold approval
+
+observation verification
+
+nursing-note signature
+
+clinical amendment
+
+abnormal-finding acknowledgement
+
+abnormal-finding closure
+
+clinical escalation approval
+
+Care Action autonomous creation
+
+Medication autonomous mutation
+
+clinical-record autonomous mutation
+
+
+RULE
+
+AI output is advisory.
+
+Human clinical/care accountability remains mandatory.
+
+
+AI ALERT
+
+An AI alert may point to an existing clinical record.
+
+An AI alert is not itself:
+
+a verified observation
+
+a diagnosis
+
+a human nursing note
+
+a clinical escalation
+
+a Care Action
+
+a medication order
+
+
+autonomousClinicalAction = false

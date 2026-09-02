@@ -1,0 +1,77 @@
+TAM AN CARE V7.4.3
+STEP 7J — RESOLUTION AUTHORIZATION MATRIX
+
+============================================================
+
+ACTOR / CONDITION                         RESOLVE
+
+Assigned Owner                            ALLOW
+
+SUPERVISOR                                ALLOW OVERRIDE
+
+CARE_MANAGER                              ALLOW OVERRIDE
+
+Other Caregiver                           DENY
+
+AI                                        DENY
+
+SYSTEM                                    DENY
+
+Empty actorId                             DENY
+
+Empty actorRole                           DENY
+
+Unknown Care Action                       DENY / 404
+
+Unassigned Care Action                    DENY
+
+PENDING Care Action                       DENY
+
+IN_REVIEW Care Action                     REQUIRED
+
+Already RESOLVED                          DENY
+
+Missing careNote                          DENY
+
+Missing resolutionReason                  DENY
+
+============================================================
+
+STATE TRANSITION
+
+IN_REVIEW -> RESOLVED
+
+============================================================
+
+OWNERSHIP
+
+assignedTo      UNCHANGED
+assignedRole    UNCHANGED
+assignedAt      UNCHANGED
+
+TRANSFER        NO
+
+============================================================
+
+AUDIT
+
+SUCCESS:
+
+CREATED
+-> ASSIGNED
+-> REVIEW_STARTED
+-> RESOLVED
+
+Exactly one RESOLVED event.
+
+============================================================
+
+AI AUTONOMOUS RESOLUTION
+
+NO
+
+SYSTEM AUTONOMOUS RESOLUTION
+
+NO
+
+============================================================

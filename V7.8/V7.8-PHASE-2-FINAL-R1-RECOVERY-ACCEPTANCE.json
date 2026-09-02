@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-08-21T13:26:00.744536+00:00",
+  "version": "V7.8",
+  "phase": "2-FINAL-R1",
+  "status": "PASSED",
+  "decision": "PHASE_2_RESTART_RECOVERY_ROLLBACK_ACCEPTED",
+  "artifact_resolution": "SHA256_IDENTITY_NOT_FILENAME",
+  "accepted_evidence": {
+    "phase2a_r1_result": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2A-R1-API-UI-CONTROLLED-RESTART-RECOVERY-RESULT.txt",
+      "hash": "adc83e36c2aca567fd8abc35ac5cfe961f320dc26579b4df1646e8b6c9b6ad80"
+    },
+    "phase2a_r1_manifest": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8/V7.8-PHASE-2A-R1-API-UI-CONTROLLED-RESTART-RECOVERY.json",
+      "hash": "59193c3b2477437bdfcb0bf1c4e84a805f3cd9b889f3bb096b23f2437564524f"
+    },
+    "phase2b_result": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2B-DATABASE-RECOVERY-SAFETY-RESULT.txt",
+      "hash": "ccfc951af9f74f47ee304678d00c4d8825e86cf6afbf049b4e03930c1dec549a"
+    },
+    "phase2b_r1_result": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2B-R1-CONTROLLED-PRODUCTION-DB-RESTART-RESULT.txt",
+      "hash": "4a05ae1cf5af5eaa53552e2ccdc3854a6dd933b99c6b77accaca2541fbd01e44"
+    },
+    "phase2c_result": {
+      "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.8-PHASE-2C-ROLLBACK-RECOVERY-ACCEPTANCE-RESULT.txt",
+      "hash": "c69b77d861397873cb546e29be97da7b367b05b6a187a4b904f1c43c90981f4c"
+    }
+  },
+  "production": {
+    "api_health": "200",
+    "api_security": "401|401|401",
+    "ui_matrix": "200|401|401|200",
+    "api_image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "ui_image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147"
+  },
+  "database": {
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "restore": false,
+    "migration": false,
+    "write": false
+  },
+  "rollback": {
+    "v76_api_state": "exited",
+    "v76_ui_state": "exited",
+    "v76_db_state": "running",
+    "production_rollback_performed": false,
+    "readiness": "PASSED"
+  },
+  "source_hash": "bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7",
+  "next": "V7.8_PHASE_3A_LOW_IMPACT_LATENCY_BASELINE"
+}

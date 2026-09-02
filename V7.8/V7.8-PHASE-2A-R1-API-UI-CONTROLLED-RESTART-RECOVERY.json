@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-08-21T10:43:22.225254+00:00",
+  "version": "V7.8",
+  "phase": "2A-R1",
+  "status": "PASSED",
+  "restart_evidence_contract": {
+    "hash": "1f14f8213a741ccfac8a4b1f830b8fc2d7fd48a4e05949fb641703933676ecef",
+    "restart_count": "INFORMATIONAL_ONLY",
+    "authoritative": [
+      "same_container_id",
+      "same_image",
+      "started_at_changed",
+      "health_recovered",
+      "security_or_routing_recovered",
+      "database_unchanged"
+    ]
+  },
+  "api": {
+    "container_id": "9c5685f6d7c34b1f95029a15263a59dbaf6006253fa24d3c39a962125a31c2d9",
+    "image": "sha256:36b1511ed4b4872bb6ff1a669c19a0a6e245d9e649277b5db01ec433964ef4b7",
+    "started_at_before": "2026-08-21T10:40:46.229610133Z",
+    "started_at_after": "2026-08-21T10:42:58.92688025Z",
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "health": "200",
+    "security": "401|401|401",
+    "restart_proven": true
+  },
+  "ui": {
+    "container_id": "3b8ce413e4e6f8edea10959cf9e3453217f041132f5155b6268d415b63069bd3",
+    "image": "sha256:53bf7afecf93a6a29cb984ac20464cc82c72789bffe6f3d977a1f56731a85147",
+    "started_at_before": "2026-08-21T10:26:16.879721092Z",
+    "started_at_after": "2026-08-21T10:43:11.079908006Z",
+    "restart_count_before": 0,
+    "restart_count_after": 0,
+    "matrix": "200|401|401|200",
+    "restart_proven": true
+  },
+  "database": {
+    "restart_performed": false,
+    "table_count": 118,
+    "fingerprint": "7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639",
+    "row_delta": false,
+    "schema_change": false
+  },
+  "v76_rollback_assets_preserved": true,
+  "next": "V7.8_PHASE_2B_DATABASE_RECOVERY_SAFETY"
+}

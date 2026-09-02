@@ -1,0 +1,74 @@
+TAM AN CARE V7.8
+PHASE 2B — DATABASE RECOVERY SAFETY PREFLIGHT
+
+STATUS=READY
+
+PHASE2A_R1_RESULT_HASH=
+adc83e36c2aca567fd8abc35ac5cfe961f320dc26579b4df1646e8b6c9b6ad80
+
+PHASE2A_R1_MANIFEST_HASH=
+59193c3b2477437bdfcb0bf1c4e84a805f3cd9b889f3bb096b23f2437564524f
+
+RESTART_EVIDENCE_CONTRACT_HASH=
+1f14f8213a741ccfac8a4b1f830b8fc2d7fd48a4e05949fb641703933676ecef
+
+V7.7_SOURCE_HASH=
+bd68dcede4144c46dbb1633bd19af422ac58df2b492a62cc7a460c2db93ebac7
+
+DATABASE_TABLE_COUNT=
+118
+
+DATABASE_FINGERPRINT=
+7c1156b0bd562d03181259d6102412340f4ecbbb752b4eb427fd92cdc1864639
+
+API_CONTROLLED_RESTART=
+PASSED
+
+UI_CONTROLLED_RESTART=
+PASSED
+
+IMPORTANT:
+
+Docker RestartCount is NOT an acceptance condition
+for deliberate docker restart commands.
+
+Phase 2B must:
+
+1. Inspect current DB volume and container identity.
+2. Lock Phase 1 backup artifact.
+3. Inspect PostgreSQL shutdown/startup semantics.
+4. Inspect API DB connection-pool reconnect behavior.
+5. Determine expected API response while DB is unavailable.
+6. Prepare automatic recovery before any DB runtime mutation.
+7. Preserve API/UI container identities.
+8. Preserve DB volume.
+9. Never remove/recreate the production DB container.
+10. Never restore the backup into production.
+11. Never perform schema migration.
+12. Capture DB fingerprint immediately before restart.
+13. Only after safety proof, authorize one controlled DB restart.
+14. Verify PostgreSQL returns SQL-ready.
+15. Verify API reconnects without API restart if supported.
+16. Verify API health/security.
+17. Verify UI routing.
+18. Verify 118 tables.
+19. Verify exact database row fingerprint.
+20. Preserve V7.6 rollback assets.
+
+DATABASE_RESTART_AUTHORIZED=
+NOT_YET
+
+DATABASE_CONTAINER_REMOVE=
+NO
+
+DATABASE_VOLUME_CHANGE=
+NO
+
+DATABASE_RESTORE=
+NO
+
+SCHEMA_MIGRATION=
+NO
+
+V7.7_SOURCE_WRITE=
+NO

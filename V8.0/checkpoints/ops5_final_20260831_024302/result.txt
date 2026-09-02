@@ -1,0 +1,45 @@
+======================================================================
+ TAMANCARE V8.0 — OPS-5 DB FUNCTIONAL MICRO-CLOSEOUT
+
+ PURPOSE = REPAIR TEST-RUNNER ONLY
+ M5 REPLAY = NO
+ HTTP REPLAY = NO
+ AUTH REPLAY = NO
+ SOURCE MODIFICATION = NO
+ INVENTORY SOURCE MODIFICATION = NO
+ RESIDENT CONSUMPTION SOURCE MODIFICATION = NO
+======================================================================
+
+----- 1. PRESERVED STATE -----
+M5_SHA256=9ce8e9bec09139a1ba8257cb7db0b87dfbc72dd0852a809ec0497a5eccc429f1
+M5_REGISTRY=1
+M5_TABLES=1|1
+DATABASE_BASELINE=1|1|0|0|0|0|0|0
+PASS: OPS-5 PRESERVED STATE
+
+----- 2. DB FUNCTIONAL ACCEPTANCE -----
+PASS: OPS-5 DB FUNCTIONAL ACCEPTANCE
+
+----- 3. ROLLBACK VERIFICATION -----
+TEST_RESIDUE=0|0|0|0|0
+PASS: DB FUNCTIONAL ROLLBACK CLEAN
+
+----- 4. FINAL DATABASE STATE -----
+DATABASE_FINAL=1|1|0|0|0|0|0|0
+M5_REGISTRY_FINAL=1
+PASS: FINAL DATABASE + M5 REGISTRY
+
+----- 5. FINAL BUILD -----
+
+> taman-care-v7-health-trend@7.3.2 build
+> nest build
+
+PASS: FINAL BUILD
+
+======================================================================
+ TAMANCARE V8.0 — OPS-5 MICRO-CLOSEOUT DECISION
+======================================================================
+
+PASS_COUNT=5
+FAIL_COUNT=0
+

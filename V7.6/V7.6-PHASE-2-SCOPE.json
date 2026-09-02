@@ -1,0 +1,222 @@
+{
+  "generated_at": "2026-08-21T00:11:24.392648+00:00",
+  "phase": "V7.6 Phase 2",
+  "classification": {
+    "infrastructure": [
+      "database",
+      "health"
+    ],
+    "authorization_helper": [
+      "care-plan-authorization",
+      "care-task-authorization",
+      "reopen-authorization",
+      "resident-access-scope",
+      "resolution-authorization",
+      "start-review-authorization"
+    ],
+    "integration_orchestration": [
+      "care-action-bridge",
+      "cross-domain-integration",
+      "responsibility-acceptance"
+    ],
+    "operations_administration": [
+      "operational-care-view",
+      "resident-access-administration",
+      "residents",
+      "staff-actors"
+    ],
+    "care_workflow": [
+      "care-actions",
+      "care-plan-governance",
+      "care-plans",
+      "care-task-execution",
+      "care-tasks",
+      "warning-reviews"
+    ],
+    "clinical_core": [
+      "clinical-observations",
+      "incidents",
+      "medication"
+    ],
+    "resident_care_domains": [
+      "activity-rehabilitation",
+      "behavioral-cognitive",
+      "fall-mobility",
+      "infection-control",
+      "medication-safety",
+      "nutrition-hydration",
+      "pain-comfort",
+      "personal-care",
+      "safeguarding",
+      "skin-wound",
+      "sleep-rest"
+    ],
+    "advanced_ai": [
+      "ai"
+    ]
+  },
+  "false_positive_reasons": {
+    "database": "infrastructure; no user-facing screen expected",
+    "health": "system infrastructure; represented by system-status",
+    "care-plan-authorization": "authorization helper",
+    "care-task-authorization": "authorization helper",
+    "reopen-authorization": "authorization helper",
+    "resolution-authorization": "authorization helper",
+    "resident-access-scope": "authorization helper",
+    "start-review-authorization": "authorization helper",
+    "care-action-bridge": "workflow orchestration helper",
+    "cross-domain-integration": "integration aggregator",
+    "responsibility-acceptance": "workflow authorization/orchestration",
+    "staff-actors": "represented by staff-access feature",
+    "resident-access-administration": "represented by staff-access feature",
+    "operational-care-view": "represented by dashboard/care-view"
+  },
+  "marker_stats": {
+    "throw_error": 272,
+    "todo": 0,
+    "fixme": 0,
+    "not_implemented": 2,
+    "stub_return": 26
+  },
+  "not_implemented_hits": [
+    {
+      "file": "api/src/ai/ai-engine.service.ts",
+      "line": 24
+    },
+    {
+      "file": "api/src/ai/ai-engine.service.v7.3.3.backup.ts",
+      "line": 24
+    }
+  ],
+  "existing_ui_mapping": {
+    "residents": [
+      "residents"
+    ],
+    "dashboard": [
+      "operational-care-view",
+      "cross-domain-integration"
+    ],
+    "care-view": [
+      "operational-care-view",
+      "care-actions",
+      "warning-reviews"
+    ],
+    "staff-access": [
+      "staff-actors",
+      "resident-access-administration",
+      "resident-access-scope"
+    ],
+    "system-status": [
+      "health"
+    ]
+  },
+  "true_gap_groups": {
+    "care_work_management": [
+      "care-actions",
+      "care-plans",
+      "care-plan-governance",
+      "care-tasks",
+      "care-task-execution",
+      "warning-reviews"
+    ],
+    "clinical_operations": [
+      "clinical-observations",
+      "incidents",
+      "medication"
+    ],
+    "daily_resident_care": [
+      "activity-rehabilitation",
+      "behavioral-cognitive",
+      "fall-mobility",
+      "infection-control",
+      "medication-safety",
+      "nutrition-hydration",
+      "pain-comfort",
+      "personal-care",
+      "safeguarding",
+      "skin-wound",
+      "sleep-rest"
+    ],
+    "advanced_ai": [
+      "ai"
+    ]
+  },
+  "release_scope": {
+    "release": "V7.6",
+    "theme": "Operational Care Workspace",
+    "principle": "Expose and unify already-existing operational care capabilities before expanding into advanced clinical or AI workflows.",
+    "in_scope": {
+      "frontend": [
+        "enhance dashboard",
+        "enhance resident care-view",
+        "add care work management UI",
+        "integrate warning review workflow",
+        "preserve staff-access administration",
+        "preserve responsive desktop/tablet/mobile behavior"
+      ],
+      "backend": [
+        "care-actions",
+        "care-plans",
+        "care-plan-governance",
+        "care-tasks",
+        "care-task-execution",
+        "warning-reviews",
+        "operational-care-view",
+        "cross-domain-integration"
+      ],
+      "security": [
+        "human actor propagation",
+        "resident access scope enforcement",
+        "role authorization",
+        "fail-closed behavior"
+      ]
+    },
+    "explicitly_deferred": {
+      "clinical_operations": [
+        "clinical-observations",
+        "incidents",
+        "medication"
+      ],
+      "daily_resident_care": [
+        "activity-rehabilitation",
+        "behavioral-cognitive",
+        "fall-mobility",
+        "infection-control",
+        "medication-safety",
+        "nutrition-hydration",
+        "pain-comfort",
+        "personal-care",
+        "safeguarding",
+        "skin-wound",
+        "sleep-rest"
+      ],
+      "advanced_ai": [
+        "ai"
+      ]
+    }
+  },
+  "acceptance_criteria": [
+    "Frozen V7.5 production remains unchanged during development.",
+    "V7.6 development occurs only in isolated V7.6 workspace/runtime.",
+    "All new frontend API calls use the authoritative backend routes.",
+    "Human actor identity propagates through every protected workflow.",
+    "No protected operation succeeds without an authorized actor.",
+    "Resident access scope is enforced before resident-specific data/actions.",
+    "Care actions can be listed/viewed and workflow state is visible.",
+    "Assignment and transfer preserve actor/audit history.",
+    "Start-review, resolve and reopen preserve authorization rules.",
+    "Care-plan governance is exposed only where backend contract is proven.",
+    "Care-task execution is exposed only where backend contract is proven.",
+    "Warning review workflow integrates with resident operational care.",
+    "Dashboard and resident care-view remain backward compatible.",
+    "Staff Access remains backward compatible.",
+    "Desktop, tablet and mobile layouts pass responsive acceptance.",
+    "All API error states render safely without destructive UI behavior.",
+    "Database schema changes are prohibited unless separately gated.",
+    "Functional acceptance uses disposable isolated database fixtures.",
+    "Active production database receives no acceptance-test fixtures.",
+    "Rollback artifact is created before any future production cutover.",
+    "Exact source/build/image hashes are locked before promotion.",
+    "Production cutover occurs only after integrated E2E acceptance."
+  ]
+}

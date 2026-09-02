@@ -1,0 +1,14 @@
+{
+  "version": "V7.9",
+  "series": "03",
+  "phase": "2_RESIDENT_MANAGEMENT",
+  "selection_rule": "SHA256_IDENTITY_NOT_FILENAME",
+  "phase2_preflight_result": {
+    "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9-PHASE-2-RESIDENT-MANAGEMENT-PREFLIGHT-RESULT.txt",
+    "sha256": "de9c5f608f9572ed80147717ce18341d814669da555a65072de4269d4517c9bb"
+  },
+  "phase2_preflight_manifest": {
+    "path": "/Users/anhha/Downloads/TamAnCare_V7_4_3_Development/V7.9/preflight/V7.9-PHASE-2-RESIDENT-MANAGEMENT-PREFLIGHT.json",
+    "sha256": "b141ab143e8f5797ca31fc616a5ef3425f43c4428d496d401ade9b40c892c40e"
+  }
+}
