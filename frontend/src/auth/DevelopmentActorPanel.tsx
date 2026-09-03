@@ -13,40 +13,6 @@ import {
 import { ROLE_LABELS } from './role-policy';
 import { recordSystemAuditLog } from '../api/audit-log';
 
-const ROLE_BADGE_CLASS: Record<string, string> = {
-  ADMIN: 'badge badge-danger',
-  SUPERVISOR: 'badge badge-purple',
-  CARE_MANAGER: 'badge badge-info',
-  PSYCHOLOGIST: 'badge badge-purple',
-  SOCIAL_WORKER: 'badge badge-info',
-  NURSE: 'badge badge-success',
-  CAREGIVER: 'badge badge-warning',
-  NUTRITIONIST: 'badge badge-success',
-  HOUSEKEEPING: 'badge badge-neutral',
-  REHABILITATION_SPECIALIST: 'badge badge-info',
-  SECURITY: 'badge badge-danger',
-  ACCOUNTANT: 'badge badge-warning',
-  RECEPTIONIST: 'badge badge-neutral',
-  GUARDIAN: 'badge badge-success',
-};
-
-const ROLE_ICONS: Record<string, string> = {
-  ADMIN: '🛡️',
-  SUPERVISOR: '👑',
-  CARE_MANAGER: '📋',
-  PSYCHOLOGIST: '🧠',
-  SOCIAL_WORKER: '🤝',
-  NURSE: '🩺',
-  CAREGIVER: '🤲',
-  NUTRITIONIST: '🥗',
-  HOUSEKEEPING: '🧹',
-  REHABILITATION_SPECIALIST: '🧘',
-  SECURITY: '🛡️',
-  ACCOUNTANT: '💰',
-  RECEPTIONIST: '🛎️',
-  GUARDIAN: '👨‍👩‍👧',
-};
-
 const GUARDIAN_DEMO_ACCOUNTS: ActiveStaffMember[] = [
   {
     actorId: 'guardian-bao-001',
@@ -67,22 +33,21 @@ const GUARDIAN_DEMO_ACCOUNTS: ActiveStaffMember[] = [
 export function DevelopmentActorPanel() {
   const { actor, setActor, clearActor } = useActor();
   const queryClient = useQueryClient();
-  const [inputActorId, setInputActorId] = useState(actor?.actorId ?? '');
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Admin Login Credentials Form
-  const [adminUsernameInput, setAdminUsernameInput] = useState('Admin');
-  const [adminPasswordInput, setAdminPasswordInput] = useState('Admin');
-  const [adminAuthFeedback, setAdminAuthFeedback] = useState<string | null>(null);
+  // Unified Single Login State
+  const [loginIdentifier, setLoginIdentifier] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginFeedback, setLoginFeedback] = useState<{ text: string; isError: boolean } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modal Change Admin Password State
+  // Admin Change Password Modal State
   const [showChangeAdminPasswordModal, setShowChangeAdminPasswordModal] = useState(false);
   const [currentAdminPasswordInput, setCurrentAdminPasswordInput] = useState('');
   const [newAdminPasswordInput, setNewAdminPasswordInput] = useState('');
   const [confirmAdminPasswordInput, setConfirmAdminPasswordInput] = useState('');
   const [changePasswordFeedback, setChangePasswordFeedback] = useState<string | null>(null);
 
-  // Load available active staff accounts
+  // Load available staff list (used for Admin quick selection)
   const { data: staffList, isLoading } = useQuery({
     queryKey: ['auth-active-staff'],
     queryFn: fetchActiveStaff,
@@ -93,58 +58,79 @@ export function DevelopmentActorPanel() {
     ...GUARDIAN_DEMO_ACCOUNTS,
   ];
 
-  const resolveMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const trimmed = id.trim();
-      if (trimmed.toLowerCase() === 'admin' || trimmed === 'STAFF-ADMIN-001' || trimmed === 'ADMIN-001') {
-        return ADMIN_DEMO_ACCOUNT;
+  const isAdmin = actor?.actorRole === 'ADMIN';
+
+  // Unified Single Login Handler
+  const handleUnifiedLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginFeedback(null);
+
+    const userStr = loginIdentifier.trim();
+    const passStr = loginPassword.trim();
+
+    if (!userStr) {
+      setLoginFeedback({ text: '❌ Vui lòng nhập Tên đăng nhập hoặc Mã nhân viên.', isError: true });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const q = userStr.toLowerCase();
+
+      // Check if user is attempting Admin login
+      if (q === 'admin' || q === 'admin-001' || q === 'adm-001' || q === 'staff-admin-001') {
+        const isValidAdminPass = await verifyAdminPassword(passStr);
+        if (!isValidAdminPass) {
+          setLoginFeedback({
+            text: '❌ Mật khẩu Quản trị viên (Admin) không chính xác.',
+            isError: true,
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        setActor({
+          actorId: 'Admin',
+          actorRole: 'ADMIN',
+          displayName: 'Quản Trị Viên Tối Cao (Admin)',
+        });
+        setLoginFeedback({
+          text: '✅ Đăng nhập Quản trị viên (Admin) thành công!',
+          isError: false,
+        });
+        setLoginPassword('');
+        setIsSubmitting(false);
+        setTimeout(() => setLoginFeedback(null), 4000);
+        return;
       }
-      const matchedGuardian = GUARDIAN_DEMO_ACCOUNTS.find(
-        (g) => g.actorId === trimmed || g.staffCode === trimmed,
-      );
-      if (matchedGuardian) return matchedGuardian;
-      return resolveStaffActor(trimmed);
-    },
-    onSuccess: (data: ActiveStaffMember) => {
+
+      // Resolving regular Staff Member or Guardian by Staff Code / ID
+      const resolved = await resolveStaffActor(userStr);
+
       setActor({
-        actorId: data.actorId,
-        actorRole: data.actorRole,
-        displayName: data.displayName,
+        actorId: resolved.actorId,
+        actorRole: resolved.actorRole,
+        displayName: resolved.displayName,
       });
-      setInputActorId(data.actorId);
-      setErrorMessage(null);
-    },
-    onError: (err: any) => {
-      setErrorMessage(err.message || 'Mã nhân sự không hợp lệ hoặc tài khoản không hoạt động');
-    },
-  });
 
-  const handleAdminLogin = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setAdminAuthFeedback(null);
-
-    const valid = await verifyAdminPassword(adminPasswordInput.trim());
-    if (adminUsernameInput.trim().toLowerCase() !== 'admin' && adminUsernameInput.trim() !== 'ADMIN-001') {
-      setAdminAuthFeedback('❌ Tên đăng nhập Admin không chính xác. Mặc định là: Admin');
-      return;
+      setLoginFeedback({
+        text: `✅ Đăng nhập thành công với vai trò: ${resolved.displayName} (${ROLE_LABELS[resolved.actorRole] || resolved.actorRole})`,
+        isError: false,
+      });
+      setLoginPassword('');
+      setIsSubmitting(false);
+      setTimeout(() => setLoginFeedback(null), 4000);
+    } catch (err: any) {
+      setLoginFeedback({
+        text: err.message || '❌ Tên đăng nhập hoặc Mã nhân viên không tồn tại trong hệ thống.',
+        isError: true,
+      });
+      setIsSubmitting(false);
     }
-
-    if (!valid) {
-      setAdminAuthFeedback('❌ Mật khẩu Admin không chính xác. (Mặc định tạm thời là: Admin)');
-      return;
-    }
-
-    // Login as Admin
-    setActor({
-      actorId: 'Admin',
-      actorRole: 'ADMIN',
-      displayName: 'Quản Trị Viên Tối Cao (Admin)',
-    });
-    setInputActorId('Admin');
-    setAdminAuthFeedback('✅ Đăng nhập Admin thành công với 100% toàn quyền truy cập & chỉnh sửa tất cả thông tin!');
-    setTimeout(() => setAdminAuthFeedback(null), 5000);
   };
 
+  // Change Admin Password Handler
   const handleChangeAdminPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setChangePasswordFeedback(null);
@@ -161,21 +147,19 @@ export function DevelopmentActorPanel() {
     }
 
     if (newAdminPasswordInput.trim() !== confirmAdminPasswordInput.trim()) {
-      setChangePasswordFeedback('❌ Xác nhận mật khẩu mới không khớp.');
+      setChangePasswordFeedback('❌ Mật khẩu xác nhận không trùng khớp.');
       return;
     }
 
     setStoredAdminPassword(newAdminPasswordInput.trim());
-    setAdminPasswordInput(newAdminPasswordInput.trim());
 
-    // Record audit log
     await recordSystemAuditLog({
       actorId: actor?.actorId || 'Admin',
       actorName: actor?.displayName || 'Quản Trị Viên (Admin)',
-      actorRole: 'ADMIN',
-      actorRoleLabel: 'Quản trị viên Tối cao',
+      actorRole: actor?.actorRole || 'ADMIN',
+      actorRoleLabel: ROLE_LABELS[actor?.actorRole || 'ADMIN'] || 'Quản trị viên',
       actionType: 'UPDATE',
-      actionLabel: 'Thay đổi mật khẩu tài khoản Admin tối cao',
+      actionLabel: 'Cập nhật mật khẩu Admin',
       module: 'SYSTEM_ADMIN',
       moduleLabel: 'Bảo Mật Hệ Thống',
       targetEntityId: 'Admin',
@@ -195,23 +179,15 @@ export function DevelopmentActorPanel() {
     }, 1500);
   };
 
-  const handleManualSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputActorId.trim()) return;
-    resolveMutation.mutate(inputActorId.trim());
-  };
-
   const handleSelectStaff = (staff: ActiveStaffMember) => {
     setActor({
       actorId: staff.actorId,
       actorRole: staff.actorRole,
       displayName: staff.displayName,
     });
-    setInputActorId(staff.actorId);
-    setErrorMessage(null);
+    setLoginIdentifier(staff.staffCode || staff.actorId);
+    setLoginFeedback(null);
   };
-
-  const isAdmin = actor?.actorRole === 'ADMIN';
 
   return (
     <div
@@ -230,212 +206,141 @@ export function DevelopmentActorPanel() {
           <img src="/branding/tam-an-logo-master.png" alt="Tâm An Logo" style={{ height: '32px', width: 'auto' }} />
           <div>
             <h2 style={{ margin: 0, fontSize: '1.05rem', color: '#166534', fontWeight: 800 }}>
-              Đăng Nhập & Chuyển Đổi Vai Trò Nhân Sự
+              Đăng Nhập Tài Khoản Nhiệm Vụ Nhân Sự
             </h2>
             <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              Hệ Thống Quản Trị Viện Dưỡng Lão Tâm An Care
+              Viện Dưỡng Lão Tâm An Care — Hệ Thống Phân Quyền Bảo Mật
             </div>
           </div>
         </div>
 
         {actor ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.82rem', color: '#334155' }}>
               Đang đăng nhập: <b style={{ color: '#166534' }}>{actor.displayName || actor.actorId}</b> ({ROLE_LABELS[actor.actorRole] || actor.actorRole})
             </span>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => setShowChangeAdminPasswordModal(true)}
+                style={{
+                  background: '#fef3c7',
+                  border: '1px solid #fde047',
+                  color: '#854d0e',
+                  padding: '0.25rem 0.55rem',
+                  borderRadius: '0.35rem',
+                  fontWeight: 700,
+                  fontSize: '0.74rem',
+                  cursor: 'pointer',
+                }}
+              >
+                🔑 Đổi Mật Khẩu Admin
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-sm btn-danger-outline"
               onClick={() => {
                 clearActor();
-                setInputActorId('');
-                setErrorMessage(null);
+                setLoginIdentifier('');
+                setLoginPassword('');
+                setLoginFeedback(null);
               }}
               style={{ fontSize: '0.78rem', padding: '0.25rem 0.6rem' }}
             >
-              Đăng xuất
+              🚪 Đăng xuất
             </button>
           </div>
         ) : (
           <span style={{ fontSize: '0.78rem', color: '#b91c1c', fontWeight: 700, background: '#fee2e2', padding: '0.25rem 0.6rem', borderRadius: '0.35rem' }}>
-            ⚠️ Chưa đăng nhập — Vui lòng chọn tài khoản bên dưới
+            ⚠️ Vui lòng gõ Tên đăng nhập / Mã nhân viên và Mật khẩu để đăng nhập
           </span>
         )}
       </div>
 
-      {/* Main Login Options Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
-        {/* Box 1: Admin & Executive Login Form */}
-        <div
-          style={{
-            background: isAdmin ? '#f0fdf4' : '#f8fafc',
-            border: `1.5px solid ${isAdmin ? '#86efac' : '#e2e8f0'}`,
-            borderRadius: '0.65rem',
-            padding: '1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span style={{ fontSize: '1.2rem' }}>🛡️</span>
-                <b style={{ color: '#0f172a', fontSize: '0.92rem' }}>ĐĂNG NHẬP QUẢN TRỊ VIÊN (ADMIN)</b>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowChangeAdminPasswordModal(true)}
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  color: '#475569',
-                  padding: '0.2rem 0.55rem',
-                  borderRadius: '0.35rem',
-                  fontWeight: 600,
-                  fontSize: '0.74rem',
-                  cursor: 'pointer',
-                }}
-              >
-                🔑 Đổi Mật Khẩu
-              </button>
-            </div>
-            <div style={{ fontSize: '0.76rem', color: '#64748b', marginBottom: '0.75rem' }}>
-              Toàn quyền truy cập và chỉnh sửa dữ liệu toàn hệ thống. Mặc định: <b>Admin / Admin</b>
-            </div>
-
-            <form onSubmit={handleAdminLogin} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.15rem' }}>
-                    Tên đăng nhập:
-                  </label>
-                  <input
-                    type="text"
-                    className="text-input"
-                    style={{ width: '100%', height: '32px', fontSize: '0.82rem', padding: '0 0.5rem', boxSizing: 'border-box', fontWeight: 700 }}
-                    value={adminUsernameInput}
-                    onChange={(e) => setAdminUsernameInput(e.target.value)}
-                    placeholder="Admin"
-                  />
-                </div>
-                <div>
-                  <label style={{ fontSize: '0.72rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.15rem' }}>
-                    Mật khẩu:
-                  </label>
-                  <input
-                    type="password"
-                    className="text-input"
-                    style={{ width: '100%', height: '32px', fontSize: '0.82rem', padding: '0 0.5rem', boxSizing: 'border-box', fontWeight: 700 }}
-                    value={adminPasswordInput}
-                    onChange={(e) => setAdminPasswordInput(e.target.value)}
-                    placeholder="Admin"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                style={{
-                  width: '100%',
-                  height: '32px',
-                  background: '#166534',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '0.4rem',
-                  fontWeight: 700,
-                  fontSize: '0.82rem',
-                  cursor: 'pointer',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {isAdmin ? '✅ Đang Là Admin Tối Cao' : '🔒 Đăng Nhập Quản Trị Viên'}
-              </button>
-            </form>
-
-            {adminAuthFeedback && (
-              <div
-                style={{
-                  marginTop: '0.5rem',
-                  padding: '0.35rem 0.6rem',
-                  borderRadius: '0.35rem',
-                  fontSize: '0.76rem',
-                  fontWeight: 600,
-                  background: adminAuthFeedback.includes('❌') ? '#fee2e2' : '#dcfce7',
-                  color: adminAuthFeedback.includes('❌') ? '#b91c1c' : '#15803d',
-                }}
-              >
-                {adminAuthFeedback}
-              </div>
-            )}
-          </div>
+      {/* UNIFIED SINGLE LOGIN FORM FOR ALL ROLES */}
+      <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '0.75rem', padding: '1.25rem', maxWidth: '600px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+          <span style={{ fontSize: '1.25rem' }}>🔑</span>
+          <b style={{ color: '#0f172a', fontSize: '1rem' }}>HỘP THOẠI ĐĂNG NHẬP HỆ THỐNG</b>
+        </div>
+        <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
+          Nhập <b>Tên đăng nhập / Mã nhân viên</b> và <b>Mật khẩu</b> được phân công để thực thi nhiệm vụ đúng thẩm quyền.
         </div>
 
-        {/* Box 2: Quick Staff Code & ID Login */}
-        <div
-          style={{
-            background: '#f8fafc',
-            border: '1.5px solid #e2e8f0',
-            borderRadius: '0.65rem',
-            padding: '1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
+        <form onSubmit={handleUnifiedLogin} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
-              <span style={{ fontSize: '1.2rem' }}>🆔</span>
-              <b style={{ color: '#0f172a', fontSize: '0.92rem' }}>ĐĂNG NHẬP THEO MÃ NHÂN VIÊN / ID</b>
-            </div>
-            <div style={{ fontSize: '0.76rem', color: '#64748b', marginBottom: '0.75rem' }}>
-              Nhập Mã nhân viên (ví dụ: <b>NV-DIR-001</b>, <b>DIR-001</b>, <b>NUR-003</b>, <b>CG-001</b>, <b>GD-001</b>) hoặc ID được Ban Giám đốc cấp.
-            </div>
-
-            <form onSubmit={handleManualSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <input
-                type="text"
-                value={inputActorId}
-                onChange={(e) => setInputActorId(e.target.value)}
-                placeholder="Gõ Mã nhân viên (ví dụ: NV-DIR-001, DIR-001, CG-001)..."
-                className="form-input"
-                style={{ width: '100%', height: '36px', fontSize: '0.86rem', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 600 }}
-              />
-
-              {errorMessage && (
-                <div style={{ padding: '0.4rem 0.6rem', borderRadius: '0.35rem', fontSize: '0.78rem', background: '#fee2e2', color: '#b91c1c', fontWeight: 600 }}>
-                  {errorMessage}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={!inputActorId.trim() || resolveMutation.isPending}
-                style={{
-                  width: '100%',
-                  height: '36px',
-                  background: '#0369a1',
-                  color: '#ffffff',
-                  border: 'none',
-                  borderRadius: '0.4rem',
-                  fontWeight: 700,
-                  fontSize: '0.85rem',
-                  cursor: 'pointer',
-                  marginTop: '0.25rem',
-                }}
-              >
-                {resolveMutation.isPending ? '⏳ Đang xác thực mã nhân viên...' : '🔑 Đăng Nhập Theo Mã Nhân Viên'}
-              </button>
-            </form>
+            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+              Tên đăng nhập / Mã nhân viên <span style={{ color: '#b91c1c' }}>*</span>
+            </label>
+            <input
+              type="text"
+              value={loginIdentifier}
+              onChange={(e) => setLoginIdentifier(e.target.value)}
+              placeholder="Nhập Mã nhân viên (ví dụ: NV-DIR-001, DIR-001, CG-001) hoặc Admin..."
+              className="form-input"
+              style={{ width: '100%', height: '38px', fontSize: '0.88rem', padding: '0 0.75rem', boxSizing: 'border-box', fontWeight: 600 }}
+              required
+            />
           </div>
-        </div>
+
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+              Mật khẩu đăng nhập <span style={{ color: '#b91c1c' }}>*</span>
+            </label>
+            <input
+              type="password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+              placeholder="Nhập mật khẩu cá nhân..."
+              className="form-input"
+              style={{ width: '100%', height: '38px', fontSize: '0.88rem', padding: '0 0.75rem', boxSizing: 'border-box', fontWeight: 600 }}
+            />
+          </div>
+
+          {loginFeedback && (
+            <div
+              style={{
+                padding: '0.5rem 0.75rem',
+                borderRadius: '0.4rem',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                background: loginFeedback.isError ? '#fee2e2' : '#dcfce7',
+                color: loginFeedback.isError ? '#b91c1c' : '#15803d',
+                border: loginFeedback.isError ? '1px solid #fca5a5' : '1px solid #86efac',
+              }}
+            >
+              {loginFeedback.text}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting || !loginIdentifier.trim()}
+            style={{
+              width: '100%',
+              height: '40px',
+              background: '#166534',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '0.5rem',
+              fontWeight: 800,
+              fontSize: '0.92rem',
+              cursor: 'pointer',
+              marginTop: '0.25rem',
+              boxShadow: '0 2px 4px rgba(22, 101, 52, 0.2)',
+            }}
+          >
+            {isSubmitting ? '⏳ Đang xác thực thông tin đăng nhập...' : '🔑 Đăng Nhập Hệ Thống'}
+          </button>
+        </form>
       </div>
 
-      {/* Quick Staff Selector Bar (ONLY VISIBLE TO ADMIN) */}
+      {/* Quick Staff Selector Bar (ONLY VISIBLE TO LOGGED IN ADMIN) */}
       {isAdmin && (
-        <div style={{ marginTop: '1rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.75rem' }}>
-          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>
-            👥 Chọn nhanh vai trò tài khoản nhân sự (Dành riêng cho Quản trị viên Admin):
+        <div style={{ marginTop: '1.25rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
+          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>
+            👥 Chuyển nhanh vai trò thử nghiệm (Chỉ hiển thị cho Quản trị viên Admin):
           </div>
 
           {isLoading ? (
@@ -450,23 +355,17 @@ export function DevelopmentActorPanel() {
                     type="button"
                     onClick={() => handleSelectStaff(staff)}
                     style={{
-                      padding: '0.3rem 0.6rem',
                       background: isSelected ? '#166534' : '#f1f5f9',
                       color: isSelected ? '#ffffff' : '#334155',
-                      border: isSelected ? '1px solid #15803d' : '1px solid #cbd5e1',
-                      borderRadius: '0.4rem',
-                      fontSize: '0.76rem',
-                      fontWeight: isSelected ? 700 : 600,
+                      border: isSelected ? '1px solid #14532d' : '1px solid #cbd5e1',
+                      borderRadius: '0.35rem',
+                      padding: '0.25rem 0.55rem',
+                      fontSize: '0.74rem',
+                      fontWeight: isSelected ? 700 : 500,
                       cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <span>{ROLE_ICONS[staff.actorRole] || '👤'}</span>
-                    <span>{staff.displayName}</span>
-                    <span style={{ opacity: 0.75, fontSize: '0.7rem' }}>({ROLE_LABELS[staff.actorRole] || staff.actorRole})</span>
+                    {staff.displayName} ({staff.staffCode})
                   </button>
                 );
               })}
@@ -475,135 +374,88 @@ export function DevelopmentActorPanel() {
         </div>
       )}
 
-
-      {/* MODAL: ĐỔI MẬT KHẨU ADMIN */}
+      {/* MODAL CHANGE ADMIN PASSWORD */}
       {showChangeAdminPasswordModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.65)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '1rem',
-          }}
-        >
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '0.75rem',
-              maxWidth: '480px',
-              width: '100%',
-              padding: '1.5rem',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#7e22ce', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span>🔑</span> Thay Đổi Mật Khẩu Admin Tối Cao
-              </h2>
-              <button
-                onClick={() => setShowChangeAdminPasswordModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
-              >
+        <div className="modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
+          <div className="modal-dialog" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '420px', width: '100%', padding: '1.25rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.6rem', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#166534', fontWeight: 800 }}>
+                🔑 Cập Nhật Mật Khẩu Admin Tối Cao
+              </h3>
+              <button onClick={() => setShowChangeAdminPasswordModal(false)} className="modal-close" style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>
                 ✕
               </button>
             </div>
 
             <form onSubmit={handleChangeAdminPassword}>
-              <div style={{ marginBottom: '0.85rem' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
-                  Mật khẩu hiện tại (Mặc định: Admin):
-                </label>
-                <input
-                  type="password"
-                  className="text-input"
-                  style={{ width: '100%', height: '36px', padding: '0 0.6rem', boxSizing: 'border-box' }}
-                  value={currentAdminPasswordInput}
-                  onChange={(e) => setCurrentAdminPasswordInput(e.target.value)}
-                  placeholder="Nhập mật khẩu Admin hiện tại"
-                  required
-                />
-              </div>
-
-              <div style={{ marginBottom: '0.85rem' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
-                  Mật khẩu mới:
-                </label>
-                <input
-                  type="password"
-                  className="text-input"
-                  style={{ width: '100%', height: '36px', padding: '0 0.6rem', boxSizing: 'border-box' }}
-                  value={newAdminPasswordInput}
-                  onChange={(e) => setNewAdminPasswordInput(e.target.value)}
-                  placeholder="Nhập mật khẩu mới bảo mật"
-                  required
-                />
-              </div>
-
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
-                  Xác nhận lại mật khẩu mới:
-                </label>
-                <input
-                  type="password"
-                  className="text-input"
-                  style={{ width: '100%', height: '36px', padding: '0 0.6rem', boxSizing: 'border-box' }}
-                  value={confirmAdminPasswordInput}
-                  onChange={(e) => setConfirmAdminPasswordInput(e.target.value)}
-                  placeholder="Nhập lại mật khẩu mới"
-                  required
-                />
-              </div>
-
-              {changePasswordFeedback && (
-                <div
-                  style={{
-                    marginBottom: '1rem',
-                    padding: '0.45rem 0.75rem',
-                    borderRadius: '0.35rem',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    background: changePasswordFeedback.includes('❌') ? '#fee2e2' : '#dcfce7',
-                    color: changePasswordFeedback.includes('❌') ? '#b91c1c' : '#15803d',
-                  }}
-                >
-                  {changePasswordFeedback}
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div>
+                  <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                    Mật khẩu Admin hiện tại <span className="req">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={currentAdminPasswordInput}
+                    onChange={(e) => setCurrentAdminPasswordInput(e.target.value)}
+                    required
+                    className="form-input"
+                    placeholder="Nhập mật khẩu Admin hiện tại..."
+                    style={{ width: '100%', fontSize: '0.85rem' }}
+                  />
                 </div>
-              )}
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowChangeAdminPasswordModal(false)}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '0.4rem',
-                    border: '1px solid #cbd5e1',
-                    background: '#f8fafc',
-                    fontWeight: 600,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Hủy bỏ
+                <div>
+                  <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                    Mật khẩu Admin mới <span className="req">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={newAdminPasswordInput}
+                    onChange={(e) => setNewAdminPasswordInput(e.target.value)}
+                    required
+                    className="form-input"
+                    placeholder="Nhập mật khẩu mới..."
+                    style={{ width: '100%', fontSize: '0.85rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                    Xác nhận mật khẩu mới <span className="req">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmAdminPasswordInput}
+                    onChange={(e) => setConfirmAdminPasswordInput(e.target.value)}
+                    required
+                    className="form-input"
+                    placeholder="Nhập lại mật khẩu mới..."
+                    style={{ width: '100%', fontSize: '0.85rem' }}
+                  />
+                </div>
+
+                {changePasswordFeedback && (
+                  <div
+                    style={{
+                      padding: '0.4rem 0.6rem',
+                      borderRadius: '0.35rem',
+                      fontSize: '0.78rem',
+                      fontWeight: 600,
+                      background: changePasswordFeedback.includes('❌') ? '#fee2e2' : '#dcfce7',
+                      color: changePasswordFeedback.includes('❌') ? '#b91c1c' : '#15803d',
+                    }}
+                  >
+                    {changePasswordFeedback}
+                  </div>
+                )}
+              </div>
+
+              <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
+                <button type="button" onClick={() => setShowChangeAdminPasswordModal(false)} className="btn btn-secondary" style={{ fontSize: '0.8rem' }}>
+                  Hủy
                 </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: '0.5rem 1.25rem',
-                    borderRadius: '0.4rem',
-                    border: 'none',
-                    background: '#7e22ce',
-                    color: '#ffffff',
-                    fontWeight: 700,
-                    fontSize: '0.85rem',
-                    cursor: 'pointer',
-                  }}
-                >
-                  ✓ Cập Nhật Mật Khẩu Admin
+                <button type="submit" className="btn btn-primary" style={{ fontSize: '0.8rem', fontWeight: 700 }}>
+                  💾 Cập nhật mật khẩu
                 </button>
               </div>
             </form>
