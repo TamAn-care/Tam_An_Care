@@ -44,6 +44,7 @@ import {
 import { NotificationBell } from '../notifications/NotificationBell';
 import { TesterPortalModal } from '../testing/TesterPortalModal';
 import { MobileBottomNav } from '../navigation/MobileBottomNav';
+import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
 
 export function AppShell() {
   const {
@@ -130,6 +131,7 @@ export function AppShell() {
 
   return (
     <div className="app-shell">
+      <IOSPWAInstallBanner />
       <aside
         id="application-sidebar"
         className={

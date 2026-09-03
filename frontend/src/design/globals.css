@@ -1904,4 +1904,48 @@ transform: scale(1.28);
   }
 }
 
+/* ========================================================================== */
+/* IOS PWA SPECIFIC ANIMATIONS & NATIVE INTERACTIONS                         */
+/* ========================================================================== */
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* iOS active press feedback */
+.ios-press {
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease;
+}
+
+.ios-press:active {
+  transform: scale(0.96) !important;
+  opacity: 0.85 !important;
+}
+
+/* Glassmorphism Navigation Blur */
+.ios-nav-blur {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* iOS PWA Standalone status bar gap */
+@media all and (display-mode: standalone) {
+  body {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  input, textarea, select, [contenteditable="true"] {
+    -webkit-user-select: text;
+  }
+}
+
+
 

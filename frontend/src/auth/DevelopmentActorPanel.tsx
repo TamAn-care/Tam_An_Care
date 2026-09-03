@@ -371,7 +371,7 @@ export function DevelopmentActorPanel() {
           </div>
         </div>
 
-        {/* Box 2: Quick ID Login */}
+        {/* Box 2: Quick Staff Code & ID Login */}
         <div
           style={{
             background: '#f8fafc',
@@ -386,10 +386,10 @@ export function DevelopmentActorPanel() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.4rem' }}>
               <span style={{ fontSize: '1.2rem' }}>🆔</span>
-              <b style={{ color: '#0f172a', fontSize: '0.92rem' }}>ĐĂNG NHẬP THEO MÃ ID NHÂN VIÊN</b>
+              <b style={{ color: '#0f172a', fontSize: '0.92rem' }}>ĐĂNG NHẬP THEO MÃ NHÂN VIÊN / ID</b>
             </div>
             <div style={{ fontSize: '0.76rem', color: '#64748b', marginBottom: '0.75rem' }}>
-              Nhập trực tiếp mã định danh nhân sự (ID) được Ban Giám đốc hoặc Quản lý cấp.
+              Nhập Mã nhân viên (ví dụ: <b>NV-DIR-001</b>, <b>DIR-001</b>, <b>NUR-003</b>, <b>CG-001</b>, <b>GD-001</b>) hoặc ID được Ban Giám đốc cấp.
             </div>
 
             <form onSubmit={handleManualSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -397,13 +397,13 @@ export function DevelopmentActorPanel() {
                 type="text"
                 value={inputActorId}
                 onChange={(e) => setInputActorId(e.target.value)}
-                placeholder="Nhập ID (ví dụ: STAFF-DIR-001, STAFF-NUR-003)..."
+                placeholder="Gõ Mã nhân viên (ví dụ: NV-DIR-001, DIR-001, CG-001)..."
                 className="form-input"
-                style={{ width: '100%', height: '32px', fontSize: '0.82rem', padding: '0 0.5rem', boxSizing: 'border-box' }}
+                style={{ width: '100%', height: '36px', fontSize: '0.86rem', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 600 }}
               />
 
               {errorMessage && (
-                <div style={{ padding: '0.35rem 0.6rem', borderRadius: '0.35rem', fontSize: '0.76rem', background: '#fee2e2', color: '#b91c1c', fontWeight: 600 }}>
+                <div style={{ padding: '0.4rem 0.6rem', borderRadius: '0.35rem', fontSize: '0.78rem', background: '#fee2e2', color: '#b91c1c', fontWeight: 600 }}>
                   {errorMessage}
                 </div>
               )}
@@ -413,18 +413,18 @@ export function DevelopmentActorPanel() {
                 disabled={!inputActorId.trim() || resolveMutation.isPending}
                 style={{
                   width: '100%',
-                  height: '32px',
+                  height: '36px',
                   background: '#0369a1',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '0.4rem',
                   fontWeight: 700,
-                  fontSize: '0.82rem',
+                  fontSize: '0.85rem',
                   cursor: 'pointer',
                   marginTop: '0.25rem',
                 }}
               >
-                {resolveMutation.isPending ? '⏳ Đang xác thực...' : '➡️ Đăng Nhập Bằng ID'}
+                {resolveMutation.isPending ? '⏳ Đang xác thực mã nhân viên...' : '🔑 Đăng Nhập Theo Mã Nhân Viên'}
               </button>
             </form>
           </div>
