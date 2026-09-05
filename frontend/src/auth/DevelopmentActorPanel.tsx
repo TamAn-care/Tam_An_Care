@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './ActorContext';
 import {
   fetchActiveStaff,
   resolveStaffActor,
   ActiveStaffMember,
-  ADMIN_DEMO_ACCOUNT,
   getStoredAdminPassword,
   setStoredAdminPassword,
   verifyAdminPassword,
@@ -15,15 +14,15 @@ import { recordSystemAuditLog } from '../api/audit-log';
 
 const GUARDIAN_DEMO_ACCOUNTS: ActiveStaffMember[] = [
   {
-    actorId: 'guardian-bao-001',
-    staffCode: 'GD-001',
+    actorId: 'TA-GUA-01',
+    staffCode: 'TA-GUA-01',
     displayName: 'Lê Gia Bảo (Thân nhân cụ Nguyễn Văn An)',
     actorRole: 'GUARDIAN',
     status: 'ACTIVE',
   },
   {
-    actorId: 'guardian-duc-002',
-    staffCode: 'GD-002',
+    actorId: 'TA-GUA-02',
+    staffCode: 'TA-GUA-02',
     displayName: 'Trần Anh Đức (Thân nhân cụ Trần Thị Bình)',
     actorRole: 'GUARDIAN',
     status: 'ACTIVE',
@@ -34,7 +33,7 @@ export function DevelopmentActorPanel() {
   const { actor, setActor, clearActor } = useActor();
   const queryClient = useQueryClient();
 
-  // Unified Single Login State
+  // Unified Login State
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginFeedback, setLoginFeedback] = useState<{ text: string; isError: boolean } | null>(null);
@@ -115,7 +114,7 @@ export function DevelopmentActorPanel() {
       });
 
       setLoginFeedback({
-        text: `✅ Đăng nhập thành công với vai trò: ${resolved.displayName} (${ROLE_LABELS[resolved.actorRole] || resolved.actorRole})`,
+        text: `✅ Đăng nhập thành công: ${resolved.displayName} (${ROLE_LABELS[resolved.actorRole] || resolved.actorRole})`,
         isError: false,
       });
       setLoginPassword('');
@@ -193,154 +192,282 @@ export function DevelopmentActorPanel() {
     <div
       style={{
         background: '#ffffff',
-        border: '1px solid #cbd5e1',
-        borderRadius: '0.75rem',
-        padding: '1.25rem',
-        marginBottom: '1.5rem',
-        boxShadow: '0 4px 12px rgba(15, 23, 42, 0.05)',
+        borderRadius: '1rem',
+        border: '1px solid #d8e2dc',
+        boxShadow: '0 12px 35px rgba(22, 101, 52, 0.08)',
+        overflow: 'hidden',
+        margin: '0 auto',
       }}
     >
-      {/* Top Header Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <img src="/branding/tam-an-logo-master.png" alt="Tâm An Logo" style={{ height: '32px', width: 'auto' }} />
-          <div>
-            <h2 style={{ margin: 0, fontSize: '1.05rem', color: '#166534', fontWeight: 800 }}>
-              Đăng Nhập Tài Khoản Nhiệm Vụ Nhân Sự
-            </h2>
-            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              Viện Dưỡng Lão Tâm An Care — Hệ Thống Phân Quyền Bảo Mật
-            </div>
-          </div>
-        </div>
-
-        {actor ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.82rem', color: '#334155' }}>
-              Đang đăng nhập: <b style={{ color: '#166534' }}>{actor.displayName || actor.actorId}</b> ({ROLE_LABELS[actor.actorRole] || actor.actorRole})
-            </span>
-            {isAdmin && (
-              <button
-                type="button"
-                onClick={() => setShowChangeAdminPasswordModal(true)}
-                style={{
-                  background: '#fef3c7',
-                  border: '1px solid #fde047',
-                  color: '#854d0e',
-                  padding: '0.25rem 0.55rem',
-                  borderRadius: '0.35rem',
-                  fontWeight: 700,
-                  fontSize: '0.74rem',
-                  cursor: 'pointer',
-                }}
-              >
-                🔑 Đổi Mật Khẩu Admin
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-sm btn-danger-outline"
-              onClick={() => {
-                clearActor();
-                setLoginIdentifier('');
-                setLoginPassword('');
-                setLoginFeedback(null);
-              }}
-              style={{ fontSize: '0.78rem', padding: '0.25rem 0.6rem' }}
-            >
-              🚪 Đăng xuất
-            </button>
-          </div>
-        ) : (
-          <span style={{ fontSize: '0.78rem', color: '#b91c1c', fontWeight: 700, background: '#fee2e2', padding: '0.25rem 0.6rem', borderRadius: '0.35rem' }}>
-            ⚠️ Vui lòng gõ Tên đăng nhập / Mã nhân viên và Mật khẩu để đăng nhập
-          </span>
-        )}
-      </div>
-
-      {/* UNIFIED SINGLE LOGIN FORM FOR ALL ROLES */}
-      <div style={{ background: '#f8fafc', border: '1.5px solid #cbd5e1', borderRadius: '0.75rem', padding: '1.25rem', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-          <span style={{ fontSize: '1.25rem' }}>🔑</span>
-          <b style={{ color: '#0f172a', fontSize: '1rem' }}>HỘP THOẠI ĐĂNG NHẬP HỆ THỐNG</b>
-        </div>
-        <div style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '1rem' }}>
-          Nhập <b>Tên đăng nhập / Mã nhân viên</b> và <b>Mật khẩu</b> được phân công để thực thi nhiệm vụ đúng thẩm quyền.
-        </div>
-
-        <form onSubmit={handleUnifiedLogin} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
-              Tên đăng nhập / Mã nhân viên <span style={{ color: '#b91c1c' }}>*</span>
-            </label>
-            <input
-              type="text"
-              value={loginIdentifier}
-              onChange={(e) => setLoginIdentifier(e.target.value)}
-              placeholder="Nhập Mã nhân viên (ví dụ: NV-DIR-001, DIR-001, CG-001) hoặc Admin..."
-              className="form-input"
-              style={{ width: '100%', height: '38px', fontSize: '0.88rem', padding: '0 0.75rem', boxSizing: 'border-box', fontWeight: 600 }}
-              required
-            />
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
-              Mật khẩu đăng nhập <span style={{ color: '#b91c1c' }}>*</span>
-            </label>
-            <input
-              type="password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              placeholder="Nhập mật khẩu cá nhân..."
-              className="form-input"
-              style={{ width: '100%', height: '38px', fontSize: '0.88rem', padding: '0 0.75rem', boxSizing: 'border-box', fontWeight: 600 }}
-            />
-          </div>
-
-          {loginFeedback && (
-            <div
-              style={{
-                padding: '0.5rem 0.75rem',
-                borderRadius: '0.4rem',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                background: loginFeedback.isError ? '#fee2e2' : '#dcfce7',
-                color: loginFeedback.isError ? '#b91c1c' : '#15803d',
-                border: loginFeedback.isError ? '1px solid #fca5a5' : '1px solid #86efac',
-              }}
-            >
-              {loginFeedback.text}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSubmitting || !loginIdentifier.trim()}
+      {/* TRADITIONAL SIDE-BY-SIDE 2-COLUMN SPLIT CONTAINER */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          alignItems: 'stretch',
+        }}
+      >
+        {/* LEFT COLUMN: BRANDING & LOGO */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+            padding: '2.75rem 2.25rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            borderRight: '1px solid #e2e8f0',
+          }}
+        >
+          <img
+            src="/branding/tam-an-logo-master.png"
+            alt="Logo Tâm An"
             style={{
-              width: '100%',
-              height: '40px',
-              background: '#166534',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: '0.5rem',
+              width: '215px',
+              height: 'auto',
+              marginBottom: '1.5rem',
+              filter: 'drop-shadow(0 8px 20px rgba(22, 101, 52, 0.22))',
+              transition: 'transform 0.3s ease',
+            }}
+          />
+          <h2
+            style={{
+              margin: '0 0 0.4rem 0',
+              fontSize: '1.5rem',
               fontWeight: 800,
-              fontSize: '0.92rem',
-              cursor: 'pointer',
-              marginTop: '0.25rem',
-              boxShadow: '0 2px 4px rgba(22, 101, 52, 0.2)',
+              color: '#14532d',
+              letterSpacing: '-0.025em',
+              lineHeight: 1.25,
             }}
           >
-            {isSubmitting ? '⏳ Đang xác thực thông tin đăng nhập...' : '🔑 Đăng Nhập Hệ Thống'}
-          </button>
-        </form>
+            Trung Tâm Dưỡng Lão Tâm An
+          </h2>
+          <p
+            style={{
+              margin: 0,
+              fontSize: '1rem',
+              color: '#166534',
+              fontWeight: 600,
+              letterSpacing: '0.01em',
+            }}
+          >
+            Nơi Tuổi Già An Nhiên
+          </p>
+
+          <div
+            style={{
+              width: '48px',
+              height: '3.5px',
+              background: '#166534',
+              borderRadius: '3px',
+              margin: '1.25rem 0',
+              opacity: 0.85,
+            }}
+          />
+
+          <span
+            style={{
+              fontSize: '0.82rem',
+              color: '#166534',
+              background: 'rgba(255, 255, 255, 0.9)',
+              padding: '0.45rem 1rem',
+              borderRadius: '24px',
+              border: '1px solid #86efac',
+              fontWeight: 700,
+              boxShadow: '0 2px 6px rgba(22, 101, 52, 0.06)',
+            }}
+          >
+            Tận Tâm • An Toàn • Y Khoa Chuẩn Mực
+          </span>
+        </div>
+
+        {/* RIGHT COLUMN: LOGIN FORM OR LOGGED-IN STATUS */}
+        <div style={{ padding: '2.5rem 2.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          {actor ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>✅</span>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#166534', fontWeight: 800 }}>
+                  Đã Xác Thực Đăng Nhập
+                </h3>
+              </div>
+              
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', fontSize: '0.88rem' }}>
+                <div>Tài khoản: <b style={{ color: '#166534' }}>{actor.displayName || actor.actorId}</b></div>
+                <div>Vai trò: <b>{ROLE_LABELS[actor.actorRole] || actor.actorRole}</b></div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => setShowChangeAdminPasswordModal(true)}
+                    style={{
+                      background: '#fef3c7',
+                      border: '1px solid #fde047',
+                      color: '#854d0e',
+                      padding: '0.45rem 0.85rem',
+                      borderRadius: '0.4rem',
+                      fontWeight: 700,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    🔑 Đổi Mật Khẩu Admin
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearActor();
+                    setLoginIdentifier('');
+                    setLoginPassword('');
+                    setLoginFeedback(null);
+                  }}
+                  style={{
+                    background: '#fef2f2',
+                    border: '1px solid #fca5a5',
+                    color: '#991b1b',
+                    padding: '0.45rem 0.85rem',
+                    borderRadius: '0.4rem',
+                    fontWeight: 700,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  🚪 Đăng Xuất
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* LOGIN FORM */}
+              <h1
+                style={{
+                  margin: '0 0 0.35rem 0',
+                  fontSize: '1.1rem',
+                  fontWeight: 800,
+                  color: '#166534',
+                  letterSpacing: '0.01em',
+                }}
+              >
+                HỆ THỐNG QUẢN TRỊ TÂM AN - Tam An Care
+              </h1>
+              <p style={{ margin: '0 0 1.5rem 0', fontSize: '0.82rem', color: '#64748b' }}>
+                Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền
+              </p>
+
+              <form onSubmit={handleUnifiedLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.83rem',
+                      fontWeight: 700,
+                      color: '#1e293b',
+                      marginBottom: '0.35rem',
+                    }}
+                  >
+                    Tên đăng nhập / Mã nhân viên <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={loginIdentifier}
+                    onChange={(e) => setLoginIdentifier(e.target.value)}
+                    placeholder="Nhập Mã nhân viên (VD: NV-DIR-001, DIR-001) hoặc Admin..."
+                    className="form-input"
+                    style={{
+                      width: '100%',
+                      height: '44px',
+                      fontSize: '1rem',
+                      padding: '0 0.85rem',
+                      borderRadius: '0.5rem',
+                      border: '1.5px solid #cbd5e1',
+                      boxSizing: 'border-box',
+                      fontWeight: 600,
+                    }}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '0.83rem',
+                      fontWeight: 700,
+                      color: '#1e293b',
+                      marginBottom: '0.35rem',
+                    }}
+                  >
+                    Mật khẩu đăng nhập <span style={{ color: '#dc2626' }}>*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu..."
+                    className="form-input"
+                    style={{
+                      width: '100%',
+                      height: '44px',
+                      fontSize: '1rem',
+                      padding: '0 0.85rem',
+                      borderRadius: '0.5rem',
+                      border: '1.5px solid #cbd5e1',
+                      boxSizing: 'border-box',
+                      fontWeight: 600,
+                    }}
+                  />
+                </div>
+
+                {loginFeedback && (
+                  <div
+                    style={{
+                      padding: '0.6rem 0.85rem',
+                      borderRadius: '0.5rem',
+                      fontSize: '0.83rem',
+                      fontWeight: 600,
+                      background: loginFeedback.isError ? '#fef2f2' : '#f0fdf4',
+                      color: loginFeedback.isError ? '#991b1b' : '#14532d',
+                      border: loginFeedback.isError ? '1px solid #fecaca' : '1px solid #bbf7d0',
+                    }}
+                  >
+                    {loginFeedback.text}
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !loginIdentifier.trim()}
+                  style={{
+                    width: '100%',
+                    height: '44px',
+                    background: '#166534',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    fontWeight: 800,
+                    fontSize: '0.95rem',
+                    cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                    boxShadow: '0 4px 12px rgba(22, 101, 52, 0.25)',
+                    marginTop: '0.25rem',
+                  }}
+                >
+                  {isSubmitting ? '⏳ Đang xác thực thông tin đăng nhập...' : '🔑 Đăng Nhập Hệ Thống'}
+                </button>
+              </form>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Quick Staff Selector Bar (ONLY VISIBLE TO LOGGED IN ADMIN) */}
+      {/* QUICK STAFF SELECTOR (ONLY FOR LOGGED IN ADMIN) */}
       {isAdmin && (
-        <div style={{ marginTop: '1.25rem', borderTop: '1px solid #f1f5f9', paddingTop: '0.85rem' }}>
-          <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>
-            👥 Chuyển nhanh vai trò thử nghiệm (Chỉ hiển thị cho Quản trị viên Admin):
+        <div style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', padding: '1rem 1.5rem' }}>
+          <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>
+            👥 Chuyển nhanh vai trò nhân viên thử nghiệm (Dành riêng cho Admin):
           </div>
 
           {isLoading ? (
@@ -355,7 +482,7 @@ export function DevelopmentActorPanel() {
                     type="button"
                     onClick={() => handleSelectStaff(staff)}
                     style={{
-                      background: isSelected ? '#166534' : '#f1f5f9',
+                      background: isSelected ? '#166534' : '#ffffff',
                       color: isSelected ? '#ffffff' : '#334155',
                       border: isSelected ? '1px solid #14532d' : '1px solid #cbd5e1',
                       borderRadius: '0.35rem',

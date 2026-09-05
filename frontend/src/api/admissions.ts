@@ -6,6 +6,22 @@ import {
   apiRequest,
 } from './client';
 
+export interface AdmissionFinancialAgreement {
+  basicCarePackageKey: string;
+  basicCarePackageName: string;
+  basicCarePackageFee: number;
+
+  supportServiceKey: string;
+  supportServiceName: string;
+  supportServiceFee: number;
+
+  depositAmount: number;
+  paymentCycleDay: string;
+  calculatedMonthlyTotal: number;
+  guardianAgreed: boolean;
+  notes?: string;
+}
+
 export interface AdmissionCase {
   admissionCaseId: string;
   admissionCode: string;
@@ -178,6 +194,13 @@ export async function createInitialAssessment(actor: HumanActorSession, admissio
   if (target) {
     target.assessmentSummary = typeof body.summary === 'string' ? body.summary : JSON.stringify(body.summary || body);
     target.clinicalNotes = body.clinicalNotes || '';
+    try {
+      const sumObj = typeof body.summary === 'string' ? JSON.parse(body.summary) : body.summary;
+      if (sumObj?.dateOfBirth) target.dateOfBirth = sumObj.dateOfBirth;
+      if (sumObj?.prospectiveResidentName) target.prospectiveResidentName = sumObj.prospectiveResidentName;
+      if (sumObj?.gender) target.gender = sumObj.gender;
+      if (sumObj?.identityNumber !== undefined) target.identityNumber = sumObj.identityNumber;
+    } catch {}
     saveLocalAdmissions(items);
   }
   return { assessmentId: `ASM-${Date.now().toString().slice(-6)}`, admissionCaseId };

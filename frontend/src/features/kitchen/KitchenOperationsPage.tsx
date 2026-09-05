@@ -111,6 +111,8 @@ export default function KitchenOperationsPage() {
 
   // Form State for New Receiving Batch
   const [newBatchVendorId, setNewBatchVendorId] = useState(vendors[0]?.id || 'VND-001');
+  const [newBatchVendorName, setNewBatchVendorName] = useState(vendors[0]?.vendorName || 'Công ty Thực Phẩm Sạch Vissan Care');
+  const [isCustomVendor, setIsCustomVendor] = useState(false);
   const [newBatchNoteNumber, setNewBatchNoteNumber] = useState('');
   const [newBatchPlate, setNewBatchPlate] = useState('');
   const [newBatchDeliverer, setNewBatchDeliverer] = useState('');
@@ -192,10 +194,13 @@ export default function KitchenOperationsPage() {
   const createBatchMutation = useMutation({
     mutationFn: async () => {
       if (!actor) throw new Error('Yêu cầu đăng nhập');
-      const vendor = vendors.find((v) => v.id === newBatchVendorId) || vendors[0];
+      const matchingVendor = vendors.find((v) => v.id === newBatchVendorId || v.vendorName.toLowerCase() === newBatchVendorName.trim().toLowerCase());
+      const finalVendorId = isCustomVendor ? `VND-CUSTOM-${Date.now().toString().slice(-6)}` : (matchingVendor?.id || 'VND-001');
+      const finalVendorName = (isCustomVendor ? newBatchVendorName.trim() : (matchingVendor?.vendorName || newBatchVendorName.trim())) || 'Nhà cung cấp mới';
+
       return createFoodReceivingBatch(actor, {
-        vendorId: vendor.id,
-        vendorName: vendor.vendorName,
+        vendorId: finalVendorId,
+        vendorName: finalVendorName,
         deliveryNoteNumber: newBatchNoteNumber || `PGH-${Date.now().toString().slice(-6)}`,
         vehiclePlate: newBatchPlate || '29C-123.45',
         delivererName: newBatchDeliverer || 'Nguyễn Văn Giao',
@@ -215,6 +220,8 @@ export default function KitchenOperationsPage() {
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       setShowNewBatchModal(false);
       // Reset form
+      setIsCustomVendor(false);
+      setNewBatchVendorName(vendors[0]?.vendorName || '');
       setNewBatchNoteNumber('');
       setNewBatchPlate('');
       setNewBatchDeliverer('');
@@ -1188,18 +1195,76 @@ export default function KitchenOperationsPage() {
                 <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
                   Nhà cung cấp:
                 </label>
-                <select
-                  className="text-input"
-                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
-                  value={newBatchVendorId}
-                  onChange={(e) => setNewBatchVendorId(e.target.value)}
-                >
-                  {vendors.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.vendorName} ({v.categoryLabel})
+                {!isCustomVendor ? (
+                  <select
+                    className="text-input"
+                    style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                    value={newBatchVendorId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'CUSTOM_OPTION') {
+                        setIsCustomVendor(true);
+                        setNewBatchVendorName('');
+                      } else {
+                        setNewBatchVendorId(val);
+                        const found = vendors.find((v) => v.id === val);
+                        if (found) setNewBatchVendorName(found.vendorName);
+                      }
+                    }}
+                  >
+                    {vendors.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.vendorName} ({v.categoryLabel})
+                      </option>
+                    ))}
+                    <option value="CUSTOM_OPTION" style={{ fontWeight: 600, color: '#166534' }}>
+                      ✏️ + Nhập tên nhà cung cấp mới...
                     </option>
-                  ))}
-                </select>
+                  </select>
+                ) : (
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      list="custom-vendor-suggestions"
+                      className="text-input"
+                      placeholder="Nhập tên nhà cung cấp mới..."
+                      style={{ width: '100%', height: '38px', padding: '0 5rem 0 0.6rem', boxSizing: 'border-box' }}
+                      value={newBatchVendorName}
+                      onChange={(e) => setNewBatchVendorName(e.target.value)}
+                      autoFocus
+                    />
+                    <datalist id="custom-vendor-suggestions">
+                      {vendors.map((v) => (
+                        <option key={v.id} value={v.vendorName}>
+                          {v.categoryLabel}
+                        </option>
+                      ))}
+                    </datalist>
+                    <button
+                      type="button"
+                      title="Quay lại chọn từ danh sách"
+                      onClick={() => {
+                        setIsCustomVendor(false);
+                        setNewBatchVendorId(vendors[0]?.id || 'VND-001');
+                        setNewBatchVendorName(vendors[0]?.vendorName || '');
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: '4px',
+                        background: '#f1f5f9',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: '3px 6px',
+                        color: '#475569',
+                      }}
+                    >
+                      ↩️ Danh sách
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>

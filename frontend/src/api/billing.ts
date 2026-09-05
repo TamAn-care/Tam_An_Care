@@ -65,30 +65,33 @@ export interface ResidentMonthlyInvoice {
   basicPackageName: string;
   basicPackageFee: number;
   
-  // II. Phí Chăm Sóc Hỗ Trợ
+  // II. Tiền Đặt Cọc Ký Quỹ
+  depositFee: number; // Tiền đặt cọc (VD: 20.000.000đ)
+  
+  // III. Phí Chăm Sóc Hỗ Trợ
   supportServicesFee: number;
   supportServiceItems: SupportServiceUsage[];
   
-  // III. Phí Chăm Sóc Mở Rộng
+  // IV. Phí Chăm Sóc Mở Rộng
   extendedCareFee: number;
   extendedCareDays?: number;
   extendedCareRate?: number;
   
-  // IV. Giảm Trừ Nghỉ Phép / Bất Khả Kháng
+  // V. Giảm Trừ Nghỉ Phép / Bất Khả Kháng
   leaveDays: number;
   forceMajeureLeaveDays: number; // Cấp cứu, bệnh viện, triệu tập pháp luật: 200.000đ/ngày
   regularLeaveDays: number; // Nghỉ phép thông thường / thăm nhà: 100.000đ/ngày
   leaveDeductionFee: number;
   
-  // V. Phụ Thu Ngày Lễ Tết
+  // VI. Phụ Thu Ngày Lễ Tết
   holidayDays: number;
   holidaySurchargeFee: number;
   
-  // VI. Chức Năng Giảm Giá & Ưu Đãi Đặc Biệt
+  // VII. Chức Năng Giảm Giá & Ưu Đãi Đặc Biệt
   discountsApplied: AppliedDiscount[];
   totalDiscountAmount: number;
   
-  // VII. Chi Phí Suất Ăn Thân Nhân & Vật Tư Tiêu Hao
+  // VIII. Chi Phí Suất Ăn Thân Nhân & Vật Tư Tiêu Hao
   extraMealsFee: number;
   extraMealItems: ExtraMealChargeItem[];
   consumablesFee: number;
@@ -519,6 +522,136 @@ export const DEFAULT_PRICING_MATRIX: PricingMatrix = {
 // In-memory persistent stores
 let pricingMatrixState: PricingMatrix = JSON.parse(JSON.stringify(DEFAULT_PRICING_MATRIX));
 
+/**
+ * Công thức tính toán chuẩn hóa & nhất quán 100% cho mọi Bảng kê thu phí tại Viện Dưỡng Lão Tâm An
+ */
+export function calculateInvoiceTotals(
+  inv: Partial<ResidentMonthlyInvoice>
+): {
+  supportServicesFee: number;
+  leaveDeductionFee: number;
+  totalDiscountAmount: number;
+  extraMealsFee: number;
+  consumablesFee: number;
+  subtotalAmount: number;
+  totalAmount: number;
+  remainingAmount: number;
+} {
+  const basicFee = inv.basicPackageFee || 0;
+  const depositFee = inv.depositFee || 0;
+  
+  // III. Phí dịch vụ hỗ trợ (tính từ danh mục dịch vụ thực tế hoặc giữ 0 nếu không có dịch vụ hỗ trợ)
+  const supportServicesFee = (inv.supportServiceItems && inv.supportServiceItems.length > 0)
+    ? inv.supportServiceItems.reduce((sum, item) => sum + (item.totalPrice || item.unitPrice * item.quantity), 0)
+    : (inv.supportServicesFee || 0);
+
+  const extendedFee = inv.extendedCareFee || 0;
+  const holidayFee = inv.holidaySurchargeFee || 0;
+
+  // V. Giảm trừ vắng mặt RLA-BR-01
+  const forceMajeureDays = inv.forceMajeureLeaveDays || 0;
+  const regularDays = inv.regularLeaveDays || 0;
+  const leaveDeductionFee = (forceMajeureDays * 200000) + (regularDays * 100000);
+
+  // VII. Ưu đãi / Giảm giá phê duyệt
+  const totalDiscountAmount = (inv.discountsApplied || []).reduce(
+    (sum, d) => sum + (d.amountDeducted || 0),
+    0
+  );
+
+  // VIII. Suất ăn & Vật tư
+  const extraMealsFee = (inv.extraMealItems && inv.extraMealItems.length > 0)
+    ? inv.extraMealItems.reduce((sum, m) => sum + m.price, 0)
+    : (inv.extraMealsFee || 0);
+
+  const consumablesFee = (inv.consumableItems && inv.consumableItems.length > 0)
+    ? inv.consumableItems.reduce((sum, c) => sum + (c.totalPrice || c.unitPrice * c.quantity), 0)
+    : (inv.consumablesFee || 0);
+
+  // Tổng phụ (Subtotal): Phí cơ bản + Đặt cọc + Phí hỗ trợ + Phí mở rộng + Phụ thu lễ
+  const subtotalAmount = basicFee + depositFee + supportServicesFee + extendedFee + holidayFee;
+
+  // Tổng thực thu (Total Amount): Subtotal - Giảm trừ vắng mặt - Giảm giá + Suất ăn + Vật tư
+  const totalAmount = Math.max(
+    0,
+    subtotalAmount - leaveDeductionFee - totalDiscountAmount + extraMealsFee + consumablesFee
+  );
+
+  const paid = inv.paidAmount || 0;
+  const remainingAmount = Math.max(0, totalAmount - paid);
+
+  return {
+    supportServicesFee,
+    leaveDeductionFee,
+    totalDiscountAmount,
+    extraMealsFee,
+    consumablesFee,
+    subtotalAmount,
+    totalAmount,
+    remainingAmount,
+  };
+}
+
+/**
+ * Khởi tạo Bảng kê thu phí theo chuẩn hợp đồng đăng ký mới cho Người cao tuổi
+ */
+export function createMonthlyInvoiceForResident(params: {
+  residentId: string;
+  residentName: string;
+  room: string;
+  bed: string;
+  billingMonth: string;
+  careLevel: 1 | 2 | 3;
+  packageId: string;
+  isFirstMonthDeposit?: boolean;
+  supportServiceItems?: SupportServiceUsage[];
+  discountsApplied?: AppliedDiscount[];
+}): ResidentMonthlyInvoice {
+  const pkg = DEFAULT_PRICING_MATRIX.basicCarePackages.find((p) => p.id === params.packageId) ||
+    DEFAULT_PRICING_MATRIX.basicCarePackages[0];
+
+  const depositFee = params.isFirstMonthDeposit !== false ? 20000000 : 0;
+  const supportItems = params.supportServiceItems || [];
+
+  const draftInvoice: Partial<ResidentMonthlyInvoice> = {
+    invoiceId: `INV-${params.billingMonth.replace('-', '')}-${Date.now().toString().slice(-3)}`,
+    invoiceCode: `BKVP-${params.billingMonth}-${params.residentId.replace(/[^0-9]/g, '') || '009'}`,
+    residentId: params.residentId,
+    residentName: params.residentName,
+    room: params.room,
+    bed: params.bed,
+    billingMonth: params.billingMonth,
+    careLevel: params.careLevel,
+    roomTier: pkg.name,
+    basicPackageId: pkg.id,
+    basicPackageName: pkg.name,
+    basicPackageFee: pkg.monthlyFee,
+    depositFee: depositFee,
+    supportServiceItems: supportItems,
+    extendedCareFee: 0,
+    leaveDays: 0,
+    forceMajeureLeaveDays: 0,
+    regularLeaveDays: 0,
+    holidayDays: 0,
+    holidaySurchargeFee: 0,
+    discountsApplied: params.discountsApplied || [],
+    extraMealItems: [],
+    consumableItems: [],
+    paidAmount: 0,
+    depositBalance: 20000000,
+    status: 'PENDING',
+    issuedDate: new Date().toISOString().slice(0, 10),
+    dueDate: `${params.billingMonth}-10`,
+  };
+
+  const calculated = calculateInvoiceTotals(draftInvoice);
+
+  return {
+    ...draftInvoice,
+    ...calculated,
+  } as ResidentMonthlyInvoice;
+}
+
 let mockInvoices: ResidentMonthlyInvoice[] = [
   {
     invoiceId: 'INV-202609-001',
@@ -536,27 +669,27 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     basicPackageName: 'Phòng VIP 2 giường',
     basicPackageFee: 16500000,
     
-    // II. Phí Chăm Sóc Hỗ Trợ
-    supportServicesFee: 1500000,
-    supportServiceItems: [
-      { serviceId: 'SS-01', serviceName: 'Hỗ trợ tắm gội chuyên biệt', quantity: 1, unit: 'tháng', unitPrice: 500000, totalPrice: 500000 },
-      { serviceId: 'SS-07', serviceName: 'Tập VLTL - PHCN công nghệ AI (Gói tháng)', quantity: 1, unit: 'tháng', unitPrice: 1000000, totalPrice: 1000000, notes: '3 buổi/tuần' },
-    ],
+    // II. Tiền Đặt Cọc
+    depositFee: 20000000,
     
-    // III. Mở Rộng
+    // III. Phí Chăm Sóc Hỗ Trợ
+    supportServicesFee: 0,
+    supportServiceItems: [],
+    
+    // IV. Mở Rộng
     extendedCareFee: 0,
     
-    // IV. Giảm Trừ Vắng Mặt
+    // V. Giảm Trừ Vắng Mặt
     leaveDays: 3,
     forceMajeureLeaveDays: 1, // 1 ngày đi khám viện tuyến trên: 200.000đ
     regularLeaveDays: 2, // 2 ngày về thăm nhà: 2 * 100.000đ = 200.000đ
     leaveDeductionFee: 400000,
     
-    // V. Phụ Thu Lễ
+    // VI. Phụ Thu Lễ
     holidayDays: 1,
     holidaySurchargeFee: 200000, // Lễ 2/9 dài hạn: 200.000đ
     
-    // VI. Giảm Giá Đặc Biệt
+    // VII. Giảm Giá Đặc Biệt
     discountsApplied: [
       {
         id: 'APP-DISC-01',
@@ -573,7 +706,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     ],
     totalDiscountAmount: 495000,
     
-    // VII. Suất Ăn & Vật Tư
+    // VIII. Suất Ăn & Vật Tư
     extraMealsFee: 120000,
     extraMealItems: [
       { date: '2026-09-02', mealType: 'Bữa trưa thân nhân', guestName: 'Nguyễn Văn Minh (Con trai)', price: 60000, notes: 'Đăng ký ăn cùng cụ dịp lễ' },
@@ -587,11 +720,11 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     ],
     
     // Tổng
-    subtotalAmount: 18200000, // 16.5m + 1.5m + 0.2m (lễ)
-    totalAmount: 17700000, // 18.2m - 0.4m (vắng mặt) - 0.495m (giảm giá) + 0.12m + 0.275m ≈ 17.700.000đ
-    paidAmount: 17700000,
+    subtotalAmount: 36700000, // 16.5m (phí cơ bản) + 20m (tiền cọc) + 0m (hỗ trợ) + 0.2m (lễ)
+    totalAmount: 36200000, // 36.7m - 0.4m (vắng mặt) - 0.495m (giảm giá) + 0.12m + 0.275m = 36.200.000đ
+    paidAmount: 36200000,
     remainingAmount: 0,
-    depositBalance: 30000000,
+    depositBalance: 20000000,
     status: 'PAID',
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
@@ -611,6 +744,8 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     basicPackageId: 'BCP-04',
     basicPackageName: 'Phòng VIP 1 giường',
     basicPackageFee: 20000000,
+    
+    depositFee: 20000000,
     
     supportServicesFee: 3500000,
     supportServiceItems: [
@@ -650,15 +785,15 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-006', itemCode: 'VT-006', name: 'Ống Sonde ăn dạ dày Levin Silicone Fr16', unit: 'sợi', unitPrice: 45000, quantity: 1, totalPrice: 45000, date: '2026-09-01', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
     
-    subtotalAmount: 23700000,
-    totalAmount: 22195000, // 20m + 3.5m + 0.2m - 2m (giảm giá) + 0.495m
-    paidAmount: 15000000,
+    subtotalAmount: 43700000, // 20m + 20m + 3.5m + 0.2m
+    totalAmount: 42195000, // 43.7m - 2m (giảm giá) + 0.495m
+    paidAmount: 35000000,
     remainingAmount: 7195000,
-    depositBalance: 50000000,
+    depositBalance: 20000000,
     status: 'PARTIAL',
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
-    notes: 'Đã tạm ứng 15 triệu, phần còn lại thanh toán trước ngày 10/09.',
+    notes: 'Đã thanh toán 35 triệu, phần còn lại thanh toán trước ngày 10/09.',
   },
   {
     invoiceId: 'INV-202609-003',
@@ -674,6 +809,8 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     basicPackageId: 'BCP-01',
     basicPackageName: 'Phòng tập thể 6 giường',
     basicPackageFee: 12000000,
+    
+    depositFee: 20000000,
     
     supportServicesFee: 500000,
     supportServiceItems: [
@@ -700,10 +837,10 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-001', itemCode: 'VT-001', name: 'Que thử đường huyết Accu-Chek Instant', unit: 'que', unitPrice: 12000, quantity: 3, totalPrice: 36000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
     
-    subtotalAmount: 12700000,
-    totalAmount: 12396000, // 12m + 0.5m + 0.2m - 0.4m + 0.06m + 0.036m
+    subtotalAmount: 32700000, // 12m + 20m + 0.5m + 0.2m
+    totalAmount: 32396000, // 32.7m - 0.4m + 0.06m + 0.036m
     paidAmount: 0,
-    remainingAmount: 12396000,
+    remainingAmount: 32396000,
     depositBalance: 20000000,
     status: 'PENDING',
     issuedDate: '2026-09-01',
@@ -720,7 +857,7 @@ let mockReceipts: PaymentReceipt[] = [
     invoiceCode: 'BKVP-2026-09-001',
     residentId: 'RES-001',
     residentName: 'Cụ Nguyễn Văn An',
-    amount: 17700000,
+    amount: 36200000,
     paymentMethod: 'BANK_TRANSFER',
     transactionReference: 'MB-FT260901889922',
     receivedBy: 'Vũ Hoàng Nam',
@@ -919,13 +1056,8 @@ export async function applyDiscountToInvoice(
   };
 
   inv.discountsApplied = [...(inv.discountsApplied || []), newDiscount];
-  inv.totalDiscountAmount = inv.discountsApplied.reduce((sum, d) => sum + d.amountDeducted, 0);
-
-  // Recalculate totals
-  const subtotal = inv.basicPackageFee + inv.supportServicesFee + inv.extendedCareFee + inv.holidaySurchargeFee;
-  inv.subtotalAmount = subtotal;
-  inv.totalAmount = Math.max(0, subtotal - inv.leaveDeductionFee - inv.totalDiscountAmount + inv.extraMealsFee + inv.consumablesFee);
-  inv.remainingAmount = Math.max(0, inv.totalAmount - inv.paidAmount);
+  const calculated = calculateInvoiceTotals(inv);
+  Object.assign(inv, calculated);
 
   if (inv.remainingAmount === 0 && inv.paidAmount > 0) {
     inv.status = 'PAID';
@@ -971,12 +1103,8 @@ export async function removeDiscountFromInvoice(
 
   const removed = inv.discountsApplied?.find((d) => d.id === discountId);
   inv.discountsApplied = (inv.discountsApplied || []).filter((d) => d.id !== discountId);
-  inv.totalDiscountAmount = inv.discountsApplied.reduce((sum, d) => sum + d.amountDeducted, 0);
-
-  const subtotal = inv.basicPackageFee + inv.supportServicesFee + inv.extendedCareFee + inv.holidaySurchargeFee;
-  inv.subtotalAmount = subtotal;
-  inv.totalAmount = Math.max(0, subtotal - inv.leaveDeductionFee - inv.totalDiscountAmount + inv.extraMealsFee + inv.consumablesFee);
-  inv.remainingAmount = Math.max(0, inv.totalAmount - inv.paidAmount);
+  const calculated = calculateInvoiceTotals(inv);
+  Object.assign(inv, calculated);
 
   // Record audit log
   await recordSystemAuditLog({

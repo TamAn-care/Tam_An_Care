@@ -385,7 +385,7 @@ export default function FamilyPortalPage() {
           Đồng Hành Chăm Sóc Người Cao Tuổi
         </h1>
         <p className="page-description">
-          Theo dõi sát sao sức khỏe định kỳ, xem báo cáo y khoa chính thức, đăng ký nghỉ phép tạm vắng và đặt lịch thăm gặp Cụ tại Viện dưỡng lão Tâm An.
+          Theo dõi sát sao sức khỏe định kỳ, xem báo cáo y khoa chính thức, đăng ký nghỉ phép tạm vắng và đặt lịch thăm gặp Cụ tại Trung Tâm Dưỡng Lão Tâm An.
         </p>
       </header>
 

@@ -1,7 +1,7 @@
 {
-  "name": "Viện Dưỡng Lão Tâm An Care - Quản Lý Vận Hành & Y Khoa",
+  "name": "Trung Tâm Dưỡng Lão Tâm An - Quản Lý Vận Hành & Y Khoa",
   "short_name": "Tâm An Care",
-  "description": "Hệ thống quản lý vận hành viện dưỡng lão, tiếp nhận y khoa, kế hoạch chăm sóc ADL và phân công nhân sự Tâm An Care.",
+  "description": "Hệ thống quản lý vận hành trung tâm dưỡng lão, tiếp nhận y khoa, kế hoạch chăm sóc ADL và phân công nhân sự Tâm An Care.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

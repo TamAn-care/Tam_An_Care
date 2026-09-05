@@ -61,7 +61,7 @@ export interface UpdateStaffStatusInput {
 }
 
 // In-Memory Mock Staff Dataset
-let mockStaffActors: StaffActor[] = [
+export let mockStaffActors: StaffActor[] = [
   {
     actorId: 'Admin',
     staffCode: 'ADMIN-001',
@@ -80,8 +80,8 @@ let mockStaffActors: StaffActor[] = [
     updatedAt: '2026-09-02T08:00:00+07:00',
   },
   {
-    actorId: 'STAFF-DIR-001',
-    staffCode: 'NV-DIR-001',
+    actorId: 'TA-DIR-01',
+    staffCode: 'TA-DIR-01',
     displayName: 'Hoàng Quốc Anh',
     primaryOperationalRole: 'SUPERVISOR',
     department: 'Ban Giám Đốc',
@@ -97,8 +97,8 @@ let mockStaffActors: StaffActor[] = [
     updatedAt: '2026-09-01T14:15:30+07:00',
   },
   {
-    actorId: 'STAFF-MGR-002',
-    staffCode: 'NV-MGR-002',
+    actorId: 'TA-MGR-01',
+    staffCode: 'TA-MGR-01',
     displayName: 'Nguyễn Thị Thu Hà',
     primaryOperationalRole: 'CARE_MANAGER',
     department: 'Khối Quản Lý Vận Hành',
@@ -108,14 +108,14 @@ let mockStaffActors: StaffActor[] = [
     employmentReference: 'QĐ-02/2026/BGD-TA',
     initialPassword: 'TamAn@Manager#2026',
     lastPasswordResetAt: '2026-08-05T09:30:00+07:00',
-    createdByActorId: 'STAFF-DIR-001',
+    createdByActorId: 'TA-DIR-01',
     createdByActorName: 'Hoàng Quốc Anh (Ban Giám đốc)',
     createdAt: '2026-08-05T09:30:00+07:00',
     updatedAt: '2026-09-01T16:00:00+07:00',
   },
   {
-    actorId: 'STAFF-NUR-003',
-    staffCode: 'NV-NUR-003',
+    actorId: 'TA-NUR-01',
+    staffCode: 'TA-NUR-01',
     displayName: 'Trần Thị Mai',
     primaryOperationalRole: 'NURSE',
     department: 'Khối Y Tế & Điều Dưỡng',
@@ -125,14 +125,14 @@ let mockStaffActors: StaffActor[] = [
     employmentReference: 'HĐLĐ-12/2026/TA',
     initialPassword: 'TamAn@Nurse#2026',
     lastPasswordResetAt: '2026-08-10T10:00:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
+    createdByActorId: 'TA-MGR-01',
     createdByActorName: 'Nguyễn Thị Thu Hà (Quản lý)',
     createdAt: '2026-08-10T10:00:00+07:00',
     updatedAt: '2026-08-10T10:00:00+07:00',
   },
   {
-    actorId: 'STAFF-CG-004',
-    staffCode: 'NV-CG-004',
+    actorId: 'TA-CG-01',
+    staffCode: 'TA-CG-01',
     displayName: 'Lê Văn Nam',
     primaryOperationalRole: 'CAREGIVER',
     department: 'Khối Chăm Sóc Trực Tiếp',
@@ -372,6 +372,72 @@ export async function getStaffActor(
   return found;
 }
 
+export function getNextSequentialStaffCode(
+  role: HumanActorRole,
+  existingList?: Array<{ staffCode?: string; actorId?: string }>,
+): { staffCode: string; actorId: string; prefix: string; seqNumber: number } {
+  const rolePrefixMap: Record<HumanActorRole, string> = {
+    ADMIN: 'ADM',
+    SUPERVISOR: 'DIR',
+    CARE_MANAGER: 'MGR',
+    NURSE: 'NUR',
+    CAREGIVER: 'CG',
+    NUTRITIONIST: 'NUT',
+    ACCOUNTANT: 'ACC',
+    RECEPTIONIST: 'REC',
+    PSYCHOLOGIST: 'PSY',
+    SOCIAL_WORKER: 'SW',
+    REHABILITATION_SPECIALIST: 'REH',
+    HOUSEKEEPING: 'HK',
+    SECURITY: 'SEC',
+    GUARDIAN: 'GUA',
+  };
+
+  const prefix = rolePrefixMap[role] || 'STF';
+
+  // Gather all accounts to calculate highest sequence number
+  const allAccounts = existingList ?? mockStaffActors;
+
+  // Also check localStorage created staff if available
+  let localCreated: Array<{ staffCode?: string; actorId?: string }> = [];
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('tamancare_created_staff');
+      if (stored) localCreated = JSON.parse(stored);
+    } catch {
+      // ignore
+    }
+  }
+
+  const mergedList = [...allAccounts, ...localCreated];
+  let maxSeq = 0;
+  const pattern = new RegExp(`(?:TA-|NV-|STAFF-)?${prefix}[-_]?(\\d+)`, 'i');
+
+  for (const item of mergedList) {
+    if (!item) continue;
+    const codes = [item.staffCode, item.actorId].filter(Boolean);
+    for (const codeStr of codes) {
+      const match = (codeStr as string).match(pattern);
+      if (match && match[1]) {
+        const num = parseInt(match[1], 10);
+        if (!isNaN(num) && num > maxSeq) {
+          maxSeq = num;
+        }
+      }
+    }
+  }
+
+  const nextSeq = maxSeq + 1;
+  const seqPadded = String(nextSeq).padStart(2, '0');
+
+  return {
+    staffCode: `TA-${prefix}-${seqPadded}`,
+    actorId: `TA-${prefix}-${seqPadded}`,
+    prefix,
+    seqNumber: nextSeq,
+  };
+}
+
 export async function createStaffAccount(
   actor: HumanActorSession | null,
   input: CreateStaffAccountInput,
@@ -395,27 +461,9 @@ export async function createStaffAccount(
     throw new Error('Quyền hạn bị từ chối: Bạn không có quyền cấp tài khoản.');
   }
 
-  const rolePrefixMap: Record<HumanActorRole, string> = {
-    ADMIN: 'ADM',
-    SUPERVISOR: 'DIR',
-    CARE_MANAGER: 'MGR',
-    NURSE: 'NUR',
-    CAREGIVER: 'CG',
-    NUTRITIONIST: 'NUT',
-    ACCOUNTANT: 'ACC',
-    RECEPTIONIST: 'REC',
-    PSYCHOLOGIST: 'PSY',
-    SOCIAL_WORKER: 'SW',
-    REHABILITATION_SPECIALIST: 'REH',
-    HOUSEKEEPING: 'HK',
-    SECURITY: 'SEC',
-    GUARDIAN: 'GUA',
-  };
-
-  const prefix = rolePrefixMap[input.primaryOperationalRole] || 'STF';
-  const randomSuffix = Math.floor(100 + Math.random() * 900);
-  const actorId = input.actorId?.trim() || `STAFF-${prefix}-${randomSuffix}`;
-  const staffCode = input.staffCode?.trim() || `NV-${prefix}-${randomSuffix}`;
+  const seqInfo = getNextSequentialStaffCode(input.primaryOperationalRole, mockStaffActors);
+  const actorId = input.actorId?.trim() || seqInfo.actorId;
+  const staffCode = input.staffCode?.trim() || seqInfo.staffCode;
   const initialPassword = input.initialPassword?.trim() || generateSecurePassword();
 
   const newStaff: StaffActor = {
@@ -427,7 +475,7 @@ export async function createStaffAccount(
     email: input.email.trim(),
     phone: input.phone.trim(),
     status: 'ACTIVE',
-    employmentReference: `HĐLĐ-${randomSuffix}/2026/TA`,
+    employmentReference: `HĐLĐ-${seqInfo.seqNumber}/2026/TA`,
     initialPassword,
     lastPasswordResetAt: new Date().toISOString(),
     createdByActorId: actor.actorId || 'STAFF-UNKNOWN',
@@ -437,6 +485,26 @@ export async function createStaffAccount(
   };
 
   mockStaffActors = [newStaff, ...mockStaffActors];
+
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('tamancare_created_staff');
+      const existingList = stored ? JSON.parse(stored) : [];
+      const newActiveMember = {
+        actorId: newStaff.actorId,
+        staffCode: newStaff.staffCode,
+        displayName: newStaff.displayName,
+        actorRole: newStaff.primaryOperationalRole,
+        status: newStaff.status,
+      };
+      if (!existingList.some((s: any) => s.actorId === newActiveMember.actorId || s.staffCode === newActiveMember.staffCode)) {
+        existingList.push(newActiveMember);
+        localStorage.setItem('tamancare_created_staff', JSON.stringify(existingList));
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }
 
   // Ghi nhật ký kiểm toán quy trách nhiệm
   await recordSystemAuditLog({

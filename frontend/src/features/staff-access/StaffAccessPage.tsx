@@ -7,6 +7,7 @@ import {
   resetStaffPassword,
   updateStaffStatus,
   generateSecurePassword,
+  getNextSequentialStaffCode,
   type StaffActor,
   type StaffActorStatus,
 } from '../../api/staff-actors';
@@ -114,7 +115,7 @@ export function StaffAccessPage() {
   const [assignmentRole, setAssignmentRole] = useState<AssignmentRole>('CAREGIVER');
   const [showConfirmAssignModal, setShowConfirmAssignModal] = useState(false);
 
-  // Auto-fill codes when role or name changes
+  // Auto-fill codes sequentially when role or name changes
   const handleRoleChangeInForm = (nextRole: HumanActorRole) => {
     setFormRole(nextRole);
     const prefixMap: Record<HumanActorRole, { prefix: string; dept: string }> = {
@@ -135,9 +136,9 @@ export function StaffAccessPage() {
     };
 
     const config = prefixMap[nextRole] || { prefix: 'STF', dept: 'Vận Hành & Chăm Sóc' };
-    const rand = Math.floor(100 + Math.random() * 900);
-    setFormStaffCode(`NV-${config.prefix}-${rand}`);
-    setFormActorId(`STAFF-${config.prefix}-${rand}`);
+    const seq = getNextSequentialStaffCode(nextRole, staffQuery.data || []);
+    setFormStaffCode(seq.staffCode);
+    setFormActorId(seq.actorId);
     setFormDepartment(config.dept);
   };
 

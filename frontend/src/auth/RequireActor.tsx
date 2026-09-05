@@ -25,22 +25,18 @@ export function RequireActor({
   }
 
   return (
-    <section style={{ maxWidth: '1000px', margin: '0 auto', paddingTop: '1rem' }}>
-      <header className="page-header" style={{ marginBottom: '1rem' }}>
-        <div className="eyebrow" style={{ color: '#166534', fontWeight: 700 }}>
-          HỆ THỐNG QUẢN TRỊ TÂM AN CARE
-        </div>
-
-        <h1 className="page-title" style={{ fontSize: '1.4rem' }}>
-          Đăng Nhập & Chọn Vai Trò Nhân Sự
-        </h1>
-
-        <p className="page-description">
-          Vui lòng chọn hoặc nhập tài khoản làm việc của bạn để truy cập chức năng hệ thống ({location.pathname}).
-        </p>
-      </header>
-
-      <DevelopmentActorPanel />
-    </section>
+    <div
+      style={{
+        minHeight: '80vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem 0.5rem',
+      }}
+    >
+      <div style={{ width: '100%', maxWidth: '960px' }}>
+        <DevelopmentActorPanel />
+      </div>
+    </div>
   );
 }

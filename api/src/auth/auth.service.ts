@@ -55,13 +55,20 @@ export class AuthService {
     if (!trimmed) {
       throw new UnauthorizedException('Mã nhân viên không được để trống');
     }
+    const normalized = trimmed.replace(/^(ta-|nv-|staff-)/i, '');
     const result = await this.db.query(
       `SELECT actor_id AS "actorId", staff_code AS "staffCode", display_name AS "displayName",
               primary_operational_role AS "actorRole", status
        FROM staff_actors
-       WHERE (actor_id = $1 OR staff_code = $1)
+       WHERE UPPER(actor_id) = UPPER($1) 
+          OR UPPER(staff_code) = UPPER($1)
+          OR UPPER(actor_id) = UPPER('TA-' || $2)
+          OR UPPER(staff_code) = UPPER('TA-' || $2)
+          OR UPPER(actor_id) = UPPER('STAFF-' || $2)
+          OR UPPER(staff_code) = UPPER('NV-' || $2)
+          OR UPPER(staff_code) = UPPER($2)
        LIMIT 1`,
-      [trimmed],
+      [trimmed, normalized],
     );
     if (!result.rows.length) {
       throw new UnauthorizedException('Không tìm thấy nhân sự với mã: ' + trimmed);

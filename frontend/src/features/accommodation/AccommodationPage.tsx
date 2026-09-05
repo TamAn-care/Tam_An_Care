@@ -394,12 +394,14 @@ export default function AccommodationPage() {
               className="form-select"
               style={{ width: '100%' }}
             >
-              <option value="ALL">Tất cả các tầng</option>
-              {(floors.data ?? []).map(x => (
-                <option key={x.floorId} value={x.floorId}>
-                  {x.name}
-                </option>
-              ))}
+              <option value="ALL">Tất cả các tầng (Tầng 1 - Tầng 4)</option>
+              {(floors.data ?? [])
+                .filter(x => (x.floorNumber !== null && x.floorNumber >= 1 && x.floorNumber <= 4) || (x.code && /^FL-[1-4]$/i.test(x.code)) || (x.name && /Tầng\s*[1-4]/i.test(x.name)))
+                .map(x => (
+                  <option key={x.floorId} value={x.floorId}>
+                    {x.name}
+                  </option>
+                ))}
             </select>
           </div>
 
@@ -715,14 +717,16 @@ export default function AccommodationPage() {
               <option value="">
                 Chọn tầng
               </option>
-              {(floors.data ?? []).map(x => (
-                <option
-                  key={x.floorId}
-                  value={x.floorId}
-                >
-                  {x.name}
-                </option>
-              ))}
+              {(floors.data ?? [])
+                .filter(x => (x.floorNumber !== null && x.floorNumber >= 1 && x.floorNumber <= 4) || (x.code && /^FL-[1-4]$/i.test(x.code)) || (x.name && /Tầng\s*[1-4]/i.test(x.name)))
+                .map(x => (
+                  <option
+                    key={x.floorId}
+                    value={x.floorId}
+                  >
+                    {x.name}
+                  </option>
+                ))}
             </select>
 
             <input

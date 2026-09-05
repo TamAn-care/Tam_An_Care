@@ -286,6 +286,32 @@ export default function BillingPage() {
         </div>
       </div>
 
+      {/* Universal Calculation Rule Banner */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%)',
+          border: '1px solid #bbf7d0',
+          borderRadius: '0.65rem',
+          padding: '0.75rem 1rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.85rem',
+          fontSize: '0.83rem',
+          color: '#1e293b',
+        }}
+      >
+        <span style={{ fontSize: '1.4rem' }}>📐</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700, color: '#14532d', marginBottom: '0.15rem' }}>
+            NGUYÊN TẮC TÍNH PHÍ NHẤT QUÁN TOÀN VIỆN TÂM AN
+          </div>
+          <div>
+            <b>Tổng thực thu</b> = 🏨 Phí cơ bản (gói phòng) + 💳 Tiền cọc (kỳ đầu) + 🩺 Phí hỗ trợ (chỉ khi có chỉ định) + 🏮 Phụ thu lễ - 📉 Giảm trừ vắng mặt RLA - 🎁 Ưu đãi phê duyệt + 🍲 Suất ăn / 🩹 Vật tư y tế. <i>Cư dân không sử dụng dịch vụ hỗ trợ được tính phí hỗ trợ = 0đ.</i>
+          </div>
+        </div>
+      </div>
+
       {/* Primary Tabs - Streamlined single-line layout */}
       <div
         className="tab-nav"
@@ -492,7 +518,9 @@ export default function BillingPage() {
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Người Cao Tuổi</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Phòng & Gói Phòng</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí Cơ Bản (đồng)</th>
-                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí Hỗ Trợ (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Tiền Đặt Cọc (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí dịch vụ chăm sóc hỗ trợ (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí dịch vụ chăm sóc mở rộng (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm Trừ RLA (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm Giá (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Tổng Thực Thu (đồng)</th>
@@ -522,8 +550,36 @@ export default function BillingPage() {
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
                             {formatNum(inv.basicPackageFee)}
                           </td>
-                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', color: '#0369a1', fontVariantNumeric: 'tabular-nums' }}>
-                            {inv.supportServicesFee > 0 ? `+${formatNum(inv.supportServicesFee)}` : '0'}
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', color: '#0d9488', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+                            {formatNum(inv.depositFee || 20000000)}
+                          </td>
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            <div style={{ fontWeight: inv.supportServicesFee > 0 ? 700 : 400, color: inv.supportServicesFee > 0 ? '#0369a1' : '#64748b' }}>
+                              {inv.supportServicesFee > 0 ? `+${formatNum(inv.supportServicesFee)}` : '0'}
+                            </div>
+                            {inv.supportServiceItems && inv.supportServiceItems.length > 0 ? (
+                              <div style={{ fontSize: '0.72rem', color: '#0284c7', marginTop: '0.15rem', fontStyle: 'italic', maxWidth: '190px', marginLeft: 'auto' }}>
+                                {inv.supportServiceItems.map((item) => `${item.serviceName} (${formatNum(item.totalPrice)}đ)`).join(', ')}
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                                Không sử dụng
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            <div style={{ fontWeight: inv.extendedCareFee > 0 ? 700 : 400, color: inv.extendedCareFee > 0 ? '#7c3aed' : '#64748b' }}>
+                              {inv.extendedCareFee > 0 ? `+${formatNum(inv.extendedCareFee)}` : '0'}
+                            </div>
+                            {inv.extendedCareFee > 0 ? (
+                              <div style={{ fontSize: '0.72rem', color: '#6d28d9', marginTop: '0.15rem', fontStyle: 'italic', maxWidth: '160px', marginLeft: 'auto' }}>
+                                CS mở rộng{inv.extendedCareDays ? ` (${inv.extendedCareDays} ngày)` : ''}
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                                Không sử dụng
+                              </div>
+                            )}
                           </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', color: '#b91c1c', fontVariantNumeric: 'tabular-nums' }}>
                             {inv.leaveDeductionFee > 0 ? `-${formatNum(inv.leaveDeductionFee)}` : '0'}
@@ -922,6 +978,30 @@ export default function BillingPage() {
               ))}
             </div>
           </div>
+
+          {/* Section V: Hạng Mục Thu Tiền Đặt Cọc */}
+          <div className="card" style={{ padding: '1.25rem', borderRadius: '0.65rem', marginTop: '1.25rem', background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', borderBottom: '2px solid #16a34a', paddingBottom: '0.5rem' }}>
+              <span style={{ fontSize: '1.3rem' }}>💳</span>
+              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                V. HẠNG MỤC THU TIỀN ĐẶT CỌC LƯU TRÚ (KÝ QUỶ)
+              </h2>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                  Tiền đặt cọc tiếp nhận lưu trú: <span style={{ color: '#15803d', fontWeight: 800 }}>20.000.000 VNĐ / hợp đồng</span>
+                </div>
+                <div style={{ fontSize: '0.85rem', color: '#334155', marginTop: '0.35rem', lineHeight: '1.5' }}>
+                  Mỗi Cụ khi vào ở tại Trung Tâm Dưỡng Lão Tâm An sẽ nộp khoản tiền đặt cọc ký quỹ <b>20.000.000 đồng</b>. Khoản tiền này nhằm bảo đảm thực hiện hợp đồng, bù đắp các chi phí phát sinh cấp cứu (nếu có) hoặc đối trừ khi thanh lý. Số tiền này sẽ được <b>hoàn trả 100%</b> cho Thân nhân khi kết thúc hợp đồng dịch vụ.
+                </div>
+              </div>
+              <div className="badge badge-success" style={{ fontSize: '0.9rem', padding: '0.5rem 0.85rem', fontWeight: 700 }}>
+                Định mức: 20.000.000 đ
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1053,8 +1133,16 @@ export default function BillingPage() {
                 <b>{formatVndText(invoicesList.reduce((s, i) => s + i.basicPackageFee, 0))}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
+                <span>💳 Tiền đặt cọc lưu trú (ký quỹ):</span>
+                <b style={{ color: '#0f766e' }}>{formatVndText(invoicesList.reduce((s, i) => s + (i.depositFee || 20000000), 0))}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
                 <span>🩺 Phí dịch vụ chăm sóc hỗ trợ:</span>
                 <b>{formatVndText(invoicesList.reduce((s, i) => s + i.supportServicesFee, 0))}</b>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
+                <span>✨ Phí dịch vụ chăm sóc mở rộng:</span>
+                <b style={{ color: '#7c3aed' }}>{formatVndText(invoicesList.reduce((s, i) => s + (i.extendedCareFee || 0), 0))}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
                 <span>📉 Giảm trừ vắng mặt (RLA):</span>
@@ -1280,11 +1368,17 @@ export default function BillingPage() {
                 <span style={{ fontWeight: 700 }}>{formatVndText(detailModalInvoice.basicPackageFee)}</span>
               </div>
 
-              {/* II. Phí Hỗ Trợ */}
+              {/* II. Tiền Đặt Cọc */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9', background: '#f0fdf4', padding: '0.4rem 0.6rem', borderRadius: '0.35rem' }}>
+                <span style={{ fontWeight: 600, color: '#0f766e' }}>💳 II. Tiền đặt cọc (Ký quỹ hoàn trả):</span>
+                <span style={{ fontWeight: 700, color: '#0f766e' }}>{formatVndText(detailModalInvoice.depositFee || 20000000)}</span>
+              </div>
+
+              {/* III. Phí Hỗ Trợ */}
               {detailModalInvoice.supportServicesFee > 0 && (
                 <div style={{ background: '#f0f9ff', padding: '0.6rem', borderRadius: '0.35rem', border: '1px solid #e0f2fe' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, color: '#0369a1' }}>
-                    <span>🩺 II. Phí dịch vụ chăm sóc hỗ trợ:</span>
+                    <span>🩺 III. Phí dịch vụ chăm sóc hỗ trợ:</span>
                     <span>+{formatVndText(detailModalInvoice.supportServicesFee)}</span>
                   </div>
                   {detailModalInvoice.supportServiceItems?.map((item, idx) => (

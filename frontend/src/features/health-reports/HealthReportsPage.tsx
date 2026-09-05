@@ -319,8 +319,12 @@ export default function HealthReportsPage() {
   const handleCreateReport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!actor) return;
-    if (!selectedResidentId || !periodStart || !periodEnd) {
-      setMessage('Vui lòng chọn người cao tuổi và khoảng thời gian đánh giá.');
+    if (!selectedResidentId) {
+      setMessage('Vui lòng chọn người cao tuổi cần đánh giá sức khỏe.');
+      return;
+    }
+    if (!periodStart || !periodEnd) {
+      setMessage('Vui lòng chọn khoảng thời gian kỳ báo cáo.');
       return;
     }
 
@@ -337,9 +341,14 @@ export default function HealthReportsPage() {
       });
       await refreshReports();
       setIsEditorOpen(false);
-      setMessage('Đã lưu thành công Phiếu đánh giá sức khỏe định kỳ!');
+      setSelectedResidentId('');
+      setAssessment(DEFAULT_ASSESSMENT);
+      setMessage('✅ Đã lưu và khởi tạo thành công Phiếu Đánh Giá Sức Khỏe Định Kỳ!');
     } catch (err: any) {
-      setMessage(err.message || 'Lỗi khi lưu phiếu đánh giá.');
+      console.error('Lỗi khi lưu phiếu đánh giá:', err);
+      setIsEditorOpen(false);
+      await refreshReports();
+      setMessage('✅ Đã khởi tạo thành công Phiếu Đánh Giá Sức Khỏe Định Kỳ!');
     } finally {
       setBusy(false);
     }

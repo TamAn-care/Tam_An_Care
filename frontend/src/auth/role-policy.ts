@@ -543,20 +543,39 @@ export function getAssignedResidentIdsForActor(actorId?: string, displayName?: s
 
 export const GUARDIAN_ASSIGNMENTS: Record<string, string[]> = {
   // Lê Gia Bảo - Con trai cụ Nguyễn Văn An (res-demo-001)
+  'TA-GUA-01': ['res-demo-001'],
   'guardian-bao-001': ['res-demo-001'],
+  'GD-001': ['res-demo-001'],
   'Lê Gia Bảo': ['res-demo-001'],
   'STAFF-GD-001': ['res-demo-001'],
   'GUARDIAN-001': ['res-demo-001'],
 
   // Trần Anh Đức - Con trai cụ Trần Thị Bình (res-demo-002)
+  'TA-GUA-02': ['res-demo-002'],
   'guardian-duc-002': ['res-demo-002'],
+  'GD-002': ['res-demo-002'],
   'Trần Anh Đức': ['res-demo-002'],
   'STAFF-GD-002': ['res-demo-002'],
   'GUARDIAN-002': ['res-demo-002'],
+
+  // Bùi Thị Mai - Thân nhân cụ Phạm Văn Cường (res-demo-003)
+  'TA-GUA-03': ['res-demo-003'],
+  'guardian-mai-003': ['res-demo-003'],
 };
 
 export function getAssignedResidentIdsForGuardian(actorId?: string, displayName?: string): string[] {
   if (actorId && GUARDIAN_ASSIGNMENTS[actorId]) return GUARDIAN_ASSIGNMENTS[actorId];
   if (displayName && GUARDIAN_ASSIGNMENTS[displayName]) return GUARDIAN_ASSIGNMENTS[displayName];
+
+  // Dynamic fallback for any TA-GUA-xx or GUARDIAN account
+  if (actorId) {
+    const match = actorId.match(/(?:TA-GUA-|GUA-|GD-)(\d+)/i);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      const demoResId = `res-demo-00${((num - 1) % 3) + 1}`;
+      return [demoResId];
+    }
+  }
+
   return ['res-demo-001'];
 }

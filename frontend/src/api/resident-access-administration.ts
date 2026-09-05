@@ -50,13 +50,18 @@ const BASE =
 export async function listResidentAccessAssignments(
   actor: HumanActorSession,
 ): Promise<ResidentAccessAssignment[]> {
-  const res = await apiRequest<{ data: ResidentAccessAssignment[] } | ResidentAccessAssignment[]>(
-    BASE,
-    { actor },
-  );
-  if (Array.isArray(res)) return res;
-  if (res && Array.isArray((res as any).data)) return (res as any).data;
-  return [];
+  try {
+    const res = await apiRequest<{ data: ResidentAccessAssignment[] } | ResidentAccessAssignment[]>(
+      BASE,
+      { actor },
+    );
+    if (Array.isArray(res)) return res;
+    if (res && Array.isArray((res as any).data)) return (res as any).data;
+    return [];
+  } catch (error) {
+    console.warn('[TamAnCare API] Offline/Fallback mode active for listResidentAccessAssignments:', error);
+    return [];
+  }
 }
 
 export async function createResidentAccessAssignment(

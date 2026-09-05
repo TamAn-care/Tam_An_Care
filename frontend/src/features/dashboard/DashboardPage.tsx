@@ -41,7 +41,7 @@ export function DashboardPage() {
   const { data: accommodationData, isLoading: loadingAccom } = useQuery({
     queryKey: ['dashboard-accommodation', actorId],
     queryFn: () => getAccommodationOverview(actor!, {}),
-    enabled: Boolean(actor) && (actorRole === 'SUPERVISOR' || actorRole === 'CARE_MANAGER' || actorRole === 'RECEPTIONIST' || actorRole === 'HOUSEKEEPING'),
+    enabled: Boolean(actor),
   });
 
   const { data: leaveData } = useQuery({

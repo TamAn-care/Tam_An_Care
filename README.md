@@ -42,7 +42,36 @@
 
 ---
 
-## 💻 HƯỚNG DẪN KHỞI CHẠY (LOCAL QUICK START)
+## 🐳 TRIỂN KHAI BẰNG DOCKER & DEBIAN (DOCKER & DEBIAN DEPLOYMENT)
+
+### 1. Khởi chạy nhanh bằng Docker Compose (Development / Testing)
+```bash
+# Thao tác tại thư mục gốc của dự án
+docker compose up -d --build
+```
+- **NestJS API Service**: Chạy tại `http://localhost:3000`
+- **PostgreSQL 16 Database**: Khởi tạo tự động schema từ `database/schema.sql`
+
+### 2. Triển khai Production trên Máy Chủ Debian Linux
+Vui lòng tham khảo tài liệu chi tiết đầy đủ từng bước tại:
+📄 **[Debian & Docker Deployment Guide](docs/DEPLOYMENT_DEBIAN_DOCKER.md)**
+
+Tóm tắt các bước triển khai trên máy chủ Debian:
+```bash
+# 1. Cài đặt Docker & Docker Compose trên Debian
+sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 2. Clone dự án từ GitHub
+git clone https://github.com/YOUR_USERNAME/tam-an-care.git
+cd tam-an-care/TamAnCare_V7_4_3_Development
+
+# 3. Khởi chạy ứng dụng với Docker Compose
+docker compose up -d --build
+```
+
+---
+
+## 💻 HƯỚNG DẪN KHỞI CHẠY CỤC BỘ (LOCAL DEVELOPMENT)
 
 ### 1. Khởi chạy Frontend (React + Vite + TypeScript)
 ```bash
@@ -60,14 +89,35 @@ npm run build
 
 ---
 
-## 🐙 HƯỚNG DẪN ĐẨY MÃ NGUỒN LÊN GITHUB
+## 🐙 HƯỚNG DẪN QUẢN LÝ MÃ NGUỒN TRÊN GITHUB
 
-Toàn bộ mã nguồn và lịch sử commit cục bộ đã được chuẩn bị sẵn sàng. Để đẩy lên GitHub của bạn:
-
+### 1. Đẩy mã nguồn lên GitHub (Push to GitHub)
 1. Tạo một repository mới trên GitHub (Ví dụ: `tam-an-care`).
-2. Mở Terminal tại thư mục dự án và chạy 2 lệnh:
+2. Mở Terminal tại thư mục dự án và chạy các lệnh:
 ```bash
+# Thêm remote repository
 git remote add origin https://github.com/YOUR_USERNAME/tam-an-care.git
+
+# Đặt tên branch chính là main
+git branch -M main
+
+# Đẩy toàn bộ mã nguồn lên GitHub
 git push -u origin main
 ```
-# Tam_An_Care
+
+### 2. Cập nhật mã nguồn từ GitHub (Pull Updates)
+Khi có sự thay đổi từ trên GitHub hoặc triển khai lên server mới:
+```bash
+# Kéo mã nguồn mới nhất về
+git pull origin main
+
+# Rebuild lại container với mã nguồn mới
+docker compose up -d --build
+```
+
+---
+
+## 📚 TÀI LIỆU HƯỚNG DẪN LIÊN QUAN
+- 📄 [Hướng dẫn Triển khai Debian & Docker](docs/DEPLOYMENT_DEBIAN_DOCKER.md)
+- 📄 [Hướng dẫn Dành cho Tester & QA](TESTERS_GUIDE.md)
+- 📄 [Tài liệu Thiết kế Design Spec](DESIGN.md)

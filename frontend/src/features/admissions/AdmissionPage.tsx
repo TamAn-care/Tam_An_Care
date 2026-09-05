@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useActor } from '../../auth/ActorContext';
 import {
   approveClassification,
@@ -195,6 +195,45 @@ export const DEFAULT_HANDOVER_BELONGINGS: HandoverBelongingItem[] = [
   },
 ];
 
+export interface FinancialAgreementItem {
+  basicCarePackageKey: string;
+  basicCarePackageName: string;
+  basicCarePackageFee: number;
+
+  supportServiceKey: string;
+  supportServiceName: string;
+  supportServiceFee: number;
+
+  depositAmount: number;
+  paymentCycleDay: string;
+  calculatedMonthlyTotal: number;
+  guardianAgreed: boolean;
+  notes: string;
+}
+
+export const BASIC_CARE_PACKAGE_OPTIONS: Record<string, { name: string; defaultFee: number; desc: string }> = {
+  'BCP-04': { name: 'Phòng VIP 1 giường', defaultFee: 20000000, desc: 'Phòng đơn riêng tư tuyệt đối, ban công riêng, giường y tế đa chức năng' },
+  'BCP-03': { name: 'Phòng VIP 2 giường', defaultFee: 16500000, desc: 'Không gian 2 cụ, tiện nghi cao cấp, điều hòa 2 chiều, TV thông minh' },
+  'BCP-02': { name: 'Phòng tập thể 3, 4 giường', defaultFee: 14500000, desc: 'Phòng tiêu chuẩn 3 - 4 cụ rộng rãi, ban công đón nắng, dinh dưỡng y học' },
+  'BCP-01': { name: 'Phòng tập thể 6 giường', defaultFee: 12000000, desc: 'Phòng 6 giường tiêu chuẩn, vệ sinh khép kín, tiện nghi kinh tế' },
+  'BCP-05': { name: 'Phòng chăm sóc toàn diện', defaultFee: 16500000, desc: 'Dành cho cụ phụ thuộc hoàn toàn, theo dõi y tế & chăm sóc 24/7' },
+  'CUSTOM': { name: 'Khác / Thỏa thuận riêng', defaultFee: 0, desc: 'Mức phí tùy chỉnh theo hợp đồng phê duyệt' },
+};
+
+export const SUPPORT_SERVICE_OPTIONS: Record<string, { name: string; defaultFee: number; unit: string; desc: string }> = {
+  'NONE': { name: 'Không đăng ký dịch vụ hỗ trợ phát sinh', defaultFee: 0, unit: 'tháng', desc: 'Không có phụ phí hỗ trợ' },
+  'SS-01': { name: 'Hỗ trợ tắm gội', defaultFee: 1000000, unit: 'tháng', desc: 'Gợi ý: 500.000 - 1.500.000 đ/tháng' },
+  'SS-02': { name: 'Hỗ trợ nâng đỡ, di chuyển', defaultFee: 500000, unit: 'tháng', desc: 'Gợi ý: 500.000 đ/tháng' },
+  'SS-03': { name: 'Hỗ trợ xúc ăn', defaultFee: 500000, unit: 'tháng', desc: 'Gợi ý: 500.000 đ/tháng' },
+  'SS-04': { name: 'Hỗ trợ vệ sinh', defaultFee: 2000000, unit: 'tháng', desc: 'Gợi ý: 1.000.000 - 3.000.000 đ/tháng' },
+  'SS-05': { name: 'Hỗ trợ ăn qua sonde', defaultFee: 1500000, unit: 'tháng', desc: 'Gợi ý: 1.500.000 đ/tháng' },
+  'SS-06': { name: 'Chăm sóc NCT bị lẫn tuổi già', defaultFee: 1500000, unit: 'tháng', desc: 'Gợi ý: 500.000 - 2.000.000 đ/tháng' },
+  'SS-07': { name: 'Tập VLTL & PHCN chuyên sâu (Công nghệ AI)', defaultFee: 350000, unit: 'buổi', desc: 'Gợi ý: 350.000 - 500.000 đ/buổi' },
+  'SS-08': { name: 'Chăm sóc các ổ loét', defaultFee: 2000000, unit: 'tháng', desc: 'Gợi ý: 2.000.000 đ/tháng' },
+  'SS-09': { name: 'Chăm sóc người đặt sonde bàng quang', defaultFee: 2000000, unit: 'tháng', desc: 'Gợi ý: 2.000.000 đ/tháng' },
+  'CUSTOM': { name: 'Tùy chọn dịch vụ chăm sóc hỗ trợ khác', defaultFee: 0, unit: 'tháng', desc: 'Nhập đơn giá tùy chỉnh thủ công' },
+};
+
 // Initial Clinical Assessment Data Model matching uploaded 2-page template
 export interface InitialClinicalAssessment {
   intakeDate: string;
@@ -286,6 +325,9 @@ export interface InitialClinicalAssessment {
 
   // IX. Tiếp nhận thuốc & Đồ dùng cá nhân
   handoverRecord?: AdmissionHandoverRecord;
+
+  // X. Thống nhất Bảng giá dịch vụ & Viện phí hàng tháng
+  financialAgreement?: FinancialAgreementItem;
 }
 
 const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
@@ -373,7 +415,21 @@ const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
     supervisorApprovalName: 'Hoàng Quốc Anh (Ban Giám đốc)',
     medications: DEFAULT_HANDOVER_MEDICATIONS,
     belongings: DEFAULT_HANDOVER_BELONGINGS,
-    generalNotes: 'Thân nhân và người cao tuổi đã bàn giao đầy đủ thuốc và đồ dùng cá nhân. Viện dưỡng lão Tâm An Care đã kiểm đếm và lưu giữ theo đúng quy trình.',
+    generalNotes: 'Thân nhân và người cao tuổi đã bàn giao đầy đủ thuốc và đồ dùng cá nhân. Trung Tâm Dưỡng Lão Tâm An đã kiểm đếm và lưu giữ theo đúng quy trình.',
+  },
+
+  financialAgreement: {
+    basicCarePackageKey: 'BCP-02',
+    basicCarePackageName: 'Phòng tập thể 3, 4 giường',
+    basicCarePackageFee: 14500000,
+    supportServiceKey: 'NONE',
+    supportServiceName: 'Không đăng ký dịch vụ hỗ trợ phát sinh',
+    supportServiceFee: 0,
+    depositAmount: 20000000,
+    paymentCycleDay: 'Từ ngày 01 đến ngày 05 hàng tháng',
+    calculatedMonthlyTotal: 14500000,
+    guardianAgreed: true,
+    notes: 'Đại diện gia đình thống nhất Bảng giá dịch vụ và ký cam kết viện phí hàng tháng.',
   },
 };
 
@@ -390,6 +446,204 @@ const STATUS_BADGES: Record<string, { label: string; className: string }> = {
   COMPLETED: { label: 'Đã vào Tâm An chính thức', className: 'badge badge-success' },
   CANCELLED: { label: 'Đã hủy', className: 'badge badge-neutral' },
 };
+
+interface DobDatePickerProps {
+  value: string;
+  onChange: (val: string) => void;
+  required?: boolean;
+}
+
+function DobDatePicker({ value, onChange, required }: DobDatePickerProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const parseValue = (val: string) => {
+    if (!val) return { day: 1, month: 0, year: 1950 };
+    const trimmed = val.trim();
+    if (/^\d{4}$/.test(trimmed)) {
+      return { day: 1, month: 0, year: parseInt(trimmed, 10) };
+    }
+    if (trimmed.includes('/')) {
+      const parts = trimmed.split('/');
+      if (parts.length === 3) {
+        const d = parseInt(parts[0], 10) || 1;
+        const m = (parseInt(parts[1], 10) || 1) - 1;
+        const y = parseInt(parts[2], 10) || 1950;
+        return { day: d, month: Math.max(0, Math.min(11, m)), year: y };
+      }
+    }
+    if (trimmed.includes('-')) {
+      const parts = trimmed.split('-');
+      if (parts.length === 3) {
+        const y = parseInt(parts[0], 10) || 1950;
+        const m = (parseInt(parts[1], 10) || 1) - 1;
+        const d = parseInt(parts[2], 10) || 1;
+        return { day: d, month: Math.max(0, Math.min(11, m)), year: y };
+      }
+    }
+    return { day: 1, month: 0, year: 1950 };
+  };
+
+  const currentParsed = parseValue(value);
+  const [selectedYear, setSelectedYear] = useState(currentParsed.year);
+  const [selectedMonth, setSelectedMonth] = useState(currentParsed.month);
+
+  useEffect(() => {
+    const p = parseValue(value);
+    setSelectedYear(p.year);
+    setSelectedMonth(p.month);
+  }, [value]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(selectedYear, selectedMonth, 1).getDay();
+
+  const handleSelectDay = (day: number) => {
+    const dd = String(day).padStart(2, '0');
+    const mm = String(selectedMonth + 1).padStart(2, '0');
+    const yyyy = selectedYear;
+    onChange(`${dd}/${mm}/${yyyy}`);
+    setIsOpen(false);
+  };
+
+  const years = Array.from({ length: 96 }, (_, i) => 1920 + i);
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block' }}>
+      <input
+        type="text"
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onFocus={() => setIsOpen(true)}
+        onClick={() => setIsOpen(true)}
+        placeholder="dd/mm/yyyy"
+        required={required}
+        className="form-input"
+        style={{ width: '165px', fontWeight: 600, letterSpacing: '0.02em' }}
+      />
+
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            zIndex: 1050,
+            width: '320px',
+            background: '#ffffff',
+            border: '1px solid #cbd5e1',
+            borderRadius: '0.5rem',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.18)',
+            padding: '0.75rem',
+          }}
+        >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '0.5rem', marginBottom: '0.65rem' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                Sổ xuống chọn Năm:
+              </label>
+              <select
+                value={selectedYear}
+                onChange={e => setSelectedYear(parseInt(e.target.value, 10))}
+                className="form-input"
+                style={{ padding: '0.25rem 0.4rem', fontSize: '0.85rem', fontWeight: 700, color: '#0284c7' }}
+              >
+                {years.map(y => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                Tháng:
+              </label>
+              <select
+                value={selectedMonth}
+                onChange={e => setSelectedMonth(parseInt(e.target.value, 10))}
+                className="form-input"
+                style={{ padding: '0.25rem 0.4rem', fontSize: '0.85rem' }}
+              >
+                {Array.from({ length: 12 }, (_, i) => (
+                  <option key={i} value={i}>
+                    Tháng {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.15rem', textAlign: 'center', fontWeight: 600, fontSize: '0.75rem', color: '#64748b', marginBottom: '0.35rem' }}>
+            <span>CN</span><span>T2</span><span>T3</span><span>T4</span><span>T5</span><span>T6</span><span>T7</span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '0.2rem' }}>
+            {Array.from({ length: firstDayOfWeek }).map((_, idx) => (
+              <div key={`empty-${idx}`} />
+            ))}
+            {Array.from({ length: daysInMonth }, (_, idx) => {
+              const dayNum = idx + 1;
+              const isSelected = currentParsed.day === dayNum && currentParsed.month === selectedMonth && currentParsed.year === selectedYear;
+              return (
+                <button
+                  key={dayNum}
+                  type="button"
+                  onClick={() => handleSelectDay(dayNum)}
+                  style={{
+                    padding: '0.3rem 0',
+                    fontSize: '0.82rem',
+                    borderRadius: '0.25rem',
+                    border: '1px solid',
+                    borderColor: isSelected ? '#0284c7' : '#e2e8f0',
+                    background: isSelected ? '#0284c7' : '#f8fafc',
+                    color: isSelected ? '#ffffff' : '#1e293b',
+                    fontWeight: isSelected ? 700 : 500,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {dayNum}
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ marginTop: '0.65rem', paddingTop: '0.5rem', borderTop: '1px solid #f1f5f9', display: 'flex', gap: '0.3rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Năm sinh chọn nhanh:</span>
+            {[1935, 1940, 1945, 1950, 1955, 1960].map(yr => (
+              <button
+                key={yr}
+                type="button"
+                onClick={() => setSelectedYear(yr)}
+                style={{
+                  fontSize: '0.72rem',
+                  padding: '0.1rem 0.35rem',
+                  borderRadius: '0.2rem',
+                  border: '1px solid #cbd5e1',
+                  background: selectedYear === yr ? '#e0f2fe' : '#ffffff',
+                  color: selectedYear === yr ? '#0369a1' : '#475569',
+                  fontWeight: selectedYear === yr ? 700 : 400,
+                  cursor: 'pointer',
+                }}
+              >
+                {yr}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function AdmissionPage() {
   const { actor } = useActor();
@@ -449,6 +703,35 @@ export function AdmissionPage() {
       return { bmi: String(val), evalResult };
     }
     return { bmi: '', evalResult: 'NORMAL' as const };
+  };
+
+  const normalizeDob = (dobStr: string): string => {
+    if (!dobStr) return '';
+    const trimmed = dobStr.trim();
+    if (/^\d{4}$/.test(trimmed)) {
+      return `01/01/${trimmed}`;
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      const [y, m, d] = trimmed.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    return trimmed;
+  };
+
+  const formatDateDisplay = (dobStr?: string) => {
+    if (!dobStr) return '—';
+    const trimmed = dobStr.trim();
+    if (/^\d{4}$/.test(trimmed)) return trimmed;
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(trimmed)) return trimmed;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+      const [y, m, d] = trimmed.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    const d = new Date(trimmed);
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('vi-VN');
+    }
+    return trimmed;
   };
 
   const handleWeightChange = (val: string) => {
@@ -512,6 +795,10 @@ export function AdmissionPage() {
 
   const handleEditDraft = async (c: AdmissionCase) => {
     if (!actor) return;
+    if (c.status === 'ADMITTED' || c.status === 'COMPLETED') {
+      setMessage('Hồ sơ đối với cụ đã vào Tâm An chính thức không thể chỉnh sửa.');
+      return;
+    }
     try {
       setBusy(true);
       setMessage('');
@@ -561,11 +848,13 @@ export function AdmissionPage() {
 
       let caseId = editingCase?.admissionCaseId;
 
+      const dobValue = normalizeDob(form.dateOfBirth) || new Date().toISOString().slice(0, 10);
+
       if (!caseId) {
         // 1. Create Base Admission Case
         const caseItem = await createAdmission(actor, {
           prospectiveResidentName: form.prospectiveResidentName.trim(),
-          dateOfBirth: form.dateOfBirth || new Date().toISOString().slice(0, 10),
+          dateOfBirth: dobValue,
           gender: form.gender,
           identityNumber: form.identityNumber.trim() || undefined,
           requestedAdmissionDate: form.intakeDate,
@@ -737,7 +1026,7 @@ export function AdmissionPage() {
       setMessage('');
       const res = await finalizeAdmission(actor, caseId);
       await refreshList();
-      setMessage(`Đã hoàn tất tiếp nhận thành công! Mã người cao tuổi chính thức: ${res.residentCode} (${res.displayName}).`);
+      setMessage(`Đã hoàn tất tiếp nhận thành công! Mã người cao tuổi chính thức: ${res.residentCode} (${res.displayName}). Đã khởi tạo Bảng kê thu phí chuẩn theo đúng Nguyên tắc tính toán nhất quán Viện Tâm An.`);
     } catch (err: any) {
       setMessage(err.message || 'Lỗi khi hoàn tất tiếp nhận.');
     } finally {
@@ -848,7 +1137,7 @@ export function AdmissionPage() {
                       <div className="cell-secondary">Mã hồ sơ: {item.admissionCode}</div>
                     </td>
                     <td>
-                      <div>{item.dateOfBirth ? new Date(item.dateOfBirth).toLocaleDateString('vi-VN') : '—'}</div>
+                      <div>{formatDateDisplay(item.dateOfBirth)}</div>
                       <div className="cell-secondary">{item.gender === 'FEMALE' ? 'Nữ' : 'Nam'}</div>
                     </td>
                     <td>
@@ -862,23 +1151,25 @@ export function AdmissionPage() {
                     </td>
                     <td className="text-right">
                       <div className="btn-group" style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                        {item.status !== 'ADMITTED' && item.status !== 'COMPLETED' && (
+                          <button
+                            onClick={() => void handleEditDraft(item)}
+                            className="btn btn-sm btn-warning"
+                            style={{ fontWeight: 600 }}
+                            title="Sửa đổi/chỉnh sửa lại thông tin trong phiếu đánh giá ban đầu"
+                          >
+                            ✏️ Sửa phiếu
+                          </button>
+                        )}
+
                         {isDraft && (
-                          <>
-                            <button
-                              onClick={() => void handleEditDraft(item)}
-                              className="btn btn-sm btn-primary"
-                              title="Mở biểu mẫu để tiếp tục điền thông tin"
-                            >
-                              ✏️ Điền tiếp
-                            </button>
-                            <button
-                              onClick={() => void handleQuickFinalize(item)}
-                              className="btn btn-sm btn-success"
-                              title="Chuyển hồ sơ sang trạng thái Đã hoàn thiện"
-                            >
-                              ✅ Hoàn thiện
-                            </button>
-                          </>
+                          <button
+                            onClick={() => void handleQuickFinalize(item)}
+                            className="btn btn-sm btn-success"
+                            title="Chuyển hồ sơ sang trạng thái Đã hoàn thiện"
+                          >
+                            ✅ Hoàn thiện
+                          </button>
                         )}
 
                         <button
@@ -973,12 +1264,10 @@ export function AdmissionPage() {
                   <div className="form-row" style={{ marginTop: '0.75rem' }}>
                     <div>
                       <label className="form-label">Ngày tháng năm sinh <span className="req">*</span></label>
-                      <input
-                        type="date"
+                      <DobDatePicker
                         value={form.dateOfBirth}
-                        onChange={e => setForm(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                        onChange={val => setForm(prev => ({ ...prev, dateOfBirth: val }))}
                         required
-                        className="form-input"
                       />
                     </div>
 
@@ -1767,9 +2056,229 @@ export function AdmissionPage() {
                     rows={2}
                     value={form.handoverRecord?.generalNotes ?? ''}
                     onChange={e => setForm(prev => ({ ...prev, handoverRecord: { ...prev.handoverRecord!, generalNotes: e.target.value } }))}
-                    placeholder="Thân nhân và người cao tuổi đã bàn giao đầy đủ. Viện Dưỡng Lão Tâm An Care đã kiểm đếm..."
+                    placeholder="Thân nhân và người cao tuổi đã bàn giao đầy đủ. Trung Tâm Dưỡng Lão Tâm An đã kiểm đếm..."
                     className="form-textarea"
                   />
+                </div>
+              </div>
+
+              {/* X. THỐNG NHẤT BẢNG GIÁ DỊCH VỤ & PHÍ HÀNG THÁNG */}
+              <div style={{ background: '#fefce8', border: '1px solid #fef08a', borderRadius: '0.5rem', padding: '1rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <h3 style={{ margin: 0, fontSize: '1rem', color: '#854d0e', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>💰</span> X. THỐNG NHẤT BẢNG GIÁ DỊCH VỤ & KHUNG VIỆN PHÍ HÀNG THÁNG
+                  </h3>
+                  <span style={{ fontSize: '0.78rem', background: '#fef08a', color: '#713f12', padding: '0.2rem 0.5rem', borderRadius: '0.25rem', fontWeight: 600 }}>
+                    Căn cứ tính toán thu phí hàng tháng cho cư dân
+                  </span>
+                </div>
+
+                {/* Form Row: Gói chăm sóc cơ bản & Ô nhập giá thủ công */}
+                <div className="form-row" style={{ marginBottom: '0.75rem' }}>
+                  <div>
+                    <label className="form-label">1. Gói chăm sóc cơ bản (Chọn từ Bảng giá):</label>
+                    <select
+                      value={form.financialAgreement?.basicCarePackageKey ?? 'BCP-02'}
+                      onChange={e => {
+                        const key = e.target.value;
+                        const pkg = BASIC_CARE_PACKAGE_OPTIONS[key];
+                        const defaultPrice = pkg?.defaultFee ?? 0;
+                        const pkgName = pkg?.name ?? 'Gói chăm sóc cơ bản';
+                        setForm(prev => {
+                          const currentSupportFee = prev.financialAgreement?.supportServiceFee ?? 0;
+                          const total = defaultPrice + currentSupportFee;
+                          return {
+                            ...prev,
+                            financialAgreement: {
+                              ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                              basicCarePackageKey: key,
+                              basicCarePackageName: pkgName,
+                              basicCarePackageFee: defaultPrice,
+                              calculatedMonthlyTotal: total,
+                            },
+                          };
+                        });
+                      }}
+                      className="form-select"
+                      style={{ width: '100%' }}
+                    >
+                      <option value="BCP-04">Phòng VIP 1 giường (20.000.000 VNĐ / tháng)</option>
+                      <option value="BCP-03">Phòng VIP 2 giường (16.500.000 VNĐ / tháng)</option>
+                      <option value="BCP-02">Phòng tập thể 3, 4 giường (14.500.000 VNĐ / tháng)</option>
+                      <option value="BCP-01">Phòng tập thể 6 giường (12.000.000 VNĐ / tháng)</option>
+                      <option value="BCP-05">Phòng chăm sóc toàn diện (16.500.000 VNĐ / tháng)</option>
+                      <option value="CUSTOM">Khác / Thỏa thuận riêng</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="form-label">Đơn giá Gói chăm sóc cơ bản (Nhập thủ công VNĐ):</label>
+                    <input
+                      type="number"
+                      value={form.financialAgreement?.basicCarePackageFee ?? 14500000}
+                      onChange={e => {
+                        const newFee = Number(e.target.value) || 0;
+                        setForm(prev => {
+                          const currentSupportFee = prev.financialAgreement?.supportServiceFee ?? 0;
+                          const total = newFee + currentSupportFee;
+                          return {
+                            ...prev,
+                            financialAgreement: {
+                              ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                              basicCarePackageFee: newFee,
+                              calculatedMonthlyTotal: total,
+                            },
+                          };
+                        });
+                      }}
+                      className="form-input"
+                      placeholder="Nhập đơn giá gói cơ bản..."
+                    />
+                    <div style={{ fontSize: '0.74rem', color: '#854d0e', marginTop: '0.2rem' }}>
+                      (Cho phép tùy chỉnh đơn giá thực tế làm căn cứ tính phí hàng tháng)
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form Row: Phí dịch vụ chăm sóc hỗ trợ (Mục II) & Ô nhập giá thủ công */}
+                <div className="form-row" style={{ marginBottom: '0.75rem' }}>
+                  <div>
+                    <label className="form-label">2. Phí dịch vụ chăm sóc hỗ trợ (Mục II Bảng giá):</label>
+                    <select
+                      value={form.financialAgreement?.supportServiceKey ?? 'NONE'}
+                      onChange={e => {
+                        const key = e.target.value;
+                        const svc = SUPPORT_SERVICE_OPTIONS[key];
+                        const defaultPrice = svc?.defaultFee ?? 0;
+                        const svcName = svc?.name ?? 'Dịch vụ chăm sóc hỗ trợ';
+                        setForm(prev => {
+                          const currentBasicFee = prev.financialAgreement?.basicCarePackageFee ?? 14500000;
+                          const total = currentBasicFee + defaultPrice;
+                          return {
+                            ...prev,
+                            financialAgreement: {
+                              ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                              supportServiceKey: key,
+                              supportServiceName: svcName,
+                              supportServiceFee: defaultPrice,
+                              calculatedMonthlyTotal: total,
+                            },
+                          };
+                        });
+                      }}
+                      className="form-select"
+                      style={{ width: '100%' }}
+                    >
+                      <option value="NONE">Không đăng ký dịch vụ hỗ trợ phát sinh (0 VNĐ)</option>
+                      <option value="SS-01">Hỗ trợ tắm gội (Gợi ý: 500k - 1.5tr)</option>
+                      <option value="SS-02">Hỗ trợ nâng đỡ, di chuyển (Gợi ý: 500k)</option>
+                      <option value="SS-03">Hỗ trợ xúc ăn (Gợi ý: 500k)</option>
+                      <option value="SS-04">Hỗ trợ vệ sinh (Gợi ý: 1tr - 3tr)</option>
+                      <option value="SS-05">Hỗ trợ ăn qua sonde (Gợi ý: 1.5tr)</option>
+                      <option value="SS-06">Chăm sóc NCT bị lẫn tuổi già (Gợi ý: 500k - 2tr)</option>
+                      <option value="SS-07">Tập VLTL & PHCN chuyên sâu (Công nghệ AI) (350k - 500k/buổi)</option>
+                      <option value="SS-08">Chăm sóc các ổ loét (Gợi ý: 2tr)</option>
+                      <option value="SS-09">Chăm sóc người đặt sonde bàng quang (Gợi ý: 2tr)</option>
+                      <option value="CUSTOM">Tùy chọn dịch vụ chăm sóc hỗ trợ khác</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="form-label">Đơn giá Dịch vụ chăm sóc hỗ trợ (Nhập thủ công VNĐ):</label>
+                    <input
+                      type="number"
+                      value={form.financialAgreement?.supportServiceFee ?? 0}
+                      onChange={e => {
+                        const newSupportFee = Number(e.target.value) || 0;
+                        setForm(prev => {
+                          const currentBasicFee = prev.financialAgreement?.basicCarePackageFee ?? 14500000;
+                          const total = currentBasicFee + newSupportFee;
+                          return {
+                            ...prev,
+                            financialAgreement: {
+                              ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                              supportServiceFee: newSupportFee,
+                              calculatedMonthlyTotal: total,
+                            },
+                          };
+                        });
+                      }}
+                      className="form-input"
+                      placeholder="0 (Nhập phí hỗ trợ tùy chỉnh...)"
+                    />
+                    <div style={{ fontSize: '0.74rem', color: '#854d0e', marginTop: '0.2rem' }}>
+                      (Cho phép cập nhật, điều chỉnh đơn giá dịch vụ hỗ trợ thủ công)
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form Row: Deposit & Payment Cycle */}
+                <div className="form-row" style={{ marginBottom: '0.75rem' }}>
+                  <div>
+                    <label className="form-label">3. Quỹ Tiền Đặt Cọc / Dự phòng y tế ban đầu (VNĐ):</label>
+                    <input
+                      type="number"
+                      value={form.financialAgreement?.depositAmount ?? 20000000}
+                      onChange={e => setForm(prev => ({
+                        ...prev,
+                        financialAgreement: {
+                          ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                          depositAmount: Number(e.target.value) || 0,
+                        },
+                      }))}
+                      className="form-input"
+                    />
+                    <div style={{ fontSize: '0.74rem', color: '#854d0e', marginTop: '0.2rem' }}>
+                      (Mức đặt cọc gợi ý mặc định: 20.000.000 VNĐ, có thể điều chỉnh thủ công)
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="form-label">4. Hạn thanh toán định kỳ hàng tháng:</label>
+                    <input
+                      type="text"
+                      value={form.financialAgreement?.paymentCycleDay ?? 'Từ ngày 01 đến ngày 05 hàng tháng'}
+                      onChange={e => setForm(prev => ({
+                        ...prev,
+                        financialAgreement: {
+                          ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                          paymentCycleDay: e.target.value,
+                        },
+                      }))}
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Monthly Calculation Summary Banner */}
+                <div style={{ background: '#fef08a', border: '1px solid #facc15', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginTop: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', color: '#713f12', fontWeight: 600 }}>TỔNG CHI PHÍ PHẢI THU HÀNG THÁNG DỰ KIẾN:</div>
+                    <div style={{ fontSize: '0.75rem', color: '#854d0e' }}>
+                      (Gói chăm sóc cơ bản: {(form.financialAgreement?.basicCarePackageFee ?? 14500000).toLocaleString('vi-VN')} đ + Dịch vụ hỗ trợ: {(form.financialAgreement?.supportServiceFee ?? 0).toLocaleString('vi-VN')} đ)
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#92400e' }}>
+                    {((form.financialAgreement?.basicCarePackageFee ?? 14500000) + (form.financialAgreement?.supportServiceFee ?? 0)).toLocaleString('vi-VN')} VNĐ / tháng
+                  </div>
+                </div>
+
+                {/* Guardian Agreement Checkbox */}
+                <div style={{ marginTop: '0.75rem' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem', fontWeight: 700, color: '#713f12', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={form.financialAgreement?.guardianAgreed ?? true}
+                      onChange={e => setForm(prev => ({
+                        ...prev,
+                        financialAgreement: {
+                          ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
+                          guardianAgreed: e.target.checked,
+                        },
+                      }))}
+                    />
+                    <span>Xác nhận Đại diện gia đình / Thân nhân đã thống nhất Bảng giá dịch vụ và cam kết thanh toán đúng hạn.</span>
+                  </label>
                 </div>
               </div>
 
@@ -1816,7 +2325,21 @@ export function AdmissionPage() {
           <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <h2 className="modal-title">Phiếu Đánh Giá Sức Khỏe Ban Đầu Cho Người Cao Tuổi</h2>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                {viewingAssessment.c.status !== 'ADMITTED' && viewingAssessment.c.status !== 'COMPLETED' && (
+                  <button
+                    onClick={() => {
+                      const targetCase = viewingAssessment.c;
+                      setViewingAssessment(null);
+                      void handleEditDraft(targetCase);
+                    }}
+                    className="btn btn-sm btn-warning"
+                    style={{ fontWeight: 700 }}
+                    title="Mở biểu mẫu để chỉnh sửa lại thông tin trong phiếu này"
+                  >
+                    ✏️ Sửa phiếu
+                  </button>
+                )}
                 <button
                   onClick={() => window.print()}
                   className="btn btn-sm btn-primary"
@@ -1863,7 +2386,7 @@ export function AdmissionPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
                 <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem' }}>{viewingAssessment.data.prospectiveResidentName}</span></div>
                 <div><b>Giới tính (Nam/Nữ):</b> {viewingAssessment.data.gender === 'FEMALE' ? 'Nữ' : 'Nam'}</div>
-                <div><b>Ngày tháng năm sinh:</b> {viewingAssessment.data.dateOfBirth}</div>
+                <div><b>Ngày tháng năm sinh:</b> {formatDateDisplay(viewingAssessment.data.dateOfBirth)}</div>
                 <div><b>Số CMND/CCCD:</b> {viewingAssessment.data.identityNumber || '—'}</div>
                 <div><b>Họ tên người bảo hộ (NBH):</b> {viewingAssessment.data.guardianName}</div>
                 <div><b>Mối quan hệ:</b> {viewingAssessment.data.guardianRelationship}</div>
@@ -2024,29 +2547,74 @@ export function AdmissionPage() {
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b> &nbsp;
-                <span style={{ background: '#fef08a' }}>[{viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] <b>(1) Tự phục vụ</b></span> &nbsp;
-                [{viewingAssessment.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] (2) Cần hỗ trợ một phần &nbsp;
-                [{viewingAssessment.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện
+                <span style={{ background: viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? '#fef08a' : 'transparent', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', fontWeight: viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? 700 : 400 }}>
+                  [{viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ
+                </span> &nbsp;&nbsp;
+                <span style={{ background: viewingAssessment.data.careLevelProposal === 'LEVEL_2' ? '#fef08a' : 'transparent', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', fontWeight: viewingAssessment.data.careLevelProposal === 'LEVEL_2' ? 700 : 400 }}>
+                  [{viewingAssessment.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] (2) Cần hỗ trợ một phần
+                </span> &nbsp;&nbsp;
+                <span style={{ background: viewingAssessment.data.careLevelProposal === 'LEVEL_3' ? '#fef08a' : 'transparent', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', fontWeight: viewingAssessment.data.careLevelProposal === 'LEVEL_3' ? 700 : 400 }}>
+                  [{viewingAssessment.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện
+                </span>
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}>
                 <b>2. Ghi chú cụ thể:</b> {viewingAssessment.data.specificNotes || 'Không có.'}
               </div>
 
-              {/* Dual Signatures */}
-              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', textAlign: 'center', marginTop: '0.6rem' }}>
+              {/* IX. THỐNG NHẤT BẢNG GIÁ DỊCH VỤ & KHUNG PHÍ HÀNG THÁNG */}
+              <div className="section-header" style={{ background: '#fef08a', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#713f12' }}>
+                IX. THỐNG NHẤT BẢNG GIÁ DỊCH VỤ & PHÍ HÀNG THÁNG CHUẨN TÂM AN CARE
+              </div>
+              {(() => {
+                const fin = viewingAssessment.data.financialAgreement || DEFAULT_INITIAL_ASSESSMENT.financialAgreement!;
+                const basicPkgName = fin.basicCarePackageName || BASIC_CARE_PACKAGE_OPTIONS[fin.basicCarePackageKey]?.name || 'Gói chăm sóc cơ bản';
+                const basicFee = fin.basicCarePackageFee ?? 14500000;
+                const supportSvcName = fin.supportServiceName || SUPPORT_SERVICE_OPTIONS[fin.supportServiceKey]?.name || 'Dịch vụ chăm sóc hỗ trợ';
+                const supportFee = fin.supportServiceFee ?? 0;
+                const total = basicFee + supportFee;
+
+                return (
+                  <div style={{ fontSize: '0.78rem', marginBottom: '0.5rem', background: '#fffbeb', border: '1px solid #fef08a', padding: '0.4rem 0.6rem', borderRadius: '0.25rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.3rem', marginBottom: '0.35rem' }}>
+                      <div><b>1. Gói chăm sóc cơ bản:</b> {basicPkgName} ({basicFee.toLocaleString('vi-VN')} đ/tháng)</div>
+                      <div><b>2. Phí chăm sóc hỗ trợ (Mục II):</b> {supportSvcName} ({supportFee.toLocaleString('vi-VN')} đ/tháng)</div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #fde047', paddingTop: '0.3rem', marginTop: '0.2rem' }}>
+                      <div>
+                        <b>Đặt cọc ban đầu:</b> {(fin.depositAmount ?? 20000000).toLocaleString('vi-VN')} VNĐ &nbsp;|&nbsp;
+                        <b>Hạn thanh toán:</b> {fin.paymentCycleDay || 'Từ ngày 01 đến ngày 05 hàng tháng'}
+                      </div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 800, color: '#92400e' }}>
+                        TỔNG PHÍ HÀNG THÁNG: {total.toLocaleString('vi-VN')} VNĐ
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Triple Signatures */}
+              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '0.6rem', gap: '0.5rem' }}>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Người lập phiếu</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Gia đình / Thân nhân</div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ký và ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '75%', margin: '0 auto', fontSize: '0.82rem' }}>
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
+                    {viewingAssessment.data.guardianName || 'Người đại diện'}
+                  </div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Người lập phiếu đánh giá</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
                     {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thúy'}
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Người bảo hộ / Gia đình</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ký và ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '75%', margin: '0 auto', fontSize: '0.82rem' }}>
-                    {viewingAssessment.data.guardianName || 'Người đại diện'}
+                  <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Viện Tâm An Care</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ban Giám đốc / Kế toán)</div>
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
+                    Hoàng Quốc Anh
                   </div>
                 </div>
               </div>
@@ -2189,21 +2757,39 @@ export function AdmissionPage() {
               </div>
             )}
 
-            <div className="modal-footer">
-              <button
-                type="button"
-                onClick={() => setViewingAssessment(null)}
-                className="btn btn-secondary"
-              >
-                Đóng
-              </button>
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="btn btn-primary"
-              >
-                🖨️ In Phiếu Tiếp Nhận (A4)
-              </button>
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {viewingAssessment.c.status !== 'ADMITTED' && viewingAssessment.c.status !== 'COMPLETED' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const targetCase = viewingAssessment.c;
+                    setViewingAssessment(null);
+                    void handleEditDraft(targetCase);
+                  }}
+                  className="btn btn-warning"
+                  style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                >
+                  ✏️ Sửa phiếu này
+                </button>
+              ) : (
+                <div />
+              )}
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setViewingAssessment(null)}
+                  className="btn btn-secondary"
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="btn btn-primary"
+                >
+                  🖨️ In Phiếu Tiếp Nhận (A4)
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2336,7 +2922,7 @@ export function AdmissionPage() {
               <div style={{ textAlign: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: '#475569' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM — TIÊU CHUẨN Y KHOA TÂM AN CARE</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>PHIẾU BÀN GIAO THUỐC & ĐỒ DÙNG CÁ NHÂN NGƯỜI CAO TUỔI</div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Thời điểm tiếp nhận ban đầu tại Viện Dưỡng Lão Tâm An Care • Mã hồ sơ: {selectedHandoverPrint.caseCode}</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Thời điểm tiếp nhận ban đầu tại Trung Tâm Dưỡng Lão Tâm An • Mã hồ sơ: {selectedHandoverPrint.caseCode}</div>
               </div>
 
               {/* Info Header */}
