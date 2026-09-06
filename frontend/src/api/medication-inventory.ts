@@ -625,6 +625,36 @@ export async function fetchInventoryItems(
   return result;
 }
 
+export async function createInventoryItem(
+  actor: HumanActorSession,
+  payload: {
+    name: string;
+    category?: InventoryCategory;
+    unit?: string;
+    minStockThreshold?: number;
+    lotNumber?: string;
+    expiryDate?: string;
+    unitPrice?: number;
+    location?: string;
+  },
+): Promise<MedicalInventoryItem> {
+  const newItem: MedicalInventoryItem = {
+    itemId: `inv-${Date.now()}`,
+    itemCode: `MED-CUS-${Math.floor(100 + Math.random() * 900)}`,
+    name: payload.name,
+    category: payload.category || 'CONSUMABLES',
+    unit: payload.unit || 'Cái',
+    currentStock: 0,
+    minStockThreshold: payload.minStockThreshold || 10,
+    lotNumber: payload.lotNumber || `LOT-${new Date().getFullYear()}-NEW`,
+    expiryDate: payload.expiryDate || new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString().slice(0, 10),
+    unitPrice: payload.unitPrice || 0,
+    location: payload.location || 'Kho y tế Tầng 1',
+  };
+  inventoryItems = [newItem, ...inventoryItems];
+  return newItem;
+}
+
 export async function recordInventoryTransaction(
   actor: HumanActorSession,
   payload: {

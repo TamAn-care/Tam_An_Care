@@ -36,7 +36,7 @@ export const PAGE_META:
         'Phân ca trực nhân sự, điểm danh vào/ra ca và bàn giao ca chuẩn y khoa.',
     },
     '/operations': {
-      title: 'Vận hành chăm sóc',
+      title: 'Chăm sóc & Vận hành',
       description:
         'Ghi nhận và rà soát bằng chứng công việc chăm sóc hàng ngày.',
     },

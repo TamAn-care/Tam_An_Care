@@ -301,6 +301,33 @@ export function OperationsPage() {
   const [quantity, setQuantity] = useState('1');
   const [note, setNote] = useState('');
 
+  // Dynamic Specific Clinical Parameters State
+  const [sysBP, setSysBP] = useState('120');
+  const [diaBP, setDiaBP] = useState('80');
+  const [heartRate, setHeartRate] = useState('75');
+  const [temp, setTemp] = useState('36.8');
+  const [spo2, setSpo2] = useState('98');
+  const [respRate, setRespRate] = useState('18');
+  const [bloodGlucose, setBloodGlucose] = useState('');
+
+  const [medName, setMedName] = useState('');
+  const [medDose, setMedDose] = useState('');
+  const [medStatus, setMedStatus] = useState('FULL');
+
+  const [excretionType, setExcretionType] = useState('NORMAL');
+  const [diaperCount, setDiaperCount] = useState('1');
+  const [hygieneNote, setHygieneNote] = useState('');
+
+  const [woundLocation, setWoundLocation] = useState('');
+  const [woundCondition, setWoundCondition] = useState('HEALING');
+  const [dressingUsed, setDressingUsed] = useState('');
+
+  const [mealIntake, setMealIntake] = useState('100%');
+  const [fluidIntake, setFluidIntake] = useState('');
+
+  const [durationMin, setDurationMin] = useState('15');
+  const [rehabResponse, setRehabResponse] = useState('EXCELLENT');
+
   // Amend & Void Form State
   const [amendQuantity, setAmendQuantity] = useState('');
   const [amendNote, setAmendNote] = useState('');
@@ -407,16 +434,21 @@ export function OperationsPage() {
     return map;
   }, [allAvailableTypes]);
 
-  const residentById = useMemo(
-    () =>
-      new Map(
-        (residentsQuery.data ?? []).map(({ resident }) => [
-          resident.residentId,
-          resident,
-        ]),
-      ),
-    [residentsQuery.data],
-  );
+  const residentById = useMemo(() => {
+    const map = new Map<string, any>();
+    for (const item of (residentsQuery.data ?? [])) {
+      const res = item.resident;
+      if (res.residentId) {
+        map.set(res.residentId, res);
+        map.set(res.residentId.toLowerCase(), res);
+      }
+      if (res.residentCode) {
+        map.set(res.residentCode, res);
+        map.set(res.residentCode.toLowerCase(), res);
+      }
+    }
+    return map;
+  }, [residentsQuery.data]);
 
   const selectedResident = useMemo(() => {
     if (!residentId) return null;
@@ -482,6 +514,192 @@ export function OperationsPage() {
     });
   }, [eventsQuery.data?.items, categoryFilter, searchKeyword, typeById, residentById]);
 
+  const renderDynamicClinicalFields = (code: string) => {
+    if (code === 'VITAL_SIGNS_CHECK') {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#166534', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>🩺</span> Nhập Chỉ Số Dấu Hiệu Sinh Tồn & Huyết Áp Chi Tiết (Chuẩn Y Khoa)
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Huyết áp (mmHg) *</label>
+              <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
+                <input type="number" placeholder="Tâm thu (120)" className="text-input" value={sysBP} onChange={(e) => setSysBP(e.target.value)} style={{ width: '50%' }} />
+                <span>/</span>
+                <input type="number" placeholder="Tâm trương (80)" className="text-input" value={diaBP} onChange={(e) => setDiaBP(e.target.value)} style={{ width: '50%' }} />
+              </div>
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Mạch / Nhịp tim (lần/phút) *</label>
+              <input type="number" placeholder="75" className="text-input" value={heartRate} onChange={(e) => setHeartRate(e.target.value)} />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Thân nhiệt (°C) *</label>
+              <input type="number" step="0.1" placeholder="36.8" className="text-input" value={temp} onChange={(e) => setTemp(e.target.value)} />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Nồng độ SpO2 (%) *</label>
+              <input type="number" placeholder="98" className="text-input" value={spo2} onChange={(e) => setSpo2(e.target.value)} />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Nhịp thở (lần/phút)</label>
+              <input type="number" placeholder="18" className="text-input" value={respRate} onChange={(e) => setRespRate(e.target.value)} />
+            </div>
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Đường huyết (mmol/L - nếu có)</label>
+              <input type="number" step="0.1" placeholder="5.6" className="text-input" value={bloodGlucose} onChange={(e) => setBloodGlucose(e.target.value)} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (code === 'MEDICATION_ADMINISTRATION') {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#1e40af', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>💊</span> Chi Tiết Cấp Phát & Uống Thuốc eMAR
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Tên thuốc / Y lệnh *</label>
+              <input type="text" placeholder="Ví dụ: Amlodipine 5mg" className="text-input" value={medName} onChange={(e) => setMedName(e.target.value)} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Liều lượng dùng *</label>
+              <input type="text" placeholder="Ví dụ: 1 viên sau ăn sáng" className="text-input" value={medDose} onChange={(e) => setMedDose(e.target.value)} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Trạng thái cấp phát *</label>
+              <select className="text-input" value={medStatus} onChange={(e) => setMedStatus(e.target.value)}>
+                <option value="FULL">✅ Đã uống đủ (Quy tắc 5 Đúng)</option>
+                <option value="PARTIAL">⚠️ Uống một phần</option>
+                <option value="REFUSED">❌ Người cao tuổi từ chối uống</option>
+                <option value="POSTPONED">⏸️ Tạm hoãn theo chỉ định y bác sĩ</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (code === 'DIAPER_TOILETING' || code === 'HYGIENE_BATHING') {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#c2410c', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>🧼</span> Ghi Nhận Chi Tiết Vệ Sinh Thân Thể & Bài Tiết
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Loại bài tiết</label>
+              <select className="text-input" value={excretionType} onChange={(e) => setExcretionType(e.target.value)}>
+                <option value="NORMAL">Bình thường / Tắm rửa sinh hoạt</option>
+                <option value="URINE">Tiểu tiện</option>
+                <option value="STOOL">Đại tiện</option>
+                <option value="BOTH">Cả đại tiện & tiểu tiện</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Số lượng tã bỉm đã dùng (cái)</label>
+              <input type="number" min="0" placeholder="1" className="text-input" value={diaperCount} onChange={(e) => setDiaperCount(e.target.value)} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Ghi nhận tính chất / da</label>
+              <input type="text" placeholder="Phân mềm, vùng mông da khô thoáng không tấy..." className="text-input" value={hygieneNote} onChange={(e) => setHygieneNote(e.target.value)} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (code === 'WOUND_CARE') {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#b91c1c', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>🩹</span> Thông Số Chăm Sóc Vết Thương & Vết Loét Tì Đè
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Vị trí vết thương *</label>
+              <input type="text" placeholder="Ví dụ: Vùng xương cùng / Gót chân T" className="text-input" value={woundLocation} onChange={(e) => setWoundLocation(e.target.value)} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Mức độ / Tình trạng vết thương *</label>
+              <select className="text-input" value={woundCondition} onChange={(e) => setWoundCondition(e.target.value)}>
+                <option value="HEALING">🟢 Đang khô lành tốt (Không tiết dịch)</option>
+                <option value="REDNESS">🟡 Đỏ sưng nhẹ xung quanh</option>
+                <option value="EXUDATE">🟠 Có dịch tiết vừa</option>
+                <option value="INFECTED">🔴 Mưng mủ / Dấu hiệu nhiễm trùng (Cần báo bác sĩ)</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Vật tư & Băng gạc sử dụng</label>
+              <input type="text" placeholder="Ví dụ: Gạc tiệt trùng + Povidone 10%" className="text-input" value={dressingUsed} onChange={(e) => setDressingUsed(e.target.value)} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (code === 'MEAL_ASSISTANCE' || code === 'TUBE_FEEDING_ASSIST') {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#fdf4ff', border: '1px solid #f5d0fe', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#86198f', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>🥣</span> Thông Số Theo Dõi Khẩu Phần Bữa Ăn & Dịch Uống
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Mức độ ăn hết suất *</label>
+              <select className="text-input" value={mealIntake} onChange={(e) => setMealIntake(e.target.value)}>
+                <option value="100%">🟢 100% (Ăn hết suất)</option>
+                <option value="75%">🔵 75% (Ăn hầu hết)</option>
+                <option value="50%">🟡 50% (Ăn một nửa)</option>
+                <option value="25%">🟠 25% (Ăn ít)</option>
+                <option value="0% (Refused)">🔴 Bỏ bữa / Không ăn</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Lượng nước / Dịch súp uống thêm (ml)</label>
+              <input type="number" placeholder="200" className="text-input" value={fluidIntake} onChange={(e) => setFluidIntake(e.target.value)} />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (code === 'REHAB_EXERCISE' || code === 'MOBILITY_ASSISTANCE') {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#faf5ff', border: '1px solid #e9d5ff', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#6b21a8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>🧘</span> Thông Số Tập VLTL & Phục Hồi Vận Động
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Thời lượng tập (phút) *</label>
+              <input type="number" placeholder="15" className="text-input" value={durationMin} onChange={(e) => setDurationMin(e.target.value)} />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Khả năng đáp ứng của cụ *</label>
+              <select className="text-input" value={rehabResponse} onChange={(e) => setRehabResponse(e.target.value)}>
+                <option value="EXCELLENT">🟢 Hợp tác tốt / Hoàn thành bài tập</option>
+                <option value="TIRED">🟡 Mệt mỏi nhẹ / Cần nghỉ ngơi giữa chừng</option>
+                <option value="PAIN">🔴 Kêu đau khớp / Dừng tập sớm</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   async function refreshEvents() {
     await queryClient.invalidateQueries({
       queryKey: ['operational-work-events'],
@@ -532,8 +750,8 @@ export function OperationsPage() {
         );
       }
 
-      if (selectedType?.resident_related && !createResidentId) {
-        throw new Error('Công việc này yêu cầu chọn người cao tuổi.');
+      if (!createResidentId) {
+        throw new Error('Vui lòng chọn Người cao tuổi thực hiện chăm sóc.');
       }
 
       if (selectedType?.code === 'OTHER_INCIDENTAL' && !note.trim()) {
@@ -548,14 +766,54 @@ export function OperationsPage() {
         throw new Error('Số lượng phải lớn hơn 0.');
       }
 
+      let formattedAutoNote = note.trim();
+      let metricsPayload: Record<string, any> = {};
+
+      const code = selectedType?.code;
+
+      if (code === 'VITAL_SIGNS_CHECK') {
+        const sys = Number(sysBP) || 120;
+        const dia = Number(diaBP) || 80;
+        const hr = Number(heartRate) || 75;
+        const tp = Number(temp) || 36.8;
+        const sp = Number(spo2) || 98;
+        const resp = Number(respRate) || 18;
+        const bg = bloodGlucose.trim() ? Number(bloodGlucose) : undefined;
+
+        metricsPayload = { sysBP: sys, diaBP: dia, heartRate: hr, temp: tp, spo2: sp, respRate: resp, bloodGlucose: bg };
+        const vitalsSummary = `📊 Sinh hiệu: HA ${sys}/${dia} mmHg | Mạch ${hr} bpm | Thân nhiệt ${tp}°C | SpO2 ${sp}% | Nhịp thở ${resp} bpm${bg ? ` | GLU ${bg} mmol/L` : ''}`;
+        formattedAutoNote = formattedAutoNote ? `${vitalsSummary} — ${formattedAutoNote}` : vitalsSummary;
+      } else if (code === 'MEDICATION_ADMINISTRATION') {
+        metricsPayload = { medName: medName.trim() || 'Amlodipine 5mg', medDose: medDose.trim() || '1 viên', medStatus };
+        const medSummary = `💊 Thuốc: ${metricsPayload.medName} (${metricsPayload.medDose}) | Trạng thái: ${medStatus === 'FULL' ? 'Đã uống đủ 5 Đúng' : medStatus === 'REFUSED' ? 'Từ chối uống' : 'Uống 1 phần'}`;
+        formattedAutoNote = formattedAutoNote ? `${medSummary} — ${formattedAutoNote}` : medSummary;
+      } else if (code === 'HYGIENE_BATHING' || code === 'DIAPER_TOILETING') {
+        metricsPayload = { excretionType, diaperCount: Number(diaperCount) || 1, hygieneNote: hygieneNote.trim() };
+        const hygieneSummary = `🧼 Vệ sinh / Bài tiết: ${excretionType === 'NORMAL' ? 'Bình thường' : excretionType === 'BOTH' ? 'Đại & Tiểu tiện' : excretionType} | Dùng ${diaperCount} tã bỉm${hygieneNote ? ` | Ghi nhận: ${hygieneNote}` : ''}`;
+        formattedAutoNote = formattedAutoNote ? `${hygieneSummary} — ${formattedAutoNote}` : hygieneSummary;
+      } else if (code === 'WOUND_CARE') {
+        metricsPayload = { woundLocation: woundLocation.trim() || 'Vùng tì đè', woundCondition, dressingUsed: dressingUsed.trim() };
+        const woundSummary = `🩹 Chăm sóc vết thương: ${metricsPayload.woundLocation} | Tình trạng: ${woundCondition === 'HEALING' ? 'Đang khô lành tốt' : woundCondition === 'REDNESS' ? 'Đỏ sưng nhẹ' : woundCondition}${dressingUsed ? ` | Băng gạc: ${dressingUsed}` : ''}`;
+        formattedAutoNote = formattedAutoNote ? `${woundSummary} — ${formattedAutoNote}` : woundSummary;
+      } else if (code === 'MEAL_ASSISTANCE' || code === 'TUBE_FEEDING_ASSIST') {
+        metricsPayload = { mealIntake, fluidIntake: fluidIntake.trim() };
+        const mealSummary = `🥣 Bữa ăn: ${mealIntake}${fluidIntake ? ` | Dịch uống: ${fluidIntake} ml` : ''}`;
+        formattedAutoNote = formattedAutoNote ? `${mealSummary} — ${formattedAutoNote}` : mealSummary;
+      } else if (code === 'REHAB_EXERCISE' || code === 'MOBILITY_ASSISTANCE') {
+        metricsPayload = { durationMin: Number(durationMin) || 15, rehabResponse };
+        const rehabSummary = `🧘 VLTL & Vận động: ${durationMin} phút | Khả năng đáp ứng: ${rehabResponse === 'EXCELLENT' ? 'Đáp ứng tốt' : rehabResponse === 'TIRED' ? 'Mệt mỏi nhẹ' : 'Kêu đau'}`;
+        formattedAutoNote = formattedAutoNote ? `${rehabSummary} — ${formattedAutoNote}` : rehabSummary;
+      }
+
       return createWorkEvent(actor, {
-        residentId: createResidentId || undefined,
+        residentId: createResidentId,
         workEventTypeId: createTypeId,
         sourceDomain: 'MANUAL_OPERATION',
         plannedClassification: classification,
         quantity: numericQuantity,
-        note: note.trim() || undefined,
+        note: formattedAutoNote,
         status: 'RECORDED',
+        metrics: metricsPayload,
       });
     },
     onSuccess: async (event) => {
@@ -564,7 +822,8 @@ export function OperationsPage() {
       setSelectedEventId(event.work_event_id);
       setShowCreateSection(false);
       await refreshEvents();
-      alert('Đã ghi nhận công việc vận hành chăm sóc thành công!');
+      queryClient.invalidateQueries({ queryKey: ['resident-integration-overview'] });
+      alert('Đã ghi nhận công việc vận hành chăm sóc và đồng bộ dữ liệu sức khỏe thành công!');
     },
     onError: (error) => setActionError(errorText(error)),
   });
@@ -1283,6 +1542,8 @@ export function OperationsPage() {
                 </div>
               )}
             </label>
+
+            {selectedCreateType && renderDynamicClinicalFields(selectedCreateType.code)}
 
             <label className="field-group">
               <span className="field-label">Phân loại</span>

@@ -9,6 +9,7 @@ import {
   fetchDailyAdministrations,
   updateAdministrationStatus,
   fetchInventoryItems,
+  createInventoryItem,
   recordInventoryTransaction,
   fetchInventoryTransactions,
   MedicationOrder,
@@ -72,6 +73,13 @@ export default function MedicationInventoryPage() {
   const [txQuantity, setTxQuantity] = useState<number>(1);
   const [txResidentId, setTxResidentId] = useState<string>('');
   const [txReason, setTxReason] = useState<string>('');
+
+  // Custom Item State for Open Input Mode
+  const [isCustomItem, setIsCustomItem] = useState<boolean>(false);
+  const [customItemName, setCustomItemName] = useState<string>('');
+  const [customItemUnit, setCustomItemUnit] = useState<string>('Cái');
+  const [customItemCategory, setCustomItemCategory] = useState<InventoryCategory>('CONSUMABLES');
+  const [customItemLocation, setCustomItemLocation] = useState<string>('Kho y tế Tầng 1');
 
   // Exception modal state for administration
   const [exceptionModalAdmin, setExceptionModalAdmin] = useState<MedicationAdministration | null>(null);
@@ -170,13 +178,27 @@ export default function MedicationInventoryPage() {
 
   const recordTxMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedTxItem) throw new Error('Vui lòng chọn vật tư y tế.');
+      let targetItem = selectedTxItem;
+
+      if (isCustomItem) {
+        if (!customItemName.trim()) {
+          throw new Error('Vui lòng nhập tên vật tư y tế mới.');
+        }
+        targetItem = await createInventoryItem(actor!, {
+          name: customItemName.trim(),
+          category: customItemCategory,
+          unit: customItemUnit.trim() || 'Cái',
+          location: customItemLocation.trim() || 'Kho y tế Tầng 1',
+        });
+      }
+
+      if (!targetItem) throw new Error('Vui lòng chọn hoặc nhập tên vật tư y tế.');
       if (txQuantity <= 0) throw new Error('Số lượng phải lớn hơn 0.');
 
       const res = residentsQuery.data?.find((r) => r.resident.residentId === txResidentId);
 
       return recordInventoryTransaction(actor!, {
-        itemId: selectedTxItem.itemId,
+        itemId: targetItem.itemId,
         type: txType,
         quantity: txQuantity,
         residentId: txResidentId || undefined,
@@ -189,6 +211,9 @@ export default function MedicationInventoryPage() {
       queryClient.invalidateQueries({ queryKey: ['med-inventory-tx'] });
       setIsTxModalOpen(false);
       setSelectedTxItem(null);
+      setIsCustomItem(false);
+      setCustomItemName('');
+      setCustomItemUnit('Cái');
       setTxQuantity(1);
       setTxReason('');
     },
@@ -1297,25 +1322,136 @@ export default function MedicationInventoryPage() {
                 recordTxMutation.mutate();
               }}
             >
-              <label className="field-group" style={{ marginBottom: '1rem' }}>
-                <span className="field-label">Chọn Vật Tư Y Tế *</span>
-                <select
-                  className="text-input"
-                  value={selectedTxItem?.itemId || ''}
-                  onChange={(e) => {
-                    const item = inventoryItemsList.find((i) => i.itemId === e.target.value);
-                    setSelectedTxItem(item || null);
-                  }}
-                  required
-                >
-                  <option value="">-- Chọn mặt hàng --</option>
-                  {inventoryItemsList.map((item) => (
-                    <option key={item.itemId} value={item.itemId}>
-                      {item.name} ({item.currentStock} {item.unit} khả dụng)
+              <div className="field-group" style={{ marginBottom: '1rem' }}>
+                <span className="field-label" style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 700 }}>
+                  Chọn Vật Tư Y Tế *
+                </span>
+
+                {/* Mode Selector Segmented Tabs */}
+                <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.75rem', background: '#f1f5f9', padding: '0.25rem', borderRadius: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCustomItem(false);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '0.45rem 0.5rem',
+                      borderRadius: '0.375rem',
+                      border: 'none',
+                      background: !isCustomItem ? '#ffffff' : 'transparent',
+                      color: !isCustomItem ? '#15803d' : '#64748b',
+                      fontWeight: 700,
+                      fontSize: '0.83rem',
+                      cursor: 'pointer',
+                      boxShadow: !isCustomItem ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    📋 Chọn từ danh mục kho
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCustomItem(true);
+                      setSelectedTxItem(null);
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '0.45rem 0.5rem',
+                      borderRadius: '0.375rem',
+                      border: 'none',
+                      background: isCustomItem ? '#ffffff' : 'transparent',
+                      color: isCustomItem ? '#15803d' : '#64748b',
+                      fontWeight: 700,
+                      fontSize: '0.83rem',
+                      cursor: 'pointer',
+                      boxShadow: isCustomItem ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    ✍️ Nhập thủ công (Vật tư khác)
+                  </button>
+                </div>
+
+                {!isCustomItem ? (
+                  <select
+                    className="text-input"
+                    value={selectedTxItem?.itemId || ''}
+                    onChange={(e) => {
+                      if (e.target.value === '__CUSTOM__') {
+                        setIsCustomItem(true);
+                        setSelectedTxItem(null);
+                      } else {
+                        const item = inventoryItemsList.find((i) => i.itemId === e.target.value);
+                        setSelectedTxItem(item || null);
+                      }
+                    }}
+                    required={!isCustomItem}
+                  >
+                    <option value="">-- Chọn mặt hàng có sẵn --</option>
+                    {inventoryItemsList.map((item) => (
+                      <option key={item.itemId} value={item.itemId}>
+                        {item.name} ({item.currentStock} {item.unit} khả dụng)
+                      </option>
+                    ))}
+                    <option value="__CUSTOM__" style={{ fontWeight: 700, color: '#15803d' }}>
+                      ✍️ ➕ Nhập thủ công vật tư y tế khác (Chưa có trong danh mục)...
                     </option>
-                  ))}
-                </select>
-              </label>
+                  </select>
+                ) : (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.5rem', padding: '0.85rem', marginTop: '0.25rem' }}>
+                    <div style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 700, marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                      ✍️ Nhập thủ công thông tin vật tư y tế khác (Tự động cập nhật vào danh mục kho)
+                    </div>
+                    
+                    <label className="field-group" style={{ marginBottom: '0.75rem' }}>
+                      <span className="field-label">Tên vật tư y tế khác (Nhập thủ công) *</span>
+                      <input
+                        className="text-input"
+                        placeholder="VD: Băng cá nhân, Oxy y tế, Kim tiêm 10ml, Dung dịch Povidone..."
+                        value={customItemName}
+                        onChange={(e) => setCustomItemName(e.target.value)}
+                        required={isCustomItem}
+                        autoFocus
+                      />
+                    </label>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                      <label className="field-group">
+                        <span className="field-label">Đơn vị tính *</span>
+                        <input
+                          className="text-input"
+                          placeholder="VD: Hộp, Cái, Cuộn, Gói, Chai..."
+                          value={customItemUnit}
+                          onChange={(e) => setCustomItemUnit(e.target.value)}
+                          required={isCustomItem}
+                        />
+                      </label>
+
+                      <label className="field-group">
+                        <span className="field-label">Phân loại vật tư *</span>
+                        <select
+                          className="text-input"
+                          value={customItemCategory}
+                          onChange={(e) => setCustomItemCategory(e.target.value as InventoryCategory)}
+                        >
+                          {Object.entries(CATEGORY_LABELS).map(([k, label]) => (
+                            <option key={k} value={k}>{label}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                 <label className="field-group">
@@ -1364,14 +1500,18 @@ export default function MedicationInventoryPage() {
                 <button
                   type="button"
                   className="btn btn-neutral"
-                  onClick={() => setIsTxModalOpen(false)}
+                  onClick={() => {
+                    setIsTxModalOpen(false);
+                    setIsCustomItem(false);
+                    setSelectedTxItem(null);
+                  }}
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
                   className="btn btn-primary"
-                  disabled={recordTxMutation.isPending || !selectedTxItem}
+                  disabled={recordTxMutation.isPending || (!selectedTxItem && (!isCustomItem || !customItemName.trim()))}
                   style={{ fontWeight: 700 }}
                 >
                   {recordTxMutation.isPending ? 'Đang lưu...' : 'Xác Nhận Giao Dịch'}

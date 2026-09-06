@@ -200,6 +200,15 @@ export const router =
           ),
         },
         {
+          path: '/care-view',
+          element: (
+            <Navigate
+              to="/operations"
+              replace
+            />
+          ),
+        },
+        {
           path: '/family-portal',
           lazy: async () => {
             const module = await import('../features/family-portal/FamilyPortalPage');

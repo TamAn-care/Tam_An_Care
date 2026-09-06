@@ -1,5 +1,6 @@
 import {
-  NavLink,
+  useNavigate,
+  useLocation,
 } from 'react-router-dom';
 
 import {
@@ -41,7 +42,7 @@ const items: NavItem[] = [
   {
     key: 'operations',
     to: '/operations',
-    label: 'Vận hành chăm sóc',
+    label: 'Chăm sóc & Vận hành',
   },
   {
     key: 'staff-access',
@@ -100,8 +101,14 @@ const items: NavItem[] = [
   },
 ];
 
-export function AppNavigation() {
+interface AppNavigationProps {
+  onNavItemClick?: () => void;
+}
+
+export function AppNavigation({ onNavItemClick }: AppNavigationProps = {}) {
   const { actor } = useActor();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const visibleItems =
     actor
@@ -117,24 +124,34 @@ export function AppNavigation() {
             'system-status',
         );
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
+    e.preventDefault();
+    if (onNavItemClick) {
+      onNavItemClick();
+    }
+    navigate(to);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  };
+
   return (
     <nav
       className="navigation"
       aria-label="Điều hướng chính"
     >
-      {visibleItems.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          className={({ isActive }) =>
-            isActive
-              ? 'nav-link active'
-              : 'nav-link'
-          }
-        >
-          {item.label}
-        </NavLink>
-      ))}
+      {visibleItems.map((item) => {
+        const isActive = location.pathname === item.to;
+        return (
+          <a
+            key={item.to}
+            href={item.to}
+            onClick={(e) => handleNavClick(e, item.to)}
+            className={isActive ? 'nav-link active' : 'nav-link'}
+          >
+            {item.label}
+          </a>
+        );
+      })}
     </nav>
   );
 }
+

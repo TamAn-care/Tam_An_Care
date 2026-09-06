@@ -73,10 +73,13 @@ a {
 
 .nav-link {
   display: block;
-  padding: 0.7rem 0.85rem;
+  padding: 0.75rem 0.85rem;
   border-radius: var(--radius-sm);
   text-decoration: none;
   color: var(--text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-link:hover,
@@ -472,46 +475,142 @@ transform: scale(1.28);
   }
 }
 
+/* DESKTOP RESPONSIVE RULES (>= 768px) */
+@media (min-width: 768px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .sidebar-backdrop {
+    display: none !important;
+  }
+
+  .mobile-sidebar-close {
+    display: none !important;
+  }
+}
+
+/* MOBILE OFF-CANVAS DRAWER & RESPONSIVE RULES (< 768px) */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-sidebar-close {
+  background: #f1f5f9;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
 @media (max-width: 767px) {
   .mobile-menu-button {
     display: inline-flex;
   }
 
   .sidebar {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 290px;
+    max-width: 85vw;
+    z-index: 9999;
+    background: var(--surface-panel);
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.18);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-default);
+    padding: var(--space-4);
   }
 
   .sidebar.sidebar-open {
-    display: flex;
+    transform: translateX(0);
   }
 
   .sidebar-open .navigation {
     display: grid;
+    gap: var(--space-1);
   }
 
-  .topbar-start,
-  .topbar-end {
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .topbar-start {
     width: 100%;
     justify-content: space-between;
   }
 
   .topbar-end {
-    align-items: flex-start;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-start;
     flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .actor-panel {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .topbar-subtitle {
     display: none;
   }
 
+  .page-content {
+    padding: var(--space-4);
+    padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  }
+
   .section-heading {
     flex-direction: column;
+    gap: var(--space-2);
   }
+}
+
+/* RESPONSIVE TABLE CONTAINERS & TOUCH ENHANCEMENTS */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-panel);
+}
+
+.table-responsive table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
 }
 
 /* STEP 9E.B — Resident Management UI */
@@ -1598,9 +1697,26 @@ transform: scale(1.28);
 
 .entity-grid-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.15rem;
   margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .filter-toolbar-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .entity-grid-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
 }
 
 .entity-card-uniform {
@@ -1933,6 +2049,47 @@ transform: scale(1.28);
 .ios-nav-blur {
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
+}
+
+/* ========================================================================== */
+/* GLOBAL TABLE RESPONSIVENESS & TOUCH ENHANCEMENTS                          */
+/* ========================================================================== */
+
+.data-table,
+.ui-table,
+.operations-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+div:has(> table.data-table),
+div:has(> table.ui-table),
+div:has(> table.operations-table),
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+@media (max-width: 767px) {
+  .data-table,
+  .ui-table,
+  .operations-table {
+    min-width: 640px;
+  }
+
+  button,
+  input,
+  select,
+  .button,
+  .text-input,
+  .form-select,
+  .form-input {
+    min-height: 44px;
+    font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+  }
 }
 
 /* iOS PWA Standalone status bar gap */

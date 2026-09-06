@@ -74,6 +74,12 @@ export function AppShell() {
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
+  // Auto-close mobile drawer menu and scroll to top whenever route changes
+  useEffect(() => {
+    setMenuOpen(false);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
+
   const handleInstallApp = async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -132,6 +138,11 @@ export function AppShell() {
   return (
     <div className="app-shell">
       <IOSPWAInstallBanner />
+      <div
+        className={menuOpen ? 'sidebar-backdrop active' : 'sidebar-backdrop'}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
       <aside
         id="application-sidebar"
         className={
@@ -140,27 +151,39 @@ export function AppShell() {
             : 'sidebar'
         }
       >
-        <div className="brand">
-          <div className="brand-mark">
-            <img
-              src="/branding/tam-an-logo-master.png"
-              alt="Tâm An"
-              className="brand-logo"
-            />
-          </div>
+        <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <div className="brand-mark">
+              <img
+                src="/branding/tam-an-logo-master.png"
+                alt="Tâm An"
+                className="brand-logo"
+              />
+            </div>
 
-          <div>
-            <h1 className="brand-title">
-              Tâm An Care
-            </h1>
+            <div>
+              <h1 className="brand-title">
+                Tâm An Care
+              </h1>
 
-            <div className="brand-subtitle">
-              Nơi Tuổi Già An Nhiên
+              <div className="brand-subtitle">
+                Nơi Tuổi Già An Nhiên
+              </div>
             </div>
           </div>
+          {menuOpen && (
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              className="mobile-sidebar-close"
+              aria-label="Đóng menu"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
-        <AppNavigation />
+        <AppNavigation onNavItemClick={() => setMenuOpen(false)} />
 
         <div className="sidebar-footer">
           <span className="version-text">
@@ -279,7 +302,7 @@ export function AppShell() {
               </div>
 
               {actor && (
-                <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                <div className="topbar-action-group" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button
                     type="button"
                     onClick={() => setShowTesterModal(true)}

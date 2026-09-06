@@ -13,7 +13,7 @@ export function MobileBottomNav({ onOpenMenu, onOpenTesterModal }: MobileBottomN
   const navItems = [
     { label: 'Trang Chủ', icon: '🏠', path: '/dashboard' },
     { label: 'Cư Dân', icon: '📋', path: '/residents' },
-    { label: 'Chăm Sóc', icon: '🩺', path: '/care-view' },
+    { label: 'Chăm Sóc', icon: '🩺', path: '/operations' },
     { label: 'Dược eMAR', icon: '💊', path: '/medication-inventory' },
   ];
 
