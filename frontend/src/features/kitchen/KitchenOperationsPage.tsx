@@ -308,23 +308,48 @@ export default function KitchenOperationsPage() {
     },
   });
 
+  // Helper to get suggested menu name synced with the active menu schedule
+  const getSuggestedMenuName = (mType: WeeklyMealType) => {
+    const daySched = selectedDaySchedule || weeklySchedule.find((d) => d.dayId === todayDayId) || weeklySchedule[0];
+    if (!daySched || !daySched.meals) return '';
+    const slot = daySched.meals.find((m) => m.mealType === mType);
+    if (!slot) return '';
+    return slot.dishName + (slot.sideDishes ? ` & ${slot.sideDishes}` : '');
+  };
+
   // State for Food Dispatch
-  const [dispatchMealType, setDispatchMealType] = useState<'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER'>('LUNCH');
-  const [dispatchMenuName, setDispatchMenuName] = useState('Bò hầm củ quả & Canh bí đỏ thịt bằm');
+  const [dispatchMealType, setDispatchMealType] = useState<WeeklyMealType>('LUNCH');
+  const [dispatchMenuName, setDispatchMenuName] = useState('Thịt bò phi lê Úc hầm củ quả mềm nhừ & Canh cải bó xôi thịt bằm');
   const [dispatchResidentCount, setDispatchResidentCount] = useState(78);
   const [dispatchItems, setDispatchItems] = useState<Array<{ itemId: string; itemName: string; quantity: number; unit: string }>>([
     { itemId: 'INV-F02', itemName: 'Thịt bò phi lê Úc', quantity: 8.0, unit: 'kg' },
     { itemId: 'INV-F05', itemName: 'Bí đỏ hồ lô hạt sen', quantity: 10.0, unit: 'kg' },
   ]);
 
+  const handleOpenDispatchModal = () => {
+    const defaultType: WeeklyMealType = 'LUNCH';
+    setDispatchMealType(defaultType);
+    setDispatchMenuName(getSuggestedMenuName(defaultType) || 'Thịt bò phi lê Úc hầm củ quả mềm nhừ & Canh cải bó xôi thịt bằm');
+    setShowDispatchModal(true);
+  };
+
+  const handleDispatchMealTypeChange = (newType: WeeklyMealType) => {
+    setDispatchMealType(newType);
+    const suggested = getSuggestedMenuName(newType);
+    if (suggested) {
+      setDispatchMenuName(suggested);
+    }
+  };
+
   const dispatchMutation = useMutation({
     mutationFn: async () => {
       if (!actor) throw new Error('Yêu cầu đăng nhập');
-      const mealLabels = {
+      const mealLabels: Record<WeeklyMealType, string> = {
         BREAKFAST: 'Bữa Sáng',
         LUNCH: 'Bữa Trưa',
         AFTERNOON_SNACK: 'Bữa Xế chiều',
         DINNER: 'Bữa Tối',
+        NIGHT_SNACK: 'Bữa Phụ Tối',
       };
       return dispatchFoodForCooking(actor, {
         dispatchDate: new Date().toISOString().split('T')[0],
@@ -1079,7 +1104,7 @@ export default function KitchenOperationsPage() {
 
               <button
                 className="button-primary"
-                onClick={() => setShowDispatchModal(true)}
+                onClick={handleOpenDispatchModal}
                 style={{
                   background: '#b45309',
                   color: '#ffffff',
@@ -2010,12 +2035,13 @@ export default function KitchenOperationsPage() {
                   className="text-input"
                   style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
                   value={dispatchMealType}
-                  onChange={(e) => setDispatchMealType(e.target.value as any)}
+                  onChange={(e) => handleDispatchMealTypeChange(e.target.value as WeeklyMealType)}
                 >
-                  <option value="BREAKFAST">Bữa Sáng</option>
-                  <option value="LUNCH">Bữa Trưa</option>
-                  <option value="AFTERNOON_SNACK">Bữa Xế chiều</option>
-                  <option value="DINNER">Bữa Tối</option>
+                  <option value="BREAKFAST">Bữa Sáng (06:45 - 07:30)</option>
+                  <option value="LUNCH">Bữa Trưa (11:15 - 12:00)</option>
+                  <option value="AFTERNOON_SNACK">Bữa Xế Chiều (14:30 - 15:00)</option>
+                  <option value="DINNER">Bữa Tối (17:30 - 18:15)</option>
+                  <option value="NIGHT_SNACK">Bữa Phụ Tối / Đêm (20:00 - 20:30)</option>
                 </select>
               </div>
 
@@ -2034,16 +2060,111 @@ export default function KitchenOperationsPage() {
             </div>
 
             <div style={{ marginBottom: '1rem' }}>
-              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
-                Tên thực đơn / Món ăn:
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>
+                  Tên thực đơn / Món ăn (Đồng bộ với Thực đơn từng bữa):
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const suggested = getSuggestedMenuName(dispatchMealType);
+                    if (suggested) setDispatchMenuName(suggested);
+                  }}
+                  style={{
+                    background: '#e0f2fe',
+                    color: '#0369a1',
+                    border: '1px solid #bae6fd',
+                    borderRadius: '0.3rem',
+                    padding: '0.2rem 0.55rem',
+                    fontSize: '0.73rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                  }}
+                  title="Tải lại tên món chuẩn từ Thực đơn"
+                >
+                  <span>🔄</span> Đồng bộ từ Thực đơn
+                </button>
+              </div>
+
+              {/* Quick Select from Today's/Selected Day Menu Schedule */}
+              {selectedDaySchedule?.meals && selectedDaySchedule.meals.length > 0 && (
+                <div style={{ marginBottom: '0.45rem' }}>
+                  <select
+                    className="text-input"
+                    style={{
+                      width: '100%',
+                      height: '34px',
+                      padding: '0 0.5rem',
+                      fontSize: '0.78rem',
+                      color: '#1e293b',
+                      background: '#f8fafc',
+                      borderColor: '#cbd5e1',
+                      borderRadius: '0.35rem',
+                    }}
+                    value={dispatchMenuName}
+                    onChange={(e) => setDispatchMenuName(e.target.value)}
+                  >
+                    <option value="">-- Chọn món ăn từ Thực đơn {selectedDaySchedule.dayName} --</option>
+                    {selectedDaySchedule.meals.map((m) => {
+                      const fullTitle = m.dishName + (m.sideDishes ? ` & ${m.sideDishes}` : '');
+                      return (
+                        <option key={m.id} value={fullTitle}>
+                          [{m.mealLabel.split(' ')[1] || m.mealType}] {m.dishName}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              )}
+
               <input
                 type="text"
                 className="text-input"
-                style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 600 }}
                 value={dispatchMenuName}
                 onChange={(e) => setDispatchMenuName(e.target.value)}
+                placeholder="Nhập hoặc chỉnh sửa tên thực đơn chế biến..."
               />
+
+              {/* Sync Status Badge */}
+              {(() => {
+                const currentSlot = selectedDaySchedule?.meals?.find((m) => m.mealType === dispatchMealType);
+                const suggested = getSuggestedMenuName(dispatchMealType);
+                const isExactSync = dispatchMenuName.trim() === suggested.trim() || (currentSlot && dispatchMenuName.includes(currentSlot.dishName));
+
+                return (
+                  <div
+                    style={{
+                      marginTop: '0.4rem',
+                      padding: '0.4rem 0.65rem',
+                      borderRadius: '0.35rem',
+                      fontSize: '0.75rem',
+                      background: isExactSync ? '#f0fdf4' : '#fffbeb',
+                      border: `1px solid ${isExactSync ? '#bbf7d0' : '#fde68a'}`,
+                      color: isExactSync ? '#15803d' : '#b45309',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <span>{isExactSync ? '✅' : 'ℹ️'}</span>
+                    <span>
+                      {isExactSync ? (
+                        <>
+                          <b>Đồng bộ chuẩn Thực đơn ({selectedDaySchedule?.dayName}):</b> {currentSlot?.dishName || dispatchMenuName}
+                        </>
+                      ) : (
+                        <>
+                          <b>Tùy chỉnh:</b> Món chuẩn trong thực đơn là <i>"{suggested || 'Chưa thiết lập'}"</i>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                );
+              })()}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>

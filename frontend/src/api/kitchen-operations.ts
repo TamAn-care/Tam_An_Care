@@ -95,7 +95,7 @@ export interface FoodInventoryItem {
 export interface DailyMealDispatch {
   id: string;
   dispatchDate: string;
-  mealType: 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER';
+  mealType: 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'NIGHT_SNACK';
   mealTypeLabel: string;
   menuName: string;
   residentCount: number;
