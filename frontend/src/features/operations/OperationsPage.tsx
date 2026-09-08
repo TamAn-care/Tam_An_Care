@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -29,6 +30,9 @@ import {
 import {
   useActor,
 } from '../../auth/ActorContext';
+import {
+  ROLE_LABELS,
+} from '../../auth/role-policy';
 import {
   ApiError,
 } from '../../api/errors';
@@ -211,6 +215,84 @@ export const POPULAR_WORK_EVENT_TYPES: WorkEventType[] = [
     updated_at: '',
   },
   {
+    work_event_type_id: 'ops-wet-mmse-cognitive-assess',
+    code: 'COGNITIVE_ASSESSMENT_MMSE',
+    display_name_vi: 'Đánh giá nhận thức MMSE / MoCA & Trầm cảm GDS',
+    category: 'PSYCHOSOCIAL',
+    default_unit: 'lần',
+    default_work_weight: 1,
+    resident_related: true,
+    inventory_link_allowed: false,
+    active: true,
+    created_at: '',
+    updated_at: '',
+  },
+  {
+    work_event_type_id: 'ops-wet-reminiscence-therapy',
+    code: 'REMINISCENCE_THERAPY',
+    display_name_vi: 'Liệu pháp Ký ức (Reminiscence Therapy) & Trị liệu nhóm',
+    category: 'PSYCHOSOCIAL',
+    default_unit: 'lần',
+    default_work_weight: 1,
+    resident_related: true,
+    inventory_link_allowed: false,
+    active: true,
+    created_at: '',
+    updated_at: '',
+  },
+  {
+    work_event_type_id: 'ops-wet-relocation-adaptation',
+    code: 'RELOCATION_ADAPTATION_SUPPORT',
+    display_name_vi: 'Hỗ trợ tâm lý thích ứng khi mới vào viện / Giải tỏa khủng hoảng',
+    category: 'PSYCHOSOCIAL',
+    default_unit: 'lần',
+    default_work_weight: 1,
+    resident_related: true,
+    inventory_link_allowed: false,
+    active: true,
+    created_at: '',
+    updated_at: '',
+  },
+  {
+    work_event_type_id: 'ops-wet-social-group-activity',
+    code: 'SOCIAL_GROUP_ACTIVITY',
+    display_name_vi: 'Tổ chức sinh hoạt nhóm, CLB & Sự kiện giao lưu cộng đồng',
+    category: 'PSYCHOSOCIAL',
+    default_unit: 'buổi',
+    default_work_weight: 1,
+    resident_related: true,
+    inventory_link_allowed: false,
+    active: true,
+    created_at: '',
+    updated_at: '',
+  },
+  {
+    work_event_type_id: 'ops-wet-family-connect',
+    code: 'FAMILY_RELATIONSHIP_CONNECT',
+    display_name_vi: 'Tham vấn & Hỗ trợ gắn kết tình cảm Thân nhân - Người cao tuổi',
+    category: 'PSYCHOSOCIAL',
+    default_unit: 'lần',
+    default_work_weight: 1,
+    resident_related: true,
+    inventory_link_allowed: false,
+    active: true,
+    created_at: '',
+    updated_at: '',
+  },
+  {
+    work_event_type_id: 'ops-wet-social-work-admission',
+    code: 'SOCIAL_WORK_ADMISSION',
+    display_name_vi: 'Đánh giá nhu cầu trợ giúp xã hội & Bảo vệ quyền lợi cụ',
+    category: 'PSYCHOSOCIAL',
+    default_unit: 'lần',
+    default_work_weight: 1,
+    resident_related: true,
+    inventory_link_allowed: false,
+    active: true,
+    created_at: '',
+    updated_at: '',
+  },
+  {
     work_event_type_id: 'ops-wet-diaper-toileting',
     code: 'DIAPER_TOILETING',
     display_name_vi: 'Thay tã bỉm & Vệ sinh bài tiết',
@@ -294,19 +376,52 @@ function errorText(error: unknown) {
   return 'Không thể hoàn tất thao tác.';
 }
 
+export function getActorDomainCategory(role?: string): string | null {
+  if (!role) return null;
+  if (['ADMIN', 'SUPERVISOR', 'CARE_MANAGER', 'DIRECTOR'].includes(role)) {
+    return null;
+  }
+  switch (role) {
+    case 'PSYCHOLOGIST':
+    case 'SOCIAL_WORKER':
+      return 'PSYCHOSOCIAL';
+    case 'NURSE':
+      return 'CLINICAL_CARE';
+    case 'CAREGIVER':
+      return 'PERSONAL_CARE';
+    case 'REHABILITATION_SPECIALIST':
+      return 'MOBILITY';
+    case 'NUTRITIONIST':
+      return 'NUTRITION';
+    case 'HOUSEKEEPING':
+      return 'HOUSEKEEPING';
+    default:
+      return null;
+  }
+}
+
 export function OperationsPage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
+  const userDomainCategory = useMemo(() => getActorDomainCategory(actor?.actorRole), [actor?.actorRole]);
+  const isManagement = !userDomainCategory;
+
   // Search & Filter State
   const [residentId, setResidentId] = useState('');
   const [typeId, setTypeId] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState(userDomainCategory || '');
   const [performedBy, setPerformedBy] = useState('');
   const [status, setStatus] = useState<WorkEventStatus | ''>('');
   const [searchKeyword, setSearchKeyword] = useState('');
   const [sourceDomain, setSourceDomain] = useState('');
   const [limit, setLimit] = useState(100);
+
+  useEffect(() => {
+    if (userDomainCategory) {
+      setCategoryFilter(userDomainCategory);
+    }
+  }, [userDomainCategory]);
 
   // Selected Resident Comprehensive View Tab
   const [residentActiveTab, setResidentActiveTab] = useState<'VITALS' | 'MEDS' | 'TASKS' | 'EVENTS' | 'INCIDENTS'>('VITALS');
@@ -322,7 +437,7 @@ export function OperationsPage() {
   const [quantity, setQuantity] = useState('1');
   const [note, setNote] = useState('');
 
-  // Dynamic Specific Clinical Parameters State
+  // Dynamic Specific Clinical & Psychosocial Parameters State
   const [sysBP, setSysBP] = useState('120');
   const [diaBP, setDiaBP] = useState('80');
   const [heartRate, setHeartRate] = useState('75');
@@ -348,6 +463,14 @@ export function OperationsPage() {
 
   const [durationMin, setDurationMin] = useState('15');
   const [rehabResponse, setRehabResponse] = useState('EXCELLENT');
+
+  // Psychosocial & Social Work Parameters State
+  const [mmseScore, setMmseScore] = useState('24');
+  const [gdsScore, setGdsScore] = useState('3');
+  const [moodState, setMoodState] = useState('CHEERFUL');
+  const [adaptationLevel, setAdaptationLevel] = useState('EXCELLENT');
+  const [familyInteractionQuality, setFamilyInteractionQuality] = useState('WARM');
+  const [groupEngagement, setGroupEngagement] = useState('ACTIVE');
 
   // Amend & Void Form State
   const [amendQuantity, setAmendQuantity] = useState('');
@@ -718,6 +841,83 @@ export function OperationsPage() {
       );
     }
 
+    if (
+      code === 'PSYCHOLOGICAL_SUPPORT' ||
+      code === 'COGNITIVE_ASSESSMENT_MMSE' ||
+      code === 'REMINISCENCE_THERAPY' ||
+      code === 'RELOCATION_ADAPTATION_SUPPORT' ||
+      code === 'SOCIAL_GROUP_ACTIVITY' ||
+      code === 'FAMILY_RELATIONSHIP_CONNECT' ||
+      code === 'FAMILY_VISIT_ASSIST' ||
+      code === 'SOCIAL_WORK_ADMISSION'
+    ) {
+      return (
+        <div style={{ gridColumn: '1 / -1', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '0.5rem', padding: '1rem', marginTop: '0.25rem', marginBottom: '0.5rem' }}>
+          <div style={{ fontWeight: 700, color: '#0369a1', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>🧠</span> Thông Số Nghiệp Vụ Tâm Lý & Công Tác Xã Hội (Dành Riêng Cho Người Cao Tuổi)
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
+            {code === 'COGNITIVE_ASSESSMENT_MMSE' && (
+              <>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Điểm nhận thức MMSE (/30) *</label>
+                  <input type="number" min="0" max="30" placeholder="24" className="text-input" value={mmseScore} onChange={(e) => setMmseScore(e.target.value)} />
+                </div>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Điểm trầm cảm GDS (/15)</label>
+                  <input type="number" min="0" max="15" placeholder="3" className="text-input" value={gdsScore} onChange={(e) => setGdsScore(e.target.value)} />
+                </div>
+              </>
+            )}
+
+            <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Trạng thái tâm trạng / Cảm xúc *</label>
+              <select className="text-input" value={moodState} onChange={(e) => setMoodState(e.target.value)}>
+                <option value="CHEERFUL">🟢 Vui vẻ / Lạc quan, minh mẫn</option>
+                <option value="NORMAL">🔵 Bình thường / Cảm xúc ổn định</option>
+                <option value="ANXIOUS">🟡 Lo âu / Bồn chồn, trăn trở</option>
+                <option value="DEPRESSED">🟠 Buồn bã / Mất động lực, cô đơn</option>
+                <option value="AGITATED">🔴 Kích động / Khủng hoảng tâm lý</option>
+              </select>
+            </div>
+
+            {(code === 'RELOCATION_ADAPTATION_SUPPORT' || code === 'SOCIAL_WORK_ADMISSION') && (
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Mức độ thích ứng viện *</label>
+                <select className="text-input" value={adaptationLevel} onChange={(e) => setAdaptationLevel(e.target.value)}>
+                  <option value="EXCELLENT">🟢 Thích ứng tốt / Hòa nhập nhanh</option>
+                  <option value="ADAPTING">🟡 Đang dần quen nếp sinh hoạt</option>
+                  <option value="NEEDS_SUPPORT">🔴 Nhớ nhà / Khủng hoảng thích ứng (Relocation Stress)</option>
+                </select>
+              </div>
+            )}
+
+            {(code === 'FAMILY_RELATIONSHIP_CONNECT' || code === 'FAMILY_VISIT_ASSIST') && (
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Chất lượng tương tác thân nhân *</label>
+                <select className="text-input" value={familyInteractionQuality} onChange={(e) => setFamilyInteractionQuality(e.target.value)}>
+                  <option value="WARM">🟢 Ấm áp / Rất phấn khởi khi gặp con cháu</option>
+                  <option value="NORMAL">🔵 Tương tác bình thường</option>
+                  <option value="TENSE">🔴 Trầm lắng / Có trăn trở mâu thuẫn gia đình</option>
+                </select>
+              </div>
+            )}
+
+            {(code === 'SOCIAL_GROUP_ACTIVITY' || code === 'REMINISCENCE_THERAPY') && (
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Mức độ tham gia nhóm / CLB *</label>
+                <select className="text-input" value={groupEngagement} onChange={(e) => setGroupEngagement(e.target.value)}>
+                  <option value="ACTIVE">🟢 Tích cực chủ động tham gia</option>
+                  <option value="PASSIVE">🔵 Tham gia lắng nghe thụ động</option>
+                  <option value="REFUSED">🔴 E ngại / Từ chối tham gia nhóm</option>
+                </select>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     return null;
   };
 
@@ -742,7 +942,7 @@ export function OperationsPage() {
   function clearFilters() {
     setResidentId('');
     setTypeId('');
-    setCategoryFilter('');
+    setCategoryFilter(userDomainCategory || '');
     setPerformedBy('');
     setStatus('');
     setSearchKeyword('');
@@ -824,6 +1024,27 @@ export function OperationsPage() {
         metricsPayload = { durationMin: Number(durationMin) || 15, rehabResponse };
         const rehabSummary = `🧘 VLTL & Vận động: ${durationMin} phút | Khả năng đáp ứng: ${rehabResponse === 'EXCELLENT' ? 'Đáp ứng tốt' : rehabResponse === 'TIRED' ? 'Mệt mỏi nhẹ' : 'Kêu đau'}`;
         formattedAutoNote = formattedAutoNote ? `${rehabSummary} — ${formattedAutoNote}` : rehabSummary;
+      } else if (
+        code === 'PSYCHOLOGICAL_SUPPORT' ||
+        code === 'COGNITIVE_ASSESSMENT_MMSE' ||
+        code === 'REMINISCENCE_THERAPY' ||
+        code === 'RELOCATION_ADAPTATION_SUPPORT' ||
+        code === 'SOCIAL_GROUP_ACTIVITY' ||
+        code === 'FAMILY_RELATIONSHIP_CONNECT' ||
+        code === 'FAMILY_VISIT_ASSIST' ||
+        code === 'SOCIAL_WORK_ADMISSION'
+      ) {
+        metricsPayload = {
+          mmseScore: code === 'COGNITIVE_ASSESSMENT_MMSE' ? Number(mmseScore) || 24 : undefined,
+          gdsScore: code === 'COGNITIVE_ASSESSMENT_MMSE' ? Number(gdsScore) || 3 : undefined,
+          moodState,
+          adaptationLevel,
+          familyInteractionQuality,
+          groupEngagement,
+        };
+        const moodText = moodState === 'CHEERFUL' ? 'Vui vẻ lạc quan' : moodState === 'ANXIOUS' ? 'Lo âu trăn trở' : moodState === 'DEPRESSED' ? 'Buồn cô đơn' : 'Cảm xúc ổn định';
+        const psychoSummary = `🧠 Tâm lý - Xã hội: Cảm xúc ${moodText}${code === 'COGNITIVE_ASSESSMENT_MMSE' ? ` | MMSE: ${mmseScore}/30 | GDS: ${gdsScore}/15` : ''}${code === 'RELOCATION_ADAPTATION_SUPPORT' ? ` | Thích ứng: ${adaptationLevel === 'EXCELLENT' ? 'Thích ứng tốt' : 'Cần hỗ trợ'}` : ''}${code === 'FAMILY_RELATIONSHIP_CONNECT' || code === 'FAMILY_VISIT_ASSIST' ? ` | Tương tác thân nhân: ${familyInteractionQuality === 'WARM' ? 'Ấm áp' : 'Bình thường'}` : ''}`;
+        formattedAutoNote = formattedAutoNote ? `${psychoSummary} — ${formattedAutoNote}` : psychoSummary;
       }
 
       return createWorkEvent(actor, {
@@ -976,6 +1197,25 @@ export function OperationsPage() {
           <div className="kpi-desc">Danh mục quy trình chuẩn</div>
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* 🛡️ THÔNG BÁO PHÂN QUYỀN VÀ THẨM QUYỀN TRUY CẬP CHUYÊN MÔN (RBAC) */}
+      {/* ========================================================================= */}
+      {isManagement ? (
+        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '0.85rem 1.25rem', borderRadius: '8px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#1e40af', fontWeight: 600, fontSize: '0.92rem' }}>
+            <span>👑</span> <b>Thẩm Quyền Quản Trị / Giám Sát Vĩ Mô ({ROLE_LABELS[actor.actorRole] || actor.actorRole}):</b> Bạn có thẩm quyền xem & tổng hợp toàn bộ các hoạt động chăm sóc của tất cả <b>{Object.keys(CATEGORY_LABELS).length} khối chuyên môn</b>.
+          </div>
+          <span className="badge badge-primary">Toàn Bộ Khối Chuyên Môn</span>
+        </div>
+      ) : (
+        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.85rem 1.25rem', borderRadius: '8px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#166534', fontWeight: 600, fontSize: '0.92rem' }}>
+            <span>🎯</span> <b>Phân Quyền Chuyên Môn [{ROLE_LABELS[actor.actorRole] || actor.actorRole}]:</b> Ghi nhận & Bảng tổng hợp được mặc định định hướng tập trung vào khối <b>{CATEGORY_LABELS[userDomainCategory!] || userDomainCategory}</b>.
+          </div>
+          <span className="badge badge-success">Khối {CATEGORY_LABELS[userDomainCategory!] || userDomainCategory}</span>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 🔍 BỘ LỌC VÀ TÌM KIẾM ĐA CHIỀU */}
