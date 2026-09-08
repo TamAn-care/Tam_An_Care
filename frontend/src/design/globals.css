@@ -1758,7 +1758,7 @@ transform: scale(1.28);
     overflow: visible !important;
   }
 
-  /* Hide app navigation, headers, footers, and non-print buttons */
+  /* Hide app navigation, headers, footers, data tables, and non-print buttons */
   .app-shell > aside,
   .sidebar,
   .navigation,
@@ -1772,8 +1772,15 @@ transform: scale(1.28);
   .kpi-row,
   .kpi-box,
   .filter-toolbar,
+  .table-responsive,
+  .data-table,
   button,
-  .no-print {
+  .no-print,
+  .page-content > .card:not(:has(.printable-a4-sheet)) {
+    display: none !important;
+  }
+
+  body:has(.modal-overlay) .page-content > *:not(.modal-overlay):not(:has(.modal-overlay)) {
     display: none !important;
   }
 
@@ -1852,9 +1859,25 @@ transform: scale(1.28);
   }
 
   .printable-a4-sheet .signature-box {
-    margin-top: 8px !important;
+    margin-top: 14px !important;
     margin-bottom: 0 !important;
     page-break-inside: avoid !important;
+  }
+
+  /* Independent Print Sheet Filtering */
+  .print-target-assessment .print-section-handover {
+    display: none !important;
+  }
+
+  .print-target-handover .print-section-assessment {
+    display: none !important;
+  }
+
+  .print-target-all .print-section-handover {
+    page-break-before: always !important;
+    break-before: page !important;
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
   }
 
   /* Avoid unnecessary page breaks */

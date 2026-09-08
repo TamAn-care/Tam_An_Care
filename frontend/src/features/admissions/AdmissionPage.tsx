@@ -657,7 +657,15 @@ export function AdmissionPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingCase, setEditingCase] = useState<AdmissionCase | null>(null);
   const [viewingAssessment, setViewingAssessment] = useState<{ c: AdmissionCase; data: InitialClinicalAssessment } | null>(null);
+  const [printTarget, setPrintTarget] = useState<'ALL' | 'ASSESSMENT' | 'HANDOVER'>('ALL');
   const [decisionCase, setDecisionCase] = useState<AdmissionCase | null>(null);
+
+  const handleTriggerPrint = useCallback((target: 'ALL' | 'ASSESSMENT' | 'HANDOVER') => {
+    setPrintTarget(target);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  }, []);
 
   // Handover History Modals
   const [showHandoverHistoryModal, setShowHandoverHistoryModal] = useState(false);
@@ -1106,7 +1114,7 @@ export function AdmissionPage() {
       </div>
 
       {/* Admissions Table */}
-      <div className="table-responsive">
+      <div className="table-responsive no-print">
         <table className="ui-table">
           <thead>
             <tr>
@@ -2322,10 +2330,10 @@ export function AdmissionPage() {
       {/* ========================================================================= */}
       {viewingAssessment && (
         <div className="modal-overlay">
-          <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
+          <div className={`modal-dialog modal-dialog-lg print-target-${printTarget.toLowerCase()}`} style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header">
-              <h2 className="modal-title">Phiếu Đánh Giá Sức Khỏe Ban Đầu Cho Người Cao Tuổi</h2>
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <h2 className="modal-title">Xem & In Phiếu Nhập Viện (Đánh Giá Sức Khỏe & Bàn Giao)</h2>
+              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 {viewingAssessment.c.status !== 'ADMITTED' && viewingAssessment.c.status !== 'COMPLETED' && (
                   <button
                     onClick={() => {
@@ -2341,10 +2349,26 @@ export function AdmissionPage() {
                   </button>
                 )}
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => handleTriggerPrint('ASSESSMENT')}
                   className="btn btn-sm btn-primary"
+                  title="Chỉ in Phiếu đánh giá sức khỏe ban đầu"
                 >
-                  🖨️ In / Xuất PDF (A4)
+                  📋 In Phiếu Đánh Giá
+                </button>
+                <button
+                  onClick={() => handleTriggerPrint('HANDOVER')}
+                  className="btn btn-sm"
+                  style={{ background: '#0284c7', color: '#fff', borderColor: '#0369a1', fontWeight: 600 }}
+                  title="Chỉ in Phiếu bàn giao thuốc & đồ dùng cá nhân"
+                >
+                  💊 In Phiếu Bàn Giao
+                </button>
+                <button
+                  onClick={() => handleTriggerPrint('ALL')}
+                  className="btn btn-sm btn-secondary"
+                  title="In cả 2 mẫu phiếu (thành 2 trang A4 độc lập)"
+                >
+                  🖨️ In Cả 2 Phiếu (A4)
                 </button>
                 <button onClick={() => setViewingAssessment(null)} className="modal-close">
                   &times;
@@ -2352,7 +2376,7 @@ export function AdmissionPage() {
               </div>
             </div>
 
-            <div className="modal-body printable-a4-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
+            <div className="modal-body printable-a4-sheet print-section-assessment" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
               {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
@@ -2593,10 +2617,10 @@ export function AdmissionPage() {
               })()}
 
               {/* Triple Signatures */}
-              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '0.6rem', gap: '0.5rem' }}>
+              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Gia đình / Thân nhân</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
                     {viewingAssessment.data.guardianName || 'Người đại diện'}
                   </div>
@@ -2604,7 +2628,7 @@ export function AdmissionPage() {
 
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Người lập phiếu đánh giá</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
                     {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thúy'}
                   </div>
@@ -2612,7 +2636,7 @@ export function AdmissionPage() {
 
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Viện Tâm An Care</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ban Giám đốc / Kế toán)</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ban Giám đốc / Kế toán)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
                     Hoàng Quốc Anh
                   </div>
@@ -2624,7 +2648,7 @@ export function AdmissionPage() {
             {/* PHIẾU BÀN GIAO THUỐC & ĐỒ DÙNG CÁ NHÂN — PHẦN IN RIÊNG          */}
             {/* ================================================================= */}
             {viewingAssessment.data.handoverRecord && (
-              <div className="modal-body printable-a4-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem', borderTop: '2px dashed #bae6fd', marginTop: '0' }}>
+              <div className="modal-body printable-a4-sheet print-section-handover" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem', borderTop: printTarget === 'ALL' ? '2px dashed #bae6fd' : 'none', marginTop: '0' }}>
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', borderBottom: '2px solid #0369a1', paddingBottom: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
@@ -2731,24 +2755,24 @@ export function AdmissionPage() {
                 )}
 
                 {/* Triple Signatures for Handover */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '0.75rem', gap: '0.5rem' }}>
+                <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Bên bàn giao</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.5rem' }}>(Ký và ghi rõ họ tên)</div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                     <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                       {viewingAssessment.data.handoverRecord.guardianDelivererName || viewingAssessment.data.guardianName}
                     </div>
                   </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Điều dưỡng tiếp nhận</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.5rem' }}>(Ký và ghi rõ họ tên)</div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                     <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                       {viewingAssessment.data.handoverRecord.nurseReceiverName}
                     </div>
                   </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Quản lý xác nhận</div>
-                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.5rem' }}>(Ký và ghi rõ họ tên)</div>
+                    <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                     <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                       {viewingAssessment.data.handoverRecord.supervisorApprovalName}
                     </div>
@@ -2757,7 +2781,7 @@ export function AdmissionPage() {
               </div>
             )}
 
-            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
               {viewingAssessment.c.status !== 'ADMITTED' && viewingAssessment.c.status !== 'COMPLETED' ? (
                 <button
                   type="button"
@@ -2774,7 +2798,7 @@ export function AdmissionPage() {
               ) : (
                 <div />
               )}
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <button
                   type="button"
                   onClick={() => setViewingAssessment(null)}
@@ -2784,10 +2808,27 @@ export function AdmissionPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => window.print()}
+                  onClick={() => handleTriggerPrint('ASSESSMENT')}
                   className="btn btn-primary"
+                  style={{ fontWeight: 700 }}
                 >
-                  🖨️ In Phiếu Tiếp Nhận (A4)
+                  📋 In Phiếu Đánh Giá Ban Đầu
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTriggerPrint('HANDOVER')}
+                  className="btn"
+                  style={{ background: '#0284c7', color: '#fff', borderColor: '#0369a1', fontWeight: 700 }}
+                >
+                  💊 In Phiếu Bàn Giao Thuốc & Đồ Dùng
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTriggerPrint('ALL')}
+                  className="btn btn-dark"
+                  style={{ fontWeight: 700 }}
+                >
+                  🖨️ In Cả 2 Phiếu (2 Trang A4)
                 </button>
               </div>
             </div>
@@ -2996,24 +3037,24 @@ export function AdmissionPage() {
               </table>
 
               {/* Signatures */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1rem', gap: '0.5rem' }}>
+              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Bên bàn giao</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.8rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                     {selectedHandoverPrint.handover.guardianDelivererName}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Điều dưỡng tiếp nhận</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.8rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                     {selectedHandoverPrint.handover.nurseReceiverName}
                   </div>
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Quản lý xác nhận</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '1.8rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                     {selectedHandoverPrint.handover.supervisorApprovalName}
                   </div>
