@@ -45,6 +45,7 @@ import { NotificationBell } from '../notifications/NotificationBell';
 import { TesterPortalModal } from '../testing/TesterPortalModal';
 import { MobileBottomNav } from '../navigation/MobileBottomNav';
 import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
+import { PWAInstallModal } from '../pwa/PWAInstallModal';
 
 export function AppShell() {
   const {
@@ -80,16 +81,8 @@ export function AppShell() {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location.pathname]);
 
-  const handleInstallApp = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        setDeferredPrompt(null);
-      }
-    } else {
-      setShowInstallModal(true);
-    }
+  const handleInstallApp = () => {
+    setShowInstallModal(true);
   };
 
   // Self-Service Change Password State
@@ -183,7 +176,10 @@ export function AppShell() {
           )}
         </div>
 
-        <AppNavigation onNavItemClick={() => setMenuOpen(false)} />
+        <AppNavigation
+          onNavItemClick={() => setMenuOpen(false)}
+          onOpenInstallModal={() => setShowInstallModal(true)}
+        />
 
         <div className="sidebar-footer">
           <span className="version-text">
@@ -578,44 +574,13 @@ export function AppShell() {
         </div>
       )}
 
-      {/* MODAL HƯỚNG DẪN CÀI ĐẶT ỨNG DỤNG (PWA) */}
-      {showInstallModal && (
-        <div className="modal-backdrop" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
-          <div className="modal-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '540px', width: '100%', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-              <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span>📱</span> Hướng Dẫn Cài Đặt Ứng Dụng Tâm An Care
-              </h2>
-              <button onClick={() => setShowInstallModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
-            </div>
-
-            <div style={{ fontSize: '0.86rem', color: '#334155', lineHeight: '1.6' }}>
-              <p style={{ marginTop: 0 }}>Ứng dụng <b>Tâm An Care</b> hỗ trợ cài đặt trực tiếp dạng Progressive Web App (PWA) chạy độc lập trên iPhone, iPad, Android, Mac và máy tính Windows mà không cần qua App Store.</p>
-
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem' }}>
-                <div style={{ fontWeight: 700, color: '#166534', marginBottom: '0.4rem' }}>🍏 Trên iPhone / iPad (Safari):</div>
-                <ol style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                  <li>Nhấn vào biểu tượng <b>Chia sẻ (Share ⎋)</b> ở thanh công cụ trình duyệt Safari.</li>
-                  <li>Cuộn xuống và chọn <b>"Thêm vào Màn hình chính" (Add to Home Screen ➕)</b>.</li>
-                  <li>Nhấn <b>Thêm (Add)</b> để hoàn tất. Icon ứng dụng Tâm An Care sẽ xuất hiện ngoài màn hình ứng dụng.</li>
-                </ol>
-              </div>
-
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem' }}>
-                <div style={{ fontWeight: 700, color: '#0369a1', marginBottom: '0.4rem' }}>💻 Trên Máy tính macOS / Windows (Chrome / Edge):</div>
-                <ol style={{ margin: 0, paddingLeft: '1.2rem' }}>
-                  <li>Nhấn vào biểu tượng <b>Cài đặt (Install 📲)</b> ở góc phải thanh địa chỉ URL.</li>
-                  <li>Hoặc bấm menu <b>⋮ (3 chấm) &rarr; "Cài đặt ứng dụng Tâm An Care..."</b>.</li>
-                </ol>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
-              <button type="button" onClick={() => setShowInstallModal(false)} className="btn btn-primary">Đã hiểu</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* MODAL CÀI ĐẶT ỨNG DỤNG PWA ĐA NỀN TẢNG */}
+      <PWAInstallModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+        deferredPrompt={deferredPrompt}
+        onPromptTriggered={() => setDeferredPrompt(null)}
+      />
 
       {/* MODAL CHẾ ĐỘ THỬ NGHIỆM MULTI-ROLE CHO TESTERS */}
       <TesterPortalModal

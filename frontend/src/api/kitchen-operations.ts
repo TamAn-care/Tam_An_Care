@@ -702,6 +702,58 @@ export async function fetchFoodInventory(): Promise<FoodInventoryItem[]> {
   return [...mockFoodInventory];
 }
 
+export async function updateFoodInventorySafetyStock(
+  actor: HumanActorSession,
+  itemId: string,
+  newMinSafetyStock: number,
+  reasonNote?: string
+): Promise<FoodInventoryItem> {
+  await new Promise((r) => setTimeout(r, 120));
+
+  const itemIndex = mockFoodInventory.findIndex((i) => i.id === itemId);
+  if (itemIndex === -1) throw new Error('Không tìm thấy mặt hàng thực phẩm trong kho');
+
+  const oldItem = mockFoodInventory[itemIndex];
+  const oldSafetyStock = oldItem.minSafetyStock;
+  const sanitizedStock = Math.max(0, Number(newMinSafetyStock.toFixed(2)));
+
+  const updatedItem: FoodInventoryItem = {
+    ...oldItem,
+    minSafetyStock: sanitizedStock,
+    status: oldItem.currentStock <= sanitizedStock ? 'LOW_STOCK' : oldItem.status === 'LOW_STOCK' ? 'FRESH' : oldItem.status,
+  };
+
+  mockFoodInventory[itemIndex] = updatedItem;
+
+  const actorRoleLabel = actor.actorRole === 'NUTRITIONIST'
+    ? 'Nhân viên dinh dưỡng'
+    : actor.actorRole === 'CARE_MANAGER'
+    ? 'Nhân viên quản lý'
+    : actor.actorRole === 'SUPERVISOR'
+    ? 'Ban Giám Đốc'
+    : (actor.actorRole || 'Nhân viên');
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-NUT-007',
+    actorName: actor.displayName || 'Nhân viên dinh dưỡng',
+    actorRole: actor.actorRole || 'NUTRITIONIST',
+    actorRoleLabel,
+    actionType: 'UPDATE',
+    actionLabel: 'Cập nhật Ngưỡng an toàn thực phẩm tồn kho',
+    module: 'CARE_OPERATIONS',
+    moduleLabel: 'Bếp Ăn & Dinh Dưỡng',
+    targetEntityId: updatedItem.id,
+    targetEntityName: `Mặt hàng: ${updatedItem.itemName}`,
+    summary: `${actorRoleLabel} ${actor.displayName || ''} đã điều chỉnh Ngưỡng an toàn của "${updatedItem.itemName}" từ ${oldSafetyStock} ${updatedItem.unit} sang ${sanitizedStock} ${updatedItem.unit}.`,
+    details: `Tồn hiện tại: ${updatedItem.currentStock} ${updatedItem.unit} | Ngưỡng cũ: ${oldSafetyStock} | Ngưỡng mới: ${sanitizedStock} | Lý do điều chỉnh: ${reasonNote || 'Phù hợp với điều kiện vận hành thực tế của Trung tâm'}.`,
+    previousValue: `${oldSafetyStock} ${updatedItem.unit}`,
+    newValue: `${sanitizedStock} ${updatedItem.unit}`,
+    severity: 'IMPORTANT',
+  });
+
+  return updatedItem;
+}
+
 export async function dispatchFoodForCooking(
   actor: HumanActorSession,
   input: Omit<DailyMealDispatch, 'id'>

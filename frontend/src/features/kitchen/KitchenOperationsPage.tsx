@@ -6,6 +6,7 @@ import {
   fetchFoodReceivingBatches,
   createFoodReceivingBatch,
   fetchFoodInventory,
+  updateFoodInventorySafetyStock,
   dispatchFoodForCooking,
   fetchFoodSamples,
   createFoodSampleRecord,
@@ -26,6 +27,7 @@ import {
   InspectionStatus,
   FoodReceivingBatch,
   FoodReceivingItem,
+  FoodInventoryItem,
 } from '../../api/kitchen-operations';
 
 export default function KitchenOperationsPage() {
@@ -43,6 +45,7 @@ export default function KitchenOperationsPage() {
   const canManageKitchen = hasCapability(actor?.actorRole, 'canManageKitchenOperations');
   const canViewFinancials = hasCapability(actor?.actorRole, 'canViewSensitiveFinancials');
   const canUpdateMenu = isNutritionist || isManager || isDirector || isAdmin;
+  const canUpdateSafetyStock = isNutritionist || isManager || isDirector || isAdmin || canManageKitchen;
 
   // Queries
   const batchesQuery = useQuery({ queryKey: ['kitchen-batches'], queryFn: fetchFoodReceivingBatches });
@@ -63,6 +66,26 @@ export default function KitchenOperationsPage() {
   const [showDetailBatchModal, setShowDetailBatchModal] = useState<FoodReceivingBatch | null>(null);
   const [showDispatchModal, setShowDispatchModal] = useState(false);
   const [showNewSampleModal, setShowNewSampleModal] = useState(false);
+  const [editingSafetyStockItem, setEditingSafetyStockItem] = useState<FoodInventoryItem | null>(null);
+  const [formSafetyStockVal, setFormSafetyStockVal] = useState<number>(10);
+  const [formSafetyStockReason, setFormSafetyStockReason] = useState<string>('');
+
+  const updateSafetyStockMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingSafetyStockItem || !actor) return;
+      return updateFoodInventorySafetyStock(
+        actor,
+        editingSafetyStockItem.id,
+        formSafetyStockVal,
+        formSafetyStockReason || 'Phù hợp với điều kiện vận hành thực tế của Trung tâm'
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kitchen-inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      setEditingSafetyStockItem(null);
+    },
+  });
 
   // Weekly Menu Schedule State
   const weeklySchedule = weeklyScheduleQuery.data || [];
@@ -1154,8 +1177,35 @@ export default function KitchenOperationsPage() {
                     <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 800, color: item.currentStock <= item.minSafetyStock ? '#b91c1c' : '#166534', fontSize: '0.92rem' }}>
                       {item.currentStock} {item.unit}
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#64748b' }}>
-                      {item.minSafetyStock} {item.unit}
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem' }}>
+                        <span style={{ fontWeight: 700, color: '#334155' }}>
+                          {item.minSafetyStock} {item.unit}
+                        </span>
+                        {canUpdateSafetyStock && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingSafetyStockItem(item);
+                              setFormSafetyStockVal(item.minSafetyStock);
+                              setFormSafetyStockReason('Điều chỉnh phù hợp với nhu cầu lưu trữ và chế biến thực tế');
+                            }}
+                            title="Điều chỉnh Ngưỡng An Toàn Tồn Kho"
+                            style={{
+                              background: '#eff6ff',
+                              color: '#1d4ed8',
+                              border: '1px solid #bfdbfe',
+                              borderRadius: '0.25rem',
+                              padding: '0.15rem 0.45rem',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            ✏️ Sửa
+                          </button>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                       <div style={{ fontWeight: 600 }}>{item.expiryDate}</div>
@@ -2607,6 +2657,148 @@ export default function KitchenOperationsPage() {
                 style={{ padding: '0.5rem 1.25rem', borderRadius: '0.4rem', border: 'none', background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
               >
                 {updateSingleMealSlotMutation.isPending ? 'Đang lưu...' : '✓ Lưu Bữa Ăn'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CẬP NHẬT NGƯỠNG AN TOÀN THỰC PHẨM */}
+      {editingSafetyStockItem && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '540px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🛡️</span> Điều Chỉnh Ngưỡng An Toàn Tồn Kho
+              </h2>
+              <button
+                onClick={() => setEditingSafetyStockItem(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>{editingSafetyStockItem.itemName}</div>
+              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem', display: 'flex', gap: '1rem' }}>
+                <span>Phân khu: <b>{STORAGE_ZONE_META[editingSafetyStockItem.storageZone]?.label}</b></span>
+                <span>Tồn thực tế: <b style={{ color: '#0369a1' }}>{editingSafetyStockItem.currentStock} {editingSafetyStockItem.unit}</b></span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                Ngưỡng an toàn tối thiểu ({editingSafetyStockItem.unit}) *:
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                className="text-input"
+                style={{ width: '100%', height: '40px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 700, fontSize: '1.05rem', color: '#0f172a' }}
+                value={formSafetyStockVal}
+                onChange={(e) => setFormSafetyStockVal(parseFloat(e.target.value) || 0)}
+              />
+
+              {/* Quick Presets */}
+              <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.45rem', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Gợi ý:</span>
+                <button
+                  type="button"
+                  onClick={() => setFormSafetyStockVal(Math.max(1, formSafetyStockVal - 5))}
+                  style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.72rem', cursor: 'pointer' }}
+                >
+                  -5 {editingSafetyStockItem.unit}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormSafetyStockVal(formSafetyStockVal + 5)}
+                  style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.72rem', cursor: 'pointer' }}
+                >
+                  +5 {editingSafetyStockItem.unit}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormSafetyStockVal(Math.round(editingSafetyStockItem.currentStock * 0.3))}
+                  style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #3b82f6', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  30% Tồn Hiện Tại ({Math.round(editingSafetyStockItem.currentStock * 0.3)} {editingSafetyStockItem.unit})
+                </button>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                Lý do điều chỉnh ngưỡng (Đảm bảo điều kiện thực tế Trung tâm Tâm An):
+              </label>
+              <input
+                type="text"
+                className="text-input"
+                style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                value={formSafetyStockReason}
+                onChange={(e) => setFormSafetyStockReason(e.target.value)}
+                placeholder="Ví dụ: Phù hợp với công suất lưu trú thực tế của Trung tâm..."
+              />
+            </div>
+
+            {/* Warning threshold preview */}
+            <div style={{ background: '#f0fdf4', padding: '0.55rem 0.75rem', borderRadius: '0.35rem', border: '1px solid #bbf7d0', fontSize: '0.75rem', color: '#15803d', marginBottom: '1.25rem' }}>
+              ℹ️ Khi số lượng tồn thực tế nhỏ hơn hoặc bằng <b>{formSafetyStockVal} {editingSafetyStockItem.unit}</b>, hệ thống sẽ phát cảnh báo màu đỏ <b>"Cần nhập thêm"</b> giúp Nhân viên dinh dưỡng và Quản lý lập phiếu tiếp nhận kịp thời.
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setEditingSafetyStockItem(null)}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSafetyStockMutation.mutate()}
+                disabled={updateSafetyStockMutation.isPending}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: 'none',
+                  background: '#0284c7',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {updateSafetyStockMutation.isPending ? 'Đang lưu...' : '✓ Lưu Ngưỡng An Toàn'}
               </button>
             </div>
           </div>

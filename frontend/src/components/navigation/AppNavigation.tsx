@@ -103,9 +103,10 @@ const items: NavItem[] = [
 
 interface AppNavigationProps {
   onNavItemClick?: () => void;
+  onOpenInstallModal?: () => void;
 }
 
-export function AppNavigation({ onNavItemClick }: AppNavigationProps = {}) {
+export function AppNavigation({ onNavItemClick, onOpenInstallModal }: AppNavigationProps = {}) {
   const { actor } = useActor();
   const navigate = useNavigate();
   const location = useLocation();
@@ -147,6 +148,34 @@ export function AppNavigation({ onNavItemClick }: AppNavigationProps = {}) {
           </a>
         );
       })}
+
+      {onOpenInstallModal && (
+        <button
+          type="button"
+          onClick={() => {
+            if (onNavItemClick) onNavItemClick();
+            onOpenInstallModal();
+          }}
+          className="nav-link"
+          style={{
+            marginTop: '0.5rem',
+            background: '#e0f2fe',
+            color: '#0369a1',
+            fontWeight: 700,
+            border: '1px solid #bae6fd',
+            borderRadius: '0.4rem',
+            padding: '0.5rem 0.75rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+            cursor: 'pointer',
+            textAlign: 'left',
+            width: '100%',
+          }}
+        >
+          <span>📱</span> Cài Đặt App (PWA)
+        </button>
+      )}
     </nav>
   );
 }

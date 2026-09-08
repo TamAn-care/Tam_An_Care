@@ -1,8 +1,10 @@
 {
+  "id": "/",
   "name": "Trung Tâm Dưỡng Lão Tâm An - Quản Lý Vận Hành & Y Khoa",
   "short_name": "Tâm An Care",
   "description": "Hệ thống quản lý vận hành trung tâm dưỡng lão, tiếp nhận y khoa, kế hoạch chăm sóc ADL và phân công nhân sự Tâm An Care.",
-  "start_url": "/",
+  "start_url": "/?utm_source=pwa",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#166534",
@@ -26,6 +28,45 @@
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Tổng Quan Vận Hành",
+      "short_name": "Tổng Quan",
+      "description": "Mở nhanh Bảng điều khiển Tổng quan Tâm An Care",
+      "url": "/dashboard",
+      "icons": [{ "src": "/icons/tam-an-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tiếp Nhận & Đánh Giá",
+      "short_name": "Tiếp Nhận",
+      "description": "Hồ sơ tiếp nhận cư dân và đánh giá y khoa",
+      "url": "/admissions",
+      "icons": [{ "src": "/icons/tam-an-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dược Phẩm eMAR",
+      "short_name": "Dược eMAR",
+      "description": "Quản lý kho dược phẩm và cho uống thuốc 5 đúng",
+      "url": "/medication-inventory",
+      "icons": [{ "src": "/icons/tam-an-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/branding/tam-an-logo-master.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Giao diện quản trị Tâm An Care trên Máy tính & Tablet"
+    },
+    {
+      "src": "/branding/tam-an-logo-master.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Giao diện di động Tâm An Care trên iPhone & Android"
     }
   ]
 }
