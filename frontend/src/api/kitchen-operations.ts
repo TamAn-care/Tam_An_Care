@@ -95,7 +95,7 @@ export interface FoodInventoryItem {
 export interface DailyMealDispatch {
   id: string;
   dispatchDate: string;
-  mealType: 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'NIGHT_SNACK';
+  mealType: 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER';
   mealTypeLabel: string;
   menuName: string;
   residentCount: number;
@@ -907,7 +907,7 @@ export async function fetchVendors(): Promise<VendorContract[]> {
 // THỰC ĐƠN TUẦN & THỰC ĐƠN HÔM NAY (SERIES BẾP & DINH DƯỠNG)
 // ==========================================
 
-export type WeeklyMealType = 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER' | 'NIGHT_SNACK';
+export type WeeklyMealType = 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER';
 
 export interface MealSlotDefinition {
   id: string;
@@ -983,18 +983,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         kcal: 480,
         proteinG: 26,
       },
-      {
-        id: 'MON-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Sữa tươi tiệt trùng bổ sung canxi TH Warm',
-        sideDishes: 'Bánh quy yến mạch ít đường (2 cái)',
-        drinkOrSnack: 'Sữa ấm 45°C hỗ trợ giấc ngủ',
-        textureOptions: ['Súp loãng', 'Ăn Sonde'],
-        dietNotes: 'Chế độ tiểu đường dùng sữa không đường',
-        kcal: 160,
-        proteinG: 8,
-      },
     ],
   },
   {
@@ -1048,18 +1036,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         dietNotes: 'Nhẹ bụng, thanh nhiệt',
         kcal: 450,
         proteinG: 24,
-      },
-      {
-        id: 'TUE-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Chè đậu xanh hạt sen cốt dừa ấm nhẹ',
-        sideDishes: 'Hạt chia ngâm nở',
-        drinkOrSnack: '1 ly sữa hạt điều ấm',
-        textureOptions: ['Chè nấu mềm', 'Súp loãng', 'Ăn Sonde'],
-        dietNotes: 'Đường isomalt dành riêng cho cụ tiểu đường',
-        kcal: 180,
-        proteinG: 6,
       },
     ],
   },
@@ -1115,18 +1091,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         kcal: 460,
         proteinG: 23,
       },
-      {
-        id: 'WED-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Ly sữa dinh dưỡng chuyên biệt (Ensure/Glucerna)',
-        sideDishes: 'Bánh mỳ gối mềm (1 lát)',
-        drinkOrSnack: 'Sữa dinh dưỡng 230ml ấm',
-        textureOptions: ['Sữa loãng', 'Ăn Sonde'],
-        dietNotes: 'Cung cấp 28 vitamin & khoáng chất',
-        kcal: 200,
-        proteinG: 9,
-      },
     ],
   },
   {
@@ -1180,18 +1144,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         dietNotes: 'Giàu beta-carotene sáng mắt',
         kcal: 440,
         proteinG: 20,
-      },
-      {
-        id: 'THU-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Yến chưng đường phèn hạt sen táo đỏ (Chén nhỏ)',
-        sideDishes: 'Hạt sen ninh nhừ melt-in-mouth',
-        drinkOrSnack: 'Sữa tươi ấm canxi',
-        textureOptions: ['Yến lỏng', 'Ăn Sonde'],
-        dietNotes: 'Bồi bổ phổi & phế quản',
-        kcal: 170,
-        proteinG: 7,
       },
     ],
   },
@@ -1247,18 +1199,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         kcal: 450,
         proteinG: 22,
       },
-      {
-        id: 'FRI-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Sữa tươi tiệt trùng canxi TH tiệt trùng ấm',
-        sideDishes: 'Bánh ngũ cốc mầm dinh dưỡng',
-        drinkOrSnack: 'Sữa ấm 45°C',
-        textureOptions: ['Súp loãng', 'Ăn Sonde'],
-        dietNotes: 'Không gây đầy bụng ban đêm',
-        kcal: 160,
-        proteinG: 8,
-      },
     ],
   },
   {
@@ -1313,18 +1253,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         kcal: 460,
         proteinG: 21,
       },
-      {
-        id: 'SAT-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Cháo trắng trứng muối dưỡng sinh (Bát nhỏ)',
-        sideDishes: 'Trứng muối dầm nhỏ',
-        drinkOrSnack: '1 ly sữa đậu nành ấm',
-        textureOptions: ['Cháo loãng', 'Ăn Sonde'],
-        dietNotes: 'Ấm dạ dày, dễ tiêu',
-        kcal: 170,
-        proteinG: 7,
-      },
     ],
   },
   {
@@ -1378,18 +1306,6 @@ export const INITIAL_WEEKLY_SCHEDULE: DayMenuSchedule[] = [
         dietNotes: 'Vị đậm đà thanh nhẹ không cay',
         kcal: 470,
         proteinG: 24,
-      },
-      {
-        id: 'SUN-NIGHT_SNACK',
-        mealType: 'NIGHT_SNACK',
-        mealLabel: '🥣 Bữa Phụ Tối / Đêm (20:00 - 20:30)',
-        dishName: 'Sữa tươi tiệt trùng bổ sung canxi TH Warm',
-        sideDishes: 'Bánh xốp mềm dinh dưỡng',
-        drinkOrSnack: 'Sữa tiệt trùng canxi 45°C',
-        textureOptions: ['Súp loãng', 'Ăn Sonde'],
-        dietNotes: 'Giúp an giấc tối Chủ Nhật',
-        kcal: 165,
-        proteinG: 8,
       },
     ],
   },

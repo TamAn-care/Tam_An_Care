@@ -73,23 +73,30 @@ export class OperationalCareViewService {
       );
     }
 
-    if (
-      normalizedRole !== 'CAREGIVER'
-      && normalizedRole !== 'NURSE'
-      && normalizedRole !== 'SUPERVISOR'
-    ) {
+    const isAllowedRole =
+      normalizedRole === 'CAREGIVER' ||
+      normalizedRole === 'NURSE' ||
+      normalizedRole === 'SUPERVISOR' ||
+      normalizedRole === 'CARE_MANAGER' ||
+      normalizedRole === 'ADMIN' ||
+      normalizedRole === 'RECEPTIONIST' ||
+      normalizedRole === 'GUARDIAN' ||
+      normalizedRole === 'NUTRITIONIST' ||
+      normalizedRole === 'PHYSICAL_THERAPIST' ||
+      normalizedRole === 'DIRECTOR';
+
+    if (!isAllowedRole) {
       throw new ForbiddenException(
         'Actor is not authorized for resident care view.',
       );
     }
 
-    const actorRole =
-      normalizedRole as HumanRole;
+    const actorRole = normalizedRole as HumanRole;
 
     const scope: OperationalScope =
-      actorRole === 'SUPERVISOR'
+      normalizedRole === 'SUPERVISOR' || normalizedRole === 'ADMIN' || normalizedRole === 'CARE_MANAGER' || normalizedRole === 'DIRECTOR'
         ? 'SUPERVISORY'
-        : actorRole === 'NURSE'
+        : normalizedRole === 'NURSE' || normalizedRole === 'NUTRITIONIST' || normalizedRole === 'PHYSICAL_THERAPIST'
           ? 'CLINICAL'
           : 'OPERATIONAL';
 

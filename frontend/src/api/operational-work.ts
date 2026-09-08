@@ -296,7 +296,7 @@ export const MOCK_INITIAL_WORK_EVENTS: WorkEvent[] = [
     occurred_at: new Date(Date.now() - 3600000 * 2).toISOString(),
     started_at: new Date(Date.now() - 3600000 * 2).toISOString(),
     completed_at: new Date(Date.now() - 3600000 * 1.8).toISOString(),
-    performed_by: 'NURSE-01',
+    performed_by: 'Trần Thị Bích',
     performed_by_role: 'NURSE',
     quantity: 1,
     unit: 'lần',
@@ -316,7 +316,7 @@ export const MOCK_INITIAL_WORK_EVENTS: WorkEvent[] = [
     occurred_at: new Date(Date.now() - 3600000 * 4).toISOString(),
     started_at: new Date(Date.now() - 3600000 * 4).toISOString(),
     completed_at: new Date(Date.now() - 3600000 * 3.9).toISOString(),
-    performed_by: 'NURSE-01',
+    performed_by: 'Nguyễn Thị Phương Thúy',
     performed_by_role: 'NURSE',
     quantity: 1,
     unit: 'lần',
@@ -336,7 +336,7 @@ export const MOCK_INITIAL_WORK_EVENTS: WorkEvent[] = [
     occurred_at: new Date(Date.now() - 3600000 * 5).toISOString(),
     started_at: new Date(Date.now() - 3600000 * 5.5).toISOString(),
     completed_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-    performed_by: 'CAREGIVER-02',
+    performed_by: 'Trần Thị Mai',
     performed_by_role: 'CAREGIVER',
     quantity: 1,
     unit: 'bữa',
@@ -356,7 +356,7 @@ export const MOCK_INITIAL_WORK_EVENTS: WorkEvent[] = [
     occurred_at: new Date(Date.now() - 3600000 * 6).toISOString(),
     started_at: new Date(Date.now() - 3600000 * 6.5).toISOString(),
     completed_at: new Date(Date.now() - 3600000 * 6).toISOString(),
-    performed_by: 'CAREGIVER-01',
+    performed_by: 'Đặng Thị Hoa',
     performed_by_role: 'CAREGIVER',
     quantity: 1,
     unit: 'lần',
@@ -376,7 +376,7 @@ export const MOCK_INITIAL_WORK_EVENTS: WorkEvent[] = [
     occurred_at: new Date(Date.now() - 3600000 * 8).toISOString(),
     started_at: new Date(Date.now() - 3600000 * 8.5).toISOString(),
     completed_at: new Date(Date.now() - 3600000 * 8).toISOString(),
-    performed_by: 'PHYSIO-01',
+    performed_by: 'Phạm Văn Đức',
     performed_by_role: 'PHYSIOTHERAPIST',
     quantity: 1,
     unit: 'lần',
@@ -666,4 +666,3 @@ export async function voidWorkEvent(
     throw error;
   }
 }
-

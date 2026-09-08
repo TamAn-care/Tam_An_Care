@@ -40,6 +40,7 @@ import {
 } from './resident-ui';
 
 import { getAssignedResidentIdsForActor } from '../../auth/role-policy';
+import ElderlyAvatar from '../../components/common/ElderlyAvatar';
 
 type StatusFilter =
   | 'ALL'
@@ -352,20 +353,7 @@ export function ResidentsPage() {
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <div style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '50%',
-                          background: '#e0f2fe',
-                          color: '#0369a1',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                          fontSize: '1rem',
-                        }}>
-                          {resident.displayName.charAt(resident.displayName.lastIndexOf(' ') + 1) || 'C'}
-                        </div>
+                        <ElderlyAvatar gender={resident.gender} name={resident.displayName} size={42} />
                         <div>
                           <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
                             {resident.displayName}

@@ -8,6 +8,7 @@ import { getAssignedResidentIdsForGuardian, getAssignedResidentIdsForActor } fro
 import { fetchResidentIntegrationOverview } from '../../api/integration';
 import { getTodayMenuSchedule } from '../../api/kitchen-operations';
 import { LoadingState, ErrorState, EmptyState } from '../../components/feedback/FeedbackStates';
+import ElderlyAvatar from '../../components/common/ElderlyAvatar';
 
 const CARE_LEVEL_CONFIG: Record<string, { label: string; badgeClass: string; desc: string }> = {
   INDEPENDENT: { label: 'Chăm sóc Cấp độ 1', badgeClass: 'badge-success', desc: 'Tự chủ sinh hoạt cơ bản, cần hỗ trợ nhẹ' },
@@ -356,7 +357,10 @@ export default function FamilyPortalPage() {
     }
 
     const slotLabel = visitTimeSlot === 'MORNING' ? 'Sáng (08:30 - 11:00)' : 'Chiều (14:30 - 17:00)';
-    const locationLabel = visitLocation === 'ROOM' ? 'Tại phòng nghỉ của Cụ' : 'Sảnh vườn hoa Tâm An';
+    const roomNum = currentResident?.resident?.room || (currentResident?.resident as any)?.room_number;
+    const locationLabel = visitLocation === 'ROOM'
+      ? `Tại phòng nghỉ của Cụ (${roomNum ? `Phòng ${roomNum}` : 'Phòng nghỉ'})`
+      : 'Tại Sảnh Tâm An';
 
     const newVisit = {
       id: `visit-${Date.now()}`,
@@ -423,21 +427,7 @@ export default function FamilyPortalPage() {
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div
-              style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                background: '#dcfce7',
-                border: '2px solid #86efac',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '2rem',
-              }}
-            >
-              👵
-            </div>
+            <ElderlyAvatar gender={resData.gender} name={resData.displayName} size={64} />
 
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -1152,8 +1142,10 @@ export default function FamilyPortalPage() {
                     value={visitLocation}
                     onChange={(e) => setVisitLocation(e.target.value)}
                   >
-                    <option value="ROOM">Tại phòng nghỉ của Cụ (Phòng 101)</option>
-                    <option value="GARDEN">Sảnh vườn hoa Tâm An</option>
+                    <option value="ROOM">
+                      Tại phòng nghỉ của Cụ ({currentResident?.resident?.room ? `Phòng ${currentResident.resident.room}` : 'Phòng nghỉ'})
+                    </option>
+                    <option value="HALL">Tại Sảnh Tâm An</option>
                   </select>
                 </label>
               </div>

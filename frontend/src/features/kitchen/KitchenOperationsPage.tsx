@@ -372,7 +372,6 @@ export default function KitchenOperationsPage() {
         LUNCH: 'Bữa Trưa',
         AFTERNOON_SNACK: 'Bữa Xế chiều',
         DINNER: 'Bữa Tối',
-        NIGHT_SNACK: 'Bữa Phụ Tối',
       };
       return dispatchFoodForCooking(actor, {
         dispatchDate: new Date().toISOString().split('T')[0],
@@ -737,7 +736,7 @@ export default function KitchenOperationsPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.1rem' }}>
               {selectedDaySchedule.meals.map((meal) => {
-                const isSnack = meal.mealType === 'AFTERNOON_SNACK' || meal.mealType === 'NIGHT_SNACK';
+                const isSnack = meal.mealType === 'AFTERNOON_SNACK';
                 return (
                   <div
                     key={meal.id}
@@ -2091,7 +2090,6 @@ export default function KitchenOperationsPage() {
                   <option value="LUNCH">Bữa Trưa (11:15 - 12:00)</option>
                   <option value="AFTERNOON_SNACK">Bữa Xế Chiều (14:30 - 15:00)</option>
                   <option value="DINNER">Bữa Tối (17:30 - 18:15)</option>
-                  <option value="NIGHT_SNACK">Bữa Phụ Tối / Đêm (20:00 - 20:30)</option>
                 </select>
               </div>
 

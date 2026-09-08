@@ -37,6 +37,7 @@ import {
   ErrorState,
   LoadingState,
 } from '../../components/feedback/FeedbackStates';
+import ElderlyAvatar from '../../components/common/ElderlyAvatar';
 
 const STATUS_LABEL: Record<string, string> = {
   RECORDED: 'Đã ghi nhận',
@@ -70,6 +71,26 @@ const CATEGORY_LABELS: Record<string, string> = {
   EMERGENCY: 'Sự cố & Khẩn cấp',
   OTHER: 'Khác & Nghiệp vụ chung',
 };
+
+const STAFF_CODE_NAME_MAP: Record<string, string> = {
+  'NURSE-01': 'Nguyễn Thị Phương Thúy',
+  'STAFF-NUR-001': 'Nguyễn Thị Phương Thúy',
+  'STAFF-NUR-003': 'Trần Thị Bích',
+  'CAREGIVER-01': 'Trần Thị Mai',
+  'cg-mai-001': 'Trần Thị Mai',
+  'CAREGIVER-02': 'Lê Văn Nam',
+  'STAFF-CG-002': 'Lê Văn Nam',
+  'CAREGIVER-03': 'Đặng Thị Hoa',
+  'cg-hoa-003': 'Đặng Thị Hoa',
+  'PHYSIO-01': 'Phạm Văn Đức',
+  'STAFF-NUT-001': 'Phạm Thị Lan',
+  'STAFF-NUT-007': 'Hoàng Minh Châu',
+};
+
+export function formatStaffDisplayName(val: string | null | undefined): string {
+  if (!val) return '—';
+  return STAFF_CODE_NAME_MAP[val] || val;
+}
 
 export const POPULAR_WORK_EVENT_TYPES: WorkEventType[] = [
   {
@@ -1126,9 +1147,7 @@ export function OperationsPage() {
           {/* Header of Selected Resident */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '1rem', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <div style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#2563eb', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700 }}>
-                {selectedResident.displayName.charAt(0)}
-              </div>
+              <ElderlyAvatar gender={selectedResident.gender} name={selectedResident.displayName} size={56} />
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <h2 style={{ margin: 0, fontSize: '1.35rem', color: '#1e293b' }}>
@@ -1409,7 +1428,7 @@ export function OperationsPage() {
                               <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{type?.category ? CATEGORY_LABELS[type.category] || type.category : ''}</div>
                             </td>
                             <td>
-                              {item.performed_by}
+                              {formatStaffDisplayName(item.performed_by)}
                               <br />
                               <small style={{ color: '#64748b' }}>{item.performed_by_role}</small>
                             </td>
@@ -1828,7 +1847,7 @@ export function OperationsPage() {
                       </td>
 
                       <td>
-                        <div>{item.performed_by}</div>
+                        <div>{formatStaffDisplayName(item.performed_by)}</div>
                         <small style={{ color: '#64748b' }}>{item.performed_by_role}</small>
                       </td>
 

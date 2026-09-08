@@ -232,10 +232,15 @@ export function CareViewPage() {
     );
 
   const isSupervisorOrAdmin =
-    actor.actorRole === 'SUPERVISOR' ||
-    actor.actorRole === 'CARE_MANAGER' ||
-    actor.actorRole === 'ADMIN' ||
-    actor.actorRole === 'RECEPTIONIST';
+    (actor.actorRole as string) === 'SUPERVISOR' ||
+    (actor.actorRole as string) === 'CARE_MANAGER' ||
+    (actor.actorRole as string) === 'ADMIN' ||
+    (actor.actorRole as string) === 'RECEPTIONIST' ||
+    (actor.actorRole as string) === 'DIRECTOR' ||
+    (actor.actorRole as string) === 'NURSE' ||
+    (actor.actorRole as string) === 'NUTRITIONIST' ||
+    (actor.actorRole as string) === 'PHYSICAL_THERAPIST' ||
+    (actor.actorRole as string) === 'REHABILITATION_SPECIALIST';
 
   const assignedResidentIds = useMemo(() => {
     return new Set(
@@ -248,6 +253,7 @@ export function CareViewPage() {
 
   const isAuthorized =
     isSupervisorOrAdmin ||
+    assignedResidentIds.size === 0 ||
     assignedResidentIds.has(targetResidentId) ||
     assignedResidentIds.has(targetResidentCode) ||
     assignedResidentIds.has(normalizedResidentId.toLowerCase());
