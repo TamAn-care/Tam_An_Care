@@ -6,6 +6,7 @@ import {
   createStaffAccount,
   resetStaffPassword,
   updateStaffStatus,
+  deleteStaffAccount,
   generateSecurePassword,
   getNextSequentialStaffCode,
   type StaffActor,
@@ -57,6 +58,7 @@ export function StaffAccessPage() {
   const isManager = actor?.actorRole === 'CARE_MANAGER';
   const canManageStaff = hasCapability(actor?.actorRole, 'canManageStaff');
   const canManageDirector = hasCapability(actor?.actorRole, 'canManageDirectorStaff');
+  const canDeleteStaff = hasCapability(actor?.actorRole, 'canDeleteStaff');
 
   // Filters & Search for Staff Accounts Tab
   const [search, setSearch] = useState('');
@@ -94,6 +96,7 @@ export function StaffAccessPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showHandoverModal, setShowHandoverModal] = useState<StaffActor | null>(null);
   const [showResetModal, setShowResetModal] = useState<StaffActor | null>(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState<StaffActor | null>(null);
 
   // Create Staff Account Form State
   const [formDisplayName, setFormDisplayName] = useState('');
@@ -226,6 +229,23 @@ export function StaffAccessPage() {
     },
     onError: (err) => {
       setFeedback(`❌ Lỗi: ${errorText(err, 'Không thể thay đổi trạng thái tài khoản')}`);
+    },
+  });
+
+  // Delete Staff Account Mutation
+  const deleteAccountMutation = useMutation({
+    mutationFn: async (targetStaff: StaffActor) => {
+      if (!actor) throw new Error('Chưa đăng nhập');
+      return deleteStaffAccount(actor, targetStaff.actorId);
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ['staff-actors'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      setShowDeleteConfirmModal(null);
+      setFeedback(`✅ Đã xoá/bớt tài khoản nhân sự ${res.deletedActor.displayName} (${res.deletedActor.actorId}) khỏi hệ thống thành công.`);
+    },
+    onError: (err) => {
+      setFeedback(`❌ Lỗi: ${errorText(err, 'Không thể xoá tài khoản nhân sự')}`);
     },
   });
 
@@ -802,7 +822,7 @@ export function StaffAccessPage() {
                                   🔑 Đổi MK
                                 </button>
 
-                                {/* Lock/Unlock button (Admin account cannot be locked) */}
+                                 {/* Lock/Unlock button (Admin account cannot be locked) */}
                                 {!isAdminAccount && (
                                   <button
                                     onClick={() => toggleStatusMutation.mutate({ actorId: item.actorId, currentStatus: item.status })}
@@ -819,6 +839,26 @@ export function StaffAccessPage() {
                                     }}
                                   >
                                     {item.status === 'ACTIVE' ? '🔒 Khóa' : '🔓 Mở'}
+                                  </button>
+                                )}
+
+                                {/* Delete / Remove button (Admin & Ban Giám đốc) */}
+                                {canDeleteStaff && !isAdminAccount && item.actorId !== 'Admin' && item.actorId !== 'SYSTEM-ROOT' && (
+                                  <button
+                                    onClick={() => setShowDeleteConfirmModal(item)}
+                                    title="Bớt / Xoá tài khoản nhân sự khỏi hệ thống"
+                                    style={{
+                                      background: '#fef2f2',
+                                      border: '1px solid #fecaca',
+                                      color: '#b91c1c',
+                                      padding: '0.28rem 0.6rem',
+                                      borderRadius: '0.35rem',
+                                      fontSize: '0.76rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    🗑️ Xoá
                                   </button>
                                 )}
                               </div>
@@ -1839,6 +1879,98 @@ export function StaffAccessPage() {
                   }}
                 >
                   {createAssignmentMutation.isPending ? '⏳ Đang xử lý...' : '✅ Xác nhận, tiến hành phân công'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Confirmation: Delete Staff Account (Admin & Ban Giám đốc) */}
+      {showDeleteConfirmModal && (
+        <div
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 9999, padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#fff', borderRadius: '0.75rem',
+              maxWidth: '480px', width: '100%',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
+              overflow: 'hidden', border: '1px solid #fecaca',
+            }}
+          >
+            {/* Header */}
+            <div style={{ background: '#b91c1c', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <span style={{ fontSize: '1.3rem' }}>🗑️</span>
+                <h2 style={{ margin: 0, fontSize: '1rem', color: '#fff', fontWeight: 700 }}>
+                  Xác nhận xoá / bớt tài khoản nhân sự
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirmModal(null)}
+                style={{ background: 'none', border: 'none', color: '#fca5a5', fontSize: '1.2rem', cursor: 'pointer', lineHeight: 1 }}
+              >✕</button>
+            </div>
+
+            {/* Body */}
+            <div style={{ padding: '1.25rem' }}>
+              <p style={{ margin: '0 0 1rem 0', fontSize: '0.88rem', color: '#475569' }}>
+                Hành động này sẽ <strong>xoá hoàn toàn tài khoản nhân sự</strong> khỏi danh sách quản lý của hệ thống:
+              </p>
+
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.55rem', padding: '1rem', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '0.35rem 0.75rem', fontSize: '0.87rem' }}>
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Họ & tên:</span>
+                  <span style={{ fontWeight: 700, color: '#b91c1c' }}>{showDeleteConfirmModal.displayName}</span>
+
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Mã NV / ID:</span>
+                  <span style={{ fontWeight: 700, fontFamily: 'monospace', color: '#0f172a' }}>{showDeleteConfirmModal.staffCode} ({showDeleteConfirmModal.actorId})</span>
+
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Bộ phận:</span>
+                  <span style={{ fontWeight: 600 }}>{showDeleteConfirmModal.department}</span>
+
+                  <span style={{ color: '#64748b', fontWeight: 600 }}>Vai trò:</span>
+                  <span style={{ fontWeight: 700, color: '#0369a1' }}>{ROLE_LABEL[showDeleteConfirmModal.primaryOperationalRole] || showDeleteConfirmModal.primaryOperationalRole}</span>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '0.82rem', color: '#b91c1c', background: '#fff5f5', border: '1px solid #fed7d7', borderRadius: '0.4rem', padding: '0.65rem 0.85rem', marginBottom: '1.25rem' }}>
+                ⚠️ <b>Lưu ý bảo mật & kiểm toán:</b> Hành động xoá tài khoản sẽ được ghi nhận lại trên hệ thống kiểm toán AuditLog tối cao.
+              </div>
+
+              {/* Action buttons */}
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirmModal(null)}
+                  style={{
+                    padding: '0.55rem 1.2rem', borderRadius: '0.45rem',
+                    background: '#f1f5f9', border: '1px solid #cbd5e1',
+                    color: '#475569', fontWeight: 700, fontSize: '0.88rem', cursor: 'pointer',
+                  }}
+                >
+                  Hủy thao tác
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteAccountMutation.isPending}
+                  onClick={() => deleteAccountMutation.mutate(showDeleteConfirmModal)}
+                  style={{
+                    padding: '0.55rem 1.4rem', borderRadius: '0.45rem',
+                    background: '#b91c1c', border: 'none',
+                    color: '#fff', fontWeight: 700, fontSize: '0.88rem', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', gap: '0.4rem',
+                  }}
+                >
+                  {deleteAccountMutation.isPending ? '⏳ Đang xoá...' : '🗑️ Xác nhận xoá tài khoản'}
                 </button>
               </div>
             </div>

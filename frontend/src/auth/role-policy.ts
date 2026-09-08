@@ -42,6 +42,7 @@ export interface RoleCapability {
   allowedRoutes: AppRouteKey[];
   canManageStaff: boolean;
   canManageDirectorStaff: boolean; // ĐỘC QUYỀN BAN GIÁM ĐỐC / ADMIN: Ban Giám đốc tạo ID & mật khẩu cho BGĐ, Quản lý & Nhân viên. Quản lý chỉ tạo cho Nhân viên.
+  canDeleteStaff: boolean; // ĐỘC QUYỀN BAN GIÁM ĐỐC / ADMIN: Quyền bớt/xoá tài khoản nhân viên khỏi hệ thống.`
   canManageAccommodation: boolean;
   canManageLifecycle: boolean;
   canApproveDischarge: boolean;
@@ -85,6 +86,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: true, // ADMIN: Toàn quyền tạo và quản lý tài khoản 100% nhân sự & BGĐ
     canManageDirectorStaff: true, // ADMIN: Toàn quyền quản lý tài khoản Ban Giám đốc
+    canDeleteStaff: true, // ADMIN: Quyền bớt/xoá tài khoản nhân viên khỏi hệ thống
     canManageAccommodation: true, // ADMIN: Toàn quyền quản lý phòng giường
     canManageLifecycle: true, // ADMIN: Toàn quyền quản lý vòng đời cư dân
     canApproveDischarge: true, // ADMIN: Toàn quyền duyệt xuất viện
@@ -126,6 +128,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: true, // BAN GIÁM ĐỐC: Toàn quyền tạo ID, cấp mật khẩu cho Ban Giám đốc, Quản lý và toàn thể Nhân viên
     canManageDirectorStaff: true, // BAN GIÁM ĐỐC: Độc quyền tạo & quản lý tài khoản Ban Giám đốc
+    canDeleteStaff: true, // BAN GIÁM ĐỐC: Quyền bớt/xoá tài khoản nhân viên khỏi hệ thống
     canManageAccommodation: true,
     canManageLifecycle: true,
     canApproveDischarge: true,
@@ -165,6 +168,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: true, // QUẢN LÝ: Quyền tạo ID & mật khẩu cho nhân viên thuộc quyền quản lý
     canManageDirectorStaff: false, // QUẢN LÝ: KHÔNG có quyền tạo, sửa, reset tài khoản Ban Giám đốc
+    canDeleteStaff: false, // QUẢN LÝ: KHÔNG có quyền bớt/xoá tài khoản nhân viên
     canManageAccommodation: true,
     canManageLifecycle: true,
     canApproveDischarge: false,
@@ -193,6 +197,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -223,6 +228,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -256,6 +262,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -284,6 +291,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -313,6 +321,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -342,6 +351,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -370,6 +380,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -397,6 +408,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -428,6 +440,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -459,6 +472,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,
@@ -484,6 +498,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: false,
     canManageLifecycle: false,
     canApproveDischarge: false,

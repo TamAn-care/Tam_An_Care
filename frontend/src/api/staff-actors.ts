@@ -692,3 +692,77 @@ export async function changeSelfPassword(
 
   return { success: true, message: 'Đổi mật khẩu thành công!' };
 }
+
+export async function deleteStaffAccount(
+  actor: HumanActorSession | null,
+  actorIdToDelete: string,
+): Promise<{ success: boolean; deletedActor: StaffActor }> {
+  await new Promise((r) => setTimeout(r, 100));
+
+  if (!actor) {
+    throw new Error('Chưa xác định phiên làm việc. Vui lòng đăng nhập.');
+  }
+
+  // Authority Check: Only ADMIN and SUPERVISOR can delete staff accounts
+  if (actor.actorRole !== 'ADMIN' && actor.actorRole !== 'SUPERVISOR') {
+    throw new Error('Quyền hạn bị từ chối: Chỉ Quản trị viên Tối cao (Admin) và Ban Giám đốc mới có quyền xoá/bớt tài khoản nhân viên.');
+  }
+
+  const staffIndex = mockStaffActors.findIndex((s) => s.actorId === actorIdToDelete);
+  if (staffIndex === -1) {
+    throw new Error(`Không tìm thấy tài khoản nhân sự với mã ID: ${actorIdToDelete}`);
+  }
+
+  const targetStaff = mockStaffActors[staffIndex];
+
+  // Hierarchy Safety:
+  if (targetStaff.primaryOperationalRole === 'ADMIN' && actor.actorRole !== 'ADMIN') {
+    throw new Error('Quyền hạn bị từ chối: Không thể xoá tài khoản Quản trị viên Tối cao (Admin).');
+  }
+
+  if (targetStaff.actorId === 'Admin' || targetStaff.actorId === 'SYSTEM-ROOT') {
+    throw new Error('Không thể xoá tài khoản Admin mặc định của hệ thống.');
+  }
+
+  if (actor.actorRole === 'SUPERVISOR' && targetStaff.primaryOperationalRole === 'SUPERVISOR' && targetStaff.actorId !== actor.actorId) {
+    throw new Error('Quyền hạn bị từ chối: Thành viên Ban Giám đốc không thể xoá tài khoản của thành viên Ban Giám đốc khác.');
+  }
+
+  // Remove from mock array
+  mockStaffActors.splice(staffIndex, 1);
+
+  // Sync localStorage if available
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('tamancare_created_staff');
+      if (stored) {
+        let list = JSON.parse(stored);
+        list = list.filter((s: any) => s.actorId !== actorIdToDelete && s.staffCode !== targetStaff.staffCode);
+        localStorage.setItem('tamancare_created_staff', JSON.stringify(list));
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }
+
+  // Audit Log
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-UNKNOWN',
+    actorName: actor.displayName || 'Nhân sự thực hiện',
+    actorRole: actor.actorRole || 'ADMIN',
+    actorRoleLabel: actor.actorRole === 'ADMIN' ? 'Quản trị viên Tối cao' : 'Ban Giám đốc',
+    actionType: 'DELETE',
+    actionLabel: 'Xoá / Bớt tài khoản nhân sự khỏi hệ thống',
+    module: 'SYSTEM_ADMIN',
+    moduleLabel: 'Nhân Sự & Phân Quyền',
+    targetEntityId: targetStaff.actorId,
+    targetEntityName: `${targetStaff.displayName} (${targetStaff.staffCode})`,
+    summary: `Xoá/bớt tài khoản ID ${targetStaff.actorId} của nhân sự ${targetStaff.displayName} khỏi hệ thống.`,
+    details: `Thực hiện bởi: ${actor.displayName} (${actor.actorRole}). Tài khoản đã bị loại bỏ khỏi danh sách quản lý nhân sự.`,
+    previousValue: `Tài khoản: ACTIVE (${targetStaff.primaryOperationalRole})`,
+    newValue: 'Đã xoá khỏi hệ thống (DELETED)',
+    severity: 'CRITICAL',
+  });
+
+  return { success: true, deletedActor: targetStaff };
+}

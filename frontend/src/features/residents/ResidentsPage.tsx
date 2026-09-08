@@ -226,23 +226,23 @@ export function ResidentsPage() {
       <div className="kpi-grid">
         <div className="kpi-box">
           <div className="kpi-title">Tổng số hồ sơ</div>
-          <div className="kpi-number">{query.data?.length ?? 0}</div>
-          <div className="kpi-desc">Toàn bộ hồ sơ trên hệ thống</div>
+          <div className="kpi-number">{isCaregiver ? scopedTotalRows.length : (query.data?.length ?? 0)}</div>
+          <div className="kpi-desc">{isCaregiver ? 'Hồ sơ thuộc phân công phụ trách' : 'Toàn bộ hồ sơ trên hệ thống'}</div>
         </div>
         <div className="kpi-box">
           <div className="kpi-title">Đang lưu trú / Hoạt động</div>
           <div className="kpi-number" style={{ color: '#16a34a' }}>{activeCount}</div>
-          <div className="kpi-desc">Cư dân đang ở trung tâm</div>
+          <div className="kpi-desc">{isCaregiver ? 'Cư dân được phân công đang ở viện' : 'Cư dân đang ở trung tâm'}</div>
         </div>
         <div className="kpi-box">
           <div className="kpi-title">Mức (1) Tự phục vụ</div>
           <div className="kpi-number" style={{ color: '#2563eb' }}>{level1Count}</div>
-          <div className="kpi-desc">Theo dõi y tế định kỳ</div>
+          <div className="kpi-desc">{isCaregiver ? 'Thuộc phân công (Theo dõi y tế)' : 'Theo dõi y tế định kỳ'}</div>
         </div>
         <div className="kpi-box">
           <div className="kpi-title">Mức (2) & (3) Cần chăm sóc</div>
           <div className="kpi-number" style={{ color: '#ea580c' }}>{assistedCount}</div>
-          <div className="kpi-desc">Hỗ trợ sinh hoạt & toàn diện</div>
+          <div className="kpi-desc">{isCaregiver ? 'Thuộc phân công (Hỗ trợ sinh hoạt)' : 'Hỗ trợ sinh hoạt & toàn diện'}</div>
         </div>
       </div>
 

@@ -103,6 +103,8 @@ export function DashboardPage() {
       total: 110,
       occupied: totalResidents,
       available: 110 - totalResidents,
+      reserved: 0,
+      unavailable: 0,
       occupancyPercentage: Math.round((totalResidents / 110) * 100),
     };
     const activeLeaves = leaveData?.items?.filter(x => x.status === 'ACTIVE_LEAVE')?.length ?? 0;
@@ -184,24 +186,72 @@ export function DashboardPage() {
       </div>
 
       {/* Conditional KPI Row based on Role */}
-      {isCaregiver ? (
-        /* Caregiver Focused KPIs (No macro facility capacity / No sensitive total bed metrics) */
+      {isExecutive ? (
+        /* Executive / Management Macro KPI Row (Restricted to Admin, Ban Giám đốc, Quản lý) */
         <div className="kpi-row">
           <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
-            <div className="kpi-label">Cụ bạn phụ trách trực tiếp</div>
+            <div className="kpi-label">Số lượng người cao tuổi nội trú</div>
             <div className="kpi-val" style={{ color: '#166534' }}>
-              {myAssignedResidentRows.length} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>người cao tuổi</span>
+              {loadingResidents ? '...' : stats.activeResidents} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
             </div>
-            <div className="kpi-sub">Được phân quyền chăm sóc y khoa & ADL</div>
+            <div className="kpi-sub">Tổng số cư dân đang thụ hưởng dịch vụ chăm sóc</div>
+          </div>
+
+          <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
+            <div className="kpi-label">Tổng giường & Công suất sử dụng</div>
+            <div className="kpi-val" style={{ color: '#2563eb' }}>
+              {loadingAccom ? '...' : `${stats.accomSummary.occupied}/${stats.accomSummary.total}`} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>giường</span>
+            </div>
+            <div className="kpi-sub">
+              Đạt {stats.accomSummary.occupancyPercentage}% • Trống {stats.accomSummary.available} • Giữ chỗ {stats.accomSummary.reserved ?? 0} • Bảo trì {stats.accomSummary.unavailable ?? 0}
+            </div>
+          </div>
+
+          <div className="kpi-card" style={{ borderLeft: '4px solid #d97706' }}>
+            <div className="kpi-label">Đang tạm vắng</div>
+            <div className="kpi-val" style={{ color: '#d97706' }}>
+              {stats.activeLeaves} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
+            </div>
+            <div className="kpi-sub">
+              Vắng mặt hợp lệ ({stats.leavingToday} rời viện, {stats.returningToday} trở lại)
+            </div>
+          </div>
+
+          <div className="kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
+            <div className="kpi-label">Lịch trực ca hôm nay</div>
+            <div className="kpi-val" style={{ color: '#7c3aed' }}>
+              {stats.todayShifts} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>ca trực</span>
+            </div>
+            <div className="kpi-sub">
+              {stats.inProgressShifts > 0 ? `🟢 ${stats.inProgressShifts} nhân viên đang trực` : 'Đã phân ca sáng/chiều/đêm'}
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* Non-Executive Staff Scoped KPIs (No macro 110 bed or facility-wide occupancy metrics) */
+        <div className="kpi-row">
+          <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
+            <div className="kpi-label">
+              {isCaregiver ? 'Cụ bạn phụ trách trực tiếp' : 'Hồ sơ thuộc phạm vi phụ trách'}
+            </div>
+            <div className="kpi-val" style={{ color: '#166534' }}>
+              {isCaregiver ? myAssignedResidentRows.length : stats.activeResidents} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>người cao tuổi</span>
+            </div>
+            <div className="kpi-sub">Được phân quyền thao tác nghiệp vụ</div>
           </div>
 
           <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
             <div className="kpi-label">Trạng thái tại Tâm An hôm nay</div>
             <div className="kpi-val" style={{ color: '#2563eb' }}>
-              {myAssignedResidentRows.length - myActiveLeavesCount}/{myAssignedResidentRows.length} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
+              {isCaregiver
+                ? `${myAssignedResidentRows.length - myActiveLeavesCount}/${myAssignedResidentRows.length}`
+                : `${stats.activeResidents - stats.activeLeaves}/${stats.activeResidents}`}{' '}
+              <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
             </div>
             <div className="kpi-sub">
-              {myActiveLeavesCount > 0 ? `${myActiveLeavesCount} cụ đang tạm vắng có báo trước` : 'Đầy đủ tại phòng ở'}
+              {isCaregiver && myActiveLeavesCount > 0
+                ? `${myActiveLeavesCount} cụ đang tạm vắng có báo trước`
+                : 'Đang lưu trú tại các phòng ở'}
             </div>
           </div>
 
@@ -216,51 +266,11 @@ export function DashboardPage() {
           </div>
 
           <div className="kpi-card" style={{ borderLeft: '4px solid #d97706' }}>
-            <div className="kpi-label">Nhật ký chăm sóc trong ca</div>
+            <div className="kpi-label">Nhật ký công việc trong ca</div>
             <div className="kpi-val" style={{ color: '#d97706' }}>
               {stats.workEventsCount} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>lượt</span>
             </div>
-            <div className="kpi-sub">Ghi nhận ăn uống, sinh hoạt, vệ sinh</div>
-          </div>
-        </div>
-      ) : (
-        <div className="kpi-row">
-          <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
-            <div className="kpi-label">Người cao tuổi nội trú</div>
-            <div className="kpi-val" style={{ color: '#166534' }}>
-              {loadingResidents ? '...' : stats.activeResidents}
-            </div>
-            <div className="kpi-sub">Đang thụ hưởng dịch vụ chăm sóc</div>
-          </div>
-
-          <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
-            <div className="kpi-label">Công suất giường nằm</div>
-            <div className="kpi-val" style={{ color: '#2563eb' }}>
-              {loadingAccom ? '...' : `${stats.accomSummary.occupied}/${stats.accomSummary.total}`}
-            </div>
-            <div className="kpi-sub">
-              Đạt {stats.accomSummary.occupancyPercentage}% • Trống {stats.accomSummary.available} giường
-            </div>
-          </div>
-
-          <div className="kpi-card" style={{ borderLeft: '4px solid #d97706' }}>
-            <div className="kpi-label">Đang tạm vắng</div>
-            <div className="kpi-val" style={{ color: '#d97706' }}>
-              {stats.activeLeaves}
-            </div>
-            <div className="kpi-sub">
-              Vắng mặt hợp lệ ({stats.leavingToday} rời viện, {stats.returningToday} trở lại)
-            </div>
-          </div>
-
-          <div className="kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
-            <div className="kpi-label">Lịch trực ca hôm nay</div>
-            <div className="kpi-val" style={{ color: '#7c3aed' }}>
-              {stats.todayShifts}
-            </div>
-            <div className="kpi-sub">
-              {stats.inProgressShifts > 0 ? `🟢 ${stats.inProgressShifts} nhân viên đang trực` : 'Đã phân ca sáng/chiều/đêm'}
-            </div>
+            <div className="kpi-sub">Ghi nhận thao tác chuyên môn theo ca</div>
           </div>
         </div>
       )}
