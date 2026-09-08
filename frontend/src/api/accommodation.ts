@@ -90,10 +90,10 @@ export let mockBuildings: Building[] = [
 ];
 
 export let mockFloors: Floor[] = [
-  { floorId: 'flr-100', buildingId: 'bld-001', code: 'FL-1', name: 'Tầng 1 - Khu Y Tế & Chăm Sóc Đặc Biệt', floorNumber: 1, status: 'ACTIVE' },
-  { floorId: 'flr-200', buildingId: 'bld-001', code: 'FL-2', name: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, status: 'ACTIVE' },
-  { floorId: 'flr-300', buildingId: 'bld-001', code: 'FL-3', name: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, status: 'ACTIVE' },
-  { floorId: 'flr-400', buildingId: 'bld-001', code: 'FL-4', name: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, status: 'ACTIVE' },
+  { floorId: 'flr-100', buildingId: 'bld-001', code: 'FL-1', name: 'Tầng 1', floorNumber: 1, status: 'ACTIVE' },
+  { floorId: 'flr-200', buildingId: 'bld-001', code: 'FL-2', name: 'Tầng 2', floorNumber: 2, status: 'ACTIVE' },
+  { floorId: 'flr-300', buildingId: 'bld-001', code: 'FL-3', name: 'Tầng 3', floorNumber: 3, status: 'ACTIVE' },
+  { floorId: 'flr-400', buildingId: 'bld-001', code: 'FL-4', name: 'Tầng 4', floorNumber: 4, status: 'ACTIVE' },
 ];
 
 export let mockRooms: Room[] = [
@@ -148,53 +148,52 @@ function generateMockAccommodationItems(): AccommodationItem[] {
     bedCount: number;
   }> = [
     // Floor 1 (16 beds)
-    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1 - Khu Y Tế & Chăm Sóc Đặc Biệt', floorNumber: 1, roomId: 'rm-101', roomCode: 'P-101', roomName: 'Phòng 101', roomType: 'DOUBLE', bedCount: 2 },
-    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1 - Khu Y Tế & Chăm Sóc Đặc Biệt', floorNumber: 1, roomId: 'rm-102', roomCode: 'P-102', roomName: 'Phòng 102', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1 - Khu Y Tế & Chăm Sóc Đặc Biệt', floorNumber: 1, roomId: 'rm-103', roomCode: 'P-103', roomName: 'Phòng 103', roomType: 'DOUBLE', bedCount: 2 },
-    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1 - Khu Y Tế & Chăm Sóc Đặc Biệt', floorNumber: 1, roomId: 'rm-104', roomCode: 'P-104', roomName: 'Phòng 104', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1', floorNumber: 1, roomId: 'rm-101', roomCode: 'P-101', roomName: 'Phòng 101', roomType: 'DOUBLE', bedCount: 2 },
+    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1', floorNumber: 1, roomId: 'rm-102', roomCode: 'P-102', roomName: 'Phòng 102', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1', floorNumber: 1, roomId: 'rm-103', roomCode: 'P-103', roomName: 'Phòng 103', roomType: 'DOUBLE', bedCount: 2 },
+    { floorId: 'flr-100', floorCode: 'FL-1', floorName: 'Tầng 1', floorNumber: 1, roomId: 'rm-104', roomCode: 'P-104', roomName: 'Phòng 104', roomType: 'SIX_BED', bedCount: 6 },
 
     // Floor 2 (35 beds)
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-201', roomCode: 'P-201', roomName: 'Phòng 201', roomType: 'DOUBLE', bedCount: 2 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-202', roomCode: 'P-202', roomName: 'Phòng 202', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-203', roomCode: 'P-203', roomName: 'Phòng 203', roomType: 'SINGLE', bedCount: 1 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-204', roomCode: 'P-204', roomName: 'Phòng 204', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-205', roomCode: 'P-205', roomName: 'Phòng 205', roomType: 'TRIPLE', bedCount: 3 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-206', roomCode: 'P-206', roomName: 'Phòng 206', roomType: 'QUAD', bedCount: 4 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-207', roomCode: 'P-207', roomName: 'Phòng 207', roomType: 'SINGLE', bedCount: 1 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-208', roomCode: 'P-208', roomName: 'Phòng 208', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2 - Khu Sinh Hoạt Chung & Điều Dưỡng', floorNumber: 2, roomId: 'rm-209', roomCode: 'P-209', roomName: 'Phòng 209', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-201', roomCode: 'P-201', roomName: 'Phòng 201', roomType: 'DOUBLE', bedCount: 2 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-202', roomCode: 'P-202', roomName: 'Phòng 202', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-203', roomCode: 'P-203', roomName: 'Phòng 203', roomType: 'SINGLE', bedCount: 1 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-204', roomCode: 'P-204', roomName: 'Phòng 204', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-205', roomCode: 'P-205', roomName: 'Phòng 205', roomType: 'TRIPLE', bedCount: 3 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-206', roomCode: 'P-206', roomName: 'Phòng 206', roomType: 'QUAD', bedCount: 4 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-207', roomCode: 'P-207', roomName: 'Phòng 207', roomType: 'SINGLE', bedCount: 1 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-208', roomCode: 'P-208', roomName: 'Phòng 208', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-200', floorCode: 'FL-2', floorName: 'Tầng 2', floorNumber: 2, roomId: 'rm-209', roomCode: 'P-209', roomName: 'Phòng 209', roomType: 'SIX_BED', bedCount: 6 },
 
     // Floor 3 (38 beds)
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-301', roomCode: 'P-301', roomName: 'Phòng 301', roomType: 'DOUBLE', bedCount: 2 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-302', roomCode: 'P-302', roomName: 'Phòng 302', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-303', roomCode: 'P-303', roomName: 'Phòng 303', roomType: 'SINGLE', bedCount: 1 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-304', roomCode: 'P-304', roomName: 'Phòng 304', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-305', roomCode: 'P-305', roomName: 'Phòng 305', roomType: 'SINGLE', bedCount: 1 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-306', roomCode: 'P-306', roomName: 'Phòng 306', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-307', roomCode: 'P-307', roomName: 'Phòng 307', roomType: 'TRIPLE', bedCount: 3 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-308', roomCode: 'P-308', roomName: 'Phòng 308', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-309', roomCode: 'P-309', roomName: 'Phòng 309', roomType: 'SINGLE', bedCount: 1 },
-    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3 - Khu Nghỉ Dưỡng Cao Cấp', floorNumber: 3, roomId: 'rm-310', roomCode: 'P-310', roomName: 'Phòng 310', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-301', roomCode: 'P-301', roomName: 'Phòng 301', roomType: 'DOUBLE', bedCount: 2 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-302', roomCode: 'P-302', roomName: 'Phòng 302', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-303', roomCode: 'P-303', roomName: 'Phòng 303', roomType: 'SINGLE', bedCount: 1 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-304', roomCode: 'P-304', roomName: 'Phòng 304', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-305', roomCode: 'P-305', roomName: 'Phòng 305', roomType: 'SINGLE', bedCount: 1 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-306', roomCode: 'P-306', roomName: 'Phòng 306', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-307', roomCode: 'P-307', roomName: 'Phòng 307', roomType: 'TRIPLE', bedCount: 3 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-308', roomCode: 'P-308', roomName: 'Phòng 308', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-309', roomCode: 'P-309', roomName: 'Phòng 309', roomType: 'SINGLE', bedCount: 1 },
+    { floorId: 'flr-300', floorCode: 'FL-3', floorName: 'Tầng 3', floorNumber: 3, roomId: 'rm-310', roomCode: 'P-310', roomName: 'Phòng 310', roomType: 'SIX_BED', bedCount: 6 },
 
     // Floor 4 (21 beds)
-    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, roomId: 'rm-401', roomCode: 'P-401', roomName: 'Phòng 401', roomType: 'TRIPLE', bedCount: 3 },
-    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, roomId: 'rm-402', roomCode: 'P-402', roomName: 'Phòng 402', roomType: 'QUAD', bedCount: 4 },
-    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, roomId: 'rm-403', roomCode: 'P-403', roomName: 'Phòng 403', roomType: 'SINGLE', bedCount: 1 },
-    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, roomId: 'rm-404', roomCode: 'P-404', roomName: 'Phòng 404', roomType: 'SIX_BED', bedCount: 6 },
-    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, roomId: 'rm-405', roomCode: 'P-405', roomName: 'Phòng 405', roomType: 'TRIPLE', bedCount: 3 },
-    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4 - Phục Hồi Chức Năng & Vườn Treo', floorNumber: 4, roomId: 'rm-406', roomCode: 'P-406', roomName: 'Phòng 406', roomType: 'QUAD', bedCount: 4 },
+    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4', floorNumber: 4, roomId: 'rm-401', roomCode: 'P-401', roomName: 'Phòng 401', roomType: 'TRIPLE', bedCount: 3 },
+    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4', floorNumber: 4, roomId: 'rm-402', roomCode: 'P-402', roomName: 'Phòng 402', roomType: 'QUAD', bedCount: 4 },
+    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4', floorNumber: 4, roomId: 'rm-403', roomCode: 'P-403', roomName: 'Phòng 403', roomType: 'SINGLE', bedCount: 1 },
+    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4', floorNumber: 4, roomId: 'rm-404', roomCode: 'P-404', roomName: 'Phòng 404', roomType: 'SIX_BED', bedCount: 6 },
+    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4', floorNumber: 4, roomId: 'rm-405', roomCode: 'P-405', roomName: 'Phòng 405', roomType: 'TRIPLE', bedCount: 3 },
+    { floorId: 'flr-400', floorCode: 'FL-4', floorName: 'Tầng 4', floorNumber: 4, roomId: 'rm-406', roomCode: 'P-406', roomName: 'Phòng 406', roomType: 'QUAD', bedCount: 4 },
   ];
 
-  const letterSuffixes = ['A', 'B', 'C', 'D', 'E', 'F'];
   const residentAssignments: Record<string, { residentId: string; residentName: string; careLevel: string }> = {
-    '101-B': { residentId: 'res-demo-001', residentName: 'Nguyễn Văn An', careLevel: 'ASSISTED' },
-    '102-A': { residentId: 'res-demo-002', residentName: 'Trần Thị Bình', careLevel: 'HIGH_ASSISTANCE' },
-    '103-B': { residentId: 'res-demo-003', residentName: 'Phạm Văn Cường', careLevel: 'INDEPENDENT' },
-    '201-A': { residentId: 'res-demo-004', residentName: 'Phạm Thị Dung', careLevel: 'DEPENDENT' },
-    '202-B': { residentId: 'res-demo-005', residentName: 'Hoàng Văn Em', careLevel: 'ASSISTED' },
-    '203-A': { residentId: 'res-demo-006', residentName: 'Ngô Thị Phương', careLevel: 'ASSISTED' },
-    '301-B': { residentId: 'res-demo-007', residentName: 'Vũ Văn Giáp', careLevel: 'INDEPENDENT' },
-    '302-A': { residentId: 'res-demo-008', residentName: 'Đỗ Thị Hoa', careLevel: 'DEPENDENT' },
+    '101-2': { residentId: 'res-demo-001', residentName: 'Nguyễn Văn An', careLevel: 'ASSISTED' },
+    '102-1': { residentId: 'res-demo-002', residentName: 'Trần Thị Bình', careLevel: 'HIGH_ASSISTANCE' },
+    '103-2': { residentId: 'res-demo-003', residentName: 'Phạm Văn Cường', careLevel: 'INDEPENDENT' },
+    '201-1': { residentId: 'res-demo-004', residentName: 'Phạm Thị Dung', careLevel: 'DEPENDENT' },
+    '202-2': { residentId: 'res-demo-005', residentName: 'Hoàng Văn Em', careLevel: 'ASSISTED' },
+    '203-1': { residentId: 'res-demo-006', residentName: 'Ngô Thị Phương', careLevel: 'ASSISTED' },
+    '301-2': { residentId: 'res-demo-007', residentName: 'Vũ Văn Giáp', careLevel: 'INDEPENDENT' },
+    '302-1': { residentId: 'res-demo-008', residentName: 'Đỗ Thị Hoa', careLevel: 'DEPENDENT' },
   };
 
   const items: AccommodationItem[] = [];
@@ -203,9 +202,9 @@ function generateMockAccommodationItems(): AccommodationItem[] {
   for (const r of roomDefs) {
     const numPart = r.roomCode.replace('P-', '');
     for (let i = 0; i < r.bedCount; i++) {
-      const letter = letterSuffixes[i];
-      const bedCode = `${numPart}-${letter}`;
-      const bedId = `bed-${numPart.toLowerCase()}-${letter.toLowerCase()}`;
+      const bedNum = i + 1;
+      const bedCode = `${numPart}-${bedNum}`;
+      const bedId = `bed-${numPart.toLowerCase()}-${bedNum}`;
       const asg = residentAssignments[bedCode];
 
       items.push({

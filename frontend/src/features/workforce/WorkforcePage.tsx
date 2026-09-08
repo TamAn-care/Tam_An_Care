@@ -534,32 +534,32 @@ export default function WorkforcePage() {
       </div>
 
       {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--border-color)', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '2px' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--border-color)', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
         <button
           onClick={() => setActiveTab('SHIFTS')}
           className={`btn btn-sm ${activeTab === 'SHIFTS' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
         >
           📅 Lịch Trực & Ca Kíp ({filteredItems.length})
         </button>
         <button
           onClick={() => setActiveTab('SWAPS')}
           className={`btn btn-sm ${activeTab === 'SWAPS' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
         >
           🔄 Đề Nghị Đổi Ca ({swapRequests.filter(s => s.status === 'PENDING').length > 0 ? `🔴 ${swapRequests.filter(s => s.status === 'PENDING').length} Chờ duyệt` : swapRequests.length})
         </button>
         <button
           onClick={() => setActiveTab('KPI')}
           className={`btn btn-sm ${activeTab === 'KPI' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
         >
           📊 Giám Sát KPI & Mức Độ Hoàn Thành
         </button>
         <button
           onClick={() => setActiveTab('RECOGNITIONS')}
           className={`btn btn-sm ${activeTab === 'RECOGNITIONS' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
         >
           🎖️ Khen Thưởng & Thành Tích ({recognitions.length})
         </button>

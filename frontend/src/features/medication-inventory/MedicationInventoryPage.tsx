@@ -151,7 +151,7 @@ export default function MedicationInventoryPage() {
         residentId: newOrderResidentId,
         residentName: resData?.displayName || 'Người cao tuổi',
         room: resData?.room || '101',
-        bed: resData?.bed || '101-A',
+        bed: resData?.bed || '101-1',
         drugName: newOrderDrugName,
         brandName: newOrderBrandName || undefined,
         dosage: newOrderDosage,

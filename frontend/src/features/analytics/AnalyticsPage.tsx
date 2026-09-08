@@ -87,6 +87,8 @@ export default function AnalyticsPage() {
           marginBottom: '1.5rem',
           overflowX: 'auto',
           paddingBottom: '0.25rem',
+          whiteSpace: 'nowrap',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         <button

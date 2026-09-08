@@ -323,7 +323,7 @@ export default function BillingPage() {
           overflowX: 'auto',
           whiteSpace: 'nowrap',
           paddingBottom: '0.25rem',
-          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         <button

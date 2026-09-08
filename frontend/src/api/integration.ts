@@ -146,7 +146,7 @@ export async function fetchResidentIntegrationOverview(
         display_name: 'Nguyễn Văn An',
         date_of_birth: '1944-05-15',
         gender: 'Nam',
-        room: 'Phòng 101 — Giường 101-B',
+        room: 'Phòng 101 — Giường 101-2',
         care_level: 'ASSISTED',
         active_status: 'PRESENT',
       },

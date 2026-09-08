@@ -523,13 +523,13 @@ export default function ResidentLeavePage() {
                         Thời gian báo trước: <b>{noticePreview.hours} giờ</b>.
                         {canViewMealDeduction ? (
                           noticePreview.is48h ? (
-                            <span> Đạt chuẩn $\ge 48$h &rarr; <b>Được giảm trừ toàn bộ tiền ăn</b> trong các ngày vắng mặt.</span>
+                            <span> Đạt chuẩn <b>≥ 48h</b> &rarr; <b>Được giảm trừ toàn bộ tiền ăn</b> trong các ngày vắng mặt.</span>
                           ) : (
                             <span> Báo dưới 48h &rarr; <b>Tính phí ngày đầu tiên</b>. Tiền ăn các ngày tiếp theo sẽ được giảm trừ khi nhân viên xác nhận.</span>
                           )
                         ) : (
                           noticePreview.is48h ? (
-                            <span> Đạt chuẩn báo trước $\ge 48$h theo quy định của Trung tâm.</span>
+                            <span> Đạt chuẩn báo trước <b>≥ 48h</b> theo quy định của Trung tâm.</span>
                           ) : (
                             <span> Báo gấp dưới 48h, cần phối hợp với bộ phận quản lý để điều phối chăm sóc.</span>
                           )

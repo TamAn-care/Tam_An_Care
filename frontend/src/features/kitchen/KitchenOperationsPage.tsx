@@ -405,7 +405,7 @@ export default function KitchenOperationsPage() {
       </div>
 
       {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '2px' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
         <button
           className={`tab-button ${activeTab === 'RECEIVING' ? 'active' : ''}`}
           onClick={() => setActiveTab('RECEIVING')}

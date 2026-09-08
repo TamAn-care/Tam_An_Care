@@ -146,21 +146,33 @@ export function NotificationBell() {
 
       {/* Popover Dropdown */}
       {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            right: 0,
-            width: '380px',
-            maxWidth: '90vw',
-            background: '#ffffff',
-            border: '1.5px solid #cbd5e1',
-            borderRadius: '0.65rem',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
-            zIndex: 99999,
-            overflow: 'hidden',
-          }}
-        >
+        <>
+          <div
+            className="notification-backdrop"
+            onClick={() => setIsOpen(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 99998,
+              background: 'rgba(15, 23, 42, 0.15)',
+            }}
+          />
+          <div
+            className="notification-dropdown"
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 8px)',
+              right: 0,
+              width: '380px',
+              maxWidth: '90vw',
+              background: '#ffffff',
+              border: '1.5px solid #cbd5e1',
+              borderRadius: '0.65rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+              zIndex: 99999,
+              overflow: 'hidden',
+            }}
+          >
           {/* Header */}
           <div
             style={{
@@ -288,7 +300,8 @@ export function NotificationBell() {
             Hệ thống thông báo thời gian thực Tâm An Care
           </div>
         </div>
-      )}
+      </>
+    )}
 
       {/* MODAL SOẠN & PHÁT THÔNG BÁO NỘI BỘ (DÀNH CHO BGĐ & QUẢN LÝ) */}
       {showCreateModal && (

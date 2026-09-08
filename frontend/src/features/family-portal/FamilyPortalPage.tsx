@@ -372,7 +372,7 @@ export default function FamilyPortalPage() {
   const birthYear = resData.dateOfBirth ? new Date(resData.dateOfBirth).getFullYear() : 1944;
   const currentAge = new Date().getFullYear() - birthYear;
   const roomDisplay = resData.room ? `Phòng ${resData.room}` : 'Phòng 101';
-  const bedDisplay = resData.bed ? `Giường ${resData.bed}` : 'Giường 101-B';
+  const bedDisplay = resData.bed ? `Giường ${resData.bed}` : 'Giường 101-2';
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
@@ -473,6 +473,8 @@ export default function FamilyPortalPage() {
           marginBottom: '1.5rem',
           overflowX: 'auto',
           paddingBottom: '0.25rem',
+          whiteSpace: 'nowrap',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         <button
