@@ -13,6 +13,13 @@ import {
   downloadKitchenInventoryCSV,
   fetchDailyDispatches,
   fetchVendors,
+  fetchWeeklyMenuSchedule,
+  updateWeeklyMenuDay,
+  updateTodayMealSlot,
+  getCurrentDayId,
+  MealSlotDefinition,
+  DayMenuSchedule,
+  WeeklyMealType,
   FOOD_CATEGORY_META,
   STORAGE_ZONE_META,
   StorageZone,
@@ -26,13 +33,15 @@ export default function KitchenOperationsPage() {
   const queryClient = useQueryClient();
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('RECEIVING');
+  const [activeTab, setActiveTab] = useState<'MENU' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('MENU');
 
-  // Permissions
+  // Permissions (RBAC)
   const isNutritionist = actor?.actorRole === 'NUTRITIONIST';
   const isDirector = actor?.actorRole === 'SUPERVISOR';
   const isManager = actor?.actorRole === 'CARE_MANAGER';
+  const isAdmin = actor?.actorRole === 'ADMIN';
   const canManageKitchen = hasCapability(actor?.actorRole, 'canManageKitchenOperations');
+  const canUpdateMenu = isNutritionist || isManager || isDirector || isAdmin;
 
   // Queries
   const batchesQuery = useQuery({ queryKey: ['kitchen-batches'], queryFn: fetchFoodReceivingBatches });
@@ -40,6 +49,7 @@ export default function KitchenOperationsPage() {
   const samplesQuery = useQuery({ queryKey: ['kitchen-samples'], queryFn: fetchFoodSamples });
   const dispatchesQuery = useQuery({ queryKey: ['kitchen-dispatches'], queryFn: fetchDailyDispatches });
   const vendorsQuery = useQuery({ queryKey: ['kitchen-vendors'], queryFn: fetchVendors });
+  const weeklyScheduleQuery = useQuery({ queryKey: ['weekly-menu-schedule'], queryFn: fetchWeeklyMenuSchedule });
 
   const batches = batchesQuery.data || [];
   const inventory = inventoryQuery.data || [];
@@ -52,6 +62,74 @@ export default function KitchenOperationsPage() {
   const [showDetailBatchModal, setShowDetailBatchModal] = useState<FoodReceivingBatch | null>(null);
   const [showDispatchModal, setShowDispatchModal] = useState(false);
   const [showNewSampleModal, setShowNewSampleModal] = useState(false);
+
+  // Weekly Menu Schedule State
+  const weeklySchedule = weeklyScheduleQuery.data || [];
+  const todayDayId = getCurrentDayId();
+  const [selectedDayId, setSelectedDayId] = useState<'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'>(todayDayId);
+
+  const selectedDaySchedule = useMemo(() => {
+    return weeklySchedule.find((d) => d.dayId === selectedDayId) || weeklySchedule[0];
+  }, [weeklySchedule, selectedDayId]);
+
+  // Menu Edit Modals
+  const [editingDaySchedule, setEditingDaySchedule] = useState<DayMenuSchedule | null>(null);
+  const [editingMealSlot, setEditingMealSlot] = useState<MealSlotDefinition | null>(null);
+
+  // Form State for Editing Entire Day Schedule (5 Meals)
+  const [formDayMeals, setFormDayMeals] = useState<MealSlotDefinition[]>([]);
+
+  // Form State for Editing Single Meal Slot
+  const [formSingleDishName, setFormSingleDishName] = useState('');
+  const [formSingleSideDishes, setFormSingleSideDishes] = useState('');
+  const [formSingleDrinkOrSnack, setFormSingleDrinkOrSnack] = useState('');
+  const [formSingleDietNotes, setFormSingleDietNotes] = useState('');
+  const [formSingleKcal, setFormSingleKcal] = useState(400);
+  const [formSingleProteinG, setFormSingleProteinG] = useState(20);
+
+  const handleOpenEditDayModal = (daySchedule: DayMenuSchedule) => {
+    setEditingDaySchedule(daySchedule);
+    setFormDayMeals(JSON.parse(JSON.stringify(daySchedule.meals)));
+  };
+
+  const handleOpenEditMealSlotModal = (meal: MealSlotDefinition) => {
+    setEditingMealSlot(meal);
+    setFormSingleDishName(meal.dishName);
+    setFormSingleSideDishes(meal.sideDishes);
+    setFormSingleDrinkOrSnack(meal.drinkOrSnack);
+    setFormSingleDietNotes(meal.dietNotes);
+    setFormSingleKcal(meal.kcal);
+    setFormSingleProteinG(meal.proteinG);
+  };
+
+  const updateDayScheduleMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingDaySchedule || !actor) return;
+      return updateWeeklyMenuDay(actor, editingDaySchedule.dayId, formDayMeals);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['weekly-menu-schedule'] });
+      setEditingDaySchedule(null);
+    },
+  });
+
+  const updateSingleMealSlotMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingMealSlot || !actor) return;
+      return updateTodayMealSlot(actor, editingMealSlot.mealType, {
+        dishName: formSingleDishName,
+        sideDishes: formSingleSideDishes,
+        drinkOrSnack: formSingleDrinkOrSnack,
+        dietNotes: formSingleDietNotes,
+        kcal: Number(formSingleKcal) || 0,
+        proteinG: Number(formSingleProteinG) || 0,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['weekly-menu-schedule'] });
+      setEditingMealSlot(null);
+    },
+  });
 
   // Filters for Receiving Tab
   const [vendorFilter, setVendorFilter] = useState<string>('ALL');
@@ -407,6 +485,27 @@ export default function KitchenOperationsPage() {
       {/* Navigation Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
         <button
+          className={`tab-button ${activeTab === 'MENU' ? 'active' : ''}`}
+          onClick={() => setActiveTab('MENU')}
+          style={{
+            padding: '0.6rem 1.1rem',
+            fontWeight: 700,
+            fontSize: '0.88rem',
+            border: 'none',
+            borderBottom: activeTab === 'MENU' ? '3px solid #166534' : '3px solid transparent',
+            background: activeTab === 'MENU' ? '#f0fdf4' : 'transparent',
+            color: activeTab === 'MENU' ? '#166534' : '#64748b',
+            cursor: 'pointer',
+            borderRadius: '0.4rem 0.4rem 0 0',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.4rem',
+          }}
+        >
+          <span>🥗</span> 1. Thực Đơn Tuần & Bữa Ăn Hôm Nay
+        </button>
+
+        <button
           className={`tab-button ${activeTab === 'RECEIVING' ? 'active' : ''}`}
           onClick={() => setActiveTab('RECEIVING')}
           style={{
@@ -424,7 +523,7 @@ export default function KitchenOperationsPage() {
             gap: '0.4rem',
           }}
         >
-          <span>🚚</span> 1. Tiếp Nhận & Kiểm Đếm Thực Phẩm
+          <span>🚚</span> 2. Tiếp Nhận & Kiểm Đếm Thực Phẩm
         </button>
 
         <button
@@ -445,7 +544,7 @@ export default function KitchenOperationsPage() {
             gap: '0.4rem',
           }}
         >
-          <span>📦</span> 2. Kho Thực Phẩm & Xuất Chế Biến
+          <span>📦</span> 3. Kho Thực Phẩm & Xuất Chế Biến
         </button>
 
         <button
@@ -466,7 +565,7 @@ export default function KitchenOperationsPage() {
             gap: '0.4rem',
           }}
         >
-          <span>🍱</span> 3. Sổ Lưu Mẫu Thức Ăn 24 Giờ
+          <span>🍱</span> 4. Sổ Lưu Mẫu Thức Ăn 24 Giờ
         </button>
 
         <button
@@ -487,9 +586,181 @@ export default function KitchenOperationsPage() {
             gap: '0.4rem',
           }}
         >
-          <span>📊</span> 4. Đối Soát Hợp Đồng & Báo Cáo Nhập - Xuất - Tồn
+          <span>📊</span> 5. Báo Cáo Nhập - Xuất - Tồn
         </button>
       </div>
+
+      {/* TAB 0: THỰC ĐƠN TUẦN & THỰC ĐƠN HÔM NAY */}
+      {activeTab === 'MENU' && selectedDaySchedule && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Header Banner Card */}
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #15803d', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#166534', fontWeight: 800 }}>
+                    🥗 LỊCH THỰC ĐƠN DINH DƯỠNG THEO TUẦN & HÔM NAY
+                  </h2>
+                  <span className="badge badge-success" style={{ fontWeight: 700 }}>Đầy Đủ 5 Bữa/Ngày</span>
+                </div>
+                <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.86rem', color: '#475569' }}>
+                  Quản lý & Cập nhật thực đơn 5 bữa (Sáng, Trưa, Xế chiều, Tối, Phụ tối/đêm) chuẩn định mức y tế cho cụ cao tuổi Viện dưỡng lão Tâm An.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {canUpdateMenu ? (
+                  <>
+                    <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}>
+                      <span>✓</span> Thẩm quyền Cập nhật: Dinh dưỡng / Quản lý / BGĐ
+                    </span>
+                    <button
+                      className="btn"
+                      onClick={() => handleOpenEditDayModal(selectedDaySchedule)}
+                      style={{ background: '#166534', color: '#ffffff', fontWeight: 700, borderRadius: '0.5rem', padding: '0.55rem 1.1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.88rem', boxShadow: '0 2px 4px rgba(22,101,52,0.2)' }}
+                    >
+                      <span>📝</span> Cập Nhật Thực Đơn {selectedDaySchedule.dayName}
+                    </button>
+                  </>
+                ) : (
+                  <span className="badge badge-warning" style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fef3c7', fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}>
+                    🔒 Chế độ Chỉ Xem (Thẩm quyền sửa thuộc Nhân viên Dinh dưỡng, Quản lý & BGĐ)
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Day Selector Pills (Thứ 2 -> Chủ Nhật) */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem', overflowX: 'auto', paddingBottom: '4px' }}>
+              {weeklySchedule.map((day) => {
+                const isToday = day.dayId === todayDayId;
+                const isSelected = day.dayId === selectedDayId;
+                return (
+                  <button
+                    key={day.dayId}
+                    onClick={() => setSelectedDayId(day.dayId as any)}
+                    style={{
+                      padding: '0.6rem 1.1rem',
+                      borderRadius: '0.5rem',
+                      border: isSelected ? '2px solid #166534' : isToday ? '2px solid #22c55e' : '1px solid #cbd5e1',
+                      background: isSelected ? '#166534' : isToday ? '#f0fdf4' : '#ffffff',
+                      color: isSelected ? '#ffffff' : '#334155',
+                      fontWeight: isSelected || isToday ? 700 : 500,
+                      cursor: 'pointer',
+                      fontSize: '0.88rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      whiteSpace: 'nowrap',
+                      boxShadow: isSelected ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <span>{day.dayName}</span>
+                    {isToday && (
+                      <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '0.25rem', background: isSelected ? '#dcfce7' : '#166534', color: isSelected ? '#166534' : '#ffffff', fontWeight: 800 }}>
+                        ⭐ Hôm nay
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Meals List Section */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#1e293b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>📋 Danh Sách 5 Bữa Ăn — {selectedDaySchedule.dayName}</span>
+                {selectedDayId === todayDayId && <span className="badge badge-success">Thực đơn áp dụng hôm nay</span>}
+              </h3>
+              <div style={{ fontSize: '0.82rem', color: '#475569', background: '#f8fafc', padding: '0.4rem 0.75rem', borderRadius: '0.4rem', border: '1px solid #e2e8f0' }}>
+                Tổng năng lượng: <strong style={{ color: '#166534' }}>{selectedDaySchedule.meals.reduce((sum, m) => sum + (m.kcal || 0), 0)} Kcal</strong> | Đạm: <strong style={{ color: '#1d4ed8' }}>{selectedDaySchedule.meals.reduce((sum, m) => sum + (m.proteinG || 0), 0)}g Protein</strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.1rem' }}>
+              {selectedDaySchedule.meals.map((meal) => {
+                const isSnack = meal.mealType === 'AFTERNOON_SNACK' || meal.mealType === 'NIGHT_SNACK';
+                return (
+                  <div
+                    key={meal.id}
+                    className="card"
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: '0.75rem',
+                      padding: '1.15rem',
+                      border: isSnack ? '1px solid #bae6fd' : '1px solid #e2e8f0',
+                      borderTop: meal.mealType === 'BREAKFAST' ? '4px solid #f59e0b' : meal.mealType === 'LUNCH' ? '4px solid #166534' : meal.mealType === 'AFTERNOON_SNACK' ? '4px solid #0284c7' : meal.mealType === 'DINNER' ? '4px solid #2563eb' : '4px solid #0d9488',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '0.85rem',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontWeight: 800, fontSize: '0.92rem', color: meal.mealType === 'BREAKFAST' ? '#b45309' : meal.mealType === 'LUNCH' ? '#15803d' : meal.mealType === 'AFTERNOON_SNACK' ? '#0369a1' : meal.mealType === 'DINNER' ? '#1d4ed8' : '#0f766e' }}>
+                          {meal.mealLabel}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.55rem', background: '#f1f5f9', color: '#334155', borderRadius: '0.3rem' }}>
+                          🔥 {meal.kcal} kcal | 💪 {meal.proteinG}g đạm
+                        </span>
+                      </div>
+
+                      {/* Main Dish */}
+                      <div style={{ fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', lineHeight: '1.35', marginBottom: '0.45rem' }}>
+                        {meal.dishName}
+                      </div>
+
+                      {/* Side Dishes & Drinks */}
+                      <div style={{ fontSize: '0.85rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.3rem', background: '#f8fafc', padding: '0.6rem', borderRadius: '0.5rem' }}>
+                        <div><strong style={{ color: '#1e293b' }}>Món kèm/Canh:</strong> {meal.sideDishes || 'Chưa cập nhật'}</div>
+                        <div><strong style={{ color: '#1e293b' }}>Thức uống/Tráng miệng:</strong> {meal.drinkOrSnack || 'Chưa cập nhật'}</div>
+                      </div>
+
+                      {/* Preparation Textures */}
+                      <div style={{ marginTop: '0.65rem', display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                        {meal.textureOptions?.map((tex) => (
+                          <span key={tex} style={{ fontSize: '0.74rem', fontWeight: 600, padding: '0.15rem 0.5rem', borderRadius: '0.25rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>
+                            🥣 {tex}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Diet notes */}
+                      {meal.dietNotes && (
+                        <div style={{ marginTop: '0.55rem', fontSize: '0.78rem', background: '#fffbeb', color: '#92400e', padding: '0.45rem 0.65rem', borderRadius: '0.35rem', border: '1px solid #fef3c7' }}>
+                          ⚠️ <strong>Lưu ý bệnh lý:</strong> {meal.dietNotes}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer & Actions */}
+                    <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                        {meal.updatedBy ? `Cập nhật bởi ${meal.updatedBy} (${meal.updatedAt || ''})` : 'Thực đơn tiêu chuẩn'}
+                      </span>
+
+                      {canUpdateMenu && (
+                        <button
+                          className="btn btn-sm"
+                          onClick={() => handleOpenEditMealSlotModal(meal)}
+                          style={{ background: '#f8fafc', border: '1px solid #cbd5e1', color: '#334155', fontSize: '0.8rem', fontWeight: 700, padding: '0.35rem 0.75rem', borderRadius: '0.35rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                        >
+                          ✏️ Sửa bữa này
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* TAB 1: TIẾP NHẬN & KIỂM ĐẾM THỰC PHẨM */}
       {activeTab === 'RECEIVING' && (
@@ -1957,6 +2228,253 @@ export default function KitchenOperationsPage() {
                 }}
               >
                 {createSampleMutation.isPending ? 'Đang lưu...' : '✓ Xác Nhận Lưu Mẫu 24 Giờ'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 1: EDIT ALL 5 MEALS FOR A DAY */}
+      {editingDaySchedule && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(3px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div className="card" style={{ background: '#ffffff', width: '100%', maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '0.75rem', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#166534', fontWeight: 800 }}>
+                  📝 Cập Nhật Chi Tiết Thực Đơn — {editingDaySchedule.dayName}
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Chỉnh sửa khẩu phần 5 bữa ăn áp dụng cho {editingDaySchedule.dayName}</span>
+              </div>
+              <button onClick={() => setEditingDaySchedule(null)} style={{ border: 'none', background: 'transparent', fontSize: '1.3rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
+              {formDayMeals.map((meal, index) => (
+                <div key={meal.id} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#15803d', marginBottom: '0.6rem' }}>
+                    {meal.mealLabel}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginBottom: '0.6rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Tên Món Ăn Chính (*):</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 600 }}
+                        value={meal.dishName}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].dishName = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Món Kèm / Canh / Rau:</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                        value={meal.sideDishes}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].sideDishes = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Đồ Uống / Tráng Miệng:</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                        value={meal.drinkOrSnack}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].drinkOrSnack = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Kcal:</label>
+                        <input
+                          type="number"
+                          className="text-input"
+                          style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                          value={meal.kcal}
+                          onChange={(e) => {
+                            const updated = [...formDayMeals];
+                            updated[index].kcal = Number(e.target.value) || 0;
+                            setFormDayMeals(updated);
+                          }}
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Đạm (g):</label>
+                        <input
+                          type="number"
+                          className="text-input"
+                          style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                          value={meal.proteinG}
+                          onChange={(e) => {
+                            const updated = [...formDayMeals];
+                            updated[index].proteinG = Number(e.target.value) || 0;
+                            setFormDayMeals(updated);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Lưu Ý Bệnh Lý:</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        placeholder="Ví dụ: Ăn nhạt, Tiểu đường..."
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                        value={meal.dietNotes}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].dietNotes = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setEditingDaySchedule(null)}
+                style={{ padding: '0.55rem 1.25rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => updateDayScheduleMutation.mutate()}
+                disabled={updateDayScheduleMutation.isPending}
+                style={{ padding: '0.55rem 1.25rem', borderRadius: '0.4rem', border: 'none', background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                {updateDayScheduleMutation.isPending ? 'Đang lưu thực đơn...' : `✓ Lưu Thực Đơn ${editingDaySchedule.dayName}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: EDIT SINGLE MEAL SLOT */}
+      {editingMealSlot && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(3px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div className="card" style={{ background: '#ffffff', width: '100%', maxWidth: '580px', borderRadius: '0.75rem', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                  ✏️ Sửa Nhanh {editingMealSlot.mealLabel}
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Cập nhật món ăn trực tiếp cho thực đơn</span>
+              </div>
+              <button onClick={() => setEditingMealSlot(null)} style={{ border: 'none', background: 'transparent', fontSize: '1.3rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginBottom: '1.25rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Tên Món Ăn Chính (*):</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.9rem', boxSizing: 'border-box', fontWeight: 700 }}
+                  value={formSingleDishName}
+                  onChange={(e) => setFormSingleDishName(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Món Kèm / Canh / Rau:</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  value={formSingleSideDishes}
+                  onChange={(e) => setFormSingleSideDishes(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Đồ Uống / Tráng Miệng:</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  value={formSingleDrinkOrSnack}
+                  onChange={(e) => setFormSingleDrinkOrSnack(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Định mức Năng lượng (Kcal):</label>
+                  <input
+                    type="number"
+                    className="text-input"
+                    style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                    value={formSingleKcal}
+                    onChange={(e) => setFormSingleKcal(Number(e.target.value))}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Định mức Đạm (Protein g):</label>
+                  <input
+                    type="number"
+                    className="text-input"
+                    style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                    value={formSingleProteinG}
+                    onChange={(e) => setFormSingleProteinG(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Lưu Ý Chế Độ Bệnh Lý / Dị Ứng:</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="VD: Chế độ tiểu đường ăn nhạt, kiêng hải sản..."
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  value={formSingleDietNotes}
+                  onChange={(e) => setFormSingleDietNotes(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setEditingMealSlot(null)}
+                style={{ padding: '0.5rem 1.25rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSingleMealSlotMutation.mutate()}
+                disabled={updateSingleMealSlotMutation.isPending || !formSingleDishName.trim()}
+                style={{ padding: '0.5rem 1.25rem', borderRadius: '0.4rem', border: 'none', background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                {updateSingleMealSlotMutation.isPending ? 'Đang lưu...' : '✓ Lưu Bữa Ăn'}
               </button>
             </div>
           </div>

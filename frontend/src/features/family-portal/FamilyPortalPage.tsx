@@ -6,6 +6,7 @@ import { fetchLeaveRequests, createLeaveRequest, LeaveType } from '../../api/res
 import { listHealthReports, downloadHealthReportPdf, HealthReportRow } from '../health-reports/healthReportsApi';
 import { getAssignedResidentIdsForGuardian, getAssignedResidentIdsForActor } from '../../auth/role-policy';
 import { fetchResidentIntegrationOverview } from '../../api/integration';
+import { getTodayMenuSchedule } from '../../api/kitchen-operations';
 import { LoadingState, ErrorState, EmptyState } from '../../components/feedback/FeedbackStates';
 
 const CARE_LEVEL_CONFIG: Record<string, { label: string; badgeClass: string; desc: string }> = {
@@ -89,6 +90,12 @@ export default function FamilyPortalPage() {
   const [selectedResidentId, setSelectedResidentId] = useState<string>('');
   const [downloadingPdfId, setDownloadingPdfId] = useState<string | null>(null);
 
+  const todayMenuQuery = useQuery({
+    queryKey: ['today-menu-schedule'],
+    queryFn: getTodayMenuSchedule,
+  });
+  const todayMenu = todayMenuQuery.data;
+
   // Form State for Leave Submission
   const [leaveType, setLeaveType] = useState<LeaveType>('FAMILY_VISIT');
   const [startDate, setStartDate] = useState<string>('');
@@ -99,6 +106,7 @@ export default function FamilyPortalPage() {
   const [leaveNote, setLeaveNote] = useState<string>('');
   const [leaveSuccessMsg, setLeaveSuccessMsg] = useState<string>('');
   const [leaveErrorMsg, setLeaveErrorMsg] = useState<string>('');
+  const [submittedLeaveReceipt, setSubmittedLeaveReceipt] = useState<any | null>(null);
 
   // Form State for Visit Scheduling
   const [visitDate, setVisitDate] = useState<string>('');
@@ -249,8 +257,20 @@ export default function FamilyPortalPage() {
         },
       );
     },
-    onSuccess: () => {
-      setLeaveSuccessMsg('Đăng ký tạm vắng thành công! Ban Quản lý Tâm An đã tiếp nhận đơn và sẽ chuẩn bị thủ tục.');
+    onSuccess: (data: any) => {
+      setLeaveSuccessMsg('✅ Đăng ký tạm vắng thành công! Đơn của bạn đã được tiếp nhận tại hệ thống điều hành Tâm An Care.');
+      setSubmittedLeaveReceipt({
+        leaveRequestId: data.leaveRequestId || `RLA-${Date.now().toString().slice(-6)}`,
+        residentName: currentResident?.resident.displayName || 'Người cao tuổi',
+        residentCode: currentResident?.resident.residentCode || 'NCT-001',
+        leaveTypeLabel: LEAVE_TYPE_LABELS[leaveType] || leaveType,
+        startDate: startDate || new Date().toISOString().slice(0, 10),
+        expectedEndDate: expectedEndDate || new Date().toISOString().slice(0, 10),
+        reportedBy: `${reportedBy.trim()} (SĐT: ${reporterPhone.trim()})`,
+        reporterRelationship,
+        isAdvanceNotice48h: Boolean(rlaNoticePreview?.isEligible),
+        createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) + ' - ' + new Date().toLocaleDateString('vi-VN'),
+      });
       setLeaveErrorMsg('');
       setStartDate('');
       setExpectedEndDate('');
@@ -744,10 +764,59 @@ export default function FamilyPortalPage() {
               📝 Đăng Ký Nghỉ Phép / Tạm Vắng Cho Người Cao Tuổi
             </h3>
             <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.86rem', color: '#64748b' }}>
-              Đơn đăng ký được gửi trực tiếp đến Ban Quản lý Tâm An. Vui lòng đăng ký trước $\ge 48$ giờ để áp dụng chính sách giảm trừ tiền ăn theo quy định RLA-BR-01.
+              Đơn đăng ký được gửi trực tiếp đến Ban Quản lý Tâm An. Vui lòng đăng ký trước 48 giờ (≥ 48h) để áp dụng chính sách giảm trừ tiền ăn theo quy định RLA-BR-01.
             </p>
 
-            {leaveSuccessMsg && (
+            {submittedLeaveReceipt && (
+              <div
+                style={{
+                  background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                  border: '2px solid #22c55e',
+                  borderRadius: '0.75rem',
+                  padding: '1.25rem',
+                  marginBottom: '1.25rem',
+                  boxShadow: '0 4px 12px rgba(22, 163, 74, 0.1)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#14532d', fontSize: '1.1rem', fontWeight: 800 }}>
+                    <span>🎉</span> ĐÃ GỬI ĐƠN ĐĂNG KÝ TẠM VẮNG THÀNH CÔNG TỚI TÂM AN CARE!
+                  </div>
+                  <span className="badge badge-success" style={{ background: '#16a34a', color: '#ffffff', fontWeight: 700, padding: '0.35rem 0.75rem' }}>
+                    Đã tiếp nhận & Đang xử lý
+                  </span>
+                </div>
+                <p style={{ margin: '0.4rem 0 0.85rem 0', fontSize: '0.88rem', color: '#166534', lineHeight: '1.5' }}>
+                  Cảm ơn <b>{submittedLeaveReceipt.reportedBy}</b>! Đơn đăng ký tạm vắng đã được gửi trực tiếp đến Ban Quản lý và Bộ phận Điều dưỡng Tâm An. Nhân viên phụ trách sẽ liên hệ với thân nhân để xác nhận và hỗ trợ chuẩn bị đầy đủ tư trang, thuốc men cho Cụ trước giờ đón.
+                </p>
+
+                <div style={{ background: '#ffffff', borderRadius: '0.5rem', padding: '0.85rem 1rem', border: '1px solid #86efac', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', fontSize: '0.85rem' }}>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Mã đơn tiếp nhận:</span> <b style={{ color: '#0f172a' }}>{submittedLeaveReceipt.leaveRequestId}</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Người cao tuổi:</span> <b style={{ color: '#15803d' }}>{submittedLeaveReceipt.residentName} ({submittedLeaveReceipt.residentCode})</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Lý do tạm vắng:</span> <b>{submittedLeaveReceipt.leaveTypeLabel}</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Thời gian tạm vắng:</span> <b style={{ color: '#2563eb' }}>{submittedLeaveReceipt.startDate} &rarr; {submittedLeaveReceipt.expectedEndDate}</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Thời điểm gửi:</span> <b>{submittedLeaveReceipt.createdAt}</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#64748b' }}>Quy tắc RLA-BR-01:</span>{' '}
+                    <span className={submittedLeaveReceipt.isAdvanceNotice48h ? 'badge badge-success' : 'badge badge-warning'} style={{ display: 'inline-block', marginTop: '0.2rem' }}>
+                      {submittedLeaveReceipt.isAdvanceNotice48h ? 'Báo trước ≥ 48h (Giảm trừ từ ngày 2)' : 'Báo trước < 48h (Tính phí ngày đầu)'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {leaveSuccessMsg && !submittedLeaveReceipt && (
               <div className="alert-card alert-success" style={{ marginBottom: '1rem' }}>
                 <span>{leaveSuccessMsg}</span>
               </div>
@@ -933,40 +1002,65 @@ export default function FamilyPortalPage() {
       {/* TAB 3: DAILY NUTRITION & CARE STREAM */}
       {activeTab === 'nutrition' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.1rem' }}>
-                🍲 Thực Đơn Dinh Dưỡng Hôm Nay ({new Date().toLocaleDateString('vi-VN')})
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '4px solid #15803d' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 style={{ margin: 0, color: '#166534', fontSize: '1.15rem', fontWeight: 800 }}>
+                🍲 Thực Đơn Dinh Dưỡng Hôm Nay — {todayMenu?.dayName || ''} ({todayMenu?.dateStr || new Date().toLocaleDateString('vi-VN')})
               </h3>
-              <span className="badge badge-success">
-                Dạng chế biến: Cơm mềm & Canh nóng dinh dưỡng
+              <span className="badge badge-success" style={{ fontWeight: 700 }}>
+                Đầy đủ 5 bữa ăn/ngày chuẩn định mức y tế
               </span>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-              <div style={{ background: '#fffbeb', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #fef3c7' }}>
-                <div style={{ fontWeight: 700, color: '#b45309', fontSize: '0.9rem' }}>🌅 Bữa Sáng (07:00)</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', marginTop: '0.3rem' }}>Phở bò mềm gia truyền</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Kèm 1 ly sữa hạt ngũ cốc canxi ấm</div>
-              </div>
+              {todayMenu?.meals?.map((meal) => {
+                const bgStyle =
+                  meal.mealType === 'BREAKFAST'
+                    ? { bg: '#fffbeb', border: '#fef3c7', text: '#b45309' }
+                    : meal.mealType === 'LUNCH'
+                    ? { bg: '#f0fdf4', border: '#dcfce7', text: '#15803d' }
+                    : meal.mealType === 'AFTERNOON_SNACK'
+                    ? { bg: '#e0f2fe', border: '#bae6fd', text: '#0369a1' }
+                    : meal.mealType === 'DINNER'
+                    ? { bg: '#eff6ff', border: '#dbeafe', text: '#1d4ed8' }
+                    : { bg: '#f0fdf4', border: '#ccfbf1', text: '#0f766e' };
 
-              <div style={{ background: '#f0fdf4', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
-                <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.9rem' }}>☀️ Bữa Trưa (11:00)</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', marginTop: '0.3rem' }}>Cá hồi áp chảo sốt bơ chanh</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Cơm mềm, Canh bí đỏ hầm xương, Thanh long ruột đỏ</div>
-              </div>
+                return (
+                  <div
+                    key={meal.id}
+                    style={{
+                      background: bgStyle.bg,
+                      padding: '1rem',
+                      borderRadius: '0.6rem',
+                      border: `1px solid ${bgStyle.border}`,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '0.5rem',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 800, color: bgStyle.text, fontSize: '0.9rem' }}>
+                        {meal.mealLabel}
+                      </div>
+                      <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', marginTop: '0.35rem' }}>
+                        {meal.dishName}
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: '#334155', marginTop: '0.3rem' }}>
+                        <strong>Món kèm:</strong> {meal.sideDishes || 'Tiêu chuẩn'}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.2rem' }}>
+                        <strong>Thức uống:</strong> {meal.drinkOrSnack || 'Nước ấm'}
+                      </div>
+                    </div>
 
-              <div style={{ background: '#eff6ff', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #dbeafe' }}>
-                <div style={{ fontWeight: 700, color: '#1d4ed8', fontSize: '0.9rem' }}>🍵 Bữa Xế Chiều (14:30)</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', marginTop: '0.3rem' }}>Súp cua gà xé phay nấm hương</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Bổ sung nước ép táo tươi</div>
-              </div>
-
-              <div style={{ background: '#faf5ff', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #f3e8ff' }}>
-                <div style={{ fontWeight: 700, color: '#7e22ce', fontSize: '0.9rem' }}>🌙 Bữa Tối (17:30)</div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#1e293b', marginTop: '0.3rem' }}>Cháo bồ câu hầm hạt sen</div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>Rau củ luộc sốt mè, 1 ly trà hoa cúc dưỡng tâm</div>
-              </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: `1px solid ${bgStyle.border}`, paddingTop: '0.4rem', marginTop: '0.4rem', fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>
+                      <span>🔥 {meal.kcal} kcal</span>
+                      <span>💪 {meal.proteinG}g đạm</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

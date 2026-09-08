@@ -159,7 +159,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'billing-invoicing',
       'analytics-intelligence',
       'audit-trail',
-      'system-status',
     ],
     canManageStaff: true, // QUẢN LÝ: Quyền tạo ID & mật khẩu cho nhân viên thuộc quyền quản lý
     canManageDirectorStaff: false, // QUẢN LÝ: KHÔNG có quyền tạo, sửa, reset tài khoản Ban Giám đốc
@@ -187,7 +186,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'residents',
       'operations',
       'workforce',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -217,7 +215,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'resident-leave',
       'workforce',
       'operations',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -250,7 +247,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'admissions',
       'health-reports',
       'medication-inventory',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -278,7 +274,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'residents',
       'operations',
       'workforce',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -307,7 +302,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'operations',
       'kitchen-operations',
       'workforce',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -336,7 +330,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'operations',
       'workforce',
       'resident-leave',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -364,7 +357,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'residents',
       'operations',
       'workforce',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -391,7 +383,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'dashboard',
       'resident-leave',
       'workforce',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -422,7 +413,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'workforce',
       'medication-inventory',
       'billing-invoicing',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -453,7 +443,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'resident-leave',
       'workforce',
       'family-portal',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -478,7 +467,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   GUARDIAN: {
     allowedRoutes: [
       'family-portal',
-      'system-status',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -506,7 +494,7 @@ export function canAccessRoute(
   role: HumanActorRole | undefined | null,
   route: AppRouteKey,
 ): boolean {
-  if (!role) return route === 'system-status';
+  if (!role) return false;
   return ROLE_CAPABILITIES[role]?.allowedRoutes.includes(route) ?? false;
 }
 

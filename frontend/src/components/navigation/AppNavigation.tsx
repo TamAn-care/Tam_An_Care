@@ -118,11 +118,7 @@ export function AppNavigation({ onNavItemClick }: AppNavigationProps = {}) {
             item.key,
           ),
         )
-      : items.filter(
-          (item) =>
-            item.key ===
-            'system-status',
-        );
+      : [];
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
     e.preventDefault();
@@ -154,4 +150,3 @@ export function AppNavigation({ onNavItemClick }: AppNavigationProps = {}) {
     </nav>
   );
 }
-

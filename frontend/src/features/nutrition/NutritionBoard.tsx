@@ -128,7 +128,7 @@ const INITIAL_DIET_PROFILES: Record<string, ResidentDietProfile> = {
 const PREP_LABELS: Record<string, { label: string; badge: string; icon: string }> = {
   REGULAR_SOFT: { label: 'Cơm mềm / Cơm thường', badge: 'badge badge-success', icon: '🍚' },
   MASHED_SOFT: { label: 'Nấu nhừ / Băm nhỏ / Cháo', badge: 'badge badge-info', icon: '🥣' },
-  PUREED_SOUP: { label: 'Xay nhuyễn / Súp loãng', badge: 'badge badge-purple', icon: '🍲' },
+  PUREED_SOUP: { label: 'Xay nhuyễn / Súp loãng', badge: 'badge badge-warning', icon: '🍲' },
   TUBE_FEEDING: { label: 'Ăn qua ống Sonde', badge: 'badge badge-danger', icon: '🧪' },
 };
 

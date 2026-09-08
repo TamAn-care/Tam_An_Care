@@ -126,8 +126,13 @@ export const router =
         },
         {
           path: '/system-status',
-          element:
-            <SystemStatusPage />,
+          element: (
+            <RequireActor>
+              <RequireRole route="system-status">
+                <SystemStatusPage />
+              </RequireRole>
+            </RequireActor>
+          ),
         },
         {
           path: "/resident-lifecycle",
