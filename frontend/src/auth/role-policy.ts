@@ -59,6 +59,7 @@ export interface RoleCapability {
   canAccessAnalytics: boolean; // Ban Giám đốc & Quản lý xem báo cáo phân tích quản trị thông minh
   canViewAuditLog: boolean; // ĐỘC QUYỀN: Chỉ Ban Giám đốc và Quản lý có quyền xem nhật ký truy vết & lịch sử thay đổi để phục vụ kiểm toán quy trách nhiệm
   canViewDirectorAuditLog: boolean; // ĐỘC QUYỀN BAN GIÁM ĐỐC / ADMIN: Ban Giám đốc xem được toàn bộ hoạt động kể cả của Ban Giám đốc. Quản lý KHÔNG xem được hoạt động của Ban Giám đốc.
+  canViewSensitiveFinancials: boolean; // ĐỘC QUYỀN BAN GIÁM ĐỐC / ADMIN: Quyền xem thông tin kinh phí, chi phí nhập thực phẩm, doanh thu và thu nhập nhạy cảm của Trung tâm
 }
 
 export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
@@ -101,6 +102,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: true, // ADMIN: Toàn quyền truy cập trung tâm phân tích MI
     canViewAuditLog: true, // ADMIN: Toàn quyền xem nhật ký truy vết 100%
     canViewDirectorAuditLog: true, // ADMIN: Toàn quyền xem mọi hoạt động của Ban Giám đốc & nhân viên
+    canViewSensitiveFinancials: true, // ADMIN: Xem chi phí nhập thực phẩm & thu nhập nhạy cảm
   },
   SUPERVISOR: {
     allowedRoutes: [
@@ -141,6 +143,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: true, // Ban Giám đốc toàn quyền xem Trung tâm phân tích & MI
     canViewAuditLog: true, // BAN GIÁM ĐỐC: Toàn quyền xem nhật ký truy vết & trách nhiệm
     canViewDirectorAuditLog: true, // BAN GIÁM ĐỐC: Toàn quyền xem hoạt động của Ban Giám đốc và toàn thể nhân sự
+    canViewSensitiveFinancials: true, // BAN GIÁM ĐỐC: Độc quyền xem thông tin kinh phí, chi phí nhập thực phẩm & thu nhập nhạy cảm
   },
   CARE_MANAGER: {
     allowedRoutes: [
@@ -179,6 +182,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: true, // Quản lý xem phân tích vận hành & nhân sự
     canViewAuditLog: true, // QUẢN LÝ: Quyền xem nhật ký truy vết & kiểm soát trách nhiệm
     canViewDirectorAuditLog: false, // QUẢN LÝ: KHÔNG xem được hoạt động của Ban Giám đốc
+    canViewSensitiveFinancials: false, // QUẢN LÝ: KHÔNG có quyền xem thông tin chi phí nhập thực phẩm & thu nhập nhạy cảm
   },
   PSYCHOLOGIST: {
     allowedRoutes: [
@@ -206,6 +210,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   SOCIAL_WORKER: {
     allowedRoutes: [
@@ -235,6 +240,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   NURSE: {
     allowedRoutes: [
@@ -267,6 +273,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   CAREGIVER: {
     allowedRoutes: [
@@ -294,6 +301,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   NUTRITIONIST: {
     allowedRoutes: [
@@ -322,6 +330,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   HOUSEKEEPING: {
     allowedRoutes: [
@@ -350,6 +359,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   REHABILITATION_SPECIALIST: {
     allowedRoutes: [
@@ -377,6 +387,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   SECURITY: {
     allowedRoutes: [
@@ -403,6 +414,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   ACCOUNTANT: {
     allowedRoutes: [
@@ -433,6 +445,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   RECEPTIONIST: {
     allowedRoutes: [
@@ -463,6 +476,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
   GUARDIAN: {
     allowedRoutes: [
@@ -487,6 +501,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: false,
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
   },
 };
 

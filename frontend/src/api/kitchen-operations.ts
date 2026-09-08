@@ -815,8 +815,8 @@ export async function destroyFoodSampleRecord(
   return sample;
 }
 
-export function downloadKitchenInventoryCSV(inventory: FoodInventoryItem[]) {
-  const headers = ['ID', 'Tên Mặt Hàng', 'Danh Mục', 'Kho Lưu', 'Tồn Hiện Tại', 'Đơn Vị', 'Mức An Toàn', 'Hạn Sử Dụng', 'Số Ngày Còn Lại', 'Đơn Giá', 'Trạng Thái'];
+export function downloadKitchenInventoryCSV(inventory: FoodInventoryItem[], canViewFinancials: boolean = true) {
+  const headers = ['ID', 'Tên Mặt Hàng', 'Danh Mục', 'Kho Lưu', 'Tồn Hiện Tại', 'Đơn Vị', 'Mức An Toàn', 'Hạn Sử Dụng', 'Số Ngày Còn Lại', canViewFinancials ? 'Đơn Giá (VND)' : 'Đơn Giá (Bảo Mật BGĐ)', 'Trạng Thái'];
   const rows = inventory.map((i) => [
     i.id,
     `"${i.itemName.replace(/"/g, '""')}"`,
@@ -827,7 +827,7 @@ export function downloadKitchenInventoryCSV(inventory: FoodInventoryItem[]) {
     i.minSafetyStock,
     i.expiryDate,
     i.daysToExpiry,
-    i.unitPrice,
+    canViewFinancials ? i.unitPrice : '*** (Chỉ Ban Giám Đốc)',
     i.currentStock <= i.minSafetyStock ? 'Tồn Thấp' : i.daysToExpiry <= 3 ? 'Cận Date' : 'Tươi Ngon',
   ]);
   const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');

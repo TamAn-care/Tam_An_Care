@@ -41,6 +41,7 @@ export default function KitchenOperationsPage() {
   const isManager = actor?.actorRole === 'CARE_MANAGER';
   const isAdmin = actor?.actorRole === 'ADMIN';
   const canManageKitchen = hasCapability(actor?.actorRole, 'canManageKitchenOperations');
+  const canViewFinancials = hasCapability(actor?.actorRole, 'canViewSensitiveFinancials');
   const canUpdateMenu = isNutritionist || isManager || isDirector || isAdmin;
 
   // Queries
@@ -450,7 +451,13 @@ export default function KitchenOperationsPage() {
         <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
           <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>CHI PHÍ NHẬP THỰC PHẨM (THÁNG)</div>
           <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>
-            {metrics.totalMonthCost.toLocaleString('vi-VN')} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>đ</span>
+            {canViewFinancials ? (
+              <>
+                {metrics.totalMonthCost.toLocaleString('vi-VN')} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>đ</span>
+              </>
+            ) : (
+              <span style={{ fontSize: '1rem', color: '#64748b' }}>🔒 Bảo mật BGĐ</span>
+            )}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Đã đối soát {metrics.totalBatches} đợt giao nhận</div>
         </div>
@@ -918,7 +925,7 @@ export default function KitchenOperationsPage() {
                           </span>
                         </td>
                         <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>
-                          {b.totalValue.toLocaleString('vi-VN')} đ
+                          {canViewFinancials ? `${b.totalValue.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}
                         </td>
                         <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                           <span
@@ -1132,7 +1139,7 @@ export default function KitchenOperationsPage() {
                       </div>
                     </td>
                     <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#475569' }}>
-                      {item.unitPrice.toLocaleString('vi-VN')} đ/{item.unit}
+                      {canViewFinancials ? `${item.unitPrice.toLocaleString('vi-VN')} đ/${item.unit}` : '🔒 Quyền BGĐ'}
                     </td>
                     <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                       <span
@@ -1655,14 +1662,18 @@ export default function KitchenOperationsPage() {
                         <td style={{ padding: '0.4rem', textAlign: 'center', fontWeight: 700, color: item.variancePercent === 0 ? '#64748b' : item.variancePercent > 0 ? '#15803d' : '#b91c1c' }}>
                           {item.variancePercent > 0 ? `+${item.variancePercent}%` : `${item.variancePercent}%`}
                         </td>
-                        <td style={{ padding: '0.4rem' }}>
-                          <input
-                            type="number"
-                            className="text-input"
-                            style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box' }}
-                            value={item.unitPrice}
-                            onChange={(e) => handleUpdateNewBatchItem(idx, { unitPrice: parseFloat(e.target.value) || 0 })}
-                          />
+                        <td style={{ padding: '0.4rem', textAlign: 'center' }}>
+                          {canViewFinancials ? (
+                            <input
+                              type="number"
+                              className="text-input"
+                              style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box' }}
+                              value={item.unitPrice}
+                              onChange={(e) => handleUpdateNewBatchItem(idx, { unitPrice: parseFloat(e.target.value) || 0 })}
+                            />
+                          ) : (
+                            <span style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic' }}>🔒 Quyền BGĐ</span>
+                          )}
                         </td>
                         <td style={{ padding: '0.4rem' }}>
                           <input
@@ -1847,7 +1858,7 @@ export default function KitchenOperationsPage() {
                 <div>Người nhận (Dinh dưỡng): <b>{showDetailBatchModal.receiverName}</b></div>
                 <div>Mã nhân sự: <b>{showDetailBatchModal.receiverId}</b></div>
                 <div>Tổng khối lượng phiếu: <b>{showDetailBatchModal.totalOrderedWeight} kg</b> | Cân thực tế: <b>{showDetailBatchModal.totalActualWeight} kg</b></div>
-                <div>Chênh lệch: <b style={{ color: showDetailBatchModal.weightVariancePercent < 0 ? '#b91c1c' : '#15803d' }}>{showDetailBatchModal.weightVariancePercent}%</b> | Tổng giá trị: <b>{showDetailBatchModal.totalValue.toLocaleString('vi-VN')} đ</b></div>
+                <div>Chênh lệch: <b style={{ color: showDetailBatchModal.weightVariancePercent < 0 ? '#b91c1c' : '#15803d' }}>{showDetailBatchModal.weightVariancePercent}%</b> | Tổng giá trị: <b>{canViewFinancials ? `${showDetailBatchModal.totalValue.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}</b></div>
                 <div style={{ marginTop: '0.25rem' }}>
                   Kết luận tiếp nhận: <b style={{ color: showDetailBatchModal.overallStatus === 'ACCEPTED' ? '#15803d' : showDetailBatchModal.overallStatus === 'QUARANTINED' ? '#b45309' : '#b91c1c' }}>
                     {showDetailBatchModal.overallStatus === 'ACCEPTED' ? '✅ Đạt chuẩn nhập kho' : showDetailBatchModal.overallStatus === 'QUARANTINED' ? '⚠️ Tạm cách ly' : '❌ Từ chối nhận hàng'}
@@ -1882,8 +1893,8 @@ export default function KitchenOperationsPage() {
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center', fontWeight: 700, color: item.variancePercent === 0 ? '#64748b' : item.variancePercent > 0 ? '#15803d' : '#b91c1c' }}>
                         {item.variancePercent > 0 ? `+${item.variancePercent}%` : `${item.variancePercent}%`}
                       </td>
-                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>{item.unitPrice.toLocaleString('vi-VN')} đ</td>
-                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>{item.totalPrice.toLocaleString('vi-VN')} đ</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>{canViewFinancials ? `${item.unitPrice.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>{canViewFinancials ? `${item.totalPrice.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}</td>
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center', fontWeight: 600 }}>{item.deliveryTemp}°C</td>
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>{STORAGE_ZONE_META[item.storageZone]?.label}</td>
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>
