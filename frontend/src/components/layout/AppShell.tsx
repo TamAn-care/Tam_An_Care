@@ -323,27 +323,6 @@ export function AppShell() {
 
                   <button
                     type="button"
-                    onClick={handleInstallApp}
-                    style={{
-                      background: '#e0f2fe',
-                      border: '1px solid #7dd3fc',
-                      color: '#0369a1',
-                      fontWeight: 700,
-                      fontSize: '0.78rem',
-                      padding: '0.35rem 0.65rem',
-                      borderRadius: '0.35rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                    }}
-                    title="Cài đặt ứng dụng Tâm An Care dạng PWA"
-                  >
-                    <span>📱</span> Cài Đặt App
-                  </button>
-
-                  <button
-                    type="button"
                     className="button button-subtle"
                     onClick={() => {
                       setPasswordFeedback(null);
