@@ -61,6 +61,11 @@ export interface RoleCapability {
   canViewAuditLog: boolean; // ĐỘC QUYỀN: Chỉ Ban Giám đốc và Quản lý có quyền xem nhật ký truy vết & lịch sử thay đổi để phục vụ kiểm toán quy trách nhiệm
   canViewDirectorAuditLog: boolean; // ĐỘC QUYỀN BAN GIÁM ĐỐC / ADMIN: Ban Giám đốc xem được toàn bộ hoạt động kể cả của Ban Giám đốc. Quản lý KHÔNG xem được hoạt động của Ban Giám đốc.
   canViewSensitiveFinancials: boolean; // ĐỘC QUYỀN BAN GIÁM ĐỐC / ADMIN: Quyền xem thông tin kinh phí, chi phí nhập thực phẩm, doanh thu và thu nhập nhạy cảm của Trung tâm
+  canEvaluatePsychology: boolean; // ĐỘC QUYỀN: Nhân viên Tâm lý và Nhân viên Công tác xã hội lập/đánh giá Phiếu đánh giá Tâm lý
+  canRegisterStaffMeals: boolean; // ĐỘC QUYỀN: Nhân viên Quản lý thực hiện đăng ký suất ăn cho nhân viên theo nhóm công việc & ca
+  canManageCareSuppliesImport: boolean; // ĐỘC QUYỀN: Nhân viên Quản lý có quyền nhập kho Vật tư phục vụ chăm sóc NCT
+  canManagePharmacy: boolean; // ĐỘC QUYỀN: Nhân viên Y tế nhập kho và xuất kho Dược phẩm
+  canEvaluateKPI: boolean; // ĐỘC QUYỀN: Nhân viên Quản lý đánh giá KPI chi tiết dạng tick theo ca trực
 }
 
 export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
@@ -105,6 +110,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: true, // ADMIN: Toàn quyền xem nhật ký truy vết 100%
     canViewDirectorAuditLog: true, // ADMIN: Toàn quyền xem mọi hoạt động của Ban Giám đốc & nhân viên
     canViewSensitiveFinancials: true, // ADMIN: Xem chi phí nhập thực phẩm & thu nhập nhạy cảm
+    canEvaluatePsychology: true,
+    canRegisterStaffMeals: true,
+    canManageCareSuppliesImport: true,
+    canManagePharmacy: true,
+    canEvaluateKPI: true,
   },
   SUPERVISOR: {
     allowedRoutes: [
@@ -147,6 +157,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: true, // BAN GIÁM ĐỐC: Toàn quyền xem nhật ký truy vết & trách nhiệm
     canViewDirectorAuditLog: true, // BAN GIÁM ĐỐC: Toàn quyền xem hoạt động của Ban Giám đốc và toàn thể nhân sự
     canViewSensitiveFinancials: true, // BAN GIÁM ĐỐC: Độc quyền xem thông tin kinh phí, chi phí nhập thực phẩm & thu nhập nhạy cảm
+    canEvaluatePsychology: true,
+    canRegisterStaffMeals: true,
+    canManageCareSuppliesImport: true,
+    canManagePharmacy: true,
+    canEvaluateKPI: true,
   },
   CARE_MANAGER: {
     allowedRoutes: [
@@ -187,6 +202,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: true, // QUẢN LÝ: Quyền xem nhật ký truy vết & kiểm soát trách nhiệm
     canViewDirectorAuditLog: false, // QUẢN LÝ: KHÔNG xem được hoạt động của Ban Giám đốc
     canViewSensitiveFinancials: false, // QUẢN LÝ: KHÔNG có quyền xem thông tin chi phí nhập thực phẩm & thu nhập nhạy cảm
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: true,
+    canManageCareSuppliesImport: true,
+    canManagePharmacy: false,
+    canEvaluateKPI: true,
   },
   PSYCHOLOGIST: {
     allowedRoutes: [
@@ -216,6 +236,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: true,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   SOCIAL_WORKER: {
     allowedRoutes: [
@@ -247,6 +272,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: true,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   NURSE: {
     allowedRoutes: [
@@ -281,6 +311,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: true,
+    canEvaluateKPI: false,
   },
   CAREGIVER: {
     allowedRoutes: [
@@ -310,6 +345,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   NUTRITIONIST: {
     allowedRoutes: [
@@ -340,6 +380,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   HOUSEKEEPING: {
     allowedRoutes: [
@@ -370,6 +415,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   REHABILITATION_SPECIALIST: {
     allowedRoutes: [
@@ -399,6 +449,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   SECURITY: {
     allowedRoutes: [
@@ -427,6 +482,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   ACCOUNTANT: {
     allowedRoutes: [
@@ -459,6 +519,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   RECEPTIONIST: {
     allowedRoutes: [
@@ -491,6 +556,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
   GUARDIAN: {
     allowedRoutes: [
@@ -517,6 +587,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canViewAuditLog: false,
     canViewDirectorAuditLog: false,
     canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
   },
 };
 

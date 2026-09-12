@@ -12,6 +12,7 @@ import {
   createInventoryItem,
   recordInventoryTransaction,
   fetchInventoryTransactions,
+  logCareSupplyWithdrawal,
   MedicationOrder,
   MedicationAdministration,
   MedicalInventoryItem,
@@ -59,11 +60,19 @@ export default function MedicationInventoryPage() {
   const queryClient = useQueryClient();
 
   const [activeTab, setActiveTab] = useState<'emar' | 'orders' | 'inventory' | 'reports'>('emar');
+  const [selectedItemGroup, setSelectedItemGroup] = useState<'ALL' | 'PHARMACEUTICALS' | 'CARE_SUPPLIES'>('ALL');
   const [selectedSlot, setSelectedSlot] = useState<TimingSlot | 'ALL'>('ALL');
   const [selectedResidentId, setSelectedResidentId] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [inventoryFilter, setInventoryFilter] = useState<'ALL' | 'LOW_STOCK' | 'EXPIRING'>('ALL');
   const [selectedCategory, setSelectedCategory] = useState<InventoryCategory | 'ALL'>('ALL');
+
+  // Care Supply Withdrawal modal state (Item 7: Khai báo xuất sử dụng vật tư trên App)
+  const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
+  const [withdrawalItemId, setWithdrawalItemId] = useState<string>('');
+  const [withdrawalQty, setWithdrawalQty] = useState<number>(1);
+  const [withdrawalResidentId, setWithdrawalResidentId] = useState<string>('');
+  const [withdrawalReason, setWithdrawalReason] = useState<string>('');
 
   // Modals state
   const [isNewOrderModalOpen, setIsNewOrderModalOpen] = useState(false);
@@ -219,9 +228,39 @@ export default function MedicationInventoryPage() {
     },
   });
 
+  const withdrawalMutation = useMutation({
+    mutationFn: async () => {
+      if (!withdrawalItemId) throw new Error('Vui lòng chọn vật tư chăm sóc.');
+      if (withdrawalQty <= 0) throw new Error('Số lượng xuất phải lớn hơn 0.');
+      if (!withdrawalReason.trim()) throw new Error('Vui lòng nhập lý do xuất dùng.');
+
+      const res = residentsQuery.data?.find((r) => r.resident.residentId === withdrawalResidentId);
+
+      return logCareSupplyWithdrawal(actor!, {
+        itemId: withdrawalItemId,
+        quantity: withdrawalQty,
+        residentId: withdrawalResidentId || undefined,
+        residentName: res?.resident.displayName || undefined,
+        reason: withdrawalReason.trim(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['med-inventory-items'] });
+      queryClient.invalidateQueries({ queryKey: ['med-inventory-tx'] });
+      setIsWithdrawalModalOpen(false);
+      setWithdrawalItemId('');
+      setWithdrawalQty(1);
+      setWithdrawalResidentId('');
+      setWithdrawalReason('');
+    },
+  });
+
   const canPrescribe = hasCapability(actor?.actorRole, 'canPrescribeMedication'); // Chỉ NURSE
   const canAdminister = hasCapability(actor?.actorRole, 'canAdministerMedication'); // Chỉ NURSE
   const canManageInv = hasCapability(actor?.actorRole, 'canManageInventory'); // NURSE & CARE_MANAGER
+  const canManagePharmacy = hasCapability(actor?.actorRole, 'canManagePharmacy'); // NURSE & ADMIN/SUPERVISOR
+  const canManageCareSuppliesImport = hasCapability(actor?.actorRole, 'canManageCareSuppliesImport'); // CARE_MANAGER & ADMIN/SUPERVISOR
+  const canWithdrawCareSupply = Boolean(actor?.actorRole && actor.actorRole !== 'GUARDIAN'); // Tất cả nhân viên
 
   // Filtered eMAR Administrations
   const filteredAdmins = useMemo(() => {
@@ -247,6 +286,9 @@ export default function MedicationInventoryPage() {
   // Filtered Inventory items
   const filteredInventory = useMemo(() => {
     let list = inventoryQuery.data || [];
+    if (selectedItemGroup !== 'ALL') {
+      list = list.filter((i) => (i.itemGroup || (i.category === 'DIAGNOSTIC' || i.category === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES')) === selectedItemGroup);
+    }
     if (selectedCategory !== 'ALL') {
       list = list.filter((i) => i.category === selectedCategory);
     }
@@ -260,7 +302,7 @@ export default function MedicationInventoryPage() {
       });
     }
     return list;
-  }, [inventoryQuery.data, selectedCategory, inventoryFilter]);
+  }, [inventoryQuery.data, selectedItemGroup, selectedCategory, inventoryFilter]);
 
   // eMAR Progress calculation
   const totalDoses = emarQuery.data?.length || 0;
@@ -815,12 +857,46 @@ export default function MedicationInventoryPage() {
             </div>
           </div>
 
+          {/* Inventory Group Sub-Tabs (Item 7: Tách Nhóm Thuốc & Vật Tư Y Tế) */}
+          <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.35rem', borderRadius: '0.5rem', border: '1px solid #cbd5e1' }}>
+            <button
+              type="button"
+              className={`btn btn-sm ${selectedItemGroup === 'ALL' ? 'btn-primary' : 'btn-neutral'}`}
+              onClick={() => setSelectedItemGroup('ALL')}
+              style={{ fontWeight: 700 }}
+            >
+              🌐 Tất Cả Kho ({inventoryItemsList.length})
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${selectedItemGroup === 'PHARMACEUTICALS' ? 'btn-primary' : 'btn-neutral'}`}
+              onClick={() => setSelectedItemGroup('PHARMACEUTICALS')}
+              style={{ fontWeight: 700 }}
+            >
+              💊 (1) Dược Phẩm ({inventoryItemsList.filter((i) => (i.itemGroup || (i.category === 'DIAGNOSTIC' || i.category === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES')) === 'PHARMACEUTICALS').length})
+              <span className="badge badge-info" style={{ marginLeft: '0.3rem', fontSize: '0.7rem' }}>Chỉ Nhân viên Y tế</span>
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${selectedItemGroup === 'CARE_SUPPLIES' ? 'btn-primary' : 'btn-neutral'}`}
+              onClick={() => setSelectedItemGroup('CARE_SUPPLIES')}
+              style={{ fontWeight: 700 }}
+            >
+              📦 (2) Vật Tư Chăm Sóc NCT ({inventoryItemsList.filter((i) => (i.itemGroup || (i.category === 'DIAGNOSTIC' || i.category === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES')) === 'CARE_SUPPLIES').length})
+              <span className="badge badge-success" style={{ marginLeft: '0.3rem', fontSize: '0.7rem' }}>Mọi nhân viên xuất dùng</span>
+            </button>
+          </div>
+
           {/* Inventory Table & Filters */}
           <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
                 <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem' }}>
-                  📦 Tồn Kho Vật Tư Tiêu Hao & Dụng Cụ Y Tế
+                  {selectedItemGroup === 'PHARMACEUTICALS'
+                    ? '💊 Kho Dược Phẩm & Thuốc Trực Cấp Cứu'
+                    : selectedItemGroup === 'CARE_SUPPLIES'
+                    ? '📦 Kho Vật Tư Tiêu Hao Chăm Sóc NCT'
+                    : '📦 Quản Lý Kho Dược Phẩm & Vật Tư Chăm Sóc'}
                 </h3>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>
                   Hiển thị {filteredInventory.length}/{inventoryItemsList.length} mặt hàng
@@ -864,8 +940,9 @@ export default function MedicationInventoryPage() {
                 </select>
               </div>
 
-              {canManageInv ? (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {/* Quyền (1) Dược phẩm: NURSE/DOCTOR/ADMIN */}
+                {canManagePharmacy && (
                   <button
                     type="button"
                     className="btn btn-primary"
@@ -873,25 +950,41 @@ export default function MedicationInventoryPage() {
                       setTxType('IMPORT');
                       setIsTxModalOpen(true);
                     }}
+                    title="Nhân viên Y tế nhập kho Dược phẩm & Thuốc tủ trực"
                   >
-                    📥 Nhập Kho Vật Tư
+                    📥 Nhập Kho Dược Phẩm
                   </button>
+                )}
+
+                {/* Quyền (2) Vật tư chăm sóc: CARE_MANAGER nhập kho */}
+                {canManageCareSuppliesImport && (
                   <button
                     type="button"
-                    className="btn btn-neutral"
+                    className="btn btn-secondary"
                     onClick={() => {
-                      setTxType('EXPORT_RESIDENT');
+                      setTxType('IMPORT');
                       setIsTxModalOpen(true);
                     }}
+                    style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
+                    title="Quản lý (CARE_MANAGER) nhập kho vật tư chăm sóc (tã bỉm, găng tay, bông gạc)"
                   >
-                    📤 Xuất Dùng Cho Cụ
+                    📥 Quản Lý Nhập Kho Vật Tư
                   </button>
-                </div>
-              ) : (
-                <span className="badge badge-neutral">
-                  Chế độ xem tồn kho
-                </span>
-              )}
+                )}
+
+                {/* Quyền (2) Khai báo xuất sử dụng vật tư: TẤT CẢ nhân viên trong trung tâm */}
+                {canWithdrawCareSupply && (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setIsWithdrawalModalOpen(true)}
+                    style={{ background: '#2563eb', color: '#ffffff', fontWeight: 700 }}
+                    title="Khai báo trên App khi lấy vật tư chăm sóc (tã, găng tay, sữa...) xuất dùng cho Cụ"
+                  >
+                    📝 Khai Báo Xuất Sử Dụng Vật Tư
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="table-wrapper">
@@ -1411,7 +1504,7 @@ export default function MedicationInventoryPage() {
                     <div style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 700, marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                       ✍️ Nhập thủ công thông tin vật tư y tế khác (Tự động cập nhật vào danh mục kho)
                     </div>
-                    
+
                     <label className="field-group" style={{ marginBottom: '0.75rem' }}>
                       <span className="field-label">Tên vật tư y tế khác (Nhập thủ công) *</span>
                       <input
@@ -1515,6 +1608,126 @@ export default function MedicationInventoryPage() {
                   style={{ fontWeight: 700 }}
                 >
                   {recordTxMutation.isPending ? 'Đang lưu...' : 'Xác Nhận Giao Dịch'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* MODAL: KHAI BÁO XUẤT SỬ DỤNG VẬT TƯ CHĂM SÓC (MỌI NHÂN VIÊN) */}
+      {isWithdrawalModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsWithdrawalModalOpen(false)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid #e2e8f0',
+              maxWidth: '520px',
+              width: '100%',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem', fontWeight: 700 }}>
+                📝 Khai Báo Xuất Sử Dụng Vật Tư Chăm Sóc (App)
+              </h3>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={() => setIsWithdrawalModalOpen(false)}
+                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '1rem' }}>
+              ⚡ Tất cả nhân viên trong trung tâm có thể chủ động khai báo khi lấy vật tư tiêu hao (bỉm, găng tay, bông gạc, nước muối, sữa...) xuất dùng cho Cụ.
+            </p>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                withdrawalMutation.mutate();
+              }}
+            >
+              <label className="field-group" style={{ marginBottom: '1rem' }}>
+                <span className="field-label" style={{ fontWeight: 700 }}>Chọn Vật Tư Chăm Sóc *</span>
+                <select
+                  className="text-input"
+                  value={withdrawalItemId}
+                  onChange={(e) => setWithdrawalItemId(e.target.value)}
+                  required
+                >
+                  <option value="">-- Chọn mặt hàng trong kho --</option>
+                  {inventoryItemsList.map((item) => (
+                    <option key={item.itemId} value={item.itemId}>
+                      {item.name} ({item.currentStock} {item.unit} khả dụng) — [{CATEGORY_LABELS[item.category] || item.category}]
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <label className="field-group">
+                  <span className="field-label">Số lượng lấy *</span>
+                  <input
+                    type="number"
+                    min="1"
+                    className="text-input"
+                    value={withdrawalQty}
+                    onChange={(e) => setWithdrawalQty(Number(e.target.value))}
+                    required
+                  />
+                </label>
+
+                <label className="field-group">
+                  <span className="field-label">Sử dụng cho Cụ (Tùy chọn)</span>
+                  <select
+                    className="text-input"
+                    value={withdrawalResidentId}
+                    onChange={(e) => setWithdrawalResidentId(e.target.value)}
+                  >
+                    <option value="">-- Chọn Cụ (Nếu dùng riêng) --</option>
+                    {residentsQuery.data?.map((r) => (
+                      <option key={r.resident.residentId} value={r.resident.residentId}>
+                        {r.resident.displayName} — P.{r.resident.room || '101'}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <label className="field-group" style={{ marginBottom: '1.25rem' }}>
+                <span className="field-label">Lý do & Diễn giải xuất dùng *</span>
+                <textarea
+                  className="text-input"
+                  rows={2}
+                  placeholder="VD: Thay bỉm ca chiều cho Cụ An, Vệ sinh vết thương phòng 102..."
+                  value={withdrawalReason}
+                  onChange={(e) => setWithdrawalReason(e.target.value)}
+                  required
+                />
+              </label>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  onClick={() => setIsWithdrawalModalOpen(false)}
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={withdrawalMutation.isPending || !withdrawalItemId || !withdrawalReason.trim()}
+                  style={{ fontWeight: 700, background: '#2563eb' }}
+                >
+                  {withdrawalMutation.isPending ? 'Đang lưu...' : 'Xác Nhận Khai Báo Xuất Kho'}
                 </button>
               </div>
             </form>

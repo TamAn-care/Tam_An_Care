@@ -59,44 +59,44 @@ export interface ResidentMonthlyInvoice {
   billingMonth: string; // YYYY-MM
   careLevel: 1 | 2 | 3;
   roomTier: string;
-  
+
   // I. Phí Chăm Sóc Cơ Bản
   basicPackageId: string;
   basicPackageName: string;
   basicPackageFee: number;
-  
+
   // II. Tiền Đặt Cọc Ký Quỹ
   depositFee: number; // Tiền đặt cọc (VD: 20.000.000đ)
-  
+
   // III. Phí Chăm Sóc Hỗ Trợ
   supportServicesFee: number;
   supportServiceItems: SupportServiceUsage[];
-  
+
   // IV. Phí Chăm Sóc Mở Rộng
   extendedCareFee: number;
   extendedCareDays?: number;
   extendedCareRate?: number;
-  
+
   // V. Giảm Trừ Nghỉ Phép / Bất Khả Kháng
   leaveDays: number;
   forceMajeureLeaveDays: number; // Cấp cứu, bệnh viện, triệu tập pháp luật: 200.000đ/ngày
   regularLeaveDays: number; // Nghỉ phép thông thường / thăm nhà: 100.000đ/ngày
   leaveDeductionFee: number;
-  
+
   // VI. Phụ Thu Ngày Lễ Tết
   holidayDays: number;
   holidaySurchargeFee: number;
-  
+
   // VII. Chức Năng Giảm Giá & Ưu Đãi Đặc Biệt
   discountsApplied: AppliedDiscount[];
   totalDiscountAmount: number;
-  
+
   // VIII. Chi Phí Suất Ăn Thân Nhân & Vật Tư Tiêu Hao
   extraMealsFee: number;
   extraMealItems: ExtraMealChargeItem[];
   consumablesFee: number;
   consumableItems: ConsumableChargeItem[];
-  
+
   // Tổng Hợp Thu Phí
   subtotalAmount: number; // Tổng trước giảm giá
   totalAmount: number; // Tổng thực thu sau giảm giá & giảm trừ
@@ -104,7 +104,7 @@ export interface ResidentMonthlyInvoice {
   remainingAmount: number;
   depositBalance: number;
   status: InvoiceStatus;
-  
+
   issuedDate: string;
   dueDate: string;
   settledAt?: string;
@@ -206,7 +206,7 @@ export const DISCOUNT_CATEGORY_LABELS: Record<string, { label: string; icon: str
 
 export const DEFAULT_PRICING_MATRIX: PricingMatrix = {
   effectiveDate: '01/07/2026',
-  
+
   // I. PHÍ DỊCH VỤ CHĂM SÓC CƠ BẢN (đồng/người/tháng)
   basicCarePackages: [
     {
@@ -539,7 +539,7 @@ export function calculateInvoiceTotals(
 } {
   const basicFee = inv.basicPackageFee || 0;
   const depositFee = inv.depositFee || 0;
-  
+
   // III. Phí dịch vụ hỗ trợ (tính từ danh mục dịch vụ thực tế hoặc giữ 0 nếu không có dịch vụ hỗ trợ)
   const supportServicesFee = (inv.supportServiceItems && inv.supportServiceItems.length > 0)
     ? inv.supportServiceItems.reduce((sum, item) => sum + (item.totalPrice || item.unitPrice * item.quantity), 0)
@@ -663,32 +663,32 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     billingMonth: '2026-09',
     careLevel: 2,
     roomTier: 'Phòng VIP 2 giường',
-    
+
     // I. Phí Cơ Bản
     basicPackageId: 'BCP-03',
     basicPackageName: 'Phòng VIP 2 giường',
     basicPackageFee: 16500000,
-    
+
     // II. Tiền Đặt Cọc
     depositFee: 20000000,
-    
+
     // III. Phí Chăm Sóc Hỗ Trợ
     supportServicesFee: 0,
     supportServiceItems: [],
-    
+
     // IV. Mở Rộng
     extendedCareFee: 0,
-    
+
     // V. Giảm Trừ Vắng Mặt
     leaveDays: 3,
     forceMajeureLeaveDays: 1, // 1 ngày đi khám viện tuyến trên: 200.000đ
     regularLeaveDays: 2, // 2 ngày về thăm nhà: 2 * 100.000đ = 200.000đ
     leaveDeductionFee: 400000,
-    
+
     // VI. Phụ Thu Lễ
     holidayDays: 1,
     holidaySurchargeFee: 200000, // Lễ 2/9 dài hạn: 200.000đ
-    
+
     // VII. Giảm Giá Đặc Biệt
     discountsApplied: [
       {
@@ -705,7 +705,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       },
     ],
     totalDiscountAmount: 495000,
-    
+
     // VIII. Suất Ăn & Vật Tư
     extraMealsFee: 120000,
     extraMealItems: [
@@ -718,7 +718,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-002', itemCode: 'VT-002', name: 'Tã bỉm người lớn Caryn Siêu Thấm M/L', unit: 'miếng', unitPrice: 15000, quantity: 9, totalPrice: 135000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
       { itemId: 'INV-MED-003', itemCode: 'VT-003', name: 'Băng gạc tiệt trùng Urgo Sterile 10x10', unit: 'miếng', unitPrice: 8000, quantity: 2, totalPrice: 20000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
-    
+
     // Tổng
     subtotalAmount: 36700000, // 16.5m (phí cơ bản) + 20m (tiền cọc) + 0m (hỗ trợ) + 0.2m (lễ)
     totalAmount: 36200000, // 36.7m - 0.4m (vắng mặt) - 0.495m (giảm giá) + 0.12m + 0.275m = 36.200.000đ
@@ -740,19 +740,19 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     billingMonth: '2026-09',
     careLevel: 3,
     roomTier: 'Phòng VIP 1 giường',
-    
+
     basicPackageId: 'BCP-04',
     basicPackageName: 'Phòng VIP 1 giường',
     basicPackageFee: 20000000,
-    
+
     depositFee: 20000000,
-    
+
     supportServicesFee: 3500000,
     supportServiceItems: [
       { serviceId: 'SS-05', serviceName: 'Hỗ trợ ăn qua sonde dạ dày', quantity: 1, unit: 'tháng', unitPrice: 1500000, totalPrice: 1500000 },
       { serviceId: 'SS-08', serviceName: 'Chăm sóc ổ loét tì đè độ 2', quantity: 1, unit: 'tháng', unitPrice: 2000000, totalPrice: 2000000 },
     ],
-    
+
     extendedCareFee: 0,
     leaveDays: 0,
     forceMajeureLeaveDays: 0,
@@ -760,7 +760,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     leaveDeductionFee: 0,
     holidayDays: 1,
     holidaySurchargeFee: 200000,
-    
+
     discountsApplied: [
       {
         id: 'APP-DISC-02',
@@ -776,7 +776,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       },
     ],
     totalDiscountAmount: 2000000,
-    
+
     extraMealsFee: 0,
     extraMealItems: [],
     consumablesFee: 495000,
@@ -784,7 +784,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-002', itemCode: 'VT-002', name: 'Tã bỉm người lớn Caryn Siêu Thấm M/L', unit: 'miếng', unitPrice: 15000, quantity: 30, totalPrice: 450000, date: '2026-09-01', prescribedBy: 'ĐD. Lê Thị Mai' },
       { itemId: 'INV-MED-006', itemCode: 'VT-006', name: 'Ống Sonde ăn dạ dày Levin Silicone Fr16', unit: 'sợi', unitPrice: 45000, quantity: 1, totalPrice: 45000, date: '2026-09-01', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
-    
+
     subtotalAmount: 43700000, // 20m + 20m + 3.5m + 0.2m
     totalAmount: 42195000, // 43.7m - 2m (giảm giá) + 0.495m
     paidAmount: 35000000,
@@ -805,18 +805,18 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     billingMonth: '2026-09',
     careLevel: 1,
     roomTier: 'Phòng tập thể 6 giường',
-    
+
     basicPackageId: 'BCP-01',
     basicPackageName: 'Phòng tập thể 6 giường',
     basicPackageFee: 12000000,
-    
+
     depositFee: 20000000,
-    
+
     supportServicesFee: 500000,
     supportServiceItems: [
       { serviceId: 'SS-02', serviceName: 'Hỗ trợ nâng đỡ, di chuyển', quantity: 1, unit: 'tháng', unitPrice: 500000, totalPrice: 500000 },
     ],
-    
+
     extendedCareFee: 0,
     leaveDays: 4,
     forceMajeureLeaveDays: 0,
@@ -824,10 +824,10 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     leaveDeductionFee: 400000,
     holidayDays: 1,
     holidaySurchargeFee: 200000,
-    
+
     discountsApplied: [],
     totalDiscountAmount: 0,
-    
+
     extraMealsFee: 60000,
     extraMealItems: [
       { date: '2026-09-01', mealType: 'Bữa trưa thân nhân', guestName: 'Lê Thanh Hải (Cháu)', price: 60000, notes: 'Đăng ký ăn cơm trưa cùng bà' },
@@ -836,7 +836,7 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     consumableItems: [
       { itemId: 'INV-MED-001', itemCode: 'VT-001', name: 'Que thử đường huyết Accu-Chek Instant', unit: 'que', unitPrice: 12000, quantity: 3, totalPrice: 36000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
-    
+
     subtotalAmount: 32700000, // 12m + 20m + 0.5m + 0.2m
     totalAmount: 32396000, // 32.7m - 0.4m + 0.06m + 0.036m
     paidAmount: 0,
@@ -982,7 +982,7 @@ export async function updatePricingMatrix(
   matrix: Partial<PricingMatrix>
 ): Promise<PricingMatrix> {
   await new Promise((r) => setTimeout(r, 150));
-  
+
   if (actor.actorRole !== 'SUPERVISOR' && actor.actorRole !== 'CARE_MANAGER') {
     throw new Error('Chỉ Ban Giám đốc và Quản lý mới có quyền điều chỉnh đơn giá và gói dịch vụ.');
   }
@@ -1167,4 +1167,225 @@ export async function settleInvoice(
   });
 
   return { ...inv };
+}
+
+// ----------------------------------------------------------------------
+// HẠNG MỤC 4: THÔNG BÁO THU PHÍ HÀNG THÁNG & ĐÓNG PHÍ (17 MỤC EXCEL)
+// ----------------------------------------------------------------------
+export interface DetailedMonthlyFeeNotice {
+  id: string;
+  residentId: string;
+  residentName: string;
+  residentCode: string;
+  contractCode: string;
+  billingMonth: string; // e.g. "09/2026"
+
+  // 17 Mục Chi Phí Chi Tiết Theo Excel TB THU PHÍ TÂM AN 2026
+  basicFee: number;                // 1. Phí cơ bản (1)
+  accommodationFee: number;        // 2. Phí lưu trú (2)
+  bathingLaundryFee: number;       // 3. Hỗ trợ tắm giặt
+  mobilityFee: number;             // 4. Hỗ trợ xoay trở/di chuyển
+  hygieneFee: number;              // 5. Hỗ trợ vệ sinh
+  feedingSondeFee: number;         // 6. Hỗ trợ rửa ăn/ăn sonde
+  dementiaCareFee: number;         // 7. Chăm sóc NCT lú lẫn/tuổi già
+  soreCareFee: number;             // 8. Chăm sóc các lỗ loét
+  catheterCareFee: number;         // 9. Chăm sóc sonde dạ dày/bàng quang
+  tracheostomyCareFee: number;     // 10. Chăm sóc người đặt nội khí quản
+  woundDressingFee: number;        // 11. Thay băng, rửa vết thương
+  rehabFee: number;                // 12. Vật lý trị liệu - PHCN
+  incurredFee: number;             // 13. Phát sinh (5)
+  incurredContent?: string;        // Nội dung phát sinh
+  deductionFee: number;            // 14. Chi phí giảm trừ (4)
+  previousMonthDebt: number;       // 15. Nợ tháng trước (6)
+  familyMealsFee: number;          // 16. Tiền ăn cơm người nhà đăng ký tại Tâm An (Item 9)
+
+  totalDue: number;                // 17. Cần phải thu (Tổng các mục trên)
+  paidAmount: number;              // Đã thu
+  remainingAmount: number;         // Còn phải thu
+  status: 'PAID' | 'UNPAID' | 'PARTIAL'; // Trạng thái: Đã thu / Chưa thu / Thu một phần
+  statusLabel: string;
+  notes?: string;
+  lastUpdatedBy?: string;
+  lastUpdatedAt?: string;
+}
+
+let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
+  {
+    id: 'TB-202609-001',
+    residentId: 'res-demo-001',
+    residentName: 'Nguyễn Văn An',
+    residentCode: '260701',
+    contractCode: 'HD-260701',
+    billingMonth: '09/2026',
+    basicFee: 8000000,
+    accommodationFee: 1000000,
+    bathingLaundryFee: 500000,
+    mobilityFee: 500000,
+    hygieneFee: 0,
+    feedingSondeFee: 0,
+    dementiaCareFee: 0,
+    soreCareFee: 0,
+    catheterCareFee: 0,
+    tracheostomyCareFee: 0,
+    woundDressingFee: 0,
+    rehabFee: 0,
+    incurredFee: 400000,
+    incurredContent: 'Phụ thu đi khám Bệnh viện Quốc Thành',
+    deductionFee: 0,
+    previousMonthDebt: 0,
+    familyMealsFee: 150000, // 3 bữa ăn gia đình x 50k
+    totalDue: 10550000,
+    paidAmount: 10550000,
+    remainingAmount: 0,
+    status: 'PAID',
+    statusLabel: 'Đã thu phí',
+    notes: 'Đã nhận chuyển khoản đủ qua VCB ngày 05/09/2026',
+  },
+  {
+    id: 'TB-202609-002',
+    residentId: 'res-demo-002',
+    residentName: 'Trần Thị Bình',
+    residentCode: '260702',
+    contractCode: 'HD-260702',
+    billingMonth: '09/2026',
+    basicFee: 11500000,
+    accommodationFee: 0,
+    bathingLaundryFee: 1000000,
+    mobilityFee: 500000,
+    hygieneFee: 0,
+    feedingSondeFee: 0,
+    dementiaCareFee: 500000,
+    soreCareFee: 0,
+    catheterCareFee: 0,
+    tracheostomyCareFee: 0,
+    woundDressingFee: 0,
+    rehabFee: 0,
+    incurredFee: 0,
+    deductionFee: 200000, // Giảm trừ 1 ngày khám viện
+    previousMonthDebt: 0,
+    familyMealsFee: 100000,
+    totalDue: 13400000,
+    paidAmount: 0,
+    remainingAmount: 13400000,
+    status: 'UNPAID',
+    statusLabel: 'Chưa thu phí',
+    notes: 'Đã gửi thông báo cho anh Trần Anh Đức ngày 01/09',
+  },
+  {
+    id: 'TB-202609-003',
+    residentId: 'res-demo-003',
+    residentName: 'Phạm Văn Cường',
+    residentCode: '260801',
+    contractCode: 'HD-260801',
+    billingMonth: '09/2026',
+    basicFee: 14500000,
+    accommodationFee: 0,
+    bathingLaundryFee: 4500000,
+    mobilityFee: 500000,
+    hygieneFee: 3000000,
+    feedingSondeFee: 500000,
+    dementiaCareFee: 0,
+    soreCareFee: 0,
+    catheterCareFee: 0,
+    tracheostomyCareFee: 0,
+    woundDressingFee: 0,
+    rehabFee: 0,
+    incurredFee: 0,
+    deductionFee: 0,
+    previousMonthDebt: 4000000,
+    familyMealsFee: 200000,
+    totalDue: 27200000,
+    paidAmount: 10000000,
+    remainingAmount: 17200000,
+    status: 'PARTIAL',
+    statusLabel: 'Thu một phần',
+    notes: 'Đã thu đợt 1 tiền mặt 10.000.000đ. Hẹn đợt 2 ngày 18/09.',
+  },
+];
+
+export async function fetchDetailedFeeNotices(residentId?: string): Promise<DetailedMonthlyFeeNotice[]> {
+  await new Promise((r) => setTimeout(r, 100));
+  if (residentId) {
+    return mockDetailedFeeNotices.filter((n) => n.residentId === residentId);
+  }
+  return [...mockDetailedFeeNotices];
+}
+
+export async function updateFeeNoticePayment(
+  actor: HumanActorSession,
+  noticeId: string,
+  paymentStatus: 'PAID' | 'UNPAID' | 'PARTIAL',
+  paidAmountInput: number,
+  notesInput?: string
+): Promise<DetailedMonthlyFeeNotice> {
+  await new Promise((r) => setTimeout(r, 150));
+
+  const noticeIndex = mockDetailedFeeNotices.findIndex((n) => n.id === noticeId);
+  if (noticeIndex === -1) throw new Error('Không tìm thấy Thông báo thu phí');
+
+  const old = mockDetailedFeeNotices[noticeIndex];
+
+  let newPaid = 0;
+  let statusLabel = 'Chưa thu phí';
+
+  if (paymentStatus === 'PAID') {
+    newPaid = old.totalDue;
+    statusLabel = 'Đã thu phí';
+  } else if (paymentStatus === 'PARTIAL') {
+    newPaid = Math.min(old.totalDue, Math.max(0, paidAmountInput));
+    statusLabel = `Thu một phần (${newPaid.toLocaleString('vi-VN')} đ)`;
+  } else {
+    newPaid = 0;
+    statusLabel = 'Chưa thu phí';
+  }
+
+  const remaining = Math.max(0, old.totalDue - newPaid);
+
+  const updated: DetailedMonthlyFeeNotice = {
+    ...old,
+    paidAmount: newPaid,
+    remainingAmount: remaining,
+    status: paymentStatus,
+    statusLabel,
+    notes: notesInput || old.notes,
+    lastUpdatedBy: actor.displayName || 'Kế toán viên',
+    lastUpdatedAt: new Date().toISOString(),
+  };
+
+  mockDetailedFeeNotices[noticeIndex] = updated;
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-ACC-001',
+    actorName: actor.displayName || 'Kế toán viên',
+    actorRole: actor.actorRole || 'ACCOUNTANT',
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole || 'Kế toán',
+    actionType: 'UPDATE',
+    actionLabel: 'Xác thực đóng phí / Cập nhật tiến trình thu phí',
+    module: 'BILLING_PRICING',
+    moduleLabel: 'Quản Lý Thu Phí Tháng',
+    targetEntityId: updated.id,
+    targetEntityName: `Thông báo thu phí cụ ${updated.residentName} (${updated.billingMonth})`,
+    summary: `Cập nhật trạng thái thu phí sang "${updated.statusLabel}". Đã thu: ${newPaid.toLocaleString('vi-VN')} đ. Còn nợ: ${remaining.toLocaleString('vi-VN')} đ.`,
+    details: `Người thực hiện: ${actor.displayName} (${actor.actorRole}) | Ghi chú: ${notesInput || 'Cập nhật từ hệ thống'}.`,
+    severity: 'IMPORTANT',
+  });
+
+  return updated;
+}
+
+export async function addFamilyMealFeeToNotice(residentId: string, mealFeeAmount: number): Promise<void> {
+  const noticeIndex = mockDetailedFeeNotices.findIndex((n) => n.residentId === residentId);
+  if (noticeIndex !== -1) {
+    const old = mockDetailedFeeNotices[noticeIndex];
+    const newFamilyMeals = old.familyMealsFee + mealFeeAmount;
+    const newTotalDue = old.totalDue + mealFeeAmount;
+    const newRemaining = Math.max(0, newTotalDue - old.paidAmount);
+
+    mockDetailedFeeNotices[noticeIndex] = {
+      ...old,
+      familyMealsFee: newFamilyMeals,
+      totalDue: newTotalDue,
+      remainingAmount: newRemaining,
+    };
+  }
 }

@@ -17,16 +17,34 @@ import {
   requestShiftSwap,
   scheduleShift,
   submitHandover,
+  fetchFullShiftSwaps,
+  createShiftSwapProposal,
+  respondShiftSwapTarget,
+  approveShiftSwapByManager,
+  fetchShiftTimeConfigs,
+  updateShiftTimeConfig,
+  fetchStaffMealRegistrations,
+  saveStaffMealRegistrations,
   HandoverItem,
   ShiftItem,
   ShiftStatus,
   ShiftSwapRequest,
+  ShiftTimeConfig,
+  StaffMealRegistration,
   ShiftType,
   StaffRecognition,
 } from '../../api/workforce';
+import {
+  fetchStaffKPIEvaluations,
+  submitStaffKPIEvaluation,
+  DEFAULT_KPI_CRITERIA_BY_GROUP,
+  JOB_GROUP_LABELS,
+  JobGroup,
+  KPICriterionResult,
+} from '../../api/kpi-evaluation';
 import { listStaffActors } from '../../api/staff-actors';
 import { fetchActiveStaff } from '../../api/auth';
-import { ROLE_LABELS } from '../../auth/role-policy';
+import { ROLE_LABELS, hasCapability } from '../../auth/role-policy';
 
 const SHIFT_TYPE_BADGE: Record<ShiftType, { label: string; className: string }> = {
   MORNING: { label: 'Ca Sáng (06:00 - 14:00)', className: 'badge badge-warning' },
@@ -67,7 +85,7 @@ export default function WorkforcePage() {
   const isSupervisor = actorRole === 'SUPERVISOR' || actorRole === 'CARE_MANAGER' || actorRole === 'ADMIN';
 
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<'SHIFTS' | 'SWAPS' | 'KPI' | 'RECOGNITIONS'>('SHIFTS');
+  const [activeTab, setActiveTab] = useState<'SHIFTS' | 'SWAPS' | 'KPI' | 'RECOGNITIONS' | 'MEAL_REGISTRATION' | 'SHIFT_TIMES' | 'KPI_CHECKLIST'>('SHIFTS');
 
   // Real-time Clock
   const [now, setNow] = useState<Date>(new Date());
@@ -82,6 +100,30 @@ export default function WorkforcePage() {
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
   const [search, setSearch] = useState<string>('');
   const [swapStatusFilter, setSwapStatusFilter] = useState<string>('ALL');
+
+  // State cho Đăng ký suất ăn NV
+  const [mealRegDate, setMealRegDate] = useState<string>(todayStr);
+  const [editingMealStaffId, setEditingMealStaffId] = useState<string>('');
+  const [mealBreakfast, setMealBreakfast] = useState<boolean>(true);
+  const [mealLunch, setMealLunch] = useState<boolean>(true);
+  const [mealDinner, setMealDinner] = useState<boolean>(false);
+  const [mealRegNotes, setMealRegNotes] = useState<string>('');
+
+  // State cho Cấu hình Khung Ca Trực
+  const [editingConfigGroup, setEditingConfigGroup] = useState<any | null>(null);
+  const [morningHoursInput, setMorningHoursInput] = useState<string>('06:00 - 14:00');
+  const [afternoonHoursInput, setAfternoonHoursInput] = useState<string>('14:00 - 22:00');
+  const [nightHoursInput, setNightHoursInput] = useState<string>('22:00 - 06:00');
+
+  // State cho Đánh giá KPI Ca Trực (Checklist dạng Tick)
+  const [kpiStaffId, setKpiStaffId] = useState<string>('');
+  const [kpiStaffName, setKpiStaffName] = useState<string>('');
+  const [kpiJobGroup, setKpiJobGroup] = useState<JobGroup>('CAREGIVER');
+  const [kpiShiftDate, setKpiShiftDate] = useState<string>(todayStr);
+  const [kpiShiftName, setKpiShiftName] = useState<string>('Ca Sáng (06:00 - 14:00)');
+  const [kpiTickResults, setKpiTickResults] = useState<Record<string, 'PASSED' | 'FAILED' | 'EXCELLENT'>>({});
+  const [kpiEvaluationNotes, setKpiEvaluationNotes] = useState<string>('');
+  const [kpiSuccessMsg, setKpiSuccessMsg] = useState<string>('');
 
   // Modals
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
@@ -138,7 +180,26 @@ export default function WorkforcePage() {
     queryKey: ['workforce-swaps', swapStatusFilter, actorId],
     queryFn: () => fetchSwapRequests(actorId, actorRole, { status: swapStatusFilter }),
     enabled: Boolean(actorId),
-    refetchInterval: 30000,
+  });
+
+  const fullSwapsQuery = useQuery({
+    queryKey: ['full-shift-swaps'],
+    queryFn: fetchFullShiftSwaps,
+  });
+
+  const shiftTimeConfigsQuery = useQuery({
+    queryKey: ['shift-time-configs'],
+    queryFn: fetchShiftTimeConfigs,
+  });
+
+  const staffMealsQuery = useQuery({
+    queryKey: ['staff-meal-registrations', mealRegDate],
+    queryFn: () => fetchStaffMealRegistrations(mealRegDate),
+  });
+
+  const kpiLogsQuery = useQuery({
+    queryKey: ['staff-kpi-evaluations'],
+    queryFn: () => fetchStaffKPIEvaluations(),
   });
 
   const { data: recognitions = [], refetch: refetchRecogs } = useQuery({
@@ -585,7 +646,28 @@ export default function WorkforcePage() {
           className={`btn btn-sm ${activeTab === 'SWAPS' ? 'btn-primary' : 'btn-secondary'}`}
           style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
         >
-          🔄 Đề Nghị Đổi Ca ({swapRequests.filter(s => s.status === 'PENDING').length > 0 ? `🔴 ${swapRequests.filter(s => s.status === 'PENDING').length} Chờ duyệt` : swapRequests.length})
+          🔄 Quy Trình Đổi Ca 3 Bước ({ (fullSwapsQuery.data || []).filter(s => s.managerApprovalStatus === 'PENDING').length })
+        </button>
+        <button
+          onClick={() => setActiveTab('MEAL_REGISTRATION')}
+          className={`btn btn-sm ${activeTab === 'MEAL_REGISTRATION' ? 'btn-primary' : 'btn-secondary'}`}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
+        >
+          🍱 Đăng Ký Suất Ăn NV ({isSupervisor ? 'Phân quyền Quản lý' : 'Xem danh sách'})
+        </button>
+        <button
+          onClick={() => setActiveTab('SHIFT_TIMES')}
+          className={`btn btn-sm ${activeTab === 'SHIFT_TIMES' ? 'btn-primary' : 'btn-secondary'}`}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
+        >
+          ⏱️ Khung Ca Trực Linh Hoạt
+        </button>
+        <button
+          onClick={() => setActiveTab('KPI_CHECKLIST')}
+          className={`btn btn-sm ${activeTab === 'KPI_CHECKLIST' ? 'btn-primary' : 'btn-secondary'}`}
+          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
+        >
+          ✅ Đánh Giá KPI Ca Trực & Bell Notice
         </button>
         <button
           onClick={() => setActiveTab('KPI')}
@@ -870,139 +952,664 @@ export default function WorkforcePage() {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 2: ĐỀ NGHỊ ĐỔI CA */}
+      {/* TAB 2: QUY TRÌNH ĐỔI CA 3 BƯỚC (CÓ ĐỒNG NGHIỆP XÁC NHẬN & HẠN CUỐI TUẦN) */}
       {/* ========================================================================= */}
       {activeTab === 'SWAPS' && (
-        <div>
-          <div className="filter-card">
-            <div className="filter-group" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <span className="filter-label">Lọc theo trạng thái:</span>
-                <select
-                  value={swapStatusFilter}
-                  onChange={e => setSwapStatusFilter(e.target.value)}
-                  className="form-select"
-                >
-                  <option value="ALL">Tất cả đề nghị</option>
-                  <option value="PENDING">Chờ phê duyệt</option>
-                  <option value="APPROVED">Đã phê duyệt</option>
-                  <option value="REJECTED">Đã từ chối</option>
-                </select>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#4338ca', fontSize: '1.15rem', fontWeight: 800 }}>
+                  🔄 Quy Trình Đổi Ca 3 Bước & Xét Duyệt Quản Lý
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Yêu cầu gửi đề nghị trước cuối tuần trước liền kề (Chủ Nhật 23:59). Quản lý chỉ được phép duyệt khi Đồng nghiệp được đề xuất đã bấm <b>"Đồng Ý"</b>.
+                </p>
               </div>
 
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                Hiển thị <b>{swapRequests.length}</b> đề nghị đổi ca
-              </div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ fontWeight: 700 }}
+                onClick={async () => {
+                  const origDate = prompt('Nhập ngày ca trực hiện tại của bạn (YYYY-MM-DD):', new Date().toISOString().slice(0, 10));
+                  if (!origDate) return;
+                  const origType = prompt('Nhập ca muốn đổi (Sáng/Chiều/Đêm):', 'Ca Sáng (06:00 - 14:00)');
+                  if (!origType) return;
+                  const targetStaff = prompt('Nhập tên hoặc mã Nhân viên muốn đổi ca cùng:', 'Trần Thị Mai');
+                  if (!targetStaff) return;
+                  const targetDate = prompt('Nhập ngày muốn đổi sang (YYYY-MM-DD):', origDate);
+                  if (!targetDate) return;
+                  const reason = prompt('Nhập lý do đổi ca:');
+                  if (!reason) return;
+
+                  try {
+                    await createShiftSwapProposal(actor!, {
+                      originalShiftDate: origDate,
+                      originalShiftType: origType,
+                      targetStaffId: 'cg-mai-001',
+                      targetStaffName: targetStaff,
+                      targetShiftDate: targetDate,
+                      targetShiftType: origType,
+                      reason,
+                    });
+                    alert('✅ Đã gửi đề nghị đổi ca thành công! Vui lòng nhắc đồng nghiệp bấm "Đồng ý" (Bước 2).');
+                    fullSwapsQuery.refetch();
+                  } catch (err: any) {
+                    alert(err.message || 'Lỗi gửi đề nghị');
+                  }
+                }}
+              >
+                + Đề Nghị Đổi Ca Mới (Bước 1)
+              </button>
             </div>
-          </div>
 
-          <div className="table-responsive">
-            <table className="ui-table">
-              <thead>
-                <tr>
-                  <th>Nhân sự đề nghị</th>
-                  <th>Ca trực muốn đổi</th>
-                  <th>Đề nghị đổi với</th>
-                  <th>Lý do đổi ca</th>
-                  <th>Trạng thái & Phê duyệt</th>
-                  {isSupervisor && <th className="text-right">Duyệt đổi ca</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {swapRequests.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
-                      Chưa có đề nghị đổi ca nào. Để đổi ca, vui lòng vào tab <b>"Lịch Trực & Ca Kíp"</b> và bấm nút <b>"🔄 Đổi ca"</b> trên ca trực của bạn.
-                    </td>
+            <div className="table-responsive">
+              <table className="ui-table" style={{ width: '100%', fontSize: '0.88rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc' }}>
+                    <th>Bước 1: Người đề xuất</th>
+                    <th>Ca trực muốn đổi</th>
+                    <th>Người được đề xuất</th>
+                    <th>Bước 2: Đồng nghiệp xác nhận</th>
+                    <th>Bước 3: Quản lý phê duyệt</th>
+                    <th className="text-right">Thao tác</th>
                   </tr>
-                ) : (
-                  swapRequests.map(swap => {
-                    const statusMeta = SWAP_STATUS_BADGE[swap.status] || { label: swap.status, className: 'badge badge-neutral' };
-                    const origTypeMeta = swap.originalShiftType ? SHIFT_TYPE_BADGE[swap.originalShiftType] : null;
+                </thead>
+                <tbody>
+                  {(fullSwapsQuery.data || []).length === 0 ? (
+                    <tr>
+                      <td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                        Chưa có đề nghị đổi ca nào.
+                      </td>
+                    </tr>
+                  ) : (
+                    (fullSwapsQuery.data || []).map((swap) => {
+                      const isTargetConsentAgreed = swap.targetConsentStatus === 'AGREED';
+                      const isManagerApproved = swap.managerApprovalStatus === 'APPROVED';
 
-                    return (
-                      <tr key={swap.swap_request_id}>
-                        <td>
-                          <div className="cell-primary">{swap.requesterName || swap.requester_actor_id}</div>
-                          <div className="cell-secondary">
-                            {swap.requesterCode ? `Mã: ${swap.requesterCode}` : ''} {swap.requesterRole ? `(${ROLE_LABELS[swap.requesterRole as keyof typeof ROLE_LABELS] || swap.requesterRole})` : ''}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>
-                            Gửi lúc: {new Date(swap.created_at).toLocaleString('vi-VN')}
-                          </div>
-                        </td>
-                        <td>
-                          {origTypeMeta && <span className={origTypeMeta.className}>{origTypeMeta.label}</span>}
-                          <div style={{ fontWeight: 600, marginTop: '3px' }}>
-                            {swap.originalShiftDate ? new Date(swap.originalShiftDate).toLocaleDateString('vi-VN') : '—'}
-                          </div>
-                          <div className="cell-secondary">
-                            {swap.originalStartTime ? new Date(swap.originalStartTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''} -{' '}
-                            {swap.originalEndTime ? new Date(swap.originalEndTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
-                          </div>
-                        </td>
-                        <td>
-                          {swap.targetName ? (
-                            <>
-                              <div className="cell-primary">{swap.targetName}</div>
-                              <div className="cell-secondary">{swap.targetCode} ({ROLE_LABELS[swap.targetRole as keyof typeof ROLE_LABELS] || swap.targetRole})</div>
-                            </>
-                          ) : (
-                            <span style={{ color: '#6b7280', fontStyle: 'italic' }}>Đổi linh hoạt / Bất kỳ nhân sự phù hợp</span>
-                          )}
-                        </td>
-                        <td>
-                          <div style={{ maxWidth: '280px', whiteSpace: 'normal', lineHeight: '1.4' }}>
-                            {swap.reason}
-                          </div>
-                          {swap.rejection_reason && (
-                            <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '4px' }}>
-                              <b>Lý do từ chối:</b> {swap.rejection_reason}
+                      return (
+                        <tr key={swap.id}>
+                          <td>
+                            <div style={{ fontWeight: 700, color: '#1e293b' }}>{swap.requesterName}</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Role: {swap.requesterRole}</div>
+                            <div style={{ fontSize: '0.78rem', color: '#16a34a', marginTop: '2px' }}>
+                              {swap.submittedBeforeDeadline ? '✓ Đúng hạn trước Chủ Nhật' : '⚠️ Quá hạn cuối tuần'}
                             </div>
-                          )}
-                        </td>
-                        <td>
-                          <span className={statusMeta.className}>{statusMeta.label}</span>
-                          {swap.approverName && (
-                            <div className="cell-secondary" style={{ marginTop: '3px' }}>
-                              Bởi: {swap.approverName} ({swap.approved_by_role})
-                            </div>
-                          )}
-                        </td>
-                        {isSupervisor && (
-                          <td className="text-right">
-                            {swap.status === 'PENDING' ? (
-                              <div className="btn-group" style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
-                                <button
-                                  onClick={() => approveSwapMutation.mutate(swap.swap_request_id)}
-                                  disabled={approveSwapMutation.isPending}
-                                  className="btn btn-sm btn-success"
-                                  title="Phê duyệt hoán đổi ca và cập nhật lịch"
-                                >
-                                  ✅ Duyệt
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setRejectingSwapId(swap.swap_request_id);
-                                    setRejectionReasonInput('');
-                                  }}
-                                  className="btn btn-sm btn-danger"
-                                  title="Từ chối đề nghị đổi ca"
-                                >
-                                  ❌ Từ chối
-                                </button>
-                              </div>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>{swap.originalShiftDate} ({swap.originalShiftType})</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Đổi sang: {swap.targetShiftDate}</div>
+                            <div style={{ fontSize: '0.8rem', color: '#4338ca', fontStyle: 'italic' }}>Lý do: {swap.reason}</div>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 700, color: '#0f766e' }}>{swap.targetStaffName}</div>
+                          </td>
+                          <td>
+                            {swap.targetConsentStatus === 'AGREED' ? (
+                              <span className="badge badge-success" style={{ fontWeight: 700 }}>
+                                ✅ Đã đồng ý ({new Date(swap.targetConsentedAt || '').toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })})
+                              </span>
+                            ) : swap.targetConsentStatus === 'REJECTED' ? (
+                              <span className="badge badge-danger">❌ Đồng nghiệp từ chối</span>
                             ) : (
-                              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Đã xử lý</span>
+                              <span className="badge badge-warning">⏳ Chờ B xác nhận</span>
                             )}
                           </td>
-                        )}
+                          <td>
+                            {swap.managerApprovalStatus === 'APPROVED' ? (
+                              <span className="badge badge-success" style={{ fontWeight: 800 }}>
+                                🟢 Đã duyệt ({swap.approverName})
+                              </span>
+                            ) : swap.managerApprovalStatus === 'REJECTED' ? (
+                              <span className="badge badge-danger">🔴 Từ chối ({swap.rejectionReason})</span>
+                            ) : (
+                              <span className="badge badge-neutral">Chờ Quản lý duyệt</span>
+                            )}
+                          </td>
+                          <td className="text-right">
+                            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                              {/* Nút cho Đồng nghiệp B bấm Đồng ý / Từ chối (Bước 2) */}
+                              {swap.targetConsentStatus === 'PENDING' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-success"
+                                    onClick={async () => {
+                                      try {
+                                        await respondShiftSwapTarget(actor!, swap.id, 'AGREED');
+                                        fullSwapsQuery.refetch();
+                                      } catch (err: any) {
+                                        alert(err.message);
+                                      }
+                                    }}
+                                  >
+                                    👍 Tôi Đồng Ý
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-danger"
+                                    onClick={async () => {
+                                      try {
+                                        await respondShiftSwapTarget(actor!, swap.id, 'REJECTED');
+                                        fullSwapsQuery.refetch();
+                                      } catch (err: any) {
+                                        alert(err.message);
+                                      }
+                                    }}
+                                  >
+                                    Từ chối
+                                  </button>
+                                </>
+                              )}
+
+                              {/* Nút cho Quản lý Duyệt / Từ chối (Bước 3 - Chỉ sáng nút khi B đã ĐỒNG Ý) */}
+                              {isSupervisor && swap.managerApprovalStatus === 'PENDING' && (
+                                <button
+                                  type="button"
+                                  className={`btn btn-sm ${isTargetConsentAgreed ? 'btn-primary' : 'btn-neutral'}`}
+                                  disabled={!isTargetConsentAgreed}
+                                  title={!isTargetConsentAgreed ? 'Chờ người được đề xuất bấm Đồng ý trước!' : 'Phê duyệt chính thức'}
+                                  onClick={async () => {
+                                    try {
+                                      await approveShiftSwapByManager(actor!, swap.id, 'APPROVED');
+                                      alert('✅ Đã phê duyệt hoán đổi ca trực chính thức!');
+                                      fullSwapsQuery.refetch();
+                                    } catch (err: any) {
+                                      alert(err.message);
+                                    }
+                                  }}
+                                >
+                                  {isTargetConsentAgreed ? '✅ Duyệt (Bước 3)' : '🔒 Chờ B đồng ý'}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 2.1: ĐĂNG KÝ SUẤT ĂN NHÂN VIÊN THEO CA & NHÓM CÔNG VIỆC */}
+      {/* ========================================================================= */}
+      {activeTab === 'MEAL_REGISTRATION' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#15803d', fontSize: '1.15rem', fontWeight: 800 }}>
+                  🍱 Đăng Ký Suất Ăn Nhân Viên Theo Nhóm Công Việc & Ca Làm Việc
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Phân quyền cho <b>Nhân viên Quản lý</b> thực hiện đăng ký suất ăn cho nhân viên. Quy định: Bếp/Tạp vụ (Ca 1: Sáng+Trưa; Ca 2: Trưa); Chăm sóc/Y tế (Ca ngày: Trưa + tăng ca ăn Sáng; Ca 24h: Sáng, Trưa, Tối); Văn phòng/PHCN (Trưa).
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>Ngày đăng ký:</label>
+                <input
+                  type="date"
+                  className="text-input"
+                  value={mealRegDate}
+                  onChange={(e) => setMealRegDate(e.target.value)}
+                  style={{ width: '160px' }}
+                />
+              </div>
+            </div>
+
+            {/* Matrix Form Đăng Ký Suất Ăn theo Nhóm Công Việc */}
+            {isSupervisor && (
+              <div style={{ background: '#f0fdf4', padding: '1.25rem', borderRadius: '0.75rem', border: '1px solid #bbf7d0', marginBottom: '1.5rem' }}>
+                <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#166534', fontWeight: 800 }}>
+                  📝 Thêm / Đăng Ký Suất Ăn Cho Nhân Viên Mới
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                  <label className="field-group">
+                    <span className="field-label">Chọn Nhân viên *</span>
+                    <input
+                      className="text-input"
+                      placeholder="Nhập tên nhân viên (VD: Hoàng Văn Tuấn)"
+                      value={editingMealStaffId}
+                      onChange={(e) => setEditingMealStaffId(e.target.value)}
+                    />
+                  </label>
+
+                  <label className="field-group">
+                    <span className="field-label">Đăng ký Bữa Sáng (07:00-08:00)</span>
+                    <select
+                      className="text-input"
+                      value={mealBreakfast ? 'YES' : 'NO'}
+                      onChange={(e) => setMealBreakfast(e.target.value === 'YES')}
+                    >
+                      <option value="YES">Có ăn sáng</option>
+                      <option value="NO">Không ăn sáng</option>
+                    </select>
+                  </label>
+
+                  <label className="field-group">
+                    <span className="field-label">Đăng ký Bữa Trưa (11:00-12:00)</span>
+                    <select
+                      className="text-input"
+                      value={mealLunch ? 'YES' : 'NO'}
+                      onChange={(e) => setMealLunch(e.target.value === 'YES')}
+                    >
+                      <option value="YES">Có ăn trưa</option>
+                      <option value="NO">Không ăn trưa</option>
+                    </select>
+                  </label>
+
+                  <label className="field-group">
+                    <span className="field-label">Đăng ký Bữa Tối (17:00-18:00)</span>
+                    <select
+                      className="text-input"
+                      value={mealDinner ? 'YES' : 'NO'}
+                      onChange={(e) => setMealDinner(e.target.value === 'YES')}
+                    >
+                      <option value="YES">Có ăn tối (Dành cho ca 24h)</option>
+                      <option value="NO">Không ăn tối</option>
+                    </select>
+                  </label>
+                </div>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ fontWeight: 700 }}
+                  onClick={async () => {
+                    if (!editingMealStaffId.trim()) {
+                      alert('Vui lòng nhập tên nhân viên');
+                      return;
+                    }
+                    try {
+                      await saveStaffMealRegistrations(actor!, [
+                        {
+                          registrationDate: mealRegDate,
+                          staffActorId: `STAFF-${Date.now().toString().slice(-4)}`,
+                          staffName: editingMealStaffId.trim(),
+                          jobRole: 'CAREGIVER',
+                          jobGroupLabel: 'Nhóm Chăm Sóc & Y Tế',
+                          shiftName: 'Ca trực ngày',
+                          hasBreakfast: mealBreakfast,
+                          hasLunch: mealLunch,
+                          hasDinner: mealDinner,
+                          notes: mealRegNotes || 'Đăng ký bởi Quản lý',
+                        },
+                      ]);
+                      alert('✅ Đã lưu đăng ký suất ăn thành công!');
+                      setEditingMealStaffId('');
+                      staffMealsQuery.refetch();
+                    } catch (err: any) {
+                      alert(err.message);
+                    }
+                  }}
+                >
+                  💾 Lưu Đăng Ký Suất Ăn
+                </button>
+              </div>
+            )}
+
+            {/* Bảng Danh Sách Đã Đăng Ký */}
+            <div className="table-responsive">
+              <table className="ui-table">
+                <thead>
+                  <tr>
+                    <th>Họ và Tên Nhân Viên</th>
+                    <th>Nhóm Công Việc</th>
+                    <th>Ca Làm Việc</th>
+                    <th>Bữa Sáng (07:00-08:00)</th>
+                    <th>Bữa Trưa (11:00-12:00)</th>
+                    <th>Bữa Tối (17:00-18:00)</th>
+                    <th>Quản lý đăng ký</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(staffMealsQuery.data || []).length === 0 ? (
+                    <tr>
+                      <td colSpan={7} style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+                        Chưa có dữ liệu đăng ký suất ăn cho ngày {mealRegDate}.
+                      </td>
+                    </tr>
+                  ) : (
+                    (staffMealsQuery.data || []).map((item) => (
+                      <tr key={item.id}>
+                        <td><b>{item.staffName}</b></td>
+                        <td>{item.jobGroupLabel}</td>
+                        <td><span className="badge badge-info">{item.shiftName}</span></td>
+                        <td>{item.hasBreakfast ? <span className="badge badge-success">✓ Đã đăng ký</span> : <span style={{ color: '#94a3b8' }}>Không</span>}</td>
+                        <td>{item.hasLunch ? <span className="badge badge-success">✓ Đã đăng ký</span> : <span style={{ color: '#94a3b8' }}>Không</span>}</td>
+                        <td>{item.hasDinner ? <span className="badge badge-success">✓ Đã đăng ký</span> : <span style={{ color: '#94a3b8' }}>Không</span>}</td>
+                        <td style={{ fontSize: '0.8rem', color: '#64748b' }}>{item.registeredByStaffName}</td>
                       </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 2.2: CẤU HÌNH KHUNG CA TRỰC LINH HOẠT THEO NHÓM NHÂN VIÊN */}
+      {/* ========================================================================= */}
+      {activeTab === 'SHIFT_TIMES' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#0369a1', fontSize: '1.15rem', fontWeight: 800 }}>
+                  ⏱️ Cấu Hình Khung Ca Trực Linh Hoạt (Editable)
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Cho phép điều chỉnh linh hoạt khung thời gian ca Sáng, Chiều, Đêm theo đặc thù từng nhóm nhân viên. Giữ nút <b>"Ca linh hoạt"</b> cho trường hợp phát sinh.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+              {(shiftTimeConfigsQuery.data || []).map((config) => (
+                <div
+                  key={config.jobGroup}
+                  style={{
+                    border: '1px solid #bae6fd',
+                    borderRadius: '0.75rem',
+                    padding: '1.25rem',
+                    background: '#f0f9ff',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                    <h4 style={{ margin: 0, fontSize: '1.05rem', color: '#0369a1', fontWeight: 800 }}>
+                      {config.jobGroupLabel}
+                    </h4>
+                    <span className="badge badge-info">Ca linh hoạt: OK</span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.88rem', color: '#334155', marginBottom: '1rem' }}>
+                    <div>🌅 <b>Ca Sáng:</b> {config.morningShiftHours}</div>
+                    <div>☀️ <b>Ca Chiều:</b> {config.afternoonShiftHours}</div>
+                    <div>🌙 <b>Ca Đêm:</b> {config.nightShiftHours}</div>
+                  </div>
+
+                  {isSupervisor && (
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      style={{ width: '100%', fontWeight: 700, borderColor: '#38bdf8', color: '#0284c7' }}
+                      onClick={() => {
+                        setEditingConfigGroup(config);
+                        setMorningHoursInput(config.morningShiftHours);
+                        setAfternoonHoursInput(config.afternoonShiftHours);
+                        setNightHoursInput(config.nightShiftHours);
+                      }}
+                    >
+                      ✏️ Chỉnh Sửa Khung Giờ Ca Trực
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* TAB 2.3: ĐÁNH GIÁ KPI CA TRỰC CHI TIẾT (TICK CHECKLIST & BELL NOTICE) */}
+      {/* ========================================================================= */}
+      {activeTab === 'KPI_CHECKLIST' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#7c3aed', fontSize: '1.15rem', fontWeight: 800 }}>
+                  ✅ Tiêu Chí Đánh Giá KPI Nhân Viên Ca Trực (Dạng Tick) & Bell Notice
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Phân quyền độc quyền cho <b>Nhân viên Quản lý</b>. Khi có tiêu chí <b>Chưa đạt</b> → Tự động phát Bell notice cảnh báo cá nhân. Khi <b>Xuất sắc</b> → Bắn Bell notice vinh danh toàn viện!
+                </p>
+              </div>
+            </div>
+
+            {kpiSuccessMsg && (
+              <div className="alert-card alert-success" style={{ marginBottom: '1rem' }}>
+                <span>{kpiSuccessMsg}</span>
+              </div>
+            )}
+
+            {/* Form Đánh Giá KPI Dạng Tick */}
+            {isSupervisor ? (
+              <div style={{ background: '#faf5ff', padding: '1.25rem', borderRadius: '0.75rem', border: '1px solid #e9d5ff', marginBottom: '1.5rem' }}>
+                <h4 style={{ margin: '0 0 1rem 0', fontSize: '1.05rem', color: '#6b21a8', fontWeight: 800 }}>
+                  📝 Lập Đánh Giá KPI Hàng Ngày Theo Ca Trực
+                </h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                  <label className="field-group">
+                    <span className="field-label">Tên Nhân viên được đánh giá *</span>
+                    <input
+                      className="text-input"
+                      placeholder="Ví dụ: Hoàng Văn Tuấn"
+                      value={kpiStaffName}
+                      onChange={(e) => setKpiStaffName(e.target.value)}
+                    />
+                  </label>
+
+                  <label className="field-group">
+                    <span className="field-label">Nhóm Công Việc *</span>
+                    <select
+                      className="text-input"
+                      value={kpiJobGroup}
+                      onChange={(e) => {
+                        setKpiJobGroup(e.target.value as any);
+                        setKpiTickResults({});
+                      }}
+                    >
+                      <option value="CAREGIVER">Nhân viên Chăm sóc</option>
+                      <option value="NURSE">Nhân viên Y tế / Điều dưỡng</option>
+                      <option value="NUTRITIONIST">Nhân viên Bếp & Dinh dưỡng</option>
+                      <option value="HOUSEKEEPING">Nhân viên Tạp vụ & Vệ sinh</option>
+                      <option value="REHABILITATION_SPECIALIST">Vật lý trị liệu - PHCN</option>
+                      <option value="OFFICE_ADMIN">Văn phòng & Hành chính</option>
+                    </select>
+                  </label>
+
+                  <label className="field-group">
+                    <span className="field-label">Ngày ca trực *</span>
+                    <input
+                      type="date"
+                      className="text-input"
+                      value={kpiShiftDate}
+                      onChange={(e) => setKpiShiftDate(e.target.value)}
+                    />
+                  </label>
+
+                  <label className="field-group">
+                    <span className="field-label">Ca làm việc *</span>
+                    <input
+                      className="text-input"
+                      value={kpiShiftName}
+                      onChange={(e) => setKpiShiftName(e.target.value)}
+                    />
+                  </label>
+                </div>
+
+                {/* Danh sách Tiêu Chí Dạng Tick */}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#581c87', marginBottom: '0.6rem' }}>
+                    📋 Tiêu chí đánh giá dạng Tick (Nhóm {JOB_GROUP_LABELS[kpiJobGroup]}):
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {(DEFAULT_KPI_CRITERIA_BY_GROUP[kpiJobGroup] || []).map((criterion) => {
+                      const currentStatus = kpiTickResults[criterion.id] || 'PASSED';
+                      return (
+                        <div
+                          key={criterion.id}
+                          style={{
+                            background: '#ffffff',
+                            padding: '0.85rem 1rem',
+                            borderRadius: '0.5rem',
+                            border: '1px solid #e9d5ff',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: '0.75rem',
+                          }}
+                        >
+                          <div>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#7e22ce', background: '#f3e8ff', padding: '0.15rem 0.4rem', borderRadius: '0.2rem' }}>
+                              [{criterion.code}] {criterion.category}
+                            </span>
+                            <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem', marginTop: '0.2rem' }}>
+                              {criterion.title}
+                            </div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{criterion.description}</div>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              type="button"
+                              className={`btn btn-sm ${currentStatus === 'PASSED' ? 'btn-success' : 'btn-neutral'}`}
+                              onClick={() => setKpiTickResults({ ...kpiTickResults, [criterion.id]: 'PASSED' })}
+                            >
+                              ✓ Đạt
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn btn-sm ${currentStatus === 'EXCELLENT' ? 'btn-primary' : 'btn-neutral'}`}
+                              onClick={() => setKpiTickResults({ ...kpiTickResults, [criterion.id]: 'EXCELLENT' })}
+                            >
+                              ⭐ Xuất sắc
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn btn-sm ${currentStatus === 'FAILED' ? 'btn-danger' : 'btn-neutral'}`}
+                              onClick={() => setKpiTickResults({ ...kpiTickResults, [criterion.id]: 'FAILED' })}
+                            >
+                              ⚠️ Chưa đạt / Có vấn đề
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <label className="field-group" style={{ marginBottom: '1.25rem' }}>
+                  <span className="field-label">Ghi chú nhận xét của Quản lý</span>
+                  <input
+                    className="text-input"
+                    value={kpiEvaluationNotes}
+                    placeholder="Nhập ghi chú hoặc dặn dò thêm..."
+                    onChange={(e) => setKpiEvaluationNotes(e.target.value)}
+                  />
+                </label>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ fontWeight: 700, background: '#7c3aed', borderColor: '#6d28d9' }}
+                  onClick={async () => {
+                    if (!kpiStaffName.trim()) {
+                      alert('Vui lòng nhập tên nhân viên được đánh giá');
+                      return;
+                    }
+
+                    const criteria = DEFAULT_KPI_CRITERIA_BY_GROUP[kpiJobGroup];
+                    const results: KPICriterionResult[] = criteria.map((c) => ({
+                      criterionId: c.id,
+                      criterionCode: c.code,
+                      criterionTitle: c.title,
+                      status: kpiTickResults[c.id] || 'PASSED',
+                    }));
+
+                    try {
+                      const record = await submitStaffKPIEvaluation(actor!, {
+                        staffId: `STAFF-${Date.now().toString().slice(-4)}`,
+                        staffName: kpiStaffName.trim(),
+                        jobGroup: kpiJobGroup,
+                        shiftDate: kpiShiftDate,
+                        shiftName: kpiShiftName,
+                        results,
+                        notes: kpiEvaluationNotes,
+                      });
+
+                      setKpiSuccessMsg(`✅ Đã hoàn tất đánh giá KPI cho ${record.staffName}! Đã tự động kích hoạt Bell Notice (${record.warningSent ? '⚠️ Cảnh báo cá nhân' : record.honorSent ? '🌟 Vinh danh toàn viện' : 'Bình thường'}).`);
+                      setKpiStaffName('');
+                      setKpiEvaluationNotes('');
+                      kpiLogsQuery.refetch();
+                    } catch (err: any) {
+                      alert(err.message || 'Lỗi khi lưu đánh giá KPI');
+                    }
+                  }}
+                >
+                  🔔 Hoàn Tất Đánh Giá KPI & Bắn Bell Notice
+                </button>
+              </div>
+            ) : (
+              <div className="alert-card alert-warning" style={{ marginBottom: '1.5rem' }}>
+                <span>🔒 Tính năng đánh giá KPI chỉ phân quyền dành riêng cho Nhân viên Quản lý.</span>
+              </div>
+            )}
+
+            {/* Bảng Lịch Sử Đánh Giá KPI */}
+            <div className="table-responsive">
+              <table className="ui-table">
+                <thead>
+                  <tr>
+                    <th>Nhân viên được đánh giá</th>
+                    <th>Nhóm & Ca trực</th>
+                    <th>Điểm KPI</th>
+                    <th>Kết quả đánh giá</th>
+                    <th>Bell Notice đã gửi</th>
+                    <th>Quản lý đánh giá</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(kpiLogsQuery.data || []).map((log) => (
+                    <tr key={log.id}>
+                      <td>
+                        <div style={{ fontWeight: 700 }}>{log.staffName}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Mã: {log.staffId}</div>
+                      </td>
+                      <td>
+                        <div><b>{log.jobGroupLabel}</b></div>
+                        <div style={{ fontSize: '0.8rem', color: '#475569' }}>{log.shiftName} ({log.shiftDate})</div>
+                      </td>
+                      <td>
+                        <b style={{ fontSize: '1.05rem', color: log.totalScore < 70 ? '#dc2626' : '#16a34a' }}>
+                          {log.totalScore}/100đ
+                        </b>
+                      </td>
+                      <td>
+                        <span className={`badge ${log.overallGrade === 'EXCELLENT' ? 'badge-success' : log.overallGrade === 'GOOD' ? 'badge-info' : 'badge-danger'}`}>
+                          {log.overallGradeLabel}
+                        </span>
+                      </td>
+                      <td>
+                        {log.warningSent ? (
+                          <span className="badge badge-danger">⚠️ Bell Nhắc Nhở Cá Nhân</span>
+                        ) : log.honorSent ? (
+                          <span className="badge badge-purple">🌟 Bell Vinh Danh Toàn Viện</span>
+                        ) : (
+                          <span className="badge badge-neutral">Bình thường</span>
+                        )}
+                      </td>
+                      <td style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                        {log.evaluatorName} ({new Date(log.evaluatedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })})
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

@@ -1,4 +1,11 @@
-export type NotificationType = 'ASSIGNMENT' | 'MEDICAL_ALERT' | 'KITCHEN_ALERT' | 'WORKFORCE_ALERT' | 'SYSTEM';
+export type NotificationType =
+  | 'ASSIGNMENT'
+  | 'MEDICAL_ALERT'
+  | 'KITCHEN_ALERT'
+  | 'WORKFORCE_ALERT'
+  | 'SYSTEM'
+  | 'WARNING_NOTICE'
+  | 'HONOR_NOTICE';
 
 export interface NotificationItem {
   id: string;
@@ -9,6 +16,8 @@ export interface NotificationItem {
   isRead: boolean;
   targetUrl: string;
   targetRoles?: string[];
+  targetStaffId?: string; // Nhắm tới nhân viên cụ thể (dành cho Cảnh báo cá nhân)
+  isGlobal?: boolean;     // Phát cho toàn bộ nhân viên (dành cho Vinh danh thành tích)
   createdBy?: string;
 }
 
@@ -119,5 +128,24 @@ export function publishDirectorNotification(payload: {
     targetUrl: payload.targetUrl || '/dashboard',
     targetRoles: payload.targetRoles,
     createdBy: payload.actorName || 'Ban Giám đốc',
+  });
+}
+
+export async function sendSystemNotification(payload: {
+  title: string;
+  message: string;
+  type: NotificationType;
+  severity?: 'INFO' | 'WARNING' | 'HIGH' | 'CRITICAL';
+  targetStaffId?: string;
+  isGlobal?: boolean;
+}): Promise<NotificationItem[]> {
+  return pushInAppNotification({
+    type: payload.type,
+    title: payload.title,
+    message: payload.message,
+    targetUrl: '/workforce',
+    targetStaffId: payload.targetStaffId,
+    isGlobal: payload.isGlobal,
+    createdBy: 'Hệ thống Quản lý Tâm An Care',
   });
 }

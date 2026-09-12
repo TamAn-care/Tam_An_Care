@@ -5,8 +5,11 @@ import { listResidents } from '../../api/residents';
 import { fetchLeaveRequests, createLeaveRequest, LeaveType } from '../../api/resident-leave';
 import { listHealthReports, downloadHealthReportPdf, HealthReportRow } from '../health-reports/healthReportsApi';
 import { getAssignedResidentIdsForGuardian, getAssignedResidentIdsForActor } from '../../auth/role-policy';
+import { getTodayMenuSchedule, fetchFamilyMealBookings, bookFamilyMeal } from '../../api/kitchen-operations';
+import { fetchResidentFamilySupplies } from '../../api/resident-supplies';
+import { fetchPsychologicalAssessments, EMOTIONAL_STATE_META } from '../../api/psychological-assessment';
+import { fetchDetailedFeeNotices, updateFeeNoticePayment } from '../../api/billing';
 import { fetchResidentIntegrationOverview } from '../../api/integration';
-import { getTodayMenuSchedule } from '../../api/kitchen-operations';
 import { LoadingState, ErrorState, EmptyState } from '../../components/feedback/FeedbackStates';
 import ElderlyAvatar from '../../components/common/ElderlyAvatar';
 
@@ -87,9 +90,22 @@ export default function FamilyPortalPage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'health' | 'leave' | 'nutrition' | 'visit'>('health');
+  const [activeTab, setActiveTab] = useState<'health' | 'leave' | 'nutrition' | 'visit' | 'supplies' | 'psychology' | 'fee-notice' | 'family-meal'>('health');
   const [selectedResidentId, setSelectedResidentId] = useState<string>('');
   const [downloadingPdfId, setDownloadingPdfId] = useState<string | null>(null);
+
+  // Form state cho Đăng ký cơm người nhà
+  const [mealBookingDate, setMealBookingDate] = useState<string>('');
+  const [mealBookingType, setMealBookingType] = useState<'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER'>('LUNCH');
+  const [mealPortionCount, setMealPortionCount] = useState<number>(2);
+  const [mealDietNotes, setMealDietNotes] = useState<string>('');
+  const [mealBookingSuccessMsg, setMealBookingSuccessMsg] = useState<string>('');
+
+  // Payment Verification Modal State
+  const [verifyingFeeNotice, setVerifyingFeeNotice] = useState<any | null>(null);
+  const [paymentStatusInput, setPaymentStatusInput] = useState<'PAID' | 'UNPAID' | 'PARTIAL'>('PAID');
+  const [paidAmountValue, setPaidAmountValue] = useState<number>(0);
+  const [paymentNotesInput, setPaymentNotesInput] = useState<string>('');
 
   const todayMenuQuery = useQuery({
     queryKey: ['today-menu-schedule'],
@@ -195,10 +211,33 @@ export default function FamilyPortalPage() {
     enabled: Boolean(actor) && Boolean(activeResId),
   });
 
-  const assignedCaregiver = integrationQuery.data?.assignedStaff;
-  const assignedCaregiverDisplay = assignedCaregiver?.staff_name
-    ? `${assignedCaregiver.staff_name} (Nhân viên chăm sóc)`
-    : 'Lê Thị Mai (Nhân viên chăm sóc)';
+  // Fetch Resident Family Supplies
+  const suppliesQuery = useQuery({
+    queryKey: ['family-resident-supplies', activeResId],
+    queryFn: () => fetchResidentFamilySupplies(activeResId),
+    enabled: Boolean(activeResId),
+  });
+
+  // Fetch Psychological Assessments
+  const psychologyQuery = useQuery({
+    queryKey: ['family-psychology-assessments', activeResId],
+    queryFn: () => fetchPsychologicalAssessments(activeResId),
+    enabled: Boolean(activeResId),
+  });
+
+  // Fetch Monthly Fee Notices (17 Mục Excel)
+  const feeNoticesQuery = useQuery({
+    queryKey: ['family-fee-notices', activeResId],
+    queryFn: () => fetchDetailedFeeNotices(activeResId),
+    enabled: Boolean(activeResId),
+  });
+
+  // Fetch Family Meal Bookings
+  const familyMealsQuery = useQuery({
+    queryKey: ['family-meal-bookings', activeResId],
+    queryFn: () => fetchFamilyMealBookings(activeResId),
+    enabled: Boolean(activeResId),
+  });
 
   // Fetch Leave Requests for this Resident
   const leaveQuery = useQuery({
@@ -397,6 +436,7 @@ export default function FamilyPortalPage() {
   const currentAge = new Date().getFullYear() - birthYear;
   const roomDisplay = resData.room ? `Phòng ${resData.room}` : 'Phòng 101';
   const bedDisplay = resData.bed ? `Giường ${resData.bed}` : 'Giường 101-2';
+  const assignedCaregiverDisplay = integrationQuery.data?.assignedStaff?.staff_name || 'ĐD. Trần Thị Mai (Tầng 1)';
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
@@ -564,7 +604,87 @@ export default function FamilyPortalPage() {
             gap: '0.5rem',
           }}
         >
-          📅 Đặt Lịch Thăm Gặp
+          🗓️ Đặt Lịch Thăm Cụ
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('supplies')}
+          style={{
+            padding: '0.75rem 1.25rem',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            border: 'none',
+            background: 'none',
+            borderBottom: activeTab === 'supplies' ? '3px solid #15803d' : '3px solid transparent',
+            color: activeTab === 'supplies' ? '#15803d' : '#64748b',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          📦 Đồ Tiêu Hao & Vật Phẩm Gửi
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('psychology')}
+          style={{
+            padding: '0.75rem 1.25rem',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            border: 'none',
+            background: 'none',
+            borderBottom: activeTab === 'psychology' ? '3px solid #15803d' : '3px solid transparent',
+            color: activeTab === 'psychology' ? '#15803d' : '#64748b',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          🧠 Phiếu Đánh Giá Tâm Lý
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('fee-notice')}
+          style={{
+            padding: '0.75rem 1.25rem',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            border: 'none',
+            background: 'none',
+            borderBottom: activeTab === 'fee-notice' ? '3px solid #15803d' : '3px solid transparent',
+            color: activeTab === 'fee-notice' ? '#15803d' : '#64748b',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          💳 Thông Báo Thu Phí & Thanh Toán
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('family-meal')}
+          style={{
+            padding: '0.75rem 1.25rem',
+            fontWeight: 700,
+            fontSize: '0.95rem',
+            border: 'none',
+            background: 'none',
+            borderBottom: activeTab === 'family-meal' ? '3px solid #15803d' : '3px solid transparent',
+            color: activeTab === 'family-meal' ? '#15803d' : '#64748b',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
+          🍽️ Đăng Ký Ăn Cơm Tại Tâm An
         </button>
       </div>
 
@@ -1198,6 +1318,563 @@ export default function FamilyPortalPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 5: ĐỒ TIÊU HAO & VẬT PHẨM GIA ĐÌNH GỬI */}
+      {activeTab === 'supplies' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#14532d', fontSize: '1.15rem', fontWeight: 800 }}>
+                  📦 Đồ Tiêu Hao & Vật Phẩm Gia Đình Gửi Định Kỳ
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Kiểm soát minh bạch số lượng vật phẩm tiếp nhận (sữa, bỉm, hoa quả, nhu yếu phẩm) và nhật ký sử dụng hàng ngày cho Cụ.
+                </p>
+              </div>
+              <span className="badge badge-info" style={{ fontWeight: 700 }}>
+                Tổng vật phẩm: {(suppliesQuery.data || []).length} mục
+              </span>
+            </div>
+
+            {suppliesQuery.isLoading ? (
+              <LoadingState title="Đang tải danh sách đồ tiêu hao..." />
+            ) : (suppliesQuery.data || []).length === 0 ? (
+              <EmptyState title="Chưa có thông tin đồ tiêu hao" description="Chưa có vật phẩm tiêu hao nào được tiếp nhận cho Cụ." />
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+                {(suppliesQuery.data || []).map((item) => (
+                  <div
+                    key={item.id}
+                    style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '0.75rem',
+                      padding: '1.25rem',
+                      background: item.status === 'EXHAUSTED' ? '#f8fafc' : '#ffffff',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                      <h4 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
+                        {item.itemName}
+                      </h4>
+                      <span className={`badge ${item.status === 'EXHAUSTED' ? 'badge-neutral' : 'badge-success'}`}>
+                        {item.status === 'EXHAUSTED' ? 'Đã hết' : 'Đang sử dụng'}
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.6, marginBottom: '0.75rem' }}>
+                      <div>🏷️ Phân loại: <b>{item.categoryLabel}</b></div>
+                      <div>📦 Số lượng tiếp nhận: <b>{item.quantityReceived} {item.unit}</b> ({new Date(item.receivedAt).toLocaleDateString('vi-VN')})</div>
+                      <div>📊 Tồn kho hiện tại: <b style={{ color: item.remainingQuantity < 5 ? '#dc2626' : '#16a34a', fontSize: '0.95rem' }}>{item.remainingQuantity} {item.unit}</b></div>
+                      <div>📍 Bảo quản: <b>{item.storageLocation}</b></div>
+                      <div>👤 Người giao: {item.deliveredBy} | NV tiếp nhận: {item.receivedByStaffName}</div>
+                      {item.notes && <div style={{ color: '#0369a1', fontStyle: 'italic', marginTop: '0.2rem' }}>💡 Ghi chú: {item.notes}</div>}
+                    </div>
+
+                    {/* Usage History Log */}
+                    <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '0.5rem' }}>
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>
+                        📋 Nhật ký xuất dùng gần đây:
+                      </div>
+                      {item.usageLogs.length === 0 ? (
+                        <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Chưa có lượt dùng</div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', maxHeight: '120px', overflowY: 'auto' }}>
+                          {item.usageLogs.map((log) => (
+                            <div key={log.logId} style={{ fontSize: '0.78rem', background: '#f1f5f9', padding: '0.3rem 0.5rem', borderRadius: '0.35rem' }}>
+                              <span>🕒 {new Date(log.usedAt).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })}</span> —
+                              <b> Dùng {log.usedQuantity} {item.unit}</b> ({log.usedByStaffName})
+                              {log.note && <span style={{ color: '#475569' }}> ({log.note})</span>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: PHIẾU ĐÁNH GIÁ TÂM LÝ */}
+      {activeTab === 'psychology' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#1e1b4b', fontSize: '1.15rem', fontWeight: 800 }}>
+                  🧠 Phiếu Đánh Giá Tâm Lý Định Kỳ Chuẩn Viện Tâm An
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Đánh giá chuyên sâu bởi Nhân viên Tâm lý và Chuyên viên Công tác xã hội để theo dõi sức khỏe tinh thần của Cụ.
+                </p>
+              </div>
+              <span className="badge badge-info" style={{ fontWeight: 700 }}>
+                Định kỳ gửi gia đình
+              </span>
+            </div>
+
+            {psychologyQuery.isLoading ? (
+              <LoadingState title="Đang tải phiếu đánh giá tâm lý..." />
+            ) : (psychologyQuery.data || []).length === 0 ? (
+              <EmptyState title="Chưa có phiếu đánh giá tâm lý" description="Chưa có phiếu đánh giá tâm lý nào được cập nhật cho Cụ." />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {(psychologyQuery.data || []).map((psy) => {
+                  const emoMeta = EMOTIONAL_STATE_META[psy.emotionalState] || { label: psy.emotionalState, badge: 'badge-neutral' };
+                  return (
+                    <div
+                      key={psy.id}
+                      style={{
+                        border: '1px solid #c7d2fe',
+                        borderRadius: '0.75rem',
+                        padding: '1.5rem',
+                        background: 'linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%)',
+                        boxShadow: '0 4px 12px rgba(99, 102, 241, 0.06)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                        <div>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#4338ca', background: '#e0e7ff', padding: '0.2rem 0.6rem', borderRadius: '0.25rem' }}>
+                            {psy.periodLabel}
+                          </span>
+                          <h4 style={{ margin: '0.4rem 0 0 0', fontSize: '1.1rem', color: '#1e1b4b', fontWeight: 800 }}>
+                            Ngày đánh giá: {new Date(psy.assessmentDate).toLocaleDateString('vi-VN')}
+                          </h4>
+                        </div>
+                        <div style={{ textAlign: 'right', fontSize: '0.85rem', color: '#475569' }}>
+                          <b>Chuyên viên đánh giá:</b> {psy.evaluatorName} ({psy.evaluatorRoleLabel})
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+                        <div style={{ background: '#ffffff', padding: '0.85rem', borderRadius: '0.5rem', border: '1px solid #e0e7ff' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 700 }}>1. Trạng thái tinh thần & cảm xúc</div>
+                          <div style={{ marginTop: '0.3rem' }}>
+                            <span className={`badge ${emoMeta.badge}`} style={{ fontWeight: 700 }}>
+                              {emoMeta.label}
+                            </span>
+                          </div>
+                          {psy.emotionalNotes && <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.4rem' }}>{psy.emotionalNotes}</div>}
+                        </div>
+
+                        <div style={{ background: '#ffffff', padding: '0.85rem', borderRadius: '0.5rem', border: '1px solid #e0e7ff' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 700 }}>2. Giao tiếp & thích ứng xã hội</div>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1e293b', marginTop: '0.3rem' }}>
+                            {psy.socialCommunicationLabel}
+                          </div>
+                          {psy.socialNotes && <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.4rem' }}>{psy.socialNotes}</div>}
+                        </div>
+
+                        <div style={{ background: '#ffffff', padding: '0.85rem', borderRadius: '0.5rem', border: '1px solid #e0e7ff' }}>
+                          <div style={{ fontSize: '0.8rem', color: '#6366f1', fontWeight: 700 }}>3. Nhận thức, trí nhớ & Giấc ngủ</div>
+                          <div style={{ fontSize: '0.85rem', color: '#1e293b', marginTop: '0.3rem' }}>
+                            <div>🧠 Nhận thức: <b>{psy.cognitiveMemoryLabel}</b></div>
+                            <div>🌙 Giấc ngủ: <b>{psy.sleepQualityLabel}</b></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ background: '#ffffff', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #c7d2fe', marginBottom: '0.5rem' }}>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#3730a3', marginBottom: '0.3rem' }}>
+                          📝 Kết luận tổng quát của Chuyên viên Tâm lý:
+                        </div>
+                        <div style={{ fontSize: '0.9rem', color: '#1e293b', lineHeight: 1.5 }}>
+                          {psy.overallConclusion}
+                        </div>
+                        <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#991b1b', marginTop: '0.75rem', marginBottom: '0.2rem' }}>
+                          💡 Khuyến nghị cho Gia đình & Người chăm sóc:
+                        </div>
+                        <div style={{ fontSize: '0.88rem', color: '#334155' }}>
+                          {psy.careRecommendations}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 7: THÔNG BÁO THU PHÍ & THANH TOÁN (17 MỤC EXCEL) */}
+      {activeTab === 'fee-notice' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#065f46', fontSize: '1.15rem', fontWeight: 800 }}>
+                  💳 Thông Báo Thu Phí Tháng & Xác Thực Thanh Toán
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Hiển thị bảng tổng hợp viện phí hàng tháng (chỉ liệt kê các mục có chi phí {`> 0`}) và tiến trình xác nhận đóng phí.
+                </p>
+              </div>
+            </div>
+
+            {feeNoticesQuery.isLoading ? (
+              <LoadingState title="Đang tải thông báo thu phí..." />
+            ) : (feeNoticesQuery.data || []).length === 0 ? (
+              <EmptyState title="Chưa có thông báo thu phí" description="Chưa có bảng thông báo thu phí tháng nào được phát hành." />
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {(feeNoticesQuery.data || []).map((notice) => {
+                  // Chỉ hiển thị các mục có phí > 0 theo yêu cầu số 4
+                  const feeItemsList = [
+                    { name: '1. Phí chăm sóc cơ bản', amount: notice.basicFee },
+                    { name: '2. Phí lưu trú phòng ở', amount: notice.accommodationFee },
+                    { name: '3. Hỗ trợ tắm giặt', amount: notice.bathingLaundryFee },
+                    { name: '4. Hỗ trợ xoay trở / di chuyển', amount: notice.mobilityFee },
+                    { name: '5. Hỗ trợ vệ sinh', amount: notice.hygieneFee },
+                    { name: '6. Hỗ trợ rửa ăn / ăn qua sonde', amount: notice.feedingSondeFee },
+                    { name: '7. Chăm sóc NCT lú lẫn / tuổi già', amount: notice.dementiaCareFee },
+                    { name: '8. Chăm sóc các lỗ loét', amount: notice.soreCareFee },
+                    { name: '9. Chăm sóc sonde dạ dày / bàng quang', amount: notice.catheterCareFee },
+                    { name: '10. Chăm sóc nội khí quản', amount: notice.tracheostomyCareFee },
+                    { name: '11. Thay băng, rửa vết thương', amount: notice.woundDressingFee },
+                    { name: '12. Vật lý trị liệu - PHCN', amount: notice.rehabFee },
+                    { name: '13. Phát sinh', amount: notice.incurredFee, note: notice.incurredContent },
+                    { name: '14. Tiền ăn cơm người nhà đăng ký tại Tâm An', amount: notice.familyMealsFee },
+                    { name: '15. Nợ tháng trước', amount: notice.previousMonthDebt },
+                  ].filter((item) => item.amount > 0);
+
+                  const statusClass = notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger';
+
+                  return (
+                    <div
+                      key={notice.id}
+                      style={{
+                        border: '2px solid #a7f3d0',
+                        borderRadius: '0.75rem',
+                        padding: '1.5rem',
+                        background: '#ffffff',
+                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.05)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid #ecfdf5', paddingBottom: '0.75rem' }}>
+                        <div>
+                          <div style={{ fontSize: '0.85rem', color: '#047857', fontWeight: 700 }}>THÔNG BÁO THU PHÍ THÁNG {notice.billingMonth}</div>
+                          <h4 style={{ margin: '0.2rem 0 0 0', fontSize: '1.2rem', color: '#064e3b', fontWeight: 800 }}>
+                            Cụ {notice.residentName} (Mã HĐ: {notice.residentCode})
+                          </h4>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <span className={`badge ${statusClass}`} style={{ fontSize: '0.9rem', padding: '0.4rem 0.85rem', fontWeight: 800 }}>
+                            {notice.statusLabel}
+                          </span>
+
+                          <button
+                            type="button"
+                            className="btn btn-primary"
+                            style={{ fontWeight: 700, padding: '0.45rem 1rem' }}
+                            onClick={() => {
+                              setVerifyingFeeNotice(notice);
+                              setPaymentStatusInput(notice.status);
+                              setPaidAmountValue(notice.paidAmount);
+                              setPaymentNotesInput(notice.notes || '');
+                            }}
+                          >
+                            ✏️ Xác Thực Đóng Phí
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Chi tiết 17 mục có giá trị > 0 */}
+                      <div style={{ marginBottom: '1.25rem' }}>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.5rem' }}>
+                          📋 Bảng Chi Tiết Phí & Các Gói Dịch Vụ Phát Sinh (Chỉ hiển thị mục có phí):
+                        </div>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                          <thead>
+                            <tr style={{ background: '#f0fdf4', color: '#166534', textAlign: 'left' }}>
+                              <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5' }}>Nội dung chi phí</th>
+                              <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5', textAlign: 'right' }}>Số tiền (VNĐ)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {feeItemsList.map((item, idx) => (
+                              <tr key={idx} style={{ borderBottom: '1px solid #f0fdf4' }}>
+                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0' }}>
+                                  {item.name} {item.note ? <span style={{ color: '#0284c7', fontStyle: 'italic' }}>({item.note})</span> : ''}
+                                </td>
+                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 600 }}>
+                                  {item.amount.toLocaleString('vi-VN')} đ
+                                </td>
+                              </tr>
+                            ))}
+
+                            {/* Giảm trừ nếu có */}
+                            {notice.deductionFee > 0 && (
+                              <tr style={{ background: '#fff1f2', color: '#be123c' }}>
+                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', fontWeight: 700 }}>
+                                  16. Chi phí giảm trừ (Nghỉ phép/Ưu đãi)
+                                </td>
+                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 700 }}>
+                                  - {notice.deductionFee.toLocaleString('vi-VN')} đ
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Tổng Hợp Thu Phí */}
+                      <div style={{ background: '#f0fdf4', padding: '1rem 1.25rem', borderRadius: '0.5rem', border: '1px solid #a7f3d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                        <div>
+                          <div>💵 Tổng tiền cần thu: <b style={{ fontSize: '1.1rem', color: '#166534' }}>{notice.totalDue.toLocaleString('vi-VN')} VNĐ</b></div>
+                          <div style={{ fontSize: '0.85rem', color: '#4b5563', marginTop: '0.2rem' }}>
+                            Đã thanh toán: <b style={{ color: '#15803d' }}>{notice.paidAmount.toLocaleString('vi-VN')} đ</b> | Số dư còn phải thu: <b style={{ color: '#dc2626' }}>{notice.remainingAmount.toLocaleString('vi-VN')} đ</b>
+                          </div>
+                        </div>
+
+                        {notice.notes && (
+                          <div style={{ fontSize: '0.82rem', color: '#475569', fontStyle: 'italic', maxWidth: '400px' }}>
+                            💬 Ghi chú thu ngân: {notice.notes}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 8: ĐĂNG KÝ ĂN CƠM TẠI TÂM AN CHO NGƯỜI NHÀ */}
+      {activeTab === 'family-meal' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
+            <h3 style={{ margin: '0 0 0.5rem 0', color: '#1e293b', fontSize: '1.15rem', fontWeight: 800 }}>
+              🍽️ Đăng Ký Ăn Cơm Tại Tâm An Cho Thân Nhân
+            </h3>
+            <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.86rem', color: '#64748b' }}>
+              Quý người nhà có nhu cầu dùng cơm cùng Cụ tại Tâm An vui lòng đăng ký trước. Chi phí bữa ăn (50.000đ/suất) sẽ tự động tích hợp vào Thông báo thu phí hàng tháng.
+            </p>
+
+            {mealBookingSuccessMsg && (
+              <div className="alert-card alert-success" style={{ marginBottom: '1rem' }}>
+                <span>{mealBookingSuccessMsg}</span>
+              </div>
+            )}
+
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!mealBookingDate) {
+                  alert('Vui lòng chọn ngày đăng ký ăn.');
+                  return;
+                }
+                try {
+                  const res = await bookFamilyMeal(actor!, {
+                    residentId: activeResId,
+                    residentName: currentResident?.resident.displayName || 'Người cao tuổi',
+                    guardianName: actor?.displayName || 'Thân nhân',
+                    bookingDate: mealBookingDate,
+                    mealType: mealBookingType,
+                    portionCount: mealPortionCount,
+                    dietNotes: mealDietNotes,
+                  });
+                  setMealBookingSuccessMsg(`✅ Đăng ký thành công ${res.portionCount} suất cơm (${res.totalFee.toLocaleString('vi-VN')}đ) cho bữa ngày ${res.bookingDate}!`);
+                  setMealBookingDate('');
+                  setMealDietNotes('');
+                  queryClient.invalidateQueries({ queryKey: ['family-meal-bookings'] });
+                  queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
+                } catch (err: any) {
+                  alert(err.message || 'Lỗi khi đăng ký suất ăn');
+                }
+              }}
+            >
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
+                <label className="field-group">
+                  <span className="field-label">Ngày đăng ký ăn *</span>
+                  <input
+                    type="date"
+                    className="text-input"
+                    value={mealBookingDate}
+                    onChange={(e) => setMealBookingDate(e.target.value)}
+                    required
+                  />
+                </label>
+
+                <label className="field-group">
+                  <span className="field-label">Bữa ăn *</span>
+                  <select
+                    className="text-input"
+                    value={mealBookingType}
+                    onChange={(e) => setMealBookingType(e.target.value as any)}
+                  >
+                    <option value="BREAKFAST">Bữa Sáng (07:00 - 08:00)</option>
+                    <option value="LUNCH">Bữa Trưa (11:00 - 12:00)</option>
+                    <option value="AFTERNOON_SNACK">Bữa Phụ (14:00)</option>
+                    <option value="DINNER">Bữa Tối (17:00 - 18:00)</option>
+                  </select>
+                </label>
+
+                <label className="field-group">
+                  <span className="field-label">Số lượng suất ăn (50.000đ/suất) *</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    className="text-input"
+                    value={mealPortionCount}
+                    onChange={(e) => setMealPortionCount(Number(e.target.value))}
+                    required
+                  />
+                </label>
+
+                <div className="field-group">
+                  <span className="field-label">Thành tiền tạm tính</span>
+                  <div style={{ padding: '0.65rem', background: '#f0fdf4', borderRadius: '0.375rem', fontWeight: 800, color: '#166534', border: '1px solid #bbf7d0' }}>
+                    {(mealPortionCount * 50000).toLocaleString('vi-VN')} VNĐ
+                  </div>
+                </div>
+              </div>
+
+              <label className="field-group" style={{ marginBottom: '1.25rem' }}>
+                <span className="field-label">Yêu cầu khẩu vị / Chế độ ăn (nếu có)</span>
+                <input
+                  className="text-input"
+                  value={mealDietNotes}
+                  placeholder="Ví dụ: 1 suất ăn kiêng đường, ăn cùng Cụ tại sảnh tầng 1..."
+                  onChange={(e) => setMealDietNotes(e.target.value)}
+                />
+              </label>
+
+              <button type="submit" className="btn btn-primary" style={{ padding: '0.65rem 1.5rem', fontWeight: 700 }}>
+                🍽️ Xác Nhận Đăng Ký Bữa Ăn
+              </button>
+            </form>
+          </div>
+
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem' }}>
+            <h3 style={{ margin: '0 0 1rem 0', color: '#1e293b', fontSize: '1.1rem', fontWeight: 700 }}>
+              📋 Lịch Sử Đăng Ký Suất Ăn Thân Nhân
+            </h3>
+
+            <div className="table-wrapper">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Ngày dùng bữa</th>
+                    <th>Bữa ăn</th>
+                    <th>Số suất</th>
+                    <th>Thành tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Yêu cầu khẩu vị</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(familyMealsQuery.data || []).map((b) => (
+                    <tr key={b.id}>
+                      <td><b>{b.bookingDate}</b></td>
+                      <td>{b.mealTypeLabel}</td>
+                      <td>{b.portionCount} suất</td>
+                      <td><b>{b.totalFee.toLocaleString('vi-VN')} đ</b></td>
+                      <td><span className="badge badge-success">{b.status === 'SERVED' ? 'Đã phục vụ' : 'Đã xác nhận'}</span></td>
+                      <td style={{ fontSize: '0.82rem', color: '#64748b' }}>{b.dietNotes || '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL XÁC THỰC ĐÓNG PHÍ */}
+      {verifyingFeeNotice && (
+        <div className="modal-overlay" onClick={() => setVerifyingFeeNotice(null)}>
+          <div
+            className="modal-dialog"
+            style={{ maxWidth: '520px', background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 1rem 0', color: '#065f46', fontSize: '1.15rem', fontWeight: 800 }}>
+              ✏️ Xác Thực Tiến Trình Đóng Phí
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: '#475569', marginBottom: '1.25rem' }}>
+              Cập nhật trạng thái thanh toán cho thông báo thu phí tháng <b>{verifyingFeeNotice.billingMonth}</b> (Cụ {verifyingFeeNotice.residentName}).
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+              <label className="field-group">
+                <span className="field-label">Chọn Trạng Thái Thanh Toán *</span>
+                <select
+                  className="text-input"
+                  value={paymentStatusInput}
+                  onChange={(e) => {
+                    const status = e.target.value as any;
+                    setPaymentStatusInput(status);
+                    if (status === 'PAID') setPaidAmountValue(verifyingFeeNotice.totalDue);
+                    else if (status === 'UNPAID') setPaidAmountValue(0);
+                  }}
+                >
+                  <option value="PAID">✅ Đã thu phí (Đã nhận đủ {verifyingFeeNotice.totalDue.toLocaleString('vi-VN')} đ)</option>
+                  <option value="PARTIAL">⚠️ Thu một phần (Nhập số tiền đã nhận bên dưới)</option>
+                  <option value="UNPAID">❌ Chưa thu phí (Nợ chưa thanh toán)</option>
+                </select>
+              </label>
+
+              {paymentStatusInput === 'PARTIAL' && (
+                <label className="field-group">
+                  <span className="field-label">Số tiền thực tế đã thu (VNĐ) *</span>
+                  <input
+                    type="number"
+                    className="text-input"
+                    value={paidAmountValue}
+                    onChange={(e) => setPaidAmountValue(Number(e.target.value))}
+                    max={verifyingFeeNotice.totalDue}
+                  />
+                  <span style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.2rem' }}>
+                    Còn nợ: {Math.max(0, verifyingFeeNotice.totalDue - paidAmountValue).toLocaleString('vi-VN')} VNĐ
+                  </span>
+                </label>
+              )}
+
+              <label className="field-group">
+                <span className="field-label">Ghi chú xác thực / Giao dịch</span>
+                <textarea
+                  className="text-input"
+                  rows={3}
+                  value={paymentNotesInput}
+                  placeholder="Ví dụ: Đã nhận chuyển khoản đợt 1 ngày 12/09..."
+                  onChange={(e) => setPaymentNotesInput(e.target.value)}
+                />
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button type="button" className="btn btn-neutral" onClick={() => setVerifyingFeeNotice(null)}>
+                Hủy
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ fontWeight: 700 }}
+                onClick={async () => {
+                  try {
+                    await updateFeeNoticePayment(actor!, verifyingFeeNotice.id, paymentStatusInput, paidAmountValue, paymentNotesInput);
+                    setVerifyingFeeNotice(null);
+                    queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
+                  } catch (err: any) {
+                    alert(err.message || 'Lỗi khi cập nhật trạng thái');
+                  }
+                }}
+              >
+                💾 Lưu Trạng Thái Thanh Toán
+              </button>
             </div>
           </div>
         </div>

@@ -79,6 +79,7 @@ export interface MedicalInventoryItem {
   itemCode: string;
   name: string;
   category: InventoryCategory;
+  itemGroup: 'PHARMACEUTICALS' | 'CARE_SUPPLIES'; // (1) Dược phẩm | (2) Vật tư chăm sóc NCT
   unit: string;
   currentStock: number;
   minStockThreshold: number;
@@ -399,6 +400,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-GLU-001',
     name: 'Que thử đường huyết Accu-Chek Instant',
     category: 'DIAGNOSTIC',
+    itemGroup: 'PHARMACEUTICALS',
     unit: 'Hộp 50 que',
     currentStock: 18,
     minStockThreshold: 10,
@@ -412,6 +414,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-DIA-002',
     name: 'Tã bỉm dán người lớn Caryn size L',
     category: 'HYGIENE',
+    itemGroup: 'CARE_SUPPLIES',
     unit: 'Bịch 10 miếng',
     currentStock: 4,
     minStockThreshold: 15,
@@ -425,6 +428,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-WOU-003',
     name: 'Băng gạc vô trùng Urgo Sterile 10x10cm',
     category: 'WOUND_CARE',
+    itemGroup: 'CARE_SUPPLIES',
     unit: 'Gói 10 miếng',
     currentStock: 35,
     minStockThreshold: 10,
@@ -438,6 +442,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-GLO-004',
     name: 'Găng tay y tế Nitrile không bột Vglove size M',
     category: 'CONSUMABLES',
+    itemGroup: 'CARE_SUPPLIES',
     unit: 'Hộp 100 chiếc',
     currentStock: 24,
     minStockThreshold: 8,
@@ -451,6 +456,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-SAL-005',
     name: 'Nước muối sinh lý NaCl 0.9% 500ml',
     category: 'MEDICINE_SUPPLY',
+    itemGroup: 'PHARMACEUTICALS',
     unit: 'Chai 500ml',
     currentStock: 48,
     minStockThreshold: 12,
@@ -464,6 +470,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-SON-006',
     name: 'Ống Sonde nuôi ăn dạ dày Silicon Levin số 16',
     category: 'CONSUMABLES',
+    itemGroup: 'CARE_SUPPLIES',
     unit: 'Sợi tiệt trùng',
     currentStock: 6,
     minStockThreshold: 8, // Low stock
@@ -477,6 +484,7 @@ const INITIAL_INVENTORY: MedicalInventoryItem[] = [
     itemCode: 'MED-ALC-007',
     name: 'Cồn y tế 70 độ sát khuẩn can 5L',
     category: 'CONSUMABLES',
+    itemGroup: 'CARE_SUPPLIES',
     unit: 'Can 5 lít',
     currentStock: 5,
     minStockThreshold: 2,
@@ -630,6 +638,7 @@ export async function createInventoryItem(
   payload: {
     name: string;
     category?: InventoryCategory;
+    itemGroup?: 'PHARMACEUTICALS' | 'CARE_SUPPLIES';
     unit?: string;
     minStockThreshold?: number;
     lotNumber?: string;
@@ -638,11 +647,15 @@ export async function createInventoryItem(
     location?: string;
   },
 ): Promise<MedicalInventoryItem> {
+  const cat = payload.category || 'CONSUMABLES';
+  const group = payload.itemGroup || (cat === 'DIAGNOSTIC' || cat === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES');
+
   const newItem: MedicalInventoryItem = {
     itemId: `inv-${Date.now()}`,
     itemCode: `MED-CUS-${Math.floor(100 + Math.random() * 900)}`,
     name: payload.name,
-    category: payload.category || 'CONSUMABLES',
+    category: cat,
+    itemGroup: group,
     unit: payload.unit || 'Cái',
     currentStock: 0,
     minStockThreshold: payload.minStockThreshold || 10,
@@ -704,4 +717,46 @@ export async function fetchInventoryTransactions(
   actor: HumanActorSession,
 ): Promise<InventoryTransaction[]> {
   return [...inventoryTransactions];
+}
+
+// ----------------------------------------------------------------------
+// HẠNG MỤC 7: KHAI BÁO LẤY VẬT TƯ CHĂM SÓC QUA APP (DÀNH CHO TOÀN BỘ NHÂN VIÊN)
+// ----------------------------------------------------------------------
+export async function logCareSupplyWithdrawal(
+  actor: HumanActorSession,
+  input: {
+    itemId: string;
+    quantity: number;
+    residentId?: string;
+    residentName?: string;
+    reason: string;
+  }
+): Promise<InventoryTransaction> {
+  const item = inventoryItems.find((i) => i.itemId === input.itemId);
+  if (!item) throw new Error('Không tìm thấy vật tư chăm sóc trong kho');
+
+  if (item.currentStock < input.quantity) {
+    throw new Error(`Số lượng kho không đủ (${item.currentStock} ${item.unit} khả dụng).`);
+  }
+
+  // Deduct stock
+  item.currentStock -= input.quantity;
+
+  const newTx: InventoryTransaction = {
+    transactionId: `tx-care-${Date.now()}`,
+    itemId: item.itemId,
+    itemName: item.name,
+    type: 'EXPORT_RESIDENT',
+    quantity: input.quantity,
+    unit: item.unit,
+    performedBy: `${actor.displayName} (${actor.actorRole})`,
+    timestamp: new Date().toISOString(),
+    residentId: input.residentId,
+    residentName: input.residentName,
+    reason: `Khai báo qua App: ${input.reason}`,
+  };
+
+  inventoryTransactions = [newTx, ...inventoryTransactions];
+
+  return newTx;
 }
