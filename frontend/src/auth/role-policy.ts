@@ -66,6 +66,7 @@ export interface RoleCapability {
   canManageCareSuppliesImport: boolean; // ĐỘC QUYỀN: Nhân viên Quản lý có quyền nhập kho Vật tư phục vụ chăm sóc NCT
   canManagePharmacy: boolean; // ĐỘC QUYỀN: Nhân viên Y tế nhập kho và xuất kho Dược phẩm
   canEvaluateKPI: boolean; // ĐỘC QUYỀN: Nhân viên Quản lý đánh giá KPI chi tiết dạng tick theo ca trực
+  canViewResidentSupplies: boolean; // Quyền xem và tiếp nhận/quản lý Đồ gửi cụ từ gia đình (Bảo vệ Nhân viên Y tế không xem đồ gửi cụ)
 }
 
 export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
@@ -115,6 +116,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: true,
     canManagePharmacy: true,
     canEvaluateKPI: true,
+    canViewResidentSupplies: true,
   },
   SUPERVISOR: {
     allowedRoutes: [
@@ -162,6 +164,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: true,
     canManagePharmacy: true,
     canEvaluateKPI: true,
+    canViewResidentSupplies: true,
   },
   CARE_MANAGER: {
     allowedRoutes: [
@@ -173,47 +176,87 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'workforce',
       'operations',
       'admissions',
-      'staff-access',
       'health-reports',
+      'staff-access',
+      'family-portal',
       'medication-inventory',
       'kitchen-operations',
       'billing-invoicing',
       'analytics-intelligence',
       'audit-trail',
+      'system-status',
     ],
-    canManageStaff: true, // QUẢN LÝ: Quyền tạo ID & mật khẩu cho nhân viên thuộc quyền quản lý
-    canManageDirectorStaff: false, // QUẢN LÝ: KHÔNG có quyền tạo, sửa, reset tài khoản Ban Giám đốc
-    canDeleteStaff: false, // QUẢN LÝ: KHÔNG có quyền bớt/xoá tài khoản nhân viên
+    canManageStaff: true,
+    canManageDirectorStaff: false,
+    canDeleteStaff: false,
     canManageAccommodation: true,
     canManageLifecycle: true,
-    canApproveDischarge: false,
-    canCreateHealthReport: false,
+    canApproveDischarge: true,
+    canCreateHealthReport: true,
     canCreateAdmissionAssessment: true,
     canApproveLeave: true,
     canAssignShifts: true,
     canLogDirectCare: true,
-    canPrescribeMedication: false, // Quản lý không phân chia thuốc thay nhân viên y tế
-    canAdministerMedication: false, // Quản lý không ký eMAR thay điều dưỡng
-    canManageInventory: true, // Quản lý có quyền truy xuất quản lý kho vật tư
-    canManageKitchenOperations: true, // Quản lý theo dõi tiếp nhận, xuất kho & kiểm soát chất lượng thực phẩm
-    canManageBilling: false, // Quản lý xem đối soát, không can thiệp kế toán
-    canConfigurePricing: true, // QUẢN LÝ: Quyền cấu hình bảng giá, gói dịch vụ và đề xuất giảm giá
-    canAccessAnalytics: true, // Quản lý xem phân tích vận hành & nhân sự
-    canViewAuditLog: true, // QUẢN LÝ: Quyền xem nhật ký truy vết & kiểm soát trách nhiệm
-    canViewDirectorAuditLog: false, // QUẢN LÝ: KHÔNG xem được hoạt động của Ban Giám đốc
-    canViewSensitiveFinancials: false, // QUẢN LÝ: KHÔNG có quyền xem thông tin chi phí nhập thực phẩm & thu nhập nhạy cảm
+    canPrescribeMedication: true,
+    canAdministerMedication: true,
+    canManageInventory: true,
+    canManageKitchenOperations: true,
+    canManageBilling: true,
+    canConfigurePricing: true,
+    canAccessAnalytics: true,
+    canViewAuditLog: true,
+    canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
     canEvaluatePsychology: false,
     canRegisterStaffMeals: true,
     canManageCareSuppliesImport: true,
     canManagePharmacy: false,
     canEvaluateKPI: true,
+    canViewResidentSupplies: true,
   },
   PSYCHOLOGIST: {
     allowedRoutes: [
       'dashboard',
       'residents',
-      'operations',
+      'admissions',
+      'resident-leave',
       'workforce',
+      'operations',
+    ],
+    canManageStaff: false,
+    canManageDirectorStaff: false,
+    canDeleteStaff: false,
+    canManageAccommodation: false,
+    canManageLifecycle: false,
+    canApproveDischarge: false,
+    canCreateHealthReport: false,
+    canCreateAdmissionAssessment: true,
+    canApproveLeave: false,
+    canAssignShifts: false,
+    canLogDirectCare: true,
+    canPrescribeMedication: false,
+    canAdministerMedication: false,
+    canManageInventory: false,
+    canManageKitchenOperations: false,
+    canManageBilling: false,
+    canConfigurePricing: false,
+    canAccessAnalytics: false,
+    canViewAuditLog: false,
+    canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
+    canEvaluatePsychology: true,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
+    canViewResidentSupplies: true,
+  },
+  SOCIAL_WORKER: {
+    allowedRoutes: [
+      'dashboard',
+      'residents',
+      'workforce',
+      'operations',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -241,49 +284,13 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
-  },
-  SOCIAL_WORKER: {
-    allowedRoutes: [
-      'dashboard',
-      'residents',
-      'admissions',
-      'resident-leave',
-      'workforce',
-      'operations',
-    ],
-    canManageStaff: false,
-    canManageDirectorStaff: false,
-    canDeleteStaff: false,
-    canManageAccommodation: false,
-    canManageLifecycle: false,
-    canApproveDischarge: false,
-    canCreateHealthReport: false,
-    canCreateAdmissionAssessment: true,
-    canApproveLeave: false,
-    canAssignShifts: false,
-    canLogDirectCare: true,
-    canPrescribeMedication: false,
-    canAdministerMedication: false,
-    canManageInventory: false,
-    canManageKitchenOperations: false,
-    canManageBilling: false,
-    canConfigurePricing: false,
-    canAccessAnalytics: false,
-    canViewAuditLog: false,
-    canViewDirectorAuditLog: false,
-    canViewSensitiveFinancials: false,
-    canEvaluatePsychology: true,
-    canRegisterStaffMeals: false,
-    canManageCareSuppliesImport: false,
-    canManagePharmacy: false,
-    canEvaluateKPI: false,
+    canViewResidentSupplies: true,
   },
   NURSE: {
     allowedRoutes: [
       'dashboard',
       'accommodation',
       'residents',
-      'resident-leave',
       'workforce',
       'operations',
       'admissions',
@@ -316,6 +323,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: true,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false, // BẢO VỆ: Nhân viên Y tế KHÔNG xem Đồ gửi cụ
   },
   CAREGIVER: {
     allowedRoutes: [
@@ -331,7 +339,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageLifecycle: false,
     canApproveDischarge: false,
     canCreateHealthReport: false,
-    canCreateAdmissionAssessment: false,
+    canCreateAdmissionAssessment: false, // Nhân viên điều dưỡng KHÔNG tiếp nhận & đánh giá
     canApproveLeave: false,
     canAssignShifts: false,
     canLogDirectCare: true,
@@ -350,12 +358,12 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: true, // Điều dưỡng xem & quản lý Đồ gửi cụ từ gia đình
   },
   NUTRITIONIST: {
     allowedRoutes: [
       'dashboard',
       'residents',
-      'operations',
       'kitchen-operations',
       'workforce',
     ],
@@ -369,7 +377,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canCreateAdmissionAssessment: false,
     canApproveLeave: false,
     canAssignShifts: false,
-    canLogDirectCare: true,
+    canLogDirectCare: false,
     canPrescribeMedication: false,
     canAdministerMedication: false,
     canManageInventory: false,
@@ -385,14 +393,13 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false,
   },
   HOUSEKEEPING: {
     allowedRoutes: [
       'dashboard',
       'accommodation',
-      'operations',
       'workforce',
-      'resident-leave',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
@@ -404,7 +411,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canCreateAdmissionAssessment: false,
     canApproveLeave: false,
     canAssignShifts: false,
-    canLogDirectCare: true,
+    canLogDirectCare: false,
     canPrescribeMedication: false,
     canAdministerMedication: false,
     canManageInventory: false,
@@ -420,6 +427,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false,
   },
   REHABILITATION_SPECIALIST: {
     allowedRoutes: [
@@ -454,11 +462,10 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false, // PHỤC HỒI CHỨC NĂNG: KHÔNG xem/quản lý Đồ gửi cụ
   },
   SECURITY: {
     allowedRoutes: [
-      'dashboard',
-      'resident-leave',
       'workforce',
     ],
     canManageStaff: false,
@@ -487,15 +494,11 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false,
   },
   ACCOUNTANT: {
     allowedRoutes: [
       'dashboard',
-      'residents',
-      'admissions',
-      'resident-lifecycle',
-      'workforce',
-      'medication-inventory',
       'billing-invoicing',
     ],
     canManageStaff: false,
@@ -524,13 +527,13 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false,
   },
   RECEPTIONIST: {
     allowedRoutes: [
       'dashboard',
       'accommodation',
       'residents',
-      'admissions',
       'resident-leave',
       'workforce',
       'family-portal',
@@ -561,6 +564,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: false, // LỄ TÂN: KHÔNG xem/quản lý Đồ gửi cụ
   },
   GUARDIAN: {
     allowedRoutes: [
@@ -592,6 +596,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
+    canViewResidentSupplies: true,
   },
 };
 

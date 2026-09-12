@@ -225,10 +225,10 @@ export default function FamilyPortalPage() {
     enabled: Boolean(activeResId),
   });
 
-  // Fetch Monthly Fee Notices (17 Mục Excel)
+  // Fetch Monthly Fee Notices (Chỉ bảng kê đã được Kế toán duyệt phát hành sang Cổng Thân Nhân)
   const feeNoticesQuery = useQuery({
     queryKey: ['family-fee-notices', activeResId],
-    queryFn: () => fetchDetailedFeeNotices(activeResId),
+    queryFn: () => fetchDetailedFeeNotices(activeResId, { publishedOnly: true }),
     enabled: Boolean(activeResId),
   });
 
@@ -1370,7 +1370,27 @@ export default function FamilyPortalPage() {
                     <div style={{ fontSize: '0.85rem', color: '#4b5563', lineHeight: 1.6, marginBottom: '0.75rem' }}>
                       <div>🏷️ Phân loại: <b>{item.categoryLabel}</b></div>
                       <div>📦 Số lượng tiếp nhận: <b>{item.quantityReceived} {item.unit}</b> ({new Date(item.receivedAt).toLocaleDateString('vi-VN')})</div>
-                      <div>📊 Tồn kho hiện tại: <b style={{ color: item.remainingQuantity < 5 ? '#dc2626' : '#16a34a', fontSize: '0.95rem' }}>{item.remainingQuantity} {item.unit}</b></div>
+                      <div>
+                        📊 Tồn kho hiện tại: <b style={{ color: item.remainingQuantity <= (item.minSafetyThreshold || 5) ? '#dc2626' : '#16a34a', fontSize: '0.95rem' }}>{item.remainingQuantity} {item.unit}</b>
+                        <span style={{ fontSize: '0.78rem', color: '#64748b', marginLeft: '0.4rem' }}>
+                          (Ngưỡng an toàn: {item.minSafetyThreshold || 5} {item.unit})
+                        </span>
+                        {item.remainingQuantity <= (item.minSafetyThreshold || 5) && (
+                          <span className="badge badge-danger" style={{ marginLeft: '0.4rem', fontSize: '0.72rem' }}>
+                            ⚠️ Sắp hết
+                          </span>
+                        )}
+                      </div>
+                      {item.expiryDate && (
+                        <div>
+                          ⏳ Hạn sử dụng: <b>{item.expiryDate}</b>
+                          {new Date(item.expiryDate).getTime() - Date.now() <= 7 * 24 * 3600 * 1000 && (
+                            <span className="badge badge-warning" style={{ marginLeft: '0.4rem', fontSize: '0.72rem' }}>
+                              ⌛ Cận hạn sử dụng
+                            </span>
+                          )}
+                        </div>
+                      )}
                       <div>📍 Bảo quản: <b>{item.storageLocation}</b></div>
                       <div>👤 Người giao: {item.deliveredBy} | NV tiếp nhận: {item.receivedByStaffName}</div>
                       {item.notes && <div style={{ color: '#0369a1', fontStyle: 'italic', marginTop: '0.2rem' }}>💡 Ghi chú: {item.notes}</div>}
@@ -1527,23 +1547,23 @@ export default function FamilyPortalPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {(feeNoticesQuery.data || []).map((notice) => {
-                  // Chỉ hiển thị các mục có phí > 0 theo yêu cầu số 4
+                  // Chỉ hiển thị các mục có phí > 0 theo quy định
                   const feeItemsList = [
-                    { name: '1. Phí chăm sóc cơ bản', amount: notice.basicFee },
-                    { name: '2. Phí lưu trú phòng ở', amount: notice.accommodationFee },
-                    { name: '3. Hỗ trợ tắm giặt', amount: notice.bathingLaundryFee },
-                    { name: '4. Hỗ trợ xoay trở / di chuyển', amount: notice.mobilityFee },
+                    { name: '1. Phí cơ bản (1)', amount: notice.basicFee },
+                    { name: '2. Phí hỗ trợ (2)', amount: notice.supportFee },
+                    { name: '3. Hỗ trợ tắm gội', amount: notice.bathingLaundryFee },
+                    { name: '4. Hỗ trợ nâng đỡ, di chuyển', amount: notice.mobilityFee },
                     { name: '5. Hỗ trợ vệ sinh', amount: notice.hygieneFee },
-                    { name: '6. Hỗ trợ rửa ăn / ăn qua sonde', amount: notice.feedingSondeFee },
-                    { name: '7. Chăm sóc NCT lú lẫn / tuổi già', amount: notice.dementiaCareFee },
-                    { name: '8. Chăm sóc các lỗ loét', amount: notice.soreCareFee },
-                    { name: '9. Chăm sóc sonde dạ dày / bàng quang', amount: notice.catheterCareFee },
-                    { name: '10. Chăm sóc nội khí quản', amount: notice.tracheostomyCareFee },
+                    { name: '6. Hỗ trợ xúc ăn / ăn qua sonde', amount: notice.feedingSondeFee },
+                    { name: '7. Chăm sóc NCT bị lẫn tuổi già', amount: notice.dementiaCareFee },
+                    { name: '8. Chăm sóc các ổ loét', amount: notice.soreCareFee },
+                    { name: '9. Chăm sóc người đặt sonde bàng quang', amount: notice.catheterCareFee },
+                    { name: '10. Chăm sóc người đặt nội khí quản', amount: notice.tracheostomyCareFee },
                     { name: '11. Thay băng, rửa vết thương', amount: notice.woundDressingFee },
                     { name: '12. Vật lý trị liệu - PHCN', amount: notice.rehabFee },
-                    { name: '13. Phát sinh', amount: notice.incurredFee, note: notice.incurredContent },
+                    { name: '13. Phát sinh (3)', amount: notice.incurredFee, note: notice.incurredContent },
                     { name: '14. Tiền ăn cơm người nhà đăng ký tại Tâm An', amount: notice.familyMealsFee },
-                    { name: '15. Nợ tháng trước', amount: notice.previousMonthDebt },
+                    { name: '15. Nợ tháng trước (5)', amount: notice.previousMonthDebt, note: notice.debtNotes },
                   ].filter((item) => item.amount > 0);
 
                   const statusClass = notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger';
@@ -1926,8 +1946,9 @@ export default function FamilyPortalPage() {
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
+                    <img src="/branding/tam-an-logo-master.png" alt="Logo Tâm An" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
                     <div>
-                      <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.15rem', lineHeight: 1.1 }}>🌿 VIỆN DƯỠNG LÃO TÂM AN</div>
+                      <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.15rem', lineHeight: 1.1 }}>TRUNG TÂM DƯỠNG LÃO TÂM AN</div>
                       <div style={{ fontSize: '0.75rem', color: '#15803d', fontStyle: 'italic', fontWeight: 600, marginTop: '0.1rem' }}>
                         Nơi Tuổi Già An Nhiên — Chuẩn Mực Y Khoa & Tận Tâm
                       </div>

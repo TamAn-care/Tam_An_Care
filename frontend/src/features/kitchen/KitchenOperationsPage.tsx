@@ -658,7 +658,7 @@ export default function KitchenOperationsPage() {
                   <span className="badge badge-success" style={{ fontWeight: 700 }}>Đầy Đủ 5 Bữa/Ngày</span>
                 </div>
                 <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.86rem', color: '#475569' }}>
-                  Quản lý & Cập nhật thực đơn 5 bữa (Sáng, Trưa, Xế chiều, Tối, Phụ tối/đêm) chuẩn định mức y tế cho cụ cao tuổi Viện dưỡng lão Tâm An.
+                  Quản lý & Cập nhật thực đơn 5 bữa (Sáng, Trưa, Xế chiều, Tối, Phụ tối/đêm) chuẩn định mức y tế cho cụ cao tuổi Trung tâm dưỡng lão Tâm An.
                 </p>
               </div>
 
@@ -1908,7 +1908,7 @@ export default function KitchenOperationsPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <div>
-                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>VIỆN DƯỠNG LÃO TÂM AN CARE — BỘ PHẬN DINH DƯỠNG & BẾP ĂN</div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>TRUNG TÂM DƯỠNG LÃO TÂM AN CARE — BỘ PHẬN DINH DƯỠNG & BẾP ĂN</div>
                 <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.3rem', color: '#0f172a' }}>BIÊN BẢN TIẾP NHẬN & KIỂM ĐẾM THỰC PHẨM</h2>
                 <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Mã phiếu: <b>{showDetailBatchModal.batchId}</b> | Ngày giờ: {new Date(showDetailBatchModal.receivedAt).toLocaleString('vi-VN')}</div>
               </div>

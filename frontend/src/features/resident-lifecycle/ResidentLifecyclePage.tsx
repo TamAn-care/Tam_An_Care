@@ -103,7 +103,7 @@ export default function ResidentLifecyclePage() {
             <option value="">Chọn hồ sơ</option>
             {(residents.data?.items ?? []).map(({ resident }) => (
               <option key={resident.residentId} value={resident.residentId}>
-                {resident.residentCode} — {resident.displayName} — {resident.activeStatus ? 'Đang hoạt động' : 'Đã kết thúc'}
+                {resident.residentCode} — {resident.displayName} — {resident.activeStatus ? 'Đang lưu trú' : 'Đã kết thúc'}
               </option>
             ))}
           </select>

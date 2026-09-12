@@ -240,7 +240,12 @@ export function CareViewPage() {
     (actor.actorRole as string) === 'NURSE' ||
     (actor.actorRole as string) === 'NUTRITIONIST' ||
     (actor.actorRole as string) === 'PHYSICAL_THERAPIST' ||
-    (actor.actorRole as string) === 'REHABILITATION_SPECIALIST';
+    (actor.actorRole as string) === 'REHABILITATION_SPECIALIST' ||
+    (actor.actorRole as string) === 'CAREGIVER' ||
+    (actor.actorRole as string) === 'SOCIAL_WORKER' ||
+    (actor.actorRole as string) === 'PSYCHOLOGIST' ||
+    (actor.actorRole as string) === 'ACCOUNTANT' ||
+    (actor.actorRole as string) === 'HOUSEKEEPING';
 
   const assignedResidentIds = useMemo(() => {
     return new Set(

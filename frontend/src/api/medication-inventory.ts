@@ -1,4 +1,5 @@
 import type { HumanActorSession } from '../types/actor';
+import { recordSystemAuditLog } from './audit-log';
 
 export type MedicationRoute =
   | 'ORAL'
@@ -759,4 +760,57 @@ export async function logCareSupplyWithdrawal(
   inventoryTransactions = [newTx, ...inventoryTransactions];
 
   return newTx;
+}
+
+// ----------------------------------------------------------------------
+// HẠNG MỤC 8: ĐIỀU CHỈNH NGƯỠNG TỐI THIỂU TỒN KHO Y TẾ
+// ----------------------------------------------------------------------
+export async function updateMedicationInventoryThreshold(
+  actor: HumanActorSession,
+  itemId: string,
+  newMinThreshold: number,
+  reasonNote?: string,
+): Promise<MedicalInventoryItem> {
+  const itemIndex = inventoryItems.findIndex((i) => i.itemId === itemId);
+  if (itemIndex === -1) throw new Error('Không tìm thấy mặt hàng vật tư trong kho');
+
+  const oldItem = inventoryItems[itemIndex];
+  const oldThreshold = oldItem.minStockThreshold;
+  const sanitizedThreshold = Math.max(0, Math.round(newMinThreshold));
+
+  const updatedItem: MedicalInventoryItem = {
+    ...oldItem,
+    minStockThreshold: sanitizedThreshold,
+  };
+
+  inventoryItems[itemIndex] = updatedItem;
+
+  const actorRoleLabel =
+    actor.actorRole === 'NURSE'
+      ? 'Nhân viên y tế'
+      : actor.actorRole === 'CARE_MANAGER'
+      ? 'Nhân viên quản lý'
+      : actor.actorRole === 'SUPERVISOR'
+      ? 'Ban Giám Đốc'
+      : (actor.actorRole || 'Nhân viên');
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-NUR-001',
+    actorName: actor.displayName || 'Nhân viên y tế',
+    actorRole: actor.actorRole || 'NURSE',
+    actorRoleLabel,
+    actionType: 'UPDATE',
+    actionLabel: 'Cập nhật Ngưỡng tối thiểu vật tư y tế',
+    module: 'CARE_OPERATIONS',
+    moduleLabel: 'Kho Dược & Vật Tư Y Tế',
+    targetEntityId: updatedItem.itemId,
+    targetEntityName: `Vật tư: ${updatedItem.name}`,
+    summary: `${actorRoleLabel} ${actor.displayName || ''} đã điều chỉnh Ngưỡng tối thiểu của "${updatedItem.name}" từ ${oldThreshold} ${updatedItem.unit} sang ${sanitizedThreshold} ${updatedItem.unit}.`,
+    details: `Tồn hiện tại: ${updatedItem.currentStock} ${updatedItem.unit} | Ngưỡng cũ: ${oldThreshold} | Ngưỡng mới: ${sanitizedThreshold} | Lý do: ${reasonNote || 'Điều chỉnh phù hợp nhu cầu sử dụng thực tế Trung tâm'}.`,
+    previousValue: `${oldThreshold} ${updatedItem.unit}`,
+    newValue: `${sanitizedThreshold} ${updatedItem.unit}`,
+    severity: 'IMPORTANT',
+  });
+
+  return updatedItem;
 }

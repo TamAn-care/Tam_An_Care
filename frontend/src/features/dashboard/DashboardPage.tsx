@@ -19,6 +19,7 @@ export function DashboardPage() {
   const actorName = actor?.displayName || 'Nhân viên';
   const isCaregiver = actorRole === 'CAREGIVER';
   const isNutritionist = actorRole === 'NUTRITIONIST';
+  const isHousekeeping = actorRole === 'HOUSEKEEPING';
   const isSocialWorker = actorRole === 'SOCIAL_WORKER';
   const isRehab = actorRole === 'REHABILITATION_SPECIALIST';
   const isPsychologist = actorRole === 'PSYCHOLOGIST';
@@ -230,30 +231,34 @@ export function DashboardPage() {
       ) : (
         /* Non-Executive Staff Scoped KPIs (No macro 110 bed or facility-wide occupancy metrics) */
         <div className="kpi-row">
-          <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
-            <div className="kpi-label">
-              {isCaregiver ? 'Cụ bạn phụ trách trực tiếp' : 'Hồ sơ thuộc phạm vi phụ trách'}
-            </div>
-            <div className="kpi-val" style={{ color: '#166534' }}>
-              {isCaregiver ? myAssignedResidentRows.length : stats.activeResidents} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>người cao tuổi</span>
-            </div>
-            <div className="kpi-sub">Được phân quyền thao tác nghiệp vụ</div>
-          </div>
+          {!isHousekeeping && (
+            <>
+              <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
+                <div className="kpi-label">
+                  {isCaregiver ? 'Cụ bạn phụ trách trực tiếp' : 'Hồ sơ thuộc phạm vi phụ trách'}
+                </div>
+                <div className="kpi-val" style={{ color: '#166534' }}>
+                  {isCaregiver ? myAssignedResidentRows.length : stats.activeResidents} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>người cao tuổi</span>
+                </div>
+                <div className="kpi-sub">Được phân quyền thao tác nghiệp vụ</div>
+              </div>
 
-          <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
-            <div className="kpi-label">Trạng thái tại Tâm An hôm nay</div>
-            <div className="kpi-val" style={{ color: '#2563eb' }}>
-              {isCaregiver
-                ? `${myAssignedResidentRows.length - myActiveLeavesCount}/${myAssignedResidentRows.length}`
-                : `${stats.activeResidents - stats.activeLeaves}/${stats.activeResidents}`}{' '}
-              <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
-            </div>
-            <div className="kpi-sub">
-              {isCaregiver && myActiveLeavesCount > 0
-                ? `${myActiveLeavesCount} cụ đang tạm vắng có báo trước`
-                : 'Đang lưu trú tại các phòng ở'}
-            </div>
-          </div>
+              <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
+                <div className="kpi-label">Trạng thái tại Tâm An hôm nay</div>
+                <div className="kpi-val" style={{ color: '#2563eb' }}>
+                  {isCaregiver
+                    ? `${myAssignedResidentRows.length - myActiveLeavesCount}/${myAssignedResidentRows.length}`
+                    : `${stats.activeResidents - stats.activeLeaves}/${stats.activeResidents}`}{' '}
+                  <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
+                </div>
+                <div className="kpi-sub">
+                  {isCaregiver && myActiveLeavesCount > 0
+                    ? `${myActiveLeavesCount} cụ đang tạm vắng có báo trước`
+                    : 'Đang lưu trú tại các phòng ở'}
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
             <div className="kpi-label">Ca trực của bạn hôm nay</div>

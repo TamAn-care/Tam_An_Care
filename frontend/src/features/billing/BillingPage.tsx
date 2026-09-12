@@ -6,6 +6,9 @@ import {
   fetchMonthlyInvoices,
   fetchPaymentReceipts,
   fetchPricingMatrix,
+  fetchDetailedFeeNotices,
+  updateDetailedFeeNotice,
+  publishFeeNoticeToFamilyPortal,
   recordPayment,
   settleInvoice,
   updatePricingMatrix,
@@ -14,6 +17,8 @@ import {
   DEFAULT_PRICING_MATRIX,
   DISCOUNT_CATEGORY_LABELS,
   ResidentMonthlyInvoice,
+  DetailedMonthlyFeeNotice,
+  UpdateDetailedFeeNoticePayload,
   PaymentReceipt,
   PricingMatrix,
   InvoiceStatus,
@@ -39,10 +44,38 @@ export default function BillingPage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'invoices' | 'pricing' | 'discounts' | 'receipts' | 'reports'>('invoices');
+  const [activeTab, setActiveTab] = useState<'detailed_excel' | 'invoices' | 'pricing' | 'discounts' | 'receipts' | 'reports'>('detailed_excel');
   const [selectedMonth, setSelectedMonth] = useState<string>('2026-09');
   const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus | 'ALL'>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Edit, Publish & Print Detailed Fee Notice Modal State for Accountant
+  const [editFeeNotice, setEditFeeNotice] = useState<DetailedMonthlyFeeNotice | null>(null);
+  const [publishConfirmNotice, setPublishConfirmNotice] = useState<DetailedMonthlyFeeNotice | null>(null);
+  const [printModalNotice, setPrintModalNotice] = useState<DetailedMonthlyFeeNotice | null>(null);
+  const [publishNotesInput, setPublishNotesInput] = useState<string>('');
+  const [feeNoticeForm, setFeeNoticeForm] = useState<UpdateDetailedFeeNoticePayload>({
+    noticeId: '',
+    basicFee: 0,
+    supportFee: 0,
+    bathingLaundryFee: 0,
+    mobilityFee: 0,
+    hygieneFee: 0,
+    feedingSondeFee: 0,
+    dementiaCareFee: 0,
+    soreCareFee: 0,
+    catheterCareFee: 0,
+    tracheostomyCareFee: 0,
+    woundDressingFee: 0,
+    rehabFee: 0,
+    incurredFee: 0,
+    incurredContent: '',
+    deductionFee: 0,
+    previousMonthDebt: 0,
+    debtNotes: '',
+    paidAmount: 0,
+    notes: '',
+  });
 
   // Modals state
   const [detailModalInvoice, setDetailModalInvoice] = useState<ResidentMonthlyInvoice | null>(null);
@@ -73,6 +106,11 @@ export default function BillingPage() {
   const canManageBilling = hasCapability(actor?.actorRole, 'canManageBilling');
 
   // Queries
+  const detailedFeeNoticesQuery = useQuery({
+    queryKey: ['billing-detailed-fee-notices'],
+    queryFn: () => fetchDetailedFeeNotices(),
+  });
+
   const invoicesQuery = useQuery({
     queryKey: ['billing-invoices', selectedMonth],
     queryFn: () => fetchMonthlyInvoices(selectedMonth),
@@ -89,6 +127,30 @@ export default function BillingPage() {
       const p = await fetchPricingMatrix();
       setPricingForm(JSON.parse(JSON.stringify(p)));
       return p;
+    },
+  });
+
+  // Detailed Fee Notice Mutation for Accountant
+  const updateDetailedFeeNoticeMutation = useMutation({
+    mutationFn: async (payload: UpdateDetailedFeeNoticePayload) => {
+      return updateDetailedFeeNotice(actor!, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['billing-detailed-fee-notices'] });
+      queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
+      setEditFeeNotice(null);
+    },
+  });
+
+  const publishFeeNoticeMutation = useMutation({
+    mutationFn: async ({ noticeId, notes }: { noticeId: string; notes?: string }) => {
+      return publishFeeNoticeToFamilyPortal(actor!, noticeId, notes);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['billing-detailed-fee-notices'] });
+      queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
+      setPublishConfirmNotice(null);
+      setPublishNotesInput('');
     },
   });
 
@@ -328,6 +390,23 @@ export default function BillingPage() {
       >
         <button
           type="button"
+          className={`tab-item ${activeTab === 'detailed_excel' ? 'active' : ''}`}
+          onClick={() => setActiveTab('detailed_excel')}
+          style={{
+            padding: '0.6rem 1rem',
+            fontWeight: 700,
+            fontSize: '0.88rem',
+            border: 'none',
+            background: 'none',
+            cursor: 'pointer',
+            borderBottom: activeTab === 'detailed_excel' ? '3px solid #15803d' : 'none',
+            color: activeTab === 'detailed_excel' ? '#15803d' : '#64748b',
+          }}
+        >
+          📊 Bảng Chi Tiết Phí & Thu Tiền (Excel 21 Cột)
+        </button>
+        <button
+          type="button"
           className={`tab-item ${activeTab === 'invoices' ? 'active' : ''}`}
           onClick={() => setActiveTab('invoices')}
           style={{
@@ -412,6 +491,193 @@ export default function BillingPage() {
           📊 Báo Cáo Doanh Thu
         </button>
       </div>
+
+      {/* ========================================================================= */}
+      {/* TAB 0: BẢNG CHI TIẾT PHÍ & THU TIỀN (EXCEL 21 CỘT) */}
+      {/* ========================================================================= */}
+      {activeTab === 'detailed_excel' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', border: '1px solid #cbd5e1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#1e3a8a', fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  📊 Bảng Chi Tiết Phí & Tiến Trình Thu Tiền (Excel 21 Cột)
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Bảng tổng hợp 21 cột chi tiết mức phí cơ bản, phí hỗ trợ, y tế chuyên sâu, phát sinh & dư nợ. Tự động liên kết với Cổng Thân Nhân.
+                </p>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <div style={{ fontSize: '0.83rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '0.45rem 0.85rem', fontWeight: 700 }}>
+                  🔑 Quyền Kế Toán: Được phép nhập & cập nhật 21 mục phí
+                </div>
+              </div>
+            </div>
+
+            {detailedFeeNoticesQuery.isLoading ? (
+              <LoadingState title="Đang tải bảng chi tiết phí..." />
+            ) : (
+              <div style={{ overflowX: 'auto', border: '1px solid #cbd5e1', borderRadius: '0.5rem' }}>
+                <table style={{ width: '100%', minWidth: '2600px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                  <thead>
+                    <tr style={{ background: '#0f172a', color: '#ffffff', textAlign: 'center' }}>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '160px', position: 'sticky', left: 0, background: '#0f172a', zIndex: 10 }}>Cư Dân / Mã HĐ</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>Phí cơ bản (1)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Phí hỗ trợ (2)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Hỗ trợ tắm gội</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Hỗ trợ nâng đỡ, di chuyển</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Hỗ trợ vệ sinh</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>Hỗ trợ xúc ăn / ăn qua sonde</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Chăm sóc NCT lẫn tuổi già</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>Chăm sóc các ổ loét</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '140px' }}>CS sonde bàng quang</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '140px' }}>CS nội khí quản</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Thay băng, rửa vết thương</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>VLTL - PHCN</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Phát sinh (3)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '140px' }}>Nội dung phát sinh</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Giảm trừ (4)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Nợ tháng trước (5)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Ghi chú nợ</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px', background: '#166534', color: '#ffffff' }}>TỔNG PHẢI THU</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px', background: '#1e40af', color: '#ffffff' }}>Đã thu</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px', background: '#991b1b', color: '#ffffff' }}>Còn phải thu</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Tình trạng</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '160px', background: '#065f46', color: '#ffffff' }}>Kiểm Duyệt Cổng Thân Nhân</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '220px' }}>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(detailedFeeNoticesQuery.data || []).map((notice, idx) => (
+                      <tr key={notice.id} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontWeight: 700, position: 'sticky', left: 0, background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', zIndex: 5 }}>
+                          <div>{notice.residentName}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{notice.residentCode}</div>
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.basicFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.supportFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.bathingLaundryFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.mobilityFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.hygieneFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.feedingSondeFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.dementiaCareFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.soreCareFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.catheterCareFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.tracheostomyCareFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.woundDressingFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.rehabFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.incurredFee.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontStyle: 'italic', fontSize: '0.75rem' }}>{notice.incurredContent || '-'}</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', color: '#dc2626' }}>
+                          {notice.deductionFee > 0 ? `-${notice.deductionFee.toLocaleString('vi-VN')} đ` : '0 đ'}
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.previousMonthDebt.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontSize: '0.75rem' }}>{notice.debtNotes || '-'}</td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#15803d', background: '#f0fdf4' }}>
+                          {notice.totalDue.toLocaleString('vi-VN')} đ
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 700, color: '#1e40af' }}>
+                          {notice.paidAmount.toLocaleString('vi-VN')} đ
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#b91c1c', background: '#fef2f2' }}>
+                          {notice.remainingAmount.toLocaleString('vi-VN')} đ
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                          <span className={`badge ${notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                            {notice.statusLabel}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                          {notice.isPublishedToFamilyPortal ? (
+                            <span className="badge badge-success" style={{ fontSize: '0.75rem', fontWeight: 800, background: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }}>
+                              🟢 Đã gửi Cổng Thân Nhân
+                            </span>
+                          ) : (
+                            <span className="badge badge-warning" style={{ fontSize: '0.75rem', fontWeight: 800, background: '#fefce8', color: '#854d0e', border: '1px solid #fef08a' }}>
+                              🟡 Bản nháp Kế toán
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                          <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-primary"
+                              style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                              onClick={() => {
+                                setEditFeeNotice(notice);
+                                setFeeNoticeForm({
+                                  noticeId: notice.id,
+                                  basicFee: notice.basicFee,
+                                  supportFee: notice.supportFee,
+                                  bathingLaundryFee: notice.bathingLaundryFee,
+                                  mobilityFee: notice.mobilityFee,
+                                  hygieneFee: notice.hygieneFee,
+                                  feedingSondeFee: notice.feedingSondeFee,
+                                  dementiaCareFee: notice.dementiaCareFee,
+                                  soreCareFee: notice.soreCareFee,
+                                  catheterCareFee: notice.catheterCareFee,
+                                  tracheostomyCareFee: notice.tracheostomyCareFee,
+                                  woundDressingFee: notice.woundDressingFee,
+                                  rehabFee: notice.rehabFee,
+                                  incurredFee: notice.incurredFee,
+                                  incurredContent: notice.incurredContent || '',
+                                  deductionFee: notice.deductionFee,
+                                  previousMonthDebt: notice.previousMonthDebt,
+                                  debtNotes: notice.debtNotes || '',
+                                  paidAmount: notice.paidAmount,
+                                  notes: notice.notes || '',
+                                });
+                              }}
+                            >
+                              ✏️ Sửa Mức Phí
+                            </button>
+
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-neutral"
+                              style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem', background: '#f1f5f9', color: '#0f172a', fontWeight: 600, border: '1px solid #cbd5e1' }}
+                              onClick={() => setPrintModalNotice(notice)}
+                              title="Xem bản xem trước & in Thông báo thu phí bản giấy A4"
+                            >
+                              🖨️ In Bản Giấy
+                            </button>
+
+                            {!notice.isPublishedToFamilyPortal ? (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-success"
+                                style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem', background: '#166534', color: '#ffffff', fontWeight: 700 }}
+                                onClick={() => {
+                                  setPublishConfirmNotice(notice);
+                                  setPublishNotesInput('');
+                                }}
+                              >
+                                🚀 Duyệt & Gửi Cổng Thân Nhân
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-neutral"
+                                disabled
+                                style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem', opacity: 0.65 }}
+                                title={`Đã duyệt gửi Cổng Thân Nhân bởi ${notice.approvedBy || 'Kế toán'}`}
+                              >
+                                ✅ Đã Phát Hành
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ========================================================================= */}
       {/* TAB 1: BẢNG KÊ THU PHÍ */}
@@ -1655,6 +1921,842 @@ export default function BillingPage() {
               >
                 {settleInvoiceMutation.isPending ? 'Đang khóa...' : 'Xác Nhận Khóa Sổ'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 5: NHẬP & CẬP NHẬT MỨC PHÍ THU THÁNG (KẾ TOÁN) */}
+      {/* ========================================================================= */}
+      {editFeeNotice && (
+        <div className="modal-overlay" onClick={() => setEditFeeNotice(null)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid #e2e8f0',
+              maxWidth: '840px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#1e3a8a', fontSize: '1.2rem', fontWeight: 800 }}>
+                  ✏️ Nhập & Cập Nhật Mức Phí Tháng {editFeeNotice.billingMonth}
+                </h3>
+                <div style={{ fontSize: '0.88rem', color: '#475569', marginTop: '0.2rem' }}>
+                  Cụ <b>{editFeeNotice.residentName}</b> (Mã HĐ: {editFeeNotice.residentCode})
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-sm btn-neutral"
+                onClick={() => setEditFeeNotice(null)}
+              >
+                ✕ Đóng
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateDetailedFeeNoticeMutation.mutate(feeNoticeForm);
+              }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+            >
+              {/* Nhóm 1: Phí cơ bản & Hỗ trợ */}
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534', marginBottom: '0.75rem' }}>
+                  1. Phí Cơ Bản & Phí Hỗ Trợ Chăm Sóc:
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Phí cơ bản (1) [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.basicFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, basicFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Phí hỗ trợ (2) [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.supportFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, supportFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Hỗ trợ tắm gội [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.bathingLaundryFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, bathingLaundryFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Hỗ trợ nâng đỡ, di chuyển [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.mobilityFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, mobilityFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Hỗ trợ vệ sinh [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.hygieneFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, hygieneFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Hỗ trợ xúc ăn / ăn sonde [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.feedingSondeFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, feedingSondeFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Nhóm 2: Chăm sóc Y tế chuyên sâu */}
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1e40af', marginBottom: '0.75rem' }}>
+                  2. Phí Chăm Sóc Y Tế Chuyên Sâu:
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>CS NCT lẫn tuổi già [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.dementiaCareFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, dementiaCareFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>CS các ổ loét [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.soreCareFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, soreCareFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>CS sonde bàng quang [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.catheterCareFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, catheterCareFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>CS nội khí quản [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.tracheostomyCareFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, tracheostomyCareFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Thay băng, rửa vết thương [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.woundDressingFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, woundDressingFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>VLTL - PHCN [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.rehabFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, rehabFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Nhóm 3: Phát sinh, Giảm trừ & Dư nợ */}
+              <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#991b1b', marginBottom: '0.75rem' }}>
+                  3. Phát Sinh (3), Giảm Trừ (4) & Nợ Tháng Trước (5):
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Phát sinh (3) [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.incurredFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, incurredFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group" style={{ gridColumn: 'span 2' }}>
+                    <span className="field-label" style={{ fontWeight: 600 }}>Nội dung phát sinh</span>
+                    <input
+                      type="text"
+                      className="text-input"
+                      placeholder="Mô tả khoản phát sinh (VD: Đi khám BV...)"
+                      value={feeNoticeForm.incurredContent || ''}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, incurredContent: e.target.value })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600, color: '#dc2626' }}>Chi phí giảm trừ (4) [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.deductionFee}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, deductionFee: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 600 }}>Nợ tháng trước (5) [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.previousMonthDebt}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, previousMonthDebt: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group" style={{ gridColumn: 'span 2' }}>
+                    <span className="field-label" style={{ fontWeight: 600 }}>Ghi chú nợ</span>
+                    <input
+                      type="text"
+                      className="text-input"
+                      placeholder="Ghi chú về nợ cũ..."
+                      value={feeNoticeForm.debtNotes || ''}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, debtNotes: e.target.value })}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Nhóm 4: Tiến trình thu tiền */}
+              <div style={{ background: '#eff6ff', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #bfdbfe' }}>
+                <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1e40af', marginBottom: '0.75rem' }}>
+                  4. Số Tiền Thực Thu & Ghi Chú Đóng Phí:
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+                  <label className="field-group">
+                    <span className="field-label" style={{ fontWeight: 700, color: '#1e40af' }}>Đã thu (Số tiền thực nhận) [VNĐ]</span>
+                    <input
+                      type="number"
+                      className="text-input"
+                      value={feeNoticeForm.paidAmount}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, paidAmount: Number(e.target.value) || 0 })}
+                    />
+                  </label>
+                  <label className="field-group" style={{ gridColumn: 'span 2' }}>
+                    <span className="field-label" style={{ fontWeight: 600 }}>Ghi chú xác thực / thu phí</span>
+                    <input
+                      type="text"
+                      className="text-input"
+                      placeholder="Ghi chú người nộp, phương thức..."
+                      value={feeNoticeForm.notes || ''}
+                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, notes: e.target.value })}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              {/* Hộp tính toán thời gian thực (Real-time auto sum) */}
+              {(() => {
+                const liveTotal =
+                  feeNoticeForm.basicFee +
+                  feeNoticeForm.supportFee +
+                  feeNoticeForm.bathingLaundryFee +
+                  feeNoticeForm.mobilityFee +
+                  feeNoticeForm.hygieneFee +
+                  feeNoticeForm.feedingSondeFee +
+                  feeNoticeForm.dementiaCareFee +
+                  feeNoticeForm.soreCareFee +
+                  feeNoticeForm.catheterCareFee +
+                  feeNoticeForm.tracheostomyCareFee +
+                  feeNoticeForm.woundDressingFee +
+                  feeNoticeForm.rehabFee +
+                  feeNoticeForm.incurredFee -
+                  feeNoticeForm.deductionFee +
+                  feeNoticeForm.previousMonthDebt +
+                  (editFeeNotice.familyMealsFee || 0);
+
+                const liveRemaining = Math.max(0, liveTotal - feeNoticeForm.paidAmount);
+                const liveStatusLabel =
+                  feeNoticeForm.paidAmount >= liveTotal && liveTotal > 0
+                    ? 'Đã thu'
+                    : feeNoticeForm.paidAmount > 0
+                    ? 'Thu một phần'
+                    : 'Chưa thu';
+
+                return (
+                  <div style={{ background: '#f0fdf4', border: '2px solid #a7f3d0', padding: '1rem 1.25rem', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                    <div>
+                      <div style={{ fontSize: '0.9rem', color: '#166534', fontWeight: 600 }}>
+                        💵 TỔNG PHẢI THU (sum tự động): <b style={{ fontSize: '1.25rem', color: '#15803d' }}>{liveTotal.toLocaleString('vi-VN')} đ</b>
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: '#475569', marginTop: '0.25rem' }}>
+                        Đã thu: <b style={{ color: '#1e40af' }}>{feeNoticeForm.paidAmount.toLocaleString('vi-VN')} đ</b> | Còn phải thu (tự động): <b style={{ color: '#b91c1c' }}>{liveRemaining.toLocaleString('vi-VN')} đ</b>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span className={`badge ${feeNoticeForm.paidAmount >= liveTotal && liveTotal > 0 ? 'badge-success' : feeNoticeForm.paidAmount > 0 ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.88rem', fontWeight: 800, padding: '0.35rem 0.75rem' }}>
+                        Tình trạng: {liveStatusLabel}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  onClick={() => setEditFeeNotice(null)}
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={updateDetailedFeeNoticeMutation.isPending}
+                  style={{ fontWeight: 700, minWidth: '160px' }}
+                >
+                  {updateDetailedFeeNoticeMutation.isPending ? 'Đang lưu...' : '💾 Lưu & Cập Nhật Bảng Kê'}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  onClick={() => {
+                    if (editFeeNotice) {
+                      const liveTotal =
+                        feeNoticeForm.basicFee +
+                        feeNoticeForm.supportFee +
+                        feeNoticeForm.bathingLaundryFee +
+                        feeNoticeForm.mobilityFee +
+                        feeNoticeForm.hygieneFee +
+                        feeNoticeForm.feedingSondeFee +
+                        feeNoticeForm.dementiaCareFee +
+                        feeNoticeForm.soreCareFee +
+                        feeNoticeForm.catheterCareFee +
+                        feeNoticeForm.tracheostomyCareFee +
+                        feeNoticeForm.woundDressingFee +
+                        feeNoticeForm.rehabFee +
+                        feeNoticeForm.incurredFee -
+                        feeNoticeForm.deductionFee +
+                        feeNoticeForm.previousMonthDebt +
+                        (editFeeNotice.familyMealsFee || 0);
+                      const liveRemaining = Math.max(0, liveTotal - feeNoticeForm.paidAmount);
+
+                      setPrintModalNotice({
+                        ...editFeeNotice,
+                        ...feeNoticeForm,
+                        totalDue: liveTotal,
+                        remainingAmount: liveRemaining,
+                        status:
+                          feeNoticeForm.paidAmount >= liveTotal && liveTotal > 0
+                            ? 'PAID'
+                            : feeNoticeForm.paidAmount > 0
+                            ? 'PARTIAL'
+                            : 'UNPAID',
+                      });
+                    }
+                  }}
+                >
+                  🖨️ In Bản Giấy
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  style={{ background: '#166534', color: '#ffffff', fontWeight: 700 }}
+                  disabled={updateDetailedFeeNoticeMutation.isPending || publishFeeNoticeMutation.isPending}
+                  onClick={async () => {
+                    await updateDetailedFeeNoticeMutation.mutateAsync(feeNoticeForm);
+                    if (editFeeNotice) {
+                      const updatedNotice = { ...editFeeNotice, ...feeNoticeForm };
+                      setPublishConfirmNotice(updatedNotice);
+                    }
+                  }}
+                >
+                  🚀 Lưu & Duyệt Gửi Cổng Thân Nhân
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 6: POP-UP HỎI XÁC NHẬN DUYỆT & PHÁT HÀNH SANG CỔNG THÂN NHÂN */}
+      {/* ========================================================================= */}
+      {publishConfirmNotice && (
+        <div className="modal-overlay" onClick={() => setPublishConfirmNotice(null)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.75rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '2px solid #166534',
+              maxWidth: '540px',
+              width: '100%',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: '2.5rem', textAlign: 'center', marginBottom: '0.5rem' }}>🚀</div>
+            <h3 style={{ margin: '0 0 0.5rem 0', color: '#166534', textAlign: 'center', fontSize: '1.25rem', fontWeight: 800 }}>
+              Xác Nhận Duyệt & Phát Hành Thông Báo Thu Phí
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: '#334155', lineHeight: '1.6', textAlign: 'center', margin: '0 0 1.25rem 0' }}>
+              Bạn có chắc chắn muốn duyệt và phát hành Thông báo thu phí tháng <b>{publishConfirmNotice.billingMonth}</b> cho cụ <b>{publishConfirmNotice.residentName}</b> (Mã HĐ: {publishConfirmNotice.residentCode}) sang <b>Cổng Thân Nhân</b> không?
+            </p>
+
+            <div style={{ background: '#f0fdf4', padding: '0.85rem 1rem', borderRadius: '0.5rem', border: '1px solid #bbf7d0', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+              <div><b>TỔNG PHẢI THU:</b> <span style={{ color: '#15803d', fontWeight: 800, fontSize: '1.05rem' }}>{publishConfirmNotice.totalDue.toLocaleString('vi-VN')} VNĐ</span></div>
+              <div style={{ marginTop: '0.2rem', color: '#475569' }}>
+                Đã thu: <b>{publishConfirmNotice.paidAmount.toLocaleString('vi-VN')} đ</b> | Còn phải thu: <b>{publishConfirmNotice.remainingAmount.toLocaleString('vi-VN')} đ</b>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#15803d', fontStyle: 'italic', marginTop: '0.4rem' }}>
+                ⚠️ Thông tin sau khi phát hành sẽ hiển thị công khai cho người nhà tra cứu tại Cổng Thân Nhân.
+              </div>
+            </div>
+
+            <label className="field-group" style={{ marginBottom: '1.25rem' }}>
+              <span className="field-label" style={{ fontWeight: 600 }}>Ghi chú kiểm duyệt (không bắt buộc)</span>
+              <input
+                type="text"
+                className="text-input"
+                placeholder="VD: Đã kiểm tra đối soát 100% dịch vụ & chỉ định..."
+                value={publishNotesInput}
+                onChange={(e) => setPublishNotesInput(e.target.value)}
+              />
+            </label>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={() => setPublishConfirmNotice(null)}
+              >
+                Hủy Bỏ
+              </button>
+              <button
+                type="button"
+                className="btn btn-success"
+                disabled={publishFeeNoticeMutation.isPending}
+                onClick={() => {
+                  publishFeeNoticeMutation.mutate({
+                    noticeId: publishConfirmNotice.id,
+                    notes: publishNotesInput || undefined,
+                  });
+                }}
+                style={{ fontWeight: 800, background: '#166534', color: '#ffffff', minWidth: '180px' }}
+              >
+                {publishFeeNoticeMutation.isPending ? 'Đang duyệt...' : '✅ Chắc Chắn Duyệt & Gửi'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 7: TRANG XEM TRƯỚC & IN THÔNG BÁO THU PHÍ GIẤY A4 (PRINT PREVIEW) */}
+      {/* ========================================================================= */}
+      {printModalNotice && (
+        <div className="modal-overlay" onClick={() => setPrintModalNotice(null)} style={{ overflowY: 'auto', padding: '2rem 1rem' }}>
+          <style>{`
+            @media print {
+              body * {
+                visibility: hidden !important;
+              }
+              #printable-fee-notice-area, #printable-fee-notice-area * {
+                visibility: visible !important;
+              }
+              #printable-fee-notice-area {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 15mm 15mm !important;
+                box-shadow: none !important;
+                border: none !important;
+                background: #ffffff !important;
+                font-family: Arial, sans-serif !important;
+                color: #000000 !important;
+              }
+              .no-print {
+                display: none !important;
+              }
+            }
+          `}</style>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '0',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              maxWidth: '850px',
+              width: '100%',
+              margin: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Non-Printable Header */}
+            <div className="no-print" style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', borderTopLeftRadius: '0.75rem', borderTopRightRadius: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>🖨️</span>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#0f172a', fontWeight: 700 }}>
+                  Xem Trước Bản In A4 - Thông Báo Thu Phí Tháng {printModalNotice.billingMonth}
+                </h3>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  onClick={() => setPrintModalNotice(null)}
+                  style={{ fontSize: '0.85rem' }}
+                >
+                  Đóng Window
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => window.print()}
+                  style={{ fontWeight: 700, padding: '0.45rem 1.15rem', display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#166534', borderColor: '#15803d' }}
+                >
+                  🖨️ In Bản Giấy A4 (Print)
+                </button>
+              </div>
+            </div>
+
+            {/* Printable A4 Content Box */}
+            <div
+              id="printable-fee-notice-area"
+              style={{
+                padding: '2.5rem 3rem',
+                color: '#0f172a',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+                lineHeight: 1.5,
+              }}
+            >
+              {/* Header: Logo, Center Name, Slogan & Contact Details */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #0f172a', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                  <img
+                    src="/branding/tam-an-logo-master.png"
+                    alt="Logo Trung tâm dưỡng lão Tâm An"
+                    style={{ height: '85px', width: 'auto', objectFit: 'contain' }}
+                  />
+                  <div>
+                    <div style={{ fontSize: '1.35rem', fontWeight: 900, color: '#166534', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>
+                      TRUNG TÂM DƯỠNG LÃO TÂM AN
+                    </div>
+                    <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#047857', fontStyle: 'italic', marginTop: '0.15rem' }}>
+                      "Nơi Tuổi Già An Nhiên"
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.35rem' }}>
+                      Địa chỉ: Xã Thạch Hòa, Huyện Thạch Thất, TP. Hà Nội<br />
+                      Hotline: <b>1900-TAMAN</b> | Email: <b>info@taman.vn</b>
+                    </div>
+                  </div>
+                </div>
+
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                    Mẫu số: <b>01/TBTP-TA</b>
+                  </div>
+                  <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>
+                    Ngày in: {new Date().toLocaleDateString('vi-VN')}
+                  </div>
+                  <div style={{ marginTop: '0.4rem' }}>
+                    <span style={{
+                      display: 'inline-block',
+                      padding: '0.2rem 0.6rem',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      background: printModalNotice.isPublishedToFamilyPortal ? '#dcfce7' : '#fef3c7',
+                      color: printModalNotice.isPublishedToFamilyPortal ? '#15803d' : '#b45309',
+                      border: `1px solid ${printModalNotice.isPublishedToFamilyPortal ? '#86efac' : '#fde68a'}`,
+                    }}>
+                      {printModalNotice.isPublishedToFamilyPortal ? '✅ ĐÃ KIỂM DUYỆT' : '⏳ BẢN DỰ THẢO'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Title Section */}
+              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.35rem 0', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  THÔNG BÁO THU PHÍ CHĂM SÓC CƯ DÂN
+                </h2>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#166534' }}>
+                  KỲ THU PHÍ: THÁNG {printModalNotice.billingMonth}
+                </div>
+              </div>
+
+              {/* Resident & Sponsor Profile Card */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1.5rem', fontSize: '0.9rem' }}>
+                <div>
+                  <span style={{ color: '#64748b' }}>Họ và tên Người Cao Tuổi:</span>{' '}
+                  <b style={{ color: '#0f172a', fontSize: '1rem' }}>{printModalNotice.residentName}</b>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Mã Hợp Đồng / Hồ Sơ:</span>{' '}
+                  <b style={{ color: '#166534', fontFamily: 'monospace', fontSize: '0.95rem' }}>{printModalNotice.residentCode}</b>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Người Bảo Lãnh (Thân nhân):</span>{' '}
+                  <b>{printModalNotice.sponsorName || 'Gia đình Cụ'}</b>
+                </div>
+                <div>
+                  <span style={{ color: '#64748b' }}>Số Điện Thoại Liên Hệ:</span>{' '}
+                  <b>{printModalNotice.sponsorPhone || '---'}</b>
+                </div>
+              </div>
+
+              {/* Comprehensive 21-Item Breakdown Table */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  📋 BẢNG CHI TIẾT CÁC MỤC CHI PHÍ & DỊCH VỤ:
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f1f5f9', borderTop: '2px solid #cbd5e1', borderBottom: '2px solid #cbd5e1' }}>
+                      <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center', width: '40px', fontWeight: 700, borderRight: '1px solid #cbd5e1' }}>STT</th>
+                      <th style={{ padding: '0.5rem 0.75rem', textAlign: 'left', fontWeight: 700, borderRight: '1px solid #cbd5e1' }}>Mục Chi Phí / Dịch Vụ</th>
+                      <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', width: '160px', fontWeight: 700 }}>Thành Tiền (VNĐ)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>1</td>
+                      <td style={{ padding: '0.45rem 0.75rem', fontWeight: 600, borderRight: '1px solid #e2e8f0' }}>Phí dịch vụ cơ bản (Tiền phòng, ăn uống 3 bữa, tiện ích)</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.basicFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>2</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí hỗ trợ chung</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.supportFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>3</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ tắm gội</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.bathingLaundryFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>4</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ nâng đỡ, di chuyển</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.mobilityFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>5</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ vệ sinh cá nhân</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.hygieneFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>6</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ xúc ăn & ăn qua sonde</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.feedingSondeFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>7</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc NCT bị lẫn tuổi già</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.dementiaCareFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>8</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc các ổ loét</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.soreCareFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>10</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc người đặt sonde bàng quang</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.catheterCareFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>11</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc người đặt nội khí quản</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.tracheostomyCareFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>12</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Thay băng, rửa vết thương</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.woundDressingFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>13</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Vật lý trị liệu - PHCN</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.rehabFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    {(printModalNotice.familyMealsFee || 0) > 0 && (
+                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>14</td>
+                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Suất ăn thân nhân lên thăm</td>
+                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{(printModalNotice.familyMealsFee || 0).toLocaleString('vi-VN')}</td>
+                      </tr>
+                    )}
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>15</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
+                        Phí Phát sinh
+                        {printModalNotice.incurredContent && (
+                          <span style={{ color: '#475569', fontStyle: 'italic', display: 'block', fontSize: '0.78rem' }}>
+                            Nội dung: {printModalNotice.incurredContent}
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.incurredFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0', color: '#b91c1c' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>16</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Chi phí giảm trừ / Khuyến mãi</td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>-{printModalNotice.deductionFee.toLocaleString('vi-VN')}</td>
+                    </tr>
+                    <tr style={{ borderBottom: '2px solid #cbd5e1' }}>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>17</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
+                        Nợ tháng trước chuyển sang
+                        {printModalNotice.debtNotes && (
+                          <span style={{ color: '#475569', fontStyle: 'italic', display: 'block', fontSize: '0.78rem' }}>
+                            Ghi chú nợ: {printModalNotice.debtNotes}
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.previousMonthDebt.toLocaleString('vi-VN')}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Totals Summary Box */}
+              <div style={{ background: '#f0fdf4', border: '2px solid #166534', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #bbf7d0', paddingBottom: '0.6rem', marginBottom: '0.6rem' }}>
+                  <span style={{ fontSize: '1.05rem', fontWeight: 900, color: '#166534' }}>TỔNG PHẢI THU (TỰ ĐỘNG CỘNG):</span>
+                  <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#15803d', fontVariantNumeric: 'tabular-nums' }}>
+                    {printModalNotice.totalDue.toLocaleString('vi-VN')} VNĐ
+                  </span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
+                  <div>
+                    <span style={{ color: '#475569' }}>Đã thanh toán:</span><br />
+                    <b style={{ color: '#1e40af', fontSize: '1.05rem' }}>{printModalNotice.paidAmount.toLocaleString('vi-VN')} VNĐ</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#475569' }}>Còn phải thu (Dư nợ):</span><br />
+                    <b style={{ color: '#b91c1c', fontSize: '1.05rem' }}>{printModalNotice.remainingAmount.toLocaleString('vi-VN')} VNĐ</b>
+                  </div>
+                  <div>
+                    <span style={{ color: '#475569' }}>Tình trạng đóng phí:</span><br />
+                    <b style={{ color: printModalNotice.paidAmount >= printModalNotice.totalDue ? '#15803d' : printModalNotice.paidAmount > 0 ? '#b45309' : '#b91c1c', fontSize: '1.05rem' }}>
+                      {printModalNotice.paidAmount >= printModalNotice.totalDue && printModalNotice.totalDue > 0
+                        ? 'ĐÃ THU ĐỦ'
+                        : printModalNotice.paidAmount > 0
+                        ? 'THU MỘT PHẦN'
+                        : 'CHƯA THU'}
+                    </b>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Instructions Box (Section 2) */}
+              {(() => {
+                const parts = (printModalNotice.billingMonth || '09/2026').split(/[\/-]/);
+                let monthNum = '09';
+                let yearNum = '2026';
+                if (parts.length === 2) {
+                  if (parts[0].length === 4) {
+                    yearNum = parts[0];
+                    monthNum = parts[1];
+                  } else {
+                    monthNum = parts[0];
+                    yearNum = parts[1];
+                  }
+                }
+                const transferSyntax = `${printModalNotice.residentCode} - ${printModalNotice.residentName} - Phi T${monthNum}_${yearNum}`;
+
+                return (
+                  <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '2rem', background: '#ffffff', fontSize: '0.88rem', lineHeight: '1.6' }}>
+                    <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.35rem' }}>
+                      2. Hướng dẫn thanh toán
+                    </div>
+
+                    <div style={{ marginBottom: '0.4rem' }}>
+                      <b>Thời hạn thanh toán:</b> Từ ngày 01 đến hết ngày 05 tháng {monthNum} năm {yearNum}
+                    </div>
+
+                    <div style={{ fontWeight: 700, marginTop: '0.35rem', marginBottom: '0.25rem' }}>
+                      Hình thức thanh toán:
+                    </div>
+
+                    <div style={{ paddingLeft: '0.5rem', marginBottom: '0.5rem' }}>
+                      <div style={{ marginBottom: '0.25rem' }}>
+                        <b>Cách 1:</b> Thanh toán bằng tiền mặt tại văn phòng của Trung tâm.
+                      </div>
+                      <div>
+                        <b>Cách 2:</b> Chuyển khoản ngân hàng:
+                        <div style={{ paddingLeft: '1.25rem', marginTop: '0.25rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                          <div>• Tên tài khoản: <b>Công ty CP TMDV An Thịnh Phát Group</b></div>
+                          <div>• Số tài khoản: <b style={{ fontSize: '0.95rem', color: '#166534' }}>111603721868</b></div>
+                          <div>• Ngân hàng: <b>Ngân hàng VietinBank</b></div>
+                          <div>
+                            • <b style={{ color: '#b91c1c' }}>Nội dung chuyển khoản: {transferSyntax}</b>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.82rem', color: '#475569', fontStyle: 'italic', background: '#f8fafc', padding: '0.4rem 0.65rem', borderRadius: '0.35rem', borderLeft: '3px solid #166534', marginTop: '0.5rem' }}>
+                      <b>Lưu ý:</b> Sau khi chuyển khoản, Quý Gia đình vui lòng gửi xác nhận giao dịch cho Trung tâm để thuận tiện đối soát và cập nhật.
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Official 3-Column Signatures */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '2.5rem', pageBreakInside: 'avoid' }}>
+                <div>
+                  <div style={{ fontWeight: 700, color: '#0f172a' }}>NGƯỜI LẬP BẢNG</div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 700, color: '#0f172a' }}>KẾ TOÁN TRƯỞNG</div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155' }}>Nguyễn Thị Kế Toán</div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 700, color: '#0f172a' }}>GIÁM ĐỐC TRUNG TÂM</div>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155' }}>Viện Trưởng Tâm An</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

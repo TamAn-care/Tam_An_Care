@@ -18,6 +18,7 @@ export interface ResidentFamilySupplyItem {
   categoryLabel: string;
   quantityReceived: number;
   remainingQuantity: number;
+  minSafetyThreshold?: number; // Ngưỡng tối thiểu cảnh báo sắp hết (mặc định 5)
   unit: string;
   receivedAt: string; // ISO String
   deliveredBy: string; // Tên người thân / đơn vị giao
@@ -203,6 +204,47 @@ export async function logSupplyUsage(
     targetEntityId: updatedItem.id,
     targetEntityName: `Cụ ${updatedItem.residentName} - ${updatedItem.itemName}`,
     summary: `Đã sử dụng ${usedQuantity} ${updatedItem.unit} ${updatedItem.itemName}. Tồn còn lại: ${newRemaining} ${updatedItem.unit}.`,
+    severity: 'NORMAL',
+  });
+
+  return updatedItem;
+}
+
+export async function updateResidentSupplyThreshold(
+  actor: HumanActorSession,
+  supplyId: string,
+  newMinThreshold: number,
+  note?: string,
+): Promise<ResidentFamilySupplyItem> {
+  const itemIndex = mockResidentSupplies.findIndex((s) => s.id === supplyId);
+  if (itemIndex === -1) throw new Error('Không tìm thấy vật phẩm tiêu hao');
+
+  const item = mockResidentSupplies[itemIndex];
+  const oldThreshold = item.minSafetyThreshold || 5;
+  const sanitizedThreshold = Math.max(0, Math.round(newMinThreshold));
+
+  const updatedItem: ResidentFamilySupplyItem = {
+    ...item,
+    minSafetyThreshold: sanitizedThreshold,
+  };
+
+  mockResidentSupplies[itemIndex] = updatedItem;
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-001',
+    actorName: actor.displayName || 'Nhân viên Tâm An',
+    actorRole: actor.actorRole || 'CAREGIVER',
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole || 'Chăm sóc',
+    actionType: 'UPDATE',
+    actionLabel: 'Cập nhật ngưỡng an toàn vật tư cá nhân cụ gửi',
+    module: 'CARE_OPERATIONS',
+    moduleLabel: 'Quản Lý Đồ Tiêu Hao',
+    targetEntityId: updatedItem.id,
+    targetEntityName: `Cụ ${updatedItem.residentName} - ${updatedItem.itemName}`,
+    summary: `Đã điều chỉnh ngưỡng tối thiểu của "${updatedItem.itemName}" từ ${oldThreshold} ${updatedItem.unit} sang ${sanitizedThreshold} ${updatedItem.unit}.`,
+    details: `Tồn hiện tại: ${updatedItem.remainingQuantity} ${updatedItem.unit} | Ngưỡng cũ: ${oldThreshold} | Ngưỡng mới: ${sanitizedThreshold} | Ghi chú: ${note || 'Phù hợp nhu cầu thực tế của Cụ'}.`,
+    previousValue: `${oldThreshold} ${updatedItem.unit}`,
+    newValue: `${sanitizedThreshold} ${updatedItem.unit}`,
     severity: 'NORMAL',
   });
 

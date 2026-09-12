@@ -274,7 +274,21 @@ export async function getResidentCareView(
     );
   } catch (error) {
     console.warn('[TamAnCare API] Offline/Fallback mode active for getResidentCareView:', error);
-    const residentObj = MOCK_RESIDENT_CONTEXTS.find((r) => r.resident.residentId === residentId)?.resident || MOCK_RESIDENT_CONTEXTS[0].resident;
+    const foundCtx = MOCK_RESIDENT_CONTEXTS.find(
+      (r) => r.resident.residentId.toLowerCase() === residentId.toLowerCase() ||
+             r.resident.residentCode.toLowerCase() === residentId.toLowerCase()
+    );
+    const residentObj = foundCtx?.resident || {
+      residentId,
+      residentCode: `RES-${residentId.toUpperCase()}`,
+      displayName: `Người cao tuổi (${residentId})`,
+      dateOfBirth: '1945-01-01',
+      gender: 'MALE',
+      room: '101',
+      bed: '101-1',
+      careLevel: 'ASSISTED',
+      activeStatus: true,
+    };
     return {
       status: 'OK',
       generatedAt: new Date().toISOString(),

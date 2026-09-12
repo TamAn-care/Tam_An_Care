@@ -523,7 +523,7 @@ export const DEFAULT_PRICING_MATRIX: PricingMatrix = {
 let pricingMatrixState: PricingMatrix = JSON.parse(JSON.stringify(DEFAULT_PRICING_MATRIX));
 
 /**
- * Công thức tính toán chuẩn hóa & nhất quán 100% cho mọi Bảng kê thu phí tại Viện Dưỡng Lão Tâm An
+ * Công thức tính toán chuẩn hóa & nhất quán 100% cho mọi Bảng kê thu phí tại Trung Tâm Dưỡng Lão Tâm An
  */
 export function calculateInvoiceTotals(
   inv: Partial<ResidentMonthlyInvoice>
@@ -1179,32 +1179,43 @@ export interface DetailedMonthlyFeeNotice {
   residentCode: string;
   contractCode: string;
   billingMonth: string; // e.g. "09/2026"
+  sponsorName?: string;
+  sponsorPhone?: string;
 
-  // 17 Mục Chi Phí Chi Tiết Theo Excel TB THU PHÍ TÂM AN 2026
+  // 21 Mục Chi Phí Chi Tiết Theo Excel TB THU PHÍ TÂM AN 2026
   basicFee: number;                // 1. Phí cơ bản (1)
-  accommodationFee: number;        // 2. Phí lưu trú (2)
-  bathingLaundryFee: number;       // 3. Hỗ trợ tắm giặt
-  mobilityFee: number;             // 4. Hỗ trợ xoay trở/di chuyển
+  supportFee: number;              // 2. Phí hỗ trợ (2)
+  bathingLaundryFee: number;       // 3. Hỗ trợ tắm gội
+  mobilityFee: number;             // 4. Hỗ trợ nâng đỡ, di chuyển
   hygieneFee: number;              // 5. Hỗ trợ vệ sinh
-  feedingSondeFee: number;         // 6. Hỗ trợ rửa ăn/ăn sonde
-  dementiaCareFee: number;         // 7. Chăm sóc NCT lú lẫn/tuổi già
-  soreCareFee: number;             // 8. Chăm sóc các lỗ loét
-  catheterCareFee: number;         // 9. Chăm sóc sonde dạ dày/bàng quang
+  feedingSondeFee: number;         // 6. Hỗ trợ xúc ăn / Hỗ trợ ăn qua sonde
+  dementiaCareFee: number;         // 7. Chăm sóc NCT bị lẫn tuổi già
+  soreCareFee: number;             // 8. Chăm sóc các ổ loét
+  catheterCareFee: number;         // 9. Chăm sóc người đặt sonde bàng quang
   tracheostomyCareFee: number;     // 10. Chăm sóc người đặt nội khí quản
   woundDressingFee: number;        // 11. Thay băng, rửa vết thương
   rehabFee: number;                // 12. Vật lý trị liệu - PHCN
-  incurredFee: number;             // 13. Phát sinh (5)
+  incurredFee: number;             // 13. Phát sinh (3)
   incurredContent?: string;        // Nội dung phát sinh
   deductionFee: number;            // 14. Chi phí giảm trừ (4)
-  previousMonthDebt: number;       // 15. Nợ tháng trước (6)
-  familyMealsFee: number;          // 16. Tiền ăn cơm người nhà đăng ký tại Tâm An (Item 9)
+  previousMonthDebt: number;       // 15. Nợ tháng trước (5)
+  debtNotes?: string;              // Ghi chú nợ
+  familyMealsFee: number;          // Tiền ăn cơm người nhà đăng ký tại Tâm An
 
-  totalDue: number;                // 17. Cần phải thu (Tổng các mục trên)
+  totalDue: number;                // TỔNG PHẢI THU (sum tự động)
   paidAmount: number;              // Đã thu
-  remainingAmount: number;         // Còn phải thu
+  remainingAmount: number;         // Còn phải thu (TỔNG PHẢI THU - Đã thu)
   status: 'PAID' | 'UNPAID' | 'PARTIAL'; // Trạng thái: Đã thu / Chưa thu / Thu một phần
   statusLabel: string;
   notes?: string;
+
+  // Quy trình Kiểm duyệt & Phát hành Cổng Thân Nhân
+  isApproved?: boolean;            // Đã được Kế toán/Quản lý kiểm duyệt
+  isPublishedToFamilyPortal?: boolean; // Đã chính thức phát hành sang Cổng Thân Nhân
+  approvedBy?: string;
+  approvedAt?: string;
+  approvalNotes?: string;
+
   lastUpdatedBy?: string;
   lastUpdatedAt?: string;
 }
@@ -1218,7 +1229,7 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     contractCode: 'HD-260701',
     billingMonth: '09/2026',
     basicFee: 8000000,
-    accommodationFee: 1000000,
+    supportFee: 1000000,
     bathingLaundryFee: 500000,
     mobilityFee: 500000,
     hygieneFee: 0,
@@ -1233,13 +1244,18 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     incurredContent: 'Phụ thu đi khám Bệnh viện Quốc Thành',
     deductionFee: 0,
     previousMonthDebt: 0,
+    debtNotes: 'Không nợ cũ',
     familyMealsFee: 150000, // 3 bữa ăn gia đình x 50k
     totalDue: 10550000,
     paidAmount: 10550000,
     remainingAmount: 0,
     status: 'PAID',
-    statusLabel: 'Đã thu phí',
+    statusLabel: 'Đã thu',
     notes: 'Đã nhận chuyển khoản đủ qua VCB ngày 05/09/2026',
+    isApproved: true,
+    isPublishedToFamilyPortal: true,
+    approvedBy: 'Trần Thị Mỹ Kế toán',
+    approvedAt: '2026-09-01T08:00:00Z',
   },
   {
     id: 'TB-202609-002',
@@ -1249,7 +1265,7 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     contractCode: 'HD-260702',
     billingMonth: '09/2026',
     basicFee: 11500000,
-    accommodationFee: 0,
+    supportFee: 0,
     bathingLaundryFee: 1000000,
     mobilityFee: 500000,
     hygieneFee: 0,
@@ -1263,13 +1279,18 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     incurredFee: 0,
     deductionFee: 200000, // Giảm trừ 1 ngày khám viện
     previousMonthDebt: 0,
+    debtNotes: '',
     familyMealsFee: 100000,
     totalDue: 13400000,
     paidAmount: 0,
     remainingAmount: 13400000,
     status: 'UNPAID',
-    statusLabel: 'Chưa thu phí',
+    statusLabel: 'Chưa thu',
     notes: 'Đã gửi thông báo cho anh Trần Anh Đức ngày 01/09',
+    isApproved: true,
+    isPublishedToFamilyPortal: true,
+    approvedBy: 'Trần Thị Mỹ Kế toán',
+    approvedAt: '2026-09-01T08:30:00Z',
   },
   {
     id: 'TB-202609-003',
@@ -1279,7 +1300,7 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     contractCode: 'HD-260801',
     billingMonth: '09/2026',
     basicFee: 14500000,
-    accommodationFee: 0,
+    supportFee: 0,
     bathingLaundryFee: 4500000,
     mobilityFee: 500000,
     hygieneFee: 3000000,
@@ -1293,6 +1314,7 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     incurredFee: 0,
     deductionFee: 0,
     previousMonthDebt: 4000000,
+    debtNotes: 'Nợ còn lại tháng 8/2026',
     familyMealsFee: 200000,
     totalDue: 27200000,
     paidAmount: 10000000,
@@ -1300,15 +1322,188 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     status: 'PARTIAL',
     statusLabel: 'Thu một phần',
     notes: 'Đã thu đợt 1 tiền mặt 10.000.000đ. Hẹn đợt 2 ngày 18/09.',
+    isApproved: false,
+    isPublishedToFamilyPortal: false, // Bản nháp Kế toán - Chưa duyệt gửi Cổng Thân Nhân
   },
 ];
 
-export async function fetchDetailedFeeNotices(residentId?: string): Promise<DetailedMonthlyFeeNotice[]> {
+export async function fetchDetailedFeeNotices(
+  residentId?: string,
+  options?: { publishedOnly?: boolean }
+): Promise<DetailedMonthlyFeeNotice[]> {
   await new Promise((r) => setTimeout(r, 100));
+  let list = [...mockDetailedFeeNotices];
   if (residentId) {
-    return mockDetailedFeeNotices.filter((n) => n.residentId === residentId);
+    list = list.filter((n) => n.residentId === residentId);
   }
-  return [...mockDetailedFeeNotices];
+  if (options?.publishedOnly) {
+    list = list.filter((n) => n.isPublishedToFamilyPortal);
+  }
+  return list;
+}
+
+export interface UpdateDetailedFeeNoticePayload {
+  noticeId: string;
+  basicFee: number;
+  supportFee: number;
+  bathingLaundryFee: number;
+  mobilityFee: number;
+  hygieneFee: number;
+  feedingSondeFee: number;
+  dementiaCareFee: number;
+  soreCareFee: number;
+  catheterCareFee: number;
+  tracheostomyCareFee: number;
+  woundDressingFee: number;
+  rehabFee: number;
+  incurredFee: number;
+  incurredContent?: string;
+  deductionFee: number;
+  previousMonthDebt: number;
+  debtNotes?: string;
+  paidAmount: number;
+  notes?: string;
+}
+
+export async function updateDetailedFeeNotice(
+  actor: HumanActorSession,
+  payload: UpdateDetailedFeeNoticePayload
+): Promise<DetailedMonthlyFeeNotice> {
+  await new Promise((r) => setTimeout(r, 150));
+
+  const noticeIndex = mockDetailedFeeNotices.findIndex((n) => n.id === payload.noticeId);
+  if (noticeIndex === -1) throw new Error('Không tìm thấy Thông báo thu phí');
+
+  const old = mockDetailedFeeNotices[noticeIndex];
+
+  // Auto sum Total Must Collect
+  const totalDue =
+    payload.basicFee +
+    payload.supportFee +
+    payload.bathingLaundryFee +
+    payload.mobilityFee +
+    payload.hygieneFee +
+    payload.feedingSondeFee +
+    payload.dementiaCareFee +
+    payload.soreCareFee +
+    payload.catheterCareFee +
+    payload.tracheostomyCareFee +
+    payload.woundDressingFee +
+    payload.rehabFee +
+    payload.incurredFee -
+    payload.deductionFee +
+    payload.previousMonthDebt +
+    old.familyMealsFee;
+
+  const paidAmount = Math.max(0, payload.paidAmount);
+  const remainingAmount = Math.max(0, totalDue - paidAmount);
+
+  let status: 'PAID' | 'UNPAID' | 'PARTIAL' = 'UNPAID';
+  let statusLabel = 'Chưa thu';
+
+  if (paidAmount >= totalDue && totalDue > 0) {
+    status = 'PAID';
+    statusLabel = 'Đã thu';
+  } else if (paidAmount > 0 && paidAmount < totalDue) {
+    status = 'PARTIAL';
+    statusLabel = 'Thu một phần';
+  } else {
+    status = 'UNPAID';
+    statusLabel = 'Chưa thu';
+  }
+
+  const updated: DetailedMonthlyFeeNotice = {
+    ...old,
+    basicFee: payload.basicFee,
+    supportFee: payload.supportFee,
+    bathingLaundryFee: payload.bathingLaundryFee,
+    mobilityFee: payload.mobilityFee,
+    hygieneFee: payload.hygieneFee,
+    feedingSondeFee: payload.feedingSondeFee,
+    dementiaCareFee: payload.dementiaCareFee,
+    soreCareFee: payload.soreCareFee,
+    catheterCareFee: payload.catheterCareFee,
+    tracheostomyCareFee: payload.tracheostomyCareFee,
+    woundDressingFee: payload.woundDressingFee,
+    rehabFee: payload.rehabFee,
+    incurredFee: payload.incurredFee,
+    incurredContent: payload.incurredContent,
+    deductionFee: payload.deductionFee,
+    previousMonthDebt: payload.previousMonthDebt,
+    debtNotes: payload.debtNotes,
+    totalDue,
+    paidAmount,
+    remainingAmount,
+    status,
+    statusLabel,
+    notes: payload.notes || old.notes,
+    lastUpdatedBy: actor.displayName || 'Kế toán viên',
+    lastUpdatedAt: new Date().toISOString(),
+  };
+
+  mockDetailedFeeNotices[noticeIndex] = updated;
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-ACC-001',
+    actorName: actor.displayName || 'Kế toán viên',
+    actorRole: actor.actorRole || 'ACCOUNTANT',
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole || 'Kế toán',
+    actionType: 'UPDATE',
+    actionLabel: 'Cập nhật bảng kê phí & thu tiền hàng tháng',
+    module: 'BILLING_PRICING',
+    moduleLabel: 'Quản Lý Thu Phí Tháng',
+    targetEntityId: updated.id,
+    targetEntityName: `Bảng kê thu phí cụ ${updated.residentName} (${updated.billingMonth})`,
+    summary: `Kế toán cập nhật mức phí chi tiết. TỔNG PHẢI THU: ${totalDue.toLocaleString('vi-VN')} đ. Đã thu: ${paidAmount.toLocaleString('vi-VN')} đ. Còn phải thu: ${remainingAmount.toLocaleString('vi-VN')} đ. Tình trạng: ${statusLabel}.`,
+    details: `Người thực hiện: ${actor.displayName} (${actor.actorRole})`,
+    severity: 'IMPORTANT',
+  });
+
+  return updated;
+}
+
+export async function publishFeeNoticeToFamilyPortal(
+  actor: HumanActorSession,
+  noticeId: string,
+  approvalNotesInput?: string
+): Promise<DetailedMonthlyFeeNotice> {
+  await new Promise((r) => setTimeout(r, 150));
+
+  const noticeIndex = mockDetailedFeeNotices.findIndex((n) => n.id === noticeId);
+  if (noticeIndex === -1) throw new Error('Không tìm thấy Thông báo thu phí');
+
+  const old = mockDetailedFeeNotices[noticeIndex];
+
+  const updated: DetailedMonthlyFeeNotice = {
+    ...old,
+    isApproved: true,
+    isPublishedToFamilyPortal: true,
+    approvedBy: actor.displayName || 'Kế toán trưởng',
+    approvedAt: new Date().toISOString(),
+    approvalNotes: approvalNotesInput || 'Đã kiểm duyệt & phát hành công khai Cổng Thân Nhân',
+    lastUpdatedBy: actor.displayName || 'Kế toán viên',
+    lastUpdatedAt: new Date().toISOString(),
+  };
+
+  mockDetailedFeeNotices[noticeIndex] = updated;
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-ACC-001',
+    actorName: actor.displayName || 'Kế toán viên',
+    actorRole: actor.actorRole || 'ACCOUNTANT',
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole || 'Kế toán',
+    actionType: 'UPDATE',
+    actionLabel: 'Duyệt & Phát hành Thông báo thu phí sang Cổng Thân Nhân',
+    module: 'BILLING_PRICING',
+    moduleLabel: 'Quản Lý Thu Phí Tháng',
+    targetEntityId: updated.id,
+    targetEntityName: `Thông báo thu phí cụ ${updated.residentName} (${updated.billingMonth})`,
+    summary: `Đã duyệt & phát hành công khai Thông báo thu phí tháng ${updated.billingMonth} sang Cổng Thân Nhân. TỔNG PHẢI THU: ${updated.totalDue.toLocaleString('vi-VN')} đ.`,
+    details: `Người duyệt: ${actor.displayName} (${actor.actorRole}) | Ghi chú duyệt: ${approvalNotesInput || 'Phát hành chính thức'}`,
+    severity: 'IMPORTANT',
+  });
+
+  return updated;
 }
 
 export async function updateFeeNoticePayment(
@@ -1326,17 +1521,17 @@ export async function updateFeeNoticePayment(
   const old = mockDetailedFeeNotices[noticeIndex];
 
   let newPaid = 0;
-  let statusLabel = 'Chưa thu phí';
+  let statusLabel = 'Chưa thu';
 
   if (paymentStatus === 'PAID') {
     newPaid = old.totalDue;
-    statusLabel = 'Đã thu phí';
+    statusLabel = 'Đã thu';
   } else if (paymentStatus === 'PARTIAL') {
     newPaid = Math.min(old.totalDue, Math.max(0, paidAmountInput));
-    statusLabel = `Thu một phần (${newPaid.toLocaleString('vi-VN')} đ)`;
+    statusLabel = 'Thu một phần';
   } else {
     newPaid = 0;
-    statusLabel = 'Chưa thu phí';
+    statusLabel = 'Chưa thu';
   }
 
   const remaining = Math.max(0, old.totalDue - newPaid);

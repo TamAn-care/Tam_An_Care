@@ -71,6 +71,7 @@ export function ResidentsPage() {
   const actorName = actor?.displayName || 'Nhân viên';
   const isCaregiver = actorRole === 'CAREGIVER';
   const canEvaluatePsychology = hasCapability(actor?.actorRole, 'canEvaluatePsychology');
+  const canViewResidentSupplies = hasCapability(actor?.actorRole, 'canViewResidentSupplies');
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ACTIVE');
@@ -387,7 +388,7 @@ export function ResidentsPage() {
               style={{ width: '100%' }}
             >
               <option value="ACTIVE">
-                Đang hoạt động
+                Đang lưu trú
               </option>
               <option value="INACTIVE">
                 Không hoạt động
@@ -481,7 +482,7 @@ export function ResidentsPage() {
                         }
                       >
                         {resident.activeStatus
-                          ? 'Đang hoạt động'
+                          ? 'Đang lưu trú'
                           : 'Đã hoàn thành lưu trú'}
                       </span>
                     </div>
@@ -520,15 +521,27 @@ export function ResidentsPage() {
                     </Link>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem' }}>
-                      <button
-                        type="button"
-                        className="btn btn-sm btn-neutral"
-                        onClick={() => setSelectedSupplyResident(resident)}
-                        style={{ fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem' }}
-                        title="Tiếp nhận & Quản lý đồ tiêu hao gửi từ gia đình"
-                      >
-                        🎁 Đồ Gửi Cụ
-                      </button>
+                      {canViewResidentSupplies ? (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-neutral"
+                          onClick={() => setSelectedSupplyResident(resident)}
+                          style={{ fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem' }}
+                          title="Tiếp nhận & Quản lý đồ tiêu hao gửi từ gia đình"
+                        >
+                          🎁 Đồ Gửi Cụ
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-neutral"
+                          disabled
+                          style={{ fontSize: '0.78rem', opacity: 0.5, cursor: 'not-allowed' }}
+                          title="Tài khoản không được phân quyền xem Đồ gửi cụ (chức năng thuộc về Nhân viên Điều dưỡng)"
+                        >
+                          🔒 Đồ Gửi Cụ
+                        </button>
+                      )}
 
                       {canEvaluatePsychology ? (
                         <button

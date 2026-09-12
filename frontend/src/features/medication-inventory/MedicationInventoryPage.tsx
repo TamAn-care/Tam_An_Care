@@ -13,6 +13,7 @@ import {
   recordInventoryTransaction,
   fetchInventoryTransactions,
   logCareSupplyWithdrawal,
+  updateMedicationInventoryThreshold,
   MedicationOrder,
   MedicationAdministration,
   MedicalInventoryItem,
@@ -254,6 +255,27 @@ export default function MedicationInventoryPage() {
       setWithdrawalReason('');
     },
   });
+
+  const [editingThresholdItem, setEditingThresholdItem] = useState<MedicalInventoryItem | null>(null);
+  const [formThresholdVal, setFormThresholdVal] = useState<number>(10);
+  const [formThresholdReason, setFormThresholdReason] = useState<string>('');
+
+  const updateThresholdMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingThresholdItem) return;
+      return updateMedicationInventoryThreshold(
+        actor!,
+        editingThresholdItem.itemId,
+        formThresholdVal,
+        formThresholdReason
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['med-inventory-items'] });
+      setEditingThresholdItem(null);
+    },
+  });
+
 
   const canPrescribe = hasCapability(actor?.actorRole, 'canPrescribeMedication'); // Chỉ NURSE
   const canAdminister = hasCapability(actor?.actorRole, 'canAdministerMedication'); // Chỉ NURSE
@@ -773,47 +795,62 @@ export default function MedicationInventoryPage() {
               )}
             </div>
 
-            <div className="table-wrapper">
-              <table className="data-table">
+            <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
-                  <tr>
-                    <th>Người cao tuổi</th>
-                    <th>Vị trí</th>
-                    <th>Tên thuốc & Biệt dược</th>
-                    <th>Liều lượng</th>
-                    <th>Đường dùng</th>
-                    <th>Cữ uống trong ngày</th>
-                    <th>Thời điểm ăn</th>
-                    <th>Bác sĩ chỉ định</th>
-                    <th>Chẩn đoán</th>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem' }}>Người Cao Tuổi & Vị Trí</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Tên Thuốc & Biệt Dược</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Liều Lượng</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Đường Dùng</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Cữ Uống Trong Ngày</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thời Điểm Ăn</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Bác Sĩ Chỉ Định</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Chẩn Đoán</th>
                   </tr>
                 </thead>
                 <tbody>
                   {ordersQuery.data?.map((order) => (
-                    <tr key={order.orderId}>
-                      <td><b>{order.residentName}</b></td>
-                      <td>P.{order.room} ({order.bed})</td>
-                      <td>
-                        <div style={{ fontWeight: 700, color: '#14532d' }}>{order.drugName}</div>
-                        {order.brandName && <div style={{ fontSize: '0.78rem', color: '#64748b' }}>({order.brandName})</div>}
+                    <tr key={order.orderId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 800, color: '#0f172a' }}>👵 {order.residentName}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 600 }}>P.{order.room} ({order.bed})</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.88rem' }}>💊 {order.drugName}</div>
+                        {order.brandName && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>({order.brandName})</div>}
                         {order.allergyWarning && (
-                          <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 600 }}>{order.allergyWarning}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 700, marginTop: '0.15rem' }}>⚠️ {order.allergyWarning}</div>
                         )}
                       </td>
-                      <td><b>{order.dosage}</b></td>
-                      <td>{ROUTE_LABELS[order.route]}</td>
-                      <td>
-                        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <span style={{ fontWeight: 700, color: '#0f172a' }}>{order.dosage}</span>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <span className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+                          {ROUTE_LABELS[order.route]}
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', justifyContent: 'center' }}>
                           {order.timingSlots.map((s) => (
-                            <span key={s} className="badge badge-info" style={{ fontSize: '0.72rem' }}>
+                            <span key={s} className="badge badge-info" style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem' }}>
                               {TIMING_SLOT_CONFIG[s].icon} {TIMING_SLOT_CONFIG[s].label}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td>{INSTRUCTION_LABELS[order.instruction]}</td>
-                      <td>{order.prescribedBy}</td>
-                      <td style={{ fontSize: '0.82rem', color: '#4b5563' }}>{order.diagnosisNote || '—'}</td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <span className="badge badge-warning" style={{ fontSize: '0.75rem' }}>
+                          🍽️ {INSTRUCTION_LABELS[order.instruction]}
+                        </span>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 600, color: '#334155' }}>🩺 {order.prescribedBy}</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#4b5563' }}>
+                        {order.diagnosisNote || '—'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -987,20 +1024,20 @@ export default function MedicationInventoryPage() {
               </div>
             </div>
 
-            <div className="table-wrapper">
-              <table className="data-table">
+            <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
-                  <tr>
-                    <th>Mã VT</th>
-                    <th>Tên vật tư / Dụng cụ y tế</th>
-                    <th>Phân loại</th>
-                    <th>Số lượng tồn</th>
-                    <th>Ngưỡng tối thiểu</th>
-                    <th>Số lô</th>
-                    <th>Hạn sử dụng</th>
-                    <th>Vị trí tủ thuốc</th>
-                    <th>Đơn giá</th>
-                    {canManageInv && <th>Thao tác</th>}
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Mã VT</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Tên Vật Tư / Dụng Cụ Y Tế</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Phân Loại Nhóm</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Số Lượng Tồn</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Ngưỡng Tối Thiểu</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Số Lô & Hạn Dùng</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Vị Trí Tủ Thuốc</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Đơn Giá</th>
+                    {canManageInv && <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao Tác</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -1011,36 +1048,86 @@ export default function MedicationInventoryPage() {
                     const isExpiring = daysLeft <= 30;
 
                     return (
-                      <tr key={item.itemId}>
-                        <td><code>{item.itemCode}</code></td>
-                        <td>
-                          <b>{item.name}</b>
-                          {isLow && (
-                            <span className="badge badge-danger" style={{ marginLeft: '0.4rem', fontSize: '0.72rem' }}>
-                              ⚠️ Sắp hết
-                            </span>
-                          )}
-                          {isExpiring && (
-                            <span className="badge badge-warning" style={{ marginLeft: '0.4rem', fontSize: '0.72rem' }}>
-                              ⌛ Cận hạn ({Math.round(daysLeft)} ngày)
-                            </span>
-                          )}
+                      <tr key={item.itemId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          <code style={{ background: '#f1f5f9', padding: '0.15rem 0.4rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 600, fontSize: '0.78rem' }}>
+                            {item.itemCode}
+                          </code>
                         </td>
-                        <td>{CATEGORY_LABELS[item.category]}</td>
-                        <td>
-                          <b style={{ color: isLow ? '#dc2626' : '#15803d', fontSize: '1rem' }}>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 700, color: '#0f172a' }}>{item.name}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <span className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+                            {CATEGORY_LABELS[item.category]}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                          <b style={{ color: isLow ? '#dc2626' : '#15803d', fontSize: '0.95rem', fontWeight: 800 }}>
                             {item.currentStock} {item.unit}
                           </b>
                         </td>
-                        <td>{item.minStockThreshold} {item.unit}</td>
-                        <td><code>{item.lotNumber}</code></td>
-                        <td style={{ color: isExpiring ? '#b45309' : '#1e293b', fontWeight: isExpiring ? 700 : 400 }}>
-                          {item.expiryDate}
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem' }}>
+                            <span style={{ fontWeight: 600, color: '#475569' }}>
+                              {item.minStockThreshold} {item.unit}
+                            </span>
+                            {canManageInv && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingThresholdItem(item);
+                                  setFormThresholdVal(item.minStockThreshold);
+                                  setFormThresholdReason('Điều chỉnh ngưỡng tối thiểu phù hợp nhu cầu sử dụng y tế thực tế');
+                                }}
+                                title="Điều chỉnh Ngưỡng Tối Thiểu Tồn Kho Y Tế"
+                                style={{
+                                  background: '#eff6ff',
+                                  color: '#1d4ed8',
+                                  border: '1px solid #bfdbfe',
+                                  borderRadius: '0.25rem',
+                                  padding: '0.15rem 0.45rem',
+                                  fontSize: '0.72rem',
+                                  fontWeight: 600,
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                ✏️ Sửa
+                              </button>
+                            )}
+                          </div>
                         </td>
-                        <td>{item.location}</td>
-                        <td>{item.unitPrice.toLocaleString('vi-VN')} đ</td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          {isLow ? (
+                            <span className="badge badge-danger" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>
+                              ⚠️ Sắp hết
+                            </span>
+                          ) : isExpiring ? (
+                            <span className="badge badge-warning" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>
+                              ⌛ Cận hạn ({Math.round(daysLeft)} ngày)
+                            </span>
+                          ) : (
+                            <span className="badge badge-success" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>
+                              🛡️ An toàn
+                            </span>
+                          )}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          <div style={{ fontWeight: 600, color: isExpiring ? '#b45309' : '#1e293b' }}>
+                            {item.expiryDate}
+                          </div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>
+                            Lô: <code>{item.lotNumber}</code>
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', color: '#334155', fontSize: '0.82rem' }}>
+                          📍 {item.location}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 600, color: '#0f172a' }}>
+                          {item.unitPrice.toLocaleString('vi-VN')} đ
+                        </td>
                         {canManageInv && (
-                          <td>
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                             <button
                               type="button"
                               className="btn btn-sm btn-neutral"
@@ -1049,6 +1136,7 @@ export default function MedicationInventoryPage() {
                                 setTxType('EXPORT_RESIDENT');
                                 setIsTxModalOpen(true);
                               }}
+                              style={{ fontWeight: 600, padding: '0.25rem 0.65rem' }}
                             >
                               Xuất dùng
                             </button>
@@ -1072,33 +1160,47 @@ export default function MedicationInventoryPage() {
               📊 Nhật Ký Nhập / Xuất Kho & Cấp Phát Vật Tư
             </h3>
 
-            <div className="table-wrapper">
-              <table className="data-table">
+            <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
-                  <tr>
-                    <th>Thời gian</th>
-                    <th>Loại giao dịch</th>
-                    <th>Tên vật tư</th>
-                    <th>Số lượng</th>
-                    <th>Người thực hiện</th>
-                    <th>Người cao tuổi nhận</th>
-                    <th>Lý do / Diễn giải</th>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem' }}>Thời Gian</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Loại Giao Dịch</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Tên Vật Tư</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Số Lượng</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Người Thực Hiện</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Người Cao Tuổi Nhận</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Lý Do / Diễn Giải</th>
                   </tr>
                 </thead>
                 <tbody>
                   {txQuery.data?.map((tx) => (
-                    <tr key={tx.transactionId}>
-                      <td>{new Date(tx.timestamp).toLocaleString('vi-VN')}</td>
-                      <td>
-                        <span className={tx.type === 'IMPORT' ? 'badge badge-success' : 'badge badge-info'}>
-                          {tx.type === 'IMPORT' ? 'Nhập kho' : 'Xuất dùng cho Cụ'}
+                    <tr key={tx.transactionId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                      <td style={{ padding: '0.75rem 1rem', color: '#475569', fontWeight: 600, fontSize: '0.8rem' }}>
+                        🕒 {new Date(tx.timestamp).toLocaleString('vi-VN')}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <span className={tx.type === 'IMPORT' ? 'badge badge-success' : 'badge badge-info'} style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                          {tx.type === 'IMPORT' ? '📥 Nhập kho' : '📤 Xuất dùng'}
                         </span>
                       </td>
-                      <td><b>{tx.itemName}</b></td>
-                      <td><b>{tx.quantity} {tx.unit}</b></td>
-                      <td>{tx.performedBy}</td>
-                      <td>{tx.residentName ? <b>{tx.residentName}</b> : '—'}</td>
-                      <td style={{ fontSize: '0.82rem', color: '#64748b' }}>{tx.reason || '—'}</td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{tx.itemName}</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                        <b style={{ color: tx.type === 'IMPORT' ? '#15803d' : '#0369a1', fontSize: '0.92rem', fontWeight: 800 }}>
+                          {tx.quantity} {tx.unit}
+                        </b>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', color: '#334155' }}>
+                        👤 {tx.performedBy}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        {tx.residentName ? <span style={{ fontWeight: 700, color: '#0f172a' }}>👵 {tx.residentName}</span> : <span style={{ color: '#94a3b8' }}>—</span>}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#475569' }}>
+                        {tx.reason || '—'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1731,6 +1833,92 @@ export default function MedicationInventoryPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: ĐIỀU CHỈNH NGƯỠNG TỐI THIỂU TỒN KHO Y TẾ */}
+      {editingThresholdItem && (
+        <div className="modal-overlay" onClick={() => setEditingThresholdItem(null)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid #e2e8f0',
+              maxWidth: '480px',
+              width: '100%',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                🛡️ Điều Chỉnh Ngưỡng Tối Thiểu Tồn Kho
+              </h3>
+              <button
+                type="button"
+                onClick={() => setEditingThresholdItem(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✖
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid #e2e8f0', fontSize: '0.85rem' }}>
+              <div>📦 Mặt hàng: <b>{editingThresholdItem.name}</b></div>
+              <div>📊 Tồn kho hiện tại: <b style={{ color: editingThresholdItem.currentStock <= editingThresholdItem.minStockThreshold ? '#dc2626' : '#15803d' }}>{editingThresholdItem.currentStock} {editingThresholdItem.unit}</b></div>
+              <div>🎯 Ngưỡng hiện tại: <b>{editingThresholdItem.minStockThreshold} {editingThresholdItem.unit}</b></div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>
+                  Ngưỡng tối thiểu mới ({editingThresholdItem.unit}) *:
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  className="text-input"
+                  value={formThresholdVal}
+                  onChange={(e) => setFormThresholdVal(Number(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.3rem' }}>
+                  Lý do điều chỉnh định mức *:
+                </label>
+                <textarea
+                  rows={2}
+                  className="text-input"
+                  value={formThresholdReason}
+                  onChange={(e) => setFormThresholdReason(e.target.value)}
+                  placeholder="Lý do điều chỉnh (Căn cứ tiêu hao y tế, nhu cầu lưu trữ...)"
+                  style={{ width: '100%', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  onClick={() => setEditingThresholdItem(null)}
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={updateThresholdMutation.isPending}
+                  onClick={() => updateThresholdMutation.mutate()}
+                >
+                  {updateThresholdMutation.isPending ? 'Đang lưu...' : '✓ Lưu Ngưỡng Tối Thiểu'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

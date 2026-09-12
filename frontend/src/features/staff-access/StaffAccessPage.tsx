@@ -342,7 +342,7 @@ export function StaffAccessPage() {
 
   // Copy handover credentials to clipboard
   const handleCopyCredentials = (staff: StaffActor) => {
-    const text = `[VIỆN DƯỠNG LÃO TÂM AN CARE - THÔNG TIN TÀI KHOẢN ĐĂNG NHẬP]
+    const text = `[TRUNG TÂM DƯỠNG LÃO TÂM AN CARE - THÔNG TIN TÀI KHOẢN ĐĂNG NHẬP]
 - Họ và tên: ${staff.displayName}
 - Bộ phận: ${staff.department}
 - Vai trò: ${ROLE_LABEL[staff.primaryOperationalRole] || staff.primaryOperationalRole}
@@ -1557,7 +1557,7 @@ export function StaffAccessPage() {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>VIỆN DƯỠNG LÃO TÂM AN CARE — BẢO MẬT & PHÂN QUYỀN</div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>TRUNG TÂM DƯỠNG LÃO TÂM AN CARE — BẢO MẬT & PHÂN QUYỀN</div>
                 <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.25rem', color: '#0f172a' }}>PHIẾU BÀN GIAO TÀI KHOẢN ĐĂNG NHẬP</h2>
               </div>
               <button

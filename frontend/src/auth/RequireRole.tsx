@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { Link } from 'react-router-dom';
 import { useActor } from './ActorContext';
-import { canAccessRoute, type AppRouteKey, ROLE_LABELS } from './role-policy';
+import { canAccessRoute, type AppRouteKey, ROLE_LABELS, ROLE_CAPABILITIES } from './role-policy';
 
 export function RequireRole({
   route,
@@ -17,6 +17,11 @@ export function RequireRole({
     return <>{children}</>;
   }
 
+  const allowedRoutes = ROLE_CAPABILITIES[actor.actorRole]?.allowedRoutes ?? [];
+  const fallbackPath = allowedRoutes.includes('dashboard')
+    ? '/dashboard'
+    : (allowedRoutes.length > 0 ? `/${allowedRoutes[0]}` : '/');
+
   return (
     <section className="card" style={{ maxWidth: 640, margin: '3rem auto', textAlign: 'center', padding: '2.5rem 2rem' }}>
       <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🛡️</div>
@@ -31,8 +36,8 @@ export function RequireRole({
         <span>Vui lòng liên hệ Giám sát / Ban Giám đốc trung tâm nếu bạn cần phân công thẩm quyền xử lý.</span>
       </div>
 
-      <Link to="/dashboard" className="btn btn-primary">
-        &larr; Quay về Trang Tổng Quan
+      <Link to={fallbackPath} className="btn btn-primary">
+        &larr; Quay về Phân hệ được phân quyền
       </Link>
     </section>
   );
