@@ -1103,6 +1103,42 @@ export async function updateInvoiceItemsByDirector(
   inv.totalAmount = totals.totalAmount;
   inv.remainingAmount = totals.remainingAmount;
 
+  // Đồng bộ trực tiếp sang mockDetailedFeeNotices để cập nhật ngay Cổng Thân Nhân & Trang in Thông báo thu phí:
+  const noticeIndex = mockDetailedFeeNotices.findIndex(
+    (n) =>
+      n.residentId === inv.residentId ||
+      n.id.includes(inv.invoiceCode) ||
+      (inv.residentName && n.residentName.includes(inv.residentName.replace('Cụ ', '')))
+  );
+
+  if (noticeIndex !== -1) {
+    const notice = mockDetailedFeeNotices[noticeIndex];
+    notice.basicFee = inv.basicPackageFee;
+    notice.supportFee = inv.supportServicesFee;
+    notice.incurredFee = inv.holidaySurchargeFee;
+    if (inv.holidaySurchargeFee > 0 && !notice.incurredContent) {
+      notice.incurredContent = `Phụ thu Lễ Tết (${inv.holidayDays || 1} ngày)`;
+    }
+    notice.deductionFee = inv.leaveDeductionFee + inv.totalDiscountAmount;
+    if (inv.leaveDays > 0 || inv.totalDiscountAmount > 0) {
+      const parts = [];
+      if (inv.leaveDays > 0) parts.push(`Giảm trừ ${inv.leaveDays} ngày vắng mặt`);
+      if (inv.totalDiscountAmount > 0) parts.push(`Ưu đãi chính sách ${inv.totalDiscountAmount.toLocaleString('vi-VN')}đ`);
+      notice.deductionNotes = parts.join(' & ');
+    }
+    notice.familyMealsFee = inv.extraMealsFee;
+    notice.consumablesFee = inv.consumablesFee;
+    notice.previousMonthDebt = inv.previousMonthDebt;
+    notice.depositStatus = inv.depositStatus;
+    notice.unpaidDepositDebt = inv.unpaidDepositDebt;
+    notice.totalDue = inv.totalAmount;
+    notice.remainingAmount = inv.remainingAmount;
+    notice.isApproved = true;
+    notice.isPublishedToFamilyPortal = true;
+    notice.lastUpdatedBy = actor.displayName || 'Ban Giám Đốc';
+    notice.lastUpdatedAt = new Date().toISOString();
+  }
+
   await recordSystemAuditLog({
     actorId: actor.actorId || 'STAFF-DIR-001',
     actorName: actor.displayName || 'Ban Giám đốc',
