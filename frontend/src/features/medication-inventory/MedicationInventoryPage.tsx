@@ -527,7 +527,7 @@ export default function MedicationInventoryPage() {
                   Bảng Theo Dõi & Cấp Phát Thuốc eMAR — Ngày {new Date().toLocaleDateString('vi-VN')}
                 </div>
                 <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '0.2rem' }}>
-                  Mẫu số: <b style={{ color: '#0f172a' }}>07/PTDT-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>PTDT-TA</b> &nbsp;|&nbsp; Đã hoàn thành <b>{givenDoses}/{totalDoses}</b> liều ({completionPercentage}%)
+                  Mẫu số: <b style={{ color: '#0f172a' }}>07/PTDT-TA</b> &nbsp;|&nbsp; Đã hoàn thành <b>{givenDoses}/{totalDoses}</b> liều ({completionPercentage}%)
                 </div>
               </div>
 

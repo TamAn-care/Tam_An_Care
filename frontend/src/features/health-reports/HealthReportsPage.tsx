@@ -1339,7 +1339,7 @@ export default function HealthReportsPage() {
                     </div>
                   </div>
                   <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
-                    <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>PTDYS-TA</b></div>
+                    <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
                     <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
                   </div>
@@ -1518,7 +1518,7 @@ export default function HealthReportsPage() {
               <div className="signature-box" style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'center', marginTop: '0.6rem' }}>
                 <div style={{ width: '220px' }}>
                   <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Người đánh giá / Điều dưỡng</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '1.2rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.82rem' }}>
                     {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}
                   </div>

@@ -3211,7 +3211,7 @@ export default function BillingPage() {
 
                 <div style={{ textAlign: 'right', paddingRight: '0.75rem', flexShrink: 0 }}>
                   <div style={{ fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap' }}>
-                    Mẫu số: <b style={{ color: '#0f172a' }}>01/TBTP-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>TBTP-TA</b>
+                    Mẫu số: <b style={{ color: '#0f172a' }}>01/TBTP-TA</b>
                   </div>
                   <div style={{ fontSize: '0.76rem', color: '#475569', marginTop: '0.1rem', whiteSpace: 'nowrap' }}>
                     Ngày in: <b>{new Date().toLocaleDateString('vi-VN')}</b>
@@ -3397,23 +3397,23 @@ export default function BillingPage() {
               })()}
 
               {/* Official 3-Column Signatures */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '0.75rem', pageBreakInside: 'avoid', gap: '0.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.1rem', pageBreakInside: 'avoid', gap: '0.75rem' }}>
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.8rem' }}>NGƯỜI LẬP BẢNG</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', marginBottom: '1.8rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.82rem' }}>NGƯỜI LẬP BẢNG</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.82rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
                 </div>
 
                 <div>
                   <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>KẾ TOÁN TRƯỞNG</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', marginBottom: '1.8rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>Nguyễn Thị Kế Toán</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.82rem' }}>Nguyễn Thị Kế Toán</div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.8rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', marginBottom: '1.8rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>Ban Giám Đốc Tâm An</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.82rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.82rem' }}>Ban Giám Đốc Tâm An</div>
                 </div>
               </div>
             </div>

@@ -1913,7 +1913,7 @@ export default function KitchenOperationsPage() {
                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>TRUNG TÂM DƯỠNG LÃO TÂM AN CARE — BỘ PHẬN DINH DƯỠNG & BẾP ĂN</div>
                 <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.3rem', color: '#0f172a' }}>BIÊN BẢN TIẾP NHẬN & KIỂM ĐẾM THỰC PHẨM 3 BƯỚC</h2>
                 <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.2rem' }}>
-                  Mẫu số: <b style={{ color: '#0f172a' }}>05/BBKN-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>BBKN-TA</b> &nbsp;|&nbsp; Mã phiếu: <b>{showDetailBatchModal.batchId}</b> &nbsp;|&nbsp; Ngày giờ: {new Date(showDetailBatchModal.receivedAt).toLocaleString('vi-VN')}
+                  Mẫu số: <b style={{ color: '#0f172a' }}>05/BBKN-TA</b> &nbsp;|&nbsp; Mã phiếu: <b>{showDetailBatchModal.batchId}</b> &nbsp;|&nbsp; Ngày giờ: {new Date(showDetailBatchModal.receivedAt).toLocaleString('vi-VN')}
                 </div>
               </div>
               <button
@@ -1994,14 +1994,14 @@ export default function KitchenOperationsPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem', textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem' }}>
               <div>
                 <div style={{ fontWeight: 700 }}>ĐẠI DIỆN BÊN GIAO HÀNG</div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>(Ký và ghi rõ họ tên)</div>
-                <div style={{ marginTop: '2.5rem', fontWeight: 600, color: '#0f172a' }}>{showDetailBatchModal.delivererName}</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
+                <div style={{ fontWeight: 600, color: '#0f172a' }}>{showDetailBatchModal.delivererName}</div>
               </div>
 
               <div>
                 <div style={{ fontWeight: 700 }}>NHÂN VIÊN DINH DƯỠNG TIẾP NHẬN</div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>(Đã kiểm đếm & ký điện tử)</div>
-                <div style={{ marginTop: '2.5rem', fontWeight: 700, color: '#166534' }}>{showDetailBatchModal.receiverName}</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '3.5rem' }}>(Đã kiểm đếm & ký điện tử)</div>
+                <div style={{ fontWeight: 700, color: '#166534' }}>{showDetailBatchModal.receiverName}</div>
               </div>
             </div>
 

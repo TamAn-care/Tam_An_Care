@@ -1773,28 +1773,55 @@ transform: scale(1.28);
   button,
   .no-print,
   .modal-overlay:not(.print-modal-overlay),
-  .modal-backdrop:not(.print-modal-overlay) {
+  .modal-backdrop:not(.print-modal-overlay),
+  .modal-header:not(.printable-a4-sheet),
+  .modal-footer {
     display: none !important;
   }
 
-  /* Layout container reset */
+  /* Universal layout container reset for print */
+  html,
+  body,
+  #root,
   .app-shell,
   .main-shell,
   .content,
   .page-content,
   .page-container,
-  .card {
+  .card,
+  .modal-overlay,
+  .modal-backdrop,
+  .modal-dialog,
+  .modal-dialog-lg,
+  .modal-card,
+  .modal-body,
+  .print-modal-overlay {
     display: block !important;
-    visibility: visible !important;
     position: static !important;
+    float: none !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 100% !important;
-    min-height: auto !important;
-    background: #ffffff !important;
     border: none !important;
     box-shadow: none !important;
-    overflow: visible !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
   }
 
   /* Hide non-modal sibling content inside page containers when modal or printable sheet is active */
@@ -1802,35 +1829,6 @@ transform: scale(1.28);
   .page-content > *:not(.modal-overlay):not(.modal-backdrop):not(.printable-a4-sheet),
   .card > *:not(.modal-overlay):not(.modal-backdrop):not(.printable-a4-sheet) {
     display: none !important;
-  }
-
-  /* Flatten print modal overlay into clean printable sheet */
-  .print-modal-overlay,
-  .modal-overlay.print-modal-overlay,
-  .modal-backdrop.print-modal-overlay,
-  .print-modal-overlay .modal-dialog,
-  .print-modal-overlay .modal-dialog-lg,
-  .print-modal-overlay .modal-card {
-    position: static !important;
-    display: block !important;
-    visibility: visible !important;
-    background: #ffffff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    box-shadow: none !important;
-    border: none !important;
-  }
-
-  .modal-body {
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
-    color: #000000 !important;
   }
 
   /* Ensure single-page compact fit */
