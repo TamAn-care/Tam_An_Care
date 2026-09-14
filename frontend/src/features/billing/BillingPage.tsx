@@ -579,9 +579,9 @@ export default function BillingPage() {
       {/* TAB 1: BẢNG KÊ THU PHÍ */}
       {/* ========================================================================= */}
       {activeTab === 'invoices' && (
-        <div>
+        <div className="no-print">
           {/* Uniform 5 KPI Cards Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+          <div className="no-print kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
             <div className="card" style={{ padding: '0.9rem 1rem', background: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '115px', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
               <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>TỔNG THU PHÍ PHÁT SINH</div>
               <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: '0.25rem 0', fontVariantNumeric: 'tabular-nums' }}>
@@ -651,7 +651,7 @@ export default function BillingPage() {
           )}
 
           {/* Balanced Filter Toolbar */}
-          <div className="card" style={{ padding: '0.9rem 1.15rem', marginBottom: '1.25rem', background: '#ffffff', borderRadius: '0.65rem' }}>
+          <div className="card no-print filter-toolbar" style={{ padding: '0.9rem 1.15rem', marginBottom: '1.25rem', background: '#ffffff', borderRadius: '0.65rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
               <div>
                 <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.35rem', display: 'block' }}>Kỳ thu phí:</label>
@@ -707,7 +707,7 @@ export default function BillingPage() {
               <div>Không tìm thấy bảng kê thu phí nào phù hợp với bộ lọc.</div>
             </div>
           ) : (
-            <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
+            <div className="card no-print data-table-card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
                 <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
@@ -3034,7 +3034,7 @@ export default function BillingPage() {
               }
 
               /* 1. Reset all layout wrappers to normal static block flow */
-              html, body, #root, .app-shell, .main-shell, .page-content, .page-container, .card {
+              html, body, #root, .app-shell, .main-shell, .page-content, .page-container {
                 display: block !important;
                 visibility: visible !important;
                 position: static !important;
@@ -3049,6 +3049,8 @@ export default function BillingPage() {
               }
 
               /* 2. Hide all non-printable UI elements and non-print modal overlays */
+              .page-container > *:not(.print-modal-overlay),
+              .page-content > *:not(.print-modal-overlay),
               .app-shell > aside,
               .sidebar,
               .navigation,
@@ -3060,6 +3062,7 @@ export default function BillingPage() {
               .filter-toolbar,
               .table-responsive,
               .data-table,
+              .data-table-card,
               .no-print,
               .no-print *,
               .modal-overlay:not(.print-modal-overlay),
