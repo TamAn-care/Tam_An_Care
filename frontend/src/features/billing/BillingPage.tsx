@@ -3024,27 +3024,62 @@ export default function BillingPage() {
         <div className="modal-overlay" onClick={() => setPrintModalNotice(null)} style={{ overflowY: 'auto', padding: '2rem 1rem' }}>
           <style>{`
             @media print {
+              @page {
+                size: A4 portrait;
+                margin: 8mm 10mm 8mm 10mm;
+              }
+
+              /* 1. Reset display & visibility for wrapper parent elements */
+              html, body, #root, .app-shell, .main-shell, .page-content, .card, .modal-overlay, .modal-card {
+                display: block !important;
+                visibility: visible !important;
+                position: static !important;
+                overflow: visible !important;
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+                width: 100% !important;
+                height: auto !important;
+                min-height: auto !important;
+              }
+
+              /* 2. Hide everything by default via visibility */
               body * {
                 visibility: hidden !important;
               }
-              #printable-fee-notice-area, #printable-fee-notice-area * {
+
+              /* 3. Make printable area and all its descendants visible */
+              #printable-fee-notice-area,
+              #printable-fee-notice-area * {
                 visibility: visible !important;
               }
+
+              /* 4. Position printable area at top left of A4 paper */
               #printable-fee-notice-area {
                 position: absolute !important;
                 left: 0 !important;
                 top: 0 !important;
                 width: 100% !important;
                 margin: 0 !important;
-                padding: 15mm 15mm !important;
+                padding: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
                 background: #ffffff !important;
-                font-family: Arial, sans-serif !important;
+                font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
                 color: #000000 !important;
               }
-              .no-print {
+
+              /* 5. Force hide non-print elements */
+              .no-print,
+              .no-print *,
+              .sidebar,
+              .navigation,
+              .topbar,
+              button {
                 display: none !important;
+                visibility: hidden !important;
               }
             }
           `}</style>
@@ -3092,6 +3127,7 @@ export default function BillingPage() {
             {/* Printable A4 Content Box */}
             <div
               id="printable-fee-notice-area"
+              className="printable-a4-sheet"
               style={{
                 padding: '2rem 2.5rem',
                 color: '#0f172a',

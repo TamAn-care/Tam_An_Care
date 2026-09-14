@@ -1776,7 +1776,7 @@ transform: scale(1.28);
   .data-table,
   button,
   .no-print,
-  .page-content > .card:not(:has(.printable-a4-sheet)) {
+  .page-content > .card:not(:has(.printable-a4-sheet)):not(:has(#printable-fee-notice-area)) {
     display: none !important;
   }
 
