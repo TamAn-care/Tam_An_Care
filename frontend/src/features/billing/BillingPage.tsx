@@ -297,6 +297,9 @@ export default function BillingPage() {
         holidaySurchargeFee: directorForm.holidaySurchargeFee,
         extraMealsFee: directorForm.extraMealsFee,
         consumablesFee: directorForm.consumablesFee,
+        previousMonthDebt: directorForm.previousMonthDebt,
+        depositStatus: directorForm.depositStatus,
+        unpaidDepositDebt: directorForm.unpaidDepositDebt,
         directorEditNotes: directorForm.directorEditNotes,
       });
     },
@@ -956,12 +959,13 @@ export default function BillingPage() {
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Người Cao Tuổi</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Phòng & Gói Phòng</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí Cơ Bản (đồng)</th>
-                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Tiền Đặt Cọc (đồng)</th>
-                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí dịch vụ chăm sóc hỗ trợ (đồng)</th>
-                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí dịch vụ chăm sóc mở rộng (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí CS Hỗ Trợ (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí CS Mở Rộng (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phụ Thu Lễ Tết (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Nợ Tháng Trước (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm trừ nghỉ phép/tạm vắng (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm Giá (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Nợ Đặt Cọc (1 lần)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Tổng Thực Thu (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Đã Thu (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Còn Nợ (đồng)</th>
@@ -990,9 +994,6 @@ export default function BillingPage() {
                           </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
                             {formatNum(inv.basicPackageFee)}
-                          </td>
-                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', color: '#0d9488', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
-                            {formatNum(inv.depositFee || 20000000)}
                           </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
                             <div style={{ fontWeight: inv.supportServicesFee > 0 ? 700 : 400, color: inv.supportServicesFee > 0 ? '#0369a1' : '#64748b' }}>
@@ -1036,6 +1037,19 @@ export default function BillingPage() {
                               </div>
                             )}
                           </td>
+                          {/* Nợ tháng trước */}
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            {(inv.previousMonthDebt || 0) > 0 ? (
+                              <div>
+                                <span style={{ color: '#c2410c', fontWeight: 700 }}>
+                                  +{formatNum(inv.previousMonthDebt || 0)}
+                                </span>
+                                <div style={{ fontSize: '0.7rem', color: '#ea580c', fontStyle: 'italic' }}>Tự động cập nhật</div>
+                              </div>
+                            ) : (
+                              <span style={{ color: '#94a3b8' }}>0</span>
+                            )}
+                          </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', color: '#b91c1c', fontVariantNumeric: 'tabular-nums' }}>
                             {inv.leaveDeductionFee > 0 ? `-${formatNum(inv.leaveDeductionFee)}` : '0'}
                           </td>
@@ -1046,6 +1060,21 @@ export default function BillingPage() {
                               </span>
                             ) : (
                               <span style={{ color: '#94a3b8' }}>0</span>
+                            )}
+                          </td>
+                          {/* Nợ Đặt Cọc (1 lần khi nhập viện) */}
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            {inv.depositStatus === 'UNPAID' || (inv.unpaidDepositDebt || 0) > 0 ? (
+                              <div>
+                                <span style={{ color: '#b91c1c', fontWeight: 700, fontSize: '0.8rem' }}>
+                                  Nợ {formatNum(inv.unpaidDepositDebt || 20000000)}
+                                </span>
+                                <div style={{ fontSize: '0.7rem', color: '#dc2626', fontStyle: 'italic' }}>Cọc 1 lần nhập viện</div>
+                              </div>
+                            ) : (
+                              <span style={{ color: '#0d9488', fontWeight: 600, fontSize: '0.8rem' }}>
+                                ✓ Đã đóng cọc ({formatNum(inv.depositFee || 20000000)}đ)
+                              </span>
                             )}
                           </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontWeight: 800, color: '#0f172a', fontSize: '0.98rem', fontVariantNumeric: 'tabular-nums' }}>
@@ -3701,6 +3730,35 @@ Nếu có sai sót: Nhập chi tiết nội dung sai sót để báo cáo Ban Gi
                   value={directorForm.consumablesFee || 0}
                   onChange={(e) => setDirectorForm({ ...directorForm, consumablesFee: Number(e.target.value) })}
                 />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>📜 Nợ Tháng Trước (Tự động/Chỉnh sửa) (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.previousMonthDebt || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, previousMonthDebt: Number(e.target.value) })}
+                />
+              </div>
+
+              <div style={{ gridColumn: 'span 2' }}>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🏦 Trạng Thái Đóng Tiền Đặt Cọc (Ký Quỹ 1 lần khi nhập viện):</label>
+                <select
+                  className="text-input"
+                  value={directorForm.depositStatus || 'UNPAID'}
+                  onChange={(e) => {
+                    const status = e.target.value as 'PAID' | 'UNPAID';
+                    setDirectorForm({
+                      ...directorForm,
+                      depositStatus: status,
+                      unpaidDepositDebt: status === 'PAID' ? 0 : 20000000,
+                    });
+                  }}
+                >
+                  <option value="PAID">✓ Đã nộp tiền đặt cọc ký quỹ (0đ nợ cọc)</option>
+                  <option value="UNPAID">⚠️ Chưa nộp tiền đặt cọc ký quỹ (Nợ 20.000.000đ hiển thị ở Cổng Thân Nhân)</option>
+                </select>
               </div>
             </div>
 

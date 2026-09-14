@@ -66,8 +66,13 @@ export interface ResidentMonthlyInvoice {
   basicPackageName: string;
   basicPackageFee: number;
 
-  // II. Tiền Đặt Cọc Ký Quỹ
+  // II. Tiền Đặt Cọc Ký Quỹ & Nợ Đặt Cọc (Thu 1 lần khi nhập viện)
   depositFee: number; // Tiền đặt cọc (VD: 20.000.000đ)
+  depositStatus?: 'PAID' | 'UNPAID'; // Trạng thái hoàn tất cọc
+  unpaidDepositDebt?: number; // Nợ tiền đặt cọc chưa thanh toán
+
+  // Nợ Tháng Trước (Tự động cập nhật từ tháng trước liền kề)
+  previousMonthDebt?: number;
 
   // III. Phí Chăm Sóc Hỗ Trợ
   supportServicesFee: number;
@@ -551,7 +556,44 @@ export const DEFAULT_PRICING_MATRIX: PricingMatrix = {
 let pricingMatrixState: PricingMatrix = JSON.parse(JSON.stringify(DEFAULT_PRICING_MATRIX));
 
 /**
- * Công thức tính toán chuẩn hóa & nhất quán 100% cho mọi Bảng kê thu phí tại Trung Tâm Dưỡng Lão Tâm An
+ * Tự động tra cứu & tính toán số tiền còn thiếu (nợ) của tháng trước liền kề đối với người cao tuổi
+ */
+export function getPreviousMonthDebt(residentId?: string, currentBillingMonth?: string): number {
+  if (!residentId || !currentBillingMonth) return 0;
+
+  let year: number, month: number;
+  if (currentBillingMonth.includes('-')) {
+    const parts = currentBillingMonth.split('-');
+    year = parseInt(parts[0], 10);
+    month = parseInt(parts[1], 10);
+  } else if (currentBillingMonth.includes('/')) {
+    const parts = currentBillingMonth.split('/');
+    month = parseInt(parts[0], 10);
+    year = parseInt(parts[1], 10);
+  } else {
+    return 0;
+  }
+
+  if (isNaN(year) || isNaN(month)) return 0;
+
+  const prevYear = month === 1 ? year - 1 : year;
+  const prevMonth = month === 1 ? 12 : month - 1;
+  const prevBillingMonthDash = `${prevYear}-${String(prevMonth).padStart(2, '0')}`;
+  const prevBillingMonthSlash = `${String(prevMonth).padStart(2, '0')}/${prevYear}`;
+
+  const prevInv = mockInvoices.find(
+    (i) =>
+      i.residentId === residentId &&
+      (i.billingMonth === prevBillingMonthDash || i.billingMonth === prevBillingMonthSlash)
+  );
+
+  return prevInv ? (prevInv.remainingAmount || 0) : 0;
+}
+
+/**
+ * Công thức tính toán chuẩn hóa & nhất quán 100% cho mọi Bảng kê thu phí tại Trung Tâm Dưỡng Lão Tâm An:
+ * Tổng thực thu (theo từng tháng) = Phí cơ bản + Phí chăm sóc hỗ trợ + Phí chăm sóc mở rộng + Phụ thu Lễ Tết + Nợ tháng trước - Giảm trừ nghỉ phép/vắng mặt - Giảm giá (+ Suất ăn & Vật tư)
+ * Tiền đặt cọc chỉ tính 1 lần khi nhập vào Trung tâm (nếu chưa đóng sẽ hiển thị Nợ tiền đặt cọc).
  */
 export function calculateInvoiceTotals(
   inv: Partial<ResidentMonthlyInvoice>
@@ -561,12 +603,13 @@ export function calculateInvoiceTotals(
   totalDiscountAmount: number;
   extraMealsFee: number;
   consumablesFee: number;
+  previousMonthDebt: number;
+  unpaidDepositDebt: number;
   subtotalAmount: number;
   totalAmount: number;
   remainingAmount: number;
 } {
   const basicFee = inv.basicPackageFee || 0;
-  const depositFee = inv.depositFee || 0;
 
   // III. Phí dịch vụ hỗ trợ (tính từ danh mục dịch vụ thực tế hoặc giữ 0 nếu không có dịch vụ hỗ trợ)
   const supportServicesFee = (inv.supportServiceItems && inv.supportServiceItems.length > 0)
@@ -579,7 +622,9 @@ export function calculateInvoiceTotals(
   // V. Giảm trừ vắng mặt RLA-BR-01
   const forceMajeureDays = inv.forceMajeureLeaveDays || 0;
   const regularDays = inv.regularLeaveDays || 0;
-  const leaveDeductionFee = (forceMajeureDays * 200000) + (regularDays * 100000);
+  const leaveDeductionFee = inv.leaveDeductionFee !== undefined
+    ? inv.leaveDeductionFee
+    : (forceMajeureDays * 200000) + (regularDays * 100000);
 
   // VII. Ưu đãi / Giảm giá phê duyệt
   const totalDiscountAmount = (inv.discountsApplied || []).reduce(
@@ -596,13 +641,24 @@ export function calculateInvoiceTotals(
     ? inv.consumableItems.reduce((sum, c) => sum + (c.totalPrice || c.unitPrice * c.quantity), 0)
     : (inv.consumablesFee || 0);
 
-  // Tổng phụ (Subtotal): Phí cơ bản + Đặt cọc + Phí hỗ trợ + Phí mở rộng + Phụ thu lễ
-  const subtotalAmount = basicFee + depositFee + supportServicesFee + extendedFee + holidayFee;
+  // Nợ tháng trước: Tự động cập nhật số tiền còn thiếu của tháng trước liền kề
+  const previousMonthDebt = inv.previousMonthDebt !== undefined
+    ? inv.previousMonthDebt
+    : getPreviousMonthDebt(inv.residentId, inv.billingMonth);
 
-  // Tổng thực thu (Total Amount): Subtotal - Giảm trừ vắng mặt - Giảm giá + Suất ăn + Vật tư
+  // Tiền đặt cọc chỉ tính 1 lần khi nhập vào Trung tâm. Nếu chưa đóng cọc (depositStatus !== 'PAID'), tính nợ tiền đặt cọc
+  const isDepositPaid = inv.depositStatus === 'PAID';
+  const unpaidDepositDebt = isDepositPaid
+    ? 0
+    : (inv.unpaidDepositDebt !== undefined ? inv.unpaidDepositDebt : (inv.depositFee || 20000000));
+
+  // Tổng phụ hàng tháng (Subtotal): Phí cơ bản + Phí hỗ trợ + Phí mở rộng + Phụ thu Lễ Tết
+  const subtotalAmount = basicFee + supportServicesFee + extendedFee + holidayFee;
+
+  // Tổng thực thu (theo từng tháng) = Phí cơ bản + Phí chăm sóc hỗ trợ + Phí chăm sóc mở rộng + Phụ thu Lễ Tết + Nợ tháng trước - Giảm trừ nghỉ phép/vắng mặt - Giảm giá (+ Suất ăn + Vật tư)
   const totalAmount = Math.max(
     0,
-    subtotalAmount - leaveDeductionFee - totalDiscountAmount + extraMealsFee + consumablesFee
+    subtotalAmount + previousMonthDebt - leaveDeductionFee - totalDiscountAmount + extraMealsFee + consumablesFee
   );
 
   const paid = inv.paidAmount || 0;
@@ -614,6 +670,8 @@ export function calculateInvoiceTotals(
     totalDiscountAmount,
     extraMealsFee,
     consumablesFee,
+    previousMonthDebt,
+    unpaidDepositDebt,
     subtotalAmount,
     totalAmount,
     remainingAmount,
@@ -682,6 +740,52 @@ export function createMonthlyInvoiceForResident(params: {
 
 let mockInvoices: ResidentMonthlyInvoice[] = [
   {
+    invoiceId: 'INV-202608-002',
+    invoiceCode: 'BKVP-2026-08-002',
+    residentId: 'RES-002',
+    residentName: 'Cụ Trần Thị Bình',
+    room: '102',
+    bed: '102-1',
+    billingMonth: '2026-08',
+    careLevel: 3,
+    roomTier: 'Phòng VIP 1 giường',
+    basicPackageId: 'BCP-04',
+    basicPackageName: 'Phòng VIP 1 giường',
+    basicPackageFee: 20000000,
+    depositFee: 20000000,
+    depositStatus: 'UNPAID',
+    unpaidDepositDebt: 20000000,
+    previousMonthDebt: 0,
+    supportServicesFee: 3500000,
+    supportServiceItems: [
+      { serviceId: 'SS-05', serviceName: 'Hỗ trợ ăn qua sonde dạ dày', quantity: 1, unit: 'tháng', unitPrice: 1500000, totalPrice: 1500000 },
+      { serviceId: 'SS-08', serviceName: 'Chăm sóc ổ loét tì đè độ 2', quantity: 1, unit: 'tháng', unitPrice: 2000000, totalPrice: 2000000 },
+    ],
+    extendedCareFee: 0,
+    leaveDays: 0,
+    forceMajeureLeaveDays: 0,
+    regularLeaveDays: 0,
+    leaveDeductionFee: 0,
+    holidayDays: 0,
+    holidaySurchargeFee: 0,
+    discountsApplied: [],
+    totalDiscountAmount: 0,
+    extraMealsFee: 0,
+    extraMealItems: [],
+    consumablesFee: 500000,
+    consumableItems: [],
+    subtotalAmount: 23500000,
+    totalAmount: 24000000,
+    paidAmount: 20000000,
+    remainingAmount: 4000000, // Nợ 4 triệu từ tháng 8 chuyển qua tháng 9
+    depositBalance: 0,
+    status: 'PARTIAL',
+    issuedDate: '2026-08-01',
+    dueDate: '2026-08-10',
+    notes: 'Tháng 8 còn thiếu 4 triệu viện phí chưa thanh toán.',
+    auditStatus: 'DIRECTOR_APPROVED',
+  },
+  {
     invoiceId: 'INV-202609-001',
     invoiceCode: 'BKVP-2026-09-001',
     residentId: 'RES-001',
@@ -699,6 +803,9 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
 
     // II. Tiền Đặt Cọc
     depositFee: 20000000,
+    depositStatus: 'PAID',
+    unpaidDepositDebt: 0,
+    previousMonthDebt: 0,
 
     // III. Phí Chăm Sóc Hỗ Trợ
     supportServicesFee: 0,
@@ -747,10 +854,10 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-003', itemCode: 'VT-003', name: 'Băng gạc tiệt trùng Urgo Sterile 10x10', unit: 'miếng', unitPrice: 8000, quantity: 2, totalPrice: 20000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
 
-    // Tổng
-    subtotalAmount: 36700000, // 16.5m (phí cơ bản) + 20m (tiền cọc) + 0m (hỗ trợ) + 0.2m (lễ)
-    totalAmount: 36200000, // 36.7m - 0.4m (vắng mặt) - 0.495m (giảm giá) + 0.12m + 0.275m = 36.200.000đ
-    paidAmount: 36200000,
+    // Tổng hàng tháng = Phí cơ bản (16.5m) + Phụ thu lễ (0.2m) + Nợ tháng trước (0) - Giảm trừ (0.4m) - Ưu đãi (0.495m) + Suất ăn (0.12m) + Vật tư (0.275m)
+    subtotalAmount: 16700000,
+    totalAmount: 16480000,
+    paidAmount: 16480000,
     remainingAmount: 0,
     depositBalance: 20000000,
     status: 'PAID',
@@ -779,6 +886,9 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     basicPackageFee: 20000000,
 
     depositFee: 20000000,
+    depositStatus: 'UNPAID',
+    unpaidDepositDebt: 20000000,
+    previousMonthDebt: 4000000, // Tự động lấy từ tháng 8/2026
 
     supportServicesFee: 3500000,
     supportServiceItems: [
@@ -818,15 +928,17 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-006', itemCode: 'VT-006', name: 'Ống Sonde ăn dạ dày Levin Silicone Fr16', unit: 'sợi', unitPrice: 45000, quantity: 1, totalPrice: 45000, date: '2026-09-01', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
 
-    subtotalAmount: 43700000, // 20m + 20m + 3.5m + 0.2m
-    totalAmount: 42195000, // 43.7m - 2m (giảm giá) + 0.495m
-    paidAmount: 35000000,
-    remainingAmount: 7195000,
-    depositBalance: 20000000,
+    // Subtotal: 20m + 3.5m + 0.2m = 23.7m
+    // Total Amount = 23.7m + 4m (nợ tháng trước) - 2m (ưu đãi) + 0.495m = 26.195.000đ
+    subtotalAmount: 23700000,
+    totalAmount: 26195000,
+    paidAmount: 20000000,
+    remainingAmount: 6195000,
+    depositBalance: 0,
     status: 'PARTIAL',
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
-    notes: 'Đã thanh toán 35 triệu, phần còn lại thanh toán trước ngày 10/09.',
+    notes: 'Đã thanh toán 20 triệu đợt 1. Cần thanh toán nợ cũ 4 triệu và khoản còn lại 2.195.000đ.',
 
     auditStatus: 'MANAGER_REPORTED',
     reviewedByManagerName: 'Nguyễn Thị Thu (Quản Lý)',
@@ -849,6 +961,9 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     basicPackageFee: 12000000,
 
     depositFee: 20000000,
+    depositStatus: 'UNPAID',
+    unpaidDepositDebt: 20000000,
+    previousMonthDebt: 0,
 
     supportServicesFee: 500000,
     supportServiceItems: [
@@ -875,11 +990,11 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-001', itemCode: 'VT-001', name: 'Que thử đường huyết Accu-Chek Instant', unit: 'que', unitPrice: 12000, quantity: 3, totalPrice: 36000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
 
-    subtotalAmount: 32700000, // 12m + 20m + 0.5m + 0.2m
-    totalAmount: 32396000, // 32.7m - 0.4m + 0.06m + 0.036m
+    subtotalAmount: 12700000,
+    totalAmount: 12396000,
     paidAmount: 0,
-    remainingAmount: 32396000,
-    depositBalance: 20000000,
+    remainingAmount: 12396000,
+    depositBalance: 0,
     status: 'PENDING',
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
@@ -947,6 +1062,9 @@ export async function updateInvoiceItemsByDirector(
     holidaySurchargeFee?: number;
     extraMealsFee?: number;
     consumablesFee?: number;
+    previousMonthDebt?: number;
+    depositStatus?: 'PAID' | 'UNPAID';
+    unpaidDepositDebt?: number;
     directorEditNotes?: string;
   }
 ): Promise<ResidentMonthlyInvoice> {
@@ -964,6 +1082,9 @@ export async function updateInvoiceItemsByDirector(
   if (payload.holidaySurchargeFee !== undefined) inv.holidaySurchargeFee = payload.holidaySurchargeFee;
   if (payload.extraMealsFee !== undefined) inv.extraMealsFee = payload.extraMealsFee;
   if (payload.consumablesFee !== undefined) inv.consumablesFee = payload.consumablesFee;
+  if (payload.previousMonthDebt !== undefined) inv.previousMonthDebt = payload.previousMonthDebt;
+  if (payload.depositStatus !== undefined) inv.depositStatus = payload.depositStatus;
+  if (payload.unpaidDepositDebt !== undefined) inv.unpaidDepositDebt = payload.unpaidDepositDebt;
 
   if (payload.directorEditNotes) inv.directorEditNotes = payload.directorEditNotes;
 
@@ -972,6 +1093,8 @@ export async function updateInvoiceItemsByDirector(
   inv.leaveDeductionFee = ((inv.forceMajeureLeaveDays || 0) * 200000) + ((inv.regularLeaveDays || 0) * 100000);
 
   const totals = calculateInvoiceTotals(inv);
+  inv.previousMonthDebt = totals.previousMonthDebt;
+  inv.unpaidDepositDebt = totals.unpaidDepositDebt;
   inv.subtotalAmount = totals.subtotalAmount;
   inv.totalAmount = totals.totalAmount;
   inv.remainingAmount = totals.remainingAmount;
@@ -1385,6 +1508,8 @@ export interface DetailedMonthlyFeeNotice {
   deductionFee: number;            // 14. Chi phí giảm trừ (4)
   previousMonthDebt: number;       // 15. Nợ tháng trước (5)
   debtNotes?: string;              // Ghi chú nợ
+  depositStatus?: 'PAID' | 'UNPAID'; // Trạng thái đóng cọc
+  unpaidDepositDebt?: number;      // Nợ tiền đặt cọc tiếp nhận lưu trú (ký quỹ) - Thu 1 lần khi nhập viện
   familyMealsFee: number;          // Tiền ăn cơm người nhà đăng ký tại Tâm An
 
   totalDue: number;                // TỔNG PHẢI THU (sum tự động)
@@ -1413,10 +1538,10 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     residentCode: '260701',
     contractCode: 'HD-260701',
     billingMonth: '09/2026',
-    basicFee: 8000000,
-    supportFee: 1000000,
-    bathingLaundryFee: 500000,
-    mobilityFee: 500000,
+    basicFee: 16500000,
+    supportFee: 0,
+    bathingLaundryFee: 0,
+    mobilityFee: 0,
     hygieneFee: 0,
     feedingSondeFee: 0,
     dementiaCareFee: 0,
@@ -1425,21 +1550,23 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     tracheostomyCareFee: 0,
     woundDressingFee: 0,
     rehabFee: 0,
-    incurredFee: 400000,
-    incurredContent: 'Phụ thu đi khám Bệnh viện Quốc Thành',
-    deductionFee: 0,
+    incurredFee: 200000,
+    incurredContent: 'Phụ thu ngày Lễ Tết 2/9',
+    deductionFee: 895000, // Giảm trừ 400.000đ nghỉ phép + 495.000đ ưu đãi 6 tháng
     previousMonthDebt: 0,
     debtNotes: 'Không nợ cũ',
-    familyMealsFee: 150000, // 3 bữa ăn gia đình x 50k
-    totalDue: 10550000,
-    paidAmount: 10550000,
+    depositStatus: 'PAID',
+    unpaidDepositDebt: 0,
+    familyMealsFee: 675000, // 120k cơm + 275k vật tư + 280k bổ sung
+    totalDue: 16480000,
+    paidAmount: 16480000,
     remainingAmount: 0,
     status: 'PAID',
     statusLabel: 'Đã thu',
-    notes: 'Đã nhận chuyển khoản đủ qua VCB ngày 05/09/2026',
+    notes: 'Đã nhận chuyển khoản thanh toán đủ ngày 05/09/2026 qua VCB',
     isApproved: true,
     isPublishedToFamilyPortal: true,
-    approvedBy: 'Trần Thị Mỹ Kế toán',
+    approvedBy: 'Hoàng Quốc Anh (Giám Đốc)',
     approvedAt: '2026-09-01T08:00:00Z',
   },
   {
@@ -1449,32 +1576,35 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     residentCode: '260702',
     contractCode: 'HD-260702',
     billingMonth: '09/2026',
-    basicFee: 11500000,
-    supportFee: 0,
-    bathingLaundryFee: 1000000,
-    mobilityFee: 500000,
+    basicFee: 20000000,
+    supportFee: 3500000,
+    bathingLaundryFee: 0,
+    mobilityFee: 0,
     hygieneFee: 0,
-    feedingSondeFee: 0,
-    dementiaCareFee: 500000,
-    soreCareFee: 0,
+    feedingSondeFee: 1500000,
+    dementiaCareFee: 0,
+    soreCareFee: 2000000,
     catheterCareFee: 0,
     tracheostomyCareFee: 0,
     woundDressingFee: 0,
     rehabFee: 0,
-    incurredFee: 0,
-    deductionFee: 200000, // Giảm trừ 1 ngày khám viện
-    previousMonthDebt: 0,
-    debtNotes: '',
-    familyMealsFee: 100000,
-    totalDue: 13400000,
-    paidAmount: 0,
-    remainingAmount: 13400000,
-    status: 'UNPAID',
-    statusLabel: 'Chưa thu',
-    notes: 'Đã gửi thông báo cho anh Trần Anh Đức ngày 01/09',
+    incurredFee: 200000,
+    incurredContent: 'Phụ thu Lễ Tết 2/9',
+    deductionFee: 2000000, // 10% giảm giá chính sách thương binh
+    previousMonthDebt: 4000000, // Nợ tháng 8/2026 tự động cập nhật
+    debtNotes: 'Nợ còn lại viện phí tháng 8/2026',
+    depositStatus: 'UNPAID',
+    unpaidDepositDebt: 20000000,
+    familyMealsFee: 495000, // Vật tư y tế bỉm sonde
+    totalDue: 26195000,
+    paidAmount: 20000000,
+    remainingAmount: 6195000,
+    status: 'PARTIAL',
+    statusLabel: 'Thu một phần',
+    notes: 'Đã thanh toán 20 triệu đợt 1. Thân nhân vui lòng thanh toán nợ cũ 4 triệu và khoản còn lại trước ngày 10/09.',
     isApproved: true,
     isPublishedToFamilyPortal: true,
-    approvedBy: 'Trần Thị Mỹ Kế toán',
+    approvedBy: 'Hoàng Quốc Anh (Giám Đốc)',
     approvedAt: '2026-09-01T08:30:00Z',
   },
   {
@@ -1484,31 +1614,34 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     residentCode: '260801',
     contractCode: 'HD-260801',
     billingMonth: '09/2026',
-    basicFee: 14500000,
-    supportFee: 0,
-    bathingLaundryFee: 4500000,
+    basicFee: 12000000,
+    supportFee: 500000,
+    bathingLaundryFee: 0,
     mobilityFee: 500000,
-    hygieneFee: 3000000,
-    feedingSondeFee: 500000,
+    hygieneFee: 0,
+    feedingSondeFee: 0,
     dementiaCareFee: 0,
     soreCareFee: 0,
     catheterCareFee: 0,
     tracheostomyCareFee: 0,
     woundDressingFee: 0,
     rehabFee: 0,
-    incurredFee: 0,
-    deductionFee: 0,
-    previousMonthDebt: 4000000,
-    debtNotes: 'Nợ còn lại tháng 8/2026',
-    familyMealsFee: 200000,
-    totalDue: 27200000,
-    paidAmount: 10000000,
-    remainingAmount: 17200000,
-    status: 'PARTIAL',
-    statusLabel: 'Thu một phần',
-    notes: 'Đã thu đợt 1 tiền mặt 10.000.000đ. Hẹn đợt 2 ngày 18/09.',
-    isApproved: false,
-    isPublishedToFamilyPortal: false, // Bản nháp Kế toán - Chưa duyệt gửi Cổng Thân Nhân
+    incurredFee: 200000,
+    incurredContent: 'Phụ thu Lễ Tết 2/9',
+    deductionFee: 400000, // Giảm trừ 4 ngày nghỉ thăm nhà
+    previousMonthDebt: 0,
+    debtNotes: '',
+    depositStatus: 'UNPAID',
+    unpaidDepositDebt: 20000000,
+    familyMealsFee: 96000, // 60k cơm + 36k vật tư
+    totalDue: 12396000,
+    paidAmount: 0,
+    remainingAmount: 12396000,
+    status: 'UNPAID',
+    statusLabel: 'Chưa thu',
+    notes: 'Bảng thông báo thu phí tháng 9. Chưa đóng khoản tiền đặt cọc 20 triệu khi nhập viện.',
+    isApproved: true,
+    isPublishedToFamilyPortal: true,
   },
 ];
 
