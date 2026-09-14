@@ -1808,9 +1808,9 @@ transform: scale(1.28);
   .print-modal-overlay,
   .modal-overlay.print-modal-overlay,
   .modal-backdrop.print-modal-overlay,
-  .modal-dialog,
-  .modal-dialog-lg,
-  .modal-card {
+  .print-modal-overlay .modal-dialog,
+  .print-modal-overlay .modal-dialog-lg,
+  .print-modal-overlay .modal-card {
     position: static !important;
     display: block !important;
     visibility: visible !important;

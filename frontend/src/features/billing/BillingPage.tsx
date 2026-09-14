@@ -2288,6 +2288,7 @@ export default function BillingPage() {
                 style={{ fontWeight: 600, background: '#f1f5f9', color: '#0f172a', borderColor: '#cbd5e1' }}
                 onClick={() => {
                   const inv = detailModalInvoice;
+                  setDetailModalInvoice(null);
                   setPrintModalNotice({
                     id: inv.invoiceCode,
                     residentId: inv.residentId,
@@ -2906,7 +2907,7 @@ export default function BillingPage() {
                         (editFeeNotice.familyMealsFee || 0);
                       const liveRemaining = Math.max(0, liveTotal - feeNoticeForm.paidAmount);
 
-                      setPrintModalNotice({
+                      const noticeToPrint = {
                         ...editFeeNotice,
                         ...feeNoticeForm,
                         totalDue: liveTotal,
@@ -2917,7 +2918,9 @@ export default function BillingPage() {
                             : feeNoticeForm.paidAmount > 0
                             ? 'PARTIAL'
                             : 'UNPAID',
-                      });
+                      };
+                      setEditFeeNotice(null);
+                      setPrintModalNotice(noticeToPrint as DetailedMonthlyFeeNotice);
                     }
                   }}
                 >
@@ -3076,9 +3079,9 @@ export default function BillingPage() {
               .print-modal-overlay,
               .modal-overlay.print-modal-overlay,
               .modal-backdrop.print-modal-overlay,
-              .modal-dialog,
-              .modal-dialog-lg,
-              .modal-card {
+              .print-modal-overlay .modal-dialog,
+              .print-modal-overlay .modal-dialog-lg,
+              .print-modal-overlay .modal-card {
                 position: static !important;
                 display: block !important;
                 visibility: visible !important;
