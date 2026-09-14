@@ -3354,7 +3354,21 @@ export default function BillingPage() {
                       </div>
 
                       <div style={{ marginBottom: '0.2rem' }}>
-                        <b>Thời hạn thanh toán:</b> Từ ngày 01 đến hết ngày 05 tháng {mNum.padStart(2, '0')} năm {yNum}
+                        <b>Thời hạn thanh toán:</b> {(() => {
+                          const printDate = new Date();
+                          const endDate = new Date(printDate.getTime() + 9 * 24 * 60 * 60 * 1000);
+                          const startD = printDate.getDate().toString().padStart(2, '0');
+                          const startM = (printDate.getMonth() + 1).toString().padStart(2, '0');
+                          const startY = printDate.getFullYear();
+                          const endD = endDate.getDate().toString().padStart(2, '0');
+                          const endM = (endDate.getMonth() + 1).toString().padStart(2, '0');
+                          const endY = endDate.getFullYear();
+
+                          if (startM === endM && startY === endY) {
+                            return `Từ ngày ${startD} đến hết ngày ${endD} tháng ${endM} năm ${endY}`;
+                          }
+                          return `Từ ngày ${startD}/${startM}/${startY} đến hết ngày ${endD} tháng ${endM} năm ${endY}`;
+                        })()}
                       </div>
 
                       <div style={{ fontWeight: 700, marginTop: '0.15rem', marginBottom: '0.08rem' }}>
