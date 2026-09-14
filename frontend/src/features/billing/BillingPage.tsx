@@ -3359,8 +3359,9 @@ export default function BillingPage() {
                       "Nơi Tuổi Già An Nhiên"
                     </div>
                     <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.35rem' }}>
-                      Địa chỉ: Xã Thạch Hòa, Huyện Thạch Thất, TP. Hà Nội<br />
-                      Hotline: <b>1900-TAMAN</b> | Email: <b>info@taman.vn</b>
+                    <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.35rem' }}>
+                      Địa chỉ: Khu phố Đông 8, Ocean Park 2, Nghĩa Trụ, Hưng Yên<br />
+                      Hotline: <b>0824 155 155</b>
                     </div>
                   </div>
                 </div>
@@ -3389,274 +3390,196 @@ export default function BillingPage() {
                 </div>
               </div>
 
-              {/* Title Section */}
-              <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.35rem 0', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                  THÔNG BÁO THU PHÍ CHĂM SÓC CƯ DÂN
-                </h2>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#166534' }}>
-                  KỲ THU PHÍ: THÁNG {printModalNotice.billingMonth}
-                </div>
-              </div>
-
-              {/* Resident & Sponsor Profile Card */}
-              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem 1.5rem', fontSize: '0.9rem' }}>
-                <div>
-                  <span style={{ color: '#64748b' }}>Họ và tên Người Cao Tuổi:</span>{' '}
-                  <b style={{ color: '#0f172a', fontSize: '1rem' }}>{printModalNotice.residentName}</b>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b' }}>Mã Hợp Đồng / Hồ Sơ:</span>{' '}
-                  <b style={{ color: '#166534', fontFamily: 'monospace', fontSize: '0.95rem' }}>{printModalNotice.residentCode}</b>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b' }}>Người Bảo Lãnh (Thân nhân):</span>{' '}
-                  <b>{printModalNotice.sponsorName || 'Gia đình Cụ'}</b>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b' }}>Số Điện Thoại Liên Hệ:</span>{' '}
-                  <b>{printModalNotice.sponsorPhone || '---'}</b>
-                </div>
-              </div>
-
-              {/* Comprehensive 21-Item Breakdown Table */}
-              <div style={{ marginBottom: '1.5rem' }}>
-                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  📋 BẢNG CHI TIẾT CÁC MỤC CHI PHÍ & DỊCH VỤ:
-                </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                  <thead>
-                    <tr style={{ background: '#f1f5f9', borderTop: '2px solid #cbd5e1', borderBottom: '2px solid #cbd5e1' }}>
-                      <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center', width: '40px', fontWeight: 700, borderRight: '1px solid #cbd5e1' }}>STT</th>
-                      <th style={{ padding: '0.5rem 0.75rem', textAlign: 'left', fontWeight: 700, borderRight: '1px solid #cbd5e1' }}>Mục Chi Phí / Dịch Vụ</th>
-                      <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', width: '160px', fontWeight: 700 }}>Thành Tiền (VNĐ)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>1</td>
-                      <td style={{ padding: '0.45rem 0.75rem', fontWeight: 600, borderRight: '1px solid #e2e8f0' }}>Phí dịch vụ cơ bản (Tiền phòng, ăn uống 3 bữa, tiện ích)</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.basicFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>2</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ tắm gội</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.bathingLaundryFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>4</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ nâng đỡ, di chuyển</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.mobilityFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>5</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ vệ sinh cá nhân</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.hygieneFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>6</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ xúc ăn & ăn qua sonde</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.feedingSondeFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>7</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc NCT bị lẫn tuổi già</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.dementiaCareFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>8</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc các ổ loét</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.soreCareFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>10</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc người đặt sonde bàng quang</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.catheterCareFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>11</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Chăm sóc người đặt nội khí quản</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.tracheostomyCareFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>12</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Thay băng, rửa vết thương</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.woundDressingFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>13</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Vật lý trị liệu - PHCN</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.rehabFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    {(printModalNotice.familyMealsFee || 0) > 0 && (
-                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>14</td>
-                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Suất ăn thân nhân đăng ký</td>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{(printModalNotice.familyMealsFee || 0).toLocaleString('vi-VN')}</td>
-                      </tr>
-                    )}
-                    {(printModalNotice.consumablesFee || 0) > 0 && (
-                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>14b</td>
-                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Vật tư y tế tiêu hao</td>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{(printModalNotice.consumablesFee || 0).toLocaleString('vi-VN')}</td>
-                      </tr>
-                    )}
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>15</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
-                        Phí Phát sinh
-                        {printModalNotice.incurredContent && (
-                          <span style={{ color: '#475569', fontStyle: 'italic', display: 'block', fontSize: '0.78rem' }}>
-                            Nội dung: {printModalNotice.incurredContent}
-                          </span>
-                        )}
-                      </td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.incurredFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0', color: '#b91c1c' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>16</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Chi phí giảm trừ / Khuyến mãi / Giảm trừ vắng mặt</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>-{printModalNotice.deductionFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>17</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
-                        Nợ tháng trước chuyển sang
-                        {printModalNotice.debtNotes && (
-                          <span style={{ color: '#475569', fontStyle: 'italic', display: 'block', fontSize: '0.78rem' }}>
-                            Ghi chú nợ: {printModalNotice.debtNotes}
-                          </span>
-                        )}
-                      </td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.previousMonthDebt.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    {(printModalNotice.depositStatus === 'UNPAID' || (printModalNotice.unpaidDepositDebt || 0) > 0) && (
-                      <tr style={{ borderBottom: '2px solid #cbd5e1', color: '#b91c1c' }}>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>18</td>
-                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
-                          Nợ Tiền Đặt Cọc Tiếp Nhận Lưu Trú (Ký quỹ)
-                          <span style={{ color: '#dc2626', fontStyle: 'italic', display: 'block', fontSize: '0.78rem' }}>
-                            Khoản nợ đặt cọc 1 lần khi nhập viện
-                          </span>
-                        </td>
-                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>{(printModalNotice.unpaidDepositDebt || 20000000).toLocaleString('vi-VN')}</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Totals Summary Box */}
-              <div style={{ background: '#f0fdf4', border: '2px solid #166534', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '1.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #bbf7d0', paddingBottom: '0.6rem', marginBottom: '0.6rem' }}>
-                  <span style={{ fontSize: '1.05rem', fontWeight: 900, color: '#166534' }}>TỔNG PHẢI THU (TỰ ĐỘNG CỘNG):</span>
-                  <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#15803d', fontVariantNumeric: 'tabular-nums' }}>
-                    {printModalNotice.totalDue.toLocaleString('vi-VN')} VNĐ
-                  </span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', fontSize: '0.9rem' }}>
-                  <div>
-                    <span style={{ color: '#475569' }}>Đã thanh toán:</span><br />
-                    <b style={{ color: '#1e40af', fontSize: '1.05rem' }}>{printModalNotice.paidAmount.toLocaleString('vi-VN')} VNĐ</b>
-                  </div>
-                  <div>
-                    <span style={{ color: '#475569' }}>Còn phải thu (Dư nợ):</span><br />
-                    <b style={{ color: '#b91c1c', fontSize: '1.05rem' }}>{printModalNotice.remainingAmount.toLocaleString('vi-VN')} VNĐ</b>
-                  </div>
-                  <div>
-                    <span style={{ color: '#475569' }}>Tình trạng đóng phí:</span><br />
-                    <b style={{ color: printModalNotice.paidAmount >= printModalNotice.totalDue ? '#15803d' : printModalNotice.paidAmount > 0 ? '#b45309' : '#b91c1c', fontSize: '1.05rem' }}>
-                      {printModalNotice.paidAmount >= printModalNotice.totalDue && printModalNotice.totalDue > 0
-                        ? 'ĐÃ THU ĐỦ'
-                        : printModalNotice.paidAmount > 0
-                        ? 'THU MỘT PHẦN'
-                        : 'CHƯA THU'}
-                    </b>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Instructions Box (Section 2) */}
+              {/* Title Section & Month Formatting */}
               {(() => {
-                const parts = (printModalNotice.billingMonth || '09/2026').split(/[\/-]/);
-                let monthNum = '09';
-                let yearNum = '2026';
+                const monthRaw = printModalNotice.billingMonth || '09/2026';
+                const parts = monthRaw.split(/[\/-]/);
+                let mNum = '9';
+                let yNum = '2026';
                 if (parts.length === 2) {
                   if (parts[0].length === 4) {
-                    yearNum = parts[0];
-                    monthNum = parts[1];
+                    yNum = parts[0];
+                    mNum = parseInt(parts[1], 10).toString();
                   } else {
-                    monthNum = parts[0];
-                    yearNum = parts[1];
+                    mNum = parseInt(parts[0], 10).toString();
+                    yNum = parts[1];
                   }
                 }
-                const transferSyntax = `${printModalNotice.residentCode} - ${printModalNotice.residentName} - Phi T${monthNum}_${yearNum}`;
+                const formattedMonthDisplay = `${mNum}/${yNum}`;
+
+                const isFemale =
+                  printModalNotice.gender === 'FEMALE' ||
+                  printModalNotice.gender === 'Nữ' ||
+                  printModalNotice.residentName.includes('Thị') ||
+                  printModalNotice.residentName.includes('Bình');
+                const salutation = isFemale ? 'bà' : 'ông';
+                const cleanResidentName = printModalNotice.residentName
+                  .replace(/^(Cụ ông|Cụ bà|Cụ|Ông|Bà)\s+/i, '')
+                  .trim();
+
+                // Filter only non-zero credit/fee items for printable table
+                const rawItems = [
+                  { name: 'Phí chăm sóc cơ bản (Gói phòng & ăn uống 3 bữa)', amount: printModalNotice.basicFee, note: '' },
+                  { name: 'Hỗ trợ tắm gội', amount: printModalNotice.bathingLaundryFee, note: '' },
+                  { name: 'Hỗ trợ nâng đỡ, di chuyển', amount: printModalNotice.mobilityFee, note: '' },
+                  { name: 'Hỗ trợ vệ sinh cá nhân', amount: printModalNotice.hygieneFee, note: '' },
+                  { name: 'Hỗ trợ xúc ăn & ăn qua sonde', amount: printModalNotice.feedingSondeFee, note: '' },
+                  { name: 'Chăm sóc NCT bị lẫn tuổi già', amount: printModalNotice.dementiaCareFee, note: '' },
+                  { name: 'Chăm sóc các ổ loét', amount: printModalNotice.soreCareFee, note: '' },
+                  { name: 'Chăm sóc người đặt sonde bàng quang', amount: printModalNotice.catheterCareFee, note: '' },
+                  { name: 'Chăm sóc người đặt nội khí quản', amount: printModalNotice.tracheostomyCareFee, note: '' },
+                  { name: 'Thay băng, rửa vết thương', amount: printModalNotice.woundDressingFee, note: '' },
+                  { name: 'Vật lý trị liệu - PHCN', amount: printModalNotice.rehabFee, note: '' },
+                  { name: 'Suất ăn thân nhân đăng ký', amount: printModalNotice.familyMealsFee || 0, note: '' },
+                  { name: 'Vật tư y tế tiêu hao', amount: printModalNotice.consumablesFee || 0, note: '' },
+                  { name: 'Phí phát sinh', amount: printModalNotice.incurredFee, note: printModalNotice.incurredContent || '' },
+                  { name: 'Chi phí giảm trừ / Khuyến mãi / Giảm trừ vắng mặt', amount: printModalNotice.deductionFee ? -printModalNotice.deductionFee : 0, note: '' },
+                  { name: 'Nợ tháng trước chuyển sang', amount: printModalNotice.previousMonthDebt, note: printModalNotice.debtNotes || '' },
+                  { name: 'Nợ tiền đặt cọc tiếp nhận lưu trú (ký quỹ)', amount: printModalNotice.unpaidDepositDebt || 0, note: 'Nợ cọc 1 lần khi nhập viện' },
+                ];
+                const activePrintItems = rawItems.filter(item => item.amount !== 0);
 
                 return (
-                  <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem 1.25rem', marginBottom: '2rem', background: '#ffffff', fontSize: '0.88rem', lineHeight: '1.6' }}>
-                    <div style={{ fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.35rem' }}>
-                      2. Hướng dẫn thanh toán
+                  <>
+                    <div style={{ textAlign: 'center', marginBottom: '1.25rem' }}>
+                      <h2 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.35rem 0', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                        THÔNG BÁO CHI PHÍ CHĂM SÓC & SINH HOẠT
+                      </h2>
+                      <div style={{ fontSize: '1rem', fontWeight: 700, color: '#166534' }}>
+                        KỲ THU PHÍ: THÁNG {formattedMonthDisplay}
+                      </div>
                     </div>
 
-                    <div style={{ marginBottom: '0.4rem' }}>
-                      <b>Thời hạn thanh toán:</b> Từ ngày 01 đến hết ngày 05 tháng {monthNum} năm {yearNum}
-                    </div>
-
-                    <div style={{ fontWeight: 700, marginTop: '0.35rem', marginBottom: '0.25rem' }}>
-                      Hình thức thanh toán:
-                    </div>
-
-                    <div style={{ paddingLeft: '0.5rem', marginBottom: '0.5rem' }}>
-                      <div style={{ marginBottom: '0.25rem' }}>
-                        <b>Cách 1:</b> Thanh toán bằng tiền mặt tại văn phòng của Trung tâm.
+                    {/* Resident & Sponsor Profile Card */}
+                    <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.9rem 1.15rem', marginBottom: '1rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem 1.5rem', fontSize: '0.88rem' }}>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Kính gửi:</span>{' '}
+                        <b>Quý gia đình / Người đại diện của {salutation}: {cleanResidentName}</b>
                       </div>
                       <div>
-                        <b>Cách 2:</b> Chuyển khoản ngân hàng:
-                        <div style={{ paddingLeft: '1.25rem', marginTop: '0.25rem', display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                          <div>• Tên tài khoản: <b>Công ty CP TMDV An Thịnh Phát Group</b></div>
-                          <div>• Số tài khoản: <b style={{ fontSize: '0.95rem', color: '#166534' }}>111603721868</b></div>
-                          <div>• Ngân hàng: <b>Ngân hàng VietinBank</b></div>
-                          <div>
-                            • <b style={{ color: '#b91c1c' }}>Nội dung chuyển khoản: {transferSyntax}</b>
+                        <span style={{ color: '#64748b' }}>Hợp đồng số:</span>{' '}
+                        <b style={{ color: '#166534', fontFamily: 'monospace' }}>{printModalNotice.contractCode || printModalNotice.residentCode}</b>
+                      </div>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Người ký hợp đồng:</span>{' '}
+                        <b>{printModalNotice.sponsorName || 'Đại diện Thân nhân'}</b> {printModalNotice.sponsorPhone ? `- ${printModalNotice.sponsorPhone}` : ''}
+                      </div>
+                      <div>
+                        <span style={{ color: '#64748b' }}>Mã cư dân:</span>{' '}
+                        <b>{printModalNotice.residentCode}</b>
+                      </div>
+                    </div>
+
+                    <div style={{ fontSize: '0.85rem', color: '#334155', fontStyle: 'italic', marginBottom: '1rem' }}>
+                      Chúng tôi xin thông báo chi tiết các khoản chi phí chăm sóc và sinh hoạt của {salutation} <b>{cleanResidentName}</b> trong tháng {mNum} như sau:
+                    </div>
+
+                    {/* Non-Zero Printable Items Table */}
+                    <div style={{ marginBottom: '1.25rem' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                        1. Chi tiết các khoản phí (Ghi có)
+                      </div>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                        <thead>
+                          <tr style={{ background: '#0f172a', color: '#ffffff' }}>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'center', width: '45px', fontWeight: 700, border: '1px solid #334155' }}>STT</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'left', fontWeight: 700, border: '1px solid #334155' }}>Nội dung</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'right', width: '150px', fontWeight: 700, border: '1px solid #334155' }}>Số tiền (VNĐ)</th>
+                            <th style={{ padding: '0.5rem 0.65rem', textAlign: 'left', width: '200px', fontWeight: 700, border: '1px solid #334155' }}>Ghi chú</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {activePrintItems.map((item, idx) => (
+                            <tr key={idx} style={{ borderBottom: '1px solid #cbd5e1', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
+                              <td style={{ padding: '0.45rem 0.65rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #cbd5e1' }}>{idx + 1}</td>
+                              <td style={{ padding: '0.45rem 0.65rem', fontWeight: idx === 0 ? 700 : 500, borderRight: '1px solid #cbd5e1' }}>{item.name}</td>
+                              <td style={{ padding: '0.45rem 0.65rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', borderRight: '1px solid #cbd5e1', color: item.amount < 0 ? '#b91c1c' : '#0f172a' }}>
+                                {item.amount.toLocaleString('vi-VN')}
+                              </td>
+                              <td style={{ padding: '0.45rem 0.65rem', fontSize: '0.8rem', color: '#475569', fontStyle: 'italic' }}>{item.note || '---'}</td>
+                            </tr>
+                          ))}
+                          <tr style={{ background: '#fef3c7', fontWeight: 800, borderTop: '2px solid #b45309', borderBottom: '2px solid #b45309' }}>
+                            <td colSpan={2} style={{ padding: '0.6rem 0.75rem', textAlign: 'right', color: '#92400e', borderRight: '1px solid #fde68a' }}>
+                              TỔNG CỘNG PHẢI THU:
+                            </td>
+                            <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', color: '#b45309', fontSize: '1.05rem', fontVariantNumeric: 'tabular-nums', borderRight: '1px solid #fde68a' }}>
+                              {printModalNotice.totalDue.toLocaleString('vi-VN')}
+                            </td>
+                            <td style={{ padding: '0.6rem 0.75rem', fontSize: '0.8rem', color: '#78350f' }}>
+                              {printModalNotice.remainingAmount > 0 ? `Còn nợ: ${printModalNotice.remainingAmount.toLocaleString('vi-VN')}đ` : 'Đã thanh toán đủ'}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Payment Instructions Box (Section 2) */}
+                    <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '0.9rem 1.15rem', marginBottom: '1.5rem', background: '#ffffff', fontSize: '0.85rem', lineHeight: '1.55' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.4rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.3rem' }}>
+                        2. Hướng dẫn thanh toán
+                      </div>
+
+                      <div style={{ marginBottom: '0.35rem' }}>
+                        <b>Thời hạn thanh toán:</b> Từ ngày 01 đến hết ngày 05 tháng {mNum.padStart(2, '0')} năm {yNum}
+                      </div>
+
+                      <div style={{ fontWeight: 700, marginTop: '0.3rem', marginBottom: '0.2rem' }}>
+                        Hình thức thanh toán:
+                      </div>
+
+                      <div style={{ paddingLeft: '0.5rem', marginBottom: '0.4rem' }}>
+                        <div style={{ marginBottom: '0.2rem' }}>
+                          • <b>Cách 1:</b> Thanh toán bằng tiền mặt tại văn phòng của Trung tâm.
+                        </div>
+                        <div>
+                          • <b>Cách 2:</b> Chuyển khoản ngân hàng:
+                          <div style={{ paddingLeft: '1.25rem', marginTop: '0.2rem', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                            <div>- Tên tài khoản: <b>Công ty CP TMDV An Thịnh Phát Group</b></div>
+                            <div>- Số tài khoản: <b style={{ fontSize: '0.92rem', color: '#166534' }}>111603721868</b></div>
+                            <div>- Ngân hàng: <b>Ngân hàng VietinBank</b></div>
+                            <div>
+                              - <b style={{ color: '#b91c1c' }}>Nội dung chuyển khoản: {printModalNotice.contractCode || printModalNotice.residentCode} - {cleanResidentName} - Phí T{mNum}_{yNum}</b>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div style={{ fontSize: '0.82rem', color: '#475569', fontStyle: 'italic', background: '#f8fafc', padding: '0.4rem 0.65rem', borderRadius: '0.35rem', borderLeft: '3px solid #166534', marginTop: '0.5rem' }}>
-                      <b>Lưu ý:</b> Sau khi chuyển khoản, Quý Gia đình vui lòng gửi xác nhận giao dịch cho Trung tâm để thuận tiện đối soát và cập nhật.
+                      <div style={{ fontSize: '0.8rem', color: '#475569', fontStyle: 'italic', background: '#f8fafc', padding: '0.35rem 0.6rem', borderRadius: '0.35rem', borderLeft: '3px solid #166534', marginTop: '0.45rem' }}>
+                        Lưu ý: Sau khi chuyển khoản, Quý Gia đình vui lòng gửi xác nhận giao dịch cho Trung tâm để thuận tiện đối soát và cập nhật.
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: '#0f172a', fontWeight: 600, marginTop: '0.5rem', textAlign: 'center' }}>
+                        Mọi thắc mắc về chi phí, quý gia đình vui lòng liên hệ qua số điện thoại HOTLINE: <b>0824 155 155</b>.
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: '#166534', fontWeight: 700, fontStyle: 'italic', marginTop: '0.35rem', textAlign: 'center' }}>
+                        Xin trân trọng cảm ơn sự đồng hành và tin tưởng của quý gia đình!
+                      </div>
                     </div>
-                  </div>
+                  </>
                 );
               })()}
 
-              {/* Official 4-Column Signatures */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', textAlign: 'center', marginTop: '2.5rem', pageBreakInside: 'avoid', gap: '0.5rem' }}>
+              {/* Official 3-Column Signatures */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '2rem', pageBreakInside: 'avoid', gap: '1rem' }}>
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>NGƯỜI LẬP BẢNG</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>NGƯỜI LẬP BẢNG</div>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.88rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>KẾ TOÁN TRƯỞNG</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>KẾ TOÁN TRƯỞNG</div>
                   <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>Nguyễn Thị Kế Toán</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.88rem' }}>Nguyễn Thị Kế Toán</div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký, đóng dấu & họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>Ban Giám Đốc Tâm An</div>
-                </div>
-
-                <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>NGƯỜI NỘP TIỀN</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Thân nhân Ký & họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>{printModalNotice.sponsorName || 'Đại diện Gia đình'}</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.88rem' }}>Ban Giám Đốc Tâm An</div>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>

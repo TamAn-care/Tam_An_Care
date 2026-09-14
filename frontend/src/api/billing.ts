@@ -1493,6 +1493,7 @@ export interface DetailedMonthlyFeeNotice {
   billingMonth: string; // e.g. "09/2026"
   sponsorName?: string;
   sponsorPhone?: string;
+  gender?: string;
 
   // 21 Mục Chi Phí Chi Tiết Theo Excel TB THU PHÍ TÂM AN 2026
   basicFee: number;                // 1. Phí cơ bản (1)
