@@ -1776,11 +1776,11 @@ transform: scale(1.28);
   .data-table,
   button,
   .no-print,
-  .page-content > .card:not(:has(.printable-a4-sheet)):not(:has(#printable-fee-notice-area)) {
+  .page-content > .card:not(:has(.printable-a4-sheet)):not(:has(#printable-fee-notice-area)):not(:has(.modal-backdrop)):not(:has(.modal-overlay)) {
     display: none !important;
   }
 
-  body:has(.modal-overlay) .page-content > *:not(.modal-overlay):not(:has(.modal-overlay)) {
+  body:has(.modal-overlay, .modal-backdrop) .page-content > *:not(.modal-overlay):not(.modal-backdrop):not(:has(.modal-overlay)):not(:has(.modal-backdrop)) {
     display: none !important;
   }
 
@@ -1795,7 +1795,8 @@ transform: scale(1.28);
   }
 
   /* Flatten modal into clean printable sheet */
-  .modal-overlay {
+  .modal-overlay,
+  .modal-backdrop {
     position: static !important;
     display: block !important;
     background: transparent !important;

@@ -2959,7 +2959,7 @@ export function AdmissionPage() {
             </div>
 
             {/* Print Container A4 Sheet */}
-            <div style={{ background: '#ffffff', padding: '1rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem', fontFamily: 'serif' }}>
+            <div className="printable-a4-sheet" style={{ background: '#ffffff', padding: '1rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem', fontFamily: 'Arial, sans-serif' }}>
               <div style={{ textAlign: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: '#475569' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM — TIÊU CHUẨN Y KHOA TÂM AN CARE</div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>PHIẾU BÀN GIAO THUỐC & ĐỒ DÙNG CÁ NHÂN NGƯỜI CAO TUỔI</div>

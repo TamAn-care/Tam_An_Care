@@ -3026,7 +3026,7 @@ export default function BillingPage() {
             @media print {
               @page {
                 size: A4 portrait;
-                margin: 8mm 10mm 8mm 10mm;
+                margin: 4mm 8mm 4mm 8mm;
               }
 
               /* 1. Reset display & visibility for wrapper parent elements */
@@ -3034,15 +3034,15 @@ export default function BillingPage() {
                 display: block !important;
                 visibility: visible !important;
                 position: static !important;
-                overflow: visible !important;
+                overflow: hidden !important;
                 background: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 box-shadow: none !important;
                 border: none !important;
                 width: 100% !important;
-                height: auto !important;
-                min-height: auto !important;
+                height: 100% !important;
+                max-height: 100vh !important;
               }
 
               /* 2. Hide everything by default via visibility */
@@ -3056,7 +3056,7 @@ export default function BillingPage() {
                 visibility: visible !important;
               }
 
-              /* 4. Position printable area at top left of A4 paper */
+              /* 4. Position printable area at top left of A4 paper with tight print typography */
               #printable-fee-notice-area {
                 position: absolute !important;
                 left: 0 !important;
@@ -3069,6 +3069,24 @@ export default function BillingPage() {
                 background: #ffffff !important;
                 font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
                 color: #000000 !important;
+                font-size: 8.2pt !important;
+                line-height: 1.25 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+              }
+
+              #printable-fee-notice-area h2 {
+                font-size: 11.5pt !important;
+                margin-bottom: 2px !important;
+              }
+
+              #printable-fee-notice-area table {
+                font-size: 7.8pt !important;
+              }
+
+              #printable-fee-notice-area th,
+              #printable-fee-notice-area td {
+                padding: 2px 4px !important;
               }
 
               /* 5. Force hide non-print elements */
@@ -3097,10 +3115,10 @@ export default function BillingPage() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Non-Printable Header */}
-            <div className="no-print" style={{ padding: '1rem 1.5rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', borderTopLeftRadius: '0.75rem', borderTopRightRadius: '0.75rem' }}>
+            <div className="no-print" style={{ padding: '0.85rem 1.25rem', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc', borderTopLeftRadius: '0.75rem', borderTopRightRadius: '0.75rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '1.25rem' }}>🖨️</span>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#0f172a', fontWeight: 700 }}>
+                <span style={{ fontSize: '1.2rem' }}>🖨️</span>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 700 }}>
                   Xem Trước Bản In A4 - Thông Báo Thu Phí Tháng {printModalNotice.billingMonth}
                 </h3>
               </div>
@@ -3129,29 +3147,29 @@ export default function BillingPage() {
               id="printable-fee-notice-area"
               className="printable-a4-sheet"
               style={{
-                padding: '1.5rem 2rem',
+                padding: '1.25rem 1.75rem',
                 color: '#0f172a',
                 fontFamily: 'Arial, "Helvetica Neue", Helvetica, sans-serif',
-                lineHeight: 1.45,
+                lineHeight: 1.35,
                 background: '#ffffff',
               }}
             >
               {/* Header: Logo, Center Name, Address & Hotline */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2.5px solid #166534', paddingBottom: '0.65rem', marginBottom: '0.85rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.5rem', marginBottom: '0.65rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                   <img
                     src="/branding/tam-an-logo-master.png"
                     alt="Logo Trung tâm dưỡng lão Tâm An"
-                    style={{ height: '64px', width: 'auto', objectFit: 'contain' }}
+                    style={{ height: '54px', width: 'auto', objectFit: 'contain' }}
                   />
                   <div>
-                    <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#166534', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#166534', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>
                       TRUNG TÂM DƯỠNG LÃO TÂM AN
                     </div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#047857', fontStyle: 'italic', marginTop: '0.05rem' }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#047857', fontStyle: 'italic', marginTop: '0.02rem' }}>
                       "Nơi Tuổi Già An Nhiên"
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: '#334155', marginTop: '0.2rem', lineHeight: '1.35' }}>
+                    <div style={{ fontSize: '0.74rem', color: '#334155', marginTop: '0.15rem', lineHeight: '1.3' }}>
                       Địa chỉ: Khu phố Đông 8, Ocean Park 2, Nghĩa Trụ, Hưng Yên<br />
                       Hotline: <b style={{ color: '#166534' }}>0824 155 155</b>
                     </div>
@@ -3159,18 +3177,18 @@ export default function BillingPage() {
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
                     Mẫu số: <b>01/TBTP-TA</b>
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>
                     Ngày in: {new Date().toLocaleDateString('vi-VN')}
                   </div>
-                  <div style={{ marginTop: '0.35rem' }}>
+                  <div style={{ marginTop: '0.25rem' }}>
                     <span style={{
                       display: 'inline-block',
-                      padding: '0.15rem 0.5rem',
-                      borderRadius: '0.25rem',
-                      fontSize: '0.72rem',
+                      padding: '0.12rem 0.45rem',
+                      borderRadius: '0.2rem',
+                      fontSize: '0.7rem',
                       fontWeight: 800,
                       background: printModalNotice.isPublishedToFamilyPortal ? '#dcfce7' : '#fef3c7',
                       color: printModalNotice.isPublishedToFamilyPortal ? '#15803d' : '#b45309',
@@ -3234,25 +3252,25 @@ export default function BillingPage() {
                 return (
                   <>
                     {/* Centered Document Title */}
-                    <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-                      <h2 style={{ fontSize: '1.3rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.2rem 0', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '0.55rem' }}>
+                      <h2 style={{ fontSize: '1.2rem', fontWeight: 900, color: '#0f172a', margin: '0 0 0.15rem 0', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                         THÔNG BÁO CHI PHÍ CHĂM SÓC & SINH HOẠT
                       </h2>
-                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#166534' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#166534' }}>
                         KỲ THU PHÍ: THÁNG {formattedMonthDisplay}
                       </div>
                     </div>
 
                     {/* Resident Profile Card */}
-                    <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.4rem', padding: '0.65rem 0.95rem', marginBottom: '0.65rem', fontSize: '0.85rem' }}>
-                      <div style={{ marginBottom: '0.35rem', fontSize: '0.88rem' }}>
+                    <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.35rem', padding: '0.5rem 0.85rem', marginBottom: '0.5rem', fontSize: '0.82rem' }}>
+                      <div style={{ marginBottom: '0.25rem', fontSize: '0.85rem' }}>
                         <span style={{ color: '#64748b' }}>Kính gửi:</span>{' '}
                         <b>Quý gia đình / Người đại diện của {salutation}: {cleanResidentName}</b>
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                         <div>
                           <span style={{ color: '#64748b' }}>Hợp đồng số:</span>{' '}
-                          <b style={{ color: '#166534', fontFamily: 'monospace', fontSize: '0.9rem' }}>{printModalNotice.contractCode || printModalNotice.residentCode}</b>
+                          <b style={{ color: '#166534', fontFamily: 'monospace', fontSize: '0.88rem' }}>{printModalNotice.contractCode || printModalNotice.residentCode}</b>
                         </div>
                         <div>
                           <span style={{ color: '#64748b' }}>Mã cư dân:</span>{' '}
@@ -3262,38 +3280,38 @@ export default function BillingPage() {
                     </div>
 
                     {/* Intro Sentence */}
-                    <div style={{ fontSize: '0.82rem', color: '#334155', fontStyle: 'italic', marginBottom: '0.65rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#334155', fontStyle: 'italic', marginBottom: '0.5rem' }}>
                       Chúng tôi xin thông báo chi tiết các khoản chi phí chăm sóc và sinh hoạt của {salutation} <b>{cleanResidentName}</b> trong tháng {mNum} như sau:
                     </div>
 
                     {/* Non-Zero Printable Items Table */}
-                    <div style={{ marginBottom: '0.85rem' }}>
-                      <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.3rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                    <div style={{ marginBottom: '0.65rem' }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                         1. Chi tiết các khoản phí (Ghi có)
                       </div>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                         <thead>
                           <tr style={{ background: '#0f172a', color: '#ffffff' }}>
-                            <th style={{ padding: '0.4rem 0.5rem', textAlign: 'center', width: '40px', fontWeight: 700, border: '1px solid #334155' }}>STT</th>
-                            <th style={{ padding: '0.4rem 0.5rem', textAlign: 'left', fontWeight: 700, border: '1px solid #334155' }}>Nội dung</th>
-                            <th style={{ padding: '0.4rem 0.5rem', textAlign: 'right', width: '140px', fontWeight: 700, border: '1px solid #334155' }}>Số tiền (VNĐ)</th>
-                            <th style={{ padding: '0.4rem 0.5rem', textAlign: 'left', width: '180px', fontWeight: 700, border: '1px solid #334155' }}>Ghi chú</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'center', width: '38px', fontWeight: 700, border: '1px solid #334155' }}>STT</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'left', fontWeight: 700, border: '1px solid #334155' }}>Nội dung</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'right', width: '135px', fontWeight: 700, border: '1px solid #334155' }}>Số tiền (VNĐ)</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'left', width: '170px', fontWeight: 700, border: '1px solid #334155' }}>Ghi chú</th>
                           </tr>
                         </thead>
                         <tbody>
                           {activePrintItems.map((item, idx) => (
                             <tr key={idx} style={{ borderBottom: '1px solid #cbd5e1', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
-                              <td style={{ padding: '0.35rem 0.5rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #cbd5e1' }}>{idx + 1}</td>
-                              <td style={{ padding: '0.35rem 0.5rem', fontWeight: idx === 0 ? 700 : 500, borderRight: '1px solid #cbd5e1' }}>{item.name}</td>
-                              <td style={{ padding: '0.35rem 0.5rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', borderRight: '1px solid #cbd5e1', color: item.amount < 0 ? '#b91c1c' : '#0f172a' }}>
+                              <td style={{ padding: '0.28rem 0.45rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #cbd5e1' }}>{idx + 1}</td>
+                              <td style={{ padding: '0.28rem 0.45rem', fontWeight: idx === 0 ? 700 : 500, borderRight: '1px solid #cbd5e1' }}>{item.name}</td>
+                              <td style={{ padding: '0.28rem 0.45rem', textAlign: 'right', fontWeight: 700, fontVariantNumeric: 'tabular-nums', borderRight: '1px solid #cbd5e1', color: item.amount < 0 ? '#b91c1c' : '#0f172a' }}>
                                 {item.amount.toLocaleString('vi-VN')}
                               </td>
-                              <td style={{ padding: '0.35rem 0.5rem', fontSize: '0.78rem', color: '#475569', fontStyle: 'italic' }}>{item.note || '---'}</td>
+                              <td style={{ padding: '0.28rem 0.45rem', fontSize: '0.74rem', color: '#475569', fontStyle: 'italic' }}>{item.note || '---'}</td>
                             </tr>
                           ))}
                           <tr style={{ background: '#fef3c7', fontWeight: 800, borderTop: '2px solid #b45309', borderBottom: '2px solid #b45309' }}>
-                            <td colSpan={4} style={{ padding: '0.55rem 0.65rem', textAlign: 'center', color: '#92400e', fontSize: '0.98rem' }}>
-                              TỔNG CỘNG PHẢI THU: <span style={{ color: '#b45309', fontSize: '1.1rem', marginLeft: '0.5rem' }}>{printModalNotice.totalDue.toLocaleString('vi-VN')} VNĐ</span>
+                            <td colSpan={4} style={{ padding: '0.45rem 0.55rem', textAlign: 'center', color: '#92400e', fontSize: '0.92rem' }}>
+                              TỔNG CỘNG PHẢI THU: <span style={{ color: '#b45309', fontSize: '1.02rem', marginLeft: '0.4rem' }}>{printModalNotice.totalDue.toLocaleString('vi-VN')} VNĐ</span>
                             </td>
                           </tr>
                         </tbody>
@@ -3301,28 +3319,28 @@ export default function BillingPage() {
                     </div>
 
                     {/* Payment Instructions Box (Section 2) */}
-                    <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.4rem', padding: '0.65rem 0.95rem', marginBottom: '0.85rem', background: '#ffffff', fontSize: '0.82rem', lineHeight: '1.45' }}>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.2rem' }}>
+                    <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.35rem', padding: '0.5rem 0.85rem', marginBottom: '0.65rem', background: '#ffffff', fontSize: '0.78rem', lineHeight: '1.38' }}>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.2rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.15rem' }}>
                         2. Hướng dẫn thanh toán
                       </div>
 
-                      <div style={{ marginBottom: '0.25rem' }}>
+                      <div style={{ marginBottom: '0.2rem' }}>
                         <b>Thời hạn thanh toán:</b> Từ ngày 01 đến hết ngày 05 tháng {mNum.padStart(2, '0')} năm {yNum}
                       </div>
 
-                      <div style={{ fontWeight: 700, marginTop: '0.2rem', marginBottom: '0.1rem' }}>
+                      <div style={{ fontWeight: 700, marginTop: '0.15rem', marginBottom: '0.08rem' }}>
                         Hình thức thanh toán:
                       </div>
 
-                      <div style={{ paddingLeft: '0.5rem', marginBottom: '0.25rem' }}>
-                        <div style={{ marginBottom: '0.1rem' }}>
+                      <div style={{ paddingLeft: '0.4rem', marginBottom: '0.2rem' }}>
+                        <div style={{ marginBottom: '0.08rem' }}>
                           • <b>Cách 1:</b> Thanh toán bằng tiền mặt tại văn phòng của Trung tâm.
                         </div>
                         <div>
                           • <b>Cách 2:</b> Chuyển khoản ngân hàng:
-                          <div style={{ paddingLeft: '1.1rem', marginTop: '0.1rem', display: 'flex', flexDirection: 'column', gap: '0.05rem' }}>
+                          <div style={{ paddingLeft: '1rem', marginTop: '0.08rem', display: 'flex', flexDirection: 'column', gap: '0.04rem' }}>
                             <div>- Tên tài khoản: <b>Công ty CP TMDV An Thịnh Phát Group</b></div>
-                            <div>- Số tài khoản: <b style={{ fontSize: '0.88rem', color: '#166534' }}>111603721868</b></div>
+                            <div>- Số tài khoản: <b style={{ fontSize: '0.84rem', color: '#166534' }}>111603721868</b></div>
                             <div>- Ngân hàng: <b>Ngân hàng VietinBank</b></div>
                             <div>
                               - <b style={{ color: '#b91c1c' }}>Nội dung chuyển khoản: {printModalNotice.contractCode || printModalNotice.residentCode} - {cleanResidentName} - Phí T{mNum}_{yNum}</b>
@@ -3331,13 +3349,13 @@ export default function BillingPage() {
                         </div>
                       </div>
 
-                      <div style={{ fontSize: '0.78rem', color: '#475569', fontStyle: 'italic', background: '#f8fafc', padding: '0.25rem 0.5rem', borderRadius: '0.3rem', borderLeft: '3px solid #166534', marginTop: '0.3rem' }}>
+                      <div style={{ fontSize: '0.74rem', color: '#475569', fontStyle: 'italic', background: '#f8fafc', padding: '0.2rem 0.45rem', borderRadius: '0.25rem', borderLeft: '3px solid #166534', marginTop: '0.25rem' }}>
                         Lưu ý: Sau khi chuyển khoản, Quý Gia đình vui lòng gửi xác nhận giao dịch cho Trung tâm để thuận tiện đối soát và cập nhật.
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#0f172a', fontWeight: 600, marginTop: '0.35rem', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.76rem', color: '#0f172a', fontWeight: 600, marginTop: '0.25rem', textAlign: 'center' }}>
                         Mọi thắc mắc về chi phí, quý gia đình vui lòng liên hệ qua số điện thoại HOTLINE: <b>0824 155 155</b>.
                       </div>
-                      <div style={{ fontSize: '0.82rem', color: '#166534', fontWeight: 700, fontStyle: 'italic', marginTop: '0.2rem', textAlign: 'center' }}>
+                      <div style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700, fontStyle: 'italic', marginTop: '0.15rem', textAlign: 'center' }}>
                         Xin trân trọng cảm ơn sự đồng hành và tin tưởng của quý gia đình!
                       </div>
                     </div>
@@ -3346,23 +3364,23 @@ export default function BillingPage() {
               })()}
 
               {/* Official 3-Column Signatures */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.1rem', pageBreakInside: 'avoid', gap: '0.75rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '0.75rem', pageBreakInside: 'avoid', gap: '0.5rem' }}>
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>NGƯỜI LẬP BẢNG</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic', marginBottom: '2.8rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.8rem' }}>NGƯỜI LẬP BẢNG</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', marginBottom: '1.8rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
                 </div>
 
                 <div>
                   <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>KẾ TOÁN TRƯỞNG</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic', marginBottom: '2.8rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>Nguyễn Thị Kế Toán</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', marginBottom: '1.8rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>Nguyễn Thị Kế Toán</div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', fontStyle: 'italic', marginBottom: '2.8rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>Ban Giám Đốc Tâm An</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.8rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontStyle: 'italic', marginBottom: '1.8rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.8rem' }}>Ban Giám Đốc Tâm An</div>
                 </div>
               </div>
             </div>

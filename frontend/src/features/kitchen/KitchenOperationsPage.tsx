@@ -1895,6 +1895,7 @@ export default function KitchenOperationsPage() {
           }}
         >
           <div
+            className="modal-card printable-a4-sheet"
             style={{
               background: '#ffffff',
               borderRadius: '0.75rem',
