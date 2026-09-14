@@ -1932,7 +1932,7 @@ export default function FamilyPortalPage() {
       {/* MODAL: XEM & IN PHIẾU ĐÁNH GIÁ CHUẨN Y KHOA (PRINT VIEW) */}
       {/* ========================================================================= */}
       {viewingReport && (
-        <div className="modal-overlay" onClick={() => setViewingReport(null)}>
+        <div className="modal-overlay print-modal-overlay" onClick={() => setViewingReport(null)}>
           <div
             className="modal-dialog modal-dialog-lg"
             style={{

@@ -1758,7 +1758,7 @@ transform: scale(1.28);
     overflow: visible !important;
   }
 
-  /* Hide app navigation, headers, footers, data tables, and non-print buttons */
+  /* Hide app navigation, headers, footers, data tables, non-print buttons, and non-print modal overlays */
   .app-shell > aside,
   .sidebar,
   .navigation,
@@ -1771,7 +1771,9 @@ transform: scale(1.28);
   .table-responsive,
   .data-table,
   button,
-  .no-print {
+  .no-print,
+  .modal-overlay:not(.print-modal-overlay),
+  .modal-backdrop:not(.print-modal-overlay) {
     display: none !important;
   }
 
@@ -1780,6 +1782,7 @@ transform: scale(1.28);
   .main-shell,
   .content,
   .page-content,
+  .page-container,
   .card {
     display: block !important;
     visibility: visible !important;
@@ -1801,9 +1804,10 @@ transform: scale(1.28);
     display: none !important;
   }
 
-  /* Flatten modal into clean printable sheet */
-  .modal-overlay,
-  .modal-backdrop,
+  /* Flatten print modal overlay into clean printable sheet */
+  .print-modal-overlay,
+  .modal-overlay.print-modal-overlay,
+  .modal-backdrop.print-modal-overlay,
   .modal-dialog,
   .modal-dialog-lg,
   .modal-card {

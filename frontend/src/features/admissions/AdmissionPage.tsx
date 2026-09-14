@@ -2329,7 +2329,7 @@ export function AdmissionPage() {
       {/* MODAL 2: XEM & IN PHIẾU ĐÁNH GIÁ SỨC KHỎE BAN ĐẦU CHUẨN Y KHOA (PRINT VIEW) */}
       {/* ========================================================================= */}
       {viewingAssessment && (
-        <div className="modal-overlay">
+        <div className="modal-overlay print-modal-overlay">
           <div className={`modal-dialog modal-dialog-lg print-target-${printTarget.toLowerCase()}`} style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <h2 className="modal-title">Xem & In Phiếu Nhập Viện (Đánh Giá Sức Khỏe & Bàn Giao)</h2>
@@ -2951,7 +2951,7 @@ export function AdmissionPage() {
 
       {/* MODAL: IN PHIẾU BÀN GIAO THUỐC & ĐỒ DÙNG A4 (STANDALONE PRINT VIEW) */}
       {selectedHandoverPrint && (
-        <div className="modal-backdrop" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
+        <div className="modal-backdrop print-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
           <div className="modal-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
               <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#166534' }}>

@@ -1883,6 +1883,7 @@ export default function KitchenOperationsPage() {
       {/* MODAL: XEM CHI TIẾT BIÊN BẢN TIẾP NHẬN */}
       {showDetailBatchModal && (
         <div
+          className="modal-overlay print-modal-overlay"
           style={{
             position: 'fixed',
             inset: 0,

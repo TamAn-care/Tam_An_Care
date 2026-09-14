@@ -3022,7 +3022,7 @@ export default function BillingPage() {
       {/* MODAL 7: TRANG XEM TRƯỚC & IN THÔNG BÁO THU PHÍ GIẤY A4 (PRINT PREVIEW) */}
       {/* ========================================================================= */}
       {printModalNotice && (
-        <div className="modal-overlay" onClick={() => setPrintModalNotice(null)} style={{ overflowY: 'auto', padding: '2rem 1rem' }}>
+        <div className="modal-overlay print-modal-overlay" onClick={() => setPrintModalNotice(null)} style={{ overflowY: 'auto', padding: '2rem 1rem' }}>
           <style>{`
             @media print {
               @page {
@@ -3031,7 +3031,7 @@ export default function BillingPage() {
               }
 
               /* 1. Reset all layout wrappers to normal static block flow */
-              html, body, #root, .app-shell, .main-shell, .page-content, .card {
+              html, body, #root, .app-shell, .main-shell, .page-content, .page-container, .card {
                 display: block !important;
                 visibility: visible !important;
                 position: static !important;
@@ -3045,7 +3045,7 @@ export default function BillingPage() {
                 height: auto !important;
               }
 
-              /* 2. Hide all non-printable UI elements explicitly */
+              /* 2. Hide all non-printable UI elements and non-print modal overlays */
               .app-shell > aside,
               .sidebar,
               .navigation,
@@ -3059,19 +3059,23 @@ export default function BillingPage() {
               .data-table,
               .no-print,
               .no-print *,
+              .modal-overlay:not(.print-modal-overlay),
+              .modal-backdrop:not(.print-modal-overlay),
               button {
                 display: none !important;
               }
 
-              /* 3. Hide non-modal content inside page container when modal is active */
+              /* 3. Hide non-modal content inside page container when print modal is active */
               .page-container > *:not(.modal-overlay):not(.printable-a4-sheet),
               .page-content > *:not(.modal-overlay):not(.printable-a4-sheet),
               .card > *:not(.modal-overlay):not(.printable-a4-sheet) {
                 display: none !important;
               }
 
-              /* 4. Flatten modal container to print flat on page */
-              .modal-overlay,
+              /* 4. Flatten print modal container to print flat on page */
+              .print-modal-overlay,
+              .modal-overlay.print-modal-overlay,
+              .modal-backdrop.print-modal-overlay,
               .modal-dialog,
               .modal-dialog-lg,
               .modal-card {

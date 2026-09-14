@@ -1304,7 +1304,7 @@ export default function HealthReportsPage() {
       {/* MODAL 2: XEM & IN PHIẾU ĐÁNH GIÁ CHUẨN Y KHOA THEO MẪU ĐÍNH KÈM (PRINT VIEW) */}
       {/* ========================================================================= */}
       {viewingReport && (
-        <div className="modal-overlay">
+        <div className="modal-overlay print-modal-overlay">
           <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <h2 className="modal-title">Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
