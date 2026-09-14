@@ -1149,6 +1149,56 @@ export default function BillingPage() {
                                 👁️ Chi tiết
                               </button>
 
+                              <button
+                                type="button"
+                                className="btn btn-neutral"
+                                style={{ padding: '0.25rem 0.5rem', fontSize: '0.78rem', background: '#f1f5f9', color: '#0f172a', fontWeight: 600, border: '1px solid #cbd5e1' }}
+                                title="Xem bản xem trước & in Thông báo thu phí bản giấy A4"
+                                onClick={() => {
+                                  setPrintModalNotice({
+                                    id: inv.invoiceCode,
+                                    residentId: inv.residentId,
+                                    residentName: inv.residentName,
+                                    residentCode: inv.residentId,
+                                    contractCode: `HD-${inv.residentId}`,
+                                    billingMonth: inv.billingMonth,
+                                    sponsorName: 'Thân nhân Cụ ' + inv.residentName,
+                                    sponsorPhone: '0988xxxxxx',
+                                    basicFee: inv.basicPackageFee,
+                                    supportFee: inv.supportServicesFee,
+                                    bathingLaundryFee: 0,
+                                    mobilityFee: 0,
+                                    hygieneFee: 0,
+                                    feedingSondeFee: 0,
+                                    dementiaCareFee: 0,
+                                    soreCareFee: 0,
+                                    catheterCareFee: 0,
+                                    tracheostomyCareFee: 0,
+                                    woundDressingFee: 0,
+                                    rehabFee: 0,
+                                    incurredFee: inv.holidaySurchargeFee,
+                                    incurredContent: inv.holidaySurchargeFee > 0 ? `Phụ thu Lễ Tết (${inv.holidayDays || 1} ngày)` : undefined,
+                                    deductionFee: inv.leaveDeductionFee + inv.totalDiscountAmount,
+                                    previousMonthDebt: inv.previousMonthDebt || 0,
+                                    debtNotes: inv.previousMonthDebt ? 'Nợ tháng trước tự động cập nhật' : undefined,
+                                    depositStatus: inv.depositStatus || 'PAID',
+                                    unpaidDepositDebt: inv.depositStatus === 'UNPAID' ? (inv.unpaidDepositDebt || 20000000) : 0,
+                                    familyMealsFee: inv.extraMealsFee || 0,
+                                    consumablesFee: inv.consumablesFee || 0,
+                                    totalDue: inv.totalAmount,
+                                    paidAmount: inv.paidAmount,
+                                    remainingAmount: inv.remainingAmount,
+                                    status: inv.status === 'PAID' ? 'PAID' : inv.status === 'PARTIAL' ? 'PARTIAL' : 'UNPAID',
+                                    statusLabel: inv.status === 'PAID' ? 'Đã thu' : inv.status === 'PARTIAL' ? 'Thu một phần' : 'Chưa thu',
+                                    isApproved: inv.auditStatus === 'DIRECTOR_APPROVED' || inv.auditStatus === 'MANAGER_APPROVED',
+                                    isPublishedToFamilyPortal: inv.auditStatus === 'DIRECTOR_APPROVED',
+                                    approvedBy: inv.approvedByDirectorName || inv.reviewedByManagerName || 'Bộ phận Kế toán',
+                                  });
+                                }}
+                              >
+                                🖨️ In Thông báo
+                              </button>
+
                               {/* Thao tác Thẩm định cho Quản Lý */}
                               {canConfigurePricing && inv.auditStatus !== 'DIRECTOR_APPROVED' && (
                                 <button
@@ -2475,6 +2525,55 @@ export default function BillingPage() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                style={{ fontWeight: 600, background: '#f1f5f9', color: '#0f172a', borderColor: '#cbd5e1' }}
+                onClick={() => {
+                  const inv = detailModalInvoice;
+                  setPrintModalNotice({
+                    id: inv.invoiceCode,
+                    residentId: inv.residentId,
+                    residentName: inv.residentName,
+                    residentCode: inv.residentId,
+                    contractCode: `HD-${inv.residentId}`,
+                    billingMonth: inv.billingMonth,
+                    sponsorName: 'Thân nhân Cụ ' + inv.residentName,
+                    sponsorPhone: '0988xxxxxx',
+                    basicFee: inv.basicPackageFee,
+                    supportFee: inv.supportServicesFee,
+                    bathingLaundryFee: 0,
+                    mobilityFee: 0,
+                    hygieneFee: 0,
+                    feedingSondeFee: 0,
+                    dementiaCareFee: 0,
+                    soreCareFee: 0,
+                    catheterCareFee: 0,
+                    tracheostomyCareFee: 0,
+                    woundDressingFee: 0,
+                    rehabFee: 0,
+                    incurredFee: inv.holidaySurchargeFee,
+                    incurredContent: inv.holidaySurchargeFee > 0 ? `Phụ thu Lễ Tết (${inv.holidayDays || 1} ngày)` : undefined,
+                    deductionFee: inv.leaveDeductionFee + inv.totalDiscountAmount,
+                    previousMonthDebt: inv.previousMonthDebt || 0,
+                    debtNotes: inv.previousMonthDebt ? 'Nợ tháng trước tự động cập nhật' : undefined,
+                    depositStatus: inv.depositStatus || 'PAID',
+                    unpaidDepositDebt: inv.depositStatus === 'UNPAID' ? (inv.unpaidDepositDebt || 20000000) : 0,
+                    familyMealsFee: inv.extraMealsFee || 0,
+                    consumablesFee: inv.consumablesFee || 0,
+                    totalDue: inv.totalAmount,
+                    paidAmount: inv.paidAmount,
+                    remainingAmount: inv.remainingAmount,
+                    status: inv.status === 'PAID' ? 'PAID' : inv.status === 'PARTIAL' ? 'PARTIAL' : 'UNPAID',
+                    statusLabel: inv.status === 'PAID' ? 'Đã thu' : inv.status === 'PARTIAL' ? 'Thu một phần' : 'Chưa thu',
+                    isApproved: inv.auditStatus === 'DIRECTOR_APPROVED' || inv.auditStatus === 'MANAGER_APPROVED',
+                    isPublishedToFamilyPortal: inv.auditStatus === 'DIRECTOR_APPROVED',
+                    approvedBy: inv.approvedByDirectorName || inv.reviewedByManagerName || 'Bộ phận Kế toán',
+                  });
+                }}
+              >
+                🖨️ In Thông Báo A4
+              </button>
               {/* Quản lý Thẩm định */}
               {canConfigurePricing && detailModalInvoice.auditStatus !== 'DIRECTOR_APPROVED' && (
                 <button
@@ -3392,8 +3491,15 @@ export default function BillingPage() {
                     {(printModalNotice.familyMealsFee || 0) > 0 && (
                       <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
                         <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>14</td>
-                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Suất ăn thân nhân lên thăm</td>
+                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Suất ăn thân nhân đăng ký</td>
                         <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{(printModalNotice.familyMealsFee || 0).toLocaleString('vi-VN')}</td>
+                      </tr>
+                    )}
+                    {(printModalNotice.consumablesFee || 0) > 0 && (
+                      <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>14b</td>
+                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Vật tư y tế tiêu hao</td>
+                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{(printModalNotice.consumablesFee || 0).toLocaleString('vi-VN')}</td>
                       </tr>
                     )}
                     <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
@@ -3410,10 +3516,10 @@ export default function BillingPage() {
                     </tr>
                     <tr style={{ borderBottom: '1px solid #e2e8f0', color: '#b91c1c' }}>
                       <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>16</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Chi phí giảm trừ / Khuyến mãi</td>
+                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Chi phí giảm trừ / Khuyến mãi / Giảm trừ vắng mặt</td>
                       <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>-{printModalNotice.deductionFee.toLocaleString('vi-VN')}</td>
                     </tr>
-                    <tr style={{ borderBottom: '2px solid #cbd5e1' }}>
+                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
                       <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>17</td>
                       <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
                         Nợ tháng trước chuyển sang
@@ -3425,6 +3531,18 @@ export default function BillingPage() {
                       </td>
                       <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.previousMonthDebt.toLocaleString('vi-VN')}</td>
                     </tr>
+                    {(printModalNotice.depositStatus === 'UNPAID' || (printModalNotice.unpaidDepositDebt || 0) > 0) && (
+                      <tr style={{ borderBottom: '2px solid #cbd5e1', color: '#b91c1c' }}>
+                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', borderRight: '1px solid #e2e8f0' }}>18</td>
+                        <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>
+                          Nợ Tiền Đặt Cọc Tiếp Nhận Lưu Trú (Ký quỹ)
+                          <span style={{ color: '#dc2626', fontStyle: 'italic', display: 'block', fontSize: '0.78rem' }}>
+                            Khoản nợ đặt cọc 1 lần khi nhập viện
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontWeight: 700 }}>{(printModalNotice.unpaidDepositDebt || 20000000).toLocaleString('vi-VN')}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -3513,24 +3631,30 @@ export default function BillingPage() {
                 );
               })()}
 
-              {/* Official 3-Column Signatures */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '2.5rem', pageBreakInside: 'avoid' }}>
+              {/* Official 4-Column Signatures */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', textAlign: 'center', marginTop: '2.5rem', pageBreakInside: 'avoid', gap: '0.5rem' }}>
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a' }}>NGƯỜI LẬP BẢNG</div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>NGƯỜI LẬP BẢNG</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>{printModalNotice.approvedBy || 'Bộ phận Kế toán'}</div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a' }}>KẾ TOÁN TRƯỞNG</div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155' }}>Nguyễn Thị Kế Toán</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>KẾ TOÁN TRƯỞNG</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>Nguyễn Thị Kế Toán</div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, color: '#0f172a' }}>GIÁM ĐỐC TRUNG TÂM</div>
-                  <div style={{ fontSize: '0.78rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 600, color: '#334155' }}>Viện Trưởng Tâm An</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>ĐẠI DIỆN TRUNG TÂM</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Ký, đóng dấu & họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>Ban Giám Đốc Tâm An</div>
+                </div>
+
+                <div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.85rem' }}>NGƯỜI NỘP TIỀN</div>
+                  <div style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic', marginBottom: '3.5rem' }}>(Thân nhân Ký & họ tên)</div>
+                  <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.85rem' }}>{printModalNotice.sponsorName || 'Đại diện Gia đình'}</div>
                 </div>
               </div>
             </div>

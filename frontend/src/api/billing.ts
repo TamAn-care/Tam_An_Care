@@ -652,14 +652,14 @@ export function calculateInvoiceTotals(
     ? 0
     : (inv.unpaidDepositDebt !== undefined ? inv.unpaidDepositDebt : (inv.depositFee || 20000000));
 
-  // Tổng phụ hàng tháng (Subtotal): Phí cơ bản + Phí hỗ trợ + Phí mở rộng + Phụ thu Lễ Tết
-  const subtotalAmount = basicFee + supportServicesFee + extendedFee + holidayFee;
+  // Subtotal các khoản phí dịch vụ phát sinh hàng tháng
+  const subtotalAmount = basicFee + supportServicesFee + extendedFee + holidayFee + extraMealsFee + consumablesFee;
 
-  // Tổng thực thu (theo từng tháng) = Phí cơ bản + Phí chăm sóc hỗ trợ + Phí chăm sóc mở rộng + Phụ thu Lễ Tết + Nợ tháng trước - Giảm trừ nghỉ phép/vắng mặt - Giảm giá (+ Suất ăn + Vật tư)
-  const totalAmount = Math.max(
-    0,
-    subtotalAmount + previousMonthDebt - leaveDeductionFee - totalDiscountAmount + extraMealsFee + consumablesFee
-  );
+  // Viện phí tháng này sau trừ các khoản giảm trừ & ưu đãi
+  const currentMonthNet = Math.max(0, subtotalAmount - leaveDeductionFee - totalDiscountAmount);
+
+  // TỔNG TIỀN CẦN THU / TỔNG PHẢI THU = Viện phí tháng này + Nợ tháng trước + Nợ tiền đặt cọc (nếu chưa đóng)
+  const totalAmount = currentMonthNet + previousMonthDebt + unpaidDepositDebt;
 
   const paid = inv.paidAmount || 0;
   const remainingAmount = Math.max(0, totalAmount - paid);
@@ -928,17 +928,18 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-006', itemCode: 'VT-006', name: 'Ống Sonde ăn dạ dày Levin Silicone Fr16', unit: 'sợi', unitPrice: 45000, quantity: 1, totalPrice: 45000, date: '2026-09-01', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
 
-    // Subtotal: 20m + 3.5m + 0.2m = 23.7m
-    // Total Amount = 23.7m + 4m (nợ tháng trước) - 2m (ưu đãi) + 0.495m = 26.195.000đ
-    subtotalAmount: 23700000,
-    totalAmount: 26195000,
+    // Subtotal: 20m + 3.5m + 0.2m + 0.495m = 24.195.000đ
+    // Viện phí ròng tháng này = 24.195.000 - 2m (ưu đãi) = 22.195.000đ
+    // TỔNG PHẢI THU (bao gồm nợ cũ 4m & nợ cọc 20m) = 22.195.000 + 4m + 20m = 46.195.000đ
+    subtotalAmount: 24195000,
+    totalAmount: 46195000,
     paidAmount: 20000000,
-    remainingAmount: 6195000,
+    remainingAmount: 26195000,
     depositBalance: 0,
     status: 'PARTIAL',
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
-    notes: 'Đã thanh toán 20 triệu đợt 1. Cần thanh toán nợ cũ 4 triệu và khoản còn lại 2.195.000đ.',
+    notes: 'Đã thanh toán 20 triệu đợt 1. Thân nhân cần thanh toán phần còn nợ 26.195.000đ (bao gồm 4m nợ cũ & 20m cọc).',
 
     auditStatus: 'MANAGER_REPORTED',
     reviewedByManagerName: 'Nguyễn Thị Thu (Quản Lý)',
@@ -990,10 +991,13 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-001', itemCode: 'VT-001', name: 'Que thử đường huyết Accu-Chek Instant', unit: 'que', unitPrice: 12000, quantity: 3, totalPrice: 36000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
 
-    subtotalAmount: 12700000,
-    totalAmount: 12396000,
+    // Subtotal: 12m + 0.5m + 0.2m + 0.06m + 0.036m = 12.796.000đ
+    // Viện phí ròng tháng này = 12.796.000 - 0.4m = 12.396.000đ
+    // TỔNG PHẢI THU (bao gồm nợ cọc 20m) = 12.396.000 + 20m = 32.396.000đ
+    subtotalAmount: 12796000,
+    totalAmount: 32396000,
     paidAmount: 0,
-    remainingAmount: 12396000,
+    remainingAmount: 32396000,
     depositBalance: 0,
     status: 'PENDING',
     issuedDate: '2026-09-01',
@@ -1511,6 +1515,7 @@ export interface DetailedMonthlyFeeNotice {
   depositStatus?: 'PAID' | 'UNPAID'; // Trạng thái đóng cọc
   unpaidDepositDebt?: number;      // Nợ tiền đặt cọc tiếp nhận lưu trú (ký quỹ) - Thu 1 lần khi nhập viện
   familyMealsFee: number;          // Tiền ăn cơm người nhà đăng ký tại Tâm An
+  consumablesFee?: number;         // Phí vật tư y tế tiêu hao
 
   totalDue: number;                // TỔNG PHẢI THU (sum tự động)
   paidAmount: number;              // Đã thu
@@ -1595,13 +1600,13 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     debtNotes: 'Nợ còn lại viện phí tháng 8/2026',
     depositStatus: 'UNPAID',
     unpaidDepositDebt: 20000000,
-    familyMealsFee: 495000, // Vật tư y tế bỉm sonde
-    totalDue: 26195000,
+    familyMealsFee: 495000,
+    totalDue: 49695000,
     paidAmount: 20000000,
-    remainingAmount: 6195000,
+    remainingAmount: 29695000,
     status: 'PARTIAL',
     statusLabel: 'Thu một phần',
-    notes: 'Đã thanh toán 20 triệu đợt 1. Thân nhân vui lòng thanh toán nợ cũ 4 triệu và khoản còn lại trước ngày 10/09.',
+    notes: 'Đã thanh toán 20 triệu đợt 1. Thân nhân cần thanh toán phần còn nợ 29.695.000đ (bao gồm 4m nợ cũ & 20m nợ cọc).',
     isApproved: true,
     isPublishedToFamilyPortal: true,
     approvedBy: 'Hoàng Quốc Anh (Giám Đốc)',
@@ -1634,9 +1639,9 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     depositStatus: 'UNPAID',
     unpaidDepositDebt: 20000000,
     familyMealsFee: 96000, // 60k cơm + 36k vật tư
-    totalDue: 12396000,
+    totalDue: 32396000,
     paidAmount: 0,
-    remainingAmount: 12396000,
+    remainingAmount: 32396000,
     status: 'UNPAID',
     statusLabel: 'Chưa thu',
     notes: 'Bảng thông báo thu phí tháng 9. Chưa đóng khoản tiền đặt cọc 20 triệu khi nhập viện.',
