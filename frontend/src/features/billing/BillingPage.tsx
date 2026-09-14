@@ -3026,53 +3026,87 @@ export default function BillingPage() {
             @media print {
               @page {
                 size: A4 portrait;
-                margin: 4mm 8mm 4mm 8mm;
+                margin: 5mm 8mm 5mm 8mm;
               }
 
-              /* 1. Reset display & visibility for wrapper parent elements */
-              html, body, #root, .app-shell, .main-shell, .page-content, .card, .modal-overlay, .modal-card {
+              /* 1. Reset all layout wrappers to normal static block flow */
+              html, body, #root, .app-shell, .main-shell, .page-content, .card {
                 display: block !important;
                 visibility: visible !important;
                 position: static !important;
-                overflow: hidden !important;
+                overflow: visible !important;
                 background: #ffffff !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                box-shadow: none !important;
                 border: none !important;
+                box-shadow: none !important;
                 width: 100% !important;
-                height: 100% !important;
-                max-height: 100vh !important;
+                height: auto !important;
               }
 
-              /* 2. Hide everything by default via visibility */
-              body * {
-                visibility: hidden !important;
+              /* 2. Hide all non-printable UI elements explicitly */
+              .app-shell > aside,
+              .sidebar,
+              .navigation,
+              .topbar,
+              .page-header,
+              .alert-card,
+              .kpi-row,
+              .kpi-box,
+              .filter-toolbar,
+              .table-responsive,
+              .data-table,
+              .no-print,
+              .no-print *,
+              button {
+                display: none !important;
               }
 
-              /* 3. Make printable area and all its descendants visible */
-              #printable-fee-notice-area,
-              #printable-fee-notice-area * {
+              /* 3. Hide non-modal content inside .card when modal is active */
+              .page-content > .card > *:not(.modal-overlay) {
+                display: none !important;
+              }
+
+              /* 4. Flatten modal container to print flat on page */
+              .modal-overlay,
+              .modal-dialog,
+              .modal-dialog-lg,
+              .modal-card {
+                position: static !important;
+                display: block !important;
                 visibility: visible !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
+                overflow: visible !important;
+                box-shadow: none !important;
+                border: none !important;
               }
 
-              /* 4. Position printable area at top left of A4 paper with tight print typography */
-              #printable-fee-notice-area {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
+              /* 5. Printable A4 sheet styling */
+              #printable-fee-notice-area,
+              .printable-a4-sheet {
+                display: block !important;
+                visibility: visible !important;
+                position: static !important;
                 width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                box-shadow: none !important;
-                border: none !important;
                 background: #ffffff !important;
-                font-family: Arial, "Helvetica Neue", Helvetica, sans-serif !important;
                 color: #000000 !important;
                 font-size: 8.2pt !important;
                 line-height: 1.25 !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
+              }
+
+              #printable-fee-notice-area *,
+              .printable-a4-sheet * {
+                visibility: visible !important;
               }
 
               #printable-fee-notice-area h2 {
@@ -3087,17 +3121,6 @@ export default function BillingPage() {
               #printable-fee-notice-area th,
               #printable-fee-notice-area td {
                 padding: 2px 4px !important;
-              }
-
-              /* 5. Force hide non-print elements */
-              .no-print,
-              .no-print *,
-              .sidebar,
-              .navigation,
-              .topbar,
-              button {
-                display: none !important;
-                visibility: hidden !important;
               }
             }
           `}</style>
