@@ -190,61 +190,145 @@ export function DashboardPage() {
       {isExecutive ? (
         /* Executive / Management Macro KPI Row (Restricted to Admin, Ban Giám đốc, Quản lý) */
         <div className="kpi-row">
-          <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
-            <div className="kpi-label">Số lượng người cao tuổi nội trú</div>
+          <Link
+            to="/residents"
+            className="kpi-card"
+            style={{
+              borderLeft: '4px solid #166534',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+            }}
+            title="Nhấn để xem danh sách chi tiết Người Cao Tuổi"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <div className="kpi-label" style={{ margin: 0 }}>Số lượng người cao tuổi nội trú</div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', background: '#e2f4ea', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Chi tiết &rarr;</span>
+            </div>
             <div className="kpi-val" style={{ color: '#166534' }}>
               {loadingResidents ? '...' : stats.activeResidents} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
             </div>
             <div className="kpi-sub">Tổng số cư dân đang thụ hưởng dịch vụ chăm sóc</div>
-          </div>
+          </Link>
 
-          <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
-            <div className="kpi-label">Tổng giường & Công suất sử dụng</div>
+          <Link
+            to="/accommodation"
+            className="kpi-card"
+            style={{
+              borderLeft: '4px solid #2563eb',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+            }}
+            title="Nhấn để xem Sơ đồ Phòng & Giường"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <div className="kpi-label" style={{ margin: 0 }}>Tổng giường & Công suất sử dụng</div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Sơ đồ &rarr;</span>
+            </div>
             <div className="kpi-val" style={{ color: '#2563eb' }}>
               {loadingAccom ? '...' : `${stats.accomSummary.occupied}/${stats.accomSummary.total}`} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>giường</span>
             </div>
             <div className="kpi-sub">
               Đạt {stats.accomSummary.occupancyPercentage}% • Trống {stats.accomSummary.available} • Giữ chỗ {stats.accomSummary.reserved ?? 0} • Bảo trì {stats.accomSummary.unavailable ?? 0}
             </div>
-          </div>
+          </Link>
 
-          <div className="kpi-card" style={{ borderLeft: '4px solid #d97706' }}>
-            <div className="kpi-label">Đang tạm vắng</div>
+          <Link
+            to="/resident-leave"
+            className="kpi-card"
+            style={{
+              borderLeft: '4px solid #d97706',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+            }}
+            title="Nhấn để xem danh sách Đăng ký Tạm Vắng (RLA-BR-01)"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <div className="kpi-label" style={{ margin: 0 }}>Đang tạm vắng</div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#d97706', background: '#fef3c7', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Tạm vắng &rarr;</span>
+            </div>
             <div className="kpi-val" style={{ color: '#d97706' }}>
               {stats.activeLeaves} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>cụ</span>
             </div>
             <div className="kpi-sub">
               Vắng mặt hợp lệ ({stats.leavingToday} rời viện, {stats.returningToday} trở lại)
             </div>
-          </div>
+          </Link>
 
-          <div className="kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
-            <div className="kpi-label">Lịch trực ca hôm nay</div>
+          <Link
+            to="/workforce"
+            className="kpi-card"
+            style={{
+              borderLeft: '4px solid #7c3aed',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+            }}
+            title="Nhấn để xem Lịch trực & Biên bản Bàn giao ca"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <div className="kpi-label" style={{ margin: 0 }}>Lịch trực ca hôm nay</div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7c3aed', background: '#f3e8ff', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Ca trực &rarr;</span>
+            </div>
             <div className="kpi-val" style={{ color: '#7c3aed' }}>
               {stats.todayShifts} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>ca trực</span>
             </div>
             <div className="kpi-sub">
               {stats.inProgressShifts > 0 ? `🟢 ${stats.inProgressShifts} nhân viên đang trực` : 'Đã phân ca sáng/chiều/đêm'}
             </div>
-          </div>
+          </Link>
         </div>
       ) : (
         /* Non-Executive Staff Scoped KPIs (No macro 110 bed or facility-wide occupancy metrics) */
         <div className="kpi-row">
           {!isHousekeeping && (
             <>
-              <div className="kpi-card" style={{ borderLeft: '4px solid #166534' }}>
-                <div className="kpi-label">
-                  {isCaregiver ? 'Cụ bạn phụ trách trực tiếp' : 'Hồ sơ thuộc phạm vi phụ trách'}
+              <Link
+                to="/residents"
+                className="kpi-card"
+                style={{
+                  borderLeft: '4px solid #166534',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                }}
+                title="Nhấn để xem Cư Dân Phụ Trách Trực Tiếp"
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                  <div className="kpi-label" style={{ margin: 0 }}>
+                    {isCaregiver ? 'Cụ bạn phụ trách trực tiếp' : 'Hồ sơ thuộc phạm vi phụ trách'}
+                  </div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', background: '#e2f4ea', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Danh sách &rarr;</span>
                 </div>
                 <div className="kpi-val" style={{ color: '#166534' }}>
                   {isCaregiver ? myAssignedResidentRows.length : stats.activeResidents} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>người cao tuổi</span>
                 </div>
                 <div className="kpi-sub">Được phân quyền thao tác nghiệp vụ</div>
-              </div>
+              </Link>
 
-              <div className="kpi-card" style={{ borderLeft: '4px solid #2563eb' }}>
-                <div className="kpi-label">Trạng thái tại Tâm An hôm nay</div>
+              <Link
+                to="/residents"
+                className="kpi-card"
+                style={{
+                  borderLeft: '4px solid #2563eb',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                }}
+                title="Nhấn để xem vị trí lưu trú tại các phòng"
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                  <div className="kpi-label" style={{ margin: 0 }}>Trạng thái tại Tâm An hôm nay</div>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2563eb', background: '#eff6ff', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Chi tiết &rarr;</span>
+                </div>
                 <div className="kpi-val" style={{ color: '#2563eb' }}>
                   {isCaregiver
                     ? `${myAssignedResidentRows.length - myActiveLeavesCount}/${myAssignedResidentRows.length}`
@@ -256,27 +340,55 @@ export function DashboardPage() {
                     ? `${myActiveLeavesCount} cụ đang tạm vắng có báo trước`
                     : 'Đang lưu trú tại các phòng ở'}
                 </div>
-              </div>
+              </Link>
             </>
           )}
 
-          <div className="kpi-card" style={{ borderLeft: '4px solid #7c3aed' }}>
-            <div className="kpi-label">Ca trực của bạn hôm nay</div>
+          <Link
+            to="/workforce"
+            className="kpi-card"
+            style={{
+              borderLeft: '4px solid #7c3aed',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+            }}
+            title="Nhấn để xem Chi tiết Ca Trực & Bàn Giao Ca"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <div className="kpi-label" style={{ margin: 0 }}>Ca trực của bạn hôm nay</div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#7c3aed', background: '#f3e8ff', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Ca trực &rarr;</span>
+            </div>
             <div className="kpi-val" style={{ color: '#7c3aed', fontSize: '1.4rem' }}>
               {myShifts.length > 0 ? (myShifts[0].shiftType === 'MORNING' ? 'Ca Sáng (06:00)' : myShifts[0].shiftType === 'AFTERNOON' ? 'Ca Chiều (14:00)' : 'Ca Đêm (22:00)') : 'Chưa xếp ca'}
             </div>
             <div className="kpi-sub">
               {myShifts.length > 0 ? (myShifts[0].status === 'IN_PROGRESS' ? '🟢 Đang trong ca trực' : 'Đã có lịch trực hôm nay') : 'Liên hệ quản lý điều phối'}
             </div>
-          </div>
+          </Link>
 
-          <div className="kpi-card" style={{ borderLeft: '4px solid #d97706' }}>
-            <div className="kpi-label">Nhật ký công việc trong ca</div>
+          <Link
+            to="/operations"
+            className="kpi-card"
+            style={{
+              borderLeft: '4px solid #d97706',
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+            }}
+            title="Nhấn để Ghi Nhận Công Việc Chăm Sóc Vận Hành"
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+              <div className="kpi-label" style={{ margin: 0 }}>Nhật ký công việc trong ca</div>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#d97706', background: '#fef3c7', padding: '0.15rem 0.5rem', borderRadius: '0.25rem' }}>Vận hành &rarr;</span>
+            </div>
             <div className="kpi-val" style={{ color: '#d97706' }}>
               {stats.workEventsCount} <span style={{ fontSize: '1rem', fontWeight: 500, color: '#607067' }}>lượt</span>
             </div>
             <div className="kpi-sub">Ghi nhận thao tác chuyên môn theo ca</div>
-          </div>
+          </Link>
         </div>
       )}
 
@@ -303,7 +415,23 @@ export function DashboardPage() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                 {/* Health Reports Pending */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.75rem', background: stats.pendingReports > 0 ? '#fefce8' : '#f8fafc', border: `1px solid ${stats.pendingReports > 0 ? '#fde047' : '#e2e8f0'}`, borderRadius: '0.5rem' }}>
+                <Link
+                  to="/health-reports"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.6rem 0.75rem',
+                    background: stats.pendingReports > 0 ? '#fefce8' : '#f8fafc',
+                    border: `1px solid ${stats.pendingReports > 0 ? '#fde047' : '#e2e8f0'}`,
+                    borderRadius: '0.5rem',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                  }}
+                  title="Mở phân hệ Báo cáo Sức khỏe Y khoa"
+                >
                   <div style={{ fontSize: '0.85rem' }}>
                     <b style={{ color: '#0f172a' }}>🩺 Báo cáo sức khỏe y khoa chờ duyệt:</b>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Phiếu đánh giá sức khỏe ban đầu & định kỳ</div>
@@ -312,14 +440,30 @@ export function DashboardPage() {
                     <span style={{ fontWeight: 800, fontSize: '1.1rem', color: stats.pendingReports > 0 ? '#b45309' : '#15803d' }}>
                       {stats.pendingReports}
                     </span>
-                    <Link to="/health-reports" className="btn btn-sm btn-secondary" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                    <span className="btn btn-sm btn-secondary" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
                       Xem &rarr;
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
 
                 {/* Leaves Today */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.75rem', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '0.5rem' }}>
+                <Link
+                  to="/resident-leave"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.6rem 0.75rem',
+                    background: '#f0f9ff',
+                    border: '1px solid #bae6fd',
+                    borderRadius: '0.5rem',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                  }}
+                  title="Mở phân hệ Đăng ký Tạm vắng (RLA-BR-01)"
+                >
                   <div style={{ fontSize: '0.85rem' }}>
                     <b style={{ color: '#0f172a' }}>🌴 Biến động cư dân trong ngày:</b>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>RLA-BR-01 tạm vắng & trở lại Tâm An</div>
@@ -328,14 +472,30 @@ export function DashboardPage() {
                     <span style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0369a1' }}>
                       {stats.leavingToday} đi / {stats.returningToday} về
                     </span>
-                    <Link to="/resident-leave" className="btn btn-sm btn-secondary" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                    <span className="btn btn-sm btn-secondary" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
                       Xem &rarr;
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
 
                 {/* Shift Checkins */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.6rem 0.75rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+                <Link
+                  to="/workforce"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '0.6rem 0.75rem',
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '0.5rem',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s ease',
+                  }}
+                  title="Mở phân hệ Quản lý Nhân sự & Ca trực"
+                >
                   <div style={{ fontSize: '0.85rem' }}>
                     <b style={{ color: '#0f172a' }}>⏰ Nhân sự đang trong ca trực:</b>
                     <div style={{ fontSize: '0.76rem', color: '#64748b' }}>Điểm danh ca sáng / chiều / đêm hôm nay</div>
@@ -344,11 +504,11 @@ export function DashboardPage() {
                     <span style={{ fontWeight: 800, fontSize: '1rem', color: '#15803d' }}>
                       {stats.inProgressShifts} / {stats.todayShifts}
                     </span>
-                    <Link to="/workforce" className="btn btn-sm btn-secondary" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
+                    <span className="btn btn-sm btn-secondary" style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}>
                       Ca kíp &rarr;
-                    </Link>
+                    </span>
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
 
@@ -367,8 +527,23 @@ export function DashboardPage() {
                 Hiện có <b style={{ color: '#166534' }}>{stats.assignedStaffCount} nhân sự</b> (Điều dưỡng & Chăm sóc viên) đang được Ban Giám đốc phân công theo dõi và chăm sóc cư dân.
               </div>
 
-              {/* Mini Summary Box */}
-              <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.5rem', padding: '0.75rem', marginBottom: '1rem' }}>
+              {/* Mini Summary Box - Clickable */}
+              <Link
+                to="/staff-access"
+                style={{
+                  display: 'block',
+                  background: '#f0fdf4',
+                  border: '1px solid #86efac',
+                  borderRadius: '0.5rem',
+                  padding: '0.75rem',
+                  marginBottom: '1rem',
+                  textDecoration: 'none',
+                  color: 'inherit',
+                  cursor: 'pointer',
+                  transition: 'background 0.15s ease',
+                }}
+                title="Nhấn để Quản lý Phân công Nhân sự RBAC"
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.35rem' }}>
                   <span>Phân công hiệu lực:</span>
                   <b style={{ color: '#15803d' }}>{stats.activeAssignmentsCount} lượt</b>
@@ -381,7 +556,7 @@ export function DashboardPage() {
                   <span>Tỷ lệ bao phủ chăm sóc:</span>
                   <b style={{ color: '#166534' }}>100% người cao tuổi</b>
                 </div>
-              </div>
+              </Link>
 
               <Link
                 to="/staff-access"
