@@ -524,10 +524,10 @@ export default function MedicationInventoryPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <div style={{ fontWeight: 800, color: '#14532d', fontSize: '1.1rem' }}>
-                  Tiến Độ Cấp Phát Thuốc Ngày {new Date().toLocaleDateString('vi-VN')}
+                  Bảng Theo Dõi & Cấp Phát Thuốc eMAR — Ngày {new Date().toLocaleDateString('vi-VN')}
                 </div>
-                <div style={{ fontSize: '0.85rem', color: '#4b5563', marginTop: '0.2rem' }}>
-                  Đã hoàn thành <b>{givenDoses}/{totalDoses}</b> liều uống • {heldDoses > 0 && <span style={{ color: '#b45309' }}>({heldDoses} liều hoãn/từ chối) • </span>} <b>{completionPercentage}%</b> kế hoạch cữ thuốc
+                <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '0.2rem' }}>
+                  Mẫu số: <b style={{ color: '#0f172a' }}>07/PTDT-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>PTDT-TA</b> &nbsp;|&nbsp; Đã hoàn thành <b>{givenDoses}/{totalDoses}</b> liều ({completionPercentage}%)
                 </div>
               </div>
 

@@ -2393,7 +2393,8 @@ export function AdmissionPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem' }}>
+                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                    <div>Mẫu số: <b style={{ color: '#0f172a' }}>02/PĐG-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>PĐG-TA</b></div>
                     <div><b>Ngày tiếp nhận:</b> {viewingAssessment.data.intakeDate}</div>
                     <div><b>Người đánh giá:</b> {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
                   </div>
@@ -2658,7 +2659,8 @@ export function AdmissionPage() {
                       <div style={{ fontSize: '0.7rem', color: '#15803d', fontStyle: 'italic', fontWeight: 600 }}>Nơi Tuổi Già An Nhiên</div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem' }}>
+                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                    <div>Mẫu số: <b style={{ color: '#0f172a' }}>03/BBBG-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#0369a1' }}>BBBG-TA</b></div>
                     <div><b>Ngày bàn giao:</b> {viewingAssessment.data.handoverRecord.handoverDate}</div>
                     <div><b>Người tiếp nhận:</b> {viewingAssessment.data.handoverRecord.nurseReceiverName}</div>
                   </div>
@@ -2960,8 +2962,13 @@ export function AdmissionPage() {
 
             {/* Print Container A4 Sheet */}
             <div className="printable-a4-sheet" style={{ background: '#ffffff', padding: '1rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem', fontFamily: 'Arial, sans-serif' }}>
-              <div style={{ textAlign: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.5rem', marginBottom: '0.75rem' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: '#475569' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM — TIÊU CHUẨN Y KHOA TÂM AN CARE</div>
+              <div style={{ textAlign: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.5rem', marginBottom: '0.75rem', position: 'relative' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.25rem', fontSize: '0.75rem', color: '#475569' }}>
+                  <div style={{ fontWeight: 700, letterSpacing: '0.05em' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM — TÂM AN CARE</div>
+                  <div style={{ whiteSpace: 'nowrap' }}>
+                    Mẫu số: <b style={{ color: '#0f172a' }}>03/BBBG-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>BBBG-TA</b>
+                  </div>
+                </div>
                 <div style={{ fontSize: '1.15rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>PHIẾU BÀN GIAO THUỐC & ĐỒ DÙNG CÁ NHÂN NGƯỜI CAO TUỔI</div>
                 <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Thời điểm tiếp nhận ban đầu tại Trung Tâm Dưỡng Lão Tâm An • Mã hồ sơ: {selectedHandoverPrint.caseCode}</div>
               </div>

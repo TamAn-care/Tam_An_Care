@@ -446,6 +446,7 @@ export default function BillingPage() {
 
       {/* Universal Calculation Rule Banner */}
       <div
+        className="no-print"
         style={{
           background: 'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%)',
           border: '1px solid #bbf7d0',
@@ -472,7 +473,7 @@ export default function BillingPage() {
 
       {/* Primary Tabs - Streamlined single-line layout */}
       <div
-        className="tab-nav"
+        className="tab-nav no-print"
         style={{
           display: 'flex',
           gap: '0.5rem',
@@ -626,7 +627,7 @@ export default function BillingPage() {
 
           {/* Warning Banner for Manager Reported Invoices */}
           {reportedInvoicesCount > 0 && (
-            <div style={{ background: '#fef2f2', border: '2px solid #f87171', borderRadius: '0.65rem', padding: '0.9rem 1.15rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.85rem' }}>
+            <div className="no-print" style={{ background: '#fef2f2', border: '2px solid #f87171', borderRadius: '0.65rem', padding: '0.9rem 1.15rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.85rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <span style={{ fontSize: '1.5rem' }}>⚠️</span>
                 <div>
@@ -3062,8 +3063,10 @@ export default function BillingPage() {
                 display: none !important;
               }
 
-              /* 3. Hide non-modal content inside .card when modal is active */
-              .page-content > .card > *:not(.modal-overlay) {
+              /* 3. Hide non-modal content inside page container when modal is active */
+              .page-container > *:not(.modal-overlay):not(.printable-a4-sheet),
+              .page-content > *:not(.modal-overlay):not(.printable-a4-sheet),
+              .card > *:not(.modal-overlay):not(.printable-a4-sheet) {
                 display: none !important;
               }
 
@@ -3183,7 +3186,7 @@ export default function BillingPage() {
                   <img
                     src="/branding/tam-an-logo-master.png"
                     alt="Logo Trung tâm dưỡng lão Tâm An"
-                    style={{ height: '54px', width: 'auto', objectFit: 'contain' }}
+                    style={{ height: '65px', width: 'auto', objectFit: 'contain' }}
                   />
                   <div>
                     <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#166534', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>
@@ -3199,12 +3202,12 @@ export default function BillingPage() {
                   </div>
                 </div>
 
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    Mẫu số: <b>01/TBTP-TA</b>
+                <div style={{ textAlign: 'right', paddingRight: '0.75rem', flexShrink: 0 }}>
+                  <div style={{ fontSize: '0.76rem', color: '#475569', whiteSpace: 'nowrap' }}>
+                    Mẫu số: <b style={{ color: '#0f172a' }}>01/TBTP-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>TBTP-TA</b>
                   </div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>
-                    Ngày in: {new Date().toLocaleDateString('vi-VN')}
+                  <div style={{ fontSize: '0.76rem', color: '#475569', marginTop: '0.1rem', whiteSpace: 'nowrap' }}>
+                    Ngày in: <b>{new Date().toLocaleDateString('vi-VN')}</b>
                   </div>
                   <div style={{ marginTop: '0.25rem' }}>
                     <span style={{

@@ -1982,7 +1982,8 @@ export default function FamilyPortalPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem' }}>
+                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                    <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b> &nbsp;|&nbsp; Ký hiệu: <b style={{ color: '#166534' }}>PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
                     <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy (Nhân viên y tế)'}</div>
                   </div>
