@@ -1547,10 +1547,26 @@ export default function FamilyPortalPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 {(feeNoticesQuery.data || []).map((notice) => {
+                  // Tính xem có khoản chăm sóc hỗ trợ chi tiết nào > 0 không
+                  const subServicesSum =
+                    (notice.bathingLaundryFee || 0) +
+                    (notice.mobilityFee || 0) +
+                    (notice.hygieneFee || 0) +
+                    (notice.feedingSondeFee || 0) +
+                    (notice.dementiaCareFee || 0) +
+                    (notice.soreCareFee || 0) +
+                    (notice.catheterCareFee || 0) +
+                    (notice.tracheostomyCareFee || 0) +
+                    (notice.woundDressingFee || 0) +
+                    (notice.rehabFee || 0);
+
+                  // Chỉ hiển thị mục cha 'Phí dịch vụ chăm sóc hỗ trợ' nếu không có mục chi tiết nào > 0
+                  const includeParentSupport = subServicesSum === 0 && (notice.supportFee || 0) > 0;
+
                   // Chỉ hiển thị các mục có phí > 0 ("Ghi có"), tuyệt đối không hiển thị mục bằng 0 ("Ghi không")
                   const feeItemsList = [
                     { name: 'Phí chăm sóc cơ bản', amount: notice.basicFee },
-                    { name: 'Phí dịch vụ chăm sóc hỗ trợ', amount: notice.supportFee },
+                    ...(includeParentSupport ? [{ name: 'Phí dịch vụ chăm sóc hỗ trợ', amount: notice.supportFee }] : []),
                     { name: 'Hỗ trợ tắm gội', amount: notice.bathingLaundryFee },
                     { name: 'Hỗ trợ nâng đỡ, di chuyển', amount: notice.mobilityFee },
                     { name: 'Hỗ trợ vệ sinh', amount: notice.hygieneFee },
@@ -1561,10 +1577,11 @@ export default function FamilyPortalPage() {
                     { name: 'Chăm sóc nội khí quản', amount: notice.tracheostomyCareFee },
                     { name: 'Thay băng, rửa vết thương', amount: notice.woundDressingFee },
                     { name: 'Vật lý trị liệu - PHCN', amount: notice.rehabFee },
-                    { name: 'Phí phát sinh (Phụ thu Lễ Tết / Khám viện)', amount: notice.incurredFee, note: notice.incurredContent },
-                    { name: 'Nợ tháng trước (Tự động chuyển từ kỳ trước m-1)', amount: notice.previousMonthDebt, note: notice.debtNotes },
-                    { name: 'Suất ăn thân nhân / Vật tư tiêu hao', amount: notice.familyMealsFee },
-                    { name: 'Nợ tiền đặt cọc tiếp nhận lưu trú (Ký quỹ 1 lần khi nhập viện)', amount: notice.unpaidDepositDebt || (notice.depositStatus === 'UNPAID' ? 20000000 : 0), note: 'Chưa nộp tiền đặt cọc' },
+                    { name: 'Phí phát sinh', amount: notice.incurredFee, note: notice.incurredContent },
+                    { name: 'Nợ tháng trước', amount: notice.previousMonthDebt, note: notice.debtNotes },
+                    { name: 'Suất ăn thân nhân', amount: notice.familyMealsFee },
+                    { name: 'Vật tư y tế tiêu hao', amount: notice.consumablesFee },
+                    { name: 'Nợ tiền đặt cọc tiếp nhận lưu trú', amount: notice.unpaidDepositDebt || (notice.depositStatus === 'UNPAID' ? 20000000 : 0), note: 'Chưa nộp tiền đặt cọc' },
                   ].filter((item) => (item.amount || 0) > 0);
 
                   const statusClass = notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger';
@@ -1614,7 +1631,7 @@ export default function FamilyPortalPage() {
                         <div style={{ background: '#fffbebf0', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '1rem', color: '#92400e', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <span style={{ fontSize: '1.2rem' }}>⚠️</span>
                           <div>
-                            <b>CẢNH BÁO NỢ TIỀN ĐẶT CỌC:</b> Cụ chưa hoàn tất nộp tiền đặt cọc tiếp nhận lưu trú (ký quỹ): <b>{(notice.unpaidDepositDebt || 20000000).toLocaleString('vi-VN')} VNĐ</b> (Tiền đặt cọc chỉ nộp 1 lần khi nhập vào Trung tâm). Thân nhân vui lòng liên hệ Bộ phận Kế toán để hoàn tất.
+                            <b>CẢNH BÁO NỢ TIỀN ĐẶT CỌC:</b> Cụ chưa hoàn tất nộp tiền đặt cọc tiếp nhận lưu trú: <b>{(notice.unpaidDepositDebt || 20000000).toLocaleString('vi-VN')} VNĐ</b> (Tiền đặt cọc chỉ nộp 1 lần khi nhập vào Trung tâm). Thân nhân vui lòng liên hệ Bộ phận Kế toán để hoàn tất.
                           </div>
                         </div>
                       )}
@@ -1638,7 +1655,7 @@ export default function FamilyPortalPage() {
                                   <b>{idx + 1}. {item.name}</b> {item.note ? <span style={{ color: '#0284c7', fontStyle: 'italic' }}>({item.note})</span> : ''}
                                 </td>
                                 <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 600 }}>
-                                  {item.amount.toLocaleString('vi-VN')} đ
+                                  {(item.amount || 0).toLocaleString('vi-VN')} đ
                                 </td>
                               </tr>
                             ))}
@@ -1647,7 +1664,7 @@ export default function FamilyPortalPage() {
                             {notice.deductionFee > 0 && (
                               <tr style={{ background: '#fff1f2', color: '#be123c' }}>
                                 <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', fontWeight: 700 }}>
-                                  ➖ Chi phí giảm trừ (Nghỉ phép/Tạm vắng / Ưu đãi chính sách)
+                                  ➖ Chi phí giảm trừ {notice.deductionNotes ? `(${notice.deductionNotes})` : ''}
                                 </td>
                                 <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 700 }}>
                                   - {notice.deductionFee.toLocaleString('vi-VN')} đ

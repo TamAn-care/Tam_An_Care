@@ -1511,6 +1511,7 @@ export interface DetailedMonthlyFeeNotice {
   incurredFee: number;             // 13. Phát sinh (3)
   incurredContent?: string;        // Nội dung phát sinh
   deductionFee: number;            // 14. Chi phí giảm trừ (4)
+  deductionNotes?: string;          // Ghi chú chi tiết khoản giảm trừ
   previousMonthDebt: number;       // 15. Nợ tháng trước (5)
   debtNotes?: string;              // Ghi chú nợ
   depositStatus?: 'PAID' | 'UNPAID'; // Trạng thái đóng cọc
@@ -1558,12 +1559,14 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     rehabFee: 0,
     incurredFee: 200000,
     incurredContent: 'Phụ thu ngày Lễ Tết 2/9',
-    deductionFee: 895000, // Giảm trừ 400.000đ nghỉ phép + 495.000đ ưu đãi 6 tháng
+    deductionFee: 895000,
+    deductionNotes: 'Giảm trừ 400.000đ vắng mặt & 495.000đ ưu đãi 6 tháng',
     previousMonthDebt: 0,
     debtNotes: 'Không nợ cũ',
     depositStatus: 'PAID',
     unpaidDepositDebt: 0,
-    familyMealsFee: 395000, // 120k cơm + 275k vật tư y tế
+    familyMealsFee: 120000,
+    consumablesFee: 275000,
     totalDue: 16200000,
     paidAmount: 16200000,
     remainingAmount: 0,
@@ -1596,18 +1599,20 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     rehabFee: 0,
     incurredFee: 200000,
     incurredContent: 'Phụ thu Lễ Tết 2/9',
-    deductionFee: 2000000, // 10% giảm giá chính sách thương binh
-    previousMonthDebt: 4000000, // Nợ tháng 8/2026 tự động cập nhật
+    deductionFee: 2000000,
+    deductionNotes: 'Ưu đãi 10% chính sách thương binh',
+    previousMonthDebt: 4000000,
     debtNotes: 'Nợ còn lại viện phí tháng 8/2026',
     depositStatus: 'UNPAID',
     unpaidDepositDebt: 20000000,
-    familyMealsFee: 495000,
-    totalDue: 49695000,
+    familyMealsFee: 0,
+    consumablesFee: 495000,
+    totalDue: 46195000,
     paidAmount: 20000000,
-    remainingAmount: 29695000,
+    remainingAmount: 26195000,
     status: 'PARTIAL',
     statusLabel: 'Thu một phần',
-    notes: 'Đã thanh toán 20 triệu đợt 1. Thân nhân cần thanh toán phần còn nợ 29.695.000đ (bao gồm 4m nợ cũ & 20m nợ cọc).',
+    notes: 'Đã thanh toán 20 triệu đợt 1. Thân nhân cần thanh toán phần còn nợ 26.195.000đ (bao gồm 4.000.000đ nợ cũ & 20.000.000đ nợ cọc).',
     isApproved: true,
     isPublishedToFamilyPortal: true,
     approvedBy: 'Hoàng Quốc Anh (Giám Đốc)',
@@ -1634,18 +1639,20 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     rehabFee: 0,
     incurredFee: 200000,
     incurredContent: 'Phụ thu Lễ Tết 2/9',
-    deductionFee: 400000, // Giảm trừ 4 ngày nghỉ thăm nhà
+    deductionFee: 400000,
+    deductionNotes: 'Giảm trừ 4 ngày nghỉ thăm nhà',
     previousMonthDebt: 0,
     debtNotes: '',
     depositStatus: 'UNPAID',
     unpaidDepositDebt: 20000000,
-    familyMealsFee: 96000, // 60k cơm + 36k vật tư
+    familyMealsFee: 60000,
+    consumablesFee: 36000,
     totalDue: 32396000,
     paidAmount: 0,
     remainingAmount: 32396000,
     status: 'UNPAID',
     statusLabel: 'Chưa thu',
-    notes: 'Bảng thông báo thu phí tháng 9. Chưa đóng khoản tiền đặt cọc 20 triệu khi nhập viện.',
+    notes: 'Bảng thông báo thu phí tháng 9. Chưa đóng khoản tiền đặt cọc 20.000.000đ tiếp nhận lưu trú.',
     isApproved: true,
     isPublishedToFamilyPortal: true,
   },
@@ -1683,6 +1690,7 @@ export interface UpdateDetailedFeeNoticePayload {
   incurredFee: number;
   incurredContent?: string;
   deductionFee: number;
+  deductionNotes?: string;
   previousMonthDebt: number;
   debtNotes?: string;
   paidAmount: number;
@@ -1700,9 +1708,7 @@ export async function updateDetailedFeeNotice(
 
   const old = mockDetailedFeeNotices[noticeIndex];
 
-  // Auto sum Total Must Collect
-  const totalDue =
-    payload.basicFee +
+  const subServices =
     payload.bathingLaundryFee +
     payload.mobilityFee +
     payload.hygieneFee +
@@ -1712,11 +1718,20 @@ export async function updateDetailedFeeNotice(
     payload.catheterCareFee +
     payload.tracheostomyCareFee +
     payload.woundDressingFee +
-    payload.rehabFee +
+    payload.rehabFee;
+
+  const effectiveSupport = subServices > 0 ? subServices : payload.supportFee;
+
+  // Auto sum Total Must Collect
+  const totalDue =
+    payload.basicFee +
+    effectiveSupport +
     payload.incurredFee -
     payload.deductionFee +
     payload.previousMonthDebt +
-    old.familyMealsFee;
+    old.familyMealsFee +
+    (old.consumablesFee || 0) +
+    (old.unpaidDepositDebt || (old.depositStatus === 'UNPAID' ? 20000000 : 0));
 
   const paidAmount = Math.max(0, payload.paidAmount);
   const remainingAmount = Math.max(0, totalDue - paidAmount);
