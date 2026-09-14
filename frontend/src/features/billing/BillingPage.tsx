@@ -579,7 +579,7 @@ export default function BillingPage() {
       {/* TAB 1: BẢNG KÊ THU PHÍ */}
       {/* ========================================================================= */}
       {activeTab === 'invoices' && (
-        <div className="no-print">
+        <div>
           {/* Uniform 5 KPI Cards Grid */}
           <div className="no-print kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
             <div className="card" style={{ padding: '0.9rem 1rem', background: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '115px', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
@@ -3049,8 +3049,6 @@ export default function BillingPage() {
               }
 
               /* 2. Hide all non-printable UI elements and non-print modal overlays */
-              .page-container > *:not(.print-modal-overlay),
-              .page-content > *:not(.print-modal-overlay),
               .app-shell > aside,
               .sidebar,
               .navigation,
@@ -3063,8 +3061,8 @@ export default function BillingPage() {
               .table-responsive,
               .data-table,
               .data-table-card,
+              .tab-nav,
               .no-print,
-              .no-print *,
               .modal-overlay:not(.print-modal-overlay),
               .modal-backdrop:not(.print-modal-overlay),
               button {

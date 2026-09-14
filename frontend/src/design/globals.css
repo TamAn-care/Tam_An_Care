@@ -1759,8 +1759,6 @@ transform: scale(1.28);
   }
 
   /* Hide app navigation, headers, footers, data tables, non-print buttons, and non-print modal overlays */
-  .page-container > *:not(.print-modal-overlay),
-  .page-content > *:not(.print-modal-overlay),
   .app-shell > aside,
   .sidebar,
   .navigation,
@@ -1773,9 +1771,9 @@ transform: scale(1.28);
   .table-responsive,
   .data-table,
   .data-table-card,
+  .tab-nav,
   button,
   .no-print,
-  .no-print *,
   .modal-overlay:not(.print-modal-overlay),
   .modal-backdrop:not(.print-modal-overlay),
   .modal-header:not(.printable-a4-sheet),
