@@ -14,6 +14,9 @@ import {
   updatePricingMatrix,
   applyDiscountToInvoice,
   removeDiscountFromInvoice,
+  reviewInvoiceByManager,
+  updateInvoiceItemsByDirector,
+  publishInvoiceToFamilyPortal,
   DEFAULT_PRICING_MATRIX,
   DISCOUNT_CATEGORY_LABELS,
   ResidentMonthlyInvoice,
@@ -32,6 +35,14 @@ const STATUS_CONFIG: Record<InvoiceStatus, { label: string; badgeClass: string; 
   PARTIAL: { label: 'Thu 1 phần', badgeClass: 'badge-info', icon: '🟡' },
   PAID: { label: 'Đã thu đủ', badgeClass: 'badge-success', icon: '✅' },
   SETTLED: { label: 'Đã khóa sổ', badgeClass: 'badge-neutral', icon: '🔒' },
+};
+
+const AUDIT_STATUS_CONFIG: Record<string, { label: string; badgeClass: string; icon: string }> = {
+  DRAFT: { label: 'Bản nháp', badgeClass: 'badge-neutral', icon: '📝' },
+  PENDING_MANAGER: { label: 'Chờ Quản lý duyệt', badgeClass: 'badge-warning', icon: '⏳' },
+  MANAGER_APPROVED: { label: 'Quản lý đã duyệt', badgeClass: 'badge-info', icon: '🔍' },
+  MANAGER_REPORTED: { label: 'Quản lý báo BÁO SAI SÓT', badgeClass: 'badge-danger', icon: '⚠️' },
+  DIRECTOR_APPROVED: { label: 'Đã phát hành Cổng Thân nhân', badgeClass: 'badge-success', icon: '🌐' },
 };
 
 const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
@@ -100,6 +111,14 @@ export default function BillingPage() {
   // Pricing Matrix edit state
   const [isEditingPricing, setIsEditingPricing] = useState(false);
   const [pricingForm, setPricingForm] = useState<PricingMatrix | null>(null);
+
+  // Audit / Review state
+  const [auditFilter, setAuditFilter] = useState<string>('ALL');
+  const [managerReviewInvoice, setManagerReviewInvoice] = useState<ResidentMonthlyInvoice | null>(null);
+  const [managerReviewNotes, setManagerReviewNotes] = useState<string>('');
+
+  const [directorEditInvoice, setDirectorEditInvoice] = useState<ResidentMonthlyInvoice | null>(null);
+  const [directorForm, setDirectorForm] = useState<Partial<ResidentMonthlyInvoice>>({});
 
   // Capabilities
   const canConfigurePricing = hasCapability(actor?.actorRole, 'canConfigurePricing');
@@ -245,12 +264,86 @@ export default function BillingPage() {
     },
   });
 
-  // Filtered Invoices
+  const reviewByManagerMutation = useMutation({
+    mutationFn: async ({ invoiceId, isAccurate, notesOrReason }: { invoiceId: string; isAccurate: boolean; notesOrReason?: string }) => {
+      return reviewInvoiceByManager(actor!, { invoiceId, isAccurate, notesOrReason });
+    },
+    onSuccess: (updated, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['billing-invoices'] });
+      setManagerReviewInvoice(null);
+      setManagerReviewNotes('');
+      if (detailModalInvoice?.invoiceId === updated.invoiceId) {
+        setDetailModalInvoice(updated);
+      }
+      alert(vars.isAccurate ? 'Đã thẩm định & xác nhận Bảng kê thu phí chính xác!' : 'Đã gửi báo cáo sai sót tới Ban Giám đốc thành công!');
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Lỗi kiểm duyệt');
+    },
+  });
+
+  const updateByDirectorMutation = useMutation({
+    mutationFn: async () => {
+      if (!directorEditInvoice) throw new Error('Vui lòng chọn bảng kê.');
+      return updateInvoiceItemsByDirector(actor!, {
+        invoiceId: directorEditInvoice.invoiceId,
+        basicPackageFee: directorForm.basicPackageFee,
+        supportServicesFee: directorForm.supportServicesFee,
+        extendedCareFee: directorForm.extendedCareFee,
+        extendedCareDays: directorForm.extendedCareDays,
+        regularLeaveDays: directorForm.regularLeaveDays,
+        forceMajeureLeaveDays: directorForm.forceMajeureLeaveDays,
+        holidayDays: directorForm.holidayDays,
+        holidaySurchargeFee: directorForm.holidaySurchargeFee,
+        extraMealsFee: directorForm.extraMealsFee,
+        consumablesFee: directorForm.consumablesFee,
+        directorEditNotes: directorForm.directorEditNotes,
+      });
+    },
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({ queryKey: ['billing-invoices'] });
+      setDirectorEditInvoice(null);
+      if (detailModalInvoice?.invoiceId === updated.invoiceId) {
+        setDetailModalInvoice(updated);
+      }
+      alert('Ban Giám đốc đã cập nhật & hiệu chỉnh các hạng mục Bảng kê thu phí thành công!');
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Lỗi hiệu chỉnh');
+    },
+  });
+
+  const publishByDirectorMutation = useMutation({
+    mutationFn: async (invoiceId: string) => {
+      return publishInvoiceToFamilyPortal(actor!, invoiceId);
+    },
+    onSuccess: (updated) => {
+      queryClient.invalidateQueries({ queryKey: ['billing-invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['billing-detailed-fee-notices'] });
+      if (detailModalInvoice?.invoiceId === updated.invoiceId) {
+        setDetailModalInvoice(updated);
+      }
+      alert('Ban Giám đốc đã phê duyệt & chính thức phát hành Bảng kê thu phí tới Cổng Thân Nhân!');
+    },
+    onError: (err: any) => {
+      alert(err.message || 'Lỗi phát hành');
+    },
+  });
+
+  // Filtered Invoices & Audit Count
   const invoicesList = invoicesQuery.data || [];
+
+  const reportedInvoicesCount = useMemo(() => {
+    return invoicesList.filter((i) => i.auditStatus === 'MANAGER_REPORTED').length;
+  }, [invoicesList]);
+
   const filteredInvoices = useMemo(() => {
     let list = invoicesList;
     if (selectedStatus !== 'ALL') {
       list = list.filter((i) => i.status === selectedStatus);
+    }
+    if (auditFilter !== 'ALL') {
+      list = list.filter((i) => (i.auditStatus || 'PENDING_MANAGER') === auditFilter);
     }
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
@@ -262,7 +355,7 @@ export default function BillingPage() {
       );
     }
     return list;
-  }, [invoicesList, selectedStatus, searchTerm]);
+  }, [invoicesList, selectedStatus, auditFilter, searchTerm]);
 
   // Statistics
   const stats = useMemo(() => {
@@ -369,7 +462,7 @@ export default function BillingPage() {
             NGUYÊN TẮC TÍNH PHÍ NHẤT QUÁN TOÀN VIỆN TÂM AN
           </div>
           <div>
-            <b>Tổng thực thu</b> = 🏨 Phí cơ bản (gói phòng) + 💳 Tiền cọc (kỳ đầu) + 🩺 Phí hỗ trợ (chỉ khi có chỉ định) + 🏮 Phụ thu lễ - 📉 Giảm trừ vắng mặt RLA - 🎁 Ưu đãi phê duyệt + 🍲 Suất ăn / 🩹 Vật tư y tế. <i>Cư dân không sử dụng dịch vụ hỗ trợ được tính phí hỗ trợ = 0đ.</i>
+            <b>Tổng thực thu</b> = 🏨 Phí cơ bản (gói phòng) + 💳 Tiền cọc (kỳ đầu) + 🩺 Phí hỗ trợ (chỉ khi có chỉ định) + 🏮 Phụ thu lễ - 📉 Giảm trừ nghỉ phép/tạm vắng - 🎁 Ưu đãi phê duyệt + 🍲 Suất ăn / 🩹 Vật tư y tế. <i>Cư dân không sử dụng dịch vụ hỗ trợ được tính phí hỗ trợ = 0đ.</i>
           </div>
         </div>
       </div>
@@ -501,16 +594,16 @@ export default function BillingPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
                 <h3 style={{ margin: 0, color: '#1e3a8a', fontSize: '1.15rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  📊 Bảng Chi Tiết Phí & Tiến Trình Thu Tiền (Excel 21 Cột)
+                  📊 Bảng Chi Tiết Phí & Tiến Trình Thu Tiền (Excel 20 Cột)
                 </h3>
                 <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                  Bảng tổng hợp 21 cột chi tiết mức phí cơ bản, phí hỗ trợ, y tế chuyên sâu, phát sinh & dư nợ. Tự động liên kết với Cổng Thân Nhân.
+                  Bảng tổng hợp chi tiết mức phí cơ bản, y tế chuyên sâu, phát sinh & dư nợ. Tự động liên kết với Cổng Thân Nhân.
                 </p>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{ fontSize: '0.83rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '0.45rem 0.85rem', fontWeight: 700 }}>
-                  🔑 Quyền Kế Toán: Được phép nhập & cập nhật 21 mục phí
+                  🔑 Quyền Kế Toán: Được phép nhập & cập nhật 20 mục phí
                 </div>
               </div>
             </div>
@@ -519,12 +612,11 @@ export default function BillingPage() {
               <LoadingState title="Đang tải bảng chi tiết phí..." />
             ) : (
               <div style={{ overflowX: 'auto', border: '1px solid #cbd5e1', borderRadius: '0.5rem' }}>
-                <table style={{ width: '100%', minWidth: '2600px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                <table style={{ width: '100%', minWidth: '2500px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <thead>
                     <tr style={{ background: '#0f172a', color: '#ffffff', textAlign: 'center' }}>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '160px', position: 'sticky', left: 0, background: '#0f172a', zIndex: 10 }}>Cư Dân / Mã HĐ</th>
-                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>Phí cơ bản (1)</th>
-                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Phí hỗ trợ (2)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>Phí cơ bản</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Hỗ trợ tắm gội</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Hỗ trợ nâng đỡ, di chuyển</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Hỗ trợ vệ sinh</th>
@@ -535,10 +627,9 @@ export default function BillingPage() {
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '140px' }}>CS nội khí quản</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Thay băng, rửa vết thương</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '120px' }}>VLTL - PHCN</th>
-                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Phát sinh (3)</th>
-                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '140px' }}>Nội dung phát sinh</th>
-                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Giảm trừ (4)</th>
-                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Nợ tháng trước (5)</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '200px' }}>Phí phát sinh</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Giảm trừ</th>
+                      <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px' }}>Nợ tháng trước</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px' }}>Ghi chú nợ</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '130px', background: '#166534', color: '#ffffff' }}>TỔNG PHẢI THU</th>
                       <th style={{ padding: '0.65rem 0.5rem', border: '1px solid #334155', minWidth: '110px', background: '#1e40af', color: '#ffffff' }}>Đã thu</th>
@@ -549,90 +640,134 @@ export default function BillingPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(detailedFeeNoticesQuery.data || []).map((notice, idx) => (
-                      <tr key={notice.id} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontWeight: 700, position: 'sticky', left: 0, background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', zIndex: 5 }}>
-                          <div>{notice.residentName}</div>
-                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{notice.residentCode}</div>
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.basicFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.supportFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.bathingLaundryFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.mobilityFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.hygieneFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.feedingSondeFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.dementiaCareFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.soreCareFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.catheterCareFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.tracheostomyCareFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.woundDressingFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.rehabFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.incurredFee.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontStyle: 'italic', fontSize: '0.75rem' }}>{notice.incurredContent || '-'}</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', color: '#dc2626' }}>
-                          {notice.deductionFee > 0 ? `-${notice.deductionFee.toLocaleString('vi-VN')} đ` : '0 đ'}
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.previousMonthDebt.toLocaleString('vi-VN')} đ</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontSize: '0.75rem' }}>{notice.debtNotes || '-'}</td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#15803d', background: '#f0fdf4' }}>
-                          {notice.totalDue.toLocaleString('vi-VN')} đ
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 700, color: '#1e40af' }}>
-                          {notice.paidAmount.toLocaleString('vi-VN')} đ
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#b91c1c', background: '#fef2f2' }}>
-                          {notice.remainingAmount.toLocaleString('vi-VN')} đ
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                          <span className={`badge ${notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.75rem', fontWeight: 700 }}>
-                            {notice.statusLabel}
-                          </span>
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                          {notice.isPublishedToFamilyPortal ? (
-                            <span className="badge badge-success" style={{ fontSize: '0.75rem', fontWeight: 800, background: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }}>
-                              🟢 Đã gửi Cổng Thân Nhân
+                    {(detailedFeeNoticesQuery.data || []).map((notice, idx) => {
+                      const calculatedTotalDue =
+                        (notice.basicFee +
+                          notice.bathingLaundryFee +
+                          notice.mobilityFee +
+                          notice.hygieneFee +
+                          notice.feedingSondeFee +
+                          notice.dementiaCareFee +
+                          notice.soreCareFee +
+                          notice.catheterCareFee +
+                          notice.tracheostomyCareFee +
+                          notice.woundDressingFee +
+                          notice.rehabFee +
+                          notice.incurredFee +
+                          (notice.familyMealsFee || 0)) -
+                        notice.deductionFee +
+                        notice.previousMonthDebt;
+
+                      const calculatedRemaining = Math.max(0, calculatedTotalDue - notice.paidAmount);
+                      const calculatedStatus =
+                        notice.paidAmount >= calculatedTotalDue && calculatedTotalDue > 0
+                          ? 'PAID'
+                          : notice.paidAmount > 0
+                          ? 'PARTIAL'
+                          : 'UNPAID';
+                      const calculatedStatusLabel =
+                        calculatedStatus === 'PAID'
+                          ? 'Đã thu'
+                          : calculatedStatus === 'PARTIAL'
+                          ? 'Thu một phần'
+                          : 'Chưa thu';
+
+                      return (
+                        <tr key={notice.id} style={{ background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontWeight: 700, position: 'sticky', left: 0, background: idx % 2 === 0 ? '#ffffff' : '#f8fafc', zIndex: 5 }}>
+                            <div>{notice.residentName}</div>
+                            <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{notice.residentCode}</div>
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.basicFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.bathingLaundryFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.mobilityFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.hygieneFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.feedingSondeFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.dementiaCareFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.soreCareFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.catheterCareFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.tracheostomyCareFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.woundDressingFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.rehabFee.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', minWidth: '200px' }}>
+                            <div style={{ fontWeight: 700, textAlign: 'right', color: notice.incurredFee > 0 ? '#b91c1c' : '#475569' }}>
+                              {notice.incurredFee.toLocaleString('vi-VN')} đ
+                            </div>
+                            {notice.incurredContent && (
+                              <div style={{ fontSize: '0.74rem', color: '#475569', marginTop: '0.25rem', borderTop: notice.incurredFee > 0 ? '1px dashed #cbd5e1' : 'none', paddingTop: '0.2rem' }}>
+                                {notice.incurredContent.split('\n').map((item, i) => (
+                                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.25rem', lineHeight: '1.3' }}>
+                                    <span style={{ color: '#0369a1', fontWeight: 700 }}>•</span>
+                                    <span>{item}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', color: '#dc2626' }}>
+                            {notice.deductionFee > 0 ? `-${notice.deductionFee.toLocaleString('vi-VN')} đ` : '0 đ'}
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right' }}>{notice.previousMonthDebt.toLocaleString('vi-VN')} đ</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', fontSize: '0.75rem' }}>{notice.debtNotes || '-'}</td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#15803d', background: '#f0fdf4' }}>
+                            {calculatedTotalDue.toLocaleString('vi-VN')} đ
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 700, color: '#1e40af' }}>
+                            {notice.paidAmount.toLocaleString('vi-VN')} đ
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#b91c1c', background: '#fef2f2' }}>
+                            {calculatedRemaining.toLocaleString('vi-VN')} đ
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                            <span className={`badge ${calculatedStatus === 'PAID' ? 'badge-success' : calculatedStatus === 'PARTIAL' ? 'badge-warning' : 'badge-danger'}`} style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                              {calculatedStatusLabel}
                             </span>
-                          ) : (
-                            <span className="badge badge-warning" style={{ fontSize: '0.75rem', fontWeight: 800, background: '#fefce8', color: '#854d0e', border: '1px solid #fef08a' }}>
-                              🟡 Bản nháp Kế toán
-                            </span>
-                          )}
-                        </td>
-                        <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-                          <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-primary"
-                              style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
-                              onClick={() => {
-                                setEditFeeNotice(notice);
-                                setFeeNoticeForm({
-                                  noticeId: notice.id,
-                                  basicFee: notice.basicFee,
-                                  supportFee: notice.supportFee,
-                                  bathingLaundryFee: notice.bathingLaundryFee,
-                                  mobilityFee: notice.mobilityFee,
-                                  hygieneFee: notice.hygieneFee,
-                                  feedingSondeFee: notice.feedingSondeFee,
-                                  dementiaCareFee: notice.dementiaCareFee,
-                                  soreCareFee: notice.soreCareFee,
-                                  catheterCareFee: notice.catheterCareFee,
-                                  tracheostomyCareFee: notice.tracheostomyCareFee,
-                                  woundDressingFee: notice.woundDressingFee,
-                                  rehabFee: notice.rehabFee,
-                                  incurredFee: notice.incurredFee,
-                                  incurredContent: notice.incurredContent || '',
-                                  deductionFee: notice.deductionFee,
-                                  previousMonthDebt: notice.previousMonthDebt,
-                                  debtNotes: notice.debtNotes || '',
-                                  paidAmount: notice.paidAmount,
-                                  notes: notice.notes || '',
-                                });
-                              }}
-                            >
-                              ✏️ Sửa Mức Phí
-                            </button>
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                            {notice.isPublishedToFamilyPortal ? (
+                              <span className="badge badge-success" style={{ fontSize: '0.75rem', fontWeight: 800, background: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }}>
+                                🟢 Đã gửi Cổng Thân Nhân
+                              </span>
+                            ) : (
+                              <span className="badge badge-warning" style={{ fontSize: '0.75rem', fontWeight: 800, background: '#fefce8', color: '#854d0e', border: '1px solid #fef08a' }}>
+                                🟡 Bản nháp Kế toán
+                              </span>
+                            )}
+                          </td>
+                          <td style={{ padding: '0.5rem', border: '1px solid #e2e8f0', textAlign: 'center' }}>
+                            <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'center' }}>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-primary"
+                                style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                                onClick={() => {
+                                  setEditFeeNotice(notice);
+                                  setFeeNoticeForm({
+                                    noticeId: notice.id,
+                                    basicFee: notice.basicFee,
+                                    supportFee: notice.supportFee,
+                                    bathingLaundryFee: notice.bathingLaundryFee,
+                                    mobilityFee: notice.mobilityFee,
+                                    hygieneFee: notice.hygieneFee,
+                                    feedingSondeFee: notice.feedingSondeFee,
+                                    dementiaCareFee: notice.dementiaCareFee,
+                                    soreCareFee: notice.soreCareFee,
+                                    catheterCareFee: notice.catheterCareFee,
+                                    tracheostomyCareFee: notice.tracheostomyCareFee,
+                                    woundDressingFee: notice.woundDressingFee,
+                                    rehabFee: notice.rehabFee,
+                                    incurredFee: notice.incurredFee,
+                                    incurredContent: notice.incurredContent || '',
+                                    deductionFee: notice.deductionFee,
+                                    previousMonthDebt: notice.previousMonthDebt,
+                                    debtNotes: notice.debtNotes || '',
+                                    paidAmount: notice.paidAmount,
+                                    notes: notice.notes || '',
+                                  });
+                                }}
+                              >
+                                ✏️ Sửa Mức Phí
+                              </button>
 
                             <button
                               type="button"
@@ -670,8 +805,9 @@ export default function BillingPage() {
                           </div>
                         </td>
                       </tr>
-                    ))}
-                  </tbody>
+                    );
+                  })}
+                </tbody>
                 </table>
               </div>
             )}
@@ -721,7 +857,7 @@ export default function BillingPage() {
             </div>
 
             <div className="card" style={{ padding: '0.9rem 1rem', background: '#faf5ff', borderColor: '#e9d5ff', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '115px', borderRadius: '0.65rem' }}>
-              <div style={{ fontSize: '0.72rem', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>GIẢM TRỪ VẮNG MẶT (RLA)</div>
+              <div style={{ fontSize: '0.72rem', color: '#6b21a8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>GIẢM TRỪ NGHỈ PHÉP/TẠM VẮNG</div>
               <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#7e22ce', margin: '0.25rem 0', fontVariantNumeric: 'tabular-nums' }}>
                 {formatVndText(stats.totalLeaveDeductions)}
               </div>
@@ -729,9 +865,34 @@ export default function BillingPage() {
             </div>
           </div>
 
+          {/* Warning Banner for Manager Reported Invoices */}
+          {reportedInvoicesCount > 0 && (
+            <div style={{ background: '#fef2f2', border: '2px solid #f87171', borderRadius: '0.65rem', padding: '0.9rem 1.15rem', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>⚠️</span>
+                <div>
+                  <h4 style={{ margin: 0, color: '#991b1b', fontSize: '0.95rem', fontWeight: 800 }}>
+                    CÓ {reportedInvoicesCount} BẢNG KÊ THU PHÍ ĐƯỢC QUẢN LÝ BÁO CÁO SAI SÓT
+                  </h4>
+                  <div style={{ fontSize: '0.82rem', color: '#7f1d1d', marginTop: '0.2rem' }}>
+                    Nhân viên Quản lý đã thẩm định và ghi nhận sai sót. Đề nghị Ban Giám đốc kiểm tra, hiệu chỉnh các hạng mục trước khi phê duyệt phát hành Cổng thân nhân.
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                style={{ background: '#fee2e2', color: '#991b1b', fontWeight: 700, border: '1px solid #fca5a5', fontSize: '0.82rem' }}
+                onClick={() => setAuditFilter('MANAGER_REPORTED')}
+              >
+                🔍 Lọc Bảng Kê Báo Sai Sót ({reportedInvoicesCount})
+              </button>
+            </div>
+          )}
+
           {/* Balanced Filter Toolbar */}
           <div className="card" style={{ padding: '0.9rem 1.15rem', marginBottom: '1.25rem', background: '#ffffff', borderRadius: '0.65rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
               <div>
                 <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.35rem', display: 'block' }}>Kỳ thu phí:</label>
                 <select className="text-input" style={{ height: '38px', padding: '0 0.65rem', width: '100%', boxSizing: 'border-box' }} value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value)}>
@@ -742,23 +903,34 @@ export default function BillingPage() {
               </div>
 
               <div>
-                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.35rem', display: 'block' }}>Trạng thái thanh toán:</label>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.35rem', display: 'block' }}>Thanh toán:</label>
                 <select className="text-input" style={{ height: '38px', padding: '0 0.65rem', width: '100%', boxSizing: 'border-box' }} value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value as any)}>
                   <option value="ALL">-- Tất cả trạng thái --</option>
                   <option value="PENDING">⏳ Chờ thanh toán</option>
-                  <option value="PARTIAL">🟡 Thanh toán một phần</option>
+                  <option value="PARTIAL">🟡 Thu 1 phần</option>
                   <option value="PAID">✅ Đã thu đủ</option>
                   <option value="SETTLED">🔒 Đã quyết toán</option>
                 </select>
               </div>
 
-              <div style={{ gridColumn: 'span 2' }}>
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.35rem', display: 'block' }}>Kiểm duyệt & Duyệt BGĐ:</label>
+                <select className="text-input" style={{ height: '38px', padding: '0 0.65rem', width: '100%', boxSizing: 'border-box' }} value={auditFilter} onChange={(e) => setAuditFilter(e.target.value)}>
+                  <option value="ALL">-- Tất cả kiểm duyệt --</option>
+                  <option value="PENDING_MANAGER">⏳ Chờ Quản lý duyệt</option>
+                  <option value="MANAGER_APPROVED">🔍 Quản lý đã duyệt</option>
+                  <option value="MANAGER_REPORTED">⚠️ Quản lý báo SAI SÓT</option>
+                  <option value="DIRECTOR_APPROVED">🌐 BGĐ đã phát hành Cổng TN</option>
+                </select>
+              </div>
+
+              <div>
                 <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '0.35rem', display: 'block' }}>Tìm kiếm:</label>
                 <input
                   type="text"
                   className="text-input"
                   style={{ height: '38px', padding: '0 0.75rem', width: '100%', boxSizing: 'border-box' }}
-                  placeholder="Tìm theo tên Cụ, mã bảng kê, số phòng..."
+                  placeholder="Tìm theo tên Cụ, mã bảng kê..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -787,18 +959,21 @@ export default function BillingPage() {
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Tiền Đặt Cọc (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí dịch vụ chăm sóc hỗ trợ (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí dịch vụ chăm sóc mở rộng (đồng)</th>
-                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm Trừ RLA (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phụ Thu Lễ Tết (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm trừ nghỉ phép/tạm vắng (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm Giá (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Tổng Thực Thu (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Đã Thu (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Còn Nợ (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Kiểm Duyệt BGĐ</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Thao Tác</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredInvoices.map((inv) => {
                       const st = STATUS_CONFIG[inv.status];
+                      const auditSt = AUDIT_STATUS_CONFIG[inv.auditStatus || 'PENDING_MANAGER'];
                       return (
                         <tr key={inv.invoiceId} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
                           <td style={{ padding: '0.65rem 0.6rem' }}>
@@ -847,6 +1022,20 @@ export default function BillingPage() {
                               </div>
                             )}
                           </td>
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            <div style={{ fontWeight: inv.holidaySurchargeFee > 0 ? 700 : 400, color: inv.holidaySurchargeFee > 0 ? '#d97706' : '#64748b' }}>
+                              {inv.holidaySurchargeFee > 0 ? `+${formatNum(inv.holidaySurchargeFee)}` : '0'}
+                            </div>
+                            {inv.holidaySurchargeFee > 0 ? (
+                              <div style={{ fontSize: '0.72rem', color: '#b45309', marginTop: '0.15rem', fontStyle: 'italic', maxWidth: '160px', marginLeft: 'auto' }}>
+                                Lễ Tết ({inv.holidayDays || 1} ngày - {inv.contractType === 'SHORT_TERM' ? '300k/ngày' : '200k/ngày'})
+                              </div>
+                            ) : (
+                              <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.15rem' }}>
+                                Không phụ thu
+                              </div>
+                            )}
+                          </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', color: '#b91c1c', fontVariantNumeric: 'tabular-nums' }}>
                             {inv.leaveDeductionFee > 0 ? `-${formatNum(inv.leaveDeductionFee)}` : '0'}
                           </td>
@@ -875,7 +1064,20 @@ export default function BillingPage() {
                             </span>
                           </td>
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'center' }}>
-                            <div style={{ display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'nowrap' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
+                              <span className={`badge ${auditSt.badgeClass}`} style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem', whiteSpace: 'nowrap' }}>
+                                <span>{auditSt.icon}</span>
+                                <span>{auditSt.label}</span>
+                              </span>
+                              {inv.auditStatus === 'MANAGER_REPORTED' && inv.reportedErrorReason && (
+                                <div style={{ fontSize: '0.72rem', color: '#dc2626', fontWeight: 600, marginTop: '0.15rem', maxWidth: '170px', lineHeight: '1.2' }}>
+                                  ⚠️ Lỗi báo: {inv.reportedErrorReason}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'center' }}>
+                            <div style={{ display: 'flex', gap: '0.3rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                               <button
                                 type="button"
                                 className="btn btn-neutral"
@@ -885,6 +1087,67 @@ export default function BillingPage() {
                               >
                                 👁️ Chi tiết
                               </button>
+
+                              {/* Thao tác Thẩm định cho Quản Lý */}
+                              {canConfigurePricing && inv.auditStatus !== 'DIRECTOR_APPROVED' && (
+                                <button
+                                  type="button"
+                                  className="btn btn-neutral"
+                                  onClick={() => {
+                                    setManagerReviewInvoice(inv);
+                                    setManagerReviewNotes(inv.reportedErrorReason || inv.managerNotes || '');
+                                  }}
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.78rem', fontWeight: 600, color: '#0369a1', borderColor: '#bae6fd' }}
+                                  title="Quản lý kiểm duyệt tính chính xác hoặc báo cáo sai sót"
+                                >
+                                  🔍 Thẩm định
+                                </button>
+                              )}
+
+                              {/* Thao tác Hiệu chỉnh các hạng mục cho Ban Giám Đốc */}
+                              {actor?.actorRole === 'SUPERVISOR' && inv.auditStatus !== 'DIRECTOR_APPROVED' && (
+                                <button
+                                  type="button"
+                                  className="btn btn-primary"
+                                  onClick={() => {
+                                    setDirectorEditInvoice(inv);
+                                    setDirectorForm({
+                                      basicPackageFee: inv.basicPackageFee,
+                                      supportServicesFee: inv.supportServicesFee,
+                                      extendedCareFee: inv.extendedCareFee,
+                                      extendedCareDays: inv.extendedCareDays || 0,
+                                      regularLeaveDays: inv.regularLeaveDays || 0,
+                                      forceMajeureLeaveDays: inv.forceMajeureLeaveDays || 0,
+                                      holidayDays: inv.holidayDays || 0,
+                                      holidaySurchargeFee: inv.holidaySurchargeFee || 0,
+                                      extraMealsFee: inv.extraMealsFee || 0,
+                                      consumablesFee: inv.consumablesFee || 0,
+                                      directorEditNotes: inv.directorEditNotes || '',
+                                    });
+                                  }}
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.78rem', fontWeight: 600 }}
+                                  title="Ban Giám đốc hiệu chỉnh các hạng mục thu phí"
+                                >
+                                  ✏️ Hiệu chỉnh BGĐ
+                                </button>
+                              )}
+
+                              {/* Thao tác Phê duyệt & Phát hành Cổng thân nhân cho Ban Giám Đốc */}
+                              {actor?.actorRole === 'SUPERVISOR' && inv.auditStatus !== 'DIRECTOR_APPROVED' && (
+                                <button
+                                  type="button"
+                                  className="btn btn-success"
+                                  onClick={() => {
+                                    if (window.confirm(`Xác nhận Ban Giám đốc phê duyệt tính chính xác & phát hành Bảng kê ${inv.invoiceCode} tới Cổng Thân nhân?`)) {
+                                      publishByDirectorMutation.mutate(inv.invoiceId);
+                                    }
+                                  }}
+                                  style={{ padding: '0.25rem 0.5rem', fontSize: '0.78rem', fontWeight: 700 }}
+                                  title="Ban Giám đốc phê duyệt & phát hành gửi Cổng thân nhân"
+                                >
+                                  🚀 Duyệt & Phát hành
+                                </button>
+                              )}
 
                               {canConfigurePricing && inv.status !== 'SETTLED' && (
                                 <button
@@ -1202,16 +1465,76 @@ export default function BillingPage() {
                   {(isEditingPricing && pricingForm ? pricingForm.extendedCare : pricingData.extendedCare).map((ec, idx) => (
                     <tr key={ec.id} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
                       <td style={{ textAlign: 'center', fontWeight: 700, padding: '0.65rem' }}>{ec.stt}</td>
-                      <td style={{ fontWeight: 600, color: '#1e293b', padding: '0.65rem' }}>{ec.name}</td>
+                      <td style={{ fontWeight: 600, color: '#1e293b', padding: '0.65rem' }}>
+                        {isEditingPricing && pricingForm ? (
+                          <input
+                            type="text"
+                            className="text-input"
+                            value={ec.name}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.extendedCare];
+                              updated[idx].name = e.target.value;
+                              setPricingForm({ ...pricingForm, extendedCare: updated });
+                            }}
+                          />
+                        ) : (
+                          ec.name
+                        )}
+                      </td>
                       <td style={{ padding: '0.65rem' }}>
-                        <span className="badge badge-neutral" style={{ whiteSpace: 'nowrap' }}>{ec.unit}</span>
+                        {isEditingPricing && pricingForm ? (
+                          <input
+                            type="text"
+                            className="text-input"
+                            style={{ width: '80px' }}
+                            value={ec.unit}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.extendedCare];
+                              updated[idx].unit = e.target.value;
+                              setPricingForm({ ...pricingForm, extendedCare: updated });
+                            }}
+                          />
+                        ) : (
+                          <span className="badge badge-neutral" style={{ whiteSpace: 'nowrap' }}>{ec.unit}</span>
+                        )}
                       </td>
                       <td style={{ textAlign: 'right', padding: '0.65rem' }}>
-                        <div style={{ fontWeight: 700, color: '#7c3aed', fontVariantNumeric: 'tabular-nums' }}>
-                          {ec.priceDisplay}
-                        </div>
+                        {isEditingPricing && pricingForm ? (
+                          <input
+                            type="number"
+                            className="text-input"
+                            style={{ textAlign: 'right', width: '130px' }}
+                            value={ec.priceMin}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              const updated = [...pricingForm.extendedCare];
+                              updated[idx].priceMin = val;
+                              updated[idx].priceDisplay = ec.priceMax ? `${formatNum(val)} - ${formatNum(ec.priceMax)}` : `${formatNum(val)}`;
+                              setPricingForm({ ...pricingForm, extendedCare: updated });
+                            }}
+                          />
+                        ) : (
+                          <div style={{ fontWeight: 700, color: '#7c3aed', fontVariantNumeric: 'tabular-nums' }}>
+                            {ec.priceDisplay}
+                          </div>
+                        )}
                       </td>
-                      <td style={{ fontSize: '0.85rem', color: '#64748b', padding: '0.65rem' }}>{ec.note || '—'}</td>
+                      <td style={{ fontSize: '0.85rem', color: '#64748b', padding: '0.65rem' }}>
+                        {isEditingPricing && pricingForm ? (
+                          <input
+                            type="text"
+                            className="text-input"
+                            value={ec.note || ''}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.extendedCare];
+                              updated[idx].note = e.target.value;
+                              setPricingForm({ ...pricingForm, extendedCare: updated });
+                            }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{ec.note || '—'}</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1229,45 +1552,158 @@ export default function BillingPage() {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
-              {pricingData.policyRules.map((rule) => (
+              {(isEditingPricing && pricingForm ? pricingForm.policyRules : pricingData.policyRules).map((rule, idx) => (
                 <div key={rule.id} style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '0.9rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '110px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontWeight: 700, color: '#92400e', fontSize: '0.9rem' }}>{rule.name}</span>
-                    <span className="badge badge-warning" style={{ fontWeight: 800, whiteSpace: 'nowrap' }}>
-                      {rule.valueType === 'PERCENT' ? `Giảm ${rule.value}%` : `${formatNum(rule.value)} đ/ngày`}
-                    </span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    {isEditingPricing && pricingForm ? (
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ fontWeight: 700, color: '#92400e', fontSize: '0.85rem', flex: 1, minWidth: '150px' }}
+                        value={rule.name}
+                        onChange={(e) => {
+                          const updated = [...pricingForm.policyRules];
+                          updated[idx].name = e.target.value;
+                          setPricingForm({ ...pricingForm, policyRules: updated });
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontWeight: 700, color: '#92400e', fontSize: '0.9rem' }}>{rule.name}</span>
+                    )}
+
+                    {isEditingPricing && pricingForm ? (
+                      <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+                        <input
+                          type="number"
+                          className="text-input"
+                          style={{ width: '90px', textAlign: 'right', padding: '0.2rem 0.4rem', fontSize: '0.85rem' }}
+                          value={rule.value}
+                          onChange={(e) => {
+                            const updated = [...pricingForm.policyRules];
+                            updated[idx].value = Number(e.target.value);
+                            setPricingForm({ ...pricingForm, policyRules: updated });
+                          }}
+                        />
+                        <select
+                          className="text-input"
+                          style={{ padding: '0.2rem 0.3rem', fontSize: '0.8rem' }}
+                          value={rule.valueType}
+                          onChange={(e) => {
+                            const updated = [...pricingForm.policyRules];
+                            updated[idx].valueType = e.target.value as 'PERCENT' | 'FIXED_DAILY';
+                            setPricingForm({ ...pricingForm, policyRules: updated });
+                          }}
+                        >
+                          <option value="PERCENT">%</option>
+                          <option value="FIXED_DAILY">đ/ngày</option>
+                        </select>
+                      </div>
+                    ) : (
+                      <span className="badge badge-warning" style={{ fontWeight: 800, whiteSpace: 'nowrap' }}>
+                        {rule.valueType === 'PERCENT' ? `Giảm ${rule.value}%` : `${formatNum(rule.value)} đ/ngày`}
+                      </span>
+                    )}
                   </div>
-                  <div style={{ fontSize: '0.82rem', color: '#78350f', marginTop: '0.4rem', lineHeight: '1.4' }}>
-                    {rule.description}
-                  </div>
+                  {isEditingPricing && pricingForm ? (
+                    <textarea
+                      className="text-input"
+                      rows={2}
+                      style={{ marginTop: '0.4rem', fontSize: '0.82rem', width: '100%', resize: 'vertical' }}
+                      value={rule.description}
+                      onChange={(e) => {
+                        const updated = [...pricingForm.policyRules];
+                        updated[idx].description = e.target.value;
+                        setPricingForm({ ...pricingForm, policyRules: updated });
+                      }}
+                    />
+                  ) : (
+                    <div style={{ fontSize: '0.82rem', color: '#78350f', marginTop: '0.4rem', lineHeight: '1.4' }}>
+                      {rule.description}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           </div>
 
           {/* Section V: Hạng Mục Thu Tiền Đặt Cọc */}
-          <div className="card" style={{ padding: '1.25rem', borderRadius: '0.65rem', marginTop: '1.25rem', background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', borderBottom: '2px solid #16a34a', paddingBottom: '0.5rem' }}>
-              <span style={{ fontSize: '1.3rem' }}>💳</span>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
-                V. HẠNG MỤC THU TIỀN ĐẶT CỌC LƯU TRÚ (KÝ QUỶ)
-              </h2>
-            </div>
+          {(() => {
+            const depositConfig = (isEditingPricing && pricingForm ? pricingForm.depositFee : pricingData.depositFee) || {
+              id: 'DEP-01',
+              name: 'Tiền đặt cọc tiếp nhận lưu trú',
+              amount: 20000000,
+              description: 'Mỗi Cụ khi vào ở tại Trung Tâm Dưỡng Lão Tâm An sẽ nộp khoản tiền đặt cọc ký quỹ 20.000.000 đồng. Khoản tiền này nhằm bảo đảm thực hiện hợp đồng, bù đắp các chi phí phát sinh cấp cứu (nếu có) hoặc đối trừ khi thanh lý. Số tiền này sẽ được hoàn trả 100% cho Thân nhân khi kết thúc hợp đồng dịch vụ.',
+            };
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
-                  Tiền đặt cọc tiếp nhận lưu trú: <span style={{ color: '#15803d', fontWeight: 800 }}>20.000.000 VNĐ / hợp đồng</span>
+            return (
+              <div className="card" style={{ padding: '1.25rem', borderRadius: '0.65rem', marginTop: '1.25rem', background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', borderBottom: '2px solid #16a34a', paddingBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '1.3rem' }}>💳</span>
+                  <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                    V. HẠNG MỤC THU TIỀN ĐẶT CỌC LƯU TRÚ (KÝ QUỶ)
+                  </h2>
                 </div>
-                <div style={{ fontSize: '0.85rem', color: '#334155', marginTop: '0.35rem', lineHeight: '1.5' }}>
-                  Mỗi Cụ khi vào ở tại Trung Tâm Dưỡng Lão Tâm An sẽ nộp khoản tiền đặt cọc ký quỹ <b>20.000.000 đồng</b>. Khoản tiền này nhằm bảo đảm thực hiện hợp đồng, bù đắp các chi phí phát sinh cấp cứu (nếu có) hoặc đối trừ khi thanh lý. Số tiền này sẽ được <b>hoàn trả 100%</b> cho Thân nhân khi kết thúc hợp đồng dịch vụ.
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+                  <div style={{ flex: 1, minWidth: '280px' }}>
+                    {isEditingPricing && pricingForm ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label style={{ fontWeight: 700, fontSize: '0.9rem', color: '#0f172a', whiteSpace: 'nowrap' }}>Tiền đặt cọc tiếp nhận lưu trú (VNĐ):</label>
+                          <input
+                            type="number"
+                            className="text-input"
+                            style={{ width: '180px', fontWeight: 700, color: '#15803d' }}
+                            value={pricingForm.depositFee?.amount ?? 20000000}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setPricingForm({
+                                ...pricingForm,
+                                depositFee: {
+                                  ...(pricingForm.depositFee || depositConfig),
+                                  amount: val,
+                                },
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontWeight: 600, fontSize: '0.85rem', color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Diễn giải chính sách đặt cọc:</label>
+                          <textarea
+                            className="text-input"
+                            rows={3}
+                            style={{ width: '100%', fontSize: '0.85rem' }}
+                            value={pricingForm.depositFee?.description ?? depositConfig.description}
+                            onChange={(e) => {
+                              setPricingForm({
+                                ...pricingForm,
+                                depositFee: {
+                                  ...(pricingForm.depositFee || depositConfig),
+                                  description: e.target.value,
+                                },
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                          Tiền đặt cọc tiếp nhận lưu trú: <span style={{ color: '#15803d', fontWeight: 800 }}>{formatNum(depositConfig.amount)} VNĐ / hợp đồng</span>
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#334155', marginTop: '0.35rem', lineHeight: '1.5' }}>
+                          {depositConfig.description}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="badge badge-success" style={{ fontSize: '0.9rem', padding: '0.5rem 0.85rem', fontWeight: 700 }}>
+                    Định mức: {formatNum(depositConfig.amount)} đ
+                  </div>
                 </div>
               </div>
-              <div className="badge badge-success" style={{ fontSize: '0.9rem', padding: '0.5rem 0.85rem', fontWeight: 700 }}>
-                Định mức: 20.000.000 đ
-              </div>
-            </div>
-          </div>
+            );
+          })()}
         </div>
       )}
 
@@ -1285,10 +1721,79 @@ export default function BillingPage() {
                 Được phê duyệt bởi Ban Giám đốc và Quản lý để áp dụng cho các trường hợp đặc biệt (Gia đình chính sách, người có công, người thân nhân viên, đóng trước...).
               </p>
             </div>
+
+            {canConfigurePricing && (
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                {!isEditingPricing ? (
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setPricingForm(JSON.parse(JSON.stringify(pricingData)));
+                      setIsEditingPricing(true);
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.85rem' }}
+                  >
+                    ✏️ Cấu Hình / Chỉnh Sửa Chính Sách
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn-neutral"
+                      onClick={() => {
+                        setPricingForm(JSON.parse(JSON.stringify(pricingData)));
+                        setIsEditingPricing(false);
+                      }}
+                    >
+                      Hủy bỏ
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-success"
+                      onClick={() => updatePricingMutation.mutate()}
+                      disabled={updatePricingMutation.isPending}
+                      style={{ fontWeight: 700 }}
+                    >
+                      {updatePricingMutation.isPending ? 'Đang lưu...' : '💾 Lưu Chính Sách Mới'}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1rem', alignItems: 'stretch' }}>
-            {pricingData.specialDiscountPolicies.map((p) => {
+          {isEditingPricing && pricingForm && (
+            <div style={{ width: '100%', marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  const newPolicy: SpecialDiscountPolicy = {
+                    id: `DISC-${Date.now()}`,
+                    code: `KM-${pricingForm.specialDiscountPolicies.length + 1}`,
+                    name: 'Chính sách ưu đãi mới',
+                    reasonCategory: 'OTHER',
+                    discountType: 'PERCENT',
+                    discountValue: 5,
+                    description: 'Căn cứ phê duyệt và điều kiện áp dụng mức ưu đãi mới...',
+                    approvedRole: 'SUPERVISOR',
+                    isActive: true,
+                  };
+                  setPricingForm({
+                    ...pricingForm,
+                    specialDiscountPolicies: [...pricingForm.specialDiscountPolicies, newPolicy],
+                  });
+                }}
+                style={{ fontWeight: 600, fontSize: '0.85rem' }}
+              >
+                ➕ Thêm Chính Sách Ưu Đãi Mới
+              </button>
+            </div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1rem', alignItems: 'stretch' }}>
+            {(isEditingPricing && pricingForm ? pricingForm.specialDiscountPolicies : pricingData.specialDiscountPolicies).map((p, idx) => {
               const catInfo = DISCOUNT_CATEGORY_LABELS[p.reasonCategory] || { label: p.reasonCategory, icon: '🏷️' };
               return (
                 <div
@@ -1300,37 +1805,173 @@ export default function BillingPage() {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     height: '100%',
-                    minHeight: '200px',
-                    borderTop: '4px solid #15803d',
+                    minHeight: '220px',
+                    borderTop: `4px solid ${p.isActive ? '#15803d' : '#94a3b8'}`,
                     borderRadius: '0.65rem',
-                    background: '#ffffff',
+                    background: p.isActive ? '#ffffff' : '#f8fafc',
                     border: '1px solid #e2e8f0',
                     boxSizing: 'border-box',
+                    opacity: p.isActive ? 1 : 0.8,
                   }}
                 >
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
-                        {catInfo.icon} {catInfo.label}
-                      </span>
-                      <span className="badge badge-success" style={{ fontWeight: 800, fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
-                        {p.discountType === 'PERCENT' ? `Giảm ${p.discountValue}%` : `Giảm ${formatNum(p.discountValue)} đ`}
-                      </span>
+                  {isEditingPricing && pricingForm ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                      {/* Phân loại & Trạng thái */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                        <select
+                          className="text-input"
+                          style={{ fontSize: '0.8rem', fontWeight: 600, padding: '0.2rem 0.4rem', flex: 1 }}
+                          value={p.reasonCategory}
+                          onChange={(e) => {
+                            const updated = [...pricingForm.specialDiscountPolicies];
+                            updated[idx].reasonCategory = e.target.value as any;
+                            setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                          }}
+                        >
+                          {Object.entries(DISCOUNT_CATEGORY_LABELS).map(([catKey, catVal]) => (
+                            <option key={catKey} value={catKey}>
+                              {catVal.icon} {catVal.label}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          className={p.isActive ? 'badge badge-success' : 'badge badge-neutral'}
+                          onClick={() => {
+                            const updated = [...pricingForm.specialDiscountPolicies];
+                            updated[idx].isActive = !updated[idx].isActive;
+                            setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                          }}
+                          style={{ cursor: 'pointer', border: 'none' }}
+                        >
+                          {p.isActive ? '🟢 Áp dụng' : '🔴 Ngưng'}
+                        </button>
+                      </div>
+
+                      {/* Tên chính sách */}
+                      <div>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Tên chính sách:</label>
+                        <input
+                          type="text"
+                          className="text-input"
+                          style={{ fontWeight: 700, color: '#0f172a', width: '100%' }}
+                          value={p.name}
+                          onChange={(e) => {
+                            const updated = [...pricingForm.specialDiscountPolicies];
+                            updated[idx].name = e.target.value;
+                            setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                          }}
+                        />
+                      </div>
+
+                      {/* Mức giảm & Loại giảm */}
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <div style={{ flex: 1 }}>
+                          <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Tỷ lệ / Mức giảm:</label>
+                          <input
+                            type="number"
+                            className="text-input"
+                            style={{ fontWeight: 700, textAlign: 'right', width: '100%', color: '#166534' }}
+                            value={p.discountValue}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.specialDiscountPolicies];
+                              updated[idx].discountValue = Number(e.target.value);
+                              setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                            }}
+                          />
+                        </div>
+                        <div style={{ width: '115px' }}>
+                          <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Loại giảm:</label>
+                          <select
+                            className="text-input"
+                            style={{ fontSize: '0.8rem', padding: '0.35rem 0.4rem', width: '100%' }}
+                            value={p.discountType}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.specialDiscountPolicies];
+                              updated[idx].discountType = e.target.value as 'PERCENT' | 'FIXED_AMOUNT';
+                              setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                            }}
+                          >
+                            <option value="PERCENT">% Phần trăm</option>
+                            <option value="FIXED_AMOUNT">VNĐ Cố định</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Diễn giải */}
+                      <div>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>Diễn giải & Điều kiện áp dụng:</label>
+                        <textarea
+                          className="text-input"
+                          rows={2}
+                          style={{ fontSize: '0.82rem', width: '100%', resize: 'vertical' }}
+                          value={p.description}
+                          onChange={(e) => {
+                            const updated = [...pricingForm.specialDiscountPolicies];
+                            updated[idx].description = e.target.value;
+                            setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                          }}
+                        />
+                      </div>
+
+                      {/* Mã & Nút Xóa */}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.4rem', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Mã:</span>
+                          <input
+                            type="text"
+                            className="text-input"
+                            style={{ width: '110px', fontSize: '0.8rem', fontWeight: 600 }}
+                            value={p.code}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.specialDiscountPolicies];
+                              updated[idx].code = e.target.value;
+                              setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                            }}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          style={{ background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '0.3rem', padding: '0.25rem 0.5rem', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}
+                          onClick={() => {
+                            const updated = pricingForm.specialDiscountPolicies.filter((_, i) => i !== idx);
+                            setPricingForm({ ...pricingForm, specialDiscountPolicies: updated });
+                          }}
+                        >
+                          🗑️ Xóa
+                        </button>
+                      </div>
                     </div>
+                  ) : (
+                    <>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                            {catInfo.icon} {catInfo.label}
+                          </span>
+                          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                            {!p.isActive && <span className="badge badge-neutral" style={{ fontSize: '0.72rem' }}>Tạm ngưng</span>}
+                            <span className="badge badge-success" style={{ fontWeight: 800, fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                              {p.discountType === 'PERCENT' ? `Giảm ${p.discountValue}%` : `Giảm ${formatNum(p.discountValue)} đ`}
+                            </span>
+                          </div>
+                        </div>
 
-                    <h4 style={{ margin: '0 0 0.4rem 0', color: '#0f172a', fontSize: '1rem', fontWeight: 700, lineHeight: 1.3 }}>
-                      {p.name}
-                    </h4>
+                        <h4 style={{ margin: '0 0 0.4rem 0', color: '#0f172a', fontSize: '1rem', fontWeight: 700, lineHeight: 1.3 }}>
+                          {p.name}
+                        </h4>
 
-                    <p style={{ fontSize: '0.84rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
-                      {p.description}
-                    </p>
-                  </div>
+                        <p style={{ fontSize: '0.84rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                          {p.description}
+                        </p>
+                      </div>
 
-                  <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '0.6rem', marginTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#64748b' }}>
-                    <span>Mã: <code style={{ fontWeight: 600 }}>{p.code}</code></span>
-                    <span>Thẩm quyền: <b style={{ color: '#166534' }}>Ban Giám đốc</b></span>
-                  </div>
+                      <div style={{ borderTop: '1px dashed #e2e8f0', paddingTop: '0.6rem', marginTop: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', color: '#64748b' }}>
+                        <span>Mã: <code style={{ fontWeight: 600 }}>{p.code}</code></span>
+                        <span>Thẩm quyền: <b style={{ color: '#166534' }}>Ban Giám đốc</b></span>
+                      </div>
+                    </>
+                  )}
                 </div>
               );
             })}
@@ -1411,7 +2052,7 @@ export default function BillingPage() {
                 <b style={{ color: '#7c3aed' }}>{formatVndText(invoicesList.reduce((s, i) => s + (i.extendedCareFee || 0), 0))}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
-                <span>📉 Giảm trừ vắng mặt (RLA):</span>
+                <span>📉 Giảm trừ nghỉ phép/tạm vắng:</span>
                 <b style={{ color: '#b91c1c' }}>-{formatVndText(stats.totalLeaveDeductions)}</b>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9' }}>
@@ -1614,7 +2255,7 @@ export default function BillingPage() {
             </div>
 
             {/* Resident Header */}
-            <div style={{ background: '#f8fafc', padding: '0.75rem 0.85rem', borderRadius: '0.5rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #e2e8f0' }}>
+            <div style={{ background: '#f8fafc', padding: '0.75rem 0.85rem', borderRadius: '0.5rem', marginBottom: '0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #e2e8f0' }}>
               <div>
                 <div style={{ fontWeight: 700, fontSize: '0.98rem', color: '#0f172a' }}>{detailModalInvoice.residentName}</div>
                 <div style={{ fontSize: '0.82rem', color: '#64748b' }}>
@@ -1624,6 +2265,37 @@ export default function BillingPage() {
               <span className={`badge ${STATUS_CONFIG[detailModalInvoice.status].badgeClass}`}>
                 {STATUS_CONFIG[detailModalInvoice.status].label}
               </span>
+            </div>
+
+            {/* Audit Status Info Box */}
+            <div style={{ background: detailModalInvoice.auditStatus === 'MANAGER_REPORTED' ? '#fef2f2' : detailModalInvoice.auditStatus === 'DIRECTOR_APPROVED' ? '#f0fdf4' : '#fffbeb', border: `1px solid ${detailModalInvoice.auditStatus === 'MANAGER_REPORTED' ? '#fca5a5' : detailModalInvoice.auditStatus === 'DIRECTOR_APPROVED' ? '#bbf7d0' : '#fde68a'}`, padding: '0.75rem 0.85rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '0.88rem', color: detailModalInvoice.auditStatus === 'MANAGER_REPORTED' ? '#991b1b' : detailModalInvoice.auditStatus === 'DIRECTOR_APPROVED' ? '#166534' : '#92400e' }}>
+                  Trạng thái kiểm duyệt: {AUDIT_STATUS_CONFIG[detailModalInvoice.auditStatus || 'PENDING_MANAGER']?.icon} {AUDIT_STATUS_CONFIG[detailModalInvoice.auditStatus || 'PENDING_MANAGER']?.label}
+                </div>
+                {detailModalInvoice.publishedToFamilyAt && (
+                  <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>
+                    🌐 Đã phát hành Cổng Thân nhân ({new Date(detailModalInvoice.publishedToFamilyAt).toLocaleDateString('vi-VN')})
+                  </span>
+                )}
+              </div>
+              {detailModalInvoice.reviewedByManagerName && (
+                <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.3rem' }}>
+                  <b>Nhân viên Quản lý thẩm định:</b> {detailModalInvoice.reviewedByManagerName} {detailModalInvoice.reviewedByManagerAt && `(${new Date(detailModalInvoice.reviewedByManagerAt).toLocaleDateString('vi-VN')})`}
+                  {detailModalInvoice.managerNotes && <span> — Ghi chú: {detailModalInvoice.managerNotes}</span>}
+                </div>
+              )}
+              {detailModalInvoice.reportedErrorReason && (
+                <div style={{ fontSize: '0.82rem', color: '#dc2626', fontWeight: 600, marginTop: '0.35rem', background: '#fee2e2', padding: '0.4rem 0.65rem', borderRadius: '0.35rem' }}>
+                  ⚠️ <b>Nội dung sai sót báo cáo BGĐ:</b> {detailModalInvoice.reportedErrorReason}
+                </div>
+              )}
+              {detailModalInvoice.approvedByDirectorName && (
+                <div style={{ fontSize: '0.8rem', color: '#166534', marginTop: '0.3rem', fontWeight: 600 }}>
+                  <b>Thành viên BGĐ phê duyệt:</b> {detailModalInvoice.approvedByDirectorName} {detailModalInvoice.approvedByDirectorAt && `(${new Date(detailModalInvoice.approvedByDirectorAt).toLocaleDateString('vi-VN')})`}
+                  {detailModalInvoice.directorEditNotes && <span> — Ghi chú hiệu chỉnh: {detailModalInvoice.directorEditNotes}</span>}
+                </div>
+              )}
             </div>
 
             {/* Breakdown Sections */}
@@ -1704,7 +2376,7 @@ export default function BillingPage() {
               {/* V. Phụ Thu Lễ Tết */}
               {detailModalInvoice.holidaySurchargeFee > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '0.4rem', borderBottom: '1px solid #f1f5f9', color: '#b45309' }}>
-                  <span>🏮 V. Phụ thu ngày Lễ Tết ({detailModalInvoice.holidayDays} ngày):</span>
+                  <span>🏮 V. Phụ thu ngày Lễ Tết ({detailModalInvoice.holidayDays || 1} ngày - {detailModalInvoice.contractType === 'SHORT_TERM' ? '300.000đ/ngày ngắn hạn' : '200.000đ/ngày dài hạn'}):</span>
                   <span>+{formatVndText(detailModalInvoice.holidaySurchargeFee)}</span>
                 </div>
               )}
@@ -1741,7 +2413,65 @@ export default function BillingPage() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
+              {/* Quản lý Thẩm định */}
+              {canConfigurePricing && detailModalInvoice.auditStatus !== 'DIRECTOR_APPROVED' && (
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  style={{ fontWeight: 600, color: '#0369a1', borderColor: '#bae6fd' }}
+                  onClick={() => {
+                    setManagerReviewInvoice(detailModalInvoice);
+                    setManagerReviewNotes(detailModalInvoice.reportedErrorReason || detailModalInvoice.managerNotes || '');
+                  }}
+                >
+                  🔍 Thẩm Định (Quản Lý)
+                </button>
+              )}
+
+              {/* BGĐ Hiệu chỉnh */}
+              {actor?.actorRole === 'SUPERVISOR' && detailModalInvoice.auditStatus !== 'DIRECTOR_APPROVED' && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  style={{ fontWeight: 600 }}
+                  onClick={() => {
+                    setDirectorEditInvoice(detailModalInvoice);
+                    setDirectorForm({
+                      basicPackageFee: detailModalInvoice.basicPackageFee,
+                      supportServicesFee: detailModalInvoice.supportServicesFee,
+                      extendedCareFee: detailModalInvoice.extendedCareFee,
+                      extendedCareDays: detailModalInvoice.extendedCareDays || 0,
+                      regularLeaveDays: detailModalInvoice.regularLeaveDays || 0,
+                      forceMajeureLeaveDays: detailModalInvoice.forceMajeureLeaveDays || 0,
+                      holidayDays: detailModalInvoice.holidayDays || 0,
+                      holidaySurchargeFee: detailModalInvoice.holidaySurchargeFee || 0,
+                      extraMealsFee: detailModalInvoice.extraMealsFee || 0,
+                      consumablesFee: detailModalInvoice.consumablesFee || 0,
+                      directorEditNotes: detailModalInvoice.directorEditNotes || '',
+                    });
+                  }}
+                >
+                  ✏️ Hiệu Chỉnh BGĐ
+                </button>
+              )}
+
+              {/* BGĐ Duyệt & Phát hành */}
+              {actor?.actorRole === 'SUPERVISOR' && detailModalInvoice.auditStatus !== 'DIRECTOR_APPROVED' && (
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  style={{ fontWeight: 700 }}
+                  onClick={() => {
+                    if (window.confirm(`Xác nhận Ban Giám đốc phê duyệt & phát hành Bảng kê ${detailModalInvoice.invoiceCode} tới Cổng Thân nhân?`)) {
+                      publishByDirectorMutation.mutate(detailModalInvoice.invoiceId);
+                    }
+                  }}
+                >
+                  🚀 Duyệt & Phát Hành
+                </button>
+              )}
+
               {canConfigurePricing && detailModalInvoice.status !== 'SETTLED' && (
                 <button
                   type="button"
@@ -1978,21 +2708,12 @@ export default function BillingPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
                   <label className="field-group">
-                    <span className="field-label" style={{ fontWeight: 600 }}>Phí cơ bản (1) [VNĐ]</span>
+                    <span className="field-label" style={{ fontWeight: 600 }}>Phí cơ bản [VNĐ]</span>
                     <input
                       type="number"
                       className="text-input"
                       value={feeNoticeForm.basicFee}
                       onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, basicFee: Number(e.target.value) || 0 })}
-                    />
-                  </label>
-                  <label className="field-group">
-                    <span className="field-label" style={{ fontWeight: 600 }}>Phí hỗ trợ (2) [VNĐ]</span>
-                    <input
-                      type="number"
-                      className="text-input"
-                      value={feeNoticeForm.supportFee}
-                      onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, supportFee: Number(e.target.value) || 0 })}
                     />
                   </label>
                   <label className="field-group">
@@ -2100,11 +2821,11 @@ export default function BillingPage() {
               {/* Nhóm 3: Phát sinh, Giảm trừ & Dư nợ */}
               <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
                 <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#991b1b', marginBottom: '0.75rem' }}>
-                  3. Phát Sinh (3), Giảm Trừ (4) & Nợ Tháng Trước (5):
+                  3. Phát Sinh, Giảm Trừ & Nợ Tháng Trước:
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
                   <label className="field-group">
-                    <span className="field-label" style={{ fontWeight: 600 }}>Phát sinh (3) [VNĐ]</span>
+                    <span className="field-label" style={{ fontWeight: 600 }}>Phí phát sinh [VNĐ]</span>
                     <input
                       type="number"
                       className="text-input"
@@ -2113,17 +2834,18 @@ export default function BillingPage() {
                     />
                   </label>
                   <label className="field-group" style={{ gridColumn: 'span 2' }}>
-                    <span className="field-label" style={{ fontWeight: 600 }}>Nội dung phát sinh</span>
-                    <input
-                      type="text"
+                    <span className="field-label" style={{ fontWeight: 600 }}>Nội dung phát sinh (có thể nhập nhiều dòng phát sinh)</span>
+                    <textarea
                       className="text-input"
-                      placeholder="Mô tả khoản phát sinh (VD: Đi khám BV...)"
+                      rows={2}
+                      placeholder="Mô tả nội dung phát sinh (xuống dòng nếu có nhiều khoản phát sinh, VD:&#10;• Phụ thu đi khám Bệnh viện&#10;• Tã bỉm & vật tư y tế bổ sung)"
                       value={feeNoticeForm.incurredContent || ''}
                       onChange={(e) => setFeeNoticeForm({ ...feeNoticeForm, incurredContent: e.target.value })}
+                      style={{ resize: 'vertical', fontSize: '0.82rem' }}
                     />
                   </label>
                   <label className="field-group">
-                    <span className="field-label" style={{ fontWeight: 600, color: '#dc2626' }}>Chi phí giảm trừ (4) [VNĐ]</span>
+                    <span className="field-label" style={{ fontWeight: 600, color: '#dc2626' }}>Giảm trừ [VNĐ]</span>
                     <input
                       type="number"
                       className="text-input"
@@ -2132,7 +2854,7 @@ export default function BillingPage() {
                     />
                   </label>
                   <label className="field-group">
-                    <span className="field-label" style={{ fontWeight: 600 }}>Nợ tháng trước (5) [VNĐ]</span>
+                    <span className="field-label" style={{ fontWeight: 600 }}>Nợ tháng trước [VNĐ]</span>
                     <input
                       type="number"
                       className="text-input"
@@ -2185,7 +2907,6 @@ export default function BillingPage() {
               {(() => {
                 const liveTotal =
                   feeNoticeForm.basicFee +
-                  feeNoticeForm.supportFee +
                   feeNoticeForm.bathingLaundryFee +
                   feeNoticeForm.mobilityFee +
                   feeNoticeForm.hygieneFee +
@@ -2252,7 +2973,6 @@ export default function BillingPage() {
                     if (editFeeNotice) {
                       const liveTotal =
                         feeNoticeForm.basicFee +
-                        feeNoticeForm.supportFee +
                         feeNoticeForm.bathingLaundryFee +
                         feeNoticeForm.mobilityFee +
                         feeNoticeForm.hygieneFee +
@@ -2560,11 +3280,6 @@ export default function BillingPage() {
                     </tr>
                     <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
                       <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>2</td>
-                      <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí hỗ trợ chung</td>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.supportFee.toLocaleString('vi-VN')}</td>
-                    </tr>
-                    <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                      <td style={{ padding: '0.45rem 0.75rem', textAlign: 'center', color: '#64748b', borderRight: '1px solid #e2e8f0' }}>3</td>
                       <td style={{ padding: '0.45rem 0.75rem', borderRight: '1px solid #e2e8f0' }}>Phí Hỗ trợ tắm gội</td>
                       <td style={{ padding: '0.45rem 0.75rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{printModalNotice.bathingLaundryFee.toLocaleString('vi-VN')}</td>
                     </tr>
@@ -2757,6 +3472,266 @@ export default function BillingPage() {
                   <div style={{ fontWeight: 600, color: '#334155' }}>Viện Trưởng Tâm An</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: QUẢN LÝ THẨM ĐỊNH & BÁO CÁO SAI SÓT */}
+      {/* ========================================================================= */}
+      {managerReviewInvoice && (
+        <div className="modal-overlay" onClick={() => setManagerReviewInvoice(null)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid #e2e8f0',
+              maxWidth: '560px',
+              width: '100%',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.65rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#0369a1', fontSize: '1.15rem', fontWeight: 800 }}>
+                  🔍 Kiểm Duyệt & Thẩm Định Bảng Kê (Quản Lý)
+                </h3>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Bảng kê {managerReviewInvoice.invoiceCode} — {managerReviewInvoice.residentName}</div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={() => setManagerReviewInvoice(null)}
+                style={{ padding: '0.2rem 0.6rem', fontSize: '1.1rem', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ background: '#f0f9ff', padding: '0.75rem 0.85rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid #bae6fd', fontSize: '0.85rem', color: '#0369a1' }}>
+              ℹ️ Nhân viên Quản lý có trách nhiệm đối soát số ngày nghỉ phép, phí chăm sóc hỗ trợ, phụ thu Lễ Tết và vật tư trước khi chuyển Ban Giám đốc phê duyệt phát hành Cổng thân nhân.
+            </div>
+
+            <label className="field-group" style={{ marginBottom: '1.25rem' }}>
+              <span className="field-label" style={{ fontWeight: 700 }}>Ghi chú thẩm định / Nội dung sai sót phát hiện:</span>
+              <textarea
+                className="text-input"
+                rows={3}
+                placeholder="Nếu Bảng kê chính xác: Nhập ghi chú xác nhận (nếu có).
+Nếu có sai sót: Nhập chi tiết nội dung sai sót để báo cáo Ban Giám đốc (VD: Nhầm số ngày nghỉ phép thăm nhà, chưa giảm trừ nghỉ phép/tạm vắng...)"
+                value={managerReviewNotes}
+                onChange={(e) => setManagerReviewNotes(e.target.value)}
+              />
+            </label>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                style={{ background: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5', fontWeight: 700 }}
+                disabled={reviewByManagerMutation.isPending}
+                onClick={() => {
+                  if (!managerReviewNotes.trim()) {
+                    alert('Vui lòng nhập nội dung sai sót phát hiện để báo cáo Ban Giám đốc.');
+                    return;
+                  }
+                  reviewByManagerMutation.mutate({
+                    invoiceId: managerReviewInvoice.invoiceId,
+                    isAccurate: false,
+                    notesOrReason: managerReviewNotes,
+                  });
+                }}
+              >
+                ⚠️ Báo Cáo Sai Sót Cho BGĐ
+              </button>
+
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn btn-neutral"
+                  onClick={() => setManagerReviewInvoice(null)}
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  disabled={reviewByManagerMutation.isPending}
+                  style={{ fontWeight: 700 }}
+                  onClick={() => {
+                    reviewByManagerMutation.mutate({
+                      invoiceId: managerReviewInvoice.invoiceId,
+                      isAccurate: true,
+                      notesOrReason: managerReviewNotes || 'Đã kiểm tra và xác nhận Bảng kê chính xác 100%.',
+                    });
+                  }}
+                >
+                  {reviewByManagerMutation.isPending ? 'Đang gửi...' : '✅ Xác Nhận Chính Xác'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL: BAN GIÁM ĐỐC HIỆU CHỈNH CÁC HẠNG MỤC BẢNG KÊ */}
+      {/* ========================================================================= */}
+      {directorEditInvoice && (
+        <div className="modal-overlay" onClick={() => setDirectorEditInvoice(null)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.5rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid #e2e8f0',
+              maxWidth: '680px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.65rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#166534', fontSize: '1.15rem', fontWeight: 800 }}>
+                  ✏️ Hiệu Chỉnh Các Hạng Mục Bảng Kê (Ban Giám Đốc)
+                </h3>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Bảng kê {directorEditInvoice.invoiceCode} — {directorEditInvoice.residentName}</div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={() => setDirectorEditInvoice(null)}
+                style={{ padding: '0.2rem 0.6rem', fontSize: '1.1rem', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {directorEditInvoice.reportedErrorReason && (
+              <div style={{ background: '#fee2e2', border: '1px solid #fca5a5', padding: '0.75rem 0.85rem', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.84rem', color: '#991b1b' }}>
+                ⚠️ <b>Báo cáo sai sót từ Nhân viên Quản lý ({directorEditInvoice.reviewedByManagerName || 'Quản lý'}):</b>
+                <div style={{ marginTop: '0.25rem', fontStyle: 'italic' }}>"{directorEditInvoice.reportedErrorReason}"</div>
+              </div>
+            )}
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🏨 Phí Chăm Sóc Cơ Bản (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.basicPackageFee || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, basicPackageFee: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🩺 Phí Chăm Sóc Hỗ Trợ (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.supportServicesFee || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, supportServicesFee: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🌟 Phí Chăm Sóc Mở Rộng (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.extendedCareFee || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, extendedCareFee: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>📅 Số Ngày Vắng Mặt Thông Thường (100k/ngày):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.regularLeaveDays || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, regularLeaveDays: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🚑 Số Ngày Vắng Bất Khả Kháng (200k/ngày):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.forceMajeureLeaveDays || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, forceMajeureLeaveDays: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🏮 Phụ Thu Ngày Lễ Tết (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.holidaySurchargeFee || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, holidaySurchargeFee: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🍲 Chi Phí Suất Ăn Thân Nhân (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.extraMealsFee || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, extraMealsFee: Number(e.target.value) })}
+                />
+              </div>
+
+              <div>
+                <label className="field-label" style={{ fontSize: '0.8rem', fontWeight: 700 }}>🩹 Vật Tư Y Tế Tiêu Hao (đồng):</label>
+                <input
+                  type="number"
+                  className="text-input"
+                  value={directorForm.consumablesFee || 0}
+                  onChange={(e) => setDirectorForm({ ...directorForm, consumablesFee: Number(e.target.value) })}
+                />
+              </div>
+            </div>
+
+            <label className="field-group" style={{ marginBottom: '1.25rem' }}>
+              <span className="field-label" style={{ fontWeight: 700 }}>Ghi chú hiệu chỉnh của Ban Giám đốc:</span>
+              <textarea
+                className="text-input"
+                rows={2}
+                placeholder="Nhập căn cứ điều chỉnh các hạng mục thu phí..."
+                value={directorForm.directorEditNotes || ''}
+                onChange={(e) => setDirectorForm({ ...directorForm, directorEditNotes: e.target.value })}
+              />
+            </label>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={() => setDirectorEditInvoice(null)}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                className="btn btn-success"
+                disabled={updateByDirectorMutation.isPending}
+                style={{ fontWeight: 700 }}
+                onClick={() => updateByDirectorMutation.mutate()}
+              >
+                {updateByDirectorMutation.isPending ? 'Đang lưu...' : '💾 Lưu Hiệu Chỉnh Bảng Kê'}
+              </button>
             </div>
           </div>
         </div>

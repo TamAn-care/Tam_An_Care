@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { getResidentCareView } from '../../api/residents';
 import { useActor } from '../../auth/ActorContext';
-import { ROLE_LABELS, getAssignedResidentIdsForActor } from '../../auth/role-policy';
+import { ROLE_LABELS, getAssignedResidentIdsForActor, getAssignedResidentIdsForGuardian } from '../../auth/role-policy';
 import { ApiError } from '../../api/errors';
 import { EmptyState, ErrorState, LoadingState } from '../../components/feedback/FeedbackStates';
 import ElderlyAvatar from '../../components/common/ElderlyAvatar';
@@ -50,6 +50,13 @@ export function CareViewPage() {
       return failureCount < 1;
     },
   });
+
+  const assignedResidentIds = useMemo(() => {
+    if (!actor) return new Set<string>();
+    const caregiverAssigned = getAssignedResidentIdsForActor(actor.actorId, actor.displayName).map((id) => id.toLowerCase());
+    const guardianAssigned = getAssignedResidentIdsForGuardian(actor.actorId, actor.displayName).map((id) => id.toLowerCase());
+    return new Set([...caregiverAssigned, ...guardianAssigned]);
+  }, [actor?.actorId, actor?.displayName]);
 
   if (!normalizedResidentId) {
     return <ErrorState title="Không thể mở hồ sơ" description="Mã resident không hợp lệ." />;
@@ -148,13 +155,9 @@ export function CareViewPage() {
     (actor.actorRole as string) === 'SOCIAL_WORKER' ||
     (actor.actorRole as string) === 'PSYCHOLOGIST' ||
     (actor.actorRole as string) === 'ACCOUNTANT' ||
-    (actor.actorRole as string) === 'HOUSEKEEPING';
+    (actor.actorRole as string) === 'HOUSEKEEPING' ||
+    (actor.actorRole as string) === 'SECURITY';
 
-  const assignedResidentIds = useMemo(() => {
-    return new Set(
-      getAssignedResidentIdsForActor(actor.actorId, actor.displayName).map((id) => id.toLowerCase())
-    );
-  }, [actor.actorId, actor.displayName]);
 
   const targetResidentId = (
     textFromRecord(data.resident, 'residentId') ||

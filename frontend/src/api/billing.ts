@@ -59,6 +59,7 @@ export interface ResidentMonthlyInvoice {
   billingMonth: string; // YYYY-MM
   careLevel: 1 | 2 | 3;
   roomTier: string;
+  contractType?: 'LONG_TERM' | 'SHORT_TERM';
 
   // I. Phí Chăm Sóc Cơ Bản
   basicPackageId: string;
@@ -110,6 +111,17 @@ export interface ResidentMonthlyInvoice {
   settledAt?: string;
   settledBy?: string;
   notes?: string;
+
+  // Kiểm Duyệt & Phê Duyệt Phát Hành Cổng Thân Nhân
+  auditStatus?: 'DRAFT' | 'PENDING_MANAGER' | 'MANAGER_APPROVED' | 'MANAGER_REPORTED' | 'DIRECTOR_APPROVED';
+  reviewedByManagerAt?: string;
+  reviewedByManagerName?: string;
+  managerNotes?: string;
+  reportedErrorReason?: string; // Nội dung Quản lý báo cáo sai sót cho Ban Giám đốc
+  approvedByDirectorAt?: string;
+  approvedByDirectorName?: string;
+  directorEditNotes?: string;
+  publishedToFamilyAt?: string;
 }
 
 export interface PaymentReceipt {
@@ -185,6 +197,13 @@ export interface SpecialDiscountPolicy {
   isActive: boolean;
 }
 
+export interface DepositItemConfig {
+  id: string;
+  name: string;
+  amount: number;
+  description: string;
+}
+
 export interface PricingMatrix {
   effectiveDate: string;
   basicCarePackages: BasicCarePackage[];
@@ -192,6 +211,7 @@ export interface PricingMatrix {
   extendedCare: ExtendedCareRate[];
   policyRules: PolicyDiscountRule[];
   specialDiscountPolicies: SpecialDiscountPolicy[];
+  depositFee?: DepositItemConfig;
 }
 
 export const DISCOUNT_CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {
@@ -517,6 +537,14 @@ export const DEFAULT_PRICING_MATRIX: PricingMatrix = {
       isActive: true,
     },
   ],
+
+  // VI. HẠNG MỤC THU TIỀN ĐẶT CỌC LƯU TRÚ (KÝ QUỶ)
+  depositFee: {
+    id: 'DEP-01',
+    name: 'Tiền đặt cọc tiếp nhận lưu trú',
+    amount: 20000000,
+    description: 'Mỗi Cụ khi vào ở tại Trung Tâm Dưỡng Lão Tâm An sẽ nộp khoản tiền đặt cọc ký quỹ 20.000.000 đồng. Khoản tiền này nhằm bảo đảm thực hiện hợp đồng, bù đắp các chi phí phát sinh cấp cứu (nếu có) hoặc đối trừ khi thanh lý. Số tiền này sẽ được hoàn trả 100% cho Thân nhân khi kết thúc hợp đồng dịch vụ.',
+  },
 };
 
 // In-memory persistent stores
@@ -729,6 +757,11 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
     notes: 'Gia đình đã thanh toán toàn bộ qua chuyển khoản ngân hàng.',
+
+    auditStatus: 'DIRECTOR_APPROVED',
+    approvedByDirectorName: 'Hoàng Quốc Anh (Giám Đốc)',
+    approvedByDirectorAt: '2026-09-01T09:00:00Z',
+    publishedToFamilyAt: '2026-09-01T09:00:00Z',
   },
   {
     invoiceId: 'INV-202609-002',
@@ -794,6 +827,11 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
     notes: 'Đã thanh toán 35 triệu, phần còn lại thanh toán trước ngày 10/09.',
+
+    auditStatus: 'MANAGER_REPORTED',
+    reviewedByManagerName: 'Nguyễn Thị Thu (Quản Lý)',
+    reviewedByManagerAt: '2026-09-02T10:15:00Z',
+    reportedErrorReason: 'Phát hiện nhầm lẫn 2 ngày nghỉ phép thăm nhà của Cụ chưa được trừ vào viện phí. Đề nghị BGĐ điều chỉnh giảm trừ 200.000đ trước khi phát hành gửi Cổng thân nhân.',
   },
   {
     invoiceId: 'INV-202609-003',
@@ -845,9 +883,156 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
     status: 'PENDING',
     issuedDate: '2026-09-01',
     dueDate: '2026-09-10',
-    notes: 'Đã gửi bảng kê chi tiết cho gia đình qua Zalo và SMS.',
+    notes: 'Bảng kê dự thảo - Chờ Nhân viên quản lý thẩm định.',
+
+    auditStatus: 'PENDING_MANAGER',
   },
 ];
+
+export async function reviewInvoiceByManager(
+  actor: HumanActorSession,
+  payload: {
+    invoiceId: string;
+    isAccurate: boolean;
+    notesOrReason?: string;
+  }
+): Promise<ResidentMonthlyInvoice> {
+  await new Promise((r) => setTimeout(r, 120));
+  const inv = mockInvoices.find((i) => i.invoiceId === payload.invoiceId);
+  if (!inv) throw new Error('Không tìm thấy bảng kê thu phí.');
+
+  if (payload.isAccurate) {
+    inv.auditStatus = 'MANAGER_APPROVED';
+    inv.reviewedByManagerAt = new Date().toISOString();
+    inv.reviewedByManagerName = actor.displayName || 'Nhân viên Quản lý';
+    inv.managerNotes = payload.notesOrReason || 'Đã kiểm tra nội dung và xác nhận tính chính xác.';
+  } else {
+    inv.auditStatus = 'MANAGER_REPORTED';
+    inv.reviewedByManagerAt = new Date().toISOString();
+    inv.reviewedByManagerName = actor.displayName || 'Nhân viên Quản lý';
+    inv.reportedErrorReason = payload.notesOrReason || 'Báo cáo có sai sót trong các hạng mục thu phí.';
+  }
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-MGR-001',
+    actorName: actor.displayName || 'Quản Lý',
+    actorRole: actor.actorRole,
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole,
+    actionType: payload.isAccurate ? 'APPROVE' : 'REJECT',
+    actionLabel: payload.isAccurate ? 'Quản lý xác nhận chính xác Bảng kê thu phí' : 'Quản lý báo cáo sai sót Bảng kê thu phí',
+    module: 'BILLING_PRICING',
+    moduleLabel: 'Quản lý Phí & Kế toán',
+    targetEntityId: inv.invoiceId,
+    targetEntityName: `${inv.invoiceCode} - ${inv.residentName}`,
+    summary: payload.isAccurate
+      ? `Nhân viên quản lý ${actor.displayName} đã thẩm định và xác nhận tính chính xác của bảng kê ${inv.invoiceCode}.`
+      : `Nhân viên quản lý ${actor.displayName} đã báo cáo sai sót tới BGĐ cho bảng kê ${inv.invoiceCode}: ${payload.notesOrReason}`,
+    severity: payload.isAccurate ? 'NORMAL' : 'IMPORTANT',
+  });
+
+  return JSON.parse(JSON.stringify(inv));
+}
+
+export async function updateInvoiceItemsByDirector(
+  actor: HumanActorSession,
+  payload: {
+    invoiceId: string;
+    basicPackageFee?: number;
+    supportServicesFee?: number;
+    extendedCareFee?: number;
+    extendedCareDays?: number;
+    regularLeaveDays?: number;
+    forceMajeureLeaveDays?: number;
+    holidayDays?: number;
+    holidaySurchargeFee?: number;
+    extraMealsFee?: number;
+    consumablesFee?: number;
+    directorEditNotes?: string;
+  }
+): Promise<ResidentMonthlyInvoice> {
+  await new Promise((r) => setTimeout(r, 150));
+  const inv = mockInvoices.find((i) => i.invoiceId === payload.invoiceId);
+  if (!inv) throw new Error('Không tìm thấy bảng kê thu phí.');
+
+  if (payload.basicPackageFee !== undefined) inv.basicPackageFee = payload.basicPackageFee;
+  if (payload.supportServicesFee !== undefined) inv.supportServicesFee = payload.supportServicesFee;
+  if (payload.extendedCareFee !== undefined) inv.extendedCareFee = payload.extendedCareFee;
+  if (payload.extendedCareDays !== undefined) inv.extendedCareDays = payload.extendedCareDays;
+  if (payload.regularLeaveDays !== undefined) inv.regularLeaveDays = payload.regularLeaveDays;
+  if (payload.forceMajeureLeaveDays !== undefined) inv.forceMajeureLeaveDays = payload.forceMajeureLeaveDays;
+  if (payload.holidayDays !== undefined) inv.holidayDays = payload.holidayDays;
+  if (payload.holidaySurchargeFee !== undefined) inv.holidaySurchargeFee = payload.holidaySurchargeFee;
+  if (payload.extraMealsFee !== undefined) inv.extraMealsFee = payload.extraMealsFee;
+  if (payload.consumablesFee !== undefined) inv.consumablesFee = payload.consumablesFee;
+
+  if (payload.directorEditNotes) inv.directorEditNotes = payload.directorEditNotes;
+
+  // Tính toán lại các khoản vắng mặt & tổng cộng
+  inv.leaveDays = (inv.forceMajeureLeaveDays || 0) + (inv.regularLeaveDays || 0);
+  inv.leaveDeductionFee = ((inv.forceMajeureLeaveDays || 0) * 200000) + ((inv.regularLeaveDays || 0) * 100000);
+
+  const totals = calculateInvoiceTotals(inv);
+  inv.subtotalAmount = totals.subtotalAmount;
+  inv.totalAmount = totals.totalAmount;
+  inv.remainingAmount = totals.remainingAmount;
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-DIR-001',
+    actorName: actor.displayName || 'Ban Giám đốc',
+    actorRole: actor.actorRole,
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole,
+    actionType: 'UPDATE',
+    actionLabel: 'Ban Giám đốc hiệu chỉnh các hạng mục Bảng kê thu phí',
+    module: 'BILLING_PRICING',
+    moduleLabel: 'Quản lý Phí & Kế toán',
+    targetEntityId: inv.invoiceId,
+    targetEntityName: `${inv.invoiceCode} - ${inv.residentName}`,
+    summary: `Thành viên BGĐ ${actor.displayName} đã hiệu chỉnh các thông số/hạng mục của bảng kê ${inv.invoiceCode}. Ghi chú: ${payload.directorEditNotes || 'Đã điều chỉnh.'}`,
+    severity: 'IMPORTANT',
+  });
+
+  return JSON.parse(JSON.stringify(inv));
+}
+
+export async function publishInvoiceToFamilyPortal(
+  actor: HumanActorSession,
+  invoiceId: string
+): Promise<ResidentMonthlyInvoice> {
+  await new Promise((r) => setTimeout(r, 120));
+  const inv = mockInvoices.find((i) => i.invoiceId === invoiceId);
+  if (!inv) throw new Error('Không tìm thấy bảng kê thu phí.');
+
+  inv.auditStatus = 'DIRECTOR_APPROVED';
+  inv.approvedByDirectorAt = new Date().toISOString();
+  inv.approvedByDirectorName = actor.displayName || 'Thành viên Ban Giám đốc';
+  inv.publishedToFamilyAt = new Date().toISOString();
+
+  // Đồng bộ với mockDetailedFeeNotices nếu có
+  const notice = mockDetailedFeeNotices.find((n) => n.residentId === inv.residentId || n.id.includes(inv.invoiceCode));
+  if (notice) {
+    notice.isApproved = true;
+    notice.isPublishedToFamilyPortal = true;
+    notice.approvedBy = actor.displayName || 'Ban Giám đốc';
+    notice.approvedAt = new Date().toISOString();
+  }
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-DIR-001',
+    actorName: actor.displayName || 'Ban Giám đốc',
+    actorRole: actor.actorRole,
+    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole,
+    actionType: 'APPROVE',
+    actionLabel: 'Ban Giám đốc phê duyệt & Phát hành Cổng thân nhân',
+    module: 'BILLING_PRICING',
+    moduleLabel: 'Quản lý Phí & Kế toán',
+    targetEntityId: inv.invoiceId,
+    targetEntityName: `${inv.invoiceCode} - ${inv.residentName}`,
+    summary: `Thành viên BGĐ ${actor.displayName} đã phê duyệt tính chính xác và chính thức phát hành Bảng kê thu phí ${inv.invoiceCode} tới Cổng Thân nhân.`,
+    severity: 'CRITICAL',
+  });
+
+  return JSON.parse(JSON.stringify(inv));
+}
 
 let mockReceipts: PaymentReceipt[] = [
   {
@@ -1379,7 +1564,6 @@ export async function updateDetailedFeeNotice(
   // Auto sum Total Must Collect
   const totalDue =
     payload.basicFee +
-    payload.supportFee +
     payload.bathingLaundryFee +
     payload.mobilityFee +
     payload.hygieneFee +

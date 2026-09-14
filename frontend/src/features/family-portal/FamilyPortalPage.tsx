@@ -1549,21 +1549,20 @@ export default function FamilyPortalPage() {
                 {(feeNoticesQuery.data || []).map((notice) => {
                   // Chỉ hiển thị các mục có phí > 0 theo quy định
                   const feeItemsList = [
-                    { name: '1. Phí cơ bản (1)', amount: notice.basicFee },
-                    { name: '2. Phí hỗ trợ (2)', amount: notice.supportFee },
-                    { name: '3. Hỗ trợ tắm gội', amount: notice.bathingLaundryFee },
-                    { name: '4. Hỗ trợ nâng đỡ, di chuyển', amount: notice.mobilityFee },
-                    { name: '5. Hỗ trợ vệ sinh', amount: notice.hygieneFee },
-                    { name: '6. Hỗ trợ xúc ăn / ăn qua sonde', amount: notice.feedingSondeFee },
-                    { name: '7. Chăm sóc NCT bị lẫn tuổi già', amount: notice.dementiaCareFee },
-                    { name: '8. Chăm sóc các ổ loét', amount: notice.soreCareFee },
-                    { name: '9. Chăm sóc người đặt sonde bàng quang', amount: notice.catheterCareFee },
-                    { name: '10. Chăm sóc người đặt nội khí quản', amount: notice.tracheostomyCareFee },
-                    { name: '11. Thay băng, rửa vết thương', amount: notice.woundDressingFee },
-                    { name: '12. Vật lý trị liệu - PHCN', amount: notice.rehabFee },
-                    { name: '13. Phát sinh (3)', amount: notice.incurredFee, note: notice.incurredContent },
-                    { name: '14. Tiền ăn cơm người nhà đăng ký tại Tâm An', amount: notice.familyMealsFee },
-                    { name: '15. Nợ tháng trước (5)', amount: notice.previousMonthDebt, note: notice.debtNotes },
+                    { name: '1. Phí cơ bản', amount: notice.basicFee },
+                    { name: '2. Hỗ trợ tắm gội', amount: notice.bathingLaundryFee },
+                    { name: '3. Hỗ trợ nâng đỡ, di chuyển', amount: notice.mobilityFee },
+                    { name: '4. Hỗ trợ vệ sinh', amount: notice.hygieneFee },
+                    { name: '5. Hỗ trợ xúc ăn / ăn qua sonde', amount: notice.feedingSondeFee },
+                    { name: '6. Chăm sóc NCT bị lẫn tuổi già', amount: notice.dementiaCareFee },
+                    { name: '7. Chăm sóc các ổ loét', amount: notice.soreCareFee },
+                    { name: '8. Chăm sóc người đặt sonde bàng quang', amount: notice.catheterCareFee },
+                    { name: '9. Chăm sóc người đặt nội khí quản', amount: notice.tracheostomyCareFee },
+                    { name: '10. Thay băng, rửa vết thương', amount: notice.woundDressingFee },
+                    { name: '11. Vật lý trị liệu - PHCN', amount: notice.rehabFee },
+                    { name: '12. Phí phát sinh', amount: notice.incurredFee, note: notice.incurredContent },
+                    { name: '13. Tiền ăn cơm người nhà đăng ký tại Tâm An', amount: notice.familyMealsFee },
+                    { name: '14. Nợ tháng trước', amount: notice.previousMonthDebt, note: notice.debtNotes },
                   ].filter((item) => item.amount > 0);
 
                   const statusClass = notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger';
