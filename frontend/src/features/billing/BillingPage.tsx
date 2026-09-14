@@ -962,7 +962,8 @@ export default function BillingPage() {
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí CS Hỗ Trợ (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phí CS Mở Rộng (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phụ Thu Lễ Tết (đồng)</th>
-                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Suất Ăn & Vật Tư (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Suất Ăn Thân Nhân (đồng)</th>
+                      <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Vật Tư Tiêu Hao (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Nợ Tháng Trước (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm trừ nghỉ phép/tạm vắng (đồng)</th>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Giảm Giá (đồng)</th>
@@ -1038,17 +1039,30 @@ export default function BillingPage() {
                               </div>
                             )}
                           </td>
-                          {/* Suất ăn thân nhân & Vật tư tiêu hao */}
+                          {/* Suất ăn thân nhân */}
                           <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                            {(inv.extraMealsFee > 0 || inv.consumablesFee > 0) ? (
+                            {inv.extraMealsFee > 0 ? (
                               <div>
                                 <div style={{ fontWeight: 700, color: '#0284c7' }}>
-                                  +{formatNum((inv.extraMealsFee || 0) + (inv.consumablesFee || 0))}
+                                  +{formatNum(inv.extraMealsFee)}
                                 </div>
-                                <div style={{ fontSize: '0.72rem', color: '#0369a1', fontStyle: 'italic', maxWidth: '180px', marginLeft: 'auto' }}>
-                                  {inv.extraMealsFee > 0 ? `Ăn: ${formatNum(inv.extraMealsFee)}đ` : ''}
-                                  {inv.extraMealsFee > 0 && inv.consumablesFee > 0 ? ' | ' : ''}
-                                  {inv.consumablesFee > 0 ? `Vật tư: ${formatNum(inv.consumablesFee)}đ` : ''}
+                                <div style={{ fontSize: '0.72rem', color: '#0369a1', fontStyle: 'italic', maxWidth: '150px', marginLeft: 'auto' }}>
+                                  {inv.extraMealItems && inv.extraMealItems.length > 0 ? `${inv.extraMealItems.length} suất ăn` : 'Đăng ký ăn'}
+                                </div>
+                              </div>
+                            ) : (
+                              <span style={{ color: '#94a3b8' }}>0</span>
+                            )}
+                          </td>
+                          {/* Vật tư tiêu hao */}
+                          <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
+                            {inv.consumablesFee > 0 ? (
+                              <div>
+                                <div style={{ fontWeight: 700, color: '#0d9488' }}>
+                                  +{formatNum(inv.consumablesFee)}
+                                </div>
+                                <div style={{ fontSize: '0.72rem', color: '#0f766e', fontStyle: 'italic', maxWidth: '150px', marginLeft: 'auto' }}>
+                                  {inv.consumableItems && inv.consumableItems.length > 0 ? `${inv.consumableItems.length} mục vật tư` : 'Vật tư y tế'}
                                 </div>
                               </div>
                             ) : (

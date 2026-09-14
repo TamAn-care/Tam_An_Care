@@ -854,10 +854,10 @@ let mockInvoices: ResidentMonthlyInvoice[] = [
       { itemId: 'INV-MED-003', itemCode: 'VT-003', name: 'Băng gạc tiệt trùng Urgo Sterile 10x10', unit: 'miếng', unitPrice: 8000, quantity: 2, totalPrice: 20000, date: '2026-09-02', prescribedBy: 'ĐD. Lê Thị Mai' },
     ],
 
-    // Tổng hàng tháng = Phí cơ bản (16.5m) + Phụ thu lễ (0.2m) + Nợ tháng trước (0) - Giảm trừ (0.4m) - Ưu đãi (0.495m) + Suất ăn (0.12m) + Vật tư (0.275m)
-    subtotalAmount: 16700000,
-    totalAmount: 16480000,
-    paidAmount: 16480000,
+    // Tổng hàng tháng = Phí cơ bản (16.5m) + Phụ thu lễ (0.2m) + Suất ăn (0.12m) + Vật tư (0.275m) + Nợ tháng trước (0) - Giảm trừ (0.4m) - Ưu đãi (0.495m)
+    subtotalAmount: 17095000,
+    totalAmount: 16200000,
+    paidAmount: 16200000,
     remainingAmount: 0,
     depositBalance: 20000000,
     status: 'PAID',
@@ -1557,9 +1557,9 @@ let mockDetailedFeeNotices: DetailedMonthlyFeeNotice[] = [
     debtNotes: 'Không nợ cũ',
     depositStatus: 'PAID',
     unpaidDepositDebt: 0,
-    familyMealsFee: 675000, // 120k cơm + 275k vật tư + 280k bổ sung
-    totalDue: 16480000,
-    paidAmount: 16480000,
+    familyMealsFee: 395000, // 120k cơm + 275k vật tư y tế
+    totalDue: 16200000,
+    paidAmount: 16200000,
     remainingAmount: 0,
     status: 'PAID',
     statusLabel: 'Đã thu',
