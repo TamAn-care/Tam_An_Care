@@ -510,7 +510,7 @@ export default function MedicationInventoryPage() {
 
       {/* TAB 1: eMAR DAILY ADMINISTRATION */}
       {activeTab === 'emar' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div className="printable-a4-sheet" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Progress & 5 Rights Header Card */}
           <div
             className="card"

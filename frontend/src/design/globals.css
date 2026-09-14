@@ -1824,13 +1824,6 @@ transform: scale(1.28);
     z-index: auto !important;
   }
 
-  /* Hide non-modal sibling content inside page containers when modal or printable sheet is active */
-  .page-container > *:not(.modal-overlay):not(.modal-backdrop):not(.printable-a4-sheet),
-  .page-content > *:not(.modal-overlay):not(.modal-backdrop):not(.printable-a4-sheet),
-  .card > *:not(.modal-overlay):not(.modal-backdrop):not(.printable-a4-sheet) {
-    display: none !important;
-  }
-
   /* Ensure single-page compact fit */
   .printable-a4-sheet {
     padding: 0 !important;

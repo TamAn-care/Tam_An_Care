@@ -3068,12 +3068,7 @@ export default function BillingPage() {
                 display: none !important;
               }
 
-              /* 3. Hide non-modal content inside page container when print modal is active */
-              .page-container > *:not(.modal-overlay):not(.printable-a4-sheet),
-              .page-content > *:not(.modal-overlay):not(.printable-a4-sheet),
-              .card > *:not(.modal-overlay):not(.printable-a4-sheet) {
-                display: none !important;
-              }
+              /* 3. Printable A4 sheet styling */
 
               /* 4. Flatten print modal container to print flat on page */
               .print-modal-overlay,
