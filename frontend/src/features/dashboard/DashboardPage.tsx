@@ -524,7 +524,7 @@ export function DashboardPage() {
               </div>
 
               <div style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '0.85rem' }}>
-                Hiện có <b style={{ color: '#166534' }}>{stats.assignedStaffCount} nhân sự</b> (Điều dưỡng & Chăm sóc viên) đang được Ban Giám đốc phân công theo dõi và chăm sóc cư dân.
+                Hiện có <b style={{ color: '#166534' }}>{stats.assignedStaffCount} nhân sự</b> gồm Nhân viên y tế và Nhân viên chăm sóc đang được Ban Giám đốc phân công theo dõi và chăm sóc cư dân.
               </div>
 
               {/* Mini Summary Box - Clickable */}

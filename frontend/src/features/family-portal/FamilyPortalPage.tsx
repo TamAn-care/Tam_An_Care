@@ -741,7 +741,7 @@ export default function FamilyPortalPage() {
               <div style={{ background: '#eff6ff', padding: '0.85rem', borderRadius: '0.5rem', border: '1px solid #dbeafe' }}>
                 <div style={{ fontWeight: 700, color: '#1e40af', fontSize: '0.88rem' }}>🩺 Dặn Dò Y Khoa & Chế Độ Uống Thuốc:</div>
                 <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.84rem', color: '#374151' }}>
-                  Điều dưỡng cấp phát thuốc huyết áp đúng 07:30 sáng sau ăn. Duy trì tập phục hồi chức năng vận động khớp gối 20 phút mỗi buổi chiều.
+                  Nhân viên y tế cấp phát thuốc huyết áp đúng 07:30 sáng sau ăn. Duy trì tập phục hồi chức năng vận động khớp gối 20 phút mỗi buổi chiều.
                 </p>
               </div>
             </div>
@@ -897,7 +897,7 @@ export default function FamilyPortalPage() {
                   </span>
                 </div>
                 <p style={{ margin: '0.4rem 0 0.85rem 0', fontSize: '0.88rem', color: '#166534', lineHeight: '1.5' }}>
-                  Cảm ơn <b>{submittedLeaveReceipt.reportedBy}</b>! Đơn đăng ký tạm vắng đã được gửi trực tiếp đến Ban Quản lý và Bộ phận Điều dưỡng Tâm An. Nhân viên phụ trách sẽ liên hệ với thân nhân để xác nhận và hỗ trợ chuẩn bị đầy đủ tư trang, thuốc men cho Cụ trước giờ đón.
+                  Cảm ơn <b>{submittedLeaveReceipt.reportedBy}</b>! Đơn đăng ký tạm vắng đã được gửi trực tiếp đến Ban Quản lý và Bộ phận Y tế Tâm An. Nhân viên phụ trách sẽ liên hệ với thân nhân để xác nhận và hỗ trợ chuẩn bị đầy đủ tư trang, thuốc men cho Cụ trước giờ đón.
                 </p>
 
                 <div style={{ background: '#ffffff', borderRadius: '0.5rem', padding: '0.85rem 1rem', border: '1px solid #86efac', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', fontSize: '0.85rem' }}>
@@ -2151,7 +2151,7 @@ export default function FamilyPortalPage() {
               {/* Signature */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'center', marginTop: '0.6rem' }}>
                 <div style={{ width: '220px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Người đánh giá / Điều dưỡng</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Nhân viên y tế lập báo cáo</div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.82rem' }}>
                     {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}

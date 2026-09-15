@@ -3,10 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 interface MobileBottomNavProps {
   onOpenMenu: () => void;
-  onOpenTesterModal: () => void;
 }
 
-export function MobileBottomNav({ onOpenMenu, onOpenTesterModal }: MobileBottomNavProps) {
+export function MobileBottomNav({ onOpenMenu }: MobileBottomNavProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -85,33 +84,6 @@ export function MobileBottomNav({ onOpenMenu, onOpenTesterModal }: MobileBottomN
           </button>
         );
       })}
-
-      {/* Tester Button */}
-      <button
-        type="button"
-        className="ios-press"
-        onClick={onOpenTesterModal}
-        style={{
-          background: 'none',
-          border: 'none',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '0.15rem',
-          color: '#854d0e',
-          fontWeight: 700,
-          fontSize: '0.7rem',
-          cursor: 'pointer',
-          flex: 1,
-          padding: '0.2rem 0',
-          WebkitTapHighlightColor: 'transparent',
-          minHeight: '44px',
-        }}
-      >
-        <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>🧪</span>
-        <span>Tester</span>
-      </button>
 
       {/* Mobile Drawer Menu Button */}
       <button

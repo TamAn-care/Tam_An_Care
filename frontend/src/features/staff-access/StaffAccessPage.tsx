@@ -25,7 +25,27 @@ import { useActor } from '../../auth/ActorContext';
 import { hasCapability, ROLE_LABELS } from '../../auth/role-policy';
 import { ApiError } from '../../api/errors';
 import { EmptyState, ErrorState, LoadingState } from '../../components/feedback/FeedbackStates';
-import { pushInAppNotification } from '../../api/notifications';
+import { pushInAppNotification, sendSystemNotification } from '../../api/notifications';
+
+import {
+  fetchStaffKPIEvaluations,
+  submitStaffKPIEvaluation,
+  synthesizeStaffKPI,
+  publishPeriodKPIHonorNotices,
+  DEFAULT_KPI_CRITERIA_BY_GROUP,
+  JOB_GROUP_LABELS,
+  JobGroup,
+  KPICriterionResult,
+  StaffKPIEvaluationRecord,
+  KPISynthesisSummary,
+} from '../../api/kpi-evaluation';
+
+import {
+  fetchStaffRecognitions,
+  createStaffRecognition,
+  fetchWorkforceKpiSummary,
+  StaffRecognition,
+} from '../../api/workforce';
 
 type RoleFilter = 'ALL' | HumanActorRole;
 type StatusFilter = 'ALL' | StaffActorStatus;
@@ -45,12 +65,105 @@ function errorText(error: unknown, fallback: string): string {
   return fallback;
 }
 
+
+function exportKPISynthesisCSV(summary: KPISynthesisSummary): void {
+  const items = Array.isArray(summary.items) ? summary.items : [];
+
+  if (items.length === 0) {
+    window.alert('Không có dữ liệu KPI trong kỳ đã chọn để xuất báo cáo.');
+    return;
+  }
+
+  const rows = items.map((item) => item as unknown as Record<string, unknown>);
+
+  const columns = Array.from(
+    new Set(rows.flatMap((row) => Object.keys(row)))
+  );
+
+  const csvCell = (value: unknown): string => {
+    if (value === null || value === undefined) return '';
+
+    let text: string;
+
+    if (typeof value === 'object') {
+      try {
+        text = JSON.stringify(value);
+      } catch {
+        text = String(value);
+      }
+    } else {
+      text = String(value);
+    }
+
+    return `"${text.replace(/"/g, '""')}"`;
+  };
+
+  const csvLines = [
+    columns.map(csvCell).join(','),
+    ...rows.map((row) =>
+      columns.map((column) => csvCell(row[column])).join(',')
+    ),
+  ];
+
+  // UTF-8 BOM để Excel trên Windows/macOS hiển thị tiếng Việt đúng.
+  const csvContent = '\uFEFF' + csvLines.join('\r\n');
+
+  const blob = new Blob([csvContent], {
+    type: 'text/csv;charset=utf-8;',
+  });
+
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+
+  const summaryRecord = summary as unknown as Record<string, unknown>;
+  const periodValue = String(summaryRecord.periodValue ?? 'KPI')
+    .replace(/[^a-zA-Z0-9_-]/g, '-');
+
+  anchor.href = url;
+  anchor.download = `TamAnCare_KPI_${periodValue}.csv`;
+
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  URL.revokeObjectURL(url);
+}
+
 export function StaffAccessPage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   // Active Sub-tab
-  const [activeMainTab, setActiveMainTab] = useState<'STAFF_ACCOUNTS' | 'RESIDENT_ACCESS'>('STAFF_ACCOUNTS');
+  const [activeMainTab, setActiveMainTab] = useState<'STAFF_ACCOUNTS' | 'RESIDENT_ACCESS' | 'KPI_EVALUATION' | 'RECOGNITION_HONOR'>('STAFF_ACCOUNTS');
+
+  // KPI Sub-tab Modes
+  const [kpiSubMode, setKpiSubMode] = useState<'DAILY_CHECKLIST' | 'PERIOD_SYNTHESIS' | 'FACILITY_OVERVIEW'>('DAILY_CHECKLIST');
+
+  // State cho Đánh giá KPI Ca/Ngày dạng Checklist
+  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const [kpiStaffId, setKpiStaffId] = useState<string>('');
+  const [kpiStaffName, setKpiStaffName] = useState<string>('');
+  const [kpiJobGroup, setKpiJobGroup] = useState<JobGroup>('CAREGIVER');
+  const [kpiShiftDate, setKpiShiftDate] = useState<string>(todayStr);
+  const [kpiShiftName, setKpiShiftName] = useState<string>('Ca Sáng (06:00 - 14:00)');
+  const [kpiTickResults, setKpiTickResults] = useState<Record<string, 'PASSED' | 'FAILED' | 'EXCELLENT'>>({});
+  const [kpiEvaluationNotes, setKpiEvaluationNotes] = useState<string>('');
+
+  // State cho Tổng Hợp KPI Theo Kỳ (Tháng/Quý/Năm)
+  const [synthesisPeriodType, setSynthesisPeriodType] = useState<'MONTH' | 'QUARTER' | 'YEAR'>('MONTH');
+  const [synthesisPeriodValue, setSynthesisPeriodValue] = useState<string>('2026-09');
+  const [synthesisJobGroupFilter, setSynthesisJobGroupFilter] = useState<string>('ALL');
+
+  // State cho Khen Thưởng & Thành Tích Tab
+  const [recogSearch, setRecogSearch] = useState('');
+  const [recogTypeFilter, setRecogTypeFilter] = useState('ALL');
+  const [showRecogModal, setShowRecogModal] = useState(false);
+  const [formRecogStaffId, setFormRecogStaffId] = useState('');
+  const [formRecogType, setFormRecogType] = useState<'COMMENDATION' | 'SPECIAL_ACHIEVEMENT' | 'EFFORT_RECOGNITION' | 'SAFETY_AWARD' | 'DISCIPLINE_WARNING'>('COMMENDATION');
+  const [formRecogTitle, setFormRecogTitle] = useState('');
+  const [formRecogDesc, setFormRecogDesc] = useState('');
+  const [formRecogBonus, setFormRecogBonus] = useState(15);
+  const [formRecogDate, setFormRecogDate] = useState(todayStr);
 
   // Permissions
   const isAdmin = actor?.actorRole === 'ADMIN';
@@ -92,6 +205,83 @@ export function StaffAccessPage() {
     queryFn: () => listResidents(),
   });
 
+  const kpiEvaluationsQuery = useQuery({
+    queryKey: ['staff-kpi-evaluations'],
+    enabled: Boolean(actor),
+    queryFn: () => fetchStaffKPIEvaluations(),
+  });
+
+  const recognitionsQuery = useQuery({
+    queryKey: ['staff-recognitions', actor?.actorId ?? 'anonymous'],
+    enabled: Boolean(actor),
+    queryFn: () => fetchStaffRecognitions(actor?.actorId || '', actor?.actorRole || ''),
+  });
+
+  const workforceKpiQuery = useQuery({
+    queryKey: ['workforce-kpi-summary', actor?.actorId ?? 'anonymous'],
+    enabled: Boolean(actor),
+    queryFn: () => fetchWorkforceKpiSummary(actor?.actorId || '', actor?.actorRole || ''),
+  });
+
+  const submitKpiMutation = useMutation({
+    mutationFn: (input: {
+      staffId: string;
+      staffName: string;
+      jobGroup: JobGroup;
+      shiftDate: string;
+      shiftName: string;
+      results: KPICriterionResult[];
+      notes?: string;
+    }) => submitStaffKPIEvaluation(actor!, input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff-kpi-evaluations'] });
+      setFeedback('✅ Đã lưu kết quả đánh giá KPI ca trực, tự động phát Bell Notice & ghi nhận vào hệ thống!');
+      setKpiTickResults({});
+      setKpiEvaluationNotes('');
+    },
+    onError: (err: any) => setFeedback(`❌ Lỗi đánh giá KPI: ${err.message}`),
+  });
+
+  const createRecogMutation = useMutation({
+    mutationFn: async (payload: any) => {
+      const res = await createStaffRecognition(actor?.actorId || '', actor?.actorRole || '', payload);
+      const targetStaff = staffQuery.data?.find((s) => s.actorId === payload.staffActorId);
+      const targetName = targetStaff?.displayName || payload.staffActorId;
+
+      if (payload.recognitionType !== 'DISCIPLINE_WARNING') {
+        // Gửi Bell Notice thông báo TOÀN THỂ nhân viên Tâm An khi cá nhân có thành tích hoặc khen thưởng
+        await sendSystemNotification({
+          title: `🌟 VINH DANH KHEN THƯỞNG: ${payload.title}`,
+          message: `Tâm An Care trân trọng vinh danh & khen thưởng Nhân viên ${targetName}: ${payload.description}`,
+          type: 'HONOR_NOTICE',
+          severity: 'INFO',
+          isGlobal: true, // Gửi Bell notice toàn viện
+        });
+      } else {
+        // Cảnh báo cá nhân riêng cho nhân viên
+        await sendSystemNotification({
+          targetStaffId: payload.staffActorId,
+          title: `⚠️ BIÊN BẢN NHẮC NHỞ KỶ LUẬT: ${payload.title}`,
+          message: `Quản lý ${actor?.displayName} đã lập biên bản nhắc nhở: ${payload.description}`,
+          type: 'WARNING_NOTICE',
+          severity: 'HIGH',
+          isGlobal: false,
+        });
+      }
+
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['staff-recognitions'] });
+      setShowRecogModal(false);
+      setFormRecogStaffId('');
+      setFormRecogTitle('');
+      setFormRecogDesc('');
+      setFeedback('🎉 Đã trao Khen thưởng / Nhắc nhở thành công & phát Bell Notice toàn viện!');
+    },
+    onError: (err: any) => setFeedback(`❌ Lỗi ghi nhận khen thưởng: ${err.message}`),
+  });
+
   // Modal States for Staff Account Management
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showHandoverModal, setShowHandoverModal] = useState<StaffActor | null>(null);
@@ -122,10 +312,10 @@ export function StaffAccessPage() {
   const handleRoleChangeInForm = (nextRole: HumanActorRole) => {
     setFormRole(nextRole);
     const prefixMap: Record<HumanActorRole, { prefix: string; dept: string }> = {
-      ADMIN: { prefix: 'ADM', dept: 'Ban Quản Trị Hệ Thống Tối Cao' },
-      SUPERVISOR: { prefix: 'DIR', dept: 'Ban Giám Đốc' },
+      ADMIN: { prefix: 'ADM', dept: 'Ban Quản Trị Hệ Thống' },
+      SUPERVISOR: { prefix: 'DIR', dept: 'Ban Giám đốc' },
       CARE_MANAGER: { prefix: 'MGR', dept: 'Khối Quản Lý Vận Hành' },
-      NURSE: { prefix: 'NUR', dept: 'Khối Y Tế & Điều Dưỡng' },
+      NURSE: { prefix: 'NUR', dept: 'Khối Y Tế' },
       CAREGIVER: { prefix: 'CG', dept: 'Khối Chăm Sóc Trực Tiếp' },
       NUTRITIONIST: { prefix: 'NUT', dept: 'Bộ Phận Dinh Dưỡng & Bếp Ăn' },
       ACCOUNTANT: { prefix: 'ACC', dept: 'Phòng Kế Toán & Viện Phí' },
@@ -133,6 +323,7 @@ export function StaffAccessPage() {
       PSYCHOLOGIST: { prefix: 'PSY', dept: 'Tư Vấn & Trị Liệu Tâm Lý' },
       SOCIAL_WORKER: { prefix: 'SW', dept: 'Công Tác Xã Hội & Đời Sống' },
       REHABILITATION_SPECIALIST: { prefix: 'REH', dept: 'Vật Lý Trị Liệu & PHCN' },
+      COMMUNICATIONS: { prefix: 'COM', dept: 'Bộ Phận Truyền Thông & Marketing' },
       HOUSEKEEPING: { prefix: 'HK', dept: 'Bộ Phận Buồng Phòng & Tạp Vụ' },
       SECURITY: { prefix: 'SEC', dept: 'Đội An Ninh & Trật Tự' },
       GUARDIAN: { prefix: 'GUA', dept: 'Cổng Thân Nhân' },
@@ -480,7 +671,7 @@ export function StaffAccessPage() {
           </div>
         ) : (
           <div>
-            Quản lý có quyền <b>tạo ID và Password</b> cho các nhân viên ở các vị trí thuộc lĩnh vực quản lý vận hành (Điều dưỡng, Chăm sóc viên, Dinh dưỡng, Kế toán, Lễ tân, Tâm lý, CTXH, PHCN, Buồng phòng, An ninh). <b>Hệ thống tự động ngăn chặn Quản lý can thiệp hoặc sửa đổi tài khoản của Ban Giám đốc.</b>
+            Quản lý chung có quyền <b>tạo ID và Password</b> cho các nhân viên ở các vị trí thuộc lĩnh vực quản lý vận hành gồm Nhân viên y tế, Nhân viên chăm sóc, Nhân viên dinh dưỡng, Nhân viên kế toán, Nhân viên lễ tân, Nhân viên tâm lý và công tác xã hội, Nhân viên phục hồi chức năng, Nhân viên tạp vụ, Nhân viên bảo vệ, Nhân viên truyền thông. <b>Hệ thống tự động ngăn chặn Quản lý chung can thiệp hoặc sửa đổi tài khoản của Ban Giám đốc.</b>
           </div>
         )}
       </div>
@@ -509,13 +700,13 @@ export function StaffAccessPage() {
 
       {/* Navigation Sub-Tabs */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => setActiveMainTab('STAFF_ACCOUNTS')}
             style={{
-              padding: '0.65rem 1.25rem',
+              padding: '0.65rem 1.1rem',
               fontWeight: 700,
-              fontSize: '0.9rem',
+              fontSize: '0.88rem',
               border: 'none',
               borderBottom: activeMainTab === 'STAFF_ACCOUNTS' ? '3px solid #166534' : '3px solid transparent',
               background: activeMainTab === 'STAFF_ACCOUNTS' ? '#f0fdf4' : 'transparent',
@@ -527,15 +718,15 @@ export function StaffAccessPage() {
               gap: '0.45rem',
             }}
           >
-            <span>👥</span> 1. Danh Sách & Cấp Tài Khoản Nhân Sự ({staffQuery.data?.length ?? 0})
+            <span>👥</span> 1. Danh Sách & Cấp Tài Khoản ({staffQuery.data?.length ?? 0})
           </button>
 
           <button
             onClick={() => setActiveMainTab('RESIDENT_ACCESS')}
             style={{
-              padding: '0.65rem 1.25rem',
+              padding: '0.65rem 1.1rem',
               fontWeight: 700,
-              fontSize: '0.9rem',
+              fontSize: '0.88rem',
               border: 'none',
               borderBottom: activeMainTab === 'RESIDENT_ACCESS' ? '3px solid #166534' : '3px solid transparent',
               background: activeMainTab === 'RESIDENT_ACCESS' ? '#f0fdf4' : 'transparent',
@@ -547,13 +738,53 @@ export function StaffAccessPage() {
               gap: '0.45rem',
             }}
           >
-            <span>📋</span> 2. Phân Quyền Tiếp Cận Hồ Sơ Cư Dân ({assignmentQuery.data?.length ?? 0})
+            <span>📋</span> 2. Quyền Tiếp Cận Hồ Sơ ({assignmentQuery.data?.length ?? 0})
+          </button>
+
+          <button
+            onClick={() => setActiveMainTab('KPI_EVALUATION')}
+            style={{
+              padding: '0.65rem 1.1rem',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              border: 'none',
+              borderBottom: activeMainTab === 'KPI_EVALUATION' ? '3px solid #166534' : '3px solid transparent',
+              background: activeMainTab === 'KPI_EVALUATION' ? '#f0fdf4' : 'transparent',
+              color: activeMainTab === 'KPI_EVALUATION' ? '#166534' : '#64748b',
+              cursor: 'pointer',
+              borderRadius: '0.4rem 0.4rem 0 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+            }}
+          >
+            <span>📊</span> 3. Giám Sát & Tổng Hợp KPI ({kpiEvaluationsQuery.data?.length ?? 0})
+          </button>
+
+          <button
+            onClick={() => setActiveMainTab('RECOGNITION_HONOR')}
+            style={{
+              padding: '0.65rem 1.1rem',
+              fontWeight: 700,
+              fontSize: '0.88rem',
+              border: 'none',
+              borderBottom: activeMainTab === 'RECOGNITION_HONOR' ? '3px solid #166534' : '3px solid transparent',
+              background: activeMainTab === 'RECOGNITION_HONOR' ? '#f0fdf4' : 'transparent',
+              color: activeMainTab === 'RECOGNITION_HONOR' ? '#166534' : '#64748b',
+              cursor: 'pointer',
+              borderRadius: '0.4rem 0.4rem 0 0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+            }}
+          >
+            <span>🏆</span> 4. Khen Thưởng & Thành Tích ({recognitionsQuery.data?.length ?? 0})
           </button>
         </div>
 
-        {/* CSV Export Button */}
+        {/* Action / Export Button */}
         <div>
-          {activeMainTab === 'STAFF_ACCOUNTS' ? (
+          {activeMainTab === 'STAFF_ACCOUNTS' && (
             <button
               onClick={exportStaffAccountsCSV}
               className="btn btn-secondary"
@@ -561,7 +792,8 @@ export function StaffAccessPage() {
             >
               📥 Xuất Báo Cáo Nhân Sự Excel/CSV
             </button>
-          ) : (
+          )}
+          {activeMainTab === 'RESIDENT_ACCESS' && (
             <button
               onClick={exportResidentAssignmentsCSV}
               className="btn btn-secondary"
@@ -601,7 +833,7 @@ export function StaffAccessPage() {
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0369a1', margin: '0.2rem 0' }}>
                 {staffQuery.data?.filter((s) => ['NURSE', 'NUTRITIONIST', 'REHABILITATION_SPECIALIST'].includes(s.primaryOperationalRole)).length ?? 0} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>chuyên môn</span>
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#0369a1' }}>Điều dưỡng, Dinh dưỡng, PHCN</div>
+              <div style={{ fontSize: '0.75rem', color: '#0369a1' }}>Nhân viên y tế, Nhân viên dinh dưỡng, PHCN</div>
             </div>
 
             <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '0.65rem' }}>
@@ -901,7 +1133,7 @@ export function StaffAccessPage() {
                   ➕ Chỉ Định Nhân Sự Phụ Trách Hồ Sơ Người Cao Tuổi
                 </h2>
                 <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
-                  Chỉ định Điều dưỡng hoặc Nhân viên chăm sóc phụ trách cụ thể từng cụ để mở quyền truy cập hồ sơ y tế và nhật ký chăm sóc.
+                  Chỉ định Nhân viên y tế hoặc Nhân viên chăm sóc phụ trách cụ thể từng cụ để mở quyền truy cập hồ sơ y tế và nhật ký chăm sóc.
                 </p>
               </div>
               <span style={{
@@ -977,7 +1209,7 @@ export function StaffAccessPage() {
                     onChange={(e) => setAssignmentRole(e.target.value as AssignmentRole)}
                   >
                     <option value="CAREGIVER">Nhân viên chăm sóc</option>
-                    <option value="NURSE">Điều dưỡng</option>
+                    <option value="NURSE">Nhân viên y tế</option>
                   </select>
                 </div>
 
@@ -1105,7 +1337,7 @@ export function StaffAccessPage() {
                                 color: a.actorRole === 'NURSE' ? '#1e40af' : '#166534',
                                 border: `1px solid ${a.actorRole === 'NURSE' ? '#93c5fd' : '#86efac'}`,
                               }}>
-                                {a.actorRole === 'NURSE' ? '🩺 Điều dưỡng' : '🤝 Chăm sóc viên'}
+                                {a.actorRole === 'NURSE' ? '🩺 Nhân viên y tế' : '🤝 Nhân viên chăm sóc'}
                               </span>
                             </td>
                             <td style={{ padding: '0.55rem 0.75rem' }}>
@@ -1203,7 +1435,7 @@ export function StaffAccessPage() {
                                       color: group.actorRole === 'NURSE' ? '#1e40af' : '#166534',
                                       border: `1px solid ${group.actorRole === 'NURSE' ? '#93c5fd' : '#86efac'}`,
                                     }}>
-                                      {group.actorRole === 'NURSE' ? '🩺 Điều dưỡng' : '🤝 Chăm sóc viên'}
+                                      {group.actorRole === 'NURSE' ? '🩺 Nhân viên y tế' : '🤝 Nhân viên chăm sóc'}
                                     </span>
                                   </td>
                                 ) : null}
@@ -1297,7 +1529,717 @@ export function StaffAccessPage() {
       )}
 
 
-      {/* MODAL 1: CẤP TÀI KHOẢN & MẬT KHẨU MỚI */}
+      {/* TAB 3: GIÁM SÁT & TỔNG HỢP ĐÁNH GIÁ KPI */}
+      {activeMainTab === 'KPI_EVALUATION' && (
+        <div>
+          {/* Sub-mode Selector */}
+          <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '0.5rem', borderRadius: '0.65rem', border: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setKpiSubMode('DAILY_CHECKLIST')}
+              className={`btn btn-sm ${kpiSubMode === 'DAILY_CHECKLIST' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ fontWeight: 700, borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              📝 1. Giám Sát & Tick KPI Ca/Ngày Theo Nhóm Công Việc
+            </button>
+            <button
+              type="button"
+              onClick={() => setKpiSubMode('PERIOD_SYNTHESIS')}
+              className={`btn btn-sm ${kpiSubMode === 'PERIOD_SYNTHESIS' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ fontWeight: 700, borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              📊 2. Bảng Tổng Hợp Đánh Giá KPI (Tháng / Quý / Năm)
+            </button>
+            <button
+              type="button"
+              onClick={() => setKpiSubMode('FACILITY_OVERVIEW')}
+              className={`btn btn-sm ${kpiSubMode === 'FACILITY_OVERVIEW' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ fontWeight: 700, borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              📈 3. Giám Sát Mức Độ Hoàn Thành Toàn Viện
+            </button>
+          </div>
+
+          {/* SUB-MODE 1: DAILY CHECKLIST */}
+          {kpiSubMode === 'DAILY_CHECKLIST' && (
+            <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    📝 Đánh Giá KPI Ca Trực Hàng Ngày Cho Nhân Viên
+                  </h3>
+                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                    Nhân viên quản lý quan sát thực tế, kiểm tra ca trực và tick chọn các tiêu chí để phục vụ tổng hợp KPI tháng/quý/năm.
+                  </p>
+                </div>
+                <span className="badge badge-info" style={{ fontSize: '0.78rem' }}>
+                  🔒 Thẩm quyền Quản lý & Ban Giám đốc
+                </span>
+              </div>
+
+              {/* Selection Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '1rem', borderRadius: '0.55rem', border: '1px solid #e2e8f0' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    1. CHỌN NHÂN VIÊN ĐƯỢC ĐÁNH GIÁ *
+                  </label>
+                  <select
+                    className="form-select"
+                    value={kpiStaffId}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      setKpiStaffId(selectedId);
+                      const foundStaff = staffQuery.data?.find((s) => s.actorId === selectedId);
+                      if (foundStaff) {
+                        setKpiStaffName(foundStaff.displayName);
+                        const role = foundStaff.primaryOperationalRole;
+                        let group: JobGroup = 'CAREGIVER';
+                        if (role === 'NURSE') group = 'NURSE';
+                        else if (role === 'NUTRITIONIST') group = 'NUTRITIONIST';
+                        else if (role === 'HOUSEKEEPING') group = 'HOUSEKEEPING';
+                        else if (role === 'REHABILITATION_SPECIALIST') group = 'REHABILITATION_SPECIALIST';
+                        else if (['ADMIN', 'ACCOUNTANT', 'RECEPTIONIST', 'PSYCHOLOGIST', 'SOCIAL_WORKER'].includes(role)) group = 'OFFICE_ADMIN';
+                        setKpiJobGroup(group);
+                        setKpiTickResults({});
+                      }
+                    }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  >
+                    <option value="">-- Chọn nhân sự ({staffQuery.data?.length || 0}) --</option>
+                    {staffQuery.data?.map((s) => (
+                      <option key={s.actorId} value={s.actorId}>
+                        {s.staffCode} - {s.displayName} ({ROLE_LABEL[s.primaryOperationalRole] || s.primaryOperationalRole})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    2. NHÓM CÔNG VIỆC CHUYÊN MÔN
+                  </label>
+                  <select
+                    className="form-select"
+                    value={kpiJobGroup}
+                    onChange={(e) => {
+                      setKpiJobGroup(e.target.value as JobGroup);
+                      setKpiTickResults({});
+                    }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}
+                  >
+                    {(Object.keys(JOB_GROUP_LABELS) as JobGroup[]).map((g) => (
+                      <option key={g} value={g}>{JOB_GROUP_LABELS[g]}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    3. NGÀY ĐÁNH GIÁ
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={kpiShiftDate}
+                    onChange={(e) => setKpiShiftDate(e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    4. CA TRỰC GIÁM SÁT
+                  </label>
+                  <select
+                    className="form-select"
+                    value={kpiShiftName}
+                    onChange={(e) => setKpiShiftName(e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  >
+                    <option value="Ca Sáng (06:00 - 14:00)">Ca Sáng (06:00 - 14:00)</option>
+                    <option value="Ca Chiều (14:00 - 22:00)">Ca Chiều (14:00 - 22:00)</option>
+                    <option value="Ca Đêm (22:00 - 06:00)">Ca Đêm (22:00 - 06:00)</option>
+                    <option value="Ca 24h Toàn Ngày">Ca 24h Toàn Ngày</option>
+                    <option value="Ca Linh Hoạt / Hành Chính">Ca Linh Hoạt / Hành Chính</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Criteria Checklist */}
+              {kpiStaffId ? (
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+                      📋 BỘ TIÊU CHÍ HOẠT ĐỘNG TRONG CA TRỰC — {JOB_GROUP_LABELS[kpiJobGroup].toUpperCase()}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                      Ghi nhận cho nhân viên: <strong style={{ color: '#166534' }}>{kpiStaffName}</strong>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                    {(DEFAULT_KPI_CRITERIA_BY_GROUP[kpiJobGroup] || []).map((criterion) => {
+                      const currentStatus = kpiTickResults[criterion.id] || 'PASSED';
+                      return (
+                        <div
+                          key={criterion.id}
+                          style={{
+                            padding: '0.85rem 1rem',
+                            borderRadius: '0.5rem',
+                            background: currentStatus === 'FAILED' ? '#fff5f5' : currentStatus === 'EXCELLENT' ? '#f0fdf4' : '#fafafa',
+                            border: `1px solid ${currentStatus === 'FAILED' ? '#fecaca' : currentStatus === 'EXCELLENT' ? '#86efac' : '#e2e8f0'}`,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '1rem',
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          <div style={{ flex: 1, minWidth: '240px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <span className="badge badge-secondary" style={{ fontFamily: 'monospace', fontWeight: 700 }}>
+                                {criterion.code}
+                              </span>
+                              <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{criterion.title}</strong>
+                              <span style={{ fontSize: '0.75rem', color: '#64748b', background: '#e2e8f0', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                                Trọng số: {criterion.weight}%
+                              </span>
+                            </div>
+                            <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.2rem' }}>
+                              {criterion.description}
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                            <button
+                              type="button"
+                              onClick={() => setKpiTickResults((prev) => ({ ...prev, [criterion.id]: 'PASSED' }))}
+                              style={{
+                                padding: '0.4rem 0.75rem',
+                                borderRadius: '0.4rem',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                border: currentStatus === 'PASSED' ? '2px solid #16a34a' : '1px solid #cbd5e1',
+                                background: currentStatus === 'PASSED' ? '#dcfce7' : '#fff',
+                                color: currentStatus === 'PASSED' ? '#15803d' : '#64748b',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              🟢 ĐẠT YÊU CẦU
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setKpiTickResults((prev) => ({ ...prev, [criterion.id]: 'EXCELLENT' }))}
+                              style={{
+                                padding: '0.4rem 0.75rem',
+                                borderRadius: '0.4rem',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                border: currentStatus === 'EXCELLENT' ? '2px solid #2563eb' : '1px solid #cbd5e1',
+                                background: currentStatus === 'EXCELLENT' ? '#dbeafe' : '#fff',
+                                color: currentStatus === 'EXCELLENT' ? '#1e40af' : '#64748b',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              ⭐ XUẤT SẮC
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setKpiTickResults((prev) => ({ ...prev, [criterion.id]: 'FAILED' }))}
+                              style={{
+                                padding: '0.4rem 0.75rem',
+                                borderRadius: '0.4rem',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                border: currentStatus === 'FAILED' ? '2px solid #dc2626' : '1px solid #cbd5e1',
+                                background: currentStatus === 'FAILED' ? '#fee2e2' : '#fff',
+                                color: currentStatus === 'FAILED' ? '#b91c1c' : '#64748b',
+                                cursor: 'pointer',
+                              }}
+                            >
+                              🔴 CHƯA ĐẠT
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div style={{ marginTop: '1.25rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#475569', marginBottom: '0.35rem' }}>
+                      NHẬN XÉT & GHI CHÚ QUAN SÁT THỰC TẾ CỦA QUẢN LÝ
+                    </label>
+                    <textarea
+                      className="form-control"
+                      rows={2}
+                      placeholder="Ghi nhận chi tiết quan sát thực tế ca trực (ví dụ: Chăm sóc chu đáo, tuân thủ đúng 5 đúng eMAR, nhắc nhở thu gom túi rác y tế)..."
+                      value={kpiEvaluationNotes}
+                      onChange={(e) => setKpiEvaluationNotes(e.target.value)}
+                      style={{ width: '100%', padding: '0.65rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                    />
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                      <button
+                        type="button"
+                        disabled={submitKpiMutation.isPending}
+                        onClick={() => {
+                          const criteriaList = DEFAULT_KPI_CRITERIA_BY_GROUP[kpiJobGroup] || [];
+                          const results: KPICriterionResult[] = criteriaList.map((c) => ({
+                            criterionId: c.id,
+                            criterionCode: c.code,
+                            criterionTitle: c.title,
+                            status: kpiTickResults[c.id] || 'PASSED',
+                          }));
+
+                          submitKpiMutation.mutate({
+                            staffId: kpiStaffId,
+                            staffName: kpiStaffName,
+                            jobGroup: kpiJobGroup,
+                            shiftDate: kpiShiftDate,
+                            shiftName: kpiShiftName,
+                            results,
+                            notes: kpiEvaluationNotes,
+                          });
+                        }}
+                        className="btn btn-primary"
+                        style={{ padding: '0.65rem 1.5rem', fontWeight: 700, fontSize: '0.92rem', borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                      >
+                        {submitKpiMutation.isPending ? '⏳ Đang ghi nhận...' : '✅ Hoàn Tất Đánh Giá & Phát Bell Notice'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#64748b', background: '#f8fafc', borderRadius: '0.5rem', border: '1px dashed #cbd5e1' }}>
+                  👈 Vui lòng chọn <strong>Nhân viên</strong> ở trên để hiển thị bộ tiêu chí KPI ca trực theo đúng nhóm công việc chuyên môn.
+                </div>
+              )}
+
+              {/* Lịch sử Đánh giá gần đây */}
+              <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
+                  📜 LỊCH SỬ ĐÁNH GIÁ CA TRỰC GẦN ĐÂY ({kpiEvaluationsQuery.data?.length || 0})
+                </h4>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="table" style={{ width: '100%', fontSize: '0.84rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th>ID / Ngày Ca</th>
+                        <th>Nhân Viên</th>
+                        <th>Nhóm Công Việc</th>
+                        <th>Ca Trực</th>
+                        <th>Quản Lý Đánh Giá</th>
+                        <th>Điểm KPI</th>
+                        <th>Xếp Loại</th>
+                        <th>Ghi Chú</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(kpiEvaluationsQuery.data || []).map((rec) => (
+                        <tr key={rec.id}>
+                          <td style={{ fontFamily: 'monospace', fontWeight: 700 }}>
+                            {rec.id}<br/>
+                            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{rec.shiftDate}</span>
+                          </td>
+                          <td><strong style={{ color: '#0f172a' }}>{rec.staffName}</strong></td>
+                          <td><span className="badge badge-secondary">{rec.jobGroupLabel}</span></td>
+                          <td>{rec.shiftName}</td>
+                          <td>{rec.evaluatorName}</td>
+                          <td>
+                            <span style={{ fontSize: '1rem', fontWeight: 800, color: rec.totalScore >= 90 ? '#166534' : rec.totalScore >= 70 ? '#1e40af' : '#b91c1c' }}>
+                              {rec.totalScore}/100
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`badge ${rec.overallGrade === 'EXCELLENT' ? 'badge-success' : rec.overallGrade === 'GOOD' ? 'badge-info' : 'badge-danger'}`}>
+                              {rec.overallGradeLabel}
+                            </span>
+                          </td>
+                          <td style={{ maxWidth: '200px', fontSize: '0.78rem', color: '#475569' }}>{rec.notes || '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* SUB-MODE 2: PERIOD SYNTHESIS (MONTH / QUARTER / YEAR) */}
+          {kpiSubMode === 'PERIOD_SYNTHESIS' && (() => {
+            const summary: KPISynthesisSummary = synthesizeStaffKPI(
+              synthesisPeriodType,
+              synthesisPeriodValue,
+              synthesisJobGroupFilter
+            );
+
+            return (
+              <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+                <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      📊 Bảng Tổng Hợp Đánh Giá KPI Nhân Sự ({summary.items[0]?.periodLabel || synthesisPeriodValue})
+                    </h3>
+                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                      Tự động tổng hợp dữ liệu ca trực hàng ngày thành kết quả đánh giá thi đua Tháng, Quý và Năm của từng nhân viên.
+                    </p>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={async () => {
+                        const count = await publishPeriodKPIHonorNotices(actor!, summary);
+                        if (count > 0) {
+                          alert(`🔔 Đã phát Bell Notice vinh danh thành công ${count} nhân viên đạt Hạng A+ trong ${summary.periodValue} tới TOÀN THỂ nhân viên Tâm An Care!`);
+                          setFeedback(`🌟 Đã phát Bell Notice vinh danh toàn viện cho ${count} nhân sự xuất sắc kỳ ${summary.periodValue}!`);
+                        } else {
+                          alert(`Chưa có nhân sự đạt Hạng A+ (Xuất sắc vượt bậc) trong kỳ ${summary.periodValue} để phát Bell Notice vinh danh.`);
+                        }
+                      }}
+                      className="btn btn-secondary"
+                      style={{ background: '#eff6ff', color: '#1e40af', borderColor: '#bfdbfe', fontWeight: 700, fontSize: '0.82rem' }}
+                    >
+                      🔔 Phát Bell Notice Vinh Danh Thi Đua Kỳ ({summary.items.filter(i => i.finalRank === 'A+').length} NV A+)
+                    </button>
+
+                    <button
+                      onClick={() => exportKPISynthesisCSV(summary)}
+                      className="btn btn-secondary"
+                      style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700, fontSize: '0.82rem' }}
+                    >
+                      📥 Xuất Báo Cáo KPI Excel/CSV
+                    </button>
+                  </div>
+                </div>
+
+                {/* Period Selectors */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '1rem', borderRadius: '0.55rem', border: '1px solid #e2e8f0' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                      KỲ TỔNG HỢP (THÁNG / QUÝ / NĂM)
+                    </label>
+                    <select
+                      className="form-select"
+                      value={synthesisPeriodType}
+                      onChange={(e) => {
+                        const type = e.target.value as 'MONTH' | 'QUARTER' | 'YEAR';
+                        setSynthesisPeriodType(type);
+                        if (type === 'MONTH') setSynthesisPeriodValue('2026-09');
+                        else if (type === 'QUARTER') setSynthesisPeriodValue('2026-Q3');
+                        else setSynthesisPeriodValue('2026');
+                      }}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700 }}
+                    >
+                      <option value="MONTH">📅 Đánh Giá Theo Tháng</option>
+                      <option value="QUARTER">🏛️ Đánh Giá Theo Quý</option>
+                      <option value="YEAR">🏆 Đánh Giá Theo Năm</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                      CHỌN KỲ ĐÁNH GIÁ CỤ THỂ
+                    </label>
+                    <select
+                      className="form-select"
+                      value={synthesisPeriodValue}
+                      onChange={(e) => setSynthesisPeriodValue(e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}
+                    >
+                      {synthesisPeriodType === 'MONTH' && (
+                        <>
+                          <option value="2026-09">Tháng 09/2026 (Hiện tại)</option>
+                          <option value="2026-08">Tháng 08/2026</option>
+                          <option value="2026-07">Tháng 07/2026</option>
+                        </>
+                      )}
+                      {synthesisPeriodType === 'QUARTER' && (
+                        <>
+                          <option value="2026-Q3">Quý 3/2026 (Tháng 7 - Tháng 9)</option>
+                          <option value="2026-Q2">Quý 2/2026 (Tháng 4 - Tháng 6)</option>
+                          <option value="2026-Q1">Quý 1/2026 (Tháng 1 - Tháng 3)</option>
+                        </>
+                      )}
+                      {synthesisPeriodType === 'YEAR' && (
+                        <>
+                          <option value="2026">Năm 2026</option>
+                          <option value="2025">Năm 2025</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                      LỌC THEO NHÓM CÔNG VIỆC
+                    </label>
+                    <select
+                      className="form-select"
+                      value={synthesisJobGroupFilter}
+                      onChange={(e) => setSynthesisJobGroupFilter(e.target.value)}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                    >
+                      <option value="ALL">Tất cả nhóm công việc (6 nhóm)</option>
+                      {(Object.keys(JOB_GROUP_LABELS) as JobGroup[]).map((g) => (
+                        <option key={g} value={g}>{JOB_GROUP_LABELS[g]}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Metric Overview Cards */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>TỔNG NHÂN VIÊN ĐÃ ĐÁNH GIÁ</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.2rem 0' }}>
+                      {summary.totalStaffEvaluated} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>nhân sự</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Đã ghi nhận dữ liệu ca trực</div>
+                  </div>
+
+                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.65rem' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>ĐIỂM KPI TRUNG BÌNH TOÀN VIỆN</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>
+                      {summary.averageFacilityScore}/100 <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>điểm</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600 }}>Chỉ số hiệu suất tổng hợp</div>
+                  </div>
+
+                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#e0f2fe', border: '1px solid #bae6fd', borderRadius: '0.65rem' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 700, textTransform: 'uppercase' }}>XUẤT SẮC VƯỢT BẬC (A+)</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0369a1', margin: '0.2rem 0' }}>
+                      {summary.excellentStaffCount} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>cá nhân</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#0369a1' }}>Đủ tiêu chuẩn khen thưởng</div>
+                  </div>
+
+                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: summary.warningStaffCount > 0 ? '#fef2f2' : '#f8fafc', border: `1px solid ${summary.warningStaffCount > 0 ? '#fecaca' : '#e2e8f0'}`, borderRadius: '0.65rem' }}>
+                    <div style={{ fontSize: '0.72rem', color: summary.warningStaffCount > 0 ? '#b91c1c' : '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>CẦN CẢI THIỆN / CẢNH BÁO</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: summary.warningStaffCount > 0 ? '#b91c1c' : '#0f172a', margin: '0.2rem 0' }}>
+                      {summary.warningStaffCount} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>cá nhân</span>
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: summary.warningStaffCount > 0 ? '#b91c1c' : '#64748b' }}>Phát hiện tiêu chí chưa đạt</div>
+                  </div>
+                </div>
+
+                {/* Detailed Synthesis Table */}
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="table" style={{ width: '100%', fontSize: '0.84rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc' }}>
+                        <th>Mã & Nhân Viên</th>
+                        <th>Nhóm Công Việc</th>
+                        <th>Kỳ Đánh Giá</th>
+                        <th>Số Ca Đã Đánh Giá</th>
+                        <th>Điểm TB</th>
+                        <th>Tỷ Lệ Đạt Tiêu Chí</th>
+                        <th>Số Vi Phạm</th>
+                        <th>Xếp Loại Thi Đua Kỳ</th>
+                        <th>Tóm Tắt Tổng Hợp</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {summary.items.length > 0 ? (
+                        summary.items.map((item) => (
+                          <tr key={item.staffId}>
+                            <td>
+                              <strong style={{ color: '#0f172a' }}>{item.staffName}</strong><br/>
+                              <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: '#64748b' }}>{item.staffId}</span>
+                            </td>
+                            <td><span className="badge badge-secondary">{item.jobGroupLabel}</span></td>
+                            <td><strong>{item.periodLabel}</strong></td>
+                            <td>{item.totalEvaluatedShifts} ca</td>
+                            <td>
+                              <span style={{ fontSize: '1rem', fontWeight: 800, color: item.averageScore >= 90 ? '#166534' : item.averageScore >= 75 ? '#1e40af' : '#b91c1c' }}>
+                                {item.averageScore}/100
+                              </span>
+                            </td>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                  <div style={{ width: `${item.criterionPassRatePercent}%`, height: '100%', background: item.criterionPassRatePercent >= 90 ? '#16a34a' : '#2563eb' }} />
+                                </div>
+                                <span style={{ fontWeight: 700, fontSize: '0.78rem' }}>{item.criterionPassRatePercent}%</span>
+                              </div>
+                            </td>
+                            <td>
+                              {item.failedCount > 0 ? (
+                                <span className="badge badge-danger">⚠️ {item.failedCount} lỗi</span>
+                              ) : (
+                                <span className="badge badge-success">✓ Không lỗi</span>
+                              )}
+                            </td>
+                            <td>
+                              <span className={`badge ${item.finalRank === 'A+' ? 'badge-success' : item.finalRank === 'A' ? 'badge-info' : 'badge-warning'}`} style={{ fontWeight: 800 }}>
+                                {item.finalRankLabel}
+                              </span>
+                            </td>
+                            <td style={{ maxWidth: '240px', fontSize: '0.78rem', color: '#475569' }}>{item.evaluationSummary}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                            Chưa có dữ liệu tổng hợp KPI cho kỳ <strong>{synthesisPeriodValue}</strong>. Vui lòng thực hiện đánh giá ca trực ở Sub-mode 1.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* SUB-MODE 3: FACILITY OVERVIEW */}
+          {kpiSubMode === 'FACILITY_OVERVIEW' && (
+            <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+              <h3 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#166534' }}>
+                📈 Giám Sát Mức Độ Hoàn Thành & Tuân Thủ Tiêu Chí Toàn Viện
+              </h3>
+              <p style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '1.25rem' }}>
+                Tổng quan chỉ số hiệu suất theo các phòng ban chuyên môn và tỷ lệ tuân thủ quy chuẩn y tế Viện Dưỡng Lão Tâm An.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+                {(workforceKpiQuery.data?.teams || []).map((team) => (
+                  <div key={team.role} style={{ border: '1px solid #e2e8f0', borderRadius: '0.55rem', padding: '1rem', background: '#f8fafc' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <strong style={{ fontSize: '0.92rem', color: '#0f172a' }}>{team.role}</strong>
+                      <span className="badge badge-success">{team.completionRate}% hoàn thành</span>
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#475569', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+                      <div>Tổng nhân sự: <b>{team.totalStaff}</b></div>
+                      <div>Tổng ca trực: <b>{team.totalShifts}</b></div>
+                      <div>Ca hoàn thành: <b>{team.completedShifts}</b></div>
+                      <div>Điểm KPI: <b style={{ color: '#166534' }}>{team.kpiScore}/100</b></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 4: KHEN THƯỞNG & THÀNH TÍCH */}
+      {activeMainTab === 'RECOGNITION_HONOR' && (
+        <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+          <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                🏆 Khen Thưởng, Vinh Danh & Quản Lý Kỷ Luật Nhân Sự
+              </h3>
+              <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                Ghi nhận thành tích thi đua đột xuất, bằng khen vinh danh và biên bản nhắc nhở kỷ luật nhân sự Tâm An Care.
+              </p>
+            </div>
+
+            {isDirector && (
+              <button
+                onClick={() => {
+                  setFormRecogStaffId('');
+                  setFormRecogTitle('');
+                  setFormRecogDesc('');
+                  setFormRecogBonus(15);
+                  setShowRecogModal(true);
+                }}
+                className="btn btn-primary"
+                style={{ fontWeight: 700, padding: '0.55rem 1.1rem', borderRadius: '0.45rem' }}
+              >
+                🎖️ + Trao Khen Thưởng / Tạo Biên Bản Nhắc Nhở
+              </button>
+            )}
+          </div>
+
+          {/* Search & Filters */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="🔍 Tìm kiếm theo tên nhân viên, tiêu đề khen thưởng..."
+              value={recogSearch}
+              onChange={(e) => setRecogSearch(e.target.value)}
+              style={{ flex: 1, minWidth: '220px', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+            />
+
+            <select
+              className="form-select"
+              value={recogTypeFilter}
+              onChange={(e) => setRecogTypeFilter(e.target.value)}
+              style={{ padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+            >
+              <option value="ALL">Tất cả loại ghi nhận (Khen thưởng & Nhắc nhở)</option>
+              <option value="COMMENDATION">🏆 Khen thưởng xuất sắc</option>
+              <option value="SPECIAL_ACHIEVEMENT">⭐ Thành tích đột xuất</option>
+              <option value="EFFORT_RECOGNITION">💪 Nỗ lực vượt bậc</option>
+              <option value="SAFETY_AWARD">🛡️ An toàn & Cứu hộ khẩn cấp</option>
+              <option value="DISCIPLINE_WARNING">⚠️ Biên bản nhắc nhở / Kỷ luật</option>
+            </select>
+          </div>
+
+          {/* Recognitions List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {(recognitionsQuery.data || [])
+              .filter((r) => {
+                if (recogTypeFilter !== 'ALL' && r.recognition_type !== recogTypeFilter) return false;
+                if (recogSearch.trim()) {
+                  const needle = recogSearch.toLowerCase();
+                  return (
+                    r.staffName?.toLowerCase().includes(needle) ||
+                    r.title.toLowerCase().includes(needle) ||
+                    r.description.toLowerCase().includes(needle)
+                  );
+                }
+                return true;
+              })
+              .map((rec) => {
+                const isWarning = rec.recognition_type === 'DISCIPLINE_WARNING';
+                return (
+                  <div
+                    key={rec.recognition_id}
+                    style={{
+                      padding: '1rem',
+                      borderRadius: '0.6rem',
+                      background: isWarning ? '#fff5f5' : '#f0fdf4',
+                      border: `1px solid ${isWarning ? '#fecaca' : '#bbf7d0'}`,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      gap: '1rem',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
+                        <span className={`badge ${isWarning ? 'badge-danger' : 'badge-success'}`} style={{ fontWeight: 700 }}>
+                          {isWarning ? '⚠️ BIÊN BẢN NHẮC NHỞ' : '🏆 KHEN THƯỞNG VINH DANH'}
+                        </span>
+                        <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{rec.title}</strong>
+                      </div>
+                      <div style={{ fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem' }}>
+                        {rec.description}
+                      </div>
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                        <span>Nơi trao / Nhân viên: <strong>{rec.staffName}</strong> ({rec.staffRole})</span>
+                        <span>Người quyết định: <strong>{rec.awardedByName || rec.awarded_by}</strong></span>
+                        <span>Ngày ghi nhận: {rec.awarded_date}</span>
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: 'right' }}>
+                      <span className={`badge ${isWarning ? 'badge-danger' : 'badge-success'}`} style={{ fontSize: '0.9rem', fontWeight: 800 }}>
+                        {rec.kpi_bonus_points >= 0 ? `+${rec.kpi_bonus_points}` : rec.kpi_bonus_points} điểm thi đua
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
       {showCreateModal && (
         <div
           style={{
@@ -1836,7 +2778,7 @@ export function StaffAccessPage() {
                       color: assignmentRole === 'NURSE' ? '#1e40af' : '#166534',
                       border: `1px solid ${assignmentRole === 'NURSE' ? '#93c5fd' : '#86efac'}`,
                     }}>
-                      {assignmentRole === 'NURSE' ? '🩺 Điều dưỡng' : '🤝 Chăm sóc viên'}
+                      {assignmentRole === 'NURSE' ? '🩺 Nhân viên y tế' : '🤝 Nhân viên chăm sóc'}
                     </span>
                   </span>
 
@@ -1974,6 +2916,168 @@ export function StaffAccessPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {/* MODAL TRAO KHEN THƯỞNG / NHẮC NHỞ */}
+      {showRecogModal && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            zIndex: 9999, padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#fff', borderRadius: '0.75rem',
+              maxWidth: '550px', width: '100%',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
+              overflow: 'hidden', border: '1px solid #cbd5e1',
+            }}
+          >
+            <div style={{ background: '#166534', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem', color: '#fff', fontWeight: 700 }}>
+                🎖️ Trao Khen Thưởng / Biên Bản Nhắc Nhở Kỷ Luật
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowRecogModal(false)}
+                style={{ background: 'none', border: 'none', color: '#86efac', fontSize: '1.2rem', cursor: 'pointer' }}
+              >✕</button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!formRecogStaffId || !formRecogTitle.trim() || !formRecogDesc.trim()) {
+                  alert('Vui lòng chọn nhân viên và nhập đầy đủ tiêu đề, nội dung.');
+                  return;
+                }
+                createRecogMutation.mutate({
+                  staffActorId: formRecogStaffId,
+                  recognitionType: formRecogType,
+                  title: formRecogTitle.trim(),
+                  description: formRecogDesc.trim(),
+                  kpiBonusPoints: formRecogType === 'DISCIPLINE_WARNING' ? -Math.abs(formRecogBonus) : Math.abs(formRecogBonus),
+                  awardedDate: formRecogDate,
+                });
+              }}
+              style={{ padding: '1.25rem' }}
+            >
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  NHÂN VIÊN ĐƯỢC GHI NHẬN *
+                </label>
+                <select
+                  className="form-select"
+                  value={formRecogStaffId}
+                  onChange={(e) => setFormRecogStaffId(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  required
+                >
+                  <option value="">-- Chọn nhân sự --</option>
+                  {staffQuery.data?.map((s) => (
+                    <option key={s.actorId} value={s.actorId}>
+                      {s.staffCode} - {s.displayName} ({ROLE_LABEL[s.primaryOperationalRole] || s.primaryOperationalRole})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  LOẠI HÌNH GHI NHẬN *
+                </label>
+                <select
+                  className="form-select"
+                  value={formRecogType}
+                  onChange={(e) => setFormRecogType(e.target.value as any)}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700 }}
+                >
+                  <option value="COMMENDATION">🏆 Khen thưởng xuất sắc</option>
+                  <option value="SPECIAL_ACHIEVEMENT">⭐ Thành tích đột xuất</option>
+                  <option value="EFFORT_RECOGNITION">💪 Nỗ lực vượt bậc trong ca</option>
+                  <option value="SAFETY_AWARD">🛡️ An toàn & Cứu hộ khẩn cấp</option>
+                  <option value="DISCIPLINE_WARNING">⚠️ Biên bản nhắc nhở / Kỷ luật</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  TIÊU ĐỀ QUYẾT ĐỊNH / BẰNG KHEN *
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Ví dụ: Khen thưởng xử lý cấp cứu kịp thời sự cố té ngã..."
+                  value={formRecogTitle}
+                  onChange={(e) => setFormRecogTitle(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  NỘI DUNG CHI TIẾT GHI NHẬN *
+                </label>
+                <textarea
+                  className="form-control"
+                  rows={3}
+                  placeholder="Mô tả cụ thể hành động xuất sắc hoặc lỗi cần nhắc nhở..."
+                  value={formRecogDesc}
+                  onChange={(e) => setFormRecogDesc(e.target.value)}
+                  style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  required
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    ĐIỂM ĐỘT XUẤT
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={formRecogBonus}
+                    onChange={(e) => setFormRecogBonus(Number(e.target.value))}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    NGÀY QUYẾT ĐỊNH
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={formRecogDate}
+                    onChange={(e) => setFormRecogDate(e.target.value)}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setShowRecogModal(false)}
+                  style={{ padding: '0.55rem 1.2rem', borderRadius: '0.45rem', background: '#f1f5f9', border: '1px solid #cbd5e1', color: '#475569', fontWeight: 700, fontSize: '0.88rem', cursor: 'pointer' }}
+                >
+                  Hủy thao tác
+                </button>
+                <button
+                  type="submit"
+                  disabled={createRecogMutation.isPending}
+                  className="btn btn-primary"
+                  style={{ padding: '0.55rem 1.4rem', fontWeight: 700, fontSize: '0.88rem' }}
+                >
+                  {createRecogMutation.isPending ? '⏳ Đang lưu...' : '💾 Xác Nhận Trao Quyết Định'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

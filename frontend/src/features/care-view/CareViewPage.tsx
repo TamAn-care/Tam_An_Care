@@ -216,7 +216,7 @@ export function CareViewPage() {
               📋 Quy định bảo mật thông tin & phân quyền y khoa:
             </div>
             <div style={{ color: '#475569', lineHeight: '1.5' }}>
-              Nhằm đảm bảo an toàn thông tin sức khỏe cá nhân (eMAR) và tuân thủ quy trình phân công chăm sóc, chỉ những Điều dưỡng và Chăm sóc viên được <b>cấp quyền phụ trách trực tiếp</b> mới có thể xem và ghi nhận nhật ký chăm sóc cho cư dân này.
+              Nhằm đảm bảo an toàn thông tin sức khỏe cá nhân (eMAR) và tuân thủ quy trình phân công chăm sóc, chỉ những Nhân viên y tế và Nhân viên chăm sóc được <b>cấp quyền phụ trách trực tiếp</b> mới có thể xem và ghi nhận nhật ký chăm sóc cho cư dân này.
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -309,7 +309,7 @@ export function CareViewPage() {
                 🏥 {CARE_LEVEL_LABEL[careLevel || ''] || careLevel || 'Mức chăm sóc tiêu chuẩn'}
               </span>
               <span style={{ background: 'rgba(255,255,255,0.15)', color: '#f0fdf4', padding: '0.3rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.82rem' }}>
-                👩‍⚕️ Điều dưỡng phụ trách: <b>Điều dưỡng Phạm Thị Mai (Tầng 1)</b>
+                👩‍⚕️ Nhân viên y tế phụ trách: <b>Nhân viên y tế Phạm Thị Mai (Tầng 1)</b>
               </span>
             </div>
           </div>
@@ -611,7 +611,7 @@ export function CareViewPage() {
                           {val}
                         </td>
                         <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                          {obs.recordedBy || 'Điều dưỡng tầng'}
+                          {obs.recordedBy || 'Nhân viên y tế'}
                         </td>
                         <td style={{ padding: '0.65rem 0.85rem' }}>
                           <span className={isAbnormal ? 'badge badge-danger' : 'badge badge-success'}>
@@ -691,7 +691,7 @@ export function CareViewPage() {
                     <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                       <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Giờ dự kiến</th>
                       <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Giờ uống thực tế</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Điều dưỡng thực hiện</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Nhân viên y tế thực hiện</th>
                       <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Ghi chú lâm sàng</th>
                       <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Trạng thái</th>
                     </tr>
@@ -706,7 +706,7 @@ export function CareViewPage() {
                           {adm.administeredAt ? new Date(adm.administeredAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Chưa uống'}
                         </td>
                         <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                          {adm.assignedTo || 'Điều dưỡng ca'}
+                          {adm.assignedTo || 'Nhân viên y tế ca'}
                         </td>
                         <td style={{ padding: '0.65rem 0.85rem', color: '#334155' }}>
                           {adm.administrationNote || 'Đã uống đúng liều'}

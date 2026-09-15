@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import {
@@ -79,6 +80,7 @@ const SWAP_STATUS_BADGE: Record<string, { label: string; className: string }> = 
 export default function WorkforcePage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const actorId = actor?.actorId ?? '';
   const actorRole = actor?.actorRole ?? '';
@@ -452,7 +454,7 @@ export default function WorkforcePage() {
       item.shiftType === 'MORNING' ? 'Ca Sáng (06:00-14:00)' : item.shiftType === 'AFTERNOON' ? 'Ca Chiều (14:00-22:00)' : 'Ca Đêm (22:00-06:00)',
       `"${item.staffName}"`,
       ROLE_LABELS[item.staffRole as keyof typeof ROLE_LABELS] || item.staffRole,
-      `"${item.notes || 'Khu A - Chăm sóc nội trú'}"`,
+      `"${item.notes || 'Chăm sóc nội trú'}"`,
       item.startTime ? new Date(item.startTime).toLocaleString('vi-VN') : '',
       item.endTime ? new Date(item.endTime).toLocaleString('vi-VN') : '',
       item.status === 'COMPLETED' ? 'Đã hoàn thành ca' : item.status === 'IN_PROGRESS' ? 'Đang trực ca' : 'Đã phân ca',
@@ -630,6 +632,42 @@ export default function WorkforcePage() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* Banner chuyển giao KPI sang Nhân sự & Phân quyền */}
+      <div
+        style={{
+          background: '#f0fdf4',
+          border: '1px solid #86efac',
+          borderRadius: '0.65rem',
+          padding: '0.85rem 1.1rem',
+          marginBottom: '1.25rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <span style={{ fontSize: '1.3rem' }}>📊</span>
+          <div>
+            <strong style={{ fontSize: '0.9rem', color: '#166534' }}>
+              Hợp nhất Chức năng Đánh giá KPI & Trao Khen thưởng sang Phân hệ Nhân sự & Phân quyền
+            </strong>
+            <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '0.1rem' }}>
+              Chức năng tick đánh giá ca/ngày theo nhóm công việc, tổng hợp KPI tháng/quý/năm và trao bằng khen vinh danh đã được hợp nhất tại phân hệ <b>[Nhân sự & Phân quyền]</b>.
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => navigate('/staff-access')}
+          className="btn btn-primary"
+          style={{ padding: '0.45rem 1rem', fontSize: '0.84rem', fontWeight: 700, borderRadius: '0.45rem', whiteSpace: 'nowrap' }}
+        >
+          Chuyển tới Nhân sự & Phân quyền ➔
+        </button>
       </div>
 
       {/* Navigation Tabs */}
@@ -1410,12 +1448,13 @@ export default function WorkforcePage() {
                         setKpiTickResults({});
                       }}
                     >
-                      <option value="CAREGIVER">Nhân viên Chăm sóc</option>
-                      <option value="NURSE">Nhân viên Y tế / Điều dưỡng</option>
-                      <option value="NUTRITIONIST">Nhân viên Bếp & Dinh dưỡng</option>
-                      <option value="HOUSEKEEPING">Nhân viên Tạp vụ & Vệ sinh</option>
-                      <option value="REHABILITATION_SPECIALIST">Vật lý trị liệu - PHCN</option>
-                      <option value="OFFICE_ADMIN">Văn phòng & Hành chính</option>
+                      <option value="CAREGIVER">Nhân viên chăm sóc</option>
+                      <option value="NURSE">Nhân viên y tế</option>
+                      <option value="NUTRITIONIST">Nhân viên dinh dưỡng</option>
+                      <option value="HOUSEKEEPING">Nhân viên tạp vụ</option>
+                      <option value="REHABILITATION_SPECIALIST">Nhân viên phục hồi chức năng</option>
+                      <option value="COMMUNICATIONS">Nhân viên truyền thông</option>
+                      <option value="OFFICE_ADMIN">Nhân viên hành chính</option>
                     </select>
                   </label>
 

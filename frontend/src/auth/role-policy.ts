@@ -3,20 +3,21 @@ import type {
 } from '../types/actor';
 
 export const ROLE_LABELS: Record<HumanActorRole, string> = {
-  ADMIN: 'Quản Trị Viên Tối Cao (Admin)',
-  SUPERVISOR: 'Ban Giám đốc (Giám sát)',
-  CARE_MANAGER: 'Quản lý (Quản lý chung)',
-  PSYCHOLOGIST: 'Nhân viên tâm lý',
-  SOCIAL_WORKER: 'Nhân viên công tác xã hội',
+  ADMIN: 'Quản trị viên hệ thống',
+  SUPERVISOR: 'Ban Giám đốc',
+  CARE_MANAGER: 'Quản lý chung',
+  PSYCHOLOGIST: 'Nhân viên tâm lý và công tác xã hội',
+  SOCIAL_WORKER: 'Nhân viên tâm lý và công tác xã hội',
   NURSE: 'Nhân viên y tế',
   CAREGIVER: 'Nhân viên chăm sóc',
   NUTRITIONIST: 'Nhân viên dinh dưỡng',
   HOUSEKEEPING: 'Nhân viên tạp vụ',
   REHABILITATION_SPECIALIST: 'Nhân viên phục hồi chức năng',
-  SECURITY: 'Bảo vệ',
-  ACCOUNTANT: 'Kế toán',
+  COMMUNICATIONS: 'Nhân viên truyền thông',
+  SECURITY: 'Nhân viên bảo vệ',
+  ACCOUNTANT: 'Nhân viên kế toán',
   RECEPTIONIST: 'Nhân viên lễ tân',
-  GUARDIAN: 'Thân nhân / Người bảo hộ',
+  GUARDIAN: 'Người bảo hộ cư dân',
 };
 
 export type AppRouteKey =
@@ -309,7 +310,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAssignShifts: false,
     canLogDirectCare: true,
     canPrescribeMedication: true, // ĐỘC QUYỀN: Nhân viên y tế phân chia thuốc theo đơn bác sĩ
-    canAdministerMedication: true, // ĐỘC QUYỀN: Điều dưỡng cho uống thuốc đúng cữ & ký xác nhận eMAR
+    canAdministerMedication: true, // ĐỘC QUYỀN: Nhân viên y tế cho uống thuốc đúng cữ & ký xác nhận eMAR
     canManageInventory: true, // Nhân viên y tế có quyền truy xuất kho vật tư
     canManageKitchenOperations: false,
     canManageBilling: false,
@@ -339,7 +340,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageLifecycle: false,
     canApproveDischarge: false,
     canCreateHealthReport: false,
-    canCreateAdmissionAssessment: false, // Nhân viên điều dưỡng KHÔNG tiếp nhận & đánh giá
+    canCreateAdmissionAssessment: false, // Nhân viên chăm sóc KHÔNG tiếp nhận & đánh giá
     canApproveLeave: false,
     canAssignShifts: false,
     canLogDirectCare: true,
@@ -358,7 +359,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageCareSuppliesImport: false,
     canManagePharmacy: false,
     canEvaluateKPI: false,
-    canViewResidentSupplies: true, // Điều dưỡng xem & quản lý Đồ gửi cụ từ gia đình
+    canViewResidentSupplies: true, // Nhân viên chăm sóc xem & quản lý Đồ gửi cụ từ gia đình
   },
   NUTRITIONIST: {
     allowedRoutes: [
@@ -460,9 +461,42 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canEvaluatePsychology: false,
     canRegisterStaffMeals: false,
     canManageCareSuppliesImport: false,
-    canManagePharmacy: false,
+    canManagePharmacy: false, // PHỤC HỒI CHỨC NĂNG: KHÔNG quản lý kho Dược phẩm
     canEvaluateKPI: false,
     canViewResidentSupplies: false, // PHỤC HỒI CHỨC NĂNG: KHÔNG xem/quản lý Đồ gửi cụ
+  },
+  COMMUNICATIONS: {
+    allowedRoutes: [
+      'dashboard',
+      'operations',
+    ],
+    canManageStaff: false,
+    canManageDirectorStaff: false,
+    canDeleteStaff: false,
+    canManageAccommodation: false,
+    canManageLifecycle: false,
+    canApproveDischarge: false,
+    canCreateHealthReport: false,
+    canCreateAdmissionAssessment: false,
+    canApproveLeave: false,
+    canAssignShifts: false,
+    canLogDirectCare: false,
+    canPrescribeMedication: false,
+    canAdministerMedication: false,
+    canManageInventory: false,
+    canManageKitchenOperations: false,
+    canManageBilling: false,
+    canConfigurePricing: false,
+    canAccessAnalytics: false,
+    canViewAuditLog: false,
+    canViewDirectorAuditLog: false,
+    canViewSensitiveFinancials: false,
+    canEvaluatePsychology: false,
+    canRegisterStaffMeals: false,
+    canManageCareSuppliesImport: false,
+    canManagePharmacy: false,
+    canEvaluateKPI: false,
+    canViewResidentSupplies: false,
   },
   SECURITY: {
     allowedRoutes: [

@@ -410,9 +410,9 @@ const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
     handoverDate: new Date().toISOString().slice(0, 10),
     guardianDelivererName: '',
     guardianPhone: '',
-    nurseReceiverName: 'Trần Thị Mai (Điều dưỡng)',
-    caregiverReceiverName: 'Lê Văn Nam (Chăm sóc viên)',
-    supervisorApprovalName: 'Hoàng Quốc Anh (Ban Giám đốc)',
+    nurseReceiverName: 'Trần Thị Mai',
+    caregiverReceiverName: 'Lê Văn Nam',
+    supervisorApprovalName: 'Hoàng Quốc Anh',
     medications: DEFAULT_HANDOVER_MEDICATIONS,
     belongings: DEFAULT_HANDOVER_BELONGINGS,
     generalNotes: 'Thân nhân và người cao tuổi đã bàn giao đầy đủ thuốc và đồ dùng cá nhân. Trung Tâm Dưỡng Lão Tâm An đã kiểm đếm và lưu giữ theo đúng quy trình.',
@@ -1879,7 +1879,7 @@ export function AdmissionPage() {
                     />
                   </div>
                   <div>
-                    <label className="form-label">Điều dưỡng tiếp nhận:</label>
+                    <label className="form-label">Nhân viên y tế tiếp nhận:</label>
                     <input
                       type="text"
                       value={form.handoverRecord?.nurseReceiverName ?? ''}
@@ -2766,7 +2766,7 @@ export function AdmissionPage() {
                     </div>
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Điều dưỡng tiếp nhận</div>
+                    <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Nhân viên y tế tiếp nhận</div>
                     <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                     <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                       {viewingAssessment.data.handoverRecord.nurseReceiverName}
@@ -2893,12 +2893,12 @@ export function AdmissionPage() {
                           handoverDate: item.requestedAdmissionDate ? item.requestedAdmissionDate.slice(0, 10) : new Date().toISOString().slice(0, 10),
                           guardianDelivererName: 'Gia đình người cao tuổi',
                           guardianPhone: '0901234567',
-                          nurseReceiverName: 'Trần Thị Mai (Điều dưỡng)',
-                          caregiverReceiverName: 'Lê Văn Nam (Chăm sóc viên)',
-                          supervisorApprovalName: 'Hoàng Quốc Anh (Ban Giám đốc)',
+                          nurseReceiverName: 'Trần Thị Mai',
+                          caregiverReceiverName: 'Lê Văn Nam',
+                          supervisorApprovalName: 'Hoàng Quốc Anh',
                           medications: DEFAULT_HANDOVER_MEDICATIONS,
                           belongings: DEFAULT_HANDOVER_BELONGINGS,
-                          generalNotes: 'Kiểm đếm 100% thuốc & đồ dùng cá nhân nguyên vẹn lúc tiếp nhận.',
+                          generalNotes: 'Thân nhân và người cao tuổi đã bàn giao đầy đủ thuốc và đồ dùng cá nhân. Trung Tâm Dưỡng Lão Tâm An đã kiểm đếm và lưu giữ theo đúng quy trình.',
                         };
 
                         return (
@@ -2978,7 +2978,7 @@ export function AdmissionPage() {
                 <div><b>Họ tên người cao tuổi:</b> {selectedHandoverPrint.residentName}</div>
                 <div><b>Ngày tiếp nhận bàn giao:</b> {selectedHandoverPrint.handover.handoverDate}</div>
                 <div><b>Bên bàn giao (Gia đình):</b> {selectedHandoverPrint.handover.guardianDelivererName} ({selectedHandoverPrint.handover.guardianPhone})</div>
-                <div><b>Bên tiếp nhận (Điều dưỡng):</b> {selectedHandoverPrint.handover.nurseReceiverName}</div>
+                <div><b>Bên tiếp nhận Nhân viên y tế:</b> {selectedHandoverPrint.handover.nurseReceiverName}</div>
               </div>
 
               {/* Table A: Medications */}
@@ -3053,7 +3053,7 @@ export function AdmissionPage() {
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Điều dưỡng tiếp nhận</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Nhân viên y tế tiếp nhận</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.2rem', width: '80%', margin: '0 auto', fontSize: '0.78rem' }}>
                     {selectedHandoverPrint.handover.nurseReceiverName}

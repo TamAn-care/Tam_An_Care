@@ -537,7 +537,7 @@ export function ResidentsPage() {
                           className="btn btn-sm btn-neutral"
                           disabled
                           style={{ fontSize: '0.78rem', opacity: 0.5, cursor: 'not-allowed' }}
-                          title="Tài khoản không được phân quyền xem Đồ gửi cụ (chức năng thuộc về Nhân viên Điều dưỡng)"
+                          title="Tài khoản không được phân quyền xem Đồ gửi cụ (chức năng thuộc về Nhân viên chăm sóc)"
                         >
                           🔒 Đồ Gửi Cụ
                         </button>

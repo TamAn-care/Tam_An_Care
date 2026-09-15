@@ -13,7 +13,7 @@ export interface ActiveStaffMember {
 export const ADMIN_DEMO_ACCOUNT: ActiveStaffMember = {
   actorId: 'Admin',
   staffCode: 'ADMIN-001',
-  displayName: 'Quản Trị Viên Tối Cao (Admin)',
+  displayName: 'Quản trị viên hệ thống',
   actorRole: 'ADMIN',
   status: 'ACTIVE',
 };
@@ -22,37 +22,40 @@ export const ADMIN_DEMO_ACCOUNT: ActiveStaffMember = {
 export const MOCK_ACTIVE_STAFF_ACCOUNTS: ActiveStaffMember[] = [
   ADMIN_DEMO_ACCOUNT,
 
-  // Ban Giám Đốc & Quản Lý
-  { actorId: 'TA-DIR-01', staffCode: 'TA-DIR-01', displayName: 'Hoàng Quốc Anh (Ban Giám Đốc)', actorRole: 'SUPERVISOR', status: 'ACTIVE' },
-  { actorId: 'STAFF-DIR-001', staffCode: 'NV-DIR-001', displayName: 'Hà Quang Anh (Ban Giám Đốc)', actorRole: 'SUPERVISOR', status: 'ACTIVE' },
-  { actorId: 'TA-MGR-01', staffCode: 'TA-MGR-01', displayName: 'Nguyễn Thị Thu Hà (Quản Lý Vận Hành)', actorRole: 'CARE_MANAGER', status: 'ACTIVE' },
-  { actorId: 'STAFF-MGR-001', staffCode: 'MGR-001', displayName: 'Phạm Minh Đức (Quản Lý Vận Hành)', actorRole: 'CARE_MANAGER', status: 'ACTIVE' },
+  // Ban Giám đốc & Quản lý chung
+  { actorId: 'TA-DIR-01', staffCode: 'TA-DIR-01', displayName: 'Hoàng Quốc Anh', actorRole: 'SUPERVISOR', status: 'ACTIVE' },
+  { actorId: 'STAFF-DIR-001', staffCode: 'NV-DIR-001', displayName: 'Hà Quang Anh', actorRole: 'SUPERVISOR', status: 'ACTIVE' },
+  { actorId: 'TA-MGR-01', staffCode: 'TA-MGR-01', displayName: 'Nguyễn Thị Thu Hà', actorRole: 'CARE_MANAGER', status: 'ACTIVE' },
+  { actorId: 'STAFF-MGR-001', staffCode: 'MGR-001', displayName: 'Phạm Minh Đức', actorRole: 'CARE_MANAGER', status: 'ACTIVE' },
 
-  // Điều Dưỡng Y Tế
-  { actorId: 'TA-NUR-01', staffCode: 'TA-NUR-01', displayName: 'Trần Thị Mai (Điều Dưỡng Viên)', actorRole: 'NURSE', status: 'ACTIVE' },
-  { actorId: 'STAFF-NUR-001', staffCode: 'NUR-001', displayName: 'Lê Thị Lan (Điều Dưỡng Trưởng)', actorRole: 'NURSE', status: 'ACTIVE' },
+  // Nhân viên y tế
+  { actorId: 'TA-NUR-01', staffCode: 'TA-NUR-01', displayName: 'Trần Thị Mai', actorRole: 'NURSE', status: 'ACTIVE' },
+  { actorId: 'STAFF-NUR-001', staffCode: 'NUR-001', displayName: 'Lê Thị Lan', actorRole: 'NURSE', status: 'ACTIVE' },
 
-  // Chăm Sóc Viên
-  { actorId: 'TA-CG-01', staffCode: 'TA-CG-01', displayName: 'Lê Văn Nam (Chăm Sóc Viên)', actorRole: 'CAREGIVER', status: 'ACTIVE' },
-  { actorId: 'cg-mai-001', staffCode: 'CG-001', displayName: 'Trần Thị Mai (Chăm Sóc Viên Khu A)', actorRole: 'CAREGIVER', status: 'ACTIVE' },
-  { actorId: 'cg-hoa-003', staffCode: 'CG-003', displayName: 'Đặng Thị Hoa (Chăm Sóc Viên Khu B)', actorRole: 'CAREGIVER', status: 'ACTIVE' },
+  // Nhân viên chăm sóc
+  { actorId: 'TA-CG-01', staffCode: 'TA-CG-01', displayName: 'Lê Văn Nam', actorRole: 'CAREGIVER', status: 'ACTIVE' },
+  { actorId: 'cg-mai-001', staffCode: 'CG-001', displayName: 'Trần Thị Mai', actorRole: 'CAREGIVER', status: 'ACTIVE' },
+  { actorId: 'cg-hoa-003', staffCode: 'CG-003', displayName: 'Đặng Thị Hoa', actorRole: 'CAREGIVER', status: 'ACTIVE' },
 
-  // Dinh Dưỡng & Bếp
-  { actorId: 'TA-NUT-01', staffCode: 'TA-NUT-01', displayName: 'Hoàng Minh Châu (Chuyên Gia Dinh Dưỡng)', actorRole: 'NUTRITIONIST', status: 'ACTIVE' },
+  // Nhân viên dinh dưỡng
+  { actorId: 'TA-NUT-01', staffCode: 'TA-NUT-01', displayName: 'Hoàng Minh Châu', actorRole: 'NUTRITIONIST', status: 'ACTIVE' },
 
-  // Kế Toán & Viện Phí
-  { actorId: 'TA-ACC-01', staffCode: 'TA-ACC-01', displayName: 'Vũ Bích Ngọc (Kế Toán Viện Phí)', actorRole: 'ACCOUNTANT', status: 'ACTIVE' },
+  // Nhân viên kế toán
+  { actorId: 'TA-ACC-01', staffCode: 'TA-ACC-01', displayName: 'Vũ Bích Ngọc', actorRole: 'ACCOUNTANT', status: 'ACTIVE' },
 
-  // Lễ Tân & Tiếp Đón
-  { actorId: 'TA-REC-01', staffCode: 'TA-REC-01', displayName: 'Đặng Thanh Tâm (Lễ Tân Tiếp Đón)', actorRole: 'RECEPTIONIST', status: 'ACTIVE' },
+  // Nhân viên lễ tân
+  { actorId: 'TA-REC-01', staffCode: 'TA-REC-01', displayName: 'Đặng Thanh Tâm', actorRole: 'RECEPTIONIST', status: 'ACTIVE' },
 
-  // Tâm Lý & PHCN
-  { actorId: 'TA-PSY-01', staffCode: 'TA-PSY-01', displayName: 'Lý Quốc Cường (Tư Vấn Tâm Lý)', actorRole: 'PSYCHOLOGIST', status: 'ACTIVE' },
-  { actorId: 'TA-REH-01', staffCode: 'TA-REH-01', displayName: 'Đỗ Hữu Phước (Vật Lý Trị Liệu)', actorRole: 'REHABILITATION_SPECIALIST', status: 'ACTIVE' },
+  // Nhân viên truyền thông
+  { actorId: 'STAFF-COM-015', staffCode: 'NV-COM-015', displayName: 'Nguyễn Văn Minh', actorRole: 'COMMUNICATIONS', status: 'ACTIVE' },
 
-  // Thân Nhân
-  { actorId: 'guardian-bao-001', staffCode: 'GD-001', displayName: 'Lê Gia Bảo (Thân nhân cụ Nguyễn Văn An)', actorRole: 'GUARDIAN', status: 'ACTIVE' },
-  { actorId: 'guardian-duc-002', staffCode: 'GD-002', displayName: 'Trần Anh Đức (Thân nhân cụ Trần Thị Bình)', actorRole: 'GUARDIAN', status: 'ACTIVE' },
+  // Nhân viên tâm lý và công tác xã hội & Phục hồi chức năng
+  { actorId: 'TA-PSY-01', staffCode: 'TA-PSY-01', displayName: 'Lý Quốc Cường', actorRole: 'PSYCHOLOGIST', status: 'ACTIVE' },
+  { actorId: 'TA-REH-01', staffCode: 'TA-REH-01', displayName: 'Đỗ Hữu Phước', actorRole: 'REHABILITATION_SPECIALIST', status: 'ACTIVE' },
+
+  // Thân nhân
+  { actorId: 'guardian-bao-001', staffCode: 'GD-001', displayName: 'Lê Gia Bảo', actorRole: 'GUARDIAN', status: 'ACTIVE' },
+  { actorId: 'guardian-duc-002', staffCode: 'GD-002', displayName: 'Trần Anh Đức', actorRole: 'GUARDIAN', status: 'ACTIVE' },
 ];
 
 export function getStoredAdminPassword(): string {

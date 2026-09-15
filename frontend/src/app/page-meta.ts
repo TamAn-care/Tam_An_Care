@@ -51,9 +51,9 @@ export const PAGE_META:
         'Lập, khóa dữ liệu, rà soát, phê duyệt và gửi báo cáo sức khỏe định kỳ.',
     },
     '/staff-access': {
-      title: 'Nhân sự & Phân quyền',
+      title: 'Nhân sự, Phân quyền & Đánh giá KPI',
       description:
-        'Quản lý danh sách nhân sự và quyền tiếp cận hồ sơ người cao tuổi.',
+        'Quản lý danh sách nhân sự, phân quyền tiếp cận hồ sơ, giám sát & tổng hợp đánh giá KPI ca/ngày/tháng/năm và khen thưởng thành tích.',
     },
     '/family-portal': {
       title: 'Cổng thông tin Thân nhân',

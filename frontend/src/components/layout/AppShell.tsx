@@ -42,7 +42,6 @@ import {
 } from '../../api/staff-actors';
 
 import { NotificationBell } from '../notifications/NotificationBell';
-import { TesterPortalModal } from '../testing/TesterPortalModal';
 import { MobileBottomNav } from '../navigation/MobileBottomNav';
 import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
 import { PWAInstallModal } from '../pwa/PWAInstallModal';
@@ -61,10 +60,30 @@ export function AppShell() {
     useState(false);
   const [showTopLogin, setShowTopLogin] = useState(false);
 
+  // Desktop Collapsible Sidebar State with localStorage persistence
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('taman_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('taman_sidebar_collapsed', String(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallModal, setShowInstallModal] = useState(false);
-  const [showTesterModal, setShowTesterModal] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -129,7 +148,7 @@ export function AppShell() {
     PAGE_META[location.pathname];
 
   return (
-    <div className="app-shell">
+    <div className={isSidebarCollapsed ? "app-shell sidebar-collapsed" : "app-shell"}>
       <IOSPWAInstallBanner />
       <div
         className={menuOpen ? 'sidebar-backdrop active' : 'sidebar-backdrop'}
@@ -141,12 +160,14 @@ export function AppShell() {
         className={
           menuOpen
             ? 'sidebar sidebar-open'
+            : isSidebarCollapsed
+            ? 'sidebar collapsed'
             : 'sidebar'
         }
       >
-        <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-            <div className="brand-mark">
+            <div className="brand-mark" title="Viện Dưỡng Lão Tâm An Care">
               <img
                 src="/branding/tam-an-logo-master.png"
                 alt="Tâm An"
@@ -154,36 +175,52 @@ export function AppShell() {
               />
             </div>
 
-            <div>
-              <h1 className="brand-title">
-                Tâm An Care
-              </h1>
+            {!isSidebarCollapsed && (
+              <div>
+                <h1 className="brand-title">
+                  Tâm An Care
+                </h1>
 
-              <div className="brand-subtitle">
-                Nơi Tuổi Già An Nhiên
+                <div className="brand-subtitle">
+                  Nơi Tuổi Già An Nhiên
+                </div>
               </div>
-            </div>
+            )}
           </div>
-          {menuOpen && (
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <button
               type="button"
-              onClick={() => setMenuOpen(false)}
-              className="mobile-sidebar-close"
-              aria-label="Đóng menu"
+              onClick={toggleSidebarCollapse}
+              className="desktop-sidebar-toggle"
+              title={isSidebarCollapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng"}
+              aria-label={isSidebarCollapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng"}
             >
-              ✕
+              {isSidebarCollapsed ? '▶' : '◀'}
             </button>
-          )}
+
+            {menuOpen && (
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
+                className="mobile-sidebar-close"
+                aria-label="Đóng menu"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         <AppNavigation
           onNavItemClick={() => setMenuOpen(false)}
           onOpenInstallModal={() => setShowInstallModal(true)}
+          isCollapsed={isSidebarCollapsed}
         />
 
         <div className="sidebar-footer">
           <span className="version-text">
-            V7.5 Development
+            {isSidebarCollapsed ? 'V7.5' : 'V7.5 Development'}
           </span>
         </div>
       </aside>
@@ -299,28 +336,6 @@ export function AppShell() {
 
               {actor && (
                 <div className="topbar-action-group" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowTesterModal(true)}
-                    style={{
-                      background: '#fef3c7',
-                      border: '1px solid #fde047',
-                      color: '#854d0e',
-                      fontWeight: 800,
-                      fontSize: '0.78rem',
-                      padding: '0.35rem 0.65rem',
-                      borderRadius: '0.35rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                    }}
-                    title="Mở Bảng Điều Khiển Chạy Thử Nghiệm Multi-Role Dành Cho Testers"
-                  >
-                    <span>🧪</span> Chế Độ Tester
-                  </button>
-
                   <button
                     type="button"
                     className="button button-subtle"
@@ -561,16 +576,9 @@ export function AppShell() {
         onPromptTriggered={() => setDeferredPrompt(null)}
       />
 
-      {/* MODAL CHẾ ĐỘ THỬ NGHIỆM MULTI-ROLE CHO TESTERS */}
-      <TesterPortalModal
-        isOpen={showTesterModal}
-        onClose={() => setShowTesterModal(false)}
-      />
-
       {/* FIXED MOBILE BOTTOM NAVIGATION BAR */}
       <MobileBottomNav
         onOpenMenu={() => setMenuOpen(true)}
-        onOpenTesterModal={() => setShowTesterModal(true)}
       />
     </div>
   );

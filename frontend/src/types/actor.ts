@@ -1,18 +1,19 @@
 export type HumanActorRole =
-  | 'ADMIN' // Quản trị viên tối cao (Admin) - Toàn quyền truy cập và chỉnh sửa tất cả thông tin
-  | 'SUPERVISOR' // Ban Giám đốc - Toàn quyền điều hành và quản trị
-  | 'CARE_MANAGER' // Quản lý - Quản lý chung tất cả hoạt động
-  | 'PSYCHOLOGIST' // Nhân viên tâm lý
-  | 'SOCIAL_WORKER' // Nhân viên công tác xã hội
-  | 'NURSE' // Nhân viên y tế / Điều dưỡng
-  | 'CAREGIVER' // Nhân viên chăm sóc
-  | 'NUTRITIONIST' // Nhân viên dinh dưỡng - Bếp & thực đơn
-  | 'HOUSEKEEPING' // Nhân viên tạp vụ - Vệ sinh & giặt là
+  | 'ADMIN'                     // Quản trị viên hệ thống
+  | 'SUPERVISOR'                // Ban Giám đốc
+  | 'CARE_MANAGER'              // Quản lý chung
+  | 'PSYCHOLOGIST'              // Nhân viên tâm lý và công tác xã hội
+  | 'SOCIAL_WORKER'             // Nhân viên tâm lý và công tác xã hội
+  | 'NURSE'                     // Nhân viên y tế
+  | 'CAREGIVER'                 // Nhân viên chăm sóc
+  | 'NUTRITIONIST'              // Nhân viên dinh dưỡng
+  | 'HOUSEKEEPING'              // Nhân viên tạp vụ
   | 'REHABILITATION_SPECIALIST' // Nhân viên phục hồi chức năng
-  | 'SECURITY' // Bảo vệ - An ninh & trật tự
-  | 'ACCOUNTANT' // Kế toán - Tài chính & chi phí chăm sóc
-  | 'RECEPTIONIST' // Nhân viên lễ tân - Đón tiếp & lịch hẹn
-  | 'GUARDIAN'; // Thân nhân / Người bảo hộ người cao tuổi
+  | 'COMMUNICATIONS'            // Nhân viên truyền thông
+  | 'SECURITY'                  // Nhân viên bảo vệ
+  | 'ACCOUNTANT'                // Nhân viên kế toán
+  | 'RECEPTIONIST'              // Nhân viên lễ tân
+  | 'GUARDIAN';                 // Người bảo hộ cư dân
 
 export interface HumanActorSession {
   actorId: string;

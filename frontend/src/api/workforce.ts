@@ -1042,7 +1042,7 @@ export interface ShiftTimeConfig {
 let mockShiftTimeConfigs: ShiftTimeConfig[] = [
   {
     jobGroup: 'CAREGIVER',
-    jobGroupLabel: 'Nhân viên Chăm sóc',
+    jobGroupLabel: 'Nhân viên chăm sóc',
     morningShiftHours: '06:00 - 14:00',
     afternoonShiftHours: '14:00 - 22:00',
     nightShiftHours: '22:00 - 06:00',
@@ -1050,7 +1050,7 @@ let mockShiftTimeConfigs: ShiftTimeConfig[] = [
   },
   {
     jobGroup: 'NURSE',
-    jobGroupLabel: 'Nhân viên Y tế / Điều dưỡng',
+    jobGroupLabel: 'Nhân viên y tế',
     morningShiftHours: '06:30 - 14:30',
     afternoonShiftHours: '14:30 - 21:30',
     nightShiftHours: '21:30 - 06:30',
@@ -1058,7 +1058,7 @@ let mockShiftTimeConfigs: ShiftTimeConfig[] = [
   },
   {
     jobGroup: 'NUTRITIONIST',
-    jobGroupLabel: 'Nhân viên Bếp & Dinh dưỡng',
+    jobGroupLabel: 'Nhân viên dinh dưỡng',
     morningShiftHours: '05:30 - 13:30',
     afternoonShiftHours: '13:30 - 19:30',
     nightShiftHours: 'Không áp dụng',
@@ -1066,7 +1066,7 @@ let mockShiftTimeConfigs: ShiftTimeConfig[] = [
   },
   {
     jobGroup: 'OFFICE_ADMIN',
-    jobGroupLabel: 'Nhân viên Văn phòng & PHCN',
+    jobGroupLabel: 'Nhân viên văn phòng & hành chính',
     morningShiftHours: '07:30 - 11:30',
     afternoonShiftHours: '13:30 - 17:30',
     nightShiftHours: 'Không áp dụng',

@@ -572,7 +572,7 @@ export default function HealthReportsPage() {
                     </td>
                     <td>
                       <div>{report.created_at ? new Date(report.created_at).toLocaleDateString('vi-VN') : '—'}</div>
-                      <div className="cell-secondary">Bởi: {parsed.assessorName || 'Điều dưỡng'}</div>
+                      <div className="cell-secondary">Bởi: {parsed.assessorName || 'Nhân viên y tế'}</div>
                     </td>
                     <td className="text-right">
                       <div className="btn-group">
@@ -1517,7 +1517,7 @@ export default function HealthReportsPage() {
               {/* Signature */}
               <div className="signature-box" style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'center', marginTop: '0.6rem' }}>
                 <div style={{ width: '220px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Người đánh giá / Điều dưỡng</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Nhân viên y tế lập báo cáo</div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.82rem' }}>
                     {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}

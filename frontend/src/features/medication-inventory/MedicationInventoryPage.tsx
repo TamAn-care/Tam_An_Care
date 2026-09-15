@@ -749,7 +749,7 @@ export default function MedicationInventoryPage() {
                                 ? 'BGĐ: Xem giám sát'
                                 : actor?.actorRole === 'CARE_MANAGER'
                                 ? 'Quản lý: Theo dõi y lệnh'
-                                : 'Chờ Điều dưỡng cấp phát'}
+                                : 'Chờ Nhân viên y tế cấp phát'}
                             </span>
                           )}
                         </div>

@@ -170,7 +170,7 @@ export default function AuditTrailPage() {
             </span>
           ) : (
             <span>
-              <b>Chính sách phân quyền bảo mật cấp bậc:</b> Bạn có quyền kiểm toán và truy vết hoạt động của toàn thể nhân sự các phòng ban (Điều dưỡng, Nhân viên chăm sóc, Kế toán, Lễ tân,...) và Quản lý. Theo chính sách phân cấp, các hoạt động điều hành của Ban Giám đốc được ẩn bảo mật.
+              <b>Chính sách phân quyền bảo mật cấp bậc:</b> Bạn có quyền kiểm toán và truy vết hoạt động của toàn thể nhân sự các phòng ban gồm Nhân viên y tế, Nhân viên chăm sóc, Nhân viên kế toán, Nhân viên lễ tân và Quản lý chung. Theo chính sách phân cấp, các hoạt động điều hành của Ban Giám đốc được ẩn bảo mật.
             </span>
           )}
         </div>

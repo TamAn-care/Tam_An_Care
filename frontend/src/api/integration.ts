@@ -154,8 +154,8 @@ export async function fetchResidentIntegrationOverview(
         actor_id: 'NURSE-01',
         actor_role: 'NURSE',
         status: 'ACTIVE',
-        staff_name: 'Điều dưỡng Phạm Thị Mai',
-        primary_operational_role: 'Điều dưỡng Trưởng Tầng 1',
+        staff_name: 'Nhân viên y tế Phạm Thị Mai',
+        primary_operational_role: 'Nhân viên y tế phụ trách Tầng 1',
       },
       carePlans: {
         availability: 'AVAILABLE',
