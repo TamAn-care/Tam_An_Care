@@ -12,6 +12,7 @@ import {
   saveServiceContract,
   deleteServiceContract,
   numberToVietnameseText,
+  generateAutoContractCode,
 } from '../../api/service-contracts';
 
 export function ServiceContractsPage() {
@@ -92,10 +93,10 @@ export function ServiceContractsPage() {
 
   const handleCreateNew = () => {
     const newId = `ctr-${Date.now()}`;
-    const nextNum = String(contracts.length + 1).padStart(3, '0');
+    const autoCode = generateAutoContractCode(contracts);
     const newContract: ServiceContract = {
       contractId: newId,
-      contractCode: `${nextNum}/2026/HĐDV-TA`,
+      contractCode: autoCode,
       residentId: '',
       status: 'DRAFT',
       signedDate: new Date().toISOString().split('T')[0],
@@ -105,6 +106,11 @@ export function ServiceContractsPage() {
         residentBirthYear: '',
         residentCccd: '',
         residentAddress: '',
+        hasSecondResident: false,
+        resident2Name: '',
+        resident2BirthYear: '',
+        resident2Cccd: '',
+        resident2Address: '',
         relative1Name: '',
         relative1BirthYear: '',
         relative1Cccd: '',
@@ -167,8 +173,50 @@ export function ServiceContractsPage() {
     });
   };
 
+  const handleSelectResident2ForAutoFill = (resId: string) => {
+    const resData = (residentsQuery.data || []).find((r) => r.resident.residentId === resId);
+    if (!resData || !editingContract) return;
+
+    const res = resData.resident;
+    const birthYear = res.dateOfBirth ? new Date(res.dateOfBirth).getFullYear().toString() : '';
+
+    setEditingContract((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        partyA: {
+          ...prev.partyA,
+          hasSecondResident: true,
+          resident2Name: res.displayName,
+          resident2BirthYear: birthYear,
+          resident2Cccd: `CCCD-${res.residentCode}`,
+          resident2Address: prev.partyA.residentAddress || 'Hà Nội',
+        },
+      };
+    });
+  };
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleSignContract = (contract: ServiceContract) => {
+    const today = new Date().toISOString().split('T')[0];
+    const updatedContract: ServiceContract = {
+      ...contract,
+      status: 'ACTIVE',
+      signedDate: contract.signedDate || today,
+      effectiveDate: contract.effectiveDate || today,
+      updatedAt: new Date().toISOString(),
+    };
+    saveMutation.mutate(updatedContract, {
+      onSuccess: () => {
+        alert(`🎉 Hợp đồng ${contract.contractCode} đã ký kết thành công và chuyển sang trạng thái "Đang hiệu lực"!`);
+        if (viewingContract?.contractId === contract.contractId) {
+          setViewingContract(updatedContract);
+        }
+      },
+    });
   };
 
   return (
@@ -311,7 +359,18 @@ export function ServiceContractsPage() {
                         <span className={statusObj.badgeClass}>{statusObj.label}</span>
                       </td>
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                        <div style={{ display: 'inline-flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                          {c.status === 'DRAFT' && (
+                            <button
+                              type="button"
+                              className="btn btn-sm"
+                              style={{ background: '#15803d', color: '#ffffff', fontWeight: 700 }}
+                              onClick={() => handleSignContract(c)}
+                              title="Chuyển hợp đồng từ Dự thảo sang Đang hiệu lực"
+                            >
+                              ✍️ Đã ký hợp đồng
+                            </button>
+                          )}
                           <button
                             type="button"
                             className="btn btn-sm btn-primary"
@@ -394,14 +453,26 @@ export function ServiceContractsPage() {
               {/* Basic Info */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
                 <div>
-                  <label className="form-label">Số Hợp đồng <span style={{ color: '#ef4444' }}>*</span></label>
-                  <input
-                    type="text"
-                    required
-                    className="form-input"
-                    value={editingContract.contractCode}
-                    onChange={(e) => setEditingContract({ ...editingContract, contractCode: e.target.value })}
-                  />
+                  <label className="form-label">Số Hợp đồng (Tự động) <span style={{ color: '#ef4444' }}>*</span></label>
+                  <div style={{ display: 'flex', gap: '0.35rem' }}>
+                    <input
+                      type="text"
+                      required
+                      className="form-input"
+                      style={{ flex: 1 }}
+                      value={editingContract.contractCode}
+                      onChange={(e) => setEditingContract({ ...editingContract, contractCode: e.target.value })}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      style={{ fontSize: '0.75rem', padding: '0.35rem 0.5rem', flexShrink: 0 }}
+                      title="Tự động sinh số hợp đồng"
+                      onClick={() => setEditingContract({ ...editingContract, contractCode: generateAutoContractCode(contracts) })}
+                    >
+                      ⚡ Mới
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label className="form-label">Ngày ký</label>
@@ -435,11 +506,30 @@ export function ServiceContractsPage() {
                   I. THÔNG TIN BÊN SỬ DỤNG DỊCH VỤ (BÊN A)
                 </h3>
 
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem' }}>Người cao tuổi (*)</div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155' }}>Người cao tuổi 1 (*)</div>
+                  <label style={{ fontSize: '0.8rem', color: '#166534', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(editingContract.partyA.hasSecondResident)}
+                      onChange={(e) => {
+                        setEditingContract({
+                          ...editingContract,
+                          partyA: {
+                            ...editingContract.partyA,
+                            hasSecondResident: e.target.checked,
+                          },
+                        });
+                      }}
+                    />
+                    👥 Đăng ký gửi cả 2 Ông/Bà (Thêm Cụ 2 đi cùng)
+                  </label>
+                </div>
+
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
                   <input
                     type="text"
-                    placeholder="Họ và tên Cụ (*)"
+                    placeholder="Họ và tên Cụ 1 (*)"
                     required
                     className="form-input"
                     value={editingContract.partyA.residentName}
@@ -447,14 +537,14 @@ export function ServiceContractsPage() {
                   />
                   <input
                     type="text"
-                    placeholder="Năm sinh"
+                    placeholder="Năm sinh Cụ 1"
                     className="form-input"
                     value={editingContract.partyA.residentBirthYear}
                     onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, residentBirthYear: e.target.value } })}
                   />
                   <input
                     type="text"
-                    placeholder="Số CCCD"
+                    placeholder="Số CCCD Cụ 1"
                     className="form-input"
                     value={editingContract.partyA.residentCccd}
                     onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, residentCccd: e.target.value } })}
@@ -468,6 +558,58 @@ export function ServiceContractsPage() {
                   value={editingContract.partyA.residentAddress}
                   onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, residentAddress: e.target.value } })}
                 />
+
+                {/* Optional Second Resident (Cụ 2 đi cùng) */}
+                {editingContract.partyA.hasSecondResident && (
+                  <div style={{ background: '#f8fafc', border: '1px dashed #166534', borderRadius: '0.375rem', padding: '0.75rem', marginBottom: '0.75rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#166534' }}>👵 / 👴 Người cao tuổi 2 (Cụ thứ hai đi cùng / Vợ-Chồng)</div>
+                      <select
+                        className="form-select"
+                        style={{ fontSize: '0.75rem', width: 'auto', padding: '0.2rem 0.4rem' }}
+                        onChange={(e) => handleSelectResident2ForAutoFill(e.target.value)}
+                      >
+                        <option value="">-- Chọn Cụ 2 từ danh sách --</option>
+                        {(residentsQuery.data || []).map(({ resident }) => (
+                          <option key={resident.residentId} value={resident.residentId}>
+                            {resident.displayName} ({resident.residentCode})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <input
+                        type="text"
+                        placeholder="Họ và tên Cụ 2"
+                        className="form-input"
+                        value={editingContract.partyA.resident2Name || ''}
+                        onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, resident2Name: e.target.value } })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Năm sinh Cụ 2"
+                        className="form-input"
+                        value={editingContract.partyA.resident2BirthYear || ''}
+                        onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, resident2BirthYear: e.target.value } })}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Số CCCD Cụ 2"
+                        className="form-input"
+                        value={editingContract.partyA.resident2Cccd || ''}
+                        onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, resident2Cccd: e.target.value } })}
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Địa chỉ thường trú Cụ 2"
+                      className="form-input"
+                      style={{ width: '100%' }}
+                      value={editingContract.partyA.resident2Address || ''}
+                      onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, resident2Address: e.target.value } })}
+                    />
+                  </div>
+                )}
 
                 <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem' }}>Đại diện Thân nhân 1 (**)</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -579,13 +721,14 @@ export function ServiceContractsPage() {
                   </div>
                 </div>
 
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem' }}>
-                  Danh mục dịch vụ chăm sóc bổ sung (Đăng ký theo yêu cầu):
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Danh mục dịch vụ chăm sóc bổ sung (Giá tiền để mở - Tự do điều chỉnh giá):</span>
+                  <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>💡 Ô nhập giá tự do thay đổi</span>
                 </div>
 
-                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.375rem', padding: '0.5rem', maxHeight: '220px', overflowY: 'auto', marginBottom: '0.75rem' }}>
+                <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.375rem', padding: '0.5rem', maxHeight: '280px', overflowY: 'auto', marginBottom: '0.75rem' }}>
                   {editingContract.appendix.additionalServices.map((srv, idx) => (
-                    <div key={srv.stt} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.35rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <div key={srv.stt} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0', borderBottom: '1px solid #f1f5f9' }}>
                       <input
                         type="checkbox"
                         checked={srv.selected}
@@ -609,9 +752,32 @@ export function ServiceContractsPage() {
                       <span style={{ fontSize: '0.82rem', flex: 1, fontWeight: srv.selected ? 700 : 400, color: srv.selected ? '#166534' : '#334155' }}>
                         {srv.stt}. {srv.name}
                       </span>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#b45309', minWidth: '110px', textAlign: 'right' }}>
-                        {srv.fee.toLocaleString()} đ
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Đơn giá:</span>
+                        <input
+                          type="number"
+                          className="form-input"
+                          style={{ width: '120px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', fontWeight: 700, color: srv.selected ? '#166534' : '#334155', textAlign: 'right' }}
+                          value={srv.fee}
+                          onChange={(e) => {
+                            const newFee = parseInt(e.target.value, 10) || 0;
+                            const updated = [...editingContract.appendix.additionalServices];
+                            updated[idx].fee = newFee;
+                            const addTotal = updated.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0);
+                            const newTotal = editingContract.appendix.baseMonthlyFee + addTotal - editingContract.appendix.discount;
+                            setEditingContract({
+                              ...editingContract,
+                              appendix: {
+                                ...editingContract.appendix,
+                                additionalServices: updated,
+                                totalMonthlyFee: newTotal,
+                                totalMonthlyFeeText: numberToVietnameseText(newTotal),
+                              },
+                            });
+                          }}
+                        />
+                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>đ</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -664,7 +830,101 @@ export function ServiceContractsPage() {
 
       {/* MODAL XEM TRƯỚC VĂN BẢN HỢP ĐỒNG 10 TRANG & IN ẤN */}
       {viewingContract && (
-        <div className="modal-backdrop modal-print-backdrop" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
+        <div className="modal-backdrop print-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
+          <style>{`
+            @media print {
+              @page {
+                size: A4 portrait;
+                margin: 12mm 15mm 12mm 15mm;
+              }
+
+              html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+                font-family: "Times New Roman", Times, serif !important;
+                font-size: 13pt !important;
+                line-height: 1.35 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+              }
+
+              /* Hide all background app layout elements completely */
+              body > *:not(#root),
+              #root > *:not(.app-shell),
+              .app-shell > aside,
+              .sidebar,
+              .navigation,
+              .topbar,
+              .page-header,
+              .no-print,
+              button,
+              .modal-backdrop:not(.print-modal-overlay),
+              .modal-overlay:not(.print-modal-overlay),
+              main.page > *:not(.print-modal-overlay) {
+                display: none !important;
+              }
+
+              /* Force print modal backdrop and card containers into normal document flow */
+              .print-modal-overlay {
+                position: static !important;
+                inset: auto !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+              }
+
+              .modal-print-card {
+                position: static !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: none !important;
+                overflow: visible !important;
+                display: block !important;
+              }
+
+              .contract-print-document {
+                font-family: "Times New Roman", Times, serif !important;
+                font-size: 13pt !important;
+                line-height: 1.35 !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                display: block !important;
+              }
+
+              .contract-page-break {
+                page-break-before: always !important;
+                break-before: page !important;
+              }
+
+              table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+              }
+
+              tr {
+                page-break-inside: avoid !important;
+              }
+
+              th, td {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+              }
+            }
+          `}</style>
           <div className="modal-card modal-print-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '900px', width: '100%', maxHeight: '95vh', overflowY: 'auto', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
             
             {/* Top Toolbar (Hide during print) */}
@@ -673,6 +933,17 @@ export function ServiceContractsPage() {
                 📄 Xem Trước Văn Bản Hợp Đồng 10 Trang (Số: {viewingContract.contractCode})
               </div>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
+                {viewingContract.status === 'DRAFT' && (
+                  <button
+                    type="button"
+                    onClick={() => handleSignContract(viewingContract)}
+                    className="btn"
+                    style={{ background: '#15803d', color: '#ffffff', fontWeight: 700 }}
+                    title="Chuyển hợp đồng từ Dự thảo sang Đang hiệu lực"
+                  >
+                    ✍️ Đã ký hợp đồng
+                  </button>
+                )}
                 <button type="button" onClick={handlePrint} className="btn btn-primary" style={{ fontWeight: 700 }}>
                   🖨️ In Hợp Đồng (A4)
                 </button>
@@ -685,27 +956,6 @@ export function ServiceContractsPage() {
             {/* PRINT TEMPLATE CONTENT (100% exact text, Times New Roman, A4 format) */}
             <div className="contract-print-document" style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '13pt', lineHeight: '1.35', color: '#000000', padding: '0 10px' }}>
               
-              {/* BRANDING HEADER WITH TAM AN LOGO */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1.5px solid #166534', paddingBottom: '10px', marginBottom: '15px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '45px', height: '45px', borderRadius: '50%', background: '#166534', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '20px' }}>
-                    🌿
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 800, color: '#166534', fontSize: '13pt', letterSpacing: '0.5px' }}>
-                      TRUNG TÂM DƯỠNG LÃO TÂM AN CARE
-                    </div>
-                    <div style={{ fontSize: '9.5pt', color: '#475569' }}>
-                      An yên phụng dưỡng • Chuẩn mực y khoa • Ấm áp như gia đình
-                    </div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right', fontSize: '9.5pt', color: '#475569' }}>
-                  <b>Mã hợp đồng:</b> {viewingContract.contractCode}<br />
-                  <b>Hotline:</b> 0961.81.86.83
-                </div>
-              </div>
-
               {/* PAGE 1 */}
               <div style={{ textAlign: 'center', marginBottom: '15px' }}>
                 <div style={{ fontWeight: 'bold', fontSize: '13pt' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
@@ -714,7 +964,7 @@ export function ServiceContractsPage() {
               </div>
 
               <div style={{ textAlign: 'center', margin: '15px 0' }}>
-                <h2 style={{ margin: 0, fontSize: '15pt', fontWeight: 'bold' }}>HỢP ĐỒNG CUNG CẤP DỊCH VỤ DƯỠNG LÃỜ</h2>
+                <h2 style={{ margin: 0, fontSize: '15pt', fontWeight: 'bold' }}>HỢP ĐỒNG CUNG CẤP DỊCH VỤ DƯỠNG LÃO</h2>
                 <div style={{ fontStyle: 'italic', fontSize: '12pt', marginTop: '4px' }}>
                   (Số: {viewingContract.contractCode})
                 </div>
@@ -729,9 +979,17 @@ export function ServiceContractsPage() {
 
               {/* PART I: PARTY A */}
               <div style={{ fontWeight: 'bold', margin: '10px 0 5px 0' }}>I. BÊN SỬ DỤNG DỊCH VỤ (BÊN A):</div>
-              <div>Người cao tuổi (*): <b>{viewingContract.partyA.residentName || '...................................................'}</b></div>
+              <div>Người cao tuổi 1 (*): <b>{viewingContract.partyA.residentName || '...................................................'}</b></div>
               <div>Sinh năm: {viewingContract.partyA.residentBirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.residentCccd || '....................................'}</div>
               <div>Địa chỉ thường trú: {viewingContract.partyA.residentAddress || '...................................................................................................................................'}</div>
+
+              {(viewingContract.partyA.hasSecondResident || viewingContract.partyA.resident2Name) && (
+                <div style={{ marginTop: '6px' }}>
+                  <div>Và Người cao tuổi 2 (gửi cùng / Vợ-Chồng): <b>{viewingContract.partyA.resident2Name || '...................................................'}</b></div>
+                  <div>Sinh năm: {viewingContract.partyA.resident2BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.resident2Cccd || '....................................'}</div>
+                  <div>Địa chỉ thường trú: {viewingContract.partyA.resident2Address || viewingContract.partyA.residentAddress || '...................................................................................................................................'}</div>
+                </div>
+              )}
 
               <div style={{ marginTop: '8px' }}>Và Ông/Bà (**): <b>{viewingContract.partyA.relative1Name || '...................................................'}</b></div>
               <div>Sinh năm: {viewingContract.partyA.relative1BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.relative1Cccd || '....................................'}</div>
@@ -785,7 +1043,12 @@ export function ServiceContractsPage() {
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 2. Nội dung, thời gian, địa điểm cung cấp dịch vụ</div>
                 <div style={{ fontWeight: 'bold' }}>2.1. Tiếp nhận chăm sóc</div>
-                <div>Bên A tự nguyện giao cho Bên B chăm sóc và Bên B đồng ý tiếp nhận chăm sóc Người cao tuổi (*): <b>{viewingContract.partyA.residentName || '..................................................'}</b>, sinh ngày {viewingContract.partyA.residentBirthYear || '.....................................'}. Vào an dưỡng tại Trung tâm dưỡng lão Tâm An theo các nội dung dịch vụ được quy định tại hợp đồng này và phụ lục kèm theo hợp đồng này kể từ ngày <b>{viewingContract.effectiveDate || '...................................................'}</b>.</div>
+                <div>
+                  Bên A tự nguyện giao cho Bên B chăm sóc và Bên B đồng ý tiếp nhận chăm sóc Người cao tuổi (*): <b>{viewingContract.partyA.residentName || '..................................................'}</b>, sinh năm {viewingContract.partyA.residentBirthYear || '............'}
+                  {viewingContract.partyA.resident2Name ? (
+                    <> và Người cao tuổi thứ hai: <b>{viewingContract.partyA.resident2Name}</b>, sinh năm {viewingContract.partyA.resident2BirthYear || '............'}</>
+                  ) : null}. Vào an dưỡng tại Trung tâm dưỡng lão Tâm An theo các nội dung dịch vụ được quy định tại hợp đồng này và phụ lục kèm theo hợp đồng này kể từ ngày <b>{viewingContract.effectiveDate || '...................................................'}</b>.
+                </div>
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>2.2. Địa điểm cung cấp dịch vụ</div>
                 <div>Dịch vụ được cung cấp tại: <b>Trung tâm dưỡng lão Tâm An</b></div>
                 <div>Trực thuộc <b>Công ty Cổ phần Thương mại Dịch vụ An Thịnh Phát Group</b></div>
@@ -905,27 +1168,7 @@ export function ServiceContractsPage() {
               </div>
 
               {/* PAGE BREAK FOR APPENDIX */}
-              <div style={{ pageBreakBefore: 'always', paddingTop: '20px' }}></div>
-
-              {/* APPENDIX 01 BRANDING HEADER */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1.5px solid #166534', paddingBottom: '10px', marginBottom: '15px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#166534', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '18px' }}>
-                    🌿
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 800, color: '#166534', fontSize: '12pt' }}>
-                      TRUNG TÂM DƯỠNG LÃO TÂM AN CARE
-                    </div>
-                    <div style={{ fontSize: '9pt', color: '#475569' }}>
-                      Phụ lục Hợp đồng dịch vụ chăm sóc Người cao tuổi
-                    </div>
-                  </div>
-                </div>
-                <div style={{ textAlign: 'right', fontSize: '9pt', color: '#475569' }}>
-                  <b>Kèm HĐ số:</b> {viewingContract.contractCode}
-                </div>
-              </div>
+              <div className="contract-page-break" style={{ pageBreakBefore: 'always', paddingTop: '20px' }}></div>
 
               {/* APPENDIX 01 TITLE */}
               <div style={{ textAlign: 'center', marginBottom: '15px' }}>

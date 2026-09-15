@@ -12,11 +12,18 @@ export const CONTRACT_STATUS_LABEL: Record<ContractStatus, { label: string; badg
 };
 
 export interface ContractPartyA {
-  // Người cao tuổi (*)
+  // Người cao tuổi 1 (*)
   residentName: string;
   residentBirthYear: string;
   residentCccd: string;
   residentAddress: string;
+
+  // Người cao tuổi 2 (nếu gửi cả 2 Ông/Bà)
+  hasSecondResident?: boolean;
+  resident2Name?: string;
+  resident2BirthYear?: string;
+  resident2Cccd?: string;
+  resident2Address?: string;
 
   // Thân nhân (**)
   relative1Name: string;
@@ -229,6 +236,26 @@ export function saveStoredServiceContracts(items: ServiceContract[]) {
     localStorage.setItem(LS_CONTRACTS_KEY, JSON.stringify(items));
   } catch {}
 }
+
+export function generateAutoContractCode(existingContracts: ServiceContract[]): string {
+  const currentYear = new Date().getFullYear();
+  const yearSuffix = `${currentYear}`;
+  
+  let maxNum = 0;
+  for (const c of existingContracts) {
+    if (c.contractCode) {
+      const match = c.contractCode.match(/^(\d+)\//);
+      if (match) {
+        const n = parseInt(match[1], 10);
+        if (n > maxNum) maxNum = n;
+      }
+    }
+  }
+
+  const nextNum = String(maxNum + 1).padStart(3, '0');
+  return `${nextNum}/${yearSuffix}/HĐDV-TA`;
+}
+
 
 export async function listServiceContracts(
   actor?: HumanActorSession | null,
