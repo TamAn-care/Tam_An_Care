@@ -2229,3 +2229,152 @@ div:has(> table.operations-table),
     z-index: 99999 !important;
   }
 }
+
+/* ========================================================================= */
+/* CROSS-PLATFORM UI OPTIMIZATION (ANDROID MOBILE & IPAD / TABLET ENHANCEMENTS) */
+/* ========================================================================= */
+
+/* 1. Universal Touch & Dynamic Viewport Height (Android & iOS) */
+html,
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Normalization for Android Native Inputs & Selects */
+input,
+select,
+textarea,
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  color-scheme: light;
+}
+
+input[type="date"],
+input[type="datetime-local"],
+select.form-select,
+input.form-input {
+  min-height: 44px;
+  font-size: 16px; /* Prevents auto-zoom on mobile browsers & improves Android tap precision */
+}
+
+/* 2. Android Mobile Specific Rules (< 768px) */
+@media (max-width: 767px) {
+  /* Safe area padding for Android gesture navigation bar & iOS home indicator */
+  .mobile-bottom-nav,
+  .bottom-toolbar,
+  .modal-backdrop,
+  .page-content {
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  }
+
+  /* Smooth momentum scrolling & overscroll containment for touch tables & drawers */
+  .table-responsive,
+  .operations-table-container,
+  .sidebar {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Modal cards on Mobile Android & iOS */
+  .modal-card {
+    width: calc(100vw - 24px) !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+    border-radius: 0.75rem !important;
+    padding: 1.25rem !important;
+    margin: 0 auto !important;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Compact grid cards on mobile screens */
+  .kpi-grid,
+  .grid-kpi {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.65rem !important;
+  }
+}
+
+/* 3. iPad & Tablet Layout Optimization (768px - 1024px / 1180px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* App Shell grid structure on Tablets */
+  .app-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .app-shell.sidebar-collapsed {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  /* Tablet KPI Grid: 3 balanced columns */
+  .kpi-grid,
+  .grid-kpi,
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  /* Tablet Entity Grid (Residents, Contracts, Leave, Health, Workforce): 2 columns */
+  .entity-grid-cards,
+  .resident-grid,
+  .contract-grid,
+  .staff-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  /* Tablet Modals: Centered 88vw width for optimal reading line length */
+  .modal-card {
+    max-width: 88vw !important;
+    width: 720px !important;
+    max-height: 88vh !important;
+    max-height: 88dvh !important;
+    padding: 1.75rem !important;
+  }
+
+  /* Tablet Table Containers with custom smooth scroll */
+  .table-responsive,
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .table-responsive table {
+    min-width: 720px;
+  }
+
+  /* Tablet Touch Targets */
+  .nav-link,
+  .btn,
+  .form-input,
+  .form-select {
+    min-height: 44px;
+  }
+}
+
+/* 4. Touch Device Hover State Fix (Prevents sticky hover effects on Android & iPad touch) */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover,
+  .nav-link:hover,
+  .card:hover {
+    box-shadow: none;
+  }
+
+  .btn:active,
+  .nav-link:active,
+  .card:active {
+    opacity: 0.88;
+    transform: scale(0.985);
+    transition: transform 0.08s ease, opacity 0.08s ease;
+  }
+}
