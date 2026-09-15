@@ -13,6 +13,7 @@ import {
   deleteServiceContract,
   numberToVietnameseText,
   generateAutoContractCode,
+  formatDateDDMMYYYY,
 } from '../../api/service-contracts';
 
 export function ServiceContractsPage() {
@@ -352,8 +353,8 @@ export function ServiceContractsPage() {
                         </div>
                       </td>
                       <td style={{ padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#475569' }}>
-                        <div>Ký: {c.signedDate}</div>
-                        <div>Hiệu lực: {c.effectiveDate}</div>
+                        <div>Ký: {formatDateDDMMYYYY(c.signedDate)}</div>
+                        <div>Hiệu lực: {formatDateDDMMYYYY(c.effectiveDate)}</div>
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <span className={statusObj.badgeClass}>{statusObj.label}</span>
@@ -925,7 +926,7 @@ export function ServiceContractsPage() {
               }
             }
           `}</style>
-          <div className="modal-card modal-print-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '900px', width: '100%', maxHeight: '95vh', overflowY: 'auto', padding: '2rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+          <div className="modal-card modal-print-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '850px', width: '100%', maxHeight: '95vh', overflowY: 'auto', padding: '2rem 2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
             
             {/* Top Toolbar (Hide during print) */}
             <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.5rem' }}>
@@ -954,17 +955,29 @@ export function ServiceContractsPage() {
             </div>
 
             {/* PRINT TEMPLATE CONTENT (100% exact text, Times New Roman, A4 format) */}
-            <div className="contract-print-document" style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '13pt', lineHeight: '1.35', color: '#000000', padding: '0 10px' }}>
+            <div className="contract-print-document" style={{ fontFamily: '"Times New Roman", Times, serif', fontSize: '13pt', lineHeight: '1.35', color: '#000000', padding: '0 5px' }}>
               
-              {/* PAGE 1 */}
-              <div style={{ textAlign: 'center', marginBottom: '15px' }}>
-                <div style={{ fontWeight: 'bold', fontSize: '13pt' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
-                <div style={{ fontWeight: 'bold', fontSize: '12pt' }}>Độc lập - Tự do - Hạnh phúc</div>
-                <div style={{ fontSize: '11pt', marginTop: '2px' }}>------------------</div>
+              {/* PAGE 1 HEADER (2-Column Balanced Standard Layout) */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
+                <div style={{ textAlign: 'center', width: '48%' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '10.5pt', textTransform: 'uppercase', lineHeight: '1.25' }}>
+                    {viewingContract.partyB?.companyName || 'CÔNG TY CP THƯƠNG MẠI DỊCH VỤ AN THỊNH PHÁT GROUP'}
+                  </div>
+                  <div style={{ fontWeight: 'bold', fontSize: '11pt', textTransform: 'uppercase', marginTop: '3px' }}>
+                    TRUNG TÂM DƯỠNG LÃO TÂM AN
+                  </div>
+                  <div style={{ fontSize: '10pt', marginTop: '2px', letterSpacing: '-1px' }}>------------------</div>
+                </div>
+
+                <div style={{ textAlign: 'center', width: '48%' }}>
+                  <div style={{ fontWeight: 'bold', fontSize: '12pt', lineHeight: '1.25' }}>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '11pt', marginTop: '3px' }}>Độc lập - Tự do - Hạnh phúc</div>
+                  <div style={{ fontSize: '10pt', marginTop: '2px', letterSpacing: '-1px' }}>------------------</div>
+                </div>
               </div>
 
-              <div style={{ textAlign: 'center', margin: '15px 0' }}>
-                <h2 style={{ margin: 0, fontSize: '15pt', fontWeight: 'bold' }}>HỢP ĐỒNG CUNG CẤP DỊCH VỤ DƯỠNG LÃO</h2>
+              <div style={{ textAlign: 'center', margin: '16px 0 14px 0' }}>
+                <h2 style={{ margin: 0, fontSize: '15pt', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.3px' }}>HỢP ĐỒNG CUNG CẤP DỊCH VỤ DƯỠNG LÃO</h2>
                 <div style={{ fontStyle: 'italic', fontSize: '12pt', marginTop: '4px' }}>
                   (Số: {viewingContract.contractCode})
                 </div>
@@ -974,7 +987,7 @@ export function ServiceContractsPage() {
                 - Căn cứ Bộ luật Dân sự số 91/2015/QH13 ngày 24/11/2015;<br />
                 - Căn cứ Luật Người cao tuổi số 39/2009/QH12 ngày 23/11/2009 và các văn bản hướng dẫn thi hành hiện hành;<br />
                 - Căn cứ vào năng lực và nhu cầu của hai bên;<br />
-                Hôm nay, ngày ..... tháng ..... năm 2026, chúng tôi gồm các bên dưới đây:
+                Hôm nay, ngày {formatDateDDMMYYYY(viewingContract.signedDate, '..... tháng ..... năm 2026')}, chúng tôi gồm các bên dưới đây:
               </div>
 
               {/* PART I: PARTY A */}
@@ -1047,7 +1060,7 @@ export function ServiceContractsPage() {
                   Bên A tự nguyện giao cho Bên B chăm sóc và Bên B đồng ý tiếp nhận chăm sóc Người cao tuổi (*): <b>{viewingContract.partyA.residentName || '..................................................'}</b>, sinh năm {viewingContract.partyA.residentBirthYear || '............'}
                   {viewingContract.partyA.resident2Name ? (
                     <> và Người cao tuổi thứ hai: <b>{viewingContract.partyA.resident2Name}</b>, sinh năm {viewingContract.partyA.resident2BirthYear || '............'}</>
-                  ) : null}. Vào an dưỡng tại Trung tâm dưỡng lão Tâm An theo các nội dung dịch vụ được quy định tại hợp đồng này và phụ lục kèm theo hợp đồng này kể từ ngày <b>{viewingContract.effectiveDate || '...................................................'}</b>.
+                  ) : null}. Vào an dưỡng tại Trung tâm dưỡng lão Tâm An theo các nội dung dịch vụ được quy định tại hợp đồng này và phụ lục kèm theo hợp đồng này kể từ ngày <b>{formatDateDDMMYYYY(viewingContract.effectiveDate)}</b>.
                 </div>
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>2.2. Địa điểm cung cấp dịch vụ</div>
                 <div>Dịch vụ được cung cấp tại: <b>Trung tâm dưỡng lão Tâm An</b></div>

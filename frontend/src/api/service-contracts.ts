@@ -11,6 +11,33 @@ export const CONTRACT_STATUS_LABEL: Record<ContractStatus, { label: string; badg
   CANCELLED: { label: 'Đã hủy', badgeClass: 'badge badge-danger' },
 };
 
+/**
+ * Chuyển đổi định dạng ngày từ ISO/YYYY-MM-DD sang dd/mm/yyyy
+ * Ví dụ: '2026-09-15' -> '15/09/2026'
+ */
+export function formatDateDDMMYYYY(dateStr?: string | null, fallback = '...................'): string {
+  if (!dateStr || dateStr.trim() === '') {
+    return fallback;
+  }
+  const cleanStr = dateStr.trim().split('T')[0];
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(cleanStr)) {
+    return cleanStr;
+  }
+  const isoMatch = cleanStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch;
+    return `${day}/${month}/${year}`;
+  }
+  const d = new Date(dateStr);
+  if (!isNaN(d.getTime())) {
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+  return dateStr;
+}
+
 export interface ContractPartyA {
   // Người cao tuổi 1 (*)
   residentName: string;
