@@ -37,6 +37,7 @@ export type AppRouteKey =
   | 'billing-invoicing'
   | 'analytics-intelligence'
   | 'audit-trail'
+  | 'service-contracts'
   | 'system-status';
 
 export interface RoleCapability {
@@ -89,6 +90,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'billing-invoicing',
       'analytics-intelligence',
       'audit-trail',
+      'service-contracts',
       'system-status',
     ],
     canManageStaff: true, // ADMIN: Toàn quyền tạo và quản lý tài khoản 100% nhân sự & BGĐ
@@ -137,6 +139,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'billing-invoicing',
       'analytics-intelligence',
       'audit-trail',
+      'service-contracts',
       'system-status',
     ],
     canManageStaff: true, // BAN GIÁM ĐỐC: Toàn quyền tạo ID, cấp mật khẩu cho Ban Giám đốc, Quản lý và toàn thể Nhân viên
@@ -185,6 +188,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'billing-invoicing',
       'analytics-intelligence',
       'audit-trail',
+      'service-contracts',
       'system-status',
     ],
     canManageStaff: true,

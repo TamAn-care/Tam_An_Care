@@ -5,9 +5,11 @@ import {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   publishDirectorNotification,
+  checkAndPublishResidentBirthdayNotifications,
   NotificationItem,
   NotificationType,
 } from '../../api/notifications';
+import { listResidents } from '../../api/residents';
 import { useActor } from '../../auth/ActorContext';
 
 function formatTimeAgo(timestampStr: string): string {
@@ -40,7 +42,13 @@ export function NotificationBell() {
     actor?.actorRole === 'CARE_MANAGER' ||
     actor?.actorRole === 'ADMIN';
 
-  const refreshNotifications = () => {
+  const refreshNotifications = async () => {
+    try {
+      const resData = await listResidents(actor);
+      if (resData && resData.length > 0) {
+        checkAndPublishResidentBirthdayNotifications(resData.map((r) => r.resident));
+      }
+    } catch {}
     setNotifications(getLocalNotifications());
   };
 
@@ -235,54 +243,57 @@ export function NotificationBell() {
                 Không có thông báo mới.
               </div>
             ) : (
-              notifications.map((n) => (
-                <div
-                  key={n.id}
-                  onClick={() => handleItemClick(n)}
-                  style={{
-                    padding: '0.75rem 1rem',
-                    borderBottom: '1px solid #f1f5f9',
-                    background: n.isRead ? '#ffffff' : '#f0fdf4',
-                    cursor: 'pointer',
-                    transition: 'background 0.15s ease',
-                    position: 'relative',
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.2rem' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: n.isRead ? '#334155' : '#166534' }}>
-                      {n.title}
+              notifications.map((n) => {
+                const isBirthday = n.type === 'BIRTHDAY_ALERT';
+                return (
+                  <div
+                    key={n.id}
+                    onClick={() => handleItemClick(n)}
+                    style={{
+                      padding: '0.75rem 1rem',
+                      borderBottom: '1px solid #f1f5f9',
+                      background: n.isRead ? '#ffffff' : isBirthday ? '#fff1f2' : '#f0fdf4',
+                      cursor: 'pointer',
+                      transition: 'background 0.15s ease',
+                      position: 'relative',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.2rem' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.85rem', color: n.isRead ? '#334155' : isBirthday ? '#be123c' : '#166534' }}>
+                        {n.title}
+                      </div>
+                      <div style={{ fontSize: '0.72rem', color: '#94a3b8', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
+                        {formatTimeAgo(n.timestamp)}
+                      </div>
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#94a3b8', whiteSpace: 'nowrap', marginLeft: '0.5rem' }}>
-                      {formatTimeAgo(n.timestamp)}
+
+                    <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: '1.45' }}>
+                      {n.message}
                     </div>
+
+                    {n.createdBy && (
+                      <div style={{ fontSize: '0.7rem', color: isBirthday ? '#9f1239' : '#0369a1', marginTop: '0.25rem', fontWeight: 600 }}>
+                        Phát bởi: {n.createdBy}
+                      </div>
+                    )}
+
+                    {!n.isRead && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          left: '4px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          width: '6px',
+                          height: '6px',
+                          borderRadius: '50%',
+                          background: isBirthday ? '#e11d48' : '#166534',
+                        }}
+                      />
+                    )}
                   </div>
-
-                  <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: '1.45' }}>
-                    {n.message}
-                  </div>
-
-                  {n.createdBy && (
-                    <div style={{ fontSize: '0.7rem', color: '#0369a1', marginTop: '0.25rem', fontWeight: 600 }}>
-                      Phát bởi: {n.createdBy}
-                    </div>
-                  )}
-
-                  {!n.isRead && (
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '4px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        width: '6px',
-                        height: '6px',
-                        borderRadius: '50%',
-                        background: '#166534',
-                      }}
-                    />
-                  )}
-                </div>
-              ))
+                );
+              })
             )}
           </div>
 
@@ -341,6 +352,7 @@ export function NotificationBell() {
                   onChange={(e) => setType(e.target.value as NotificationType)}
                 >
                   <option value="SYSTEM">📢 Thông báo chung / Chỉ đạo Ban Giám đốc</option>
+                  <option value="BIRTHDAY_ALERT">🎂 Sinh nhật cụ / Chúc mừng tuổi thọ</option>
                   <option value="ASSIGNMENT">🛡️ Phân công nhân sự & Quyền tiếp cận</option>
                   <option value="MEDICAL_ALERT">🩺 Y tế & Theo dõi sức khỏe cư dân</option>
                   <option value="KITCHEN_ALERT">🥗 Bếp ăn & An toàn thực phẩm HACCP</option>

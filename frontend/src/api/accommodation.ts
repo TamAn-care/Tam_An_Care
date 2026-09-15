@@ -1,5 +1,7 @@
 import { apiRequest } from './client';
 import type { HumanActorSession } from '../types/actor';
+import { farewellResident, updateResidentLocation, getStoredResidents } from './residents';
+import { pushInAppNotification } from './notifications';
 
 export interface AccommodationSummary {
   total: number;
@@ -237,6 +239,26 @@ function generateMockAccommodationItems(): AccommodationItem[] {
 
 export let mockAccommodationItems: AccommodationItem[] = generateMockAccommodationItems();
 
+const LS_ACCOMMODATION_KEY = 'taman_accommodation_items_v1';
+
+export function getStoredAccommodationItems(): AccommodationItem[] {
+  try {
+    const raw = localStorage.getItem(LS_ACCOMMODATION_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return mockAccommodationItems;
+}
+
+export function saveStoredAccommodationItems(items: AccommodationItem[]) {
+  try {
+    mockAccommodationItems = items;
+    localStorage.setItem(LS_ACCOMMODATION_KEY, JSON.stringify(items));
+  } catch {}
+}
+
 export async function getAccommodationOverview(
   actor: HumanActorSession,
   filters: {
@@ -259,7 +281,7 @@ export async function getAccommodationOverview(
     console.warn('[TamAnCare API] Offline/Fallback mode active for getAccommodationOverview:', error);
   }
 
-  let filtered = [...mockAccommodationItems];
+  let filtered = [...getStoredAccommodationItems()];
   if (filters.buildingId && filters.buildingId !== 'ALL') {
     filtered = filtered.filter(i => i.buildingId === filters.buildingId);
   }
@@ -514,8 +536,48 @@ export async function transferBed(
   residentId: string,
   bedId: string,
 ) {
+  const items = getStoredAccommodationItems();
+  const allResidents = getStoredResidents();
+  const resObj = allResidents.find(r => r.resident.residentId === residentId)?.resident;
+  const resName = resObj?.displayName || 'Người cao tuổi';
+  const careLevel = resObj?.careLevel || 'ASSISTED';
+
+  const oldBed = items.find(b => b.residentId === residentId);
+  const newBed = items.find(b => b.bedId === bedId);
+
+  if (oldBed) {
+    oldBed.bedStatus = 'AVAILABLE';
+    oldBed.residentId = null;
+    oldBed.residentName = null;
+    oldBed.careLevel = null;
+    oldBed.assignedAt = null;
+  }
+
+  if (newBed) {
+    newBed.bedStatus = 'OCCUPIED';
+    newBed.residentId = residentId;
+    newBed.residentName = resName;
+    newBed.careLevel = careLevel;
+    newBed.assignedAt = new Date().toISOString();
+
+    updateResidentLocation(residentId, newBed.roomCode.replace('P-', ''), newBed.bedCode);
+  }
+
+  saveStoredAccommodationItems(items);
+
+  const oldLocationStr = oldBed ? `${oldBed.roomName} (Giường ${oldBed.bedCode})` : 'chưa xếp giường';
+  const newLocationStr = newBed ? `${newBed.roomName} (Giường ${newBed.bedCode})` : 'giường mới';
+  pushInAppNotification({
+    type: 'WORKFORCE_ALERT',
+    title: `🔄 Điều Chuyển Phòng & Giường: Cụ ${resName}`,
+    message: `Cán bộ điều hành (${actor?.displayName || 'Ban Giám đốc'}) vừa thực hiện điều chuyển phòng/giường cho cụ ${resName} từ ${oldLocationStr} sang ${newLocationStr}. Đã tự động cập nhật hệ thống!`,
+    targetUrl: '/accommodation',
+    isGlobal: true,
+    createdBy: actor?.displayName || 'Ban Giám đốc',
+  });
+
   try {
-    return await apiRequest(
+    await apiRequest(
       `/api/accommodation/residents/${encodeURIComponent(residentId)}/transfer`,
       {
         method: 'POST',
@@ -525,51 +587,60 @@ export async function transferBed(
       },
     );
   } catch {
-    const oldBed = mockAccommodationItems.find(b => b.residentId === residentId);
-    if (oldBed) {
-      oldBed.bedStatus = 'AVAILABLE';
-      oldBed.residentId = null;
-      oldBed.residentName = null;
-      oldBed.careLevel = null;
-      oldBed.assignedAt = null;
-    }
-    const newBed = mockAccommodationItems.find(b => b.bedId === bedId);
-    if (newBed) {
-      newBed.bedStatus = 'OCCUPIED';
-      newBed.residentId = residentId;
-      newBed.residentName = 'Người cao tuổi';
-      newBed.careLevel = 'ASSISTED';
-      newBed.assignedAt = new Date().toISOString();
-    }
-    return { status: 'OK' };
+    console.warn('[TamAnCare API] Offline mode active for transferBed');
   }
+
+  return { status: 'OK' };
 }
 
 export async function releaseBed(
   actor: HumanActorSession,
   residentId: string,
+  reason: string = 'Chia tay Tâm An & Trả giường',
 ) {
+  const items = getStoredAccommodationItems();
+  const allResidents = getStoredResidents();
+  const resObj = allResidents.find(r => r.resident.residentId === residentId)?.resident;
+  const resName = resObj?.displayName || 'Người cao tuổi';
+
+  const bed = items.find(b => b.residentId === residentId);
+  const bedInfoStr = bed ? `${bed.roomName} (Giường ${bed.bedCode})` : 'giường đang sử dụng';
+
+  if (bed) {
+    bed.bedStatus = 'AVAILABLE';
+    bed.residentId = null;
+    bed.residentName = null;
+    bed.careLevel = null;
+    bed.assignedAt = null;
+  }
+
+  saveStoredAccommodationItems(items);
+  farewellResident(residentId, reason);
+
+  pushInAppNotification({
+    type: 'SYSTEM',
+    title: `👋 Thông Báo Chia Tay Tâm An: Cụ ${resName}`,
+    message: `Cụ ${resName} đã hoàn tất thủ tục Chia Tay Tâm An và trả giường ${bedInfoStr}. Lý do: ${reason}. Trạng thái hồ sơ đã chuyển thành Đã hoàn thành lưu trú.`,
+    targetUrl: '/residents',
+    isGlobal: true,
+    createdBy: actor?.displayName || 'Ban Giám đốc',
+  });
+
   try {
-    return await apiRequest(
+    await apiRequest(
       `/api/accommodation/residents/${encodeURIComponent(residentId)}/release`,
       {
         method: 'POST',
         actor,
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ reason: 'OPERATIONAL_RELEASE' }),
+        body: JSON.stringify({ reason }),
       },
     );
   } catch {
-    const bed = mockAccommodationItems.find(b => b.residentId === residentId);
-    if (bed) {
-      bed.bedStatus = 'AVAILABLE';
-      bed.residentId = null;
-      bed.residentName = null;
-      bed.careLevel = null;
-      bed.assignedAt = null;
-    }
-    return { status: 'OK' };
+    console.warn('[TamAnCare API] Offline mode active for releaseBed');
   }
+
+  return { status: 'OK' };
 }
 
 export async function setBedStatus(

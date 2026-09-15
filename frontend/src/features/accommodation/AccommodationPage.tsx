@@ -47,6 +47,7 @@ type Action =
   | {
       type: 'RELEASE';
       residentId: string;
+      reason?: string;
     }
   | {
       type: 'STATUS';
@@ -87,6 +88,16 @@ export default function AccommodationPage() {
     bedCode: string;
     roomName: string;
     floorName?: string;
+  } | null>(null);
+
+  const [releaseReason, setReleaseReason] = useState('Hồi phục sức khỏe về với gia đình');
+
+  const [transferTarget, setTransferTarget] = useState<{
+    residentId: string;
+    residentName: string;
+    currentBedCode: string;
+    currentRoomName: string;
+    targetBedId: string;
   } | null>(null);
 
   useEffect(() => {
@@ -211,6 +222,7 @@ export default function AccommodationPage() {
         return releaseBed(
           actor,
           a.residentId,
+          a.reason || 'Chia tay Tâm An & Trả giường',
         );
       }
 
@@ -503,23 +515,46 @@ export default function AccommodationPage() {
               <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                 {canManage ? (
                   occupied ? (
-                    <button
-                      type="button"
-                      disabled={action.isPending}
-                      className="btn btn-sm btn-danger"
-                      style={{ width: '100%' }}
-                      onClick={() =>
-                        setReleaseTarget({
-                          residentId: x.residentId!,
-                          residentName: x.residentName || 'Người cao tuổi',
-                          bedCode: x.bedCode,
-                          roomName: x.roomName,
-                          floorName: x.floorName,
-                        })
-                      }
-                    >
-                      Trả giường
-                    </button>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', width: '100%' }}>
+                      <button
+                        type="button"
+                        disabled={action.isPending}
+                        className="btn btn-sm btn-secondary"
+                        style={{ fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem' }}
+                        onClick={() => {
+                          const availableBeds = (data?.items ?? []).filter(b => b.bedStatus === 'AVAILABLE');
+                          setTransferTarget({
+                            residentId: x.residentId!,
+                            residentName: x.residentName || 'Người cao tuổi',
+                            currentBedCode: x.bedCode,
+                            currentRoomName: x.roomName,
+                            targetBedId: availableBeds[0]?.bedId || '',
+                          });
+                        }}
+                        title="Chuyển cụ sang phòng / giường khác"
+                      >
+                        🔄 Đổi Giường
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={action.isPending}
+                        className="btn btn-sm btn-danger"
+                        style={{ fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.2rem' }}
+                        onClick={() =>
+                          setReleaseTarget({
+                            residentId: x.residentId!,
+                            residentName: x.residentName || 'Người cao tuổi',
+                            bedCode: x.bedCode,
+                            roomName: x.roomName,
+                            floorName: x.floorName,
+                          })
+                        }
+                        title="Chia tay Tâm An & Trả giường"
+                      >
+                        👋 Chia Tay
+                      </button>
+                    </div>
                   ) : (
                     <>
                       {residentId && (
@@ -847,10 +882,10 @@ export default function AccommodationPage() {
               </div>
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#1e293b' }}>
-                  Xác nhận trả giường
+                  👋 Chia Tay Tâm An & Trả Giường
                 </h3>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-                  Vui lòng xác nhận trước khi cập nhật sơ đồ phòng
+                  Thủ tục chia tay trung tâm & giải phóng vị trí giường nằm
                 </p>
               </div>
             </div>
@@ -861,7 +896,7 @@ export default function AccommodationPage() {
                 border: '1px solid #e2e8f0',
                 borderRadius: '0.5rem',
                 padding: '1rem',
-                marginBottom: '1.25rem',
+                marginBottom: '1rem',
                 fontSize: '0.9rem',
               }}
             >
@@ -869,8 +904,27 @@ export default function AccommodationPage() {
                 👤 Người cao tuổi: <b>{releaseTarget.residentName}</b>
               </div>
               <div style={{ marginBottom: '0.75rem', color: '#1e293b' }}>
-                🛏️ Vị trí: <b>Giường {releaseTarget.bedCode} — Phòng {releaseTarget.roomName}</b> {releaseTarget.floorName ? `(${releaseTarget.floorName})` : ''}
+                🛏️ Vị trí hiện tại: <b>Giường {releaseTarget.bedCode} — Phòng {releaseTarget.roomName}</b> {releaseTarget.floorName ? `(${releaseTarget.floorName})` : ''}
               </div>
+
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.82rem', marginBottom: '0.3rem', color: '#334155' }}>
+                  Lý do chia tay Tâm An & trả giường: <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  className="form-select"
+                  style={{ width: '100%', padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
+                  value={releaseReason}
+                  onChange={(e) => setReleaseReason(e.target.value)}
+                >
+                  <option value="Hồi phục sức khỏe về với gia đình">🏡 Hồi phục sức khỏe về với gia đình</option>
+                  <option value="Chuyển viện điều trị tuyến trên">🏥 Chuyển viện điều trị tuyến trên</option>
+                  <option value="Theo nguyện vọng gia đình">👨‍👩‍👧‍👦 Theo nguyện vọng của gia đình</option>
+                  <option value="Hoàn tất thời hạn hợp đồng lưu trú">📜 Hoàn tất thời hạn hợp đồng lưu trú</option>
+                  <option value="Khác (Ghi rõ chi tiết)">📝 Lý do khác</option>
+                </select>
+              </div>
+
               <div
                 style={{
                   background: '#fff1f2',
@@ -878,12 +932,11 @@ export default function AccommodationPage() {
                   borderRadius: '0.375rem',
                   padding: '0.75rem',
                   color: '#9f1239',
-                  fontSize: '0.86rem',
+                  fontSize: '0.85rem',
                   lineHeight: 1.45,
                 }}
               >
-                <b>Bạn có chắc chắn muốn Trả giường?</b><br />
-                Sau khi trả giường, trạng thái giường này sẽ chuyển thành <b>"Còn trống"</b> và sẵn sàng tiếp nhận người cao tuổi mới.
+                <b>⚠️ Cảnh báo thao tác:</b> Thao tác này sẽ chuyển trạng thái cư dân thành <b>"Đã hoàn thành lưu trú"</b>, trả giường <b>"Giường {releaseTarget.bedCode}"</b> về trạng thái CÒN TRỐNG, và tự động phát <b>Bell Notice</b> thông báo tới Ban Giám đốc & các bộ phận liên quan.
               </div>
             </div>
 
@@ -905,14 +958,149 @@ export default function AccommodationPage() {
                     await action.mutateAsync({
                       type: 'RELEASE',
                       residentId: releaseTarget.residentId,
+                      reason: releaseReason,
                     });
                     setReleaseTarget(null);
+                    alert(`✅ Đã hoàn tất thủ tục Chia Tay Tâm An & trả giường cho cụ ${releaseTarget.residentName}!`);
                   } catch (err: any) {
-                    alert(err.message || 'Lỗi khi trả giường');
+                    alert(err.message || 'Lỗi khi chia tay & trả giường');
                   }
                 }}
               >
-                {action.isPending ? 'Đang xử lý...' : 'Xác nhận trả giường'}
+                {action.isPending ? '⏳ Đang xử lý...' : '👋 Xác Nhận Chia Tay & Trả Giường'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL ĐỔI PHÒNG & ĐỔI GIƯỜNG (BGĐ & QUẢN LÝ) */}
+      {transferTarget && (
+        <div
+          className="modal-backdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '540px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <div
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '50%',
+                  background: '#e0f2fe',
+                  color: '#0284c7',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.4rem',
+                  flexShrink: 0,
+                }}
+              >
+                🔄
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#166534' }}>
+                  Đổi Phòng & Đổi Giường Cư Dân
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
+                  Điều chuyển cư dân sang phòng/giường mới còn trống
+                </p>
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '0.5rem',
+                padding: '1rem',
+                marginBottom: '1rem',
+                fontSize: '0.9rem',
+              }}
+            >
+              <div style={{ marginBottom: '0.5rem', color: '#1e293b' }}>
+                👤 Người cao tuổi: <b>{transferTarget.residentName}</b>
+              </div>
+              <div style={{ marginBottom: '0.85rem', color: '#1e293b' }}>
+                🛏️ Giường hiện tại: <b style={{ color: '#dc2626' }}>Phòng {transferTarget.currentRoomName} — Giường {transferTarget.currentBedCode}</b>
+              </div>
+
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.82rem', marginBottom: '0.35rem', color: '#334155' }}>
+                  Chọn Phòng & Giường mới (CÒN TRỐNG): <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  className="form-select"
+                  style={{ width: '100%', padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
+                  value={transferTarget.targetBedId}
+                  onChange={(e) => setTransferTarget({ ...transferTarget, targetBedId: e.target.value })}
+                >
+                  {((data?.items ?? []).filter(b => b.bedStatus === 'AVAILABLE')).length === 0 ? (
+                    <option value="">(Không có giường trống nào)</option>
+                  ) : (
+                    (data?.items ?? [])
+                      .filter(b => b.bedStatus === 'AVAILABLE')
+                      .map(b => (
+                        <option key={b.bedId} value={b.bedId}>
+                          {b.floorName} — {b.roomName} ({b.bedName} / {b.bedCode})
+                        </option>
+                      ))
+                  )}
+                </select>
+              </div>
+
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.65rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.82rem', color: '#166534' }}>
+                💡 <b>Tự động đồng bộ:</b> Giường cũ sẽ giải phóng thành <b>CÒN TRỐNG</b>, giường mới thành <b>ĐANG SỬ DỤNG</b>. Bell Notice sẽ phát tới toàn thể nhân sự.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setTransferTarget(null)}
+                disabled={action.isPending}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={action.isPending || !transferTarget.targetBedId}
+                onClick={async () => {
+                  try {
+                    await action.mutateAsync({
+                      type: 'TRANSFER',
+                      residentId: transferTarget.residentId,
+                      bedId: transferTarget.targetBedId,
+                    });
+                    setTransferTarget(null);
+                    alert(`🎉 Đã điều chuyển cụ ${transferTarget.residentName} sang phòng/giường mới thành công!`);
+                  } catch (err: any) {
+                    alert(err.message || 'Lỗi khi đổi phòng giường');
+                  }
+                }}
+              >
+                {action.isPending ? '⏳ Đang lưu...' : '🔄 Xác Nhận Đổi Giường'}
               </button>
             </div>
           </div>

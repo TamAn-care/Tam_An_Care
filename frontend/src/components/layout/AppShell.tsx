@@ -166,7 +166,7 @@ export function AppShell() {
         }
       >
         <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', minWidth: 0 }}>
             <div className="brand-mark" title="Viện Dưỡng Lão Tâm An Care">
               <img
                 src="/branding/tam-an-logo-master.png"
@@ -176,7 +176,7 @@ export function AppShell() {
             </div>
 
             {!isSidebarCollapsed && (
-              <div>
+              <div className="brand-text">
                 <h1 className="brand-title">
                   Tâm An Care
                 </h1>

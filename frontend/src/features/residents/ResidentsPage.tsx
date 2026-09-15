@@ -18,6 +18,14 @@ import {
 } from '../../api/residents';
 
 import {
+  publishResidentBirthdayNotice,
+} from '../../api/notifications';
+
+import {
+  releaseBed,
+} from '../../api/accommodation';
+
+import {
   listResidentAccessAssignments,
 } from '../../api/resident-access-administration';
 
@@ -55,13 +63,22 @@ import {
   createPsychologicalAssessment,
   EMOTIONAL_STATE_META,
   SOCIAL_COMMUNICATION_META,
-  PsychologicalAssessment,
 } from '../../api/psychological-assessment';
 
 type StatusFilter =
   | 'ALL'
   | 'ACTIVE'
   | 'INACTIVE';
+
+function isTodayBirthday(dateOfBirth?: string): boolean {
+  if (!dateOfBirth) return false;
+  const parts = dateOfBirth.split('-');
+  if (parts.length < 3) return false;
+  const today = new Date();
+  const dobMonth = parseInt(parts[1], 10);
+  const dobDate = parseInt(parts[2], 10);
+  return dobMonth === (today.getMonth() + 1) && dobDate === today.getDate();
+}
 
 export function ResidentsPage() {
   const { actor } = useActor();
@@ -70,11 +87,19 @@ export function ResidentsPage() {
   const actorRole = actor?.actorRole ?? '';
   const actorName = actor?.displayName || 'Nhân viên';
   const isCaregiver = actorRole === 'CAREGIVER';
+  const isDirectorOrManager =
+    actorRole === 'SUPERVISOR' ||
+    actorRole === 'CARE_MANAGER' ||
+    actorRole === 'ADMIN';
   const canEvaluatePsychology = hasCapability(actor?.actorRole, 'canEvaluatePsychology');
   const canViewResidentSupplies = hasCapability(actor?.actorRole, 'canViewResidentSupplies');
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ACTIVE');
+
+  // Modal state: Farewell Tam An
+  const [farewellModalTarget, setFarewellModalTarget] = useState<any | null>(null);
+  const [farewellReason, setFarewellReason] = useState('Hồi phục sức khỏe về với gia đình');
 
   // Modals state: Family Consumable Supplies (Item 1)
   const [selectedSupplyResident, setSelectedSupplyResident] = useState<any | null>(null);
@@ -487,6 +512,28 @@ export function ResidentsPage() {
                       </span>
                     </div>
 
+                    {isTodayBirthday(resident.dateOfBirth) && (
+                      <div style={{ marginBottom: '0.5rem' }}>
+                        <span
+                          style={{
+                            background: '#ffe4e6',
+                            color: '#be123c',
+                            border: '1px solid #fecdd3',
+                            fontSize: '0.75rem',
+                            fontWeight: 800,
+                            padding: '0.25rem 0.6rem',
+                            borderRadius: '9999px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            boxShadow: '0 1px 2px rgba(190, 18, 60, 0.1)',
+                          }}
+                        >
+                          🎉 🎂 Hom nay sinh nhật cụ!
+                        </span>
+                      </div>
+                    )}
+
                     <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.75rem', fontSize: '0.85rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', margin: '0.75rem 0' }}>
                       <div>
                         <div style={{ color: '#64748b', fontSize: '0.75rem' }}>Ngày sinh</div>
@@ -519,6 +566,54 @@ export function ResidentsPage() {
                     >
                       Mở hồ sơ chăm sóc &rarr;
                     </Link>
+
+                    <button
+                      type="button"
+                      className="btn btn-sm"
+                      style={{
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        background: '#fff1f2',
+                        color: '#be123c',
+                        border: '1px solid #fecdd3',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.3rem',
+                        cursor: 'pointer',
+                        padding: '0.35rem 0.5rem',
+                        borderRadius: '0.35rem',
+                      }}
+                      onClick={() => {
+                        publishResidentBirthdayNotice(resident);
+                        alert(`🎉 Đã phát Bell Notice mừng sinh nhật cụ ${resident.displayName} tới toàn thể viện Tâm An Care!`);
+                      }}
+                      title="Phát thông báo mừng sinh nhật cụ qua Bell Notice cho toàn bộ nhân sự Tâm An Care"
+                    >
+                      🎂 Bắn Bell Notice Sinh Nhật
+                    </button>
+
+                    {resident.activeStatus && isDirectorOrManager && (
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger"
+                        style={{
+                          fontSize: '0.78rem',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.3rem',
+                          cursor: 'pointer',
+                          padding: '0.35rem 0.5rem',
+                          borderRadius: '0.35rem',
+                        }}
+                        onClick={() => setFarewellModalTarget(resident)}
+                        title="Thực hiện thủ tục Chia Tay Tâm An & trả giường cho cụ (BGĐ & Quản lý)"
+                      >
+                        👋 Chia Tay Tâm An (Trả Giường)
+                      </button>
+                    )}
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.35rem' }}>
                       {canViewResidentSupplies ? (
@@ -969,6 +1064,85 @@ export function ResidentsPage() {
         hồ sơ chăm sóc. Backend tiếp tục quyết định
         quyền truy cập cho từng resident.
       </div>
+
+      {/* MODAL CHIA TAY TÂM AN & TRẢ GIƯỜNG (BGĐ & QUẢN LÝ) */}
+      {farewellModalTarget && (
+        <div className="modal-backdrop" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
+          <div className="modal-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '540px', width: '100%', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', flexShrink: 0 }}>
+                👋
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#1e293b' }}>
+                  Chia Tay Tâm An & Trả Giường
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
+                  Thủ tục chia tay trung tâm dành cho cư dân chuyển ra ngoài
+                </p>
+              </div>
+            </div>
+
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', fontSize: '0.9rem' }}>
+              <div style={{ marginBottom: '0.5rem', color: '#1e293b' }}>
+                👤 Người cao tuổi: <b>{farewellModalTarget.displayName}</b> ({farewellModalTarget.residentCode})
+              </div>
+              <div style={{ marginBottom: '0.75rem', color: '#1e293b' }}>
+                🛏️ Vị trí phòng giường: <b>{farewellModalTarget.room ? `Phòng ${farewellModalTarget.room} / Giường ${farewellModalTarget.bed}` : 'Chưa xếp giường'}</b>
+              </div>
+
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontWeight: 700, fontSize: '0.82rem', marginBottom: '0.3rem', color: '#334155' }}>
+                  Lý do chia tay Tâm An: <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <select
+                  className="form-select"
+                  style={{ width: '100%', padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
+                  value={farewellReason}
+                  onChange={(e) => setFarewellReason(e.target.value)}
+                >
+                  <option value="Hồi phục sức khỏe về với gia đình">🏡 Hồi phục sức khỏe về với gia đình</option>
+                  <option value="Chuyển viện điều trị tuyến trên">🏥 Chuyển viện điều trị tuyến trên</option>
+                  <option value="Theo nguyện vọng gia đình">👨‍👩‍👧‍👦 Theo nguyện vọng của gia đình</option>
+                  <option value="Hoàn tất thời hạn hợp đồng lưu trú">📜 Hoàn tất thời hạn hợp đồng lưu trú</option>
+                  <option value="Khác (Ghi rõ chi tiết)">📝 Lý do khác</option>
+                </select>
+              </div>
+
+              <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', borderRadius: '0.375rem', padding: '0.75rem', color: '#9f1239', fontSize: '0.85rem', lineHeight: 1.45 }}>
+                <b>⚠️ Cảnh báo thao tác:</b> Thao tác này sẽ chuyển trạng thái cư dân thành <b>"Đã hoàn thành lưu trú"</b>, giải phóng giường về trạng thái CÒN TRỐNG, và phát <b>Bell Notice</b> tới Ban Giám đốc và toàn thể nhân sự Tâm An Care.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setFarewellModalTarget(null)}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={async () => {
+                  try {
+                    await releaseBed(actor!, farewellModalTarget.residentId, farewellReason);
+                    await queryClient.invalidateQueries({ queryKey: ['residents'] });
+                    await queryClient.invalidateQueries({ queryKey: ['accommodation-overview'] });
+                    setFarewellModalTarget(null);
+                    alert(`✅ Đã hoàn tất thủ tục Chia Tay Tâm An & trả giường cho cụ ${farewellModalTarget.displayName}!`);
+                  } catch (err: any) {
+                    alert(err.message || 'Lỗi khi thực hiện thủ tục chia tay');
+                  }
+                }}
+              >
+                👋 Xác Nhận Chia Tay & Trả Giường
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

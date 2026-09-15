@@ -169,7 +169,7 @@ export const MOCK_RESIDENT_CONTEXTS: ResidentContextResponse[] = [
       residentId: 'res-demo-005',
       residentCode: 'RES-2026-005',
       displayName: 'Hoàng Văn Em',
-      dateOfBirth: '1945-09-12',
+      dateOfBirth: '1945-09-15',
       gender: 'MALE',
       room: '202',
       bed: '202-2',
@@ -226,20 +226,70 @@ export const MOCK_RESIDENT_CONTEXTS: ResidentContextResponse[] = [
   },
 ];
 
+const LS_RESIDENTS_KEY = 'taman_resident_contexts_v1';
+
+export function getStoredResidents(): ResidentContextResponse[] {
+  try {
+    const raw = localStorage.getItem(LS_RESIDENTS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return MOCK_RESIDENT_CONTEXTS;
+}
+
+export function saveStoredResidents(items: ResidentContextResponse[]) {
+  try {
+    localStorage.setItem(LS_RESIDENTS_KEY, JSON.stringify(items));
+  } catch {}
+}
+
+export function farewellResident(
+  residentId: string,
+  _reason?: string,
+): ResidentContextResponse[] {
+  const residents = getStoredResidents();
+  const target = residents.find((r) => r.resident.residentId === residentId);
+  if (target) {
+    target.resident.activeStatus = false;
+    target.resident.room = null;
+    target.resident.bed = null;
+    saveStoredResidents(residents);
+  }
+  return residents;
+}
+
+export function updateResidentLocation(
+  residentId: string,
+  newRoom: string | null,
+  newBed: string | null,
+): ResidentContextResponse[] {
+  const residents = getStoredResidents();
+  const target = residents.find((r) => r.resident.residentId === residentId);
+  if (target) {
+    target.resident.room = newRoom;
+    target.resident.bed = newBed;
+    saveStoredResidents(residents);
+  }
+  return residents;
+}
+
 export async function listResidents(
   actor?: HumanActorSession | null,
 ): Promise<ResidentContextResponse[]> {
   try {
-    return await apiRequest<ResidentContextResponse[]>(
+    const res = await apiRequest<ResidentContextResponse[]>(
       '/api/residents',
       {
         actor,
       },
     );
+    if (res && res.length > 0) return res;
   } catch (error) {
     console.warn('[TamAnCare API] Offline/Fallback mode active for listResidents:', error);
-    return MOCK_RESIDENT_CONTEXTS;
   }
+  return getStoredResidents();
 }
 
 export async function getResident(
@@ -255,9 +305,10 @@ export async function getResident(
     );
   } catch (error) {
     console.warn('[TamAnCare API] Offline/Fallback mode active for getResident:', error);
-    const found = MOCK_RESIDENT_CONTEXTS.find((r) => r.resident.residentId === residentId);
+    const allResidents = getStoredResidents();
+    const found = allResidents.find((r) => r.resident.residentId === residentId);
     if (found) return found;
-    return MOCK_RESIDENT_CONTEXTS[0];
+    return allResidents[0];
   }
 }
 
@@ -274,7 +325,8 @@ export async function getResidentCareView(
     );
   } catch (error) {
     console.warn('[TamAnCare API] Offline/Fallback mode active for getResidentCareView:', error);
-    const foundCtx = MOCK_RESIDENT_CONTEXTS.find(
+    const allResidents = getStoredResidents();
+    const foundCtx = allResidents.find(
       (r) => r.resident.residentId.toLowerCase() === residentId.toLowerCase() ||
              r.resident.residentCode.toLowerCase() === residentId.toLowerCase()
     );

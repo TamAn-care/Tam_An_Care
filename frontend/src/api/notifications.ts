@@ -5,7 +5,8 @@ export type NotificationType =
   | 'WORKFORCE_ALERT'
   | 'SYSTEM'
   | 'WARNING_NOTICE'
-  | 'HONOR_NOTICE';
+  | 'HONOR_NOTICE'
+  | 'BIRTHDAY_ALERT';
 
 export interface NotificationItem {
   id: string;
@@ -17,7 +18,7 @@ export interface NotificationItem {
   targetUrl: string;
   targetRoles?: string[];
   targetStaffId?: string; // Nhắm tới nhân viên cụ thể (dành cho Cảnh báo cá nhân)
-  isGlobal?: boolean;     // Phát cho toàn bộ nhân viên (dành cho Vinh danh thành tích)
+  isGlobal?: boolean;     // Phát cho toàn bộ nhân viên (dành cho Vinh danh thành tích / Sinh nhật)
   createdBy?: string;
 }
 
@@ -118,7 +119,7 @@ export function publishDirectorNotification(payload: {
   targetUrl?: string;
   actorName?: string;
 }): NotificationItem[] {
-  const icon = payload.type === 'ASSIGNMENT' ? '🛡️' : payload.type === 'MEDICAL_ALERT' ? '🩺' : payload.type === 'KITCHEN_ALERT' ? '🥗' : payload.type === 'WORKFORCE_ALERT' ? '⏰' : '📢';
+  const icon = payload.type === 'BIRTHDAY_ALERT' ? '🎂' : payload.type === 'ASSIGNMENT' ? '🛡️' : payload.type === 'MEDICAL_ALERT' ? '🩺' : payload.type === 'KITCHEN_ALERT' ? '🥗' : payload.type === 'WORKFORCE_ALERT' ? '⏰' : '📢';
   const fullTitle = `${icon} ${payload.title}`;
 
   return pushInAppNotification({
@@ -148,4 +149,71 @@ export async function sendSystemNotification(payload: {
     isGlobal: payload.isGlobal,
     createdBy: 'Hệ thống Quản lý Tâm An Care',
   });
+}
+
+export function publishResidentBirthdayNotice(resident: {
+  residentId: string;
+  residentCode?: string;
+  displayName: string;
+  room?: string | null;
+  bed?: string | null;
+  dateOfBirth: string;
+}): NotificationItem[] {
+  const birthYear = new Date(resident.dateOfBirth).getFullYear();
+  const currentYear = new Date().getFullYear();
+  const age = currentYear - birthYear;
+  const roomInfo = resident.room ? ` (Phòng ${resident.room}${resident.bed ? `-${resident.bed}` : ''})` : '';
+
+  return pushInAppNotification({
+    type: 'BIRTHDAY_ALERT',
+    title: `🎂 Mừng Sinh Nhật Cụ ${resident.displayName}${roomInfo}`,
+    message: `Hôm nay là sinh nhật lần thứ ${age} của cụ ${resident.displayName}${roomInfo}. Kính chúc cụ luôn mạnh khỏe, an vui cùng đại gia đình Tâm An Care! Vui lòng chuẩn bị hoa, quà & gửi lời chúc mừng sinh nhật từ toàn thể cán bộ nhân viên viện Tâm An Care.`,
+    targetUrl: '/residents',
+    isGlobal: true,
+    createdBy: 'Hệ thống Quản lý Tâm An Care',
+  });
+}
+
+export function checkAndPublishResidentBirthdayNotifications(residents: Array<{
+  residentId: string;
+  residentCode?: string;
+  displayName: string;
+  room?: string | null;
+  bed?: string | null;
+  dateOfBirth: string;
+  activeStatus?: boolean;
+}>): NotificationItem[] {
+  const today = new Date();
+  const currentMonth = today.getMonth() + 1;
+  const currentDate = today.getDate();
+  const todayDateStr = today.toISOString().split('T')[0];
+
+  const existingNotifications = getLocalNotifications();
+
+  residents.forEach((r) => {
+    if (r.activeStatus === false) return;
+    if (!r.dateOfBirth) return;
+
+    const dobParts = r.dateOfBirth.split('-');
+    if (dobParts.length < 3) return;
+
+    const dobMonth = parseInt(dobParts[1], 10);
+    const dobDate = parseInt(dobParts[2], 10);
+
+    if (dobMonth === currentMonth && dobDate === currentDate) {
+      const alreadyNotified = existingNotifications.some((n) => {
+        return (
+          n.type === 'BIRTHDAY_ALERT' &&
+          n.title.includes(r.displayName) &&
+          n.timestamp.startsWith(todayDateStr)
+        );
+      });
+
+      if (!alreadyNotified) {
+        publishResidentBirthdayNotice(r);
+      }
+    }
+  });
+
+  return getLocalNotifications();
 }

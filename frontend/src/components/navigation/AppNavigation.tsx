@@ -111,6 +111,12 @@ const items: NavItem[] = [
     icon: '🔍',
   },
   {
+    key: 'service-contracts',
+    to: '/service-contracts',
+    label: 'Hợp đồng dịch vụ',
+    icon: '📜',
+  },
+  {
     key: 'system-status',
     to: '/system-status',
     label: 'Trạng thái hệ thống',

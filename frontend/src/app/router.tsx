@@ -309,6 +309,22 @@ export const router =
             };
           },
         },
+        {
+          path: '/service-contracts',
+          lazy: async () => {
+            const module = await import('../features/service-contracts/ServiceContractsPage');
+            const Component = module.default;
+            return {
+              Component: () => (
+                <RequireActor>
+                  <RequireRole route="service-contracts">
+                    <Component />
+                  </RequireRole>
+                </RequireActor>
+              ),
+            };
+          },
+        },
       ],
     },
 ]);
