@@ -98,6 +98,34 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  db-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    secrets:
+      - database_url
+    volumes:
+      - tamancare_backups:/backups
+      - "../../ops/x3-production/backup:/scripts:ro"
+    environment:
+      BACKUP_DIR: /backups
+      BACKUP_RETENTION_DAYS: 14
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        export DATABASE_URL=$$(cat /run/secrets/database_url)
+        echo "0 2 * * * sh /scripts/backup.sh >> /var/log/backup.log 2>&1" > /etc/crontabs/root
+        exec crond -f -d 8
+    mem_limit: ${BACKUP_MEMORY_LIMIT:-256m}
+    cpus: ${BACKUP_CPU_LIMIT:-0.50}
+    networks:
+      - backend
+    security_opt:
+      - no-new-privileges:true
+
 secrets:
   postgres_password:
     file: ./secrets/postgres_password
@@ -108,8 +136,10 @@ secrets:
 
 volumes:
   tamancare_postgres_data:
+  tamancare_backups:
 
 networks:
   backend:
     internal: true
   edge:
+

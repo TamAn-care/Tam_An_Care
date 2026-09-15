@@ -1,3 +1,5 @@
+# Tâm An Care - Development Gitignore
+
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -6,12 +8,22 @@ node_modules/
 # Build outputs
 dist/
 build/
+.next/
+out/
 *.out
 
-# Environment variables
+# Environment variables & Secret Files (NEVER COMMIT)
 .env
 .env.local
+.env.development
 .env.production
+.env.test
+.env.staging
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
 
 # System & IDE files
 .DS_Store
@@ -20,9 +32,8 @@ Thumbs.db
 .vscode/
 *.log
 *.tmp
+*.bak
 
-node_modules/
-.next/
-dist/
-build/
-out/
+# Python
+__pycache__/
+*.pyc
