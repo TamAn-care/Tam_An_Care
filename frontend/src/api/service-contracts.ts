@@ -122,7 +122,7 @@ export interface ServiceContract {
 }
 
 export const DEFAULT_PARTY_B: ContractPartyB = {
-  companyName: 'CÔNG TY CP THƯƠNG MẠI DỊCH VỤ AN THỊNH PHÁT GROUP',
+  companyName: 'CÔNG TY CỔ PHẦN THƯƠNG MẠI DỊCH VỤ AN THỊNH PHÁT GROUP',
   address: 'Số 3 phố Vĩnh Tuy, phường Vĩnh Tuy, Thành phố Hà Nội',
   taxCode: '0111273193',
   phone: '0961.81.86.83',

@@ -836,10 +836,10 @@ export function ServiceContractsPage() {
             @media print {
               @page {
                 size: A4 portrait;
-                margin: 12mm 15mm 12mm 15mm;
+                margin: 8mm 15mm 10mm 15mm;
               }
 
-              html, body {
+              html, body, #root, .app-shell, main, main.page, .print-modal-overlay, .modal-print-card {
                 background: #ffffff !important;
                 color: #000000 !important;
                 font-family: "Times New Roman", Times, serif !important;
@@ -847,6 +847,8 @@ export function ServiceContractsPage() {
                 line-height: 1.35 !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
                 width: 100% !important;
                 height: auto !important;
                 overflow: visible !important;
@@ -866,6 +868,9 @@ export function ServiceContractsPage() {
               .modal-overlay:not(.print-modal-overlay),
               main.page > *:not(.print-modal-overlay) {
                 display: none !important;
+                height: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
               }
 
               /* Force print modal backdrop and card containers into normal document flow */
@@ -902,6 +907,8 @@ export function ServiceContractsPage() {
                 color: #000000 !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                padding-top: 0 !important;
+                margin-top: 0 !important;
                 width: 100% !important;
                 display: block !important;
               }
@@ -960,8 +967,11 @@ export function ServiceContractsPage() {
               {/* PAGE 1 HEADER (2-Column Balanced Standard Layout) */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
                 <div style={{ textAlign: 'center', width: '48%' }}>
-                  <div style={{ fontWeight: 'bold', fontSize: '10.5pt', textTransform: 'uppercase', lineHeight: '1.25' }}>
-                    {viewingContract.partyB?.companyName || 'CÔNG TY CP THƯƠNG MẠI DỊCH VỤ AN THỊNH PHÁT GROUP'}
+                  <div style={{ fontWeight: 'bold', fontSize: '10pt', textTransform: 'uppercase', lineHeight: '1.25' }}>
+                    CÔNG TY CỔ PHẦN THƯƠNG MẠI DỊCH VỤ
+                  </div>
+                  <div style={{ fontWeight: 'bold', fontSize: '10.5pt', textTransform: 'uppercase', lineHeight: '1.25', marginTop: '1px' }}>
+                    AN THỊNH PHÁT GROUP
                   </div>
                   <div style={{ fontWeight: 'bold', fontSize: '11pt', textTransform: 'uppercase', marginTop: '3px' }}>
                     TRUNG TÂM DƯỠNG LÃO TÂM AN
