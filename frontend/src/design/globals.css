@@ -2231,16 +2231,41 @@ div:has(> table.operations-table),
 }
 
 /* ========================================================================= */
-/* CROSS-PLATFORM UI OPTIMIZATION (ANDROID MOBILE & IPAD / TABLET ENHANCEMENTS) */
+/* COMPREHENSIVE CROSS-PLATFORM UI OPTIMIZATION SYSTEM                       */
+/* Desktop (macOS & Windows) | Tablet (iPad & Android) | Mobile (iOS & Android) */
 /* ========================================================================= */
 
-/* 1. Universal Touch & Dynamic Viewport Height (Android & iOS) */
+/* 1. DESKTOP (MACOS & WINDOWS) OPTIMIZATION */
 html,
 body {
   min-height: 100vh;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+}
+
+/* Cross-Platform Custom Smooth Scrollbars (Windows Chrome/Edge & macOS) */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .app-shell {
@@ -2248,7 +2273,7 @@ body {
   min-height: 100dvh;
 }
 
-/* Normalization for Android Native Inputs & Selects */
+/* Normalization for Native Inputs & Selects across Chrome, Safari, Firefox */
 input,
 select,
 textarea,
@@ -2263,10 +2288,19 @@ input[type="datetime-local"],
 select.form-select,
 input.form-input {
   min-height: 44px;
-  font-size: 16px; /* Prevents auto-zoom on mobile browsers & improves Android tap precision */
+  font-size: 16px; /* Prevents auto-zoom on mobile browsers & improves tap precision */
 }
 
-/* 2. Android Mobile Specific Rules (< 768px) */
+/* Flex Toolbar wrapping resilience for high-DPI Windows desktop scaling (125%-150%) */
+.filter-toolbar,
+.toolbar,
+.page-header-actions,
+.table-actions {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* 2. MOBILE SPECIFIC RULES (IOS SAFARI & ANDROID CHROME < 768PX) */
 @media (max-width: 767px) {
   /* Safe area padding for Android gesture navigation bar & iOS home indicator */
   .mobile-bottom-nav,
@@ -2278,6 +2312,7 @@ input.form-input {
 
   /* Smooth momentum scrolling & overscroll containment for touch tables & drawers */
   .table-responsive,
+  .data-table-container,
   .operations-table-container,
   .sidebar {
     -webkit-overflow-scrolling: touch;
@@ -2285,7 +2320,8 @@ input.form-input {
   }
 
   /* Modal cards on Mobile Android & iOS */
-  .modal-card {
+  .modal-card,
+  .modal-dialog {
     width: calc(100vw - 24px) !important;
     max-width: 100% !important;
     max-height: 90vh !important;
@@ -2296,15 +2332,41 @@ input.form-input {
     overscroll-behavior-y: contain;
   }
 
-  /* Compact grid cards on mobile screens */
+  /* KPI Cards Grid on Mobile (2 columns) */
   .kpi-grid,
-  .grid-kpi {
+  .grid-kpi,
+  .dashboard-kpi-grid,
+  .summary-grid,
+  .resident-summary-grid,
+  .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 0.65rem !important;
   }
+
+  /* Entity List Cards on Mobile (1 full-width column) */
+  .entity-grid-cards,
+  .resident-grid,
+  .contract-grid,
+  .staff-grid,
+  .room-grid,
+  .bed-grid,
+  .leave-grid,
+  .health-grid,
+  .kitchen-grid,
+  .family-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Form Filter Toolbars on Mobile */
+  .filter-toolbar-grid,
+  .resident-toolbar {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
 }
 
-/* 3. iPad & Tablet Layout Optimization (768px - 1024px / 1180px) */
+/* 3. IPAD & TABLET LAYOUT OPTIMIZATION (768PX - 1024PX / 1180PX) */
 @media (min-width: 768px) and (max-width: 1024px) {
   /* App Shell grid structure on Tablets */
   .app-shell {
@@ -2318,22 +2380,39 @@ input.form-input {
   /* Tablet KPI Grid: 3 balanced columns */
   .kpi-grid,
   .grid-kpi,
-  .dashboard-kpi-grid {
+  .dashboard-kpi-grid,
+  .summary-grid,
+  .resident-summary-grid,
+  .stats-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 1rem !important;
   }
 
-  /* Tablet Entity Grid (Residents, Contracts, Leave, Health, Workforce): 2 columns */
+  /* Tablet Entity Grid (Residents, Contracts, Leave, Health, Workforce, Rooms, Billing): 2 columns */
   .entity-grid-cards,
   .resident-grid,
   .contract-grid,
-  .staff-grid {
+  .staff-grid,
+  .room-grid,
+  .bed-grid,
+  .leave-grid,
+  .health-grid,
+  .kitchen-grid,
+  .family-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 1rem !important;
   }
 
+  /* Tablet Filter Toolbars: 2 or 3 balanced columns */
+  .filter-toolbar-grid,
+  .resident-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+
   /* Tablet Modals: Centered 88vw width for optimal reading line length */
-  .modal-card {
+  .modal-card,
+  .modal-dialog {
     max-width: 88vw !important;
     width: 720px !important;
     max-height: 88vh !important;
@@ -2341,16 +2420,27 @@ input.form-input {
     padding: 1.75rem !important;
   }
 
-  /* Tablet Table Containers with custom smooth scroll */
+  /* Tablet Table Containers with custom smooth scroll & sticky header */
   .table-responsive,
-  .data-table-container {
+  .data-table-container,
+  .operations-table-container {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
   }
 
-  .table-responsive table {
+  .table-responsive table,
+  .data-table,
+  .operations-table {
     min-width: 720px;
+  }
+
+  .table-responsive th,
+  .data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--surface-panel, #ffffff);
   }
 
   /* Tablet Touch Targets */
@@ -2362,7 +2452,7 @@ input.form-input {
   }
 }
 
-/* 4. Touch Device Hover State Fix (Prevents sticky hover effects on Android & iPad touch) */
+/* 4. TOUCH DEVICE HOVER STATE FIX (Prevents sticky hover effects on Mobile & iPad Touch) */
 @media (hover: none) and (pointer: coarse) {
   .btn:hover,
   .nav-link:hover,
