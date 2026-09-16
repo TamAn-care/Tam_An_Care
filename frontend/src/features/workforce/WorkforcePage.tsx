@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { NotificationBell } from '../notifications/NotificationBell';
 import {
   acknowledgeHandover,
   autoCompletePastShifts,
@@ -585,7 +586,9 @@ export default function WorkforcePage() {
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <NotificationBell currentActorId={actorId} />
+
             <button
               onClick={exportWorkforceShiftsCSV}
               className="btn btn-secondary"

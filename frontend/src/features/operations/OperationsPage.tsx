@@ -1775,6 +1775,33 @@ export function OperationsPage() {
               </select>
             </label>
 
+            {/* ⚡ CÁC NÚT CHỌN NHANH LỰA CHỌN CÔNG VIỆC THƯỜNG GẶP (QUICK CHIPS) */}
+            <div style={{ gridColumn: '1 / -1', background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px dashed #cbd5e1', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span>⚡</span> Chọn Nhanh Công Việc Thường Gặp (Thao tác 1-Chạm):
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                <button type="button" className="btn btn-sm" style={{ background: '#e2f4ea', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-hygiene-bathing')}>
+                  🛁 Tắm rửa & Vệ sinh
+                </button>
+                <button type="button" className="btn btn-sm" style={{ background: '#e2f4ea', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-meal-assistance')}>
+                  🥣 Hỗ trợ ăn uống
+                </button>
+                <button type="button" className="btn btn-sm" style={{ background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-diaper-toileting')}>
+                  🧼 Thay tã bỉm
+                </button>
+                <button type="button" className="btn btn-sm" style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-vitals-check')}>
+                  🩺 Đo sinh hiệu & HA
+                </button>
+                <button type="button" className="btn btn-sm" style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-medication-admin')}>
+                  💊 Cấp phát eMAR
+                </button>
+                <button type="button" className="btn btn-sm" style={{ background: '#f3e8ff', color: '#6b21a8', border: '1px solid #e9d5ff', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-room-cleaning')}>
+                  🧹 Vệ sinh phòng
+                </button>
+              </div>
+            </div>
+
             <label className="field-group">
               <span className="field-label">
                 Loại hình công việc <span style={{ color: '#dc2626' }}>*</span>
@@ -1832,9 +1859,25 @@ export function OperationsPage() {
             </label>
 
             <label className="field-group operations-wide-field">
-              <span className="field-label">
-                Ghi chú {isOtherType && <span style={{ color: '#dc2626', fontWeight: 600 }}>* (Bắt buộc diễn giải cho loại Khác)</span>}
-              </span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                <span className="field-label" style={{ margin: 0 }}>
+                  Ghi chú {isOtherType && <span style={{ color: '#dc2626', fontWeight: 600 }}>* (Bắt buộc diễn giải cho loại Khác)</span>}
+                </span>
+                <select
+                  className="text-input"
+                  style={{ width: 'auto', padding: '0.2rem 0.5rem', fontSize: '0.8rem', background: '#f1f5f9' }}
+                  onChange={(e) => {
+                    if (e.target.value) setNote(e.target.value);
+                  }}
+                >
+                  <option value="">-- Chọn Ghi chú mẫu (Sổ xuống) --</option>
+                  <option value="✅ Hoàn thành tốt, cụ hợp tác vui vẻ">✅ Hoàn thành tốt, cụ hợp tác vui vẻ</option>
+                  <option value="👍 Thực hiện đúng y lệnh & phân công ca trực">👍 Thực hiện đúng y lệnh & phân công ca trực</option>
+                  <option value="⚠️ Cụ mệt nhẹ, đã kiểm tra sinh thái an toàn">⚠️ Cụ mệt nhẹ, đã kiểm tra sinh thái an toàn</option>
+                  <option value="🥣 Cụ ăn hết 100% khẩu phần ăn">🥣 Cụ ăn hết 100% khẩu phần ăn</option>
+                  <option value="❌ Cụ từ chối, đã báo cáo bác sĩ / trưởng ca">❌ Cụ từ chối, đã báo cáo bác sĩ / trưởng ca</option>
+                </select>
+              </div>
               <input
                 className="text-input"
                 value={note}

@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useMemo, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
 import { ROLE_LABELS, getAssignedResidentIdsForActor } from '../../auth/role-policy';
@@ -8,7 +8,7 @@ import { getAccommodationOverview } from '../../api/accommodation';
 import { fetchLeaveRequests } from '../../api/resident-leave';
 import { fetchShifts } from '../../api/workforce';
 import { listHealthReports } from '../health-reports/healthReportsApi';
-import { listWorkEvents } from '../../api/operational-work';
+import { listWorkEvents, createWorkEvent } from '../../api/operational-work';
 import { NutritionBoard } from '../nutrition/NutritionBoard';
 import { listResidentAccessAssignments } from '../../api/resident-access-administration';
 
@@ -87,6 +87,37 @@ export function DashboardPage() {
   const myShifts = useMemo(() => {
     return shiftsData?.items?.filter(x => x.staffActorId === actorId) ?? [];
   }, [shiftsData, actorId]);
+
+  const queryClient = useQueryClient();
+  const [selectedQuickResident, setSelectedQuickResident] = useState('');
+  const [selectedEventType, setSelectedEventType] = useState('HYGIENE_BATHING');
+  const [quickNote, setQuickNote] = useState('✅ Hoàn thành tốt, cụ phối hợp vui vẻ');
+  const [quickSuccessMsg, setQuickSuccessMsg] = useState('');
+
+  const createQuickEventMutation = useMutation({
+    mutationFn: (payload: any) => createWorkEvent(actor!, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['dashboard-work-events'] });
+      queryClient.invalidateQueries({ queryKey: ['operational-work-events'] });
+      setQuickSuccessMsg('✅ Ghi nhận công việc thành công!');
+      setTimeout(() => setQuickSuccessMsg(''), 3500);
+    },
+  });
+
+  const handleQuickSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedQuickResident) {
+      alert('Vui lòng chọn Người cao tuổi trong danh sách!');
+      return;
+    }
+    createQuickEventMutation.mutate({
+      resident_id: selectedQuickResident,
+      work_event_type_id: selectedEventType,
+      planned_classification: 'PLANNED',
+      note: quickNote,
+      performed_by: actorId,
+    });
+  };
 
   const isExecutive = actorRole === 'SUPERVISOR' || actorRole === 'ADMIN' || actorRole === 'CARE_MANAGER';
 
@@ -184,6 +215,144 @@ export function DashboardPage() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* ⚡ BẢNG THAO TÁC 1-CHẠM THEO VAI TRÒ (ROLE QUICK ACTION PANEL) */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        borderRadius: '0.75rem',
+        padding: '1.25rem',
+        marginBottom: '1.5rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>⚡</span> THAO TÁC NHANH 1-CHẠM (LIST & TICK) — VAI TRÒ: {ROLE_LABELS[actorRole as keyof typeof ROLE_LABELS] || actorRole}
+          </div>
+          {quickSuccessMsg && (
+            <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.3rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.85rem', fontWeight: 600 }}>
+              {quickSuccessMsg}
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={handleQuickSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', alignItems: 'flex-end' }}>
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
+              👴 Chọn Cụ / Người Cao Tuổi (Sổ xuống):
+            </label>
+            <select
+              className="text-input"
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
+              value={selectedQuickResident}
+              onChange={(e) => setSelectedQuickResident(e.target.value)}
+            >
+              <option value="">-- Chọn Cụ trong danh sách phụ trách --</option>
+              {myAssignedResidentRows.map((r) => (
+                <option key={r.resident.residentId} value={r.resident.residentId}>
+                  {r.resident.displayName} ({r.resident.residentCode}) — Phòng {r.resident.room || '—'}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
+              📋 Loại Công Việc / Hạng Mục (Sổ xuống):
+            </label>
+            <select
+              className="text-input"
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
+              value={selectedEventType}
+              onChange={(e) => setSelectedEventType(e.target.value)}
+            >
+              {isCaregiver && (
+                <>
+                  <option value="HYGIENE_BATHING">🛁 Tắm rửa & Vệ sinh thân thể</option>
+                  <option value="MEAL_ASSISTANCE">🥣 Hỗ trợ ăn uống & Bón cháo/cơm</option>
+                  <option value="DIAPER_TOILETING">🧼 Thay tã bỉm & Vệ sinh cá nhân</option>
+                  <option value="CLOTHING_CHANGE">👕 Thay quần áo & Ga giường</option>
+                  <option value="MOBILITY_ASSISTANCE">👩‍🦽 Hỗ trợ di chuyển / Dắt đi dạo</option>
+                </>
+              )}
+              {(actorRole === 'NURSE' || isExecutive) && (
+                <>
+                  <option value="VITAL_SIGNS_CHECK">🩺 Đo sinh hiệu & Huyết áp chuẩn y khoa</option>
+                  <option value="MEDICATION_ADMINISTRATION">💊 Cấp phát & Cho uống thuốc (5 Đúng eMAR)</option>
+                  <option value="WOUND_CARE">🩹 Chăm sóc & Thay băng vết thương</option>
+                </>
+              )}
+              {isNutritionist && (
+                <>
+                  <option value="MEAL_ASSISTANCE">🍱 Phân bổ suất ăn & Chế độ dinh dưỡng</option>
+                  <option value="TUBE_FEEDING_ASSIST">🥛 Chuẩn bị súp / Bơm ăn qua sonde</option>
+                </>
+              )}
+              {isHousekeeping && (
+                <>
+                  <option value="ROOM_CLEANING">🧹 Vệ sinh buồng phòng & Khử khuẩn</option>
+                  <option value="LAUNDRY_SERVICE">🧺 Giặt ủi & Thu gom đồ bẩn</option>
+                </>
+              )}
+              {isRehab && (
+                <>
+                  <option value="REHAB_EXERCISE">🧘 Hướng dẫn bài tập vật lý trị liệu</option>
+                  <option value="MOBILITY_ASSISTANCE">🚶 Tập đi & Phục hồi chức năng vận động</option>
+                </>
+              )}
+              {(isPsychologist || isSocialWorker) && (
+                <>
+                  <option value="PSYCHOLOGICAL_SUPPORT">💬 Tham vấn tâm lý & Trò chuyện giải tỏa</option>
+                  <option value="COGNITIVE_ASSESSMENT_MMSE">🧠 Đánh giá nhận thức MMSE</option>
+                  <option value="FAMILY_RELATIONSHIP_CONNECT">👨‍👩‍👧 Kết nối thân nhân & Gọi điện cho gia đình</option>
+                </>
+              )}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
+              📝 Ghi Chú Nhanh (Gợi ý sẵn):
+            </label>
+            <select
+              className="text-input"
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
+              value={quickNote}
+              onChange={(e) => setQuickNote(e.target.value)}
+            >
+              <option value="✅ Hoàn thành tốt, cụ phối hợp vui vẻ">✅ Hoàn thành tốt, cụ phối hợp vui vẻ</option>
+              <option value="👍 Đã hoàn thành theo đúng y lệnh ca trực">👍 Đã hoàn thành theo đúng y lệnh ca trực</option>
+              <option value="⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau">⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau</option>
+              <option value="🥣 Cụ ăn hết 100% khẩu phần ăn">🥣 Cụ ăn hết 100% khẩu phần ăn</option>
+              <option value="❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca">❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca</option>
+            </select>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={createQuickEventMutation.isPending}
+              style={{
+                width: '100%',
+                padding: '0.55rem 1rem',
+                backgroundColor: '#166534',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                border: 'none',
+                borderRadius: '0.375rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <span>{createQuickEventMutation.isPending ? 'Đang lưu...' : '⚡ Ghi Nhận 1-Chạm'}</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Conditional KPI Row based on Role */}

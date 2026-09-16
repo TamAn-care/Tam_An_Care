@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { DatabaseService } from '../database/database.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 type Actor = { actorId: string; actorRole: string };
 const HUMAN_ROLES = new Set([
@@ -30,7 +31,10 @@ const VALID_SHIFT_TYPES = new Set(['MORNING', 'AFTERNOON', 'NIGHT', 'CUSTOM']);
 
 @Injectable()
 export class WorkforceService implements OnModuleInit {
-  constructor(private readonly db: DatabaseService) {}
+  constructor(
+    private readonly db: DatabaseService,
+    private readonly notificationsService?: NotificationsService,
+  ) {}
 
   async onModuleInit() {
     try {
@@ -169,7 +173,22 @@ export class WorkforceService implements OnModuleInit {
         ],
       );
 
-      return this.mapShiftDto(row);
+      const resultDto = this.mapShiftDto(row);
+
+      if (this.notificationsService) {
+        this.notificationsService
+          .createNotification({
+            staffActorId: staffActorId,
+            title: '🔔 Phân công ca trực mới từ Ban Giám đốc',
+            message: `Bạn vừa được phân ca trực ${shiftType} ngày ${shiftDate} (${startTimeStr} - ${endTimeStr}).`,
+            type: 'SHIFT_ASSIGNMENT',
+            sound: 'ALERT_CHIME',
+            metadata: { shiftId: resultDto.shiftId, shiftDate, shiftType },
+          })
+          .catch(() => {});
+      }
+
+      return resultDto;
     });
   }
 

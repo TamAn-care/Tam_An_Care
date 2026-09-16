@@ -69,7 +69,9 @@ import { AccommodationModule } from './accommodation/accommodation.module';
 import { ResidentLifecycleModule } from './resident-lifecycle/resident-lifecycle.module';
 import { ResidentLeaveModule } from './resident-leave/resident-leave.module';
 import { WorkforceModule } from './workforce/workforce.module';
+import { NotificationsModule } from './notifications/notifications.module';
 @Module({imports:[
+    NotificationsModule,
     WorkforceModule,
     ResidentLeaveModule,
     ResidentLifecycleModule,

@@ -75,10 +75,64 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/index.html');
-          }
-        });
-      })
+// Lắng nghe sự kiện Push Notification từ Server khi chạy ngầm / khóa màn hình
+self.addEventListener('push', (event) => {
+  let data = {
+    title: '🔔 Phân công ca trực mới - Tâm An Care',
+    body: 'Bạn có thay đổi lịch trực từ Ban Giám đốc.',
+    icon: '/icons/tam-an-192.png',
+    badge: '/favicon.png',
+    data: { url: '/workforce' }
+  };
+
+  if (event.data) {
+    try {
+      const payload = event.data.json();
+      data.title = payload.title || data.title;
+      data.body = payload.message || payload.body || data.body;
+      if (payload.metadata?.url) data.data.url = payload.metadata.url;
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+    vibrate: [200, 100, 200, 100, 300],
+    data: data.data,
+    actions: [
+      { action: 'open_shift', title: '👁️ Xem ca trực' },
+      { action: 'close', title: 'Đóng' }
+    ],
+    requireInteraction: true
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
   );
 });
+
+// Xử lý khi nhân viên nhấn vào thông báo trên điện thoại
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'close') return;
+
+  const targetUrl = (event.notification.data && event.notification.data.url) || '/workforce';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (let client of windowClients) {
+        if (client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+
