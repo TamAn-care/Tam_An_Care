@@ -1056,31 +1056,23 @@ export function AdmissionPage() {
 
   return (
     <div className="page-content">
-      {/* Header */}
-      <div className="page-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title">Tiếp Nhận & Đánh Giá Sức Khỏe Ban Đầu</h1>
-          </div>
-          {!isPsychologyOrSocialWorker && (
-            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => setShowHandoverHistoryModal(true)}
-                className="btn btn-secondary"
-                style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
-              >
-                📜 Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng
-              </button>
-              <button
-                onClick={handleOpenCreate}
-                className="btn btn-primary"
-              >
-                + Tiếp nhận người cao tuổi mới
-              </button>
-            </div>
-          )}
+      {!isPsychologyOrSocialWorker && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+          <button
+            onClick={() => setShowHandoverHistoryModal(true)}
+            className="btn btn-secondary"
+            style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
+          >
+            📜 Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng
+          </button>
+          <button
+            onClick={handleOpenCreate}
+            className="btn btn-primary"
+          >
+            + Tiếp nhận người cao tuổi mới
+          </button>
         </div>
-      </div>
+      )}
 
       {/* Message Banner */}
       {message && (

@@ -171,13 +171,6 @@ export function DashboardPage() {
 
   return (
     <div className="page-content">
-      {/* Header */}
-      <div className="page-header" style={{ marginBottom: '1.25rem' }}>
-        <h1 className="page-title">
-          Tổng Quan Hoạt Động
-        </h1>
-      </div>
-
       {/* ⚡ BẢNG THAO TÁC 1-CHẠM THEO VAI TRÒ (ROLE QUICK ACTION PANEL) */}
       <div style={{
         background: '#ffffff',

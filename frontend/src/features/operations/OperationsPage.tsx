@@ -1138,26 +1138,18 @@ export function OperationsPage() {
 
   return (
     <>
-      <header className="page-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title">Chăm Sóc & Vận Hành</h1>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => {
-                if (residentId) setCreateResidentId(residentId);
-                setShowCreateSection(!showCreateSection);
-              }}
-            >
-              {showCreateSection ? '✕ Đóng form ghi nhận' : '📝 + Ghi nhận công việc chăm sóc'}
-            </button>
-          </div>
-        </div>
-      </header>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => {
+            if (residentId) setCreateResidentId(residentId);
+            setShowCreateSection(!showCreateSection);
+          }}
+        >
+          {showCreateSection ? '✕ Đóng form ghi nhận' : '📝 + Ghi nhận công việc chăm sóc'}
+        </button>
+      </div>
 
       {/* 🎯 BẢNG THÔNG BÁO CHẾ ĐỘ TẬP TRUNG TÁC VỤ (TASK FOCUS MODE) */}
       {showCreateSection ? (

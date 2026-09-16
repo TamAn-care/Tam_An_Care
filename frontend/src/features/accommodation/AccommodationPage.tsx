@@ -320,9 +320,6 @@ export default function AccommodationPage() {
 
   return (
     <main className="page">
-      <div className="page-header">
-        <h1 className="page-title">Sơ Đồ Phòng & Giường</h1>
-      </div>
 
       {data && isDirectorOrManager && (
         <div className="kpi-grid">

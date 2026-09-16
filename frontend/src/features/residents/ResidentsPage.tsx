@@ -327,21 +327,15 @@ export function ResidentsPage() {
 
   return (
     <>
-      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 className="page-title">
-            Người Cao Tuổi
-          </h1>
-        </div>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
         <button
           onClick={exportResidentsCSV}
           className="btn btn-secondary"
-          style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700, marginTop: '0.5rem' }}
+          style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
         >
           📥 Xuất Báo Cáo Cư Dân Excel/CSV
         </button>
-      </header>
+      </div>
 
       {isDirectorOrManager && (
         <div className="kpi-grid">
