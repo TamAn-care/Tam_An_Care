@@ -321,11 +321,6 @@ export default function AccommodationPage() {
       <div className="page-header">
         <div className="eyebrow">QUẢN TRỊ CƠ SỞ VẬT CHẤT</div>
         <h1 className="page-title">Sơ Đồ Phòng & Giường</h1>
-        <p className="page-description">
-          {canManage
-            ? 'Xếp giường, chuyển giường, trả giường và quản lý phòng giường thời gian thực theo cấu trúc 29 phòng tại 4 tầng.'
-            : 'Theo dõi sơ đồ 29 phòng và 110 giường bệnh để phục vụ công tác chăm sóc và hỗ trợ người cao tuổi.'}
-        </p>
       </div>
 
       {data && (

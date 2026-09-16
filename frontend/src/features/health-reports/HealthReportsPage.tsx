@@ -451,9 +451,6 @@ export default function HealthReportsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 className="page-title">Phiếu Đánh Giá & Báo Cáo Sức Khỏe Định Kỳ</h1>
-            <p className="page-description">
-              Khảo sát dấu hiệu sinh tồn, ADL, dinh dưỡng, tâm thần kinh, đề xuất mức độ chăm sóc và dặn dò dặn thêm theo chuẩn y khoa Tâm An Care.
-            </p>
           </div>
           <button
             onClick={() => {

@@ -413,9 +413,6 @@ export default function BillingPage() {
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.35rem' }}>
             <span>💳</span> Quản Lý Phí & Bảng Giá Dịch Vụ
           </h1>
-          <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem' }}>
-            Trung tâm Dưỡng lão Tâm An — Bảng giá dịch vụ áp dụng từ 01/07/2026, gói chăm sóc, giảm trừ vắng mặt & chính sách giảm giá đặc biệt.
-          </p>
         </div>
 
       </div>

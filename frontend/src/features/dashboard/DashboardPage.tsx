@@ -201,19 +201,6 @@ export function DashboardPage() {
                 ? `Bảng Tham Vấn Tâm Lý — ${actorName}`
                 : 'Tổng Quan Hoạt Động Chăm Sóc'}
             </h1>
-            <p className="page-description">
-              {isCaregiver
-                ? 'Theo dõi trực tiếp người cao tuổi được phân quyền chăm sóc, ca trực trong ngày, ghi nhận công việc và phối hợp báo cáo suất ăn cho bếp.'
-                : isNutritionist
-                ? 'Theo dõi số lượng suất ăn thường trú tại Tâm An, tình trạng dinh dưỡng (tiểu đường, ăn nhạt), suất ăn đặc biệt và ca trực của bạn.'
-                : isSocialWorker
-                ? 'Theo dõi quy trình tiếp nhận hồ sơ ban đầu, tình hình tạm vắng nghỉ phép và ca kíp làm việc của bạn.'
-                : isRehab
-                ? 'Theo dõi kế hoạch phục hồi chức năng, bài tập vật lý trị liệu và ca trực hướng dẫn người cao tuổi trong ngày.'
-                : isPsychologist
-                ? 'Theo dõi kế hoạch tham vấn tâm lý, can thiệp cảm xúc, đánh giá nhận thức (MMSE) và ca trực của bạn.'
-                : 'Bảng điều khiển tập trung theo dõi tình hình người cao tuổi, ca kíp nhân sự, tạm vắng và công việc vận hành trong ngày.'}
-            </p>
           </div>
         </div>
       </div>

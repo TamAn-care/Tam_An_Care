@@ -1060,9 +1060,6 @@ export function AdmissionPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 className="page-title">Tiếp Nhận & Đánh Giá Sức Khỏe Ban Đầu</h1>
-            <p className="page-description">
-              Quy trình tiếp nhận, đánh giá đầu vào toàn diện (Sinh tồn, ADL, Bệnh lý, Người bảo hộ), tự động phân loại mức độ chăm sóc và thống nhất dữ liệu với Báo cáo định kỳ.
-            </p>
           </div>
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
             <button

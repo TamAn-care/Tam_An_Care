@@ -581,9 +581,6 @@ export default function WorkforcePage() {
                 Thời gian thực: {now.toLocaleTimeString('vi-VN')}
               </span>
             </div>
-            <p className="page-description">
-              Hệ thống điều phối ca kíp thời gian thực, tự động kết thúc ca quá giờ, phê duyệt đổi ca, giám sát KPI theo nhóm chuyên môn và ghi nhận thành tích thi đua đột xuất.
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -842,152 +839,261 @@ export default function WorkforcePage() {
             </div>
           </div>
 
-          {/* Shifts Table */}
-          <div className="table-responsive">
-            <table className="ui-table">
-              <thead>
-                <tr>
-                  <th>Nhân sự phân công</th>
-                  <th>Loại ca & Ngày trực</th>
-                  <th>Khung giờ quy định</th>
-                  <th>Thời gian thực tế</th>
-                  <th>Trạng thái</th>
-                  <th className="text-right">Thao tác & Đổi ca</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
+          {/* Shifts Table & Mobile Cards */}
+          <div className="desktop-only-table">
+            <div className="table-responsive">
+              <table className="ui-table">
+                <thead>
                   <tr>
-                    <td colSpan={6} className="text-center" style={{ padding: '2rem' }}>
-                      Đang tải danh sách ca kíp...
-                    </td>
+                    <th>Nhân sự phân công</th>
+                    <th>Loại ca & Ngày trực</th>
+                    <th>Khung giờ quy định</th>
+                    <th>Thời gian thực tế</th>
+                    <th>Trạng thái</th>
+                    <th className="text-right">Thao tác & Đổi ca</th>
                   </tr>
-                ) : filteredItems.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center" style={{ padding: '2.5rem', color: 'var(--text-secondary)' }}>
-                      Không có ca trực nào phù hợp với bộ lọc.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredItems.map(item => {
-                    const typeMeta = SHIFT_TYPE_BADGE[item.shiftType] || { label: item.shiftType, className: 'badge badge-neutral' };
-                    const statusMeta = STATUS_BADGE[item.status] || { label: item.status, className: 'badge badge-neutral' };
-                    const isMyShift = isStaffShift(item);
-                    const canCheckin = item.status === 'SCHEDULED' && (isMyShift || isSupervisor);
-                    const canCheckout = item.status === 'IN_PROGRESS' && (isMyShift || isSupervisor);
-                    const canHandover = (item.status === 'IN_PROGRESS' || item.status === 'COMPLETED') && (isMyShift || isSupervisor);
-                    const canSwap = item.status === 'SCHEDULED' && (isMyShift || isSupervisor);
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={6} className="text-center" style={{ padding: '2rem' }}>
+                        Đang tải danh sách ca kíp...
+                      </td>
+                    </tr>
+                  ) : filteredItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="text-center" style={{ padding: '2.5rem', color: 'var(--text-secondary)' }}>
+                        Không có ca trực nào phù hợp với bộ lọc.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredItems.map(item => {
+                      const typeMeta = SHIFT_TYPE_BADGE[item.shiftType] || { label: item.shiftType, className: 'badge badge-neutral' };
+                      const statusMeta = STATUS_BADGE[item.status] || { label: item.status, className: 'badge badge-neutral' };
+                      const isMyShift = isStaffShift(item);
+                      const canCheckin = item.status === 'SCHEDULED' && (isMyShift || isSupervisor);
+                      const canCheckout = item.status === 'IN_PROGRESS' && (isMyShift || isSupervisor);
+                      const canHandover = (item.status === 'IN_PROGRESS' || item.status === 'COMPLETED') && (isMyShift || isSupervisor);
+                      const canSwap = item.status === 'SCHEDULED' && (isMyShift || isSupervisor);
 
-                    return (
-                      <tr key={item.shiftId}>
-                        <td>
-                          <div className="cell-primary">{item.staffName || item.staffActorId}</div>
-                          <div className="cell-secondary">
-                            {item.staffCode ? `Mã: ${item.staffCode}` : ''} {item.staffRole ? `(${ROLE_LABELS[item.staffRole as keyof typeof ROLE_LABELS] || item.staffRole})` : ''}
-                          </div>
-                          {item.notes && <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>{item.notes}</div>}
-                        </td>
-                        <td>
-                          <span className={typeMeta.className}>{typeMeta.label}</span>
-                          <div className="cell-secondary" style={{ marginTop: '3px' }}>
-                            {new Date(item.shiftDate).toLocaleDateString('vi-VN')}
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            {new Date(item.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} -{' '}
-                            {new Date(item.endTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                          </div>
-                          <div className="cell-secondary">
-                            {item.shiftType === 'NIGHT' ? '(Ca xuyên đêm)' : 'Trong ngày'}
-                          </div>
-                        </td>
-                        <td>
-                          <div>
-                            {item.actualCheckinAt
-                              ? `Vào: ${new Date(item.actualCheckinAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
-                              : 'Chưa vào ca'}
-                          </div>
-                          <div className="cell-secondary">
-                            {item.actualCheckoutAt
-                              ? `Ra: ${new Date(item.actualCheckoutAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
-                              : item.status === 'IN_PROGRESS' ? '🟢 Đang trực' : '—'}
-                          </div>
-                        </td>
-                        <td>
-                          <span className={statusMeta.className}>{statusMeta.label}</span>
-                        </td>
-                        <td className="text-right">
-                          <div className="btn-group" style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                            {canCheckin && (
-                              <button
-                                onClick={() => checkinMutation.mutate(item.shiftId)}
-                                disabled={checkinMutation.isPending}
-                                className="btn btn-sm btn-primary"
-                                title="Điểm danh vào ca trực"
-                              >
-                                🟢 Vào ca
-                              </button>
-                            )}
+                      return (
+                        <tr key={item.shiftId}>
+                          <td>
+                            <div className="cell-primary">{item.staffName || item.staffActorId}</div>
+                            <div className="cell-secondary">
+                              {item.staffCode ? `Mã: ${item.staffCode}` : ''} {item.staffRole ? `(${ROLE_LABELS[item.staffRole as keyof typeof ROLE_LABELS] || item.staffRole})` : ''}
+                            </div>
+                            {item.notes && <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '2px' }}>{item.notes}</div>}
+                          </td>
+                          <td>
+                            <span className={typeMeta.className}>{typeMeta.label}</span>
+                            <div className="cell-secondary" style={{ marginTop: '3px' }}>
+                              {new Date(item.shiftDate).toLocaleDateString('vi-VN')}
+                            </div>
+                          </td>
+                          <td>
+                            <div>
+                              {new Date(item.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} -{' '}
+                              {new Date(item.endTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div className="cell-secondary">
+                              {item.shiftType === 'NIGHT' ? '(Ca xuyên đêm)' : 'Trong ngày'}
+                            </div>
+                          </td>
+                          <td>
+                            <div>
+                              {item.actualCheckinAt
+                                ? `Vào: ${new Date(item.actualCheckinAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
+                                : 'Chưa vào ca'}
+                            </div>
+                            <div className="cell-secondary">
+                              {item.actualCheckoutAt
+                                ? `Ra: ${new Date(item.actualCheckoutAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
+                                : item.status === 'IN_PROGRESS' ? '🟢 Đang trực' : '—'}
+                            </div>
+                          </td>
+                          <td>
+                            <span className={statusMeta.className}>{statusMeta.label}</span>
+                          </td>
+                          <td className="text-right">
+                            <div className="btn-group" style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                              {canCheckin && (
+                                <button
+                                  type="button"
+                                  onClick={() => checkinMutation.mutate(item.shiftId)}
+                                  disabled={checkinMutation.isPending}
+                                  className="btn btn-sm btn-primary"
+                                  title="Điểm danh vào ca trực"
+                                >
+                                  🟢 Vào ca
+                                </button>
+                              )}
 
-                            {canCheckout && (
-                              <button
-                                onClick={() => {
-                                  const cNotes = prompt('Ghi chú kết thúc ca (tùy chọn):');
-                                  checkoutMutation.mutate({ id: item.shiftId, notes: cNotes || undefined });
-                                }}
-                                disabled={checkoutMutation.isPending}
-                                className="btn btn-sm btn-success"
-                                title="Kết thúc ca trực"
-                              >
-                                🏁 Kết thúc ca
-                              </button>
-                            )}
+                              {canCheckout && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const cNotes = prompt('Ghi chú kết thúc ca (tùy chọn):');
+                                    checkoutMutation.mutate({ id: item.shiftId, notes: cNotes || undefined });
+                                  }}
+                                  disabled={checkoutMutation.isPending}
+                                  className="btn btn-sm btn-success"
+                                  title="Kết thúc ca trực"
+                                >
+                                  🏁 Kết thúc ca
+                                </button>
+                              )}
 
-                            {canHandover && (
-                              <button
-                                onClick={() => {
-                                  setHandoverShift(item);
-                                  resetHandoverForm();
-                                }}
-                                className="btn btn-sm btn-secondary"
-                                title="Lập biên bản bàn giao ca trực"
-                              >
-                                📝 Bàn giao
-                              </button>
-                            )}
+                              {canHandover && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setHandoverShift(item);
+                                    resetHandoverForm();
+                                  }}
+                                  className="btn btn-sm btn-secondary"
+                                  title="Lập biên bản bàn giao ca trực"
+                                >
+                                  📝 Bàn giao
+                                </button>
+                              )}
 
-                            {canSwap && (
-                              <button
-                                onClick={() => handleOpenSwapModal(item)}
-                                className="btn btn-sm btn-secondary"
-                                style={{ color: '#7c3aed', borderColor: '#c4b5fd' }}
-                                title="Gửi đề nghị đổi ca trực này cho nhân viên khác"
-                              >
-                                🔄 Đổi ca
-                              </button>
-                            )}
+                              {canSwap && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleOpenSwapModal(item)}
+                                  className="btn btn-sm btn-secondary"
+                                  style={{ color: '#7c3aed', borderColor: '#c4b5fd' }}
+                                  title="Gửi đề nghị đổi ca trực này cho nhân viên khác"
+                                >
+                                  🔄 Đổi ca
+                                </button>
+                              )}
 
-                            {isSupervisor && item.status !== 'COMPLETED' && item.status !== 'CANCELLED' && (
-                              <button
-                                onClick={() => {
-                                  const reason = prompt('Lý do hủy ca trực:');
-                                  if (reason) cancelMutation.mutate({ id: item.shiftId, reason });
-                                }}
-                                className="btn btn-sm btn-danger"
-                                title="Hủy ca trực"
-                              >
-                                Hủy
-                              </button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                              {isSupervisor && item.status !== 'COMPLETED' && item.status !== 'CANCELLED' && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const reason = prompt('Lý do hủy ca trực:');
+                                    if (reason) cancelMutation.mutate({ id: item.shiftId, reason });
+                                  }}
+                                  className="btn btn-sm btn-danger"
+                                  title="Hủy ca trực"
+                                >
+                                  Hủy
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Cards View (< 768px) */}
+          <div className="mobile-only-cards">
+            {filteredItems.map(item => {
+              const typeMeta = SHIFT_TYPE_BADGE[item.shiftType] || { label: item.shiftType, className: 'badge badge-neutral' };
+              const statusMeta = STATUS_BADGE[item.status] || { label: item.status, className: 'badge badge-neutral' };
+              const isMyShift = isStaffShift(item);
+              const canCheckin = item.status === 'SCHEDULED' && (isMyShift || isSupervisor);
+              const canCheckout = item.status === 'IN_PROGRESS' && (isMyShift || isSupervisor);
+              const canHandover = (item.status === 'IN_PROGRESS' || item.status === 'COMPLETED') && (isMyShift || isSupervisor);
+              const canSwap = item.status === 'SCHEDULED' && (isMyShift || isSupervisor);
+
+              return (
+                <div key={item.shiftId} className="mobile-card-item">
+                  <div className="mobile-card-header">
+                    <div className="mobile-card-title">
+                      👤 {item.staffName || item.staffActorId}{' '}
+                      <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>
+                        {item.staffRole ? `(${ROLE_LABELS[item.staffRole as keyof typeof ROLE_LABELS] || item.staffRole})` : ''}
+                      </span>
+                    </div>
+                    <span className={statusMeta.className}>{statusMeta.label}</span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Loại ca:</span>
+                    <span className="mobile-card-value">
+                      <span className={typeMeta.className}>{typeMeta.label}</span> (
+                      {new Date(item.shiftDate).toLocaleDateString('vi-VN')})
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Giờ quy định:</span>
+                    <span className="mobile-card-value">
+                      {new Date(item.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} -{' '}
+                      {new Date(item.endTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Thực tế:</span>
+                    <span className="mobile-card-value">
+                      {item.actualCheckinAt
+                        ? `Vào: ${new Date(item.actualCheckinAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
+                        : 'Chưa vào'}
+                      {item.actualCheckoutAt
+                        ? ` | Ra: ${new Date(item.actualCheckoutAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
+                        : item.status === 'IN_PROGRESS' ? ' (🟢 Đang trực)' : ''}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-actions">
+                    {canCheckin && (
+                      <button
+                        type="button"
+                        onClick={() => checkinMutation.mutate(item.shiftId)}
+                        disabled={checkinMutation.isPending}
+                        className="btn btn-sm btn-primary"
+                      >
+                        🟢 Vào ca 1-chạm
+                      </button>
+                    )}
+                    {canCheckout && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const cNotes = prompt('Ghi chú kết thúc ca (tùy chọn):');
+                          checkoutMutation.mutate({ id: item.shiftId, notes: cNotes || undefined });
+                        }}
+                        disabled={checkoutMutation.isPending}
+                        className="btn btn-sm btn-success"
+                      >
+                        🏁 Kết thúc ca
+                      </button>
+                    )}
+                    {canHandover && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setHandoverShift(item);
+                          resetHandoverForm();
+                        }}
+                        className="btn btn-sm btn-secondary"
+                      >
+                        📝 Bàn giao
+                      </button>
+                    )}
+                    {canSwap && (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenSwapModal(item)}
+                        className="btn btn-sm btn-secondary"
+                      >
+                        🔄 Đổi ca
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </>
       )}

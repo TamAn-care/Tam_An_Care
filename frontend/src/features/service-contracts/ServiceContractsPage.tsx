@@ -229,9 +229,6 @@ export function ServiceContractsPage() {
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             📜 Phân Hệ Hợp Đồng Dịch Vụ
           </h1>
-          <p className="page-description">
-            Soạn thảo, quản lý, xem trước và in ấn Hợp đồng cung cấp dịch vụ dưỡng lão (10 trang kèm Phụ lục 01) dành riêng cho Ban Giám đốc & Quản lý.
-          </p>
         </div>
 
         <button

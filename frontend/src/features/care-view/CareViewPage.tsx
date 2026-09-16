@@ -99,9 +99,6 @@ export function CareViewPage() {
         <header className="page-header">
           <div className="eyebrow">Hồ sơ chăm sóc</div>
           <h1 className="page-title">Không thể mở hồ sơ</h1>
-          <p className="page-description">
-            Hệ thống không tiết lộ thêm thông tin khi quyền truy cập không được xác nhận.
-          </p>
         </header>
         <ErrorState
           title={isNonDisclosure ? 'Hồ sơ không khả dụng' : 'Không thể tải dữ liệu'}

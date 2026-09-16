@@ -89,9 +89,6 @@ export default function ResidentLifecyclePage() {
       <header className="page-header">
         <div className="eyebrow">Resident Lifecycle</div>
         <h1 className="page-title">Vòng đời người cao tuổi</h1>
-        <p className="page-description">
-          Cập nhật kế hoạch chăm sóc, theo dõi lịch sử và kết thúc dịch vụ có kiểm soát.
-        </p>
       </header>
 
       <section className="card">

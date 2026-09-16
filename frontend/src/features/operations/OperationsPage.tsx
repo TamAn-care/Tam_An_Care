@@ -1143,9 +1143,6 @@ export function OperationsPage() {
           <div>
             <div className="eyebrow">Vận hành chăm sóc & Giám sát điều hành</div>
             <h1 className="page-title">Nhật Ký & Bằng Chứng Vận Hành Chăm Sóc</h1>
-            <p className="page-description">
-              Theo dõi và rà soát toàn bộ các hoạt động chăm sóc, y tế, sinh hiệu, dùng thuốc eMAR và phục hồi chức năng của Người cao tuổi tại Tâm An.
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -1178,13 +1175,8 @@ export function OperationsPage() {
           gap: '0.75rem',
           boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
         }}>
-          <div>
-            <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>🎯</span> CHẾ ĐỘ TẬP TRUNG TÁC VỤ: GHI NHẬN CÔNG VIỆC CHĂM SÓC
-            </div>
-            <div style={{ fontSize: '0.85rem', color: '#15803d', marginTop: '0.2rem' }}>
-              Màn hình đã tự động thu gọn và ẩn các thẻ KPI/bộ lọc không liên quan để bạn tập trung 100% vào việc ghi nhận công việc.
-            </div>
+          <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>🎯</span> GHI NHẬN CÔNG VIỆC CHĂM SÓC
           </div>
           <button
             type="button"
@@ -1764,10 +1756,6 @@ export function OperationsPage() {
             </button>
           </div>
 
-          <p className="page-description">
-            Ghi nhận bằng chứng thực hiện công việc chăm sóc cho Người cao tuổi. Hệ thống kiểm soát người thực hiện, vai trò và trọng số công việc.
-          </p>
-
           {actionError && (
             <div className="alert-card alert-danger" style={{ marginBottom: '1rem' }}>
               <span>{actionError}</span>
@@ -2090,117 +2078,213 @@ export function OperationsPage() {
         )}
 
         {filteredEvents.length > 0 && (
-          <div className="operations-table-wrap">
-            <table className="operations-table">
-              <thead>
-                <tr>
-                  <th>Thời điểm</th>
-                  <th>Người cao tuổi</th>
-                  <th>Công việc chăm sóc</th>
-                  <th>Người thực hiện</th>
-                  <th>Khối lượng</th>
-                  <th>Nguồn nghiệp vụ</th>
-                  <th>Trạng thái</th>
-                  <th style={{ textAlign: 'right' }}>Thao tác</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredEvents.map((item) => {
-                  const type = typeById.get(item.work_event_type_id);
-                  const resident = item.resident_id ? residentById.get(item.resident_id) : undefined;
-                  const isVerified = item.status === 'VERIFIED' || item.status === 'COMPLETED';
-
-                  return (
-                    <tr key={item.work_event_id}>
-                      <td>
-                        <div style={{ fontWeight: 600 }}>
-                          {new Date(item.occurred_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                          {new Date(item.occurred_at).toLocaleDateString('vi-VN')}
-                        </div>
-                      </td>
-
-                      <td>
-                        {resident ? (
-                          <div>
-                            <div style={{ fontWeight: 700, color: '#1e293b' }}>{resident.displayName}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                              Mã: {resident.residentCode} {resident.room ? `(${resident.room})` : ''}
-                            </div>
-                          </div>
-                        ) : (
-                          <span style={{ color: '#94a3b8' }}>Chung / Không gán</span>
-                        )}
-                      </td>
-
-                      <td>
-                        <div style={{ fontWeight: 600 }}>{type?.display_name_vi || item.work_event_type_id}</div>
-                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                          {type?.category ? CATEGORY_LABELS[type.category] || type.category : ''}
-                        </div>
-                        {item.note && (
-                          <div style={{ fontSize: '0.75rem', color: '#475569', fontStyle: 'italic', marginTop: '2px' }}>
-                            "{item.note}"
-                          </div>
-                        )}
-                      </td>
-
-                      <td>
-                        <div>{formatStaffDisplayName(item.performed_by)}</div>
-                        <small style={{ color: '#64748b' }}>{item.performed_by_role}</small>
-                      </td>
-
-                      <td>
-                        <b>{String(item.quantity)}</b> {item.unit}
-                      </td>
-
-                      <td>
-                        <span className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
-                          {item.source_domain}
-                        </span>
-                      </td>
-
-                      <td>
-                        <span className={STATUS_BADGE_CLASS[item.status] || 'badge badge-neutral'}>
-                          {STATUS_LABEL[item.status] || item.status}
-                        </span>
-                      </td>
-
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end' }}>
-                          {canGovern && item.status === 'RECORDED' && (
-                            <button
-                              type="button"
-                              className="btn btn-sm btn-success"
-                              title="Xác minh bằng chứng công việc"
-                              disabled={lifecycleMutation.isPending}
-                              onClick={() =>
-                                lifecycleMutation.mutate({
-                                  action: 'VERIFY',
-                                  id: item.work_event_id,
-                                })
-                              }
-                            >
-                              ✓ Duyệt
-                            </button>
-                          )}
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-secondary"
-                            onClick={() => setSelectedEventId(item.work_event_id)}
-                          >
-                            👁️ Chi tiết
-                          </button>
-                        </div>
-                      </td>
+          <>
+            <div className="desktop-only-table">
+              <div className="operations-table-wrap">
+                <table className="operations-table">
+                  <thead>
+                    <tr>
+                      <th>Thời điểm</th>
+                      <th>Người cao tuổi</th>
+                      <th>Công việc chăm sóc</th>
+                      <th>Người thực hiện</th>
+                      <th>Khối lượng</th>
+                      <th>Nguồn nghiệp vụ</th>
+                      <th>Trạng thái</th>
+                      <th style={{ textAlign: 'right' }}>Thao tác</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+
+                  <tbody>
+                    {filteredEvents.map((item) => {
+                      const type = typeById.get(item.work_event_type_id);
+                      const resident = item.resident_id ? residentById.get(item.resident_id) : undefined;
+
+                      return (
+                        <tr key={item.work_event_id}>
+                          <td>
+                            <div style={{ fontWeight: 600 }}>
+                              {new Date(item.occurred_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              {new Date(item.occurred_at).toLocaleDateString('vi-VN')}
+                            </div>
+                          </td>
+
+                          <td>
+                            {resident ? (
+                              <div>
+                                <div style={{ fontWeight: 700, color: '#1e293b' }}>{resident.displayName}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                  Mã: {resident.residentCode} {resident.room ? `(${resident.room})` : ''}
+                                </div>
+                              </div>
+                            ) : (
+                              <span style={{ color: '#94a3b8' }}>Chung / Không gán</span>
+                            )}
+                          </td>
+
+                          <td>
+                            <div style={{ fontWeight: 600 }}>{type?.display_name_vi || item.work_event_type_id}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              {type?.category ? CATEGORY_LABELS[type.category] || type.category : ''}
+                            </div>
+                            {item.note && (
+                              <div style={{ fontSize: '0.75rem', color: '#475569', fontStyle: 'italic', marginTop: '2px' }}>
+                                "{item.note}"
+                              </div>
+                            )}
+                          </td>
+
+                          <td>
+                            <div>{formatStaffDisplayName(item.performed_by)}</div>
+                            <small style={{ color: '#64748b' }}>{item.performed_by_role}</small>
+                          </td>
+
+                          <td>
+                            <b>{String(item.quantity)}</b> {item.unit}
+                          </td>
+
+                          <td>
+                            <span className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+                              {item.source_domain}
+                            </span>
+                          </td>
+
+                          <td>
+                            <span className={STATUS_BADGE_CLASS[item.status] || 'badge badge-neutral'}>
+                              {STATUS_LABEL[item.status] || item.status}
+                            </span>
+                          </td>
+
+                          <td style={{ textAlign: 'right' }}>
+                            <div style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end' }}>
+                              {canGovern && item.status === 'RECORDED' && (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-success"
+                                  title="Xác minh bằng chứng công việc"
+                                  disabled={lifecycleMutation.isPending}
+                                  onClick={() =>
+                                    lifecycleMutation.mutate({
+                                      action: 'VERIFY',
+                                      id: item.work_event_id,
+                                    })
+                                  }
+                                >
+                                  ✓ Duyệt
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-secondary"
+                                onClick={() => setSelectedEventId(item.work_event_id)}
+                              >
+                                👁️ Chi tiết
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile-Only Responsive Card View for screens < 768px */}
+            <div className="mobile-only-cards">
+              {filteredEvents.map((item) => {
+                const type = typeById.get(item.work_event_type_id);
+                const resident = item.resident_id ? residentById.get(item.resident_id) : undefined;
+
+                return (
+                  <div key={item.work_event_id} className="mobile-card-item">
+                    <div className="mobile-card-header">
+                      <div className="mobile-card-title">
+                        {resident ? (
+                          <>
+                            👴 {resident.displayName}{' '}
+                            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>
+                              {resident.room ? `(${resident.room})` : ''}
+                            </span>
+                          </>
+                        ) : (
+                          'Chung / Không gán'
+                        )}
+                      </div>
+                      <span className={STATUS_BADGE_CLASS[item.status] || 'badge badge-neutral'}>
+                        {STATUS_LABEL[item.status] || item.status}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Công việc:</span>
+                      <span className="mobile-card-value" style={{ color: '#0369a1' }}>
+                        {type?.display_name_vi || item.work_event_type_id}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Thời gian:</span>
+                      <span className="mobile-card-value">
+                        {new Date(item.occurred_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}{' '}
+                        ({new Date(item.occurred_at).toLocaleDateString('vi-VN')})
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Thực hiện bởi:</span>
+                      <span className="mobile-card-value">
+                        {formatStaffDisplayName(item.performed_by)} ({item.performed_by_role})
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Khối lượng:</span>
+                      <span className="mobile-card-value">
+                        <b>{String(item.quantity)}</b> {item.unit}
+                      </span>
+                    </div>
+
+                    {item.note && (
+                      <div className="mobile-card-row">
+                        <span className="mobile-card-label">Ghi chú:</span>
+                        <span className="mobile-card-value" style={{ fontStyle: 'italic', color: '#475569' }}>
+                          "{item.note}"
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="mobile-card-actions">
+                      {canGovern && item.status === 'RECORDED' && (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-success"
+                          disabled={lifecycleMutation.isPending}
+                          onClick={() =>
+                            lifecycleMutation.mutate({
+                              action: 'VERIFY',
+                              id: item.work_event_id,
+                            })
+                          }
+                        >
+                          ✓ Duyệt 1-chạm
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => setSelectedEventId(item.work_event_id)}
+                      >
+                        👁️ Xem chi tiết
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </section>
     </>

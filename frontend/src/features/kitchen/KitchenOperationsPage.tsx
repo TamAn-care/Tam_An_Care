@@ -458,14 +458,9 @@ export default function KitchenOperationsPage() {
           marginBottom: '1rem',
         }}
       >
-        <div>
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.4rem', color: '#166534' }}>
             <span>🥗</span> Quản Lý Bếp Ăn & Tiếp Nhận An Toàn Thực Phẩm
           </h1>
-          <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#475569' }}>
-            Quy trình tiếp nhận thực phẩm theo hợp đồng, cân đo kiểm đếm đối soát số lượng/khối lượng, đánh giá chất lượng HACCP, phân loại lưu kho và lưu mẫu 24 giờ.
-          </p>
-        </div>
 
         {/* Role Badge */}
         <div
@@ -1147,8 +1142,8 @@ export default function KitchenOperationsPage() {
           </div>
 
           {/* Inventory Table */}
-          <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+          <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                   <th style={{ padding: '0.75rem 1rem' }}>Mặt Hàng Thực Phẩm</th>

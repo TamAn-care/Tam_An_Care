@@ -336,18 +336,6 @@ export function ResidentsPage() {
           <h1 className="page-title">
             {isCaregiver ? `Cư Dân Phụ Trách (${actorName})` : 'Người Cao Tuổi'}
           </h1>
-
-          <p className="page-description">
-            {isCaregiver
-              ? `Danh sách người cao tuổi được phân quyền trực tiếp cho bạn chăm sóc. Chỉ hiển thị thông tin nghiệp vụ và hồ sơ phục vụ công tác chăm sóc hàng ngày.`
-              : 'Danh sách người cao tuổi đang lưu trú và điều trị tại Trung Tâm Dưỡng Lão Tâm An.'}
-          </p>
-
-          {isCaregiver && (
-            <div className="alert-card alert-info" style={{ marginTop: '0.75rem', padding: '0.75rem 1rem' }}>
-              <span>🤲 <b>Chế độ bảo mật phân quyền:</b> Bạn đang xem danh sách <b>{activeCount} người cao tuổi</b> thuộc phân công phụ trách trực tiếp của bạn.</span>
-            </div>
-          )}
         </div>
 
         <button

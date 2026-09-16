@@ -448,9 +448,6 @@ export default function FamilyPortalPage() {
         <h1 className="page-title" style={{ color: '#1e293b' }}>
           Đồng Hành Chăm Sóc Người Cao Tuổi
         </h1>
-        <p className="page-description">
-          Theo dõi sát sao sức khỏe định kỳ, xem báo cáo y khoa chính thức, đăng ký nghỉ phép tạm vắng và đặt lịch thăm gặp Cụ tại Trung Tâm Dưỡng Lão Tâm An.
-        </p>
       </header>
 
       {/* Resident Profile Hero Card */}

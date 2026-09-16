@@ -176,11 +176,6 @@ export default function ResidentLeavePage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 className="page-title">Quản Lý Nghỉ Phép & Tạm Vắng Người Cao Tuổi</h1>
-            <p className="page-description">
-              {canViewMealDeduction
-                ? 'Quy tắc RLA-BR-01: Báo trước ≥ 48 giờ được giảm trừ tiền ăn theo ngày vắng mặt. Báo gấp < 48 giờ tính phí ngày đầu, các ngày sau giảm trừ khi được xác nhận.'
-                : 'Quản lý lịch trình tạm vắng, tiếp nhận thông tin người bảo hộ và theo dõi ngày người cao tuổi trở lại Tâm An.'}
-            </p>
           </div>
           {canManage && (
             <button
@@ -275,135 +270,237 @@ export default function ResidentLeavePage() {
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className="table-responsive">
-        <table className="ui-table">
-          <thead>
-            <tr>
-              <th>Người cao tuổi</th>
-              <th>Loại tạm vắng</th>
-              <th>Thời gian dự kiến</th>
-              <th>Báo trước</th>
-              {canViewMealDeduction && <th>Giảm trừ tiền ăn</th>}
-              <th>Người báo / Quan hệ</th>
-              <th>Trạng thái</th>
-              <th className="text-right">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={canViewMealDeduction ? 8 : 7} className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
-                  Đang tải danh sách nghỉ phép & tạm vắng...
-                </td>
-              </tr>
-            ) : filteredItems.length === 0 ? (
-              <tr>
-                <td colSpan={canViewMealDeduction ? 8 : 7} className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
-                  Không tìm thấy yêu cầu nghỉ phép hoặc tạm vắng nào.
-                </td>
-              </tr>
-            ) : (
-              filteredItems.map((item: ResidentLeaveItem) => {
-                const statusMeta = STATUS_BADGE[item.status] || {
-                  label: item.status,
-                  className: 'badge badge-neutral',
-                };
-                const canConfirmSubsequent = canManage && !item.subsequentDaysConfirmed && item.status !== 'CANCELLED' && item.status !== 'RETURNED';
-                const canMarkReturn = canManage && (item.status === 'ACTIVE_LEAVE' || item.status === 'REGISTERED');
-                const canCancel = canManage && item.status !== 'RETURNED' && item.status !== 'CANCELLED';
+      {/* Data Table / Mobile Cards */}
+      {!isLoading && filteredItems.length === 0 ? (
+        <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)', background: '#ffffff', borderRadius: '0.75rem', border: '1px solid #cbd5e1' }}>
+          Không tìm thấy yêu cầu nghỉ phép hoặc tạm vắng nào.
+        </div>
+      ) : (
+        <>
+          <div className="desktop-only-table">
+            <div className="table-responsive">
+              <table className="ui-table">
+                <thead>
+                  <tr>
+                    <th>Người cao tuổi</th>
+                    <th>Loại tạm vắng</th>
+                    <th>Thời gian dự kiến</th>
+                    <th>Báo trước</th>
+                    {canViewMealDeduction && <th>Giảm trừ tiền ăn</th>}
+                    <th>Người báo / Quan hệ</th>
+                    <th>Trạng thái</th>
+                    <th className="text-right">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {isLoading ? (
+                    <tr>
+                      <td colSpan={canViewMealDeduction ? 8 : 7} className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                        Đang tải danh sách nghỉ phép & tạm vắng...
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredItems.map((item: ResidentLeaveItem) => {
+                      const statusMeta = STATUS_BADGE[item.status] || {
+                        label: item.status,
+                        className: 'badge badge-neutral',
+                      };
+                      const canConfirmSubsequent = canManage && !item.subsequentDaysConfirmed && item.status !== 'CANCELLED' && item.status !== 'RETURNED';
+                      const canMarkReturn = canManage && (item.status === 'ACTIVE_LEAVE' || item.status === 'REGISTERED');
+                      const canCancel = canManage && item.status !== 'RETURNED' && item.status !== 'CANCELLED';
 
-                return (
-                  <tr key={item.leaveRequestId}>
-                    <td>
-                      <div className="cell-primary">{item.residentName || item.residentId}</div>
-                      <div className="cell-secondary">{item.residentCode}</div>
-                    </td>
-                    <td>
-                      <span className="badge badge-neutral">
-                        {LEAVE_TYPE_LABEL[item.leaveType] || item.leaveType}
-                      </span>
-                    </td>
-                    <td>
-                      <div>
-                        {new Date(item.startDate).toLocaleDateString('vi-VN')} &rarr; {new Date(item.expectedEndDate).toLocaleDateString('vi-VN')}
-                      </div>
-                      {item.actualEndDate && (
-                        <div className="cell-secondary" style={{ color: '#16a34a' }}>
-                          Về ngày: {new Date(item.actualEndDate).toLocaleDateString('vi-VN')}
-                        </div>
-                      )}
-                    </td>
-                    <td>
+                      return (
+                        <tr key={item.leaveRequestId}>
+                          <td>
+                            <div className="cell-primary">{item.residentName || item.residentId}</div>
+                            <div className="cell-secondary">{item.residentCode}</div>
+                          </td>
+                          <td>
+                            <span className="badge badge-neutral">
+                              {LEAVE_TYPE_LABEL[item.leaveType] || item.leaveType}
+                            </span>
+                          </td>
+                          <td>
+                            <div>
+                              {new Date(item.startDate).toLocaleDateString('vi-VN')} &rarr; {new Date(item.expectedEndDate).toLocaleDateString('vi-VN')}
+                            </div>
+                            {item.actualEndDate && (
+                              <div className="cell-secondary" style={{ color: '#16a34a' }}>
+                                Về ngày: {new Date(item.actualEndDate).toLocaleDateString('vi-VN')}
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            <span className={item.isAdvanceNotice48h ? 'badge badge-success' : 'badge badge-warning'}>
+                              {item.noticeHours != null ? `${item.noticeHours}h` : '—'} {item.isAdvanceNotice48h ? '(\u2265 48h)' : '(< 48h)'}
+                            </span>
+                            {canViewMealDeduction && item.firstDayChargeable && (
+                              <div className="cell-secondary" style={{ color: '#dc2626' }}>
+                                Tính phí ngày đầu
+                              </div>
+                            )}
+                          </td>
+                          {canViewMealDeduction && (
+                            <td>
+                              {item.mealDeductionEligible ? (
+                                <span className="badge badge-success">Được giảm trừ</span>
+                              ) : (
+                                <span className="badge badge-neutral">Không giảm trừ</span>
+                              )}
+                              {item.subsequentDaysConfirmed && (
+                                <div className="cell-secondary" style={{ color: '#16a34a' }}>
+                                  Đã xác nhận ngày sau
+                                </div>
+                              )}
+                            </td>
+                          )}
+                          <td>
+                            <div>{item.reportedBy || '—'}</div>
+                            <div className="cell-secondary">{item.reporterRelationship || ''}</div>
+                          </td>
+                          <td>
+                            <span className={statusMeta.className}>{statusMeta.label}</span>
+                          </td>
+                          <td className="text-right">
+                            <div className="btn-group">
+                              {canConfirmSubsequent && (
+                                <button
+                                  onClick={() => confirmMutation.mutate(item.leaveRequestId)}
+                                  className="btn btn-sm btn-secondary"
+                                  title={canViewMealDeduction ? "Xác nhận tiếp tục vắng để giảm trừ tiền ăn các ngày tiếp theo" : "Xác nhận tiếp tục vắng mặt"}
+                                >
+                                  Xác nhận ngày sau
+                                </button>
+                              )}
+                              {canMarkReturn && (
+                                <button
+                                  onClick={() => returnMutation.mutate(item.leaveRequestId)}
+                                  className="btn btn-sm btn-success"
+                                >
+                                  Trở lại Tâm An
+                                </button>
+                              )}
+                              {canCancel && (
+                                <button
+                                  onClick={() => {
+                                    const reason = prompt('Nhập lý do hủy yêu cầu tạm vắng:');
+                                    if (reason) cancelMutation.mutate({ id: item.leaveRequestId, reason });
+                                  }}
+                                  className="btn btn-sm btn-ghost"
+                                  style={{ color: 'var(--status-danger)' }}
+                                >
+                                  Hủy
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Mobile Card View (< 768px) */}
+          <div className="mobile-only-cards">
+            {filteredItems.map((item: ResidentLeaveItem) => {
+              const statusMeta = STATUS_BADGE[item.status] || {
+                label: item.status,
+                className: 'badge badge-neutral',
+              };
+              const canConfirmSubsequent = canManage && !item.subsequentDaysConfirmed && item.status !== 'CANCELLED' && item.status !== 'RETURNED';
+              const canMarkReturn = canManage && (item.status === 'ACTIVE_LEAVE' || item.status === 'REGISTERED');
+              const canCancel = canManage && item.status !== 'RETURNED' && item.status !== 'CANCELLED';
+
+              return (
+                <div key={item.leaveRequestId} className="mobile-card-item">
+                  <div className="mobile-card-header">
+                    <div className="mobile-card-title">
+                      👴 {item.residentName || item.residentId}{' '}
+                      <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>({item.residentCode})</span>
+                    </div>
+                    <span className={statusMeta.className}>{statusMeta.label}</span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Loại vắng:</span>
+                    <span className="mobile-card-value">{LEAVE_TYPE_LABEL[item.leaveType] || item.leaveType}</span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Thời gian:</span>
+                    <span className="mobile-card-value">
+                      {new Date(item.startDate).toLocaleDateString('vi-VN')} &rarr; {new Date(item.expectedEndDate).toLocaleDateString('vi-VN')}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Báo trước:</span>
+                    <span className="mobile-card-value">
                       <span className={item.isAdvanceNotice48h ? 'badge badge-success' : 'badge badge-warning'}>
                         {item.noticeHours != null ? `${item.noticeHours}h` : '—'} {item.isAdvanceNotice48h ? '(\u2265 48h)' : '(< 48h)'}
                       </span>
-                      {canViewMealDeduction && item.firstDayChargeable && (
-                        <div className="cell-secondary" style={{ color: '#dc2626' }}>
-                          Tính phí ngày đầu
-                        </div>
-                      )}
-                    </td>
-                    {canViewMealDeduction && (
-                      <td>
+                    </span>
+                  </div>
+
+                  {canViewMealDeduction && (
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Giảm trừ ăn:</span>
+                      <span className="mobile-card-value">
                         {item.mealDeductionEligible ? (
                           <span className="badge badge-success">Được giảm trừ</span>
                         ) : (
                           <span className="badge badge-neutral">Không giảm trừ</span>
                         )}
-                        {item.subsequentDaysConfirmed && (
-                          <div className="cell-secondary" style={{ color: '#16a34a' }}>
-                            Đã xác nhận ngày sau
-                          </div>
-                        )}
-                      </td>
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="mobile-card-row">
+                    <span className="mobile-card-label">Người báo:</span>
+                    <span className="mobile-card-value">
+                      {item.reportedBy || '—'} {item.reporterRelationship ? `(${item.reporterRelationship})` : ''}
+                    </span>
+                  </div>
+
+                  <div className="mobile-card-actions">
+                    {canConfirmSubsequent && (
+                      <button
+                        onClick={() => confirmMutation.mutate(item.leaveRequestId)}
+                        className="btn btn-sm btn-secondary"
+                      >
+                        Xác nhận ngày sau
+                      </button>
                     )}
-                    <td>
-                      <div>{item.reportedBy || '—'}</div>
-                      <div className="cell-secondary">{item.reporterRelationship || ''}</div>
-                    </td>
-                    <td>
-                      <span className={statusMeta.className}>{statusMeta.label}</span>
-                    </td>
-                    <td className="text-right">
-                      <div className="btn-group">
-                        {canConfirmSubsequent && (
-                          <button
-                            onClick={() => confirmMutation.mutate(item.leaveRequestId)}
-                            className="btn btn-sm btn-secondary"
-                            title={canViewMealDeduction ? "Xác nhận tiếp tục vắng để giảm trừ tiền ăn các ngày tiếp theo" : "Xác nhận tiếp tục vắng mặt"}
-                          >
-                            Xác nhận ngày sau
-                          </button>
-                        )}
-                        {canMarkReturn && (
-                          <button
-                            onClick={() => returnMutation.mutate(item.leaveRequestId)}
-                            className="btn btn-sm btn-success"
-                          >
-                            Trở lại Tâm An
-                          </button>
-                        )}
-                        {canCancel && (
-                          <button
-                            onClick={() => {
-                              const reason = prompt('Nhập lý do hủy yêu cầu tạm vắng:');
-                              if (reason) cancelMutation.mutate({ id: item.leaveRequestId, reason });
-                            }}
-                            className="btn btn-sm btn-danger-outline"
-                          >
-                            Hủy
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+                    {canMarkReturn && (
+                      <button
+                        onClick={() => returnMutation.mutate(item.leaveRequestId)}
+                        className="btn btn-sm btn-success"
+                      >
+                        ✓ Trở lại Tâm An
+                      </button>
+                    )}
+                    {canCancel && (
+                      <button
+                        onClick={() => {
+                          const reason = prompt('Nhập lý do hủy yêu cầu tạm vắng:');
+                          if (reason) cancelMutation.mutate({ id: item.leaveRequestId, reason });
+                        }}
+                        className="btn btn-sm btn-ghost"
+                        style={{ color: 'var(--status-danger)' }}
+                      >
+                        Hủy đơn
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
 
       {/* Registration Modal */}
       {isRegisterOpen && (

@@ -85,9 +85,6 @@ export default function AnalyticsPage() {
             <h1 className="page-title" style={{ color: '#1e293b' }}>
               Báo Cáo Phân Tích & Điều Hành Vĩ Mô
             </h1>
-            <p className="page-description">
-              Đồng bộ thời gian thực 110 giường/29 phòng, biến động lưu trú ra vào, chất lượng lâm sàng và tài chính vận hành.
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>

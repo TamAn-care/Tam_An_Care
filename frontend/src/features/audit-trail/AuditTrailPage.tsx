@@ -118,9 +118,6 @@ export default function AuditTrailPage() {
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.35rem' }}>
             <span>📜</span> Nhật Ký Truy Vết & Lịch Sử Thay Đổi Hệ Thống
           </h1>
-          <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem' }}>
-            Lưu vết tự động 100% mọi thao tác của tất cả các vai trò, gắn với mã định danh (ID), mốc thời gian chính xác và nội dung thay đổi phục vụ kiểm toán quy trách nhiệm.
-          </p>
         </div>
 
         {/* Security badge with role-aware badge */}

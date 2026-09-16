@@ -613,9 +613,6 @@ export function StaffAccessPage() {
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.4rem', color: '#1e293b' }}>
             <span>👥</span> Quản Trị Nhân Sự & Cấp Tài Khoản Đăng Nhập
           </h1>
-          <p className="page-description" style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#475569' }}>
-            Quản lý danh sách tài khoản, tạo ID và mật khẩu phân quyền theo cấp bậc, bàn giao thông tin đăng nhập và phân công phụ trách hồ sơ cư dân.
-          </p>
         </div>
 
         {/* Clearance Badge */}

@@ -107,9 +107,6 @@ export function SystemStatusPage() {
             <h1 className="page-title" style={{ color: '#1e293b' }}>
               Trạng Thái Hệ Thống & Chứng Nhận Phát Hành
             </h1>
-            <p className="page-description">
-              Kiểm tra tình trạng vận hành của 10 phân hệ nghiệp vụ, kết nối API backend và chính sách phân quyền RBAC.
-            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>

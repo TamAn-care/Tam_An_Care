@@ -358,14 +358,9 @@ export default function MedicationInventoryPage() {
           💊 QUẢN LÝ DƯỢC PHẨM & TỒN KHO Y TẾ (SERIES AD)
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
             <h1 className="page-title" style={{ color: '#1e293b' }}>
               Sổ Cấp Phát Thuốc eMAR & Tồn Kho Vật Tư
             </h1>
-            <p className="page-description">
-              Điểm danh cấp phát thuốc chuẩn 5 Đúng trong y khoa, quản lý y lệnh của Bác sĩ và kiểm soát hạn dùng/tồn kho vật tư tiêu hao.
-            </p>
-          </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {canPrescribe && (
@@ -785,8 +780,8 @@ export default function MedicationInventoryPage() {
               )}
             </div>
 
-            <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Người Cao Tuổi & Vị Trí</th>
@@ -1014,8 +1009,8 @@ export default function MedicationInventoryPage() {
               </div>
             </div>
 
-            <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Mã VT</th>
@@ -1150,8 +1145,8 @@ export default function MedicationInventoryPage() {
               📊 Nhật Ký Nhập / Xuất Kho & Cấp Phát Vật Tư
             </h3>
 
-            <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <table style={{ width: '100%', minWidth: '750px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Thời Gian</th>
