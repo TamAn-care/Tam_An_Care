@@ -196,6 +196,7 @@ export function NutritionBoard() {
 
   const [selectedFilterPrep, setSelectedFilterPrep] = useState<string>('ALL');
   const [selectedFilterCaregiver, setSelectedFilterCaregiver] = useState<string>('ALL');
+  const [viewMode, setViewMode] = useState<'TABLE' | 'CARDS'>('TABLE');
   
   // Modals
   const [showAddExtraModal, setShowAddExtraModal] = useState<boolean>(false);
@@ -676,179 +677,377 @@ export function NutritionBoard() {
             </div>
           </div>
 
-          <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>
-            Hiển thị <b>{filteredRows.length}</b> / {residentRows.length} người cao tuổi
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', background: '#f1f5f9', padding: '0.2rem', borderRadius: '0.5rem', border: '1px solid #cbd5e1' }}>
+              <button
+                type="button"
+                onClick={() => setViewMode('TABLE')}
+                style={{
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '0.35rem',
+                  border: 'none',
+                  background: viewMode === 'TABLE' ? '#ffffff' : 'transparent',
+                  color: viewMode === 'TABLE' ? '#166534' : '#64748b',
+                  fontWeight: viewMode === 'TABLE' ? 700 : 500,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  boxShadow: viewMode === 'TABLE' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                }}
+              >
+                📊 Dạng Bảng
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('CARDS')}
+                style={{
+                  padding: '0.35rem 0.75rem',
+                  borderRadius: '0.35rem',
+                  border: 'none',
+                  background: viewMode === 'CARDS' ? '#ffffff' : 'transparent',
+                  color: viewMode === 'CARDS' ? '#166534' : '#64748b',
+                  fontWeight: viewMode === 'CARDS' ? 700 : 500,
+                  fontSize: '0.8rem',
+                  cursor: 'pointer',
+                  boxShadow: viewMode === 'CARDS' ? '0 1px 2px rgba(0,0,0,0.08)' : 'none',
+                }}
+              >
+                📱 Dạng Thẻ Mobile
+              </button>
+            </div>
+
+            <div style={{ fontSize: '0.82rem', color: '#6b7280' }}>
+              Hiển thị <b>{filteredRows.length}</b> / {residentRows.length} người cao tuổi
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Resident Dietary & Caregiver Sync Table */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '0.85rem 1.25rem', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <h3 style={{ margin: 0, fontSize: '0.98rem', color: '#1f2937', fontWeight: 700 }}>
-            📋 Báo Cáo & Đăng Ký Suất Ăn Chi Tiết Theo Từng Người Cao Tuổi
-          </h3>
-          <span style={{ fontSize: '0.78rem', color: '#6b7280' }}>
-            Cập nhật bởi NV Chăm sóc phụ trách & Quản lý
-          </span>
-        </div>
+      {/* Main Resident Dietary & Caregiver Sync View */}
+      {viewMode === 'CARDS' ? (
+        /* Mobile Card Grid View */
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '1rem' }}>
+          {filteredRows.map(row => {
+            const prepInfo = PREP_LABELS[row.diet.prepType] || PREP_LABELS.REGULAR_SOFT;
 
-        <div className="table-responsive" style={{ margin: 0, border: 'none', borderRadius: 0, width: '100%', maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' }}>
-          <table className="table" style={{ margin: 0, width: '100%', minWidth: '920px', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ background: '#f3f4f6', textAlign: 'left', fontSize: '0.82rem', color: '#4b5563' }}>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '180px' }}>Người cao tuổi & Phòng</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '130px' }}>Trạng thái hôm nay</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '140px' }}>NV Chăm sóc phụ trách</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '130px' }}>Dạng suất ăn</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '160px' }}>Bệnh lý & Dị ứng cần kiêng</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '180px' }}>Ghi chú báo cáo</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '140px' }}>Thời điểm gửi bếp</th>
-                <th style={{ padding: '0.75rem 1rem', minWidth: '130px', textAlign: 'center' }}>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map(row => {
-                const prepInfo = PREP_LABELS[row.diet.prepType] || PREP_LABELS.REGULAR_SOFT;
-
-                return (
-                  <tr
-                    key={row.residentId}
-                    style={{
-                      borderBottom: '1px solid #e5e7eb',
-                      background: row.isMyResident ? '#f0fdf4' : row.isAbsent ? '#fffbeb' : '#ffffff',
-                      opacity: row.isAbsent ? 0.75 : 1,
-                    }}
-                  >
-                    {/* Column 1: Resident Name & Room */}
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <div style={{ fontWeight: 700, color: '#111827', fontSize: '0.9rem' }}>
+            return (
+              <div
+                key={row.residentId}
+                className="card"
+                style={{
+                  padding: '1.1rem',
+                  borderRadius: '0.75rem',
+                  border: row.isMyResident ? '2px solid #86efac' : row.isAbsent ? '1px solid #fde68a' : '1px solid #e2e8f0',
+                  background: row.isMyResident ? '#f0fdf4' : row.isAbsent ? '#fffbeb' : '#ffffff',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  gap: '0.85rem',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.04)',
+                }}
+              >
+                <div>
+                  {/* Card Header: Resident Name & Room */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem', gap: '0.5rem' }}>
+                    <div>
+                      <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '1rem' }}>
                         {row.displayName}
-                        {row.isMyResident && (
-                          <span className="badge badge-success" style={{ marginLeft: '0.4rem', fontSize: '0.68rem' }}>
-                            Cụ bạn phụ trách
-                          </span>
-                        )}
                       </div>
-                      <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.1rem' }}>
-                        {row.residentCode} • <b>Phòng {row.room}</b> (Giường {row.bed})
+                      <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.1rem' }}>
+                        Mã: {row.residentCode} • <b>Phòng {row.room}</b> (Giường {row.bed})
                       </div>
-                    </td>
+                    </div>
 
-                    {/* Column 2: Status Today */}
-                    <td style={{ padding: '0.75rem 1rem' }}>
+                    <div>
                       {row.isAbsent ? (
-                        <div>
-                          <span className="badge badge-warning" style={{ fontSize: '0.75rem' }}>
-                            ✈️ Đang tạm vắng
-                          </span>
-                          <div style={{ fontSize: '0.72rem', color: '#b45309', marginTop: '0.2rem' }}>
-                            Không chuẩn bị suất ăn
-                          </div>
-                        </div>
+                        <span className="badge badge-warning" style={{ fontSize: '0.72rem' }}>
+                          ✈️ Tạm vắng
+                        </span>
                       ) : (
-                        <div>
-                          <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>
-                            ✅ Tại Tâm An ({row.diet.mealsPerDay || 3} cữ)
-                          </span>
+                        <span className="badge badge-success" style={{ fontSize: '0.72rem' }}>
+                          ✅ Tại Tâm An
+                        </span>
+                      )}
+                      {row.isMyResident && (
+                        <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#166534', background: '#dcfce7', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', marginTop: '0.2rem', textAlign: 'center' }}>
+                          Cụ bạn phụ trách
                         </div>
                       )}
-                    </td>
+                    </div>
+                  </div>
 
-                    {/* Column 3: Assigned Caregiver */}
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <div style={{ fontWeight: 600, color: '#1f2937', fontSize: '0.85rem' }}>
-                        🤲 {row.caregiver.staffName}
-                      </div>
-                      <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
-                        {row.caregiver.staffCode}
-                      </div>
-                    </td>
-
-                    {/* Column 4: Food Prep Texture */}
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <span className={prepInfo.badge} style={{ fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                        <span>{prepInfo.icon}</span> {prepInfo.label}
+                  {/* Details Breakdown */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.82rem', background: '#ffffff', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>Dạng suất ăn:</span>
+                      <span className={prepInfo.badge} style={{ fontSize: '0.75rem', padding: '0.15rem 0.45rem' }}>
+                        {prepInfo.icon} {prepInfo.label} ({row.diet.mealsPerDay} cữ)
                       </span>
-                      <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '0.2rem' }}>
-                        {row.diet.mealsPerDay} cữ/ngày
-                      </div>
-                    </td>
+                    </div>
 
-                    {/* Column 5: Medical Diets & Allergies */}
-                    <td style={{ padding: '0.75rem 1rem' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                        {row.diet.medicalDiets.map((m, idx) => (
-                          <span key={idx} style={{ fontSize: '0.75rem', color: '#0369a1', background: '#e0f2fe', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', width: 'fit-content' }}>
-                            🩺 {m}
-                          </span>
-                        ))}
-                        {row.diet.allergies.map((a, idx) => (
-                          <span key={idx} style={{ fontSize: '0.75rem', color: '#b91c1c', background: '#fee2e2', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', width: 'fit-content' }}>
-                            ⚠️ {a}
-                          </span>
-                        ))}
-                        {row.diet.medicalDiets.length === 0 && row.diet.allergies.length === 0 && (
-                          <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Không có bệnh lý kiêng khem</span>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ color: '#64748b' }}>NV Chăm sóc phụ trách:</span>
+                      <strong style={{ color: '#0f172a' }}>🤲 {row.caregiver.staffName}</strong>
+                    </div>
+
+                    {/* Medical Diets & Allergies */}
+                    {(row.diet.medicalDiets.length > 0 || row.diet.allergies.length > 0) && (
+                      <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.35rem', marginTop: '0.2rem' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block', marginBottom: '0.2rem' }}>Bệnh lý & Dị ứng:</span>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                          {row.diet.medicalDiets.map((m, idx) => (
+                            <span key={idx} style={{ fontSize: '0.72rem', color: '#0369a1', background: '#e0f2fe', padding: '0.15rem 0.4rem', borderRadius: '0.25rem' }}>
+                              🩺 {m}
+                            </span>
+                          ))}
+                          {row.diet.allergies.map((a, idx) => (
+                            <span key={idx} style={{ fontSize: '0.72rem', color: '#b91c1c', background: '#fee2e2', padding: '0.15rem 0.4rem', borderRadius: '0.25rem' }}>
+                              ⚠️ {a}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Caregiver Notes */}
+                    <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.35rem', marginTop: '0.2rem' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#64748b', display: 'block' }}>Ghi chú báo cáo:</span>
+                      <div style={{ fontSize: '0.8rem', color: '#334155', fontStyle: 'italic', marginTop: '0.1rem' }}>
+                        "{row.diet.caregiverNotes}"
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#64748b', borderTop: '1px solid #f1f5f9', paddingTop: '0.35rem' }}>
+                      <span>🕒 {row.diet.updatedAt || 'Mới cập nhật'}</span>
+                      <span style={{ color: '#15803d', fontWeight: 700 }}>✅ Đã gửi dữ liệu bếp</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Action Button */}
+                <div>
+                  {isCaregiver ? (
+                    row.isMyResident ? (
+                      <button
+                        type="button"
+                        onClick={() => handleOpenEditDiet(row.residentId)}
+                        className="btn btn-primary"
+                        style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem', fontWeight: 800, borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '44px' }}
+                      >
+                        ✏️ Cập nhật suất ăn cụ phụ trách
+                      </button>
+                    ) : (
+                      <div style={{ textAlign: 'center', fontSize: '0.78rem', color: '#94a3b8', padding: '0.4rem' }}>
+                        🔒 Quyền cập nhật thuộc NV phụ trách ({row.caregiver.staffName})
+                      </div>
+                    )
+                  ) : isManager ? (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditDiet(row.residentId)}
+                      className="btn btn-secondary"
+                      style={{ width: '100%', padding: '0.6rem', fontSize: '0.85rem', fontWeight: 800, borderRadius: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', minHeight: '44px' }}
+                    >
+                      ✏️ Quản lý sửa suất ăn
+                    </button>
+                  ) : (
+                    <div style={{ textAlign: 'center', fontSize: '0.78rem', color: '#94a3b8', padding: '0.4rem' }}>
+                      👁 Chế độ chỉ xem
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Desktop Data Table with Sticky Action Column */
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '0.85rem 1.25rem', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h3 style={{ margin: 0, fontSize: '0.98rem', color: '#1f2937', fontWeight: 700 }}>
+              📋 Báo Cáo & Đăng Ký Suất Ăn Chi Tiết Theo Từng Người Cao Tuổi
+            </h3>
+            <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 600, background: '#f0fdf4', padding: '0.2rem 0.6rem', borderRadius: '0.25rem', border: '1px solid #bbf7d0' }}>
+              👉 Mẹo: Bạn có thể vuốt ngang bảng để xem hết 8 cột, cột 'Thao tác' luôn cố định bên phải
+            </span>
+          </div>
+
+          <div className="table-responsive" style={{ margin: 0, border: 'none', borderRadius: 0, width: '100%', maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' }}>
+            <table className="table" style={{ margin: 0, width: '100%', minWidth: '1000px', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f3f4f6', textAlign: 'left', fontSize: '0.82rem', color: '#4b5563' }}>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '180px' }}>Người cao tuổi & Phòng</th>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '130px' }}>Trạng thái hôm nay</th>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '140px' }}>NV Chăm sóc phụ trách</th>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '130px' }}>Dạng suất ăn</th>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '160px' }}>Bệnh lý & Dị ứng cần kiêng</th>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '180px' }}>Ghi chú báo cáo</th>
+                  <th style={{ padding: '0.75rem 1rem', minWidth: '140px' }}>Thời điểm gửi bếp</th>
+                  <th style={{
+                    padding: '0.75rem 1rem',
+                    minWidth: '140px',
+                    textAlign: 'center',
+                    position: 'sticky',
+                    right: 0,
+                    background: '#f3f4f6',
+                    zIndex: 3,
+                    boxShadow: '-4px 0 8px rgba(0,0,0,0.08)',
+                  }}>
+                    Thao tác
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRows.map(row => {
+                  const prepInfo = PREP_LABELS[row.diet.prepType] || PREP_LABELS.REGULAR_SOFT;
+                  const rowBg = row.isMyResident ? '#f0fdf4' : row.isAbsent ? '#fffbeb' : '#ffffff';
+
+                  return (
+                    <tr
+                      key={row.residentId}
+                      style={{
+                        borderBottom: '1px solid #e5e7eb',
+                        background: rowBg,
+                        opacity: row.isAbsent ? 0.8 : 1,
+                      }}
+                    >
+                      {/* Column 1: Resident Name & Room */}
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 700, color: '#111827', fontSize: '0.9rem' }}>
+                          {row.displayName}
+                          {row.isMyResident && (
+                            <span className="badge badge-success" style={{ marginLeft: '0.4rem', fontSize: '0.68rem' }}>
+                              Cụ bạn phụ trách
+                            </span>
+                          )}
+                        </div>
+                        <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.1rem' }}>
+                          {row.residentCode} • <b>Phòng {row.room}</b> (Giường {row.bed})
+                        </div>
+                      </td>
+
+                      {/* Column 2: Status Today */}
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        {row.isAbsent ? (
+                          <div>
+                            <span className="badge badge-warning" style={{ fontSize: '0.75rem' }}>
+                              ✈️ Đang tạm vắng
+                            </span>
+                            <div style={{ fontSize: '0.72rem', color: '#b45309', marginTop: '0.2rem' }}>
+                              Không chuẩn bị suất ăn
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>
+                              ✅ Tại Tâm An ({row.diet.mealsPerDay || 3} cữ)
+                            </span>
+                          </div>
                         )}
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Column 6: Caregiver Updates & Feeding Notes */}
-                    <td style={{ padding: '0.75rem 1rem', maxWidth: '240px' }}>
-                      <div style={{ fontSize: '0.8rem', color: '#374151', lineHeight: '1.4' }}>
-                        {row.diet.caregiverNotes}
-                      </div>
-                    </td>
+                      {/* Column 3: Assigned Caregiver */}
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 600, color: '#1f2937', fontSize: '0.85rem' }}>
+                          🤲 {row.caregiver.staffName}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#6b7280' }}>
+                          {row.caregiver.staffCode}
+                        </div>
+                      </td>
 
-                    {/* Column 7: Submission Time to Kitchen */}
-                    <td style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#166534', fontSize: '0.82rem' }}>
-                        <span>🕒</span> {row.diet.updatedAt || '07:00 - 02/09/2026'}
-                      </div>
-                      <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '0.15rem' }}>
-                        Bởi: <b>{row.diet.reportedByCaregiver || row.caregiver.staffName}</b>
-                      </div>
-                      <span className="badge badge-success" style={{ fontSize: '0.65rem', marginTop: '0.2rem', padding: '0.1rem 0.35rem', display: 'inline-block' }}>
-                        ✅ Đã gửi dữ liệu bếp
-                      </span>
-                    </td>
+                      {/* Column 4: Food Prep Texture */}
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <span className={prepInfo.badge} style={{ fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <span>{prepInfo.icon}</span> {prepInfo.label}
+                        </span>
+                        <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '0.2rem' }}>
+                          {row.diet.mealsPerDay} cữ/ngày
+                        </div>
+                      </td>
 
-                    {/* Column 8: Action */}
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                      {isCaregiver ? (
-                        row.isMyResident ? (
+                      {/* Column 5: Medical Diets & Allergies */}
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                          {row.diet.medicalDiets.map((m, idx) => (
+                            <span key={idx} style={{ fontSize: '0.75rem', color: '#0369a1', background: '#e0f2fe', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', width: 'fit-content' }}>
+                              🩺 {m}
+                            </span>
+                          ))}
+                          {row.diet.allergies.map((a, idx) => (
+                            <span key={idx} style={{ fontSize: '0.75rem', color: '#b91c1c', background: '#fee2e2', padding: '0.1rem 0.4rem', borderRadius: '0.25rem', width: 'fit-content' }}>
+                              ⚠️ {a}
+                            </span>
+                          ))}
+                          {row.diet.medicalDiets.length === 0 && row.diet.allergies.length === 0 && (
+                            <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Không có bệnh lý kiêng khem</span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* Column 6: Caregiver Updates & Feeding Notes */}
+                      <td style={{ padding: '0.75rem 1rem', maxWidth: '240px' }}>
+                        <div style={{ fontSize: '0.8rem', color: '#374151', lineHeight: '1.4' }}>
+                          {row.diet.caregiverNotes}
+                        </div>
+                      </td>
+
+                      {/* Column 7: Submission Time to Kitchen */}
+                      <td style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: '#166534', fontSize: '0.82rem' }}>
+                          <span>🕒</span> {row.diet.updatedAt || '07:00 - 02/09/2026'}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#4b5563', marginTop: '0.15rem' }}>
+                          Bởi: <b>{row.diet.reportedByCaregiver || row.caregiver.staffName}</b>
+                        </div>
+                        <span className="badge badge-success" style={{ fontSize: '0.65rem', marginTop: '0.2rem', padding: '0.1rem 0.35rem', display: 'inline-block' }}>
+                          ✅ Đã gửi dữ liệu bếp
+                        </span>
+                      </td>
+
+                      {/* Column 8: Action (Sticky Right) */}
+                      <td style={{
+                        padding: '0.75rem 1rem',
+                        textAlign: 'center',
+                        position: 'sticky',
+                        right: 0,
+                        background: rowBg,
+                        zIndex: 2,
+                        boxShadow: '-4px 0 8px rgba(0,0,0,0.08)',
+                      }}>
+                        {isCaregiver ? (
+                          row.isMyResident ? (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditDiet(row.residentId)}
+                              className="btn btn-sm btn-primary"
+                              style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem', fontWeight: 700, borderRadius: '0.375rem', whiteSpace: 'nowrap' }}
+                            >
+                              ✏️ Cập nhật suất ăn
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: '0.75rem', color: '#9ca3af', fontStyle: 'italic' }}>Chỉ xem</span>
+                          )
+                        ) : isManager ? (
                           <button
                             type="button"
                             onClick={() => handleOpenEditDiet(row.residentId)}
-                            className="btn btn-sm btn-primary"
-                            style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                            className="btn btn-sm btn-secondary"
+                            style={{ fontSize: '0.75rem', padding: '0.4rem 0.75rem', fontWeight: 700, borderRadius: '0.375rem', whiteSpace: 'nowrap' }}
                           >
-                            ✏️ Cập nhật suất ăn
+                            ✏️ Sửa suất ăn
                           </button>
                         ) : (
                           <span style={{ fontSize: '0.75rem', color: '#9ca3af', fontStyle: 'italic' }}>Chỉ xem</span>
-                        )
-                      ) : isManager ? (
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEditDiet(row.residentId)}
-                          className="btn btn-sm btn-secondary"
-                          style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
-                        >
-                          Sửa suất ăn
-                        </button>
-                      ) : (
-                        <span style={{ fontSize: '0.75rem', color: '#9ca3af', fontStyle: 'italic' }}>Chỉ xem</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Grid: Suất Ăn Bổ Sung / Khách (Quản lý) & Thực Đơn Trong Ngày */}
       <div

@@ -59,10 +59,10 @@ export function KitchenQuickAction1Touch() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_DELIVERY);
       return saved ? JSON.parse(saved) : [
-        { floorId: 'F1', floorName: 'Tầng 1 (Khu A & B)', trayCount: 25, breakdown: 'Cơm 15, Cháo 8, Sonde 2', status: 'PENDING' },
-        { floorId: 'F2', floorName: 'Tầng 2 (Khu C & D)', trayCount: 30, breakdown: 'Cơm 20, Cháo 7, Xay 3', status: 'PENDING' },
-        { floorId: 'F3', floorName: 'Tầng 3 (Khu Đặc Biệt)', trayCount: 30, breakdown: 'Cơm 18, Cháo 8, Sonde 4', status: 'DELIVERED', deliveredAt: '10:52 AM', deliveredBy: actorName },
-        { floorId: 'F4', floorName: 'Tầng 4 (Khu Chăm Sóc ĐB)', trayCount: 25, breakdown: 'Cơm 12, Cháo 8, Xay 5', status: 'PENDING' },
+        { floorId: 'F1', floorName: 'Tầng 1', trayCount: 25, breakdown: 'Cơm 15, Cháo 8, Sonde 2', status: 'PENDING' },
+        { floorId: 'F2', floorName: 'Tầng 2', trayCount: 30, breakdown: 'Cơm 20, Cháo 7, Xay 3', status: 'PENDING' },
+        { floorId: 'F3', floorName: 'Tầng 3', trayCount: 30, breakdown: 'Cơm 18, Cháo 8, Sonde 4', status: 'DELIVERED', deliveredAt: '10:52 AM', deliveredBy: actorName },
+        { floorId: 'F4', floorName: 'Tầng 4', trayCount: 25, breakdown: 'Cơm 12, Cháo 8, Xay 5', status: 'PENDING' },
       ];
     } catch {
       return [];
@@ -327,7 +327,7 @@ export function KitchenQuickAction1Touch() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
         
         {/* Card 1: KPI Live Calculator */}
-        <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #166534', boxShadow: '0 2px 6px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #166534', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
           <div>
             <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               ĐIỂM KPI CA TRỰC HÔM NAY
@@ -339,12 +339,6 @@ export function KitchenQuickAction1Touch() {
             <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.4rem', fontWeight: 600 }}>
               🎯 Đạt chuẩn chất lượng Bếp Tâm An
             </div>
-          </div>
-
-          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.6rem 0.85rem', borderRadius: '0.5rem', textAlign: 'center' }}>
-            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#166534' }}>BÁO CÁO 1-CHẠM</div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#15803d', marginTop: '0.1rem' }}>TỰ ĐỘNG KPI</div>
-            <div style={{ fontSize: '0.68rem', color: '#166534', marginTop: '0.1rem' }}>Không gõ phím 📱</div>
           </div>
         </div>
 
