@@ -1043,6 +1043,7 @@ export function AdmissionPage() {
   };
 
   const isSupervisor = actor?.actorRole === 'CARE_MANAGER' || actor?.actorRole === 'SUPERVISOR';
+  const isPsychologyOrSocialWorker = actor?.actorRole === 'PSYCHOLOGIST' || actor?.actorRole === 'SOCIAL_WORKER';
 
   const kpis = useMemo(() => {
     return {
@@ -1061,21 +1062,23 @@ export function AdmissionPage() {
           <div>
             <h1 className="page-title">Tiếp Nhận & Đánh Giá Sức Khỏe Ban Đầu</h1>
           </div>
-          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <button
-              onClick={() => setShowHandoverHistoryModal(true)}
-              className="btn btn-secondary"
-              style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
-            >
-              📜 Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng
-            </button>
-            <button
-              onClick={handleOpenCreate}
-              className="btn btn-primary"
-            >
-              + Tiếp nhận người cao tuổi mới
-            </button>
-          </div>
+          {!isPsychologyOrSocialWorker && (
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setShowHandoverHistoryModal(true)}
+                className="btn btn-secondary"
+                style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
+              >
+                📜 Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng
+              </button>
+              <button
+                onClick={handleOpenCreate}
+                className="btn btn-primary"
+              >
+                + Tiếp nhận người cao tuổi mới
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1156,7 +1159,7 @@ export function AdmissionPage() {
                     </td>
                     <td className="text-right">
                       <div className="btn-group" style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                        {item.status !== 'ADMITTED' && item.status !== 'COMPLETED' && (
+                        {!isPsychologyOrSocialWorker && item.status !== 'ADMITTED' && item.status !== 'COMPLETED' && (
                           <button
                             onClick={() => void handleEditDraft(item)}
                             className="btn btn-sm btn-warning"
@@ -1167,7 +1170,7 @@ export function AdmissionPage() {
                           </button>
                         )}
 
-                        {isDraft && (
+                        {!isPsychologyOrSocialWorker && isDraft && (
                           <button
                             onClick={() => void handleQuickFinalize(item)}
                             className="btn btn-sm btn-success"
@@ -1185,7 +1188,7 @@ export function AdmissionPage() {
                           📄 Xem & In Phiếu
                         </button>
 
-                        {item.status !== 'ADMITTED' && isSupervisor && (
+                        {!isPsychologyOrSocialWorker && item.status !== 'ADMITTED' && isSupervisor && (
                           <button
                             onClick={() => void handleFinalize(item.admissionCaseId)}
                             className="btn btn-sm btn-success"

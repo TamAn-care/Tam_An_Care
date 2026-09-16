@@ -458,77 +458,9 @@ export default function KitchenOperationsPage() {
           marginBottom: '1rem',
         }}
       >
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.4rem', color: '#166534' }}>
-            <span>🥗</span> Quản Lý Bếp Ăn & Tiếp Nhận An Toàn Thực Phẩm
-          </h1>
-
-        {/* Role Badge */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.45rem 0.95rem',
-            borderRadius: '0.5rem',
-            background: isNutritionist ? '#ecfdf5' : '#eff6ff',
-            border: `1px solid ${isNutritionist ? '#a7f3d0' : '#bfdbfe'}`,
-            fontSize: '0.82rem',
-            fontWeight: 700,
-            color: isNutritionist ? '#047857' : '#1e40af',
-          }}
-        >
-          <span>{isNutritionist ? '🧑‍🍳' : '🛡️'}</span>
-          <span>
-            {isNutritionist
-              ? 'Vai trò: Nhân viên Dinh dưỡng (Trực tiếp nhận hàng, kiểm đếm & lưu mẫu)'
-              : isDirector
-              ? 'Vai trò: Ban Giám đốc (Giám sát toàn diện, kiểm toán & đối soát)'
-              : 'Vai trò: Quản lý (Theo dõi vận hành & đối soát khối lượng)'}
-          </span>
-        </div>
-      </div>
-
-      {/* KPI Overview Metrics */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
-        <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>CHI PHÍ NHẬP THỰC PHẨM (THÁNG)</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>
-            {canViewFinancials ? (
-              <>
-                {metrics.totalMonthCost.toLocaleString('vi-VN')} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>đ</span>
-              </>
-            ) : (
-              <span style={{ fontSize: '1rem', color: '#64748b' }}>🔒 Bảo mật BGĐ</span>
-            )}
-          </div>
-          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Đã đối soát {metrics.totalBatches} đợt giao nhận</div>
-        </div>
-
-        <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.65rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>TỶ LỆ ĐẠT CHUẨN HACCP</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#15803d', margin: '0.2rem 0' }}>
-            {metrics.acceptanceRate}%
-          </div>
-          <div style={{ fontSize: '0.75rem', color: '#166534' }}>100% nguyên liệu có nguồn gốc rõ ràng</div>
-        </div>
-
-        <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.65rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#b45309', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>TỒN KHO THỰC PHẨM & AN TOÀN</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#b45309', margin: '0.2rem 0' }}>
-            {metrics.totalInventoryItems} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>mặt hàng</span>
-          </div>
-          <div style={{ fontSize: '0.75rem', color: metrics.lowStockItems > 0 ? '#b91c1c' : '#b45309', fontWeight: metrics.lowStockItems > 0 ? 700 : 500 }}>
-            {metrics.lowStockItems > 0 ? `⚠️ ${metrics.lowStockItems} mặt hàng dưới mức an toàn` : 'Tất cả đạt định mức an toàn'}
-          </div>
-        </div>
-
-        <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '0.65rem' }}>
-          <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>LƯU MẪU THỨC ĂN 24H (BỘ Y TẾ)</div>
-          <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1e40af', margin: '0.2rem 0' }}>
-            {metrics.activeSamples} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>mẫu đang lưu</span>
-          </div>
-          <div style={{ fontSize: '0.75rem', color: '#1e40af' }}>Tủ chuyên dụng bảo quản +2°C đến +4°C</div>
-        </div>
+        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.4rem', color: '#166534' }}>
+          <span>🥗</span> Quản Lý Bếp Ăn & Tiếp Nhận An Toàn Thực Phẩm
+        </h1>
       </div>
 
       {/* Navigation Tabs */}

@@ -316,6 +316,8 @@ export default function AccommodationPage() {
     Boolean(data) &&
     offset + PAGE_SIZE < (data?.total ?? 0);
 
+  const isDirectorOrManager = actor.actorRole === 'SUPERVISOR' || actor.actorRole === 'CARE_MANAGER' || actor.actorRole === 'ADMIN';
+
   return (
     <main className="page">
       <div className="page-header">
@@ -323,7 +325,7 @@ export default function AccommodationPage() {
         <h1 className="page-title">Sơ Đồ Phòng & Giường</h1>
       </div>
 
-      {data && (
+      {data && isDirectorOrManager && (
         <div className="kpi-grid">
           <div className="kpi-box">
             <div className="kpi-title">Tổng số giường</div>

@@ -107,12 +107,12 @@ export function DashboardPage() {
 
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedQuickResident) {
+    if (!isNutritionist && !selectedQuickResident) {
       alert('Vui lòng chọn Người cao tuổi trong danh sách!');
       return;
     }
     createQuickEventMutation.mutate({
-      resident_id: selectedQuickResident,
+      resident_id: isNutritionist ? (selectedQuickResident || 'KITCHEN_GLOBAL') : selectedQuickResident,
       work_event_type_id: selectedEventType,
       planned_classification: 'PLANNED',
       note: quickNote,
@@ -246,21 +246,35 @@ export function DashboardPage() {
         <form onSubmit={handleQuickSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', alignItems: 'flex-end' }}>
           <div>
             <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
-              👴 Chọn Cụ / Người Cao Tuổi (Sổ xuống):
+              {isNutritionist ? '🧑‍🍳 Phân Khu Bếp Ăn & Kho:' : '👴 Chọn Cụ / Người Cao Tuổi (Sổ xuống):'}
             </label>
-            <select
-              className="text-input"
-              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
-              value={selectedQuickResident}
-              onChange={(e) => setSelectedQuickResident(e.target.value)}
-            >
-              <option value="">-- Chọn Cụ trong danh sách phụ trách --</option>
-              {myAssignedResidentRows.map((r) => (
-                <option key={r.resident.residentId} value={r.resident.residentId}>
-                  {r.resident.displayName} ({r.resident.residentCode}) — Phòng {r.resident.room || '—'}
-                </option>
-              ))}
-            </select>
+            {isNutritionist ? (
+              <select
+                className="text-input"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1', background: '#f8fafc' }}
+                value={selectedQuickResident}
+                onChange={(e) => setSelectedQuickResident(e.target.value)}
+              >
+                <option value="KITCHEN_GLOBAL">🍳 Bếp Trung Tâm & Kho Lưu Trực Tiếp</option>
+                <option value="KITCHEN_RECEIVING">📦 Khu Vực Tiếp Nhận & Kiểm Đếm</option>
+                <option value="KITCHEN_STORAGE">❄️ Tủ Chuyên Dụng & Kho Đông/Mát</option>
+                <option value="KITCHEN_PREP">🔪 Khu Vực Sơ Chế & Chế Biến</option>
+              </select>
+            ) : (
+              <select
+                className="text-input"
+                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
+                value={selectedQuickResident}
+                onChange={(e) => setSelectedQuickResident(e.target.value)}
+              >
+                <option value="">-- Chọn Cụ trong danh sách phụ trách --</option>
+                {myAssignedResidentRows.map((r) => (
+                  <option key={r.resident.residentId} value={r.resident.residentId}>
+                    {r.resident.displayName} ({r.resident.residentCode}) — Phòng {r.resident.room || '—'}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
@@ -291,8 +305,11 @@ export function DashboardPage() {
               )}
               {isNutritionist && (
                 <>
-                  <option value="MEAL_ASSISTANCE">🍱 Phân bổ suất ăn & Chế độ dinh dưỡng</option>
-                  <option value="TUBE_FEEDING_ASSIST">🥛 Chuẩn bị súp / Bơm ăn qua sonde</option>
+                  <option value="FOOD_RECEIVING">🥦 Tiếp nhận thực phẩm (kiểm đếm & giao nhận)</option>
+                  <option value="FOOD_SORTING">🧺 Phân loại thực phẩm (đạt chuẩn HACCP)</option>
+                  <option value="FOOD_STORAGE">❄️ Lưu trữ thực phẩm (kho mát / kho đông)</option>
+                  <option value="FOOD_COOKING">🍳 Chế biến thực phẩm (sơ chế & nấu nướng)</option>
+                  <option value="MEAL_PREPARATION">🍱 Chuẩn bị bữa ăn & phân bổ suất ăn</option>
                 </>
               )}
               {isHousekeeping && (

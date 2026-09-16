@@ -1189,40 +1189,6 @@ export function OperationsPage() {
         </div>
       ) : (
         <>
-          {/* Top KPI Summary */}
-      <div className="kpi-grid">
-        <div className="kpi-box">
-          <div className="kpi-title">Công việc tìm thấy</div>
-          <div className="kpi-number" style={{ color: '#2563eb' }}>{filteredEvents.length}</div>
-          <div className="kpi-desc">
-            {residentId ? `Dành riêng cho cụ đang chọn` : `Khớp theo bộ lọc hiện tại`}
-          </div>
-        </div>
-
-        <div className="kpi-box">
-          <div className="kpi-title">Đã xác minh kiểm toán</div>
-          <div className="kpi-number" style={{ color: '#16a34a' }}>
-            {filteredEvents.filter(e => e.status === 'VERIFIED' || e.status === 'COMPLETED').length}
-          </div>
-          <div className="kpi-desc">Bằng chứng y khoa hợp lệ</div>
-        </div>
-
-        <div className="kpi-box">
-          <div className="kpi-title">Người cao tuổi đang chọn</div>
-          <div className="kpi-number" style={{ color: selectedResident ? '#7c3aed' : '#64748b', fontSize: selectedResident ? '1.25rem' : '1.8rem' }}>
-            {selectedResident ? selectedResident.displayName : 'Tất cả'}
-          </div>
-          <div className="kpi-desc">
-            {selectedResident ? `Mã: ${selectedResident.residentCode} — ${selectedResident.room || 'Chưa xếp phòng'}` : 'Toàn bộ người cao tuổi'}
-          </div>
-        </div>
-
-        <div className="kpi-box">
-          <div className="kpi-title">Quy chuẩn công việc</div>
-          <div className="kpi-number" style={{ color: '#0d9488' }}>{allAvailableTypes.length}</div>
-          <div className="kpi-desc">Danh mục quy trình chuẩn</div>
-        </div>
-      </div>
 
       {/* ========================================================================= */}
       {/* 🔍 BỘ LỌC VÀ TÌM KIẾM ĐA CHIỀU */}

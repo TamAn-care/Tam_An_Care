@@ -442,11 +442,8 @@ export default function FamilyPortalPage() {
     <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
       {/* Header Banner */}
       <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <div className="eyebrow" style={{ color: '#15803d', fontWeight: 700 }}>
-          👨‍👩‍👧 CỔNG THÔNG TIN THÂN NHÂN & NGƯỜI BẢO HỘ
-        </div>
         <h1 className="page-title" style={{ color: '#1e293b' }}>
-          Đồng Hành Chăm Sóc Người Cao Tuổi
+          👨‍👩‍👧 Cổng Thông Tin Thân Nhân & Người Bảo Hộ
         </h1>
       </header>
 

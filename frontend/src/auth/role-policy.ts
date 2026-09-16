@@ -235,7 +235,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageLifecycle: false,
     canApproveDischarge: false,
     canCreateHealthReport: false,
-    canCreateAdmissionAssessment: true,
+    canCreateAdmissionAssessment: false, // Nhân viên tâm lý chỉ xem thông tin tiếp nhận ban đầu, không tạo mới
     canApproveLeave: false,
     canAssignShifts: false,
     canLogDirectCare: true,
@@ -260,6 +260,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     allowedRoutes: [
       'dashboard',
       'residents',
+      'admissions',
       'workforce',
       'operations',
     ],
@@ -270,7 +271,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canManageLifecycle: false,
     canApproveDischarge: false,
     canCreateHealthReport: false,
-    canCreateAdmissionAssessment: false,
+    canCreateAdmissionAssessment: false, // Nhân viên công tác xã hội chỉ xem thông tin tiếp nhận ban đầu
     canApproveLeave: false,
     canAssignShifts: false,
     canLogDirectCare: true,
@@ -368,7 +369,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   NUTRITIONIST: {
     allowedRoutes: [
       'dashboard',
-      'residents',
       'kitchen-operations',
       'workforce',
     ],
@@ -403,7 +403,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   HOUSEKEEPING: {
     allowedRoutes: [
       'dashboard',
-      'accommodation',
       'workforce',
     ],
     canManageStaff: false,

@@ -86,6 +86,7 @@ export default function WorkforcePage() {
   const actorId = actor?.actorId ?? '';
   const actorRole = actor?.actorRole ?? '';
   const isSupervisor = actorRole === 'SUPERVISOR' || actorRole === 'CARE_MANAGER' || actorRole === 'ADMIN';
+  const isPsychologyOrSocialWorker = actorRole === 'PSYCHOLOGIST' || actorRole === 'SOCIAL_WORKER';
 
   // Navigation Tabs
   const [activeTab, setActiveTab] = useState<'SHIFTS' | 'SWAPS' | 'KPI' | 'RECOGNITIONS' | 'MEAL_REGISTRATION' | 'SHIFT_TIMES' | 'KPI_CHECKLIST'>('SHIFTS');
@@ -632,42 +633,6 @@ export default function WorkforcePage() {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Banner chuyển giao KPI sang Nhân sự & Phân quyền */}
-      <div
-        style={{
-          background: '#f0fdf4',
-          border: '1px solid #86efac',
-          borderRadius: '0.65rem',
-          padding: '0.85rem 1.1rem',
-          marginBottom: '1.25rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '0.75rem',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <span style={{ fontSize: '1.3rem' }}>📊</span>
-          <div>
-            <strong style={{ fontSize: '0.9rem', color: '#166534' }}>
-              Hợp nhất Chức năng Đánh giá KPI & Trao Khen thưởng sang Phân hệ Nhân sự & Phân quyền
-            </strong>
-            <div style={{ fontSize: '0.82rem', color: '#15803d', marginTop: '0.1rem' }}>
-              Chức năng tick đánh giá ca/ngày theo nhóm công việc, tổng hợp KPI tháng/quý/năm và trao bằng khen vinh danh đã được hợp nhất tại phân hệ <b>[Nhân sự & Phân quyền]</b>.
-            </div>
-          </div>
-        </div>
-
-        <button
-          onClick={() => navigate('/staff-access')}
-          className="btn btn-primary"
-          style={{ padding: '0.45rem 1rem', fontSize: '0.84rem', fontWeight: 700, borderRadius: '0.45rem', whiteSpace: 'nowrap' }}
-        >
-          Chuyển tới Nhân sự & Phân quyền ➔
-        </button>
       </div>
 
       {/* Navigation Tabs */}
@@ -1517,9 +1482,11 @@ export default function WorkforcePage() {
                 <h3 style={{ margin: 0, color: '#7c3aed', fontSize: '1.15rem', fontWeight: 800 }}>
                   ✅ Tiêu Chí Đánh Giá KPI Nhân Viên Ca Trực (Dạng Tick) & Bell Notice
                 </h3>
-                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                  Phân quyền độc quyền cho <b>Nhân viên Quản lý</b>. Khi có tiêu chí <b>Chưa đạt</b> → Tự động phát Bell notice cảnh báo cá nhân. Khi <b>Xuất sắc</b> → Bắn Bell notice vinh danh toàn viện!
-                </p>
+                {!isPsychologyOrSocialWorker && (
+                  <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                    Phân quyền độc quyền cho <b>Nhân viên Quản lý</b>. Khi có tiêu chí <b>Chưa đạt</b> → Tự động phát Bell notice cảnh báo cá nhân. Khi <b>Xuất sắc</b> → Bắn Bell notice vinh danh toàn viện!
+                  </p>
+                )}
               </div>
             </div>
 
@@ -1701,11 +1668,11 @@ export default function WorkforcePage() {
                   🔔 Hoàn Tất Đánh Giá KPI & Bắn Bell Notice
                 </button>
               </div>
-            ) : (
+            ) : !isPsychologyOrSocialWorker ? (
               <div className="alert-card alert-warning" style={{ marginBottom: '1.5rem' }}>
                 <span>🔒 Tính năng đánh giá KPI chỉ phân quyền dành riêng cho Nhân viên Quản lý.</span>
               </div>
-            )}
+            ) : null}
 
             {/* Bảng Lịch Sử Đánh Giá KPI */}
             <div className="table-responsive">
