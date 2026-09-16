@@ -30,6 +30,7 @@ import {
   FoodInventoryItem,
 } from '../../api/kitchen-operations';
 import { createWorkEvent } from '../../api/operational-work';
+import { KitchenQuickAction1Touch } from './KitchenQuickAction1Touch';
 
 export default function KitchenOperationsPage() {
   const { actor } = useActor();
@@ -64,7 +65,7 @@ export default function KitchenOperationsPage() {
   };
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'MENU' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('MENU');
+  const [activeTab, setActiveTab] = useState<'QUICK_1TOUCH' | 'MENU' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('QUICK_1TOUCH');
 
   // Permissions (RBAC)
   const isNutritionist = actor?.actorRole === 'NUTRITIONIST';
@@ -479,8 +480,9 @@ export default function KitchenOperationsPage() {
 
 
       {/* Navigation Block Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
         {[
+          { id: 'QUICK_1TOUCH', icon: '⚡', title: 'Thao tác 1-chạm Mobile Bếp', sub: 'Tiến độ, bàn giao & KPI 1-tap' },
           { id: 'MENU', icon: '🥗', title: 'Thực đơn tuần & bữa ăn hôm nay', sub: 'Thực đơn 5 bữa & định mức y tế' },
           { id: 'RECEIVING', icon: '🚚', title: 'Tiếp nhận & kiểm đếm thực phẩm', sub: 'Kiểm đếm 3 bước & cân nặng' },
           { id: 'INVENTORY', icon: '📦', title: 'Kho thực phẩm & Xuất chế biến', sub: 'Tồn kho FEFO & Ngưỡng an toàn' },
@@ -622,6 +624,11 @@ export default function KitchenOperationsPage() {
           </div>
         </form>
       </div>
+
+      {/* TAB QUICK_1TOUCH: GIAO DIỆN THAO TÁC 1-CHẠM MOBILE BẾP & KPI REALTIME */}
+      {activeTab === 'QUICK_1TOUCH' && (
+        <KitchenQuickAction1Touch />
+      )}
 
       {/* TAB 0: THỰC ĐƠN TUẦN & THỰC ĐƠN HÔM NAY */}
       {activeTab === 'MENU' && selectedDaySchedule && (
