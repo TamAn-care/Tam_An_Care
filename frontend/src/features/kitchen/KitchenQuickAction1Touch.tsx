@@ -21,9 +21,9 @@ export interface HygieneCheckItem {
   completedAt?: string;
 }
 
-const STORAGE_KEY_DELIVERY = 'taman_kitchen_floor_delivery_v1';
-const STORAGE_KEY_HYGIENE = 'taman_kitchen_hygiene_checks_v1';
-const STORAGE_KEY_MEAL_STAGE = 'taman_kitchen_meal_stage_v1';
+const STORAGE_KEY_DELIVERY = 'taman_kitchen_floor_delivery_v2';
+const STORAGE_KEY_HYGIENE = 'taman_kitchen_hygiene_checks_v2';
+const STORAGE_KEY_MEAL_STAGE = 'taman_kitchen_meal_stage_v2';
 
 export function KitchenQuickAction1Touch() {
   const { actor } = useActor();
@@ -84,11 +84,11 @@ export function KitchenQuickAction1Touch() {
     }
   });
 
-  // Notification / Success Feedback Toast
+  // Toast Notification
   const [toastMessage, setToastMessage] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Sync with LocalStorage
+  // Sync LocalStorage
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY_DELIVERY, JSON.stringify(floorDeliveries));
   }, [floorDeliveries]);
@@ -101,7 +101,7 @@ export function KitchenQuickAction1Touch() {
     localStorage.setItem(STORAGE_KEY_MEAL_STAGE, JSON.stringify(mealStageStatus));
   }, [mealStageStatus]);
 
-  // Show Temporary Feedback Toast
+  // Toast Helper
   const showToast = (msg: string) => {
     setToastMessage(msg);
     if (window.navigator && window.navigator.vibrate) {
@@ -110,7 +110,7 @@ export function KitchenQuickAction1Touch() {
     setTimeout(() => setToastMessage(''), 3500);
   };
 
-  // 1-Tap Cycle Meal Stage Status
+  // Advance Meal Stage
   const handleAdvanceMealStage = async (mealKey: 'BREAKFAST' | 'LUNCH' | 'DINNER') => {
     const current = mealStageStatus[mealKey];
     let nextStatus: 'NOT_STARTED' | 'COOKING' | 'PORTIONING' | 'COMPLETED' = 'NOT_STARTED';
@@ -142,15 +142,13 @@ export function KitchenQuickAction1Touch() {
           status: 'COMPLETED',
         });
         queryClient.invalidateQueries({ queryKey: ['dashboard-work-events'] });
-      } catch {
-        // Fallback
-      }
+      } catch { }
     }
 
-    showToast(`⚡ Đã chuyển trạng thái Bữa ${mealKey === 'BREAKFAST' ? 'Sáng' : mealKey === 'LUNCH' ? 'Trưa' : 'Tối'} ➔ ${label}`);
+    showToast(`⚡ Đã chuyển Bữa ${mealKey === 'BREAKFAST' ? 'Sáng' : mealKey === 'LUNCH' ? 'Trưa' : 'Tối'} ➔ ${label}`);
   };
 
-  // 1-Tap Floor Delivery Confirmation
+  // Deliver Floor 1-Tap
   const handleDeliverFloor = async (floorId: string) => {
     const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     const targetFloor = floorDeliveries.find(f => f.floorId === floorId);
@@ -184,7 +182,7 @@ export function KitchenQuickAction1Touch() {
     showToast(`📦 [1-TAP] Đã bàn giao khay ăn cho ${targetFloor?.floorName || floorId} lúc ${timeStr}!`);
   };
 
-  // 1-Tap Hygiene / Food Preservation Checklist Toggle
+  // Toggle Hygiene Item
   const handleToggleHygieneCheck = async (checkId: string) => {
     const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
     const targetItem = hygieneChecks.find(h => h.id === checkId);
@@ -215,10 +213,10 @@ export function KitchenQuickAction1Touch() {
       } catch { }
     }
 
-    showToast(`✅ [1-TAP] Đã ghi nhận: ${targetItem?.label}`);
+    showToast(`✅ [1-TAP] Ghi nhận: ${targetItem?.label}`);
   };
 
-  // 1-Tap Quick Incident Presets
+  // Incident Presets
   const handleReportIncident = async (incidentType: string, label: string) => {
     setIsSubmitting(true);
     const timeStr = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
@@ -237,208 +235,281 @@ export function KitchenQuickAction1Touch() {
     }
 
     setIsSubmitting(false);
-    showToast(`🚨 Đã báo sự cố: "${label}" đến Ban Quản lý!`);
+    showToast(`🚨 Đã gửi báo cáo sự cố: "${label}"`);
   };
 
   // Live KPI Score Calculation
   const kpiScore = useMemo(() => {
     let score = 0;
-
-    // 1. Delivery punctuality (35%)
     const deliveredCount = floorDeliveries.filter(f => f.status === 'DELIVERED').length;
     const totalFloors = floorDeliveries.length || 1;
     score += Math.round((deliveredCount / totalFloors) * 35);
 
-    // 2. Meal Cooking Stage Completion (35%)
     const stage = mealStageStatus[activeMealSlot];
     if (stage === 'COMPLETED') score += 35;
     else if (stage === 'PORTIONING') score += 25;
     else if (stage === 'COOKING') score += 15;
     else score += 5;
 
-    // 3. Hygiene & Food Sample Preservation (20%)
     const doneHygiene = hygieneChecks.filter(h => h.status === 'COMPLETED').length;
     const totalHygiene = hygieneChecks.length || 1;
     score += Math.round((doneHygiene / totalHygiene) * 20);
 
-    // 4. Base Operations Compliance (10%)
     score += 10;
-
     return Math.min(100, score);
   }, [floorDeliveries, mealStageStatus, activeMealSlot, hygieneChecks]);
 
   return (
-    <div className="bg-slate-50 min-h-screen text-slate-800 font-sans pb-10 select-none">
+    <div style={{ width: '100%', maxWidth: '1440px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       
-      {/* Toast Alert Notification */}
+      {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 text-white font-bold text-xs px-4 py-3 rounded-xl shadow-2xl border border-emerald-400 flex items-center gap-2 animate-bounce">
-          <span>⚡</span>
-          <span>{toastMessage}</span>
+        <div style={{
+          position: 'fixed',
+          top: '1rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 9999,
+          background: '#064e3b',
+          color: '#ffffff',
+          fontWeight: 700,
+          fontSize: '0.85rem',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '0.75rem',
+          boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+          border: '1px solid #34d399',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+        }}>
+          <span>⚡</span> {toastMessage}
         </div>
       )}
 
-      {/* Header Section */}
-      <header className="bg-emerald-800 text-white p-3.5 sticky top-0 z-30 shadow-md border-b border-emerald-900 flex justify-between items-center">
+      {/* Header Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #14532d 0%, #166534 100%)',
+        borderRadius: '0.75rem',
+        padding: '1.25rem 1.5rem',
+        color: '#ffffff',
+        boxShadow: '0 4px 12px rgba(22, 101, 52, 0.2)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '1rem',
+      }}>
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <h1 className="font-extrabold text-sm tracking-tight">TÂM AN CARE — BẾP DINH DƯỠNG</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}></span>
+            <h1 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.01em' }}>
+              TÂM AN CARE — BẾP DINH DƯỠNG (THAO TÁC 1-CHẠM REALTIME)
+            </h1>
           </div>
-          <p className="text-[11px] text-emerald-200 mt-0.5">
-            Ca Sáng (06:00 - 14:00) • {actorName} ({actorRole})
+          <p style={{ margin: '0.3rem 0 0 0', fontSize: '0.85rem', color: '#bbf7d0' }}>
+            Ca Sáng (06:00 - 14:00) • Người phụ trách: <strong>{actorName}</strong> ({actorRole === 'NUTRITIONIST' ? 'Nhân viên Dinh dưỡng' : actorRole})
           </p>
         </div>
 
-        <div className="text-right">
-          <div className="bg-emerald-950 text-emerald-300 font-mono font-bold text-xs px-2.5 py-1 rounded-lg border border-emerald-700/60 shadow-inner">
-            ⏰ {currentTime || '10:58 AM'}
-          </div>
-          <div className="text-[10px] text-emerald-200 mt-0.5 font-semibold">
-            Real-time Sync 🟢
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ background: '#022c22', border: '1px solid #15803d', borderRadius: '0.5rem', padding: '0.4rem 0.85rem', textAlign: 'right' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#6ee7b7', fontFamily: 'monospace' }}>
+              ⏰ {currentTime || '10:58:24 AM'}
+            </div>
+            <div style={{ fontSize: '0.7rem', color: '#a7f3d0', fontWeight: 600 }}>
+              Đồng bộ Real-time 🟢
+            </div>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main className="p-3 space-y-3.5 max-w-lg mx-auto">
-
-        {/* Live KPI Score & Shift Overview Banner */}
-        <section className="bg-gradient-to-r from-emerald-900 to-emerald-800 text-white rounded-2xl p-4 shadow-lg border border-emerald-700/50 flex items-center justify-between">
+      {/* Top 3 KPI & Status Cards (Responsive Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
+        
+        {/* Card 1: KPI Live Calculator */}
+        <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #166534', boxShadow: '0 2px 6px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <span className="text-[11px] font-bold text-emerald-300 tracking-wider uppercase block">ĐIỂM KPI CA TRỰC HÔM NAY</span>
-            <div className="flex items-baseline gap-1.5 mt-0.5">
-              <span className="text-3xl font-black text-white">{kpiScore}</span>
-              <span className="text-xs text-emerald-200 font-semibold">/ 100 điểm</span>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              ĐIỂM KPI CA TRỰC HÔM NAY
             </div>
-            <div className="text-[11px] text-emerald-200 mt-1 flex items-center gap-2">
-              <span>🎯 Đạt chuẩn chất lượng Bếp Tâm An</span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', marginTop: '0.2rem' }}>
+              <span style={{ fontSize: '2.2rem', fontWeight: 900, color: '#0f172a', lineHeight: 1 }}>{kpiScore}</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#64748b' }}>/ 100 điểm</span>
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.4rem', fontWeight: 600 }}>
+              🎯 Đạt chuẩn chất lượng Bếp Tâm An
             </div>
           </div>
 
-          <div className="text-right bg-emerald-950/60 p-2.5 rounded-xl border border-emerald-700/50">
-            <div className="text-[10px] text-emerald-300 font-bold uppercase">Báo cáo 1-Chạm</div>
-            <div className="text-xs font-black text-emerald-400 mt-0.5">TỰ ĐỘNG GHI SỔ</div>
-            <div className="text-[10px] text-emerald-200 mt-1">Không gõ phím 📱</div>
+          <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.6rem 0.85rem', borderRadius: '0.5rem', textAlign: 'center' }}>
+            <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#166534' }}>BÁO CÁO 1-CHẠM</div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 900, color: '#15803d', marginTop: '0.1rem' }}>TỰ ĐỘNG KPI</div>
+            <div style={{ fontSize: '0.68rem', color: '#166534', marginTop: '0.1rem' }}>Không gõ phím 📱</div>
           </div>
-        </section>
+        </div>
 
-        {/* Meal Slot Stage Timeline Selector */}
-        <section className="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-200">
-          <div className="flex justify-between items-center mb-2.5">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">⏱ Tiến độ các bữa ăn trong ngày</span>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">1-Tap Đổi Trạng Thái</span>
+        {/* Card 2: Meal Progress Stage */}
+        <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #d97706', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#b45309', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              ⏱ TIẾN ĐỘ BỮA ĂN HÔM NAY
+            </div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, background: '#fffbeb', color: '#b45309', padding: '0.15rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #fef3c7' }}>
+              1-Tap Đổi Trạng Thái
+            </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', textAlign: 'center' }}>
             {/* Breakfast */}
             <button
               onClick={() => { setActiveMealSlot('BREAKFAST'); handleAdvanceMealStage('BREAKFAST'); }}
-              className={`p-2.5 rounded-xl border transition-all text-left relative ${
-                activeMealSlot === 'BREAKFAST' ? 'border-emerald-600 bg-emerald-50/80 ring-2 ring-emerald-500/20 shadow-sm' : 'border-slate-200 bg-slate-50'
-              }`}
+              style={{
+                padding: '0.6rem 0.4rem',
+                borderRadius: '0.5rem',
+                border: activeMealSlot === 'BREAKFAST' ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: activeMealSlot === 'BREAKFAST' ? '#f0fdf4' : '#f8fafc',
+                cursor: 'pointer',
+              }}
             >
-              <div className="text-[10px] font-bold text-slate-500">SÁNG (06:45)</div>
-              <div className="text-xs font-black mt-0.5 text-emerald-800">
-                {mealStageStatus.BREAKFAST === 'COMPLETED' ? '✅ Đã hoàn thành' : mealStageStatus.BREAKFAST === 'PORTIONING' ? '🔥 Đang chia' : '🟡 Đang nấu'}
+              <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#475569' }}>SÁNG (06:45)</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 800, color: mealStageStatus.BREAKFAST === 'COMPLETED' ? '#15803d' : '#b45309', marginTop: '0.2rem' }}>
+                {mealStageStatus.BREAKFAST === 'COMPLETED' ? '✅ Đã xong' : '🟡 Đang nấu'}
               </div>
             </button>
 
             {/* Lunch */}
             <button
               onClick={() => { setActiveMealSlot('LUNCH'); handleAdvanceMealStage('LUNCH'); }}
-              className={`p-2.5 rounded-xl border-2 transition-all text-left relative shadow-sm ${
-                mealStageStatus.LUNCH === 'PORTIONING' ? 'border-amber-500 bg-amber-50/90' : 'border-emerald-600 bg-emerald-50'
-              }`}
+              style={{
+                padding: '0.6rem 0.4rem',
+                borderRadius: '0.5rem',
+                border: '2px solid #d97706',
+                background: mealStageStatus.LUNCH === 'PORTIONING' ? '#fffbeb' : '#f0fdf4',
+                cursor: 'pointer',
+              }}
             >
-              <div className="text-[10px] font-extrabold text-amber-900">TRƯA (11:00)</div>
-              <div className="text-xs font-black mt-0.5 text-amber-950">
-                {mealStageStatus.LUNCH === 'COMPLETED' ? '✅ Đã hoàn thành' : mealStageStatus.LUNCH === 'PORTIONING' ? '🔥 Đang chia suất' : '🟡 Đang nấu'}
+              <div style={{ fontSize: '0.68rem', fontWeight: 800, color: '#78350f' }}>TRƯA (11:00)</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 900, color: '#92400e', marginTop: '0.2rem' }}>
+                {mealStageStatus.LUNCH === 'COMPLETED' ? '✅ Đã xong' : mealStageStatus.LUNCH === 'PORTIONING' ? '🔥 Đang chia' : '🟡 Đang nấu'}
               </div>
             </button>
 
             {/* Dinner */}
             <button
               onClick={() => { setActiveMealSlot('DINNER'); handleAdvanceMealStage('DINNER'); }}
-              className={`p-2.5 rounded-xl border transition-all text-left ${
-                activeMealSlot === 'DINNER' ? 'border-emerald-600 bg-emerald-50' : 'border-slate-200 bg-slate-50 opacity-70'
-              }`}
+              style={{
+                padding: '0.6rem 0.4rem',
+                borderRadius: '0.5rem',
+                border: activeMealSlot === 'DINNER' ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: activeMealSlot === 'DINNER' ? '#f0fdf4' : '#f8fafc',
+                opacity: activeMealSlot === 'DINNER' ? 1 : 0.65,
+                cursor: 'pointer',
+              }}
             >
-              <div className="text-[10px] font-bold text-slate-500">TỐI (17:00)</div>
-              <div className="text-xs font-semibold mt-0.5 text-slate-600">
+              <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#475569' }}>TỐI (17:00)</div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', marginTop: '0.2rem' }}>
                 {mealStageStatus.DINNER === 'COMPLETED' ? '✅ Đã xong' : '⚪ Chưa tới'}
               </div>
             </button>
           </div>
-        </section>
+        </div>
 
-        {/* Nutrition Real-time Counter Card */}
-        <section className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-          <div className="flex justify-between items-center mb-3">
-            <h2 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
-              <span>🍲</span> ĐỊNH MỨC SUẤT ĂN BỮA TRƯA (110 SUẤT)
-            </h2>
-            <span className="text-[11px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md border border-emerald-300">Chốt thực đơn</span>
+        {/* Card 3: Nutrition Prep Breakdown */}
+        <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #2563eb', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1d4ed8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              🍲 ĐỊNH MỨC BỮA TRƯA (110 SUẤT)
+            </div>
+            <span style={{ fontSize: '0.7rem', fontWeight: 700, background: '#eff6ff', color: '#1d4ed8', padding: '0.15rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #bfdbfe' }}>
+              Chốt thực đơn
+            </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-center">
-              <span className="text-[11px] text-slate-500 font-medium block">Cơm mềm</span>
-              <span className="text-lg font-black text-slate-800">65</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem', textAlign: 'center' }}>
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '0.4rem', borderRadius: '0.375rem' }}>
+              <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block' }}>Cơm mềm</span>
+              <strong style={{ fontSize: '1rem', color: '#0f172a' }}>65</strong>
             </div>
-            <div className="bg-blue-50 p-2.5 rounded-xl border border-blue-200 text-center">
-              <span className="text-[11px] text-blue-700 font-semibold block">Cháo băm</span>
-              <span className="text-lg font-black text-blue-900">25</span>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '0.4rem', borderRadius: '0.375rem' }}>
+              <span style={{ fontSize: '0.68rem', color: '#1d4ed8', display: 'block' }}>Cháo băm</span>
+              <strong style={{ fontSize: '1rem', color: '#1e40af' }}>25</strong>
             </div>
-            <div className="bg-purple-50 p-2.5 rounded-xl border border-purple-200 text-center">
-              <span className="text-[11px] text-purple-700 font-semibold block">Xay nhuyễn</span>
-              <span className="text-lg font-black text-purple-900">15</span>
+            <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', padding: '0.4rem', borderRadius: '0.375rem' }}>
+              <span style={{ fontSize: '0.68rem', color: '#7e22ce', display: 'block' }}>Xay nhuyễn</span>
+              <strong style={{ fontSize: '1rem', color: '#6b21a8' }}>15</strong>
             </div>
-            <div className="bg-orange-50 p-2.5 rounded-xl border border-orange-200 text-center">
-              <span className="text-[11px] text-orange-700 font-semibold block">Sonde</span>
-              <span className="text-lg font-black text-orange-900">5</span>
+            <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', padding: '0.4rem', borderRadius: '0.375rem' }}>
+              <span style={{ fontSize: '0.68rem', color: '#c2410c', display: 'block' }}>Sonde</span>
+              <strong style={{ fontSize: '1rem', color: '#9a3412' }}>5</strong>
             </div>
-            <div className="bg-rose-50 p-2.5 rounded-xl border border-rose-200 text-center col-span-2">
-              <span className="text-[11px] text-rose-700 font-semibold block">Kiêng đường & Ăn nhạt</span>
-              <span className="text-lg font-black text-rose-900">12 cụ</span>
+            <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', padding: '0.4rem', borderRadius: '0.375rem', gridColumn: 'span 2' }}>
+              <span style={{ fontSize: '0.68rem', color: '#be123c', display: 'block' }}>Kiêng đường & Ăn nhạt</span>
+              <strong style={{ fontSize: '1rem', color: '#9f1239' }}>12 cụ</strong>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* 1-Tap Delivery Action List by Floor / Section */}
-        <section className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-3">
-          <div className="flex justify-between items-center">
-            <h2 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5">
+      </div>
+
+      {/* Main Operational Split (2 columns desktop, 1 column mobile) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '1.25rem' }}>
+        
+        {/* Left Column: 1-Tap Floor Deliveries */}
+        <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', border: '1px solid #cbd5e1', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.65rem' }}>
+            <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span>📦</span> 1-TAP BÀN GIAO KHAY ĂN CHO TẦNG
-            </h2>
-            <span className="text-[11px] text-slate-500 font-semibold">Chạm để ghi nhận</span>
+            </h3>
+            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Chạm nút để ghi nhận</span>
           </div>
 
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {floorDeliveries.map((floor) => {
               const isDelivered = floor.status === 'DELIVERED';
               return (
                 <div
                   key={floor.floorId}
-                  className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                    isDelivered ? 'bg-emerald-50/70 border-emerald-300' : 'bg-slate-50 border-slate-200'
-                  }`}
+                  style={{
+                    padding: '0.85rem 1rem',
+                    borderRadius: '0.65rem',
+                    border: isDelivered ? '1.5px solid #86efac' : '1px solid #cbd5e1',
+                    background: isDelivered ? '#f0fdf4' : '#f8fafc',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    transition: 'all 0.15s ease',
+                  }}
                 >
                   <div>
-                    <div className={`font-bold text-xs ${isDelivered ? 'text-emerald-950' : 'text-slate-800'}`}>
+                    <div style={{ fontWeight: 800, fontSize: '0.9rem', color: isDelivered ? '#14532d' : '#0f172a' }}>
                       {floor.floorName}
                     </div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">
-                      {floor.trayCount} Khay • {floor.breakdown}
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>
+                      <strong>{floor.trayCount} Khay</strong> • {floor.breakdown}
                     </div>
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => handleDeliverFloor(floor.floorId)}
-                    className={`font-extrabold text-xs px-3.5 py-3 rounded-xl shadow active:scale-95 transition-all flex items-center gap-1 min-h-[48px] ${
-                      isDelivered
-                        ? 'bg-emerald-200 text-emerald-900 border border-emerald-400'
-                        : 'bg-emerald-700 hover:bg-emerald-800 text-white'
-                    }`}
+                    style={{
+                      padding: '0.75rem 1.1rem',
+                      borderRadius: '0.5rem',
+                      border: isDelivered ? '1px solid #4ade80' : 'none',
+                      background: isDelivered ? '#dcfce7' : '#166534',
+                      color: isDelivered ? '#14532d' : '#ffffff',
+                      fontWeight: 800,
+                      fontSize: '0.82rem',
+                      cursor: 'pointer',
+                      minHeight: '48px',
+                      whiteSpace: 'nowrap',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      boxShadow: isDelivered ? 'none' : '0 2px 4px rgba(22,101,52,0.2)',
+                      transition: 'all 0.15s ease',
+                    }}
                   >
                     <span>{isDelivered ? '✅' : '🟢'}</span>
                     <span>{isDelivered ? `ĐÃ BÀN GIAO (${floor.deliveredAt})` : 'CHẠM BÀN GIAO'}</span>
@@ -447,90 +518,171 @@ export function KitchenQuickAction1Touch() {
               );
             })}
           </div>
-        </section>
+        </div>
 
-        {/* 1-Tap Safety, Hygiene & 24h Food Preservation Checklist */}
-        <section className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 space-y-2.5">
-          <h2 className="font-extrabold text-sm text-slate-900 flex items-center gap-1.5 mb-1">
-            <span>🛡</span> VỆ SINH & LƯU MẪU 24H (BỘ Y TẾ)
-          </h2>
+        {/* Right Column: Hygiene & Incident Presets */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          
+          {/* Hygiene & Food Sample Preservation Checklist */}
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', border: '1px solid #cbd5e1', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+            <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '0.65rem' }}>
+              <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>🛡</span> VỆ SINH & LƯU MẪU 24H (CHUẨN BỘ Y TẾ)
+              </h3>
+            </div>
 
-          <div className="space-y-2">
-            {hygieneChecks.map((item) => {
-              const isDone = item.status === 'COMPLETED';
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleToggleHygieneCheck(item.id)}
-                  className={`w-full text-left p-3 rounded-xl border flex items-center justify-between transition-all min-h-[52px] active:scale-98 ${
-                    isDone ? 'bg-emerald-50/80 border-emerald-300' : 'bg-slate-50 border-slate-200 hover:bg-emerald-50/50'
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="text-base">{item.icon}</span>
-                    <div>
-                      <div className={`font-semibold text-xs ${isDone ? 'text-emerald-950' : 'text-slate-800'}`}>
-                        {item.label}
-                      </div>
-                      {isDone && (
-                        <div className="text-[10px] text-emerald-700 font-medium">
-                          Đã hoàn thành lúc {item.completedAt}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+              {hygieneChecks.map((item) => {
+                const isDone = item.status === 'COMPLETED';
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleToggleHygieneCheck(item.id)}
+                    style={{
+                      padding: '0.85rem 1rem',
+                      borderRadius: '0.65rem',
+                      border: isDone ? '1.5px solid #86efac' : '1px solid #cbd5e1',
+                      background: isDone ? '#f0fdf4' : '#ffffff',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '0.75rem',
+                      minHeight: '52px',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.84rem', color: isDone ? '#14532d' : '#1e293b' }}>
+                          {item.label}
                         </div>
-                      )}
+                        {isDone && (
+                          <div style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 600, marginTop: '0.1rem' }}>
+                            Đã hoàn thành lúc {item.completedAt}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </span>
 
-                  <span className={`text-[11px] font-extrabold px-3 py-1.5 rounded-lg border shadow-sm ${
-                    isDone
-                      ? 'bg-emerald-200 text-emerald-900 border-emerald-300'
-                      : 'bg-emerald-700 text-white border-emerald-800'
-                  }`}>
-                    {isDone ? '✅ ĐÃ LƯU' : 'CHẠM XÁC NHẬN'}
-                  </span>
-                </button>
-              );
-            })}
+                    <span style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 800,
+                      padding: '0.4rem 0.85rem',
+                      borderRadius: '0.375rem',
+                      background: isDone ? '#dcfce7' : '#166534',
+                      color: isDone ? '#14532d' : '#ffffff',
+                      border: isDone ? '1px solid #86efac' : 'none',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {isDone ? '✅ ĐÃ LƯU' : 'CHẠM XÁC NHẬN'}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </section>
 
-        {/* 1-Tap Quick Incident Presets */}
-        <section className="bg-amber-50/70 rounded-2xl p-3.5 border border-amber-200 shadow-sm">
-          <div className="text-xs font-bold text-amber-900 mb-2 flex items-center gap-1">
-            <span>🚨</span> BÁO SỰ CỐ BẾP KHẨN (1-TAP INCIDENT)
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              disabled={isSubmitting}
-              onClick={() => handleReportIncident('INGREDIENT_SHORTAGE', 'Thiếu nguyên liệu tươi')}
-              className="bg-white border border-rose-300 text-rose-800 hover:bg-rose-50 font-bold text-xs p-3 rounded-xl text-left shadow-sm active:scale-95 transition-all min-h-[48px]"
-            >
-              ⚠️ Thiếu nguyên liệu
-            </button>
-            <button
-              disabled={isSubmitting}
-              onClick={() => handleReportIncident('MENU_CHANGE', 'Đổi món đột xuất theo y lệnh')}
-              className="bg-white border border-amber-300 text-amber-900 hover:bg-amber-50 font-bold text-xs p-3 rounded-xl text-left shadow-sm active:scale-95 transition-all min-h-[48px]"
-            >
-              🔄 Đổi món đột xuất
-            </button>
-            <button
-              disabled={isSubmitting}
-              onClick={() => handleReportIncident('EQUIPMENT_FAULT', 'Hỏng hóc thiết bị bếp')}
-              className="bg-white border border-orange-300 text-orange-900 hover:bg-orange-50 font-bold text-xs p-3 rounded-xl text-left shadow-sm active:scale-95 transition-all min-h-[48px]"
-            >
-              🔧 Hỏng thiết bị bếp
-            </button>
-            <button
-              disabled={isSubmitting}
-              onClick={() => handleReportIncident('STAFF_ASSIST', 'Yêu cầu hỗ trợ tăng cường ca')}
-              className="bg-white border border-blue-300 text-blue-900 hover:bg-blue-50 font-bold text-xs p-3 rounded-xl text-left shadow-sm active:scale-95 transition-all min-h-[48px]"
-            >
-              🆘 Cần hỗ trợ ca bếp
-            </button>
-          </div>
-        </section>
+          {/* Quick Incident Report Presets */}
+          <div className="card" style={{ background: '#fffbeb', borderRadius: '0.75rem', padding: '1.25rem', border: '1px solid #fef3c7', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#92400e', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>🚨</span> BÁO SỰ CỐ BẾP KHẨN (1-TAP INCIDENT)
+            </div>
 
-      </main>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.65rem' }}>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => handleReportIncident('INGREDIENT_SHORTAGE', 'Thiếu nguyên liệu tươi')}
+                style={{
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #fecdd3',
+                  background: '#ffffff',
+                  color: '#9f1239',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  minHeight: '48px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                }}
+              >
+                ⚠️ Thiếu nguyên liệu
+              </button>
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => handleReportIncident('MENU_CHANGE', 'Đổi món đột xuất theo y lệnh')}
+                style={{
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #fef3c7',
+                  background: '#ffffff',
+                  color: '#92400e',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  minHeight: '48px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                }}
+              >
+                🔄 Đổi món đột xuất
+              </button>
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => handleReportIncident('EQUIPMENT_FAULT', 'Hỏng hóc thiết bị bếp')}
+                style={{
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #fed7aa',
+                  background: '#ffffff',
+                  color: '#9a3412',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  minHeight: '48px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                }}
+              >
+                🔧 Hỏng thiết bị bếp
+              </button>
+
+              <button
+                type="button"
+                disabled={isSubmitting}
+                onClick={() => handleReportIncident('STAFF_ASSIST', 'Yêu cầu hỗ trợ tăng cường ca')}
+                style={{
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: '0.5rem',
+                  border: '1px solid #bfdbfe',
+                  background: '#ffffff',
+                  color: '#1e40af',
+                  fontWeight: 700,
+                  fontSize: '0.82rem',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  minHeight: '48px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                }}
+              >
+                🆘 Cần hỗ trợ ca bếp
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
   );
 }
