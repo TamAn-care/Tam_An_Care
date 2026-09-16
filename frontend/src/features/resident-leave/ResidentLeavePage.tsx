@@ -171,25 +171,19 @@ export default function ResidentLeavePage() {
 
   return (
     <div className="page-content">
-      {/* Header */}
-      <div className="page-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title">Quản Lý Nghỉ Phép & Tạm Vắng Người Cao Tuổi</h1>
-          </div>
-          {canManage && (
-            <button
-              onClick={() => {
-                resetForm();
-                setIsRegisterOpen(true);
-              }}
-              className="btn btn-primary"
-            >
-              + Đăng ký tạm vắng mới
-            </button>
-          )}
+      {canManage && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
+          <button
+            onClick={() => {
+              resetForm();
+              setIsRegisterOpen(true);
+            }}
+            className="btn btn-primary"
+          >
+            + Đăng ký tạm vắng mới
+          </button>
         </div>
-      </div>
+      )}
 
       {/* KPI Cards */}
       <div className="kpi-row">

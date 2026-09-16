@@ -222,14 +222,8 @@ export function ServiceContractsPage() {
 
   return (
     <main className="page">
-      {/* Header */}
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            Hợp Đồng Dịch Vụ
-          </h1>
-        </div>
-
+      {/* Header Action Button */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1.25rem' }}>
         <button
           type="button"
           onClick={handleCreateNew}

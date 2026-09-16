@@ -831,7 +831,7 @@ export default function KitchenOperationsPage() {
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Khối Lượng Theo Phiếu</th>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Cân Thực Tế</th>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Chênh Lệch $\pm\%$</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Tổng Giá Trị</th>
+                    {canViewFinancials && <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Tổng Giá Trị</th>}
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Kết Luận Tiếp Nhận</th>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao Tác</th>
                   </tr>
@@ -839,7 +839,7 @@ export default function KitchenOperationsPage() {
                 <tbody>
                   {filteredBatches.length === 0 ? (
                     <tr>
-                      <td colSpan={9} style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                      <td colSpan={canViewFinancials ? 9 : 8} style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
                         Không tìm thấy đợt tiếp nhận thực phẩm nào phù hợp với bộ lọc.
                       </td>
                     </tr>
@@ -881,9 +881,11 @@ export default function KitchenOperationsPage() {
                             {b.weightVariancePercent > 0 ? `+${b.weightVariancePercent}%` : `${b.weightVariancePercent}%`}
                           </span>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>
-                          {canViewFinancials ? `${b.totalValue.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}
-                        </td>
+                        {canViewFinancials && (
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>
+                            {`${b.totalValue.toLocaleString('vi-VN')} đ`}
+                          </td>
+                        )}
                         <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                           <span
                             style={{
@@ -1066,7 +1068,7 @@ export default function KitchenOperationsPage() {
                   <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Tồn Thực Tế</th>
                   <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Ngưỡng An Toàn</th>
                   <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Hạn Sử Dụng (FEFO)</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Đơn Giá</th>
+                  {canViewFinancials && <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Đơn Giá</th>}
                   <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
                 </tr>
               </thead>
@@ -1122,9 +1124,11 @@ export default function KitchenOperationsPage() {
                         {item.daysToExpiry <= 3 ? `⚠️ Còn ${item.daysToExpiry} ngày` : `Còn ${item.daysToExpiry} ngày`}
                       </div>
                     </td>
-                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#475569' }}>
-                      {canViewFinancials ? `${item.unitPrice.toLocaleString('vi-VN')} đ/${item.unit}` : '🔒 Quyền BGĐ'}
-                    </td>
+                    {canViewFinancials && (
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#475569' }}>
+                        {`${item.unitPrice.toLocaleString('vi-VN')} đ/${item.unit}`}
+                      </td>
+                    )}
                     <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                       <span
                         style={{
@@ -1602,7 +1606,7 @@ export default function KitchenOperationsPage() {
                       <th style={{ padding: '0.5rem', width: '90px' }}>Phiếu (kg/đv)</th>
                       <th style={{ padding: '0.5rem', width: '90px' }}>Cân thực tế</th>
                       <th style={{ padding: '0.5rem', width: '70px' }}>Lệch $\pm\%$</th>
-                      <th style={{ padding: '0.5rem', width: '95px' }}>Đơn giá (đ)</th>
+                      {canViewFinancials && <th style={{ padding: '0.5rem', width: '95px' }}>Đơn giá (đ)</th>}
                       <th style={{ padding: '0.5rem', width: '70px' }}>Nhiệt độ</th>
                       <th style={{ padding: '0.5rem', width: '100px' }}>Hạn dùng</th>
                       <th style={{ padding: '0.5rem', width: '110px' }}>Kho lưu</th>
@@ -1646,8 +1650,8 @@ export default function KitchenOperationsPage() {
                         <td style={{ padding: '0.4rem', textAlign: 'center', fontWeight: 700, color: item.variancePercent === 0 ? '#64748b' : item.variancePercent > 0 ? '#15803d' : '#b91c1c' }}>
                           {item.variancePercent > 0 ? `+${item.variancePercent}%` : `${item.variancePercent}%`}
                         </td>
-                        <td style={{ padding: '0.4rem', textAlign: 'center' }}>
-                          {canViewFinancials ? (
+                        {canViewFinancials && (
+                          <td style={{ padding: '0.4rem', textAlign: 'center' }}>
                             <input
                               type="number"
                               className="text-input"
@@ -1655,10 +1659,8 @@ export default function KitchenOperationsPage() {
                               value={item.unitPrice}
                               onChange={(e) => handleUpdateNewBatchItem(idx, { unitPrice: parseFloat(e.target.value) || 0 })}
                             />
-                          ) : (
-                            <span style={{ fontSize: '0.75rem', color: '#64748b', fontStyle: 'italic' }}>🔒 Quyền BGĐ</span>
-                          )}
-                        </td>
+                          </td>
+                        )}
                         <td style={{ padding: '0.4rem' }}>
                           <input
                             type="number"
@@ -1846,7 +1848,10 @@ export default function KitchenOperationsPage() {
                 <div>Người nhận (Dinh dưỡng): <b>{showDetailBatchModal.receiverName}</b></div>
                 <div>Mã nhân sự: <b>{showDetailBatchModal.receiverId}</b></div>
                 <div>Tổng khối lượng phiếu: <b>{showDetailBatchModal.totalOrderedWeight} kg</b> | Cân thực tế: <b>{showDetailBatchModal.totalActualWeight} kg</b></div>
-                <div>Chênh lệch: <b style={{ color: showDetailBatchModal.weightVariancePercent < 0 ? '#b91c1c' : '#15803d' }}>{showDetailBatchModal.weightVariancePercent}%</b> | Tổng giá trị: <b>{canViewFinancials ? `${showDetailBatchModal.totalValue.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}</b></div>
+                <div>
+                  Chênh lệch: <b style={{ color: showDetailBatchModal.weightVariancePercent < 0 ? '#b91c1c' : '#15803d' }}>{showDetailBatchModal.weightVariancePercent}%</b>
+                  {canViewFinancials && <> | Tổng giá trị: <b>{`${showDetailBatchModal.totalValue.toLocaleString('vi-VN')} đ`}</b></>}
+                </div>
                 <div style={{ marginTop: '0.25rem' }}>
                   Kết luận tiếp nhận: <b style={{ color: showDetailBatchModal.overallStatus === 'ACCEPTED' ? '#15803d' : showDetailBatchModal.overallStatus === 'QUARANTINED' ? '#b45309' : '#b91c1c' }}>
                     {showDetailBatchModal.overallStatus === 'ACCEPTED' ? '✅ Đạt chuẩn nhập kho' : showDetailBatchModal.overallStatus === 'QUARANTINED' ? '⚠️ Tạm cách ly' : '❌ Từ chối nhận hàng'}
@@ -1865,8 +1870,12 @@ export default function KitchenOperationsPage() {
                     <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Phiếu Giao</th>
                     <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Cân Thực Tế</th>
                     <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Lệch</th>
-                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Đơn Giá</th>
-                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Thành Tiền</th>
+                    {canViewFinancials && (
+                      <>
+                        <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Đơn Giá</th>
+                        <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Thành Tiền</th>
+                      </>
+                    )}
                     <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Nhiệt Độ</th>
                     <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Kho Lưu</th>
                     <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Kết Luận Tiếp Nhận</th>
@@ -1881,8 +1890,12 @@ export default function KitchenOperationsPage() {
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center', fontWeight: 700, color: item.variancePercent === 0 ? '#64748b' : item.variancePercent > 0 ? '#15803d' : '#b91c1c' }}>
                         {item.variancePercent > 0 ? `+${item.variancePercent}%` : `${item.variancePercent}%`}
                       </td>
-                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>{canViewFinancials ? `${item.unitPrice.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}</td>
-                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>{canViewFinancials ? `${item.totalPrice.toLocaleString('vi-VN')} đ` : '🔒 Quyền BGĐ'}</td>
+                      {canViewFinancials && (
+                        <>
+                          <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>{`${item.unitPrice.toLocaleString('vi-VN')} đ`}</td>
+                          <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>{`${item.totalPrice.toLocaleString('vi-VN')} đ`}</td>
+                        </>
+                      )}
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center', fontWeight: 600 }}>{item.deliveryTemp}°C</td>
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>{STORAGE_ZONE_META[item.storageZone]?.label}</td>
                       <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>

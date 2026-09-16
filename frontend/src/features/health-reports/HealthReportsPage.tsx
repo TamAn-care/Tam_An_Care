@@ -446,26 +446,20 @@ export default function HealthReportsPage() {
 
   return (
     <div className="page-content">
-      {/* Page Header */}
-      <div className="page-header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title">Phiếu Đánh Giá & Báo Cáo Sức Khỏe Định Kỳ</h1>
-          </div>
-          <button
-            onClick={() => {
-              setAssessment({
-                ...DEFAULT_ASSESSMENT,
-                assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
-              });
-              setIsEditorOpen(true);
-            }}
-            className="btn btn-primary"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
-          >
-            ➕ Lập phiếu đánh giá mới
-          </button>
-        </div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
+        <button
+          onClick={() => {
+            setAssessment({
+              ...DEFAULT_ASSESSMENT,
+              assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
+            });
+            setIsEditorOpen(true);
+          }}
+          className="btn btn-primary"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
+        >
+          ➕ Lập phiếu đánh giá mới
+        </button>
       </div>
 
       {/* Message Banner */}

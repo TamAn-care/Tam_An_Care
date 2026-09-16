@@ -211,7 +211,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     canAccessAnalytics: true,
     canViewAuditLog: true,
     canViewDirectorAuditLog: false,
-    canViewSensitiveFinancials: false,
+    canViewSensitiveFinancials: true, // QUẢN LÝ: Quyền xem đơn giá & tổng giá trị nhập thực phẩm, kinh phí
     canEvaluatePsychology: false,
     canRegisterStaffMeals: true,
     canManageCareSuppliesImport: true,

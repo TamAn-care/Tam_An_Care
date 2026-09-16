@@ -407,42 +407,7 @@ export default function BillingPage() {
 
   return (
     <div className="page-container">
-      {/* Header */}
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
-        <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.35rem' }}>
-            <span>💳</span> Quản Lý Phí & Bảng Giá Dịch Vụ
-          </h1>
-        </div>
 
-      </div>
-
-      {/* Universal Calculation Rule Banner */}
-      <div
-        className="no-print"
-        style={{
-          background: 'linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%)',
-          border: '1px solid #bbf7d0',
-          borderRadius: '0.65rem',
-          padding: '0.75rem 1rem',
-          marginBottom: '1.25rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.85rem',
-          fontSize: '0.83rem',
-          color: '#1e293b',
-        }}
-      >
-        <span style={{ fontSize: '1.4rem' }}>📐</span>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, color: '#14532d', marginBottom: '0.15rem' }}>
-            NGUYÊN TẮC TÍNH PHÍ NHẤT QUÁN TOÀN VIỆN TÂM AN
-          </div>
-          <div>
-            <b>Tổng thực thu</b> = 🏨 Phí cơ bản (gói phòng) + 💳 Tiền cọc (kỳ đầu) + 🩺 Phí hỗ trợ (chỉ khi có chỉ định) + 🏮 Phụ thu lễ - 📉 Giảm trừ nghỉ phép/tạm vắng - 🎁 Ưu đãi phê duyệt + 🍲 Suất ăn / 🩹 Vật tư y tế. <i>Cư dân không sử dụng dịch vụ hỗ trợ được tính phí hỗ trợ = 0đ.</i>
-          </div>
-        </div>
-      </div>
 
       {/* Primary Tabs - Streamlined single-line layout */}
       <div

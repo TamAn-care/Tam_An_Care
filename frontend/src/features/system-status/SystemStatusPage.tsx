@@ -98,24 +98,11 @@ export function SystemStatusPage() {
 
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
-      <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <div className="eyebrow" style={{ color: '#15803d', fontWeight: 700 }}>
-          🛡️ CHỨNG NHẬN SẢN PHẨM & TRẠNG THÁI TOÀN HỆ THỐNG (SERIES P)
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title" style={{ color: '#1e293b' }}>
-              Trạng Thái Hệ Thống & Chứng Nhận Phát Hành
-            </h1>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <span className="badge badge-success" style={{ padding: '0.5rem 0.85rem', fontSize: '0.9rem', fontWeight: 800 }}>
-              ✅ PRODUCTION READY — ALL SYSTEMS OPERATIONAL
-            </span>
-          </div>
-        </div>
-      </header>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1.25rem' }}>
+        <span className="badge badge-success" style={{ padding: '0.5rem 0.85rem', fontSize: '0.9rem', fontWeight: 800 }}>
+          ✅ PRODUCTION READY — ALL SYSTEMS OPERATIONAL
+        </span>
+      </div>
 
       {/* Backend Connection & Actor Session Card */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>

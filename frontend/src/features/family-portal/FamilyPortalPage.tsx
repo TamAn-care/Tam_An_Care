@@ -440,12 +440,7 @@ export default function FamilyPortalPage() {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
-      {/* Header Banner */}
-      <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <h1 className="page-title" style={{ color: '#1e293b' }}>
-          👨‍👩‍👧 Cổng Thông Tin Thân Nhân & Người Bảo Hộ
-        </h1>
-      </header>
+
 
       {/* Resident Profile Hero Card */}
       <div

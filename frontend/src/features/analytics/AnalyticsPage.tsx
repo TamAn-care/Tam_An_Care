@@ -75,14 +75,8 @@ export default function AnalyticsPage() {
 
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
-      {/* Header Banner */}
-      <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title" style={{ color: '#1e293b' }}>
-              Phân Tích & Quản Trị
-            </h1>
-          </div>
+      {/* Top Header Actions */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
 
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {/* View Mode Toggle Button */}
@@ -173,8 +167,7 @@ export default function AnalyticsPage() {
               </span>
             )}
           </div>
-        </div>
-      </header>
+      </div>
 
       {/* Dynamic Summary Bar for Period */}
       <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.625rem', padding: '0.85rem 1.25rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>

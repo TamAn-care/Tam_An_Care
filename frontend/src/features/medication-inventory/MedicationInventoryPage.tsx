@@ -352,14 +352,7 @@ export default function MedicationInventoryPage() {
 
   return (
     <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
-      {/* Header Banner */}
-      <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <h1 className="page-title" style={{ color: '#1e293b' }}>
-            Dược Phẩm & Vật Tư Y Tế
-          </h1>
-
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
             {canPrescribe && (
               <button
                 type="button"
@@ -384,8 +377,6 @@ export default function MedicationInventoryPage() {
               </button>
             )}
           </div>
-        </div>
-      </header>
 
       {/* Tabs Header */}
       <div

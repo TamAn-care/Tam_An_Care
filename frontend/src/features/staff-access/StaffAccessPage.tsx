@@ -598,25 +598,7 @@ export function StaffAccessPage() {
 
   return (
     <div className="page-container" style={{ padding: '1.25rem 1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1rem',
-        }}
-      >
-        <div>
-          <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.4rem', color: '#1e293b' }}>
-            <span>👥</span> Quản Trị Nhân Sự & Cấp Tài Khoản Đăng Nhập
-          </h1>
-        </div>
 
-        {/* Clearance Badge */}
-      </div>
 
       {/* Global Feedback Banner */}
       {feedback && (

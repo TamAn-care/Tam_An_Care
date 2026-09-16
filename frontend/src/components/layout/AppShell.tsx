@@ -218,10 +218,34 @@ export function AppShell() {
           isCollapsed={isSidebarCollapsed}
         />
 
-        <div className="sidebar-footer">
-          <span className="version-text">
-            {isSidebarCollapsed ? 'V7.5' : 'V7.5 Development'}
-          </span>
+        <div
+          className="sidebar-footer"
+          style={{
+            marginTop: 'auto',
+            padding: isSidebarCollapsed ? '0.6rem 0.3rem' : '0.75rem 0.85rem',
+            borderTop: '1px solid #e2e8f0',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.4rem',
+            background: '#ffffff',
+          }}
+        >
+          <ConnectivityStatus isCollapsed={isSidebarCollapsed} />
+
+          <div
+            style={{
+              fontSize: '0.7rem',
+              color: '#94a3b8',
+              fontWeight: 500,
+              textAlign: isSidebarCollapsed ? 'center' : 'left',
+              paddingLeft: isSidebarCollapsed ? 0 : '0.2rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {isSidebarCollapsed ? 'v7.5 Dev' : 'Tâm An Care V7.5 Development'}
+          </div>
         </div>
       </aside>
 
@@ -295,91 +319,81 @@ export function AppShell() {
 
           <div className="topbar-end">
             <NotificationBell />
-            <ConnectivityStatus />
 
-            <div className="actor-panel">
-              {isDevelopmentBootstrap && (
-                <span className="development-badge">
-                  DEVELOPMENT
-                </span>
-              )}
-
-              <div className="actor-summary">
-                <span className="actor-label">
-                  Người dùng
-                </span>
-
-                <span className="actor-value">
-                  {actor
-                    ? actor.displayName ||
-                      actor.actorId
-                    : 'Chưa xác định'}
-                </span>
-
+            <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div className="actor-summary" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', lineHeight: 1.2 }}>
+                  <span style={{ fontSize: '0.8rem' }}>👤</span>
+                  <span className="actor-value" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                    {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
+                  </span>
+                </div>
                 {actor && (
-                  <span className="actor-role">
-                    {
-                      ROLE_LABELS[
-                        actor.actorRole
-                      ]
-                    }
+                  <span className="actor-role" style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534', background: '#dcfce7', border: '1px solid #86efac', borderRadius: '0.25rem', padding: '0.05rem 0.35rem', marginTop: '0.15rem', width: 'fit-content' }}>
+                    {ROLE_LABELS[actor.actorRole]}
                   </span>
                 )}
               </div>
 
-              {actor && (
-                <div className="topbar-action-group" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                  <button
-                    type="button"
-                    className="button button-subtle"
-                    onClick={() => {
-                      setPasswordFeedback(null);
-                      setCurrentPassword('');
-                      setNewPassword('');
-                      setConfirmPassword('');
-                      setShowPasswordModal(true);
-                    }}
-                    style={{
-                      background: '#f0fdf4',
-                      border: '1px solid #86efac',
-                      color: '#166534',
-                      fontWeight: 700,
-                      fontSize: '0.78rem',
-                      padding: '0.35rem 0.65rem',
-                      borderRadius: '0.35rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                    }}
-                  >
-                    <span>🔑</span> Đổi Mật Khẩu
-                  </button>
-
-                  {/* ONLY ADMIN CAN SEE ROLE SWITCHER TOGGLE BUTTON */}
-                  {actor?.actorRole === 'ADMIN' ? (
+              <div className="topbar-action-group" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                {actor ? (
+                  <>
                     <button
                       type="button"
                       className="button button-subtle"
-                      onClick={() => setShowTopLogin((prev) => !prev)}
+                      onClick={() => {
+                        setPasswordFeedback(null);
+                        setCurrentPassword('');
+                        setNewPassword('');
+                        setConfirmPassword('');
+                        setShowPasswordModal(true);
+                      }}
                       style={{
-                        background: showTopLogin ? '#166534' : '#eff6ff',
-                        border: showTopLogin ? '1px solid #14532d' : '1px solid #93c5fd',
-                        color: showTopLogin ? '#ffffff' : '#1e40af',
-                        fontWeight: 700,
+                        background: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                        color: '#334155',
+                        fontWeight: 600,
                         fontSize: '0.78rem',
                         padding: '0.35rem 0.65rem',
-                        borderRadius: '0.35rem',
+                        borderRadius: '0.375rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.3rem',
+                        height: '32px',
+                        whiteSpace: 'nowrap',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
                       }}
-                      title="Chuyển đổi vai trò nhân sự (Dành riêng cho Admin)"
                     >
-                      <span>🛡️</span> {showTopLogin ? 'Ẩn Panel Admin' : 'Admin Panel / Switch'}
+                      <span>🔑</span> Đổi Mật Khẩu
                     </button>
-                  ) : (
+
+                    {actor?.actorRole === 'ADMIN' && (
+                      <button
+                        type="button"
+                        className="button button-subtle"
+                        onClick={() => setShowTopLogin((prev) => !prev)}
+                        style={{
+                          background: showTopLogin ? '#166534' : '#eff6ff',
+                          border: showTopLogin ? '1px solid #14532d' : '1px solid #93c5fd',
+                          color: showTopLogin ? '#ffffff' : '#1e40af',
+                          fontWeight: 600,
+                          fontSize: '0.78rem',
+                          padding: '0.35rem 0.65rem',
+                          borderRadius: '0.375rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                          height: '32px',
+                          whiteSpace: 'nowrap',
+                        }}
+                        title="Chuyển đổi vai trò nhân sự (Dành riêng cho Admin)"
+                      >
+                        <span>🛡️</span> {showTopLogin ? 'Ẩn Panel Admin' : 'Admin Panel'}
+                      </button>
+                    )}
+
                     <button
                       type="button"
                       className="button button-subtle"
@@ -388,21 +402,46 @@ export function AppShell() {
                         background: '#fef2f2',
                         border: '1px solid #fca5a5',
                         color: '#991b1b',
-                        fontWeight: 700,
+                        fontWeight: 600,
                         fontSize: '0.78rem',
                         padding: '0.35rem 0.65rem',
-                        borderRadius: '0.35rem',
+                        borderRadius: '0.375rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.3rem',
+                        height: '32px',
+                        whiteSpace: 'nowrap',
                       }}
                     >
                       <span>🚪</span> Đăng Xuất
                     </button>
-                  )}
-                </div>
-              )}
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="button button-subtle"
+                    onClick={() => setShowTopLogin(true)}
+                    style={{
+                      background: '#166534',
+                      border: 'none',
+                      color: '#ffffff',
+                      fontWeight: 700,
+                      fontSize: '0.78rem',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '0.375rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.3rem',
+                      height: '32px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span>🔑</span> Đăng Nhập
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </header>
