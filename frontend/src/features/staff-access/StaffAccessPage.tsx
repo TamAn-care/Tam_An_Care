@@ -622,92 +622,90 @@ export function StaffAccessPage() {
         </div>
       )}
 
-      {/* Navigation Sub-Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setActiveMainTab('STAFF_ACCOUNTS')}
-            style={{
-              padding: '0.65rem 1.1rem',
-              fontWeight: 700,
-              fontSize: '0.88rem',
-              border: 'none',
-              borderBottom: activeMainTab === 'STAFF_ACCOUNTS' ? '3px solid #166534' : '3px solid transparent',
-              background: activeMainTab === 'STAFF_ACCOUNTS' ? '#f0fdf4' : 'transparent',
-              color: activeMainTab === 'STAFF_ACCOUNTS' ? '#166534' : '#64748b',
-              cursor: 'pointer',
-              borderRadius: '0.4rem 0.4rem 0 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-            }}
-          >
-            <span>👥</span> 1. Danh Sách & Cấp Tài Khoản ({staffQuery.data?.length ?? 0})
-          </button>
+      {/* Navigation Sub-Tabs (Block Cards Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          {
+            id: 'STAFF_ACCOUNTS' as const,
+            title: '1. Danh Sách & Cấp Tài Khoản',
+            icon: '👥',
+            badgeText: `${staffQuery.data?.length ?? 0} tài khoản`,
+            desc: 'Quản lý tài khoản, vai trò & phân quyền nhân sự',
+          },
+          {
+            id: 'RESIDENT_ACCESS' as const,
+            title: '2. Quyền Tiếp Cận Hồ Sơ',
+            icon: '📋',
+            badgeText: `${assignmentQuery.data?.length ?? 0} phân công`,
+            desc: 'Cấp quyền truy cập hồ sơ người cao tuổi',
+          },
+          {
+            id: 'KPI_EVALUATION' as const,
+            title: '3. Giám Sát & Tổng Hợp KPI',
+            icon: '📊',
+            badgeText: `${kpiEvaluationsQuery.data?.length ?? 0} đánh giá`,
+            desc: 'Theo dõi hiệu suất & chỉ số công việc nhân viên',
+          },
+          {
+            id: 'RECOGNITION_HONOR' as const,
+            title: '4. Khen Thưởng & Thành Tích',
+            icon: '🏆',
+            badgeText: `${recognitionsQuery.data?.length ?? 0} vinh danh`,
+            desc: 'Ghi nhận thành tích & khen thưởng cá nhân/tập thể',
+          },
+        ].map((block) => {
+          const isActive = activeMainTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveMainTab(block.id)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span style={{ fontSize: '1.25rem' }}>{block.icon}</span>
+                <span
+                  style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '0.35rem',
+                    background: isActive ? '#166534' : '#f1f5f9',
+                    color: isActive ? '#ffffff' : '#475569',
+                  }}
+                >
+                  {isActive ? 'ĐANG XEM' : block.badgeText}
+                </span>
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '0.9rem', color: isActive ? '#166534' : '#1e293b' }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.75rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.15rem' }}>
+                  {block.desc}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
 
-          <button
-            onClick={() => setActiveMainTab('RESIDENT_ACCESS')}
-            style={{
-              padding: '0.65rem 1.1rem',
-              fontWeight: 700,
-              fontSize: '0.88rem',
-              border: 'none',
-              borderBottom: activeMainTab === 'RESIDENT_ACCESS' ? '3px solid #166534' : '3px solid transparent',
-              background: activeMainTab === 'RESIDENT_ACCESS' ? '#f0fdf4' : 'transparent',
-              color: activeMainTab === 'RESIDENT_ACCESS' ? '#166534' : '#64748b',
-              cursor: 'pointer',
-              borderRadius: '0.4rem 0.4rem 0 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-            }}
-          >
-            <span>📋</span> 2. Quyền Tiếp Cận Hồ Sơ ({assignmentQuery.data?.length ?? 0})
-          </button>
-
-          <button
-            onClick={() => setActiveMainTab('KPI_EVALUATION')}
-            style={{
-              padding: '0.65rem 1.1rem',
-              fontWeight: 700,
-              fontSize: '0.88rem',
-              border: 'none',
-              borderBottom: activeMainTab === 'KPI_EVALUATION' ? '3px solid #166534' : '3px solid transparent',
-              background: activeMainTab === 'KPI_EVALUATION' ? '#f0fdf4' : 'transparent',
-              color: activeMainTab === 'KPI_EVALUATION' ? '#166534' : '#64748b',
-              cursor: 'pointer',
-              borderRadius: '0.4rem 0.4rem 0 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-            }}
-          >
-            <span>📊</span> 3. Giám Sát & Tổng Hợp KPI ({kpiEvaluationsQuery.data?.length ?? 0})
-          </button>
-
-          <button
-            onClick={() => setActiveMainTab('RECOGNITION_HONOR')}
-            style={{
-              padding: '0.65rem 1.1rem',
-              fontWeight: 700,
-              fontSize: '0.88rem',
-              border: 'none',
-              borderBottom: activeMainTab === 'RECOGNITION_HONOR' ? '3px solid #166534' : '3px solid transparent',
-              background: activeMainTab === 'RECOGNITION_HONOR' ? '#f0fdf4' : 'transparent',
-              color: activeMainTab === 'RECOGNITION_HONOR' ? '#166534' : '#64748b',
-              cursor: 'pointer',
-              borderRadius: '0.4rem 0.4rem 0 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.45rem',
-            }}
-          >
-            <span>🏆</span> 4. Khen Thưởng & Thành Tích ({recognitionsQuery.data?.length ?? 0})
-          </button>
-        </div>
-
-        {/* Action / Export Button */}
-        <div>
+      {/* Action / Export Button */}
+      {(activeMainTab === 'STAFF_ACCOUNTS' || activeMainTab === 'RESIDENT_ACCESS') && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
           {activeMainTab === 'STAFF_ACCOUNTS' && (
             <button
               onClick={exportStaffAccountsCSV}
@@ -727,7 +725,7 @@ export function StaffAccessPage() {
             </button>
           )}
         </div>
-      </div>
+      )}
 
       {/* TAB 1: DANH SÁCH & CẤP TÀI KHOẢN NHÂN SỰ */}
       {activeMainTab === 'STAFF_ACCOUNTS' && (

@@ -378,107 +378,85 @@ export default function MedicationInventoryPage() {
             )}
           </div>
 
-      {/* Tabs Header */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.5rem',
-          borderBottom: '2px solid #e2e8f0',
-          marginBottom: '1.5rem',
-          overflowX: 'auto',
-          paddingBottom: '0.25rem',
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveTab('emar')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'emar' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'emar' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          💊 Lịch Cấp Phát eMAR Hôm Nay
-          <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>
-            {givenDoses}/{totalDoses} Đã cho uống
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('orders')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'orders' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'orders' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          📋 Sổ Y Lệnh Thuốc Của Cụ
-          <span className="badge badge-info" style={{ fontSize: '0.75rem' }}>
-            {ordersQuery.data?.length || 0} Y lệnh
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('inventory')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'inventory' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'inventory' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          📦 Kho Vật Tư Tiêu Hao
-          {lowStockCount > 0 && (
-            <span className="badge badge-danger" style={{ fontSize: '0.75rem' }}>
-              ⚠️ {lowStockCount} Sắp hết
-            </span>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('reports')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'reports' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'reports' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          📊 Nhật Ký Sử Dụng & Chi Phí
-        </button>
+      {/* Tabs Header (Block Cards Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          {
+            id: 'emar' as const,
+            title: 'Lịch Cấp Phát eMAR',
+            icon: '💊',
+            badgeText: `${givenDoses}/${totalDoses} Đã cho uống`,
+            desc: 'Theo dõi & xác nhận cho cụ uống thuốc theo ca',
+          },
+          {
+            id: 'orders' as const,
+            title: 'Sổ Y Lệnh Thuốc Của Cụ',
+            icon: '📋',
+            badgeText: `${ordersQuery.data?.length || 0} y lệnh`,
+            desc: 'Quản lý đơn thuốc, liều dùng & chỉ định bác sĩ',
+          },
+          {
+            id: 'inventory' as const,
+            title: 'Kho Vật Tư Tiêu Hao',
+            icon: '📦',
+            badgeText: lowStockCount > 0 ? `⚠️ ${lowStockCount} sắp hết` : 'Đủ tồn kho',
+            desc: 'Quản lý kho thuốc, bỉm, gạc & vật tư y tế',
+          },
+          {
+            id: 'reports' as const,
+            title: 'Nhật Ký Sử Dụng & Chi Phí',
+            icon: '📊',
+            badgeText: 'Báo cáo',
+            desc: 'Thống kê lượng dùng & tổng hợp chi phí thuốc/vật tư',
+          },
+        ].map((block) => {
+          const isActive = activeTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveTab(block.id)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span style={{ fontSize: '1.25rem' }}>{block.icon}</span>
+                <span
+                  style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '0.35rem',
+                    background: isActive ? '#166534' : block.badgeText.includes('⚠️') ? '#fef2f2' : '#f1f5f9',
+                    color: isActive ? '#ffffff' : block.badgeText.includes('⚠️') ? '#dc2626' : '#475569',
+                  }}
+                >
+                  {isActive ? 'ĐANG XEM' : block.badgeText}
+                </span>
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: isActive ? '#166534' : '#1e293b' }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.15rem' }}>
+                  {block.desc}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: eMAR DAILY ADMINISTRATION */}

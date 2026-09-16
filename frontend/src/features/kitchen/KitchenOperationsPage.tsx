@@ -449,112 +449,55 @@ export default function KitchenOperationsPage() {
     <div className="page-container" style={{ padding: '1.25rem 1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
 
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
-        <button
-          className={`tab-button ${activeTab === 'MENU' ? 'active' : ''}`}
-          onClick={() => setActiveTab('MENU')}
-          style={{
-            padding: '0.6rem 1.1rem',
-            fontWeight: 700,
-            fontSize: '0.88rem',
-            border: 'none',
-            borderBottom: activeTab === 'MENU' ? '3px solid #166534' : '3px solid transparent',
-            background: activeTab === 'MENU' ? '#f0fdf4' : 'transparent',
-            color: activeTab === 'MENU' ? '#166534' : '#64748b',
-            cursor: 'pointer',
-            borderRadius: '0.4rem 0.4rem 0 0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span>🥗</span> 1. Thực Đơn Tuần & Bữa Ăn Hôm Nay
-        </button>
-
-        <button
-          className={`tab-button ${activeTab === 'RECEIVING' ? 'active' : ''}`}
-          onClick={() => setActiveTab('RECEIVING')}
-          style={{
-            padding: '0.6rem 1.1rem',
-            fontWeight: 700,
-            fontSize: '0.88rem',
-            border: 'none',
-            borderBottom: activeTab === 'RECEIVING' ? '3px solid #166534' : '3px solid transparent',
-            background: activeTab === 'RECEIVING' ? '#f0fdf4' : 'transparent',
-            color: activeTab === 'RECEIVING' ? '#166534' : '#64748b',
-            cursor: 'pointer',
-            borderRadius: '0.4rem 0.4rem 0 0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span>🚚</span> 2. Tiếp Nhận & Kiểm Đếm Thực Phẩm
-        </button>
-
-        <button
-          className={`tab-button ${activeTab === 'INVENTORY' ? 'active' : ''}`}
-          onClick={() => setActiveTab('INVENTORY')}
-          style={{
-            padding: '0.6rem 1.1rem',
-            fontWeight: 700,
-            fontSize: '0.88rem',
-            border: 'none',
-            borderBottom: activeTab === 'INVENTORY' ? '3px solid #166534' : '3px solid transparent',
-            background: activeTab === 'INVENTORY' ? '#f0fdf4' : 'transparent',
-            color: activeTab === 'INVENTORY' ? '#166534' : '#64748b',
-            cursor: 'pointer',
-            borderRadius: '0.4rem 0.4rem 0 0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span>📦</span> 3. Kho Thực Phẩm & Xuất Chế Biến
-        </button>
-
-        <button
-          className={`tab-button ${activeTab === 'SAMPLES' ? 'active' : ''}`}
-          onClick={() => setActiveTab('SAMPLES')}
-          style={{
-            padding: '0.6rem 1.1rem',
-            fontWeight: 700,
-            fontSize: '0.88rem',
-            border: 'none',
-            borderBottom: activeTab === 'SAMPLES' ? '3px solid #166534' : '3px solid transparent',
-            background: activeTab === 'SAMPLES' ? '#f0fdf4' : 'transparent',
-            color: activeTab === 'SAMPLES' ? '#166534' : '#64748b',
-            cursor: 'pointer',
-            borderRadius: '0.4rem 0.4rem 0 0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span>🍱</span> 4. Sổ Lưu Mẫu Thức Ăn 24 Giờ
-        </button>
-
-        <button
-          className={`tab-button ${activeTab === 'AUDIT' ? 'active' : ''}`}
-          onClick={() => setActiveTab('AUDIT')}
-          style={{
-            padding: '0.6rem 1.1rem',
-            fontWeight: 700,
-            fontSize: '0.88rem',
-            border: 'none',
-            borderBottom: activeTab === 'AUDIT' ? '3px solid #166534' : '3px solid transparent',
-            background: activeTab === 'AUDIT' ? '#f0fdf4' : 'transparent',
-            color: activeTab === 'AUDIT' ? '#166534' : '#64748b',
-            cursor: 'pointer',
-            borderRadius: '0.4rem 0.4rem 0 0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-          }}
-        >
-          <span>📊</span> 5. Báo Cáo Nhập - Xuất - Tồn
-        </button>
+      {/* Navigation Block Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          { id: 'MENU', icon: '🥗', title: 'Thực đơn tuần & bữa ăn hôm nay', sub: 'Thực đơn 5 bữa & định mức y tế' },
+          { id: 'RECEIVING', icon: '🚚', title: 'Tiếp nhận & kiểm đếm thực phẩm', sub: 'Kiểm đếm 3 bước & cân nặng' },
+          { id: 'INVENTORY', icon: '📦', title: 'Kho thực phẩm & Xuất chế biến', sub: 'Tồn kho FEFO & Ngưỡng an toàn' },
+          { id: 'SAMPLES', icon: '🧪', title: 'Sổ lưu mẫu thức ăn 24h', sub: 'Lưu mẫu 24h chuẩn HACCP' },
+          { id: 'AUDIT', icon: '📊', title: 'Báo cáo nhập - xuất - tồn', sub: 'Báo cáo đối soát nhà cung cấp' },
+        ].map((block) => {
+          const isActive = activeTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveTab(block.id as any)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '1.3rem' }}>{block.icon}</span>
+                {isActive && (
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#15803d', background: '#dcfce7', padding: '0.15rem 0.45rem', borderRadius: '0.25rem', border: '1px solid #86efac' }}>
+                    ĐANG XEM
+                  </span>
+                )}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.86rem', color: isActive ? '#166534' : '#0f172a', lineHeight: 1.25 }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.73rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.2rem' }}>
+                  {block.sub}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 0: THỰC ĐƠN TUẦN & THỰC ĐƠN HÔM NAY */}

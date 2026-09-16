@@ -628,57 +628,106 @@ export default function WorkforcePage() {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid var(--border-color)', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
-        <button
-          onClick={() => setActiveTab('SHIFTS')}
-          className={`btn btn-sm ${activeTab === 'SHIFTS' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          📅 Lịch Trực & Ca Kíp ({filteredItems.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('SWAPS')}
-          className={`btn btn-sm ${activeTab === 'SWAPS' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          🔄 Quy Trình Đổi Ca 3 Bước ({ (fullSwapsQuery.data || []).filter(s => s.managerApprovalStatus === 'PENDING').length })
-        </button>
-        <button
-          onClick={() => setActiveTab('MEAL_REGISTRATION')}
-          className={`btn btn-sm ${activeTab === 'MEAL_REGISTRATION' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          🍱 Đăng Ký Suất Ăn NV ({isSupervisor ? 'Phân quyền Quản lý' : 'Xem danh sách'})
-        </button>
-        <button
-          onClick={() => setActiveTab('SHIFT_TIMES')}
-          className={`btn btn-sm ${activeTab === 'SHIFT_TIMES' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          ⏱️ Khung Ca Trực Linh Hoạt
-        </button>
-        <button
-          onClick={() => setActiveTab('KPI_CHECKLIST')}
-          className={`btn btn-sm ${activeTab === 'KPI_CHECKLIST' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          ✅ Đánh Giá KPI Ca Trực & Bell Notice
-        </button>
-        <button
-          onClick={() => setActiveTab('KPI')}
-          className={`btn btn-sm ${activeTab === 'KPI' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          📊 Giám Sát KPI & Mức Độ Hoàn Thành
-        </button>
-        <button
-          onClick={() => setActiveTab('RECOGNITIONS')}
-          className={`btn btn-sm ${activeTab === 'RECOGNITIONS' ? 'btn-primary' : 'btn-secondary'}`}
-          style={{ borderRadius: '6px 6px 0 0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem', flexShrink: 0 }}
-        >
-          🎖️ Khen Thưởng & Thành Tích ({recognitions.length})
-        </button>
+      {/* Navigation Sub-Tabs (Block Cards Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          {
+            id: 'SHIFTS' as const,
+            title: 'Lịch Trực & Ca Kíp',
+            icon: '📅',
+            badgeText: `${filteredItems.length} ca`,
+            desc: 'Phân công ca trực, điểm danh & phân công nhiệm vụ',
+          },
+          {
+            id: 'SWAPS' as const,
+            title: 'Quy Trình Đổi Ca',
+            icon: '🔄',
+            badgeText: `${(fullSwapsQuery.data || []).filter(s => s.managerApprovalStatus === 'PENDING').length} chờ duyệt`,
+            desc: 'Quy trình đổi ca 3 bước & duyệt ca tự động',
+          },
+          {
+            id: 'MEAL_REGISTRATION' as const,
+            title: 'Đăng Ký Suất Ăn NV',
+            icon: '🍱',
+            badgeText: isSupervisor ? 'Phân quyền' : 'Xem danh sách',
+            desc: 'Đăng ký suất ăn ca trực cho nhân viên',
+          },
+          {
+            id: 'SHIFT_TIMES' as const,
+            title: 'Khung Ca Trực Linh Hoạt',
+            icon: '⏱️',
+            badgeText: 'Cấu hình ca',
+            desc: 'Thiết lập giờ vào ca, ra ca & giao ca',
+          },
+          {
+            id: 'KPI_CHECKLIST' as const,
+            title: 'Đánh Giá KPI & Bell',
+            icon: '✅',
+            badgeText: 'Checklist ca',
+            desc: 'Đánh giá checklist ca trực & chuông báo động',
+          },
+          {
+            id: 'KPI' as const,
+            title: 'Giám Sát KPI',
+            icon: '📊',
+            badgeText: 'Tổng hợp',
+            desc: 'Theo dõi chỉ số KPI & mức độ hoàn thành ca',
+          },
+          {
+            id: 'RECOGNITIONS' as const,
+            title: 'Khen Thưởng & Thành Tích',
+            icon: '🎖️',
+            badgeText: `${recognitions.length} vinh danh`,
+            desc: 'Ghi nhận đóng góp, thưởng điểm & vinh danh ca',
+          },
+        ].map((block) => {
+          const isActive = activeTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveTab(block.id)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span style={{ fontSize: '1.25rem' }}>{block.icon}</span>
+                <span
+                  style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '0.35rem',
+                    background: isActive ? '#166534' : '#f1f5f9',
+                    color: isActive ? '#ffffff' : '#475569',
+                  }}
+                >
+                  {isActive ? 'ĐANG XEM' : block.badgeText}
+                </span>
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: isActive ? '#166534' : '#1e293b' }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.15rem' }}>
+                  {block.desc}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* ========================================================================= */}

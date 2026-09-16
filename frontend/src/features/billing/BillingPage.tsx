@@ -409,106 +409,92 @@ export default function BillingPage() {
     <div className="page-container">
 
 
-      {/* Primary Tabs - Streamlined single-line layout */}
-      <div
-        className="tab-nav no-print"
-        style={{
-          display: 'flex',
-          gap: '0.5rem',
-          borderBottom: '2px solid #e2e8f0',
-          marginBottom: '1.25rem',
-          overflowX: 'auto',
-          whiteSpace: 'nowrap',
-          paddingBottom: '0.25rem',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-
-        <button
-          type="button"
-          className={`tab-item ${activeTab === 'invoices' ? 'active' : ''}`}
-          onClick={() => setActiveTab('invoices')}
-          style={{
-            padding: '0.6rem 1rem',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            borderBottom: activeTab === 'invoices' ? '3px solid #15803d' : 'none',
-            color: activeTab === 'invoices' ? '#15803d' : '#64748b',
-          }}
-        >
-          📑 Bảng Kê Thu Phí
-        </button>
-        <button
-          type="button"
-          className={`tab-item ${activeTab === 'pricing' ? 'active' : ''}`}
-          onClick={() => setActiveTab('pricing')}
-          style={{
-            padding: '0.6rem 1rem',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            borderBottom: activeTab === 'pricing' ? '3px solid #15803d' : 'none',
-            color: activeTab === 'pricing' ? '#15803d' : '#64748b',
-          }}
-        >
-          🏷️ Bảng Giá Dịch Vụ (01/07/2026)
-        </button>
-        <button
-          type="button"
-          className={`tab-item ${activeTab === 'discounts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('discounts')}
-          style={{
-            padding: '0.6rem 1rem',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            borderBottom: activeTab === 'discounts' ? '3px solid #15803d' : 'none',
-            color: activeTab === 'discounts' ? '#15803d' : '#64748b',
-          }}
-        >
-          🎁 Chính Sách Giảm Giá & Ưu Đãi
-        </button>
-        <button
-          type="button"
-          className={`tab-item ${activeTab === 'receipts' ? 'active' : ''}`}
-          onClick={() => setActiveTab('receipts')}
-          style={{
-            padding: '0.6rem 1rem',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            borderBottom: activeTab === 'receipts' ? '3px solid #15803d' : 'none',
-            color: activeTab === 'receipts' ? '#15803d' : '#64748b',
-          }}
-        >
-          🧾 Lịch Sử Thu Tiền ({receiptsQuery.data?.length || 0})
-        </button>
-        <button
-          type="button"
-          className={`tab-item ${activeTab === 'reports' ? 'active' : ''}`}
-          onClick={() => setActiveTab('reports')}
-          style={{
-            padding: '0.6rem 1rem',
-            fontWeight: 600,
-            fontSize: '0.88rem',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            borderBottom: activeTab === 'reports' ? '3px solid #15803d' : 'none',
-            color: activeTab === 'reports' ? '#15803d' : '#64748b',
-          }}
-        >
-          📊 Báo Cáo Doanh Thu
-        </button>
+      {/* Primary Tabs (Block Cards Grid) */}
+      <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          {
+            id: 'invoices' as const,
+            title: 'Bảng Kê Thu Phí',
+            icon: '📑',
+            badgeText: 'Hóa đơn',
+            desc: 'Quản lý bảng kê thu phí, công nợ & phát hành phiếu',
+          },
+          {
+            id: 'pricing' as const,
+            title: 'Bảng Giá Dịch Vụ',
+            icon: '🏷️',
+            badgeText: 'Áp dụng 01/07/2026',
+            desc: 'Thiết lập đơn giá phòng nghỉ, gói chăm sóc & phụ thu',
+          },
+          {
+            id: 'discounts' as const,
+            title: 'Giảm Giá & Ưu Đãi',
+            icon: '🎁',
+            badgeText: 'Miễn giảm',
+            desc: 'Chính sách giảm trừ tạm vắng & ưu đãi đặc biệt',
+          },
+          {
+            id: 'receipts' as const,
+            title: 'Lịch Sử Thu Tiền',
+            icon: '🧾',
+            badgeText: `${receiptsQuery.data?.length || 0} phiếu thu`,
+            desc: 'Nhật ký thanh toán, phiếu thu tiền & đối soát',
+          },
+          {
+            id: 'reports' as const,
+            title: 'Báo Cáo Doanh Thu',
+            icon: '📊',
+            badgeText: 'Thống kê',
+            desc: 'Báo cáo tổng hợp thu chi, thực thu & doanh số',
+          },
+        ].map((block) => {
+          const isActive = activeTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveTab(block.id)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span style={{ fontSize: '1.25rem' }}>{block.icon}</span>
+                <span
+                  style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '0.35rem',
+                    background: isActive ? '#166534' : '#f1f5f9',
+                    color: isActive ? '#ffffff' : '#475569',
+                  }}
+                >
+                  {isActive ? 'ĐANG XEM' : block.badgeText}
+                </span>
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: isActive ? '#166534' : '#1e293b' }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.15rem' }}>
+                  {block.desc}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
 

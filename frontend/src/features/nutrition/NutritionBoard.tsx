@@ -684,7 +684,7 @@ export function NutritionBoard() {
 
       {/* Main Resident Dietary & Caregiver Sync Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        <div style={{ padding: '0.85rem 1.25rem', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ padding: '0.85rem 1.25rem', borderBottom: '1px solid #e5e7eb', background: '#f9fafb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
           <h3 style={{ margin: 0, fontSize: '0.98rem', color: '#1f2937', fontWeight: 700 }}>
             📋 Báo Cáo & Đăng Ký Suất Ăn Chi Tiết Theo Từng Người Cao Tuổi
           </h3>
@@ -693,18 +693,18 @@ export function NutritionBoard() {
           </span>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="table" style={{ margin: 0, width: '100%', borderCollapse: 'collapse' }}>
+        <div className="table-responsive" style={{ margin: 0, border: 'none', borderRadius: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' }}>
+          <table className="table" style={{ margin: 0, width: '100%', minWidth: '920px', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f3f4f6', textAlign: 'left', fontSize: '0.82rem', color: '#4b5563' }}>
-                <th style={{ padding: '0.75rem 1rem' }}>Người cao tuổi & Phòng</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Trạng thái hôm nay</th>
-                <th style={{ padding: '0.75rem 1rem' }}>NV Chăm sóc phụ trách</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Dạng suất ăn</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Bệnh lý & Dị ứng cần kiêng</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Ghi chú báo cáo</th>
-                <th style={{ padding: '0.75rem 1rem' }}>Thời điểm gửi bếp</th>
-                <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao tác</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '180px' }}>Người cao tuổi & Phòng</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '130px' }}>Trạng thái hôm nay</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '140px' }}>NV Chăm sóc phụ trách</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '130px' }}>Dạng suất ăn</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '160px' }}>Bệnh lý & Dị ứng cần kiêng</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '180px' }}>Ghi chú báo cáo</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '140px' }}>Thời điểm gửi bếp</th>
+                <th style={{ padding: '0.75rem 1rem', minWidth: '130px', textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -854,13 +854,13 @@ export function NutritionBoard() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '1rem',
         }}
       >
         {/* Section 1: Suất Ăn Bổ Sung / Khách Đăng Ký (Quản lý duyệt) */}
         <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
               <h3 style={{ margin: 0, fontSize: '1rem', color: '#1f2937', fontWeight: 700 }}>
                 👥 Suất Ăn Bổ Sung & Khách Thăm ({kpis.totalExtraMeals} suất)
@@ -919,7 +919,7 @@ export function NutritionBoard() {
 
         {/* Section 2: Thực Đơn Chuẩn Dinh Dưỡng Hôm Nay */}
         <div className="card" style={{ padding: '1.25rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
             <h3 style={{ margin: 0, fontSize: '1rem', color: '#1f2937', fontWeight: 700 }}>
               🥗 Thực Đơn 4 Cữ Dinh Dưỡng Hôm Nay
             </h3>
@@ -954,15 +954,16 @@ export function NutritionBoard() {
           style={{
             position: 'fixed',
             inset: 0,
-            background: 'rgba(0,0,0,0.5)',
+            background: 'rgba(0,0,0,0.6)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
-            padding: '1rem',
+            padding: '0.75rem',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
-          <div className="card" style={{ maxWidth: '560px', width: '100%', padding: '1.5rem', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="card" style={{ maxWidth: '560px', width: '100%', padding: '1.25rem', maxHeight: '90vh', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#111827' }}>
                 📝 Báo Cáo & Đăng Ký Suất Ăn Của Cư Dân
@@ -1008,7 +1009,7 @@ export function NutritionBoard() {
               {/* Prep Texture */}
               <div>
                 <label className="form-label">Dạng chế biến suất ăn cho cụ *</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '0.5rem' }}>
                   {Object.entries(PREP_LABELS).map(([key, item]) => {
                     const isSelected = formPrepType === key;
                     return (

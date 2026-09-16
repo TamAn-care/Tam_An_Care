@@ -199,101 +199,85 @@ export default function AnalyticsPage() {
       {/* VIEW MODE 1: CHI TIẾT SỐ LIỆU (KPI Tabs + Content) */}
       {viewMode === 'kpi' && (
         <>
-          {/* Tabs Navigation for Detailed KPI View */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '0.5rem',
-              borderBottom: '2px solid #e2e8f0',
-              marginBottom: '1.5rem',
-              overflowX: 'auto',
-              paddingBottom: '0.25rem',
-              whiteSpace: 'nowrap',
-              WebkitOverflowScrolling: 'touch',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setActiveTab('occupancy')}
-              style={{
-                padding: '0.75rem 1.25rem',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                border: 'none',
-                background: 'none',
-                borderBottom: activeTab === 'occupancy' ? '3px solid #15803d' : '3px solid transparent',
-                color: activeTab === 'occupancy' ? '#15803d' : '#64748b',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              🏢 Công Suất & Phòng Giường
-              <span className="badge badge-success" style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#15803d' }}>
-                {data.occupancy.occupancyRate}%
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('clinical')}
-              style={{
-                padding: '0.75rem 1.25rem',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                border: 'none',
-                background: 'none',
-                borderBottom: activeTab === 'clinical' ? '3px solid #15803d' : '3px solid transparent',
-                color: activeTab === 'clinical' ? '#15803d' : '#64748b',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              🩺 Lâm Sàng & An Toàn Người Cao Tuổi
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('financial')}
-              style={{
-                padding: '0.75rem 1.25rem',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                border: 'none',
-                background: 'none',
-                borderBottom: activeTab === 'financial' ? '3px solid #15803d' : '3px solid transparent',
-                color: activeTab === 'financial' ? '#15803d' : '#64748b',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              💰 Tài Chính & Doanh Thu Thu Phí
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('workforce')}
-              style={{
-                padding: '0.75rem 1.25rem',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                border: 'none',
-                background: 'none',
-                borderBottom: activeTab === 'workforce' ? '3px solid #15803d' : '3px solid transparent',
-                color: activeTab === 'workforce' ? '#15803d' : '#64748b',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              👥 Năng Suất Nhân Sự & Vận Hành Ca Kíp
-            </button>
+          {/* Tabs Navigation for Detailed KPI View (Block Cards Grid) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+            {[
+              {
+                id: 'occupancy' as const,
+                title: 'Công Suất & Phòng Giường',
+                icon: '🏢',
+                badgeText: `${data.occupancy.occupancyRate}% Lấp đầy`,
+                desc: 'Phân tích tỷ lệ lấp đầy phòng, giường trống & điều phối',
+              },
+              {
+                id: 'clinical' as const,
+                title: 'Lâm Sàng & An Toàn NCT',
+                icon: '🩺',
+                badgeText: 'An toàn y tế',
+                desc: 'Chỉ số té ngã, sự cố y tế & theo dõi sinh hiệu',
+              },
+              {
+                id: 'financial' as const,
+                title: 'Tài Chính & Doanh Thu',
+                icon: '💰',
+                badgeText: 'Doanh số',
+                desc: 'Thống kê thực thu, công nợ & hiệu quả kinh doanh',
+              },
+              {
+                id: 'workforce' as const,
+                title: 'Năng Suất Nhân Sự',
+                icon: '👥',
+                badgeText: 'Vận hành',
+                desc: 'Chỉ số KPI nhân sự, hiệu suất ca trực & phân công',
+              },
+            ].map((block) => {
+              const isActive = activeTab === block.id;
+              return (
+                <button
+                  key={block.id}
+                  type="button"
+                  onClick={() => setActiveTab(block.id)}
+                  style={{
+                    padding: '0.85rem 1rem',
+                    borderRadius: '0.65rem',
+                    border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                    background: isActive ? '#f0fdf4' : '#ffffff',
+                    boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.2s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: '0.4rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                    <span style={{ fontSize: '1.25rem' }}>{block.icon}</span>
+                    <span
+                      style={{
+                        fontSize: '0.7rem',
+                        fontWeight: 700,
+                        padding: '0.15rem 0.45rem',
+                        borderRadius: '0.35rem',
+                        background: isActive ? '#166534' : '#f1f5f9',
+                        color: isActive ? '#ffffff' : '#475569',
+                      }}
+                    >
+                      {isActive ? 'ĐANG XEM' : block.badgeText}
+                    </span>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '0.88rem', color: isActive ? '#166534' : '#1e293b' }}>
+                      {block.title}
+                    </div>
+                    <div style={{ fontSize: '0.72rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.15rem' }}>
+                      {block.desc}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
           </div>
 
           {/* TAB 1: OCCUPANCY & INFRASTRUCTURE */}

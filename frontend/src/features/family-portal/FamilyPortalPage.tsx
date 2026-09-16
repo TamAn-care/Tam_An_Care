@@ -503,178 +503,113 @@ export default function FamilyPortalPage() {
         </div>
       </div>
 
-      {/* Tabs Navigation */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.5rem',
-          borderBottom: '2px solid #e2e8f0',
-          marginBottom: '1.5rem',
-          overflowX: 'auto',
-          paddingBottom: '0.25rem',
-          whiteSpace: 'nowrap',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveTab('health')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'health' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'health' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          📄 Báo Cáo Sức Khỏe Định Kỳ
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('leave')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'leave' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'leave' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          🚗 Đăng Ký Nghỉ Phép / Tạm Vắng (RLA-BR-01)
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('nutrition')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'nutrition' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'nutrition' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          🍲 Thực Đơn & Chăm Sóc Hôm Nay
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('visit')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'visit' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'visit' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          🗓️ Đặt Lịch Thăm Cụ
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('supplies')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'supplies' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'supplies' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          📦 Đồ Tiêu Hao & Vật Phẩm Gửi
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('psychology')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'psychology' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'psychology' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          🧠 Phiếu Đánh Giá Tâm Lý
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('fee-notice')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'fee-notice' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'fee-notice' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          💳 Thông Báo Thu Phí & Thanh Toán
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('family-meal')}
-          style={{
-            padding: '0.75rem 1.25rem',
-            fontWeight: 700,
-            fontSize: '0.95rem',
-            border: 'none',
-            background: 'none',
-            borderBottom: activeTab === 'family-meal' ? '3px solid #15803d' : '3px solid transparent',
-            color: activeTab === 'family-meal' ? '#15803d' : '#64748b',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          🍽️ Đăng Ký Ăn Cơm Tại Tâm An
-        </button>
+      {/* Tabs Navigation (Block Cards Grid) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          {
+            id: 'health' as const,
+            title: 'Báo Cáo Sức Khỏe',
+            icon: '📄',
+            badgeText: 'Định kỳ',
+            desc: 'Báo cáo y tế, sinh hiệu & diễn tiến sức khỏe',
+          },
+          {
+            id: 'leave' as const,
+            title: 'Đăng Ký Nghỉ Phép',
+            icon: '🚗',
+            badgeText: 'Tạm vắng',
+            desc: 'Đăng ký xin nghỉ phép, tạm vắng về thăm nhà',
+          },
+          {
+            id: 'nutrition' as const,
+            title: 'Thực Đơn & Chăm Sóc',
+            icon: '🍲',
+            badgeText: 'Hôm nay',
+            desc: 'Thực đơn 5 bữa & hoạt động chăm sóc trong ngày',
+          },
+          {
+            id: 'visit' as const,
+            title: 'Đặt Lịch Thăm Cụ',
+            icon: '🗓️',
+            badgeText: 'Lịch hẹn',
+            desc: 'Đăng ký khung giờ tới thăm người thân tại trung tâm',
+          },
+          {
+            id: 'supplies' as const,
+            title: 'Đồ Tiêu Hao & Vật Phẩm',
+            icon: '📦',
+            badgeText: 'Vật phẩm',
+            desc: 'Gửi nhu yếu phẩm & theo dõi vật tư tiêu hao',
+          },
+          {
+            id: 'psychology' as const,
+            title: 'Đánh Giá Tâm Lý',
+            icon: '🧠',
+            badgeText: 'Tinh thần',
+            desc: 'Theo dõi phiếu đánh giá sức khỏe tinh thần',
+          },
+          {
+            id: 'fee-notice' as const,
+            title: 'Thông Báo Thu Phí',
+            icon: '💳',
+            badgeText: 'Thanh toán',
+            desc: 'Xem bảng kê chi phí & xác nhận thanh toán',
+          },
+          {
+            id: 'family-meal' as const,
+            title: 'Đăng Ký Cơm Tâm An',
+            icon: '🍽️',
+            badgeText: 'Suất ăn',
+            desc: 'Đăng ký dùng bữa cùng người thân khi tới thăm',
+          },
+        ].map((block) => {
+          const isActive = activeTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveTab(block.id)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <span style={{ fontSize: '1.25rem' }}>{block.icon}</span>
+                <span
+                  style={{
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    padding: '0.15rem 0.45rem',
+                    borderRadius: '0.35rem',
+                    background: isActive ? '#166534' : '#f1f5f9',
+                    color: isActive ? '#ffffff' : '#475569',
+                  }}
+                >
+                  {isActive ? 'ĐANG XEM' : block.badgeText}
+                </span>
+              </div>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: '0.88rem', color: isActive ? '#166534' : '#1e293b' }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.15rem' }}>
+                  {block.desc}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
 
       {/* TAB 1: HEALTH REPORTS & OFFICIAL PDF */}
