@@ -93,6 +93,7 @@ export function DashboardPage() {
   const [selectedEventType, setSelectedEventType] = useState('HYGIENE_BATHING');
   const [quickNote, setQuickNote] = useState('✅ Hoàn thành tốt, cụ phối hợp vui vẻ');
   const [quickSuccessMsg, setQuickSuccessMsg] = useState('');
+  const [isFocusDashboardMode, setIsFocusDashboardMode] = useState(false);
 
   const createQuickEventMutation = useMutation({
     mutationFn: (payload: any) => createWorkEvent(actor!, payload),
@@ -230,11 +231,29 @@ export function DashboardPage() {
           <div style={{ fontWeight: 700, fontSize: '1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <span>⚡</span> THAO TÁC NHANH 1-CHẠM (LIST & TICK) — VAI TRÒ: {ROLE_LABELS[actorRole as keyof typeof ROLE_LABELS] || actorRole}
           </div>
-          {quickSuccessMsg && (
-            <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.3rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.85rem', fontWeight: 600 }}>
-              {quickSuccessMsg}
-            </div>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            {quickSuccessMsg && (
+              <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.3rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.85rem', fontWeight: 600 }}>
+                {quickSuccessMsg}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setIsFocusDashboardMode(!isFocusDashboardMode)}
+              style={{
+                background: isFocusDashboardMode ? '#166534' : '#f1f5f9',
+                color: isFocusDashboardMode ? '#ffffff' : '#334155',
+                border: '1px solid #cbd5e1',
+                padding: '0.35rem 0.75rem',
+                borderRadius: '0.375rem',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {isFocusDashboardMode ? '🎯 Đang bật Chế độ Tập trung (Ẩn thông tin khác)' : '🎯 Bật Chế độ Tập trung Tác vụ'}
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleQuickSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', alignItems: 'flex-end' }}>
@@ -355,7 +374,10 @@ export function DashboardPage() {
         </form>
       </div>
 
-      {/* Conditional KPI Row based on Role */}
+      {/* 🎯 KHI BẬT CHẾ ĐỘ TẬP TRUNG: ẨN TOÀN BỘ THÔNG TIN VĨ MÔ KHÁC */}
+      {!isFocusDashboardMode && (
+        <>
+          {/* Conditional KPI Row based on Role */}
       {isExecutive ? (
         /* Executive / Management Macro KPI Row (Restricted to Admin, Ban Giám đốc, Quản lý) */
         <div className="kpi-row">
@@ -1194,6 +1216,8 @@ export function DashboardPage() {
         <div style={{ marginBottom: '1.5rem' }}>
           <NutritionBoard />
         </div>
+      )}
+        </>
       )}
     </div>
   );

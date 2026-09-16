@@ -124,56 +124,6 @@ export default function AuditTrailPage() {
         </div>
 
         {/* Security badge with role-aware badge */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.5rem 0.95rem',
-            borderRadius: '0.5rem',
-            background: isDirector ? '#dcfce7' : '#eff6ff',
-            border: `1px solid ${isDirector ? '#86efac' : '#bfdbfe'}`,
-            fontSize: '0.82rem',
-            fontWeight: 700,
-            color: isDirector ? '#166534' : '#1e40af',
-          }}
-        >
-          <span>{isDirector ? '👑' : '🔒'}</span>
-          <span>
-            {isDirector
-              ? 'Quyền hạn: Ban Giám đốc (Toàn quyền xem BGĐ, Quản lý & Nhân viên)'
-              : 'Quyền hạn: Quản lý (Truy vết Nhân viên & Quản lý — Bảo mật hoạt động BGĐ)'}
-          </span>
-        </div>
-      </div>
-
-      {/* RBAC Notice Banner */}
-      <div
-        style={{
-          background: isDirector ? '#f0fdf4' : '#f8fafc',
-          border: `1px solid ${isDirector ? '#bbf7d0' : '#e2e8f0'}`,
-          borderRadius: '0.6rem',
-          padding: '0.75rem 1rem',
-          marginBottom: '1.25rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.6rem',
-          fontSize: '0.84rem',
-          color: isDirector ? '#166534' : '#334155',
-        }}
-      >
-        <span style={{ fontSize: '1.15rem' }}>{isDirector ? '🛡️' : 'ℹ️'}</span>
-        <div>
-          {isDirector ? (
-            <span>
-              <b>Chế độ kiểm toán toàn diện Ban Giám đốc:</b> Bạn có thẩm quyền cao nhất, theo dõi được toàn bộ hoạt động của tất cả nhân sự các phòng ban, Quản lý và các thành viên Ban Giám đốc mà không bị giới hạn.
-            </span>
-          ) : (
-            <span>
-              <b>Chính sách phân quyền bảo mật cấp bậc:</b> Bạn có quyền kiểm toán và truy vết hoạt động của toàn thể nhân sự các phòng ban gồm Nhân viên y tế, Nhân viên chăm sóc, Nhân viên kế toán, Nhân viên lễ tân và Quản lý chung. Theo chính sách phân cấp, các hoạt động điều hành của Ban Giám đốc được ẩn bảo mật.
-            </span>
-          )}
-        </div>
       </div>
 
       {/* KPI Overview Metrics */}

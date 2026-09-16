@@ -1163,7 +1163,41 @@ export function OperationsPage() {
         </div>
       </header>
 
-      {/* Top KPI Summary */}
+      {/* 🎯 BẢNG THÔNG BÁO CHẾ ĐỘ TẬP TRUNG TÁC VỤ (TASK FOCUS MODE) */}
+      {showCreateSection ? (
+        <div style={{
+          background: '#f0fdf4',
+          border: '2px solid #166534',
+          padding: '1rem 1.25rem',
+          borderRadius: '0.75rem',
+          marginBottom: '1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+        }}>
+          <div>
+            <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <span>🎯</span> CHẾ ĐỘ TẬP TRUNG TÁC VỤ: GHI NHẬN CÔNG VIỆC CHĂM SÓC
+            </div>
+            <div style={{ fontSize: '0.85rem', color: '#15803d', marginTop: '0.2rem' }}>
+              Màn hình đã tự động thu gọn và ẩn các thẻ KPI/bộ lọc không liên quan để bạn tập trung 100% vào việc ghi nhận công việc.
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => setShowCreateSection(false)}
+            style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem', border: '1px solid #166534', color: '#166534' }}
+          >
+            <span>◀ Quay lại Bảng Vận Hành Tổng Thể</span>
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Top KPI Summary */}
       <div className="kpi-grid">
         <div className="kpi-box">
           <div className="kpi-title">Công việc tìm thấy</div>
@@ -1197,25 +1231,6 @@ export function OperationsPage() {
           <div className="kpi-desc">Danh mục quy trình chuẩn</div>
         </div>
       </div>
-
-      {/* ========================================================================= */}
-      {/* 🛡️ THÔNG BÁO PHÂN QUYỀN VÀ THẨM QUYỀN TRUY CẬP CHUYÊN MÔN (RBAC) */}
-      {/* ========================================================================= */}
-      {isManagement ? (
-        <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '0.85rem 1.25rem', borderRadius: '8px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#1e40af', fontWeight: 600, fontSize: '0.92rem' }}>
-            <span>👑</span> <b>Thẩm Quyền Quản Trị / Giám Sát Vĩ Mô ({ROLE_LABELS[actor.actorRole] || actor.actorRole}):</b> Bạn có thẩm quyền xem & tổng hợp toàn bộ các hoạt động chăm sóc của tất cả <b>{Object.keys(CATEGORY_LABELS).length} khối chuyên môn</b>.
-          </div>
-          <span className="badge badge-primary">Toàn Bộ Khối Chuyên Môn</span>
-        </div>
-      ) : (
-        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.85rem 1.25rem', borderRadius: '8px', marginBottom: '1.25rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#166534', fontWeight: 600, fontSize: '0.92rem' }}>
-            <span>🎯</span> <b>Phân Quyền Chuyên Môn [{ROLE_LABELS[actor.actorRole] || actor.actorRole}]:</b> Ghi nhận & Bảng tổng hợp được mặc định định hướng tập trung vào khối <b>{CATEGORY_LABELS[userDomainCategory!] || userDomainCategory}</b>.
-          </div>
-          <span className="badge badge-success">Khối {CATEGORY_LABELS[userDomainCategory!] || userDomainCategory}</span>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* 🔍 BỘ LỌC VÀ TÌM KIẾM ĐA CHIỀU */}
@@ -1729,8 +1744,11 @@ export function OperationsPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* FORM GHI NHẬN CÔNG VIỆC PHÁT SINH */}
+      {/* FORM GHI NHẬN CÔNG VIỆC PHÁT SINH (CHẾ ĐỘ TẬP TRUNG) */}
       {/* ========================================================================= */}
+        </>
+      )}
+
       {showCreateSection && (
         <section className="card operations-panel" style={{ marginBottom: '1.5rem', border: '2px solid #2563eb' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>

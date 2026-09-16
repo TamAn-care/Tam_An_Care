@@ -391,16 +391,6 @@ export default function MedicationInventoryPage() {
                 📥 Nhập Kho Vật Tư
               </button>
             )}
-            {actor?.actorRole === 'SUPERVISOR' && (
-              <span className="badge badge-purple" style={{ padding: '0.45rem 0.75rem', fontWeight: 700 }}>
-                👑 Ban Giám đốc: Toàn quyền xem quản lý & điều hành
-              </span>
-            )}
-            {actor?.actorRole === 'CARE_MANAGER' && (
-              <span className="badge badge-info" style={{ padding: '0.45rem 0.75rem', fontWeight: 700 }}>
-                📋 Quản lý: Giám sát y lệnh & Quản lý kho vật tư
-              </span>
-            )}
           </div>
         </div>
       </header>

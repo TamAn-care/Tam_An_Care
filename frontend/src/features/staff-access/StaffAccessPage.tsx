@@ -619,61 +619,6 @@ export function StaffAccessPage() {
         </div>
 
         {/* Clearance Badge */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            padding: '0.45rem 0.95rem',
-            borderRadius: '0.5rem',
-            background: isAdmin ? '#fef2f2' : isDirector ? '#ecfdf5' : '#eff6ff',
-            border: `1px solid ${isAdmin ? '#f87171' : isDirector ? '#a7f3d0' : '#bfdbfe'}`,
-            fontSize: '0.82rem',
-            fontWeight: 700,
-            color: isAdmin ? '#b91c1c' : isDirector ? '#047857' : '#1e40af',
-          }}
-        >
-          <span>{isAdmin ? '🛡️' : isDirector ? '👑' : '🔒'}</span>
-          <span>
-            {isAdmin
-              ? 'Thẩm quyền: Quản trị viên Tối cao (Admin) - Toàn quyền 100% tất cả thông tin'
-              : isDirector
-              ? 'Thẩm quyền: Ban Giám đốc (Toàn quyền cấp ID & Password cho BGĐ, Quản lý & Nhân viên)'
-              : 'Thẩm quyền: Quản lý (Cấp ID & Password cho Nhân viên cấp dưới)'}
-          </span>
-        </div>
-      </div>
-
-      {/* Authority Clearances Banner */}
-      <div
-        className="card"
-        style={{
-          padding: '0.85rem 1.1rem',
-          marginBottom: '1.25rem',
-          background: isAdmin ? '#fef2f2' : isDirector ? '#f0fdf4' : '#eff6ff',
-          border: `1px solid ${isAdmin ? '#ef4444' : isDirector ? '#86efac' : '#93c5fd'}`,
-          borderRadius: '0.65rem',
-          color: isAdmin ? '#7f1d1d' : isDirector ? '#14532d' : '#1e3a8a',
-          fontSize: '0.84rem',
-          lineHeight: '1.5',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, marginBottom: '0.2rem' }}>
-          <span>{isAdmin ? '🛡️ QUY TRÌNH QUẢN TRỊ TỐI CAO (ADMIN)' : isDirector ? '🛡️ QUY TRÌNH BẢO MẬT BAN GIÁM ĐỐC' : '🛡️ QUY TRÌNH PHÂN QUYỀN QUẢN LÝ'}</span>
-        </div>
-        {isAdmin ? (
-          <div>
-            <b>Chỉ Quản trị viên (Admin) mới có toàn quyền truy cập và chỉnh sửa 100% tất cả các thông tin</b> trong toàn bộ hệ thống (kể cả tài khoản Ban Giám đốc, Quản lý và Nhân viên). Mọi hành động được lưu vết kiểm toán tối cao.
-          </div>
-        ) : isDirector ? (
-          <div>
-            Ban Giám đốc có quyền <b>tạo ID và Password</b> cho các thành viên trong Ban Giám đốc, Quản lý điều hành và toàn thể nhân viên. Mọi thao tác cấp mật khẩu đều được tự động lưu vết vào hệ thống truy vết kiểm toán <code>AuditTrail</code>.
-          </div>
-        ) : (
-          <div>
-            Quản lý chung có quyền <b>tạo ID và Password</b> cho các nhân viên ở các vị trí thuộc lĩnh vực quản lý vận hành gồm Nhân viên y tế, Nhân viên chăm sóc, Nhân viên dinh dưỡng, Nhân viên kế toán, Nhân viên lễ tân, Nhân viên tâm lý và công tác xã hội, Nhân viên phục hồi chức năng, Nhân viên tạp vụ, Nhân viên bảo vệ, Nhân viên truyền thông. <b>Hệ thống tự động ngăn chặn Quản lý chung can thiệp hoặc sửa đổi tài khoản của Ban Giám đốc.</b>
-          </div>
-        )}
       </div>
 
       {/* Global Feedback Banner */}

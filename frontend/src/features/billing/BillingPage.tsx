@@ -418,30 +418,6 @@ export default function BillingPage() {
           </p>
         </div>
 
-        {/* RBAC Status Badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              padding: '0.45rem 0.85rem',
-              borderRadius: '0.5rem',
-              background: canConfigurePricing ? '#dcfce7' : '#f1f5f9',
-              border: `1px solid ${canConfigurePricing ? '#86efac' : '#cbd5e1'}`,
-              fontSize: '0.82rem',
-              fontWeight: 600,
-              color: canConfigurePricing ? '#166534' : '#475569',
-            }}
-          >
-            <span>{canConfigurePricing ? '👑' : '🔒'}</span>
-            <span>
-              {canConfigurePricing
-                ? 'Thẩm quyền cấu hình giá & Giảm giá: Ban Giám đốc & Quản lý'
-                : 'Chế độ xem bảng giá (Chỉ BGĐ & Quản lý có quyền sửa giá)'}
-            </span>
-          </div>
-        </div>
       </div>
 
       {/* Universal Calculation Rule Banner */}
