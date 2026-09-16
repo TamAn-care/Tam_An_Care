@@ -329,12 +329,8 @@ export function ResidentsPage() {
     <>
       <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div className="eyebrow">
-            {isCaregiver ? 'PHÂN QUYỀN CHĂM SÓC TRỰC TIẾP' : 'HỒ SƠ NỘI TRÚ'}
-          </div>
-
           <h1 className="page-title">
-            {isCaregiver ? `Cư Dân Phụ Trách (${actorName})` : 'Người Cao Tuổi'}
+            Người Cao Tuổi
           </h1>
         </div>
 

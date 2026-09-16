@@ -573,9 +573,7 @@ export default function WorkforcePage() {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
               <h1 className="page-title" style={{ margin: 0 }}>
-                {isSupervisor
-                  ? 'Quản Lý Lịch Trực, Đổi Ca & Giám Sát Hiệu Suất'
-                  : `Lịch Trực & Ca Kíp Của Bạn — ${actor?.displayName || 'Cá Nhân'}`}
+                Lịch Trực & Ca Kíp
               </h1>
               <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-block' }}></span>

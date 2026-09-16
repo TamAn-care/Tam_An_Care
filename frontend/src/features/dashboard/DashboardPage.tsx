@@ -172,37 +172,10 @@ export function DashboardPage() {
   return (
     <div className="page-content">
       {/* Header */}
-      <div className="page-header">
-        <div className="eyebrow">
-          {isCaregiver
-            ? 'KHÔNG GIAN NHÂN VIÊN CHĂM SÓC'
-            : isNutritionist
-            ? 'KHÔNG GIAN NHÂN VIÊN DINH DƯỠNG'
-            : isSocialWorker
-            ? 'KHÔNG GIAN NHÂN VIÊN CÔNG TÁC XÃ HỘI'
-            : isRehab
-            ? 'KHÔNG GIAN NHÂN VIÊN PHỤC HỒI CHỨC NĂNG'
-            : isPsychologist
-            ? 'KHÔNG GIAN NHÂN VIÊN TÂM LÝ'
-            : 'KHÔNG GIAN VẬN HÀNH TRUNG TÂM'}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 className="page-title">
-              {isCaregiver
-                ? `Bảng Công Việc Chăm Sóc — ${actorName}`
-                : isNutritionist
-                ? `Bảng Điều Phối Dinh Dưỡng — ${actorName}`
-                : isSocialWorker
-                ? `Bảng Công Tác Xã Hội — ${actorName}`
-                : isRehab
-                ? `Bảng Phục Hồi Chức Năng — ${actorName}`
-                : isPsychologist
-                ? `Bảng Tham Vấn Tâm Lý — ${actorName}`
-                : 'Tổng Quan Hoạt Động Chăm Sóc'}
-            </h1>
-          </div>
-        </div>
+      <div className="page-header" style={{ marginBottom: '1.25rem' }}>
+        <h1 className="page-title">
+          Tổng Quan Hoạt Động
+        </h1>
       </div>
 
       {/* ⚡ BẢNG THAO TÁC 1-CHẠM THEO VAI TRÒ (ROLE QUICK ACTION PANEL) */}

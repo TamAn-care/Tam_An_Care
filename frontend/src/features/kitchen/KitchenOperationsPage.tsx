@@ -447,21 +447,7 @@ export default function KitchenOperationsPage() {
 
   return (
     <div className="page-container" style={{ padding: '1.25rem 1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '1rem',
-          marginBottom: '1rem',
-        }}
-      >
-        <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0, fontSize: '1.4rem', color: '#166534' }}>
-          <span>🥗</span> Quản Lý Bếp Ăn & Tiếp Nhận An Toàn Thực Phẩm
-        </h1>
-      </div>
+
 
       {/* Navigation Tabs */}
       <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '2px solid #e2e8f0', marginBottom: '1.25rem', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap', WebkitOverflowScrolling: 'touch' }}>
@@ -584,9 +570,6 @@ export default function KitchenOperationsPage() {
                   </h2>
                   <span className="badge badge-success" style={{ fontWeight: 700 }}>Đầy Đủ 5 Bữa/Ngày</span>
                 </div>
-                <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.86rem', color: '#475569' }}>
-                  Quản lý & Cập nhật thực đơn 5 bữa (Sáng, Trưa, Xế chiều, Tối, Phụ tối/đêm) chuẩn định mức y tế cho cụ cao tuổi Trung tâm dưỡng lão Tâm An.
-                </p>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>

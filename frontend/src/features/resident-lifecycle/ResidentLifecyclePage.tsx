@@ -87,7 +87,6 @@ export default function ResidentLifecyclePage() {
   return (
     <main>
       <header className="page-header">
-        <div className="eyebrow">Resident Lifecycle</div>
         <h1 className="page-title">Vòng đời người cao tuổi</h1>
       </header>
 

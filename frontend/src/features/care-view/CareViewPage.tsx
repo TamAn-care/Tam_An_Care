@@ -75,7 +75,6 @@ export function CareViewPage() {
     return (
       <>
         <header className="page-header">
-          <div className="eyebrow">Hồ sơ chăm sóc</div>
           <h1 className="page-title">Đang kiểm tra quyền truy cập</h1>
         </header>
         <LoadingState
@@ -97,7 +96,6 @@ export function CareViewPage() {
     return (
       <>
         <header className="page-header">
-          <div className="eyebrow">Hồ sơ chăm sóc</div>
           <h1 className="page-title">Không thể mở hồ sơ</h1>
         </header>
         <ErrorState

@@ -225,9 +225,8 @@ export function ServiceContractsPage() {
       {/* Header */}
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div className="eyebrow">QUẢN TRỊ NỘI BỘ & HỒ SƠ PHÁP LÝ</div>
           <h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            📜 Phân Hệ Hợp Đồng Dịch Vụ
+            Hợp Đồng Dịch Vụ
           </h1>
         </div>
 

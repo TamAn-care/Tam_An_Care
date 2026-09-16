@@ -288,15 +288,8 @@ export function AppShell() {
 
             <div>
               <div className="topbar-title">
-                {meta?.title ??
-                  'Tâm An Care'}
+                {meta?.title ?? 'Tâm An Care'}
               </div>
-
-              {meta?.description && (
-                <div className="topbar-subtitle">
-                  {meta.description}
-                </div>
-              )}
             </div>
           </div>
 

@@ -321,7 +321,6 @@ export default function AccommodationPage() {
   return (
     <main className="page">
       <div className="page-header">
-        <div className="eyebrow">QUẢN TRỊ CƠ SỞ VẬT CHẤT</div>
         <h1 className="page-title">Sơ Đồ Phòng & Giường</h1>
       </div>
 

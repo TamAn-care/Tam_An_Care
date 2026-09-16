@@ -77,13 +77,10 @@ export default function AnalyticsPage() {
     <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
       {/* Header Banner */}
       <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <div className="eyebrow" style={{ color: '#15803d', fontWeight: 700 }}>
-          📈 TRUNG TÂM PHÂN TÍCH & QUẢN TRỊ THÔNG MINH (SERIES AE)
-        </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
             <h1 className="page-title" style={{ color: '#1e293b' }}>
-              Báo Cáo Phân Tích & Điều Hành Vĩ Mô
+              Phân Tích & Quản Trị
             </h1>
           </div>
 

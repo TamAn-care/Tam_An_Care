@@ -354,13 +354,10 @@ export default function MedicationInventoryPage() {
     <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
       {/* Header Banner */}
       <header className="page-header" style={{ marginBottom: '1.5rem' }}>
-        <div className="eyebrow" style={{ color: '#15803d', fontWeight: 700 }}>
-          💊 QUẢN LÝ DƯỢC PHẨM & TỒN KHO Y TẾ (SERIES AD)
-        </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <h1 className="page-title" style={{ color: '#1e293b' }}>
-              Sổ Cấp Phát Thuốc eMAR & Tồn Kho Vật Tư
-            </h1>
+          <h1 className="page-title" style={{ color: '#1e293b' }}>
+            Dược Phẩm & Vật Tư Y Tế
+          </h1>
 
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {canPrescribe && (

@@ -1141,8 +1141,7 @@ export function OperationsPage() {
       <header className="page-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div className="eyebrow">Vận hành chăm sóc & Giám sát điều hành</div>
-            <h1 className="page-title">Nhật Ký & Bằng Chứng Vận Hành Chăm Sóc</h1>
+            <h1 className="page-title">Chăm Sóc & Vận Hành</h1>
           </div>
 
           <div style={{ display: 'flex', gap: '0.5rem' }}>
