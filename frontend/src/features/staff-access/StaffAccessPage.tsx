@@ -1618,9 +1618,12 @@ export function StaffAccessPage() {
                           }}
                         >
                           <div style={{ flex: 1, minWidth: '240px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                               <span className="badge badge-secondary" style={{ fontFamily: 'monospace', fontWeight: 700 }}>
                                 {criterion.code}
+                              </span>
+                              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#166534', background: '#dcfce7', padding: '0.1rem 0.45rem', borderRadius: '4px', border: '1px solid #bbf7d0' }}>
+                                {criterion.category}
                               </span>
                               <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{criterion.title}</strong>
                               <span style={{ fontSize: '0.75rem', color: '#64748b', background: '#e2e8f0', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>

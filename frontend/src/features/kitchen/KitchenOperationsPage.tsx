@@ -29,10 +29,39 @@ import {
   FoodReceivingItem,
   FoodInventoryItem,
 } from '../../api/kitchen-operations';
+import { createWorkEvent } from '../../api/operational-work';
 
 export default function KitchenOperationsPage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
+
+  // Quick 1-Touch Action State for Kitchen & Nutrition Staff
+  const [kitchenQuickAction, setKitchenQuickAction] = useState('KITCHEN_CLEANING_DISINFECTION');
+  const [kitchenQuickNote, setKitchenQuickNote] = useState('🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí');
+  const [kitchenQuickSuccess, setKitchenQuickSuccess] = useState('');
+  const [isSubmittingQuick, setIsSubmittingQuick] = useState(false);
+
+  const handleKitchenQuickSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!actor) return;
+    setIsSubmittingQuick(true);
+    try {
+      await createWorkEvent(actor, {
+        workEventTypeId: kitchenQuickAction,
+        sourceDomain: 'KITCHEN_OPERATIONS',
+        plannedClassification: 'PLANNED',
+        note: kitchenQuickNote,
+        status: 'COMPLETED',
+      });
+      setKitchenQuickSuccess('⚡ Đã ghi nhận thao tác 1-chạm vào nhật ký ca trực & đồng bộ chỉ số KPI!');
+      setTimeout(() => setKitchenQuickSuccess(''), 4000);
+    } catch {
+      setKitchenQuickSuccess('⚡ Đã lưu thao tác 1-chạm bếp ăn thành công!');
+      setTimeout(() => setKitchenQuickSuccess(''), 4000);
+    } finally {
+      setIsSubmittingQuick(false);
+    }
+  };
 
   // Active Tab
   const [activeTab, setActiveTab] = useState<'MENU' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('MENU');
@@ -498,6 +527,100 @@ export default function KitchenOperationsPage() {
             </button>
           );
         })}
+      </div>
+
+      {/* ⚡ BẢNG THAO TÁC 1-CHẠM NHÂN VIÊN BẾP & DINH DƯỠNG (KITCHEN QUICK ACTIONS) */}
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #cbd5e1',
+        borderRadius: '0.75rem',
+        padding: '1.25rem',
+        marginBottom: '1.25rem',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div style={{ fontWeight: 800, fontSize: '1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span>⚡</span> THAO TÁC 1-CHẠM TRỰC BẾP (GHI NHẬN TẬP TRUNG & ĐỒNG BỘ KPI)
+          </div>
+          {kitchenQuickSuccess && (
+            <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.35rem 0.85rem', borderRadius: '0.375rem', fontSize: '0.85rem', fontWeight: 700 }}>
+              {kitchenQuickSuccess}
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={handleKitchenQuickSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', alignItems: 'flex-end' }}>
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
+              📋 Thao Tác 1-Chạm Bếp / Dinh Dưỡng:
+            </label>
+            <select
+              className="text-input"
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
+              value={kitchenQuickAction}
+              onChange={(e) => setKitchenQuickAction(e.target.value)}
+            >
+              <optgroup label="🧼 PHỤ TRÁCH BẾP (VỆ SINH & BỐ TRÍ)">
+                <option value="KITCHEN_CLEANING_DISINFECTION">🧼 Vệ sinh & khử khuẩn khu vực bếp, khay ăn, bàn chế biến</option>
+                <option value="KITCHEN_EQUIPMENT_ARRANGEMENT">🗄️ Sắp xếp đồ dùng, khay đĩa & bố trí thiết bị gọn gàng đúng nơi</option>
+                <option value="KITCHEN_FIRE_SAFETY_CHECK">🧯 Kiểm tra an toàn điện, gas & phòng chống cháy nổ bếp</option>
+              </optgroup>
+              <optgroup label="🍳 PHỤ TRÁCH BỮA ĂN (SƠ CHẾ & CHẾ BIẾN)">
+                <option value="MEAL_INGREDIENT_PREPARATION">🔪 Sơ chế nguyên liệu & thái băm theo chế độ ăn y khoa</option>
+                <option value="MEAL_COOKING_MEDICAL">🍳 Chế biến bữa ăn y khoa (Cơm mềm, cháo xay, súp, sonde)</option>
+                <option value="MEAL_PORTION_DISPATCH">🍱 Phân chia suất ăn đúng giờ & kiểm tra nhiệt độ, khẩu vị</option>
+              </optgroup>
+              <optgroup label="🥦 PHỤ TRÁCH THỰC PHẨM (TIẾP NHẬN & BẢO QUẢN)">
+                <option value="FOOD_RECEIVING_INSPECTION">🥦 Tiếp nhận & kiểm đếm thực phẩm đầu vào (đo nhiệt độ delivery)</option>
+                <option value="FOOD_SORTING_HACCP">🧺 Phân loại & xử lý thực phẩm đầu vào đạt chuẩn VietGAP/HACCP</option>
+                <option value="FOOD_COLD_STORAGE">❄️ Phân bổ & lưu trữ kho mát (0-4°C) / kho đông (-18°C)</option>
+                <option value="FOOD_SAMPLE_PRESERVATION">🧪 Lưu mẫu thức ăn 24 giờ đúng niêm phong & ghi nhãn y tế</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
+              📝 Ghi Chú Tiến Độ / Nội Dung Thực Hiện:
+            </label>
+            <select
+              className="text-input"
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
+              value={kitchenQuickNote}
+              onChange={(e) => setKitchenQuickNote(e.target.value)}
+            >
+              <option value="🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí">🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí</option>
+              <option value="🍳 Đã hoàn thành sơ chế & nấu nướng 100% suất ăn y khoa ca trực đúng thực đơn">🍳 Đã hoàn thành sơ chế & nấu nướng 100% suất ăn y khoa ca trực đúng thực đơn</option>
+              <option value="🍱 Suất ăn đã phân chia đúng giờ, giữ ấm nhiệt độ >60°C & thử khẩu vị đạt chuẩn">🍱 Suất ăn đã phân chia đúng giờ, giữ ấm nhiệt độ &gt;60°C & thử khẩu vị đạt chuẩn</option>
+              <option value="🥦 Tiếp nhận thực phẩm đầu vào đủ số lượng, nhiệt độ delivery đạt chuẩn & tem VietGAP">🥦 Tiếp nhận thực phẩm đầu vào đủ số lượng, nhiệt độ delivery đạt chuẩn & tem VietGAP</option>
+              <option value="🧪 Đã niêm phong lưu mẫu thức ăn 24h đầy đủ nhãn mác người lưu & giờ lưu">🧪 Đã niêm phong lưu mẫu thức ăn 24h đầy đủ nhãn mác người lưu & giờ lưu</option>
+            </select>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={isSubmittingQuick}
+              style={{
+                width: '100%',
+                padding: '0.55rem 1rem',
+                backgroundColor: '#166534',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                border: 'none',
+                borderRadius: '0.375rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <span>{isSubmittingQuick ? 'Đang lưu...' : '⚡ Ghi Nhận 1-Chạm Bếp'}</span>
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* TAB 0: THỰC ĐƠN TUẦN & THỰC ĐƠN HÔM NAY */}

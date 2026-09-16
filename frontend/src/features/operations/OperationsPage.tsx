@@ -76,6 +76,26 @@ const CATEGORY_LABELS: Record<string, string> = {
   OTHER: 'Khác & Nghiệp vụ chung',
 };
 
+export const POSITION_OPTIONS: Record<string, { label: string; icon: string; desc: string }> = {
+  CAREGIVER: { label: 'Nhân viên Chăm sóc & Ca kíp', icon: '🤲', desc: 'Tắm rửa, vệ sinh, thay tã, bón ăn, xoay trở tư thế, di chuyển' },
+  NURSE: { label: 'Y sĩ / Điều dưỡng y tế', icon: '🩺', desc: 'eMAR cho uống thuốc, đo sinh hiệu, chăm sóc vết thương/loét, tiêm truyền' },
+  NUTRITIONIST: { label: 'Nhân viên Dinh dưỡng & Bếp ăn', icon: '🥗', desc: 'Chế độ ăn đặc biệt, khẩu vị, kiểm đếm thực phẩm, lưu mẫu 24h' },
+  PSYCHOSOCIAL: { label: 'Nhân viên Tâm lý & Công tác xã hội', icon: '🧠', desc: 'Trò chuyện tâm lý, MMSE/MoCA, GDS, trị liệu ký ức, tham vấn thân nhân' },
+  REHABILITATION: { label: 'Vật lý trị liệu & Phục hồi chức năng', icon: '🏃', desc: 'Tập VLTL, tập vận động khớp, phục hồi tai biến' },
+  HOUSEKEEPING: { label: 'Vệ sinh & Buồng phòng', icon: '🧹', desc: 'Dọn dẹp phòng ở, khử khuẩn không gian, thay drap giường' },
+  ALL: { label: 'Tất cả vị trí (Dành cho Quản lý / BGĐ)', icon: '🏢', desc: 'Hiển thị đầy đủ danh mục công việc toàn hệ thống' },
+};
+
+export function getDefaultPositionForRole(role: string): string {
+  if (role === 'NURSE') return 'NURSE';
+  if (role === 'NUTRITIONIST') return 'NUTRITIONIST';
+  if (role === 'PSYCHOLOGIST' || role === 'SOCIAL_WORKER') return 'PSYCHOSOCIAL';
+  if (role === 'REHABILITATION_SPECIALIST') return 'REHABILITATION';
+  if (role === 'HOUSEKEEPING') return 'HOUSEKEEPING';
+  if (role === 'ADMIN' || role === 'SUPERVISOR' || role === 'CARE_MANAGER') return 'ALL';
+  return 'CAREGIVER';
+}
+
 const STAFF_CODE_NAME_MAP: Record<string, string> = {
   'NURSE-01': 'Nguyễn Thị Phương Thúy',
   'STAFF-NUR-001': 'Nguyễn Thị Phương Thúy',
@@ -431,6 +451,7 @@ export function OperationsPage() {
   const [showCreateSection, setShowCreateSection] = useState(false);
 
   // Create Work Event Form State
+  const [selectedPositionFilter, setSelectedPositionFilter] = useState<string>(() => getDefaultPositionForRole(actor?.actorRole || ''));
   const [createResidentId, setCreateResidentId] = useState('');
   const [createTypeId, setCreateTypeId] = useState('');
   const [classification, setClassification] = useState<PlannedClassification>('PLANNED');
@@ -607,15 +628,95 @@ export function OperationsPage() {
     [allAvailableTypes],
   );
 
+  const positionFilteredTypes = useMemo(() => {
+    if (selectedPositionFilter === 'ALL') return manualTypes;
+
+    return manualTypes.filter((type) => {
+      const cat = type.category || 'OTHER';
+      if (selectedPositionFilter === 'CAREGIVER') {
+        return cat === 'PERSONAL_CARE' || cat === 'NUTRITION' || cat === 'MOBILITY' || cat === 'EMERGENCY' || cat === 'OTHER';
+      }
+      if (selectedPositionFilter === 'NURSE') {
+        return cat === 'CLINICAL_CARE' || cat === 'EMERGENCY' || cat === 'PERSONAL_CARE' || cat === 'OTHER';
+      }
+      if (selectedPositionFilter === 'NUTRITIONIST') {
+        return cat === 'NUTRITION' || cat === 'EMERGENCY' || cat === 'OTHER';
+      }
+      if (selectedPositionFilter === 'PSYCHOSOCIAL') {
+        return cat === 'PSYCHOSOCIAL' || cat === 'EMERGENCY' || cat === 'OTHER';
+      }
+      if (selectedPositionFilter === 'REHABILITATION') {
+        return cat === 'MOBILITY' || cat === 'EMERGENCY' || cat === 'OTHER';
+      }
+      if (selectedPositionFilter === 'HOUSEKEEPING') {
+        return cat === 'HOUSEKEEPING' || cat === 'EMERGENCY' || cat === 'OTHER';
+      }
+      return true;
+    });
+  }, [manualTypes, selectedPositionFilter]);
+
   const manualTypesByCategory = useMemo(() => {
     const groups: Record<string, WorkEventType[]> = {};
-    for (const type of manualTypes) {
+    for (const type of positionFilteredTypes) {
       const cat = type.category || 'OTHER';
       if (!groups[cat]) groups[cat] = [];
       groups[cat].push(type);
     }
     return groups;
-  }, [manualTypes]);
+  }, [positionFilteredTypes]);
+
+  const quickChipsByPosition = useMemo(() => {
+    switch (selectedPositionFilter) {
+      case 'CAREGIVER':
+        return [
+          { typeId: 'ops-wet-hygiene-bathing', label: '🛁 Tắm rửa & Vệ sinh', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+          { typeId: 'ops-wet-diaper-toileting', label: '🧼 Thay tã bỉm & Bài tiết', bg: '#fef3c7', color: '#b45309', border: '#fde68a' },
+          { typeId: 'ops-wet-meal-assistance', label: '🥣 Hỗ trợ bón ăn/uống', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+          { typeId: 'ops-wet-mobility-assistance', label: '🛏️ Trở mình & Di chuyển', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-tube-feeding-assist', label: '🍲 Hỗ trợ ăn qua Sonde', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+        ];
+      case 'NURSE':
+        return [
+          { typeId: 'ops-wet-vital-signs-check', label: '🩺 Đo sinh hiệu & HA', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-medication-admin', label: '💊 Cấp phát eMAR thuốc', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-wound-care', label: '🩹 Thay băng & Vết thương', bg: '#fef2f2', color: '#dc2626', border: '#fecaca' },
+          { typeId: 'ops-wet-tube-feeding-assist', label: '🍲 Theo dõi Sonde', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+        ];
+      case 'NUTRITIONIST':
+        return [
+          { typeId: 'ops-wet-meal-assistance', label: '🥗 Đánh giá khẩu vị & Dinh dưỡng', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+          { typeId: 'ops-wet-tube-feeding-assist', label: '🍲 Chế độ ăn đặc biệt / Sonde', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+        ];
+      case 'PSYCHOSOCIAL':
+        return [
+          { typeId: 'ops-wet-psychological-support', label: '🧠 Trò chuyện & Tham vấn tâm lý', bg: '#f3e8ff', color: '#6b21a8', border: '#e9d5ff' },
+          { typeId: 'ops-wet-mmse-cognitive-assess', label: '📊 Đánh giá MMSE/MoCA & GDS', bg: '#f3e8ff', color: '#6b21a8', border: '#e9d5ff' },
+          { typeId: 'ops-wet-reminiscence-therapy', label: '👵 Liệu pháp ký ức & Trị liệu nhóm', bg: '#f3e8ff', color: '#6b21a8', border: '#e9d5ff' },
+          { typeId: 'ops-wet-family-connect', label: '👨‍👩‍👧 Gắn kết thân nhân', bg: '#f3e8ff', color: '#6b21a8', border: '#e9d5ff' },
+          { typeId: 'ops-wet-social-work-admission', label: '⚖️ Đánh giá & Trợ giúp xã hội', bg: '#f3e8ff', color: '#6b21a8', border: '#e9d5ff' },
+        ];
+      case 'REHABILITATION':
+        return [
+          { typeId: 'ops-wet-rehab-exercise', label: '🏃 Hướng dẫn tập VLTL & PHCN', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-mobility-assistance', label: '🚶 Tập vận động khớp & Di chuyển', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+        ];
+      case 'HOUSEKEEPING':
+        return [
+          { typeId: 'ops-wet-room-cleaning', label: '🧹 Dọn phòng & Thay drap giường', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' },
+        ];
+      default:
+        return [
+          { typeId: 'ops-wet-hygiene-bathing', label: '🛁 Tắm rửa & Vệ sinh', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+          { typeId: 'ops-wet-meal-assistance', label: '🥣 Hỗ trợ ăn uống', bg: '#e2f4ea', color: '#166534', border: '#bbf7d0' },
+          { typeId: 'ops-wet-diaper-toileting', label: '🧼 Thay tã bỉm', bg: '#fef3c7', color: '#b45309', border: '#fde68a' },
+          { typeId: 'ops-wet-vitals-check', label: '🩺 Đo sinh hiệu & HA', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-medication-admin', label: '💊 Cấp phát eMAR', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-psychological-support', label: '🧠 Trò chuyện tâm lý', bg: '#f3e8ff', color: '#6b21a8', border: '#e9d5ff' },
+          { typeId: 'ops-wet-rehab-exercise', label: '🏃 Tập VLTL', bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe' },
+          { typeId: 'ops-wet-room-cleaning', label: '🧹 Vệ sinh phòng', bg: '#f1f5f9', color: '#334155', border: '#cbd5e1' },
+        ];
+    }
+  }, [selectedPositionFilter]);
 
   const selectedCreateType = createTypeId ? typeById.get(createTypeId) : undefined;
   const isOtherType = selectedCreateType?.code === 'OTHER_INCIDENTAL';
@@ -1738,30 +1839,64 @@ export function OperationsPage() {
               </select>
             </label>
 
-            {/* ⚡ CÁC NÚT CHỌN NHANH LỰA CHỌN CÔNG VIỆC THƯỜNG GẶP (QUICK CHIPS) */}
+            {/* 📌 VỊ TRÍ VIỆC LÀM ĐANG ÁP DỤNG & LỌC DANH MỤC CÔNG VIỆC */}
+            <div style={{ gridColumn: '1 / -1', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '0.85rem 1rem', borderRadius: '0.5rem', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                <span style={{ fontSize: '1.3rem' }}>{POSITION_OPTIONS[selectedPositionFilter]?.icon || '👤'}</span>
+                <div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#166534' }}>
+                    Danh mục công việc theo vị trí: {POSITION_OPTIONS[selectedPositionFilter]?.label || selectedPositionFilter}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.1rem' }}>
+                    {POSITION_OPTIONS[selectedPositionFilter]?.desc}
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700 }}>Vị trí việc làm:</span>
+                <select
+                  className="text-input"
+                  style={{ fontSize: '0.82rem', padding: '0.35rem 0.65rem', borderRadius: '0.4rem', borderColor: '#86efac', fontWeight: 700, color: '#166534', background: '#ffffff' }}
+                  value={selectedPositionFilter}
+                  onChange={(e) => {
+                    setSelectedPositionFilter(e.target.value);
+                    setCreateTypeId(''); // Reset selected type on position switch
+                  }}
+                >
+                  {Object.entries(POSITION_OPTIONS).map(([posKey, posInfo]) => (
+                    <option key={posKey} value={posKey}>
+                      {posInfo.icon} {posInfo.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* ⚡ CÁC NÚT CHỌN NHANH LỰA CHỌN CÔNG VIỆC THEO VỊ TRÍ VIỆC LÀM (DYNAMIC QUICK CHIPS) */}
             <div style={{ gridColumn: '1 / -1', background: '#f8fafc', padding: '0.75rem 1rem', borderRadius: '0.5rem', border: '1px dashed #cbd5e1', marginBottom: '0.5rem' }}>
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <span>⚡</span> Chọn Nhanh Công Việc Thường Gặp (Thao tác 1-Chạm):
+                <span>⚡</span> Chọn Nhanh Công Việc Theo Vị Trí Việc Làm ({POSITION_OPTIONS[selectedPositionFilter]?.label}):
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-                <button type="button" className="btn btn-sm" style={{ background: '#e2f4ea', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-hygiene-bathing')}>
-                  🛁 Tắm rửa & Vệ sinh
-                </button>
-                <button type="button" className="btn btn-sm" style={{ background: '#e2f4ea', color: '#166534', border: '1px solid #bbf7d0', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-meal-assistance')}>
-                  🥣 Hỗ trợ ăn uống
-                </button>
-                <button type="button" className="btn btn-sm" style={{ background: '#fef3c7', color: '#b45309', border: '1px solid #fde68a', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-diaper-toileting')}>
-                  🧼 Thay tã bỉm
-                </button>
-                <button type="button" className="btn btn-sm" style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-vitals-check')}>
-                  🩺 Đo sinh hiệu & HA
-                </button>
-                <button type="button" className="btn btn-sm" style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-medication-admin')}>
-                  💊 Cấp phát eMAR
-                </button>
-                <button type="button" className="btn btn-sm" style={{ background: '#f3e8ff', color: '#6b21a8', border: '1px solid #e9d5ff', fontSize: '0.8rem', fontWeight: 600 }} onClick={() => setCreateTypeId('ops-wet-room-cleaning')}>
-                  🧹 Vệ sinh phòng
-                </button>
+                {quickChipsByPosition.map((chip) => (
+                  <button
+                    key={chip.typeId}
+                    type="button"
+                    className="btn btn-sm"
+                    style={{
+                      background: createTypeId === chip.typeId ? '#166534' : chip.bg,
+                      color: createTypeId === chip.typeId ? '#ffffff' : chip.color,
+                      border: `1px solid ${createTypeId === chip.typeId ? '#166534' : chip.border}`,
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      boxShadow: createTypeId === chip.typeId ? '0 2px 4px rgba(22,101,52,0.2)' : 'none',
+                    }}
+                    onClick={() => setCreateTypeId(chip.typeId)}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -1774,7 +1909,7 @@ export function OperationsPage() {
                 value={createTypeId}
                 onChange={(event) => setCreateTypeId(event.target.value)}
               >
-                <option value="">-- Chọn loại hình công việc --</option>
+                <option value="">-- Chọn loại hình công việc ({POSITION_OPTIONS[selectedPositionFilter]?.label || 'Tất cả'}) --</option>
                 {Object.entries(manualTypesByCategory).map(([catKey, typesInCat]) => (
                   <optgroup key={catKey} label={CATEGORY_LABELS[catKey] || catKey}>
                     {typesInCat.map((type) => (

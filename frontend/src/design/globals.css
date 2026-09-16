@@ -644,16 +644,33 @@ transform: scale(1.28);
   .topbar-end {
     width: 100%;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: var(--space-2);
   }
 
   .actor-panel {
     width: 100%;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: var(--space-2);
+  }
+
+  .actor-info-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .actor-summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
   .topbar-subtitle {
@@ -2007,6 +2024,30 @@ transform: scale(1.28);
     border-top: 1px solid var(--border-default) !important;
   }
 
+  .actor-panel {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+  }
+
+  .actor-info-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    min-width: 0 !important;
+  }
+
+  .actor-summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+  }
+
   .page-content {
     padding: 0.75rem 0.65rem 5rem 0.65rem !important;
   }
@@ -2056,13 +2097,26 @@ transform: scale(1.28);
 
   /* Touch-friendly Data Tables with Smooth Horizontal Scroll */
   .table-responsive,
-  table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    white-space: nowrap;
+  .table-container {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-x: contain !important;
     border-radius: 0.5rem;
+  }
+
+  .table-responsive table,
+  .table-container table,
+  table.table,
+  table.data-table,
+  table.ui-table,
+  table.operations-table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 900px !important;
+    table-layout: auto !important;
   }
 
   table th,

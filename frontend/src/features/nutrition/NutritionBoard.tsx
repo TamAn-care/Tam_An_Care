@@ -693,7 +693,7 @@ export function NutritionBoard() {
           </span>
         </div>
 
-        <div className="table-responsive" style={{ margin: 0, border: 'none', borderRadius: 0, overflowX: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' }}>
+        <div className="table-responsive" style={{ margin: 0, border: 'none', borderRadius: 0, width: '100%', maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehaviorX: 'contain' }}>
           <table className="table" style={{ margin: 0, width: '100%', minWidth: '920px', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f3f4f6', textAlign: 'left', fontSize: '0.82rem', color: '#4b5563' }}>

@@ -271,11 +271,22 @@ export function DashboardPage() {
               )}
               {isNutritionist && (
                 <>
-                  <option value="FOOD_RECEIVING">🥦 Tiếp nhận thực phẩm (kiểm đếm & giao nhận)</option>
-                  <option value="FOOD_SORTING">🧺 Phân loại thực phẩm (đạt chuẩn HACCP)</option>
-                  <option value="FOOD_STORAGE">❄️ Lưu trữ thực phẩm (kho mát / kho đông)</option>
-                  <option value="FOOD_COOKING">🍳 Chế biến thực phẩm (sơ chế & nấu nướng)</option>
-                  <option value="MEAL_PREPARATION">🍱 Chuẩn bị bữa ăn & phân bổ suất ăn</option>
+                  <optgroup label="🧼 PHỤ TRÁCH BẾP (VỆ SINH & BỐ TRÍ)">
+                    <option value="KITCHEN_CLEANING_DISINFECTION">🧼 Vệ sinh & khử khuẩn khu vực bếp, khay ăn, bàn chế biến</option>
+                    <option value="KITCHEN_EQUIPMENT_ARRANGEMENT">🗄️ Sắp xếp đồ dùng, khay đĩa & bố trí thiết bị gọn gàng đúng nơi</option>
+                    <option value="KITCHEN_FIRE_SAFETY_CHECK">🧯 Kiểm tra an toàn điện, gas & phòng chống cháy nổ bếp</option>
+                  </optgroup>
+                  <optgroup label="🍳 PHỤ TRÁCH BỮA ĂN (SƠ CHẾ & CHẾ BIẾN)">
+                    <option value="MEAL_INGREDIENT_PREPARATION">🔪 Sơ chế nguyên liệu & thái băm theo chế độ ăn y khoa</option>
+                    <option value="MEAL_COOKING_MEDICAL">🍳 Chế biến bữa ăn y khoa (Cơm mềm, cháo xay, súp, sonde)</option>
+                    <option value="MEAL_PORTION_DISPATCH">🍱 Phân chia suất ăn đúng giờ & kiểm tra nhiệt độ, khẩu vị</option>
+                  </optgroup>
+                  <optgroup label="🥦 PHỤ TRÁCH THỰC PHẨM (TIẾP NHẬN & BẢO QUẢN)">
+                    <option value="FOOD_RECEIVING_INSPECTION">🥦 Tiếp nhận & kiểm đếm thực phẩm đầu vào (đo nhiệt độ delivery)</option>
+                    <option value="FOOD_SORTING_HACCP">🧺 Phân loại & xử lý thực phẩm đầu vào đạt chuẩn VietGAP/HACCP</option>
+                    <option value="FOOD_COLD_STORAGE">❄️ Phân bổ & lưu trữ kho mát (0-4°C) / kho đông (-18°C)</option>
+                    <option value="FOOD_SAMPLE_PRESERVATION">🧪 Lưu mẫu thức ăn 24 giờ đúng niêm phong & ghi nhãn y tế</option>
+                  </optgroup>
                 </>
               )}
               {isHousekeeping && (
@@ -310,11 +321,23 @@ export function DashboardPage() {
               value={quickNote}
               onChange={(e) => setQuickNote(e.target.value)}
             >
-              <option value="✅ Hoàn thành tốt, cụ phối hợp vui vẻ">✅ Hoàn thành tốt, cụ phối hợp vui vẻ</option>
-              <option value="👍 Đã hoàn thành theo đúng y lệnh ca trực">👍 Đã hoàn thành theo đúng y lệnh ca trực</option>
-              <option value="⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau">⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau</option>
-              <option value="🥣 Cụ ăn hết 100% khẩu phần ăn">🥣 Cụ ăn hết 100% khẩu phần ăn</option>
-              <option value="❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca">❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca</option>
+              {isNutritionist ? (
+                <>
+                  <option value="🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí">🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí</option>
+                  <option value="🍳 Đã hoàn thành sơ chế & nấu nướng 100% suất ăn y khoa ca trực đúng thực đơn">🍳 Đã hoàn thành sơ chế & nấu nướng 100% suất ăn y khoa ca trực đúng thực đơn</option>
+                  <option value="🍱 Suất ăn đã phân chia đúng giờ, giữ ấm nhiệt độ >60°C & thử khẩu vị đạt chuẩn">🍱 Suất ăn đã phân chia đúng giờ, giữ ấm nhiệt độ &gt;60°C & thử khẩu vị đạt chuẩn</option>
+                  <option value="🥦 Tiếp nhận thực phẩm đầu vào đủ số lượng, nhiệt độ delivery đạt chuẩn & tem VietGAP">🥦 Tiếp nhận thực phẩm đầu vào đủ số lượng, nhiệt độ delivery đạt chuẩn & tem VietGAP</option>
+                  <option value="🧪 Đã niêm phong lưu mẫu thức ăn 24h đầy đủ nhãn mác người lưu & giờ lưu">🧪 Đã niêm phong lưu mẫu thức ăn 24h đầy đủ nhãn mác người lưu & giờ lưu</option>
+                </>
+              ) : (
+                <>
+                  <option value="✅ Hoàn thành tốt, cụ phối hợp vui vẻ">✅ Hoàn thành tốt, cụ phối hợp vui vẻ</option>
+                  <option value="👍 Đã hoàn thành theo đúng y lệnh ca trực">👍 Đã hoàn thành theo đúng y lệnh ca trực</option>
+                  <option value="⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau">⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau</option>
+                  <option value="🥣 Cụ ăn hết 100% khẩu phần ăn">🥣 Cụ ăn hết 100% khẩu phần ăn</option>
+                  <option value="❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca">❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca</option>
+                </>
+              )}
             </select>
           </div>
 

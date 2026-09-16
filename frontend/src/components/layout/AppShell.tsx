@@ -318,24 +318,26 @@ export function AppShell() {
           </div>
 
           <div className="topbar-end">
-            <NotificationBell />
+            <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.6rem', width: '100%', flexWrap: 'wrap' }}>
+              <div className="actor-info-bar" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, flexShrink: 1 }}>
+                <NotificationBell />
 
-            <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <div className="actor-summary" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', lineHeight: 1.2 }}>
-                  <span style={{ fontSize: '0.8rem' }}>👤</span>
-                  <span className="actor-value" style={{ fontSize: '0.85rem', fontWeight: 700, color: '#0f172a' }}>
-                    {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
-                  </span>
+                <div className="actor-summary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', lineHeight: 1.2 }}>
+                    <span style={{ fontSize: '0.82rem' }}>👤</span>
+                    <span className="actor-value" style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                      {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
+                    </span>
+                  </div>
+                  {actor && (
+                    <span className="actor-role" style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534', background: '#dcfce7', border: '1px solid #86efac', borderRadius: '9999px', padding: '0.08rem 0.45rem', whiteSpace: 'nowrap' }}>
+                      {ROLE_LABELS[actor.actorRole]}
+                    </span>
+                  )}
                 </div>
-                {actor && (
-                  <span className="actor-role" style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534', background: '#dcfce7', border: '1px solid #86efac', borderRadius: '0.25rem', padding: '0.05rem 0.35rem', marginTop: '0.15rem', width: 'fit-content' }}>
-                    {ROLE_LABELS[actor.actorRole]}
-                  </span>
-                )}
               </div>
 
-              <div className="topbar-action-group" style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+              <div className="topbar-action-group" style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', marginLeft: 'auto' }}>
                 {actor ? (
                   <>
                     <button
@@ -353,13 +355,13 @@ export function AppShell() {
                         border: '1px solid #cbd5e1',
                         color: '#334155',
                         fontWeight: 600,
-                        fontSize: '0.78rem',
-                        padding: '0.35rem 0.65rem',
+                        fontSize: '0.76rem',
+                        padding: '0.3rem 0.55rem',
                         borderRadius: '0.375rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.3rem',
+                        gap: '0.25rem',
                         height: '32px',
                         whiteSpace: 'nowrap',
                         boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
@@ -378,13 +380,13 @@ export function AppShell() {
                           border: showTopLogin ? '1px solid #14532d' : '1px solid #93c5fd',
                           color: showTopLogin ? '#ffffff' : '#1e40af',
                           fontWeight: 600,
-                          fontSize: '0.78rem',
-                          padding: '0.35rem 0.65rem',
+                          fontSize: '0.76rem',
+                          padding: '0.3rem 0.55rem',
                           borderRadius: '0.375rem',
                           cursor: 'pointer',
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '0.3rem',
+                          gap: '0.25rem',
                           height: '32px',
                           whiteSpace: 'nowrap',
                         }}
@@ -403,13 +405,13 @@ export function AppShell() {
                         border: '1px solid #fca5a5',
                         color: '#991b1b',
                         fontWeight: 600,
-                        fontSize: '0.78rem',
-                        padding: '0.35rem 0.65rem',
+                        fontSize: '0.76rem',
+                        padding: '0.3rem 0.55rem',
                         borderRadius: '0.375rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.3rem',
+                        gap: '0.25rem',
                         height: '32px',
                         whiteSpace: 'nowrap',
                       }}
@@ -427,13 +429,13 @@ export function AppShell() {
                       border: 'none',
                       color: '#ffffff',
                       fontWeight: 700,
-                      fontSize: '0.78rem',
+                      fontSize: '0.76rem',
                       padding: '0.35rem 0.75rem',
                       borderRadius: '0.375rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.3rem',
+                      gap: '0.25rem',
                       height: '32px',
                       whiteSpace: 'nowrap',
                     }}
