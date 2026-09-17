@@ -201,38 +201,14 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '1.25rem',
-          flexWrap: 'wrap',
-          gap: '0.75rem',
-          borderBottom: '1px solid #f1f5f9',
-          paddingBottom: '0.85rem',
-        }}
-      >
-        <div>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: '1.15rem',
-              fontWeight: 800,
-              color: '#0f172a',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span>📱</span> Danh Mục Phân Hệ Nghiệp Vụ Tâm An Care
-          </h2>
-          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
-            Hệ thống 17 phân hệ quản trị viện dưỡng lão — Chạm icon để truy cập ứng dụng
-          </p>
-        </div>
-
-        {onOpenInstallModal && (
+      {onOpenInstallModal && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            marginBottom: '0.85rem',
+          }}
+        >
           <button
             type="button"
             onClick={onOpenInstallModal}
@@ -242,18 +218,18 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
               fontWeight: 700,
               border: '1px solid #bae6fd',
               borderRadius: '0.5rem',
-              padding: '0.45rem 0.85rem',
-              fontSize: '0.8rem',
+              padding: '0.35rem 0.75rem',
+              fontSize: '0.78rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.35rem',
               cursor: 'pointer',
             }}
           >
             <span>📱</span> Cài Đặt PWA App
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {categories.map((cat) => {
         const catItems = visibleItems.filter((item) => item.category === cat);

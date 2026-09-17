@@ -95,19 +95,19 @@ export function AppShell() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}
       >
-        <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flexWrap: 'nowrap' }}>
-          {/* Brand Logo & Slogan on 1 Horizontal Line */}
+        <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', minWidth: 0, flexWrap: 'nowrap' }}>
+          {/* Brand Logo & Slogan */}
           <Link
             to="/dashboard"
             className="topbar-brand-row"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.55rem',
+              gap: '0.5rem',
               textDecoration: 'none',
               color: 'inherit',
               whiteSpace: 'nowrap',
-              minWidth: 0,
+              flexShrink: 0,
             }}
             title="Tâm An Care — Nơi Tuổi Già An Nhiên"
           >
@@ -128,9 +128,9 @@ export function AppShell() {
           </Link>
 
           {/* Vertical Separator */}
-          <div style={{ width: '1px', height: '18px', background: '#cbd5e1', flexShrink: 0, margin: '0 0.1rem' }} />
+          <div className="topbar-brand-divider-vert" style={{ width: '1px', height: '20px', background: '#cbd5e1', flexShrink: 0, margin: '0 0.1rem' }} />
 
-          {/* Return / Back Arrow Icon Button */}
+          {/* Return / Back Arrow Icon Button - Youthful Icon Design */}
           <button
             type="button"
             className={`topbar-back-btn ${isHome ? 'is-active' : ''}`}
@@ -138,27 +138,27 @@ export function AppShell() {
               navigate('/dashboard');
               window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             }}
-            title="Quay lại Trang Chủ / Bảng điều khiển"
+            title="Quay lại Trang Chủ"
+            aria-label="Quay lại Trang Chủ"
             style={{
+              width: '34px',
+              height: '34px',
+              borderRadius: '10px',
               background: isHome ? '#e2f4ea' : '#f1f5f9',
-              color: isHome ? '#166534' : '#334155',
+              color: isHome ? '#166534' : '#475569',
               border: isHome ? '1px solid #86efac' : '1px solid #cbd5e1',
-              borderRadius: '0.5rem',
-              padding: '0.35rem 0.65rem',
-              fontSize: '0.8rem',
-              fontWeight: 600,
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.35rem',
-              transition: 'all 0.15s ease',
-              whiteSpace: 'nowrap',
+              justifyContent: 'center',
+              transition: 'all 0.18s ease-out',
               flexShrink: 0,
+              boxShadow: isHome ? '0 2px 6px rgba(22, 101, 52, 0.15)' : 'none',
             }}
           >
             <svg
-              width="15"
-              height="15"
+              width="17"
+              height="17"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -166,29 +166,27 @@ export function AppShell() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
+              <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
-            <span>Trang Chủ</span>
           </button>
 
-          {/* Module / Subsystem Status Indicator on Same Line */}
+          {/* Module Status Badge - Only Module Name (No 'Phân hệ:' word) */}
           <div
             className={`topbar-module-badge ${isHome ? 'is-home' : ''}`}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.45rem',
-              background: isHome ? '#f0fdf4' : '#f8fafc',
+              background: isHome ? '#f0fdf4' : '#ffffff',
               border: isHome ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
-              borderRadius: '0.5rem',
-              padding: '0.32rem 0.65rem',
-              fontSize: '0.8rem',
+              borderRadius: '9999px',
+              padding: '0.3rem 0.75rem',
+              fontSize: 'clamp(0.78rem, 2.2vw, 0.88rem)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               minWidth: 0,
-              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
             }}
           >
             <span
@@ -202,33 +200,42 @@ export function AppShell() {
                 boxShadow: isHome ? '0 0 0 2px #dcfce7' : '0 0 0 2px #dbeafe',
               }}
             />
-            <span style={{ color: '#64748b', fontWeight: 500, fontSize: '0.75rem' }}>Phân hệ:</span>
-            <span style={{ color: '#0f172a', fontWeight: 700, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+            <span
+              style={{
+                color: '#0f172a',
+                fontWeight: 700,
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                lineHeight: 1.25,
+              }}
+            >
               {meta ? meta.title : 'Bảng Điều Khiển Trung Tâm'}
             </span>
           </div>
         </div>
 
-        <div className="topbar-end" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <div className="topbar-end" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <NotificationBell />
 
-            <div className="actor-summary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div className="actor-summary" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
               <span style={{ fontSize: '0.85rem' }}>👤</span>
-              <span className="actor-value" style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}>
+              <span className="actor-value" style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>
                 {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
               </span>
               {actor && (
                 <span
                   className="actor-role"
                   style={{
-                    fontSize: '0.72rem',
+                    fontSize: '0.7rem',
                     fontWeight: 700,
                     color: '#166534',
                     background: '#dcfce7',
                     border: '1px solid #86efac',
                     borderRadius: '9999px',
-                    padding: '0.1rem 0.5rem',
+                    padding: '0.1rem 0.45rem',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {ROLE_LABELS[actor.actorRole] || actor.actorRole}
@@ -236,7 +243,7 @@ export function AppShell() {
               )}
             </div>
 
-            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexWrap: 'wrap' }}>
               {actor ? (
                 <>
                   <button
@@ -253,16 +260,17 @@ export function AppShell() {
                       border: '1px solid #cbd5e1',
                       color: '#334155',
                       fontWeight: 600,
-                      fontSize: '0.76rem',
-                      padding: '0.35rem 0.6rem',
+                      fontSize: '0.74rem',
+                      padding: '0.3rem 0.55rem',
                       borderRadius: '0.375rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.25rem',
+                      gap: '0.2rem',
                     }}
+                    title="Đổi mật khẩu tài khoản"
                   >
-                    <span>🔑</span> Đổi Mật Khẩu
+                    <span>🔑</span> <span className="topbar-btn-text">Đổi Mật Khẩu</span>
                   </button>
 
                   {actor?.actorRole === 'ADMIN' && (
@@ -274,17 +282,17 @@ export function AppShell() {
                         border: showTopLogin ? '1px solid #14532d' : '1px solid #93c5fd',
                         color: showTopLogin ? '#ffffff' : '#1e40af',
                         fontWeight: 600,
-                        fontSize: '0.76rem',
-                        padding: '0.35rem 0.6rem',
+                        fontSize: '0.74rem',
+                        padding: '0.3rem 0.55rem',
                         borderRadius: '0.375rem',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.25rem',
+                        gap: '0.2rem',
                       }}
                       title="Chuyển đổi vai trò nhân sự (Dành riêng cho Admin)"
                     >
-                      <span>🛡️</span> {showTopLogin ? 'Ẩn Panel Admin' : 'Admin Panel'}
+                      <span>🛡️</span> <span className="topbar-btn-text">{showTopLogin ? 'Ẩn Admin' : 'Admin Panel'}</span>
                     </button>
                   )}
 
@@ -296,16 +304,17 @@ export function AppShell() {
                       border: '1px solid #fca5a5',
                       color: '#991b1b',
                       fontWeight: 600,
-                      fontSize: '0.76rem',
-                      padding: '0.35rem 0.6rem',
+                      fontSize: '0.74rem',
+                      padding: '0.3rem 0.55rem',
                       borderRadius: '0.375rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.25rem',
+                      gap: '0.2rem',
                     }}
+                    title="Đăng xuất khỏi hệ thống"
                   >
-                    <span>🚪</span> Đăng Xuất
+                    <span>🚪</span> <span className="topbar-btn-text">Đăng Xuất</span>
                   </button>
                 </>
               ) : (
@@ -317,8 +326,8 @@ export function AppShell() {
                     border: 'none',
                     color: '#ffffff',
                     fontWeight: 700,
-                    fontSize: '0.76rem',
-                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.74rem',
+                    padding: '0.32rem 0.7rem',
                     borderRadius: '0.375rem',
                     cursor: 'pointer',
                   }}

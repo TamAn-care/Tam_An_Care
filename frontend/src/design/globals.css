@@ -639,13 +639,16 @@ transform: scale(1.28);
   .topbar {
     align-items: stretch;
     flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
   }
 
   .topbar-start {
     width: 100%;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
   }
 
   .topbar-end {
@@ -653,7 +656,7 @@ transform: scale(1.28);
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    gap: 0.4rem;
   }
 
   .actor-panel {
@@ -662,7 +665,7 @@ transform: scale(1.28);
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: var(--space-2);
+    gap: 0.4rem;
   }
 
   .actor-info-bar {
@@ -675,13 +678,21 @@ transform: scale(1.28);
   .actor-summary {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    flex-wrap: wrap;
+    gap: 0.3rem;
+    flex-wrap: nowrap;
     min-width: 0;
   }
 
   .topbar-subtitle {
     display: none;
+  }
+
+  .topbar-brand-divider-vert {
+    display: none !important;
+  }
+
+  .topbar-btn-text {
+    font-size: 0.7rem;
   }
 
   .page-content {
