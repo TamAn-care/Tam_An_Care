@@ -1736,7 +1736,7 @@ export default function FamilyPortalPage() {
             </h3>
 
             <div className="table-wrapper">
-              <table className="data-table">
+              <table className="data-table table-wide-800">
                 <thead>
                   <tr>
                     <th>Ngày dùng bữa</th>

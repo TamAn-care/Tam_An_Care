@@ -364,7 +364,7 @@ export function AppShell() {
         }}
       >
         <div>
-          <b>Tâm An Care V7.5 Development</b> • Nơi Tuổi Già An Nhiên • 1 Tòa nhà, 4 tầng, 29 phòng, 110 giường
+          <b>Tâm An Care V7.5 Development</b>
         </div>
         <ConnectivityStatus />
       </footer>

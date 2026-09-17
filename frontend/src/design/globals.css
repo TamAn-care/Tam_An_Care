@@ -1877,7 +1877,7 @@ transform: scale(1.28);
 @media print {
   @page {
     size: A4 portrait;
-    margin: 5mm 8mm 5mm 8mm;
+    margin: 6mm 10mm 6mm 10mm;
   }
 
   html,
@@ -1893,30 +1893,29 @@ transform: scale(1.28);
     overflow: visible !important;
   }
 
-  /* Hide app navigation, headers, footers, data tables, non-print buttons, and non-print modal overlays */
+  /* 1. Hide non-printable navigation, sidebar, topbar, filters, and non-printable buttons */
   .app-shell > aside,
   .sidebar,
   .navigation,
   .topbar,
-  .page-header,
-  .alert-card,
-  .kpi-row,
-  .kpi-box,
-  .filter-toolbar,
-  .table-responsive,
-  .data-table,
-  .data-table-card,
   .tab-nav,
-  button,
+  .filter-toolbar,
   .no-print,
+  button:not(.printable-button),
   .modal-overlay:not(.print-modal-overlay),
   .modal-backdrop:not(.print-modal-overlay),
-  .modal-header:not(.printable-a4-sheet),
-  .modal-footer {
+  .modal-footer:not(.printable-a4-sheet) {
     display: none !important;
   }
 
-  /* Universal layout container reset for print */
+  /* 2. Hide background app page content ONLY when a print modal overlay is active */
+  body:has(.print-modal-overlay) .page-content > *:not(.print-modal-overlay),
+  body:has(.print-modal-overlay) .main-shell > *:not(.print-modal-overlay),
+  body:has(.print-modal-overlay) .content > *:not(.print-modal-overlay) {
+    display: none !important;
+  }
+
+  /* 3. Universal layout container reset for print flow */
   html,
   body,
   #root,
@@ -1960,30 +1959,36 @@ transform: scale(1.28);
     z-index: auto !important;
   }
 
-  /* Ensure single-page compact fit */
+  /* 4. Ensure single-page and multi-page A4 print sheets render crisp */
   .printable-a4-sheet {
     padding: 0 !important;
     margin: 0 !important;
     font-size: 9.5pt !important;
     line-height: 1.22 !important;
-    page-break-after: avoid !important;
-    break-after: avoid !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
-  .printable-a4-sheet table {
+  .printable-a4-sheet table,
+  .data-table-card table,
+  .table-responsive table {
     font-size: 8.8pt !important;
     margin-bottom: 4px !important;
     border-collapse: collapse !important;
+    width: 100% !important;
   }
 
   .printable-a4-sheet th,
-  .printable-a4-sheet td {
-    padding: 2px 4px !important;
-    line-height: 1.15 !important;
+  .printable-a4-sheet td,
+  .data-table-card th,
+  .data-table-card td {
+    padding: 3px 6px !important;
+    line-height: 1.18 !important;
+    border: 1px solid #cbd5e1 !important;
   }
 
   .printable-a4-sheet .section-header {
-    padding: 2px 6px !important;
+    padding: 3px 6px !important;
     margin-bottom: 3px !important;
     margin-top: 4px !important;
     font-size: 9.2pt !important;
@@ -1993,6 +1998,7 @@ transform: scale(1.28);
     margin-top: 14px !important;
     margin-bottom: 0 !important;
     page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
 
   /* Independent Print Sheet Filtering */
@@ -2011,7 +2017,7 @@ transform: scale(1.28);
     padding-top: 1rem !important;
   }
 
-  /* Avoid unnecessary page breaks */
+  /* Universal print color adjust */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -2299,21 +2305,50 @@ div:has(> table)::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
 
-/* Width Helper Classes for Wide Tables */
+/* Width Helper Classes for Wide Tables & Overflow Protection */
 .table-wide-1600 { min-width: 1600px !important; }
+.table-wide-1500 { min-width: 1500px !important; }
 .table-wide-1400 { min-width: 1400px !important; }
+.table-wide-1300 { min-width: 1300px !important; }
 .table-wide-1200 { min-width: 1200px !important; }
+.table-wide-1100 { min-width: 1100px !important; }
 .table-wide-1000 { min-width: 1000px !important; }
 .table-wide-900  { min-width: 900px  !important; }
+.table-wide-800  { min-width: 800px  !important; }
 .table-wide-700  { min-width: 700px  !important; }
+.table-wide-650  { min-width: 650px  !important; }
 
-/* Table header text wrap prevention */
+/* Table header & cell overflow protection */
 .table-responsive th,
 .table-container th,
 .data-table th,
 .ui-table th,
-.operations-table th {
+.operations-table th,
+table th {
   white-space: nowrap;
+}
+
+/* Badge, Date, Currency & Action Button wrapping prevention in tables */
+.table-responsive td .badge,
+.table-container td .badge,
+.table-responsive td .btn,
+.table-container td .btn,
+.table-responsive td button,
+.table-container td button,
+td .badge,
+td .btn {
+  white-space: nowrap !important;
+}
+
+.td-nowrap {
+  white-space: nowrap !important;
+}
+
+.td-wrap-text {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  min-width: 160px;
 }
 
 @media (max-width: 767px) {

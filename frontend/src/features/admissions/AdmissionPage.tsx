@@ -1559,7 +1559,8 @@ export function AdmissionPage() {
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
                     IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
                   </h3>
-                  <table className="ui-table" style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                    <table className="ui-table table-wide-650" style={{ fontSize: '0.85rem', marginBottom: '1rem', minWidth: '650px' }}>
                     <thead>
                       <tr>
                         <th>Hoạt động sinh hoạt thiết yếu</th>
@@ -1606,6 +1607,7 @@ export function AdmissionPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
 
                   <div className="form-row">
                     <div>

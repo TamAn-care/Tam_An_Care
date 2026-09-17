@@ -1237,8 +1237,8 @@ export function StaffAccessPage() {
                   );
                 }
                 return (
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                  <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                    <table className="data-table table-wide-700" style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                       <thead>
                         <tr style={{ background: '#f0fdf4' }}>
                           <th style={{ padding: '0.5rem 0.75rem', borderBottom: '2px solid #86efac', textAlign: 'left', color: '#166534', fontWeight: 700 }}>Người cao tuổi</th>
@@ -1314,8 +1314,8 @@ export function StaffAccessPage() {
                       Chưa có phân công nào đang hiệu lực.
                     </div>
                   ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+                    <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                      <table className="data-table table-wide-900" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                         <thead>
                           <tr style={{ background: '#1e3a5f', color: '#fff' }}>
                             <th style={{ padding: '0.5rem 0.75rem', textAlign: 'left', fontWeight: 700, whiteSpace: 'nowrap' }}>Nhân sự phụ trách</th>
@@ -2401,6 +2401,7 @@ export function StaffAccessPage() {
       {/* MODAL 2: BÀN GIAO THÔNG TIN TÀI KHOẢN & MẬT KHẨU */}
       {showHandoverModal && (
         <div
+          className="modal-overlay print-modal-overlay"
           style={{
             position: 'fixed',
             inset: 0,
@@ -2413,6 +2414,7 @@ export function StaffAccessPage() {
           }}
         >
           <div
+            className="modal-card printable-a4-sheet"
             style={{
               background: '#ffffff',
               borderRadius: '0.75rem',
@@ -2428,6 +2430,8 @@ export function StaffAccessPage() {
                 <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.25rem', color: '#0f172a' }}>PHIẾU BÀN GIAO TÀI KHOẢN ĐĂNG NHẬP</h2>
               </div>
               <button
+                type="button"
+                className="no-print"
                 onClick={() => setShowHandoverModal(null)}
                 style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}
               >
@@ -2460,16 +2464,27 @@ export function StaffAccessPage() {
                 🔗 <b>Đường link truy cập:</b> {window.location.origin}<br />
                 🔒 <b>Bảo mật:</b> Vui lòng gửi thông tin này riêng tư cho nhân sự. Nhân sự có trách nhiệm bảo mật và đổi mật khẩu ở lần đăng nhập đầu tiên.
               </div>
+
+              <div className="signature-box" style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', textAlign: 'center', fontSize: '0.8rem' }}>
+                <div>
+                  <b>NGƯỜI BÀN GIAO</b><br />
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>(Ký & ghi rõ họ tên)</span>
+                </div>
+                <div>
+                  <b>NGƯỜI NHẬN TÀI KHOẢN</b><br />
+                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>(Ký & ghi rõ họ tên)</span>
+                </div>
+              </div>
             </div>
 
             {copyFeedback && (
-              <div style={{ background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '0.5rem 0.75rem', borderRadius: '0.4rem', fontSize: '0.82rem', fontWeight: 600, marginBottom: '1rem' }}>
+              <div className="no-print" style={{ background: '#f0fdf4', border: '1px solid #86efac', color: '#166534', padding: '0.5rem 0.75rem', borderRadius: '0.4rem', fontSize: '0.82rem', fontWeight: 600, marginBottom: '1rem' }}>
                 {copyFeedback}
               </div>
             )}
 
             {/* Action buttons */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
               <button
                 type="button"
                 onClick={() => handleCopyCredentials(showHandoverModal)}

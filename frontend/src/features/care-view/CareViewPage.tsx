@@ -242,12 +242,21 @@ export function CareViewPage() {
   const displaySpo2: string | number = typeof spo2Obs?.numericValue === 'number' || typeof spo2Obs?.numericValue === 'string' ? spo2Obs.numericValue : 98;
 
   return (
-    <div style={{ paddingBottom: '3rem' }}>
+    <div className="printable-a4-sheet" style={{ paddingBottom: '3rem' }}>
       {/* NAVIGATION TOP BAR */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-        <Link to="/residents" className="btn btn-neutral" style={{ textDecoration: 'none', fontSize: '0.88rem', fontWeight: 600 }}>
+        <Link to="/residents" className="btn btn-neutral no-print" style={{ textDecoration: 'none', fontSize: '0.88rem', fontWeight: 600 }}>
           &larr; Danh sách người cao tuổi
         </Link>
+
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="btn btn-primary no-print"
+          style={{ fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+        >
+          🖨️ In Hồ Sơ Chăm Sóc (A4)
+        </button>
         <button
           type="button"
           className="btn btn-secondary"

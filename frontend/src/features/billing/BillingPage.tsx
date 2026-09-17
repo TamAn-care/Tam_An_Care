@@ -2980,19 +2980,12 @@ export default function BillingPage() {
               .sidebar,
               .navigation,
               .topbar,
-              .page-header,
-              .alert-card,
-              .kpi-row,
-              .kpi-box,
-              .filter-toolbar,
-              .table-responsive,
-              .data-table,
-              .data-table-card,
               .tab-nav,
+              .filter-toolbar,
               .no-print,
+              button:not(.printable-button),
               .modal-overlay:not(.print-modal-overlay),
-              .modal-backdrop:not(.print-modal-overlay),
-              button {
+              .modal-backdrop:not(.print-modal-overlay) {
                 display: none !important;
               }
 

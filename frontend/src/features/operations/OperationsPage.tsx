@@ -1238,8 +1238,16 @@ export function OperationsPage() {
   const overviewData = residentOverviewQuery.data;
 
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
+    <div className="printable-a4-sheet">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="btn btn-secondary no-print"
+          style={{ background: '#f8fafc', color: '#0f172a', borderColor: '#cbd5e1', fontWeight: 700 }}
+        >
+          🖨️ In Nhật Ký Vận Hành (A4)
+        </button>
         <button
           type="button"
           className="btn btn-primary"
@@ -2379,6 +2387,6 @@ export function OperationsPage() {
           </>
         )}
       </section>
-    </>
+    </div>
   );
 }

@@ -851,9 +851,8 @@ export function ServiceContractsPage() {
               .sidebar,
               .navigation,
               .topbar,
-              .page-header,
               .no-print,
-              button,
+              button:not(.printable-button),
               .modal-backdrop:not(.print-modal-overlay),
               .modal-overlay:not(.print-modal-overlay),
               main.page > *:not(.print-modal-overlay) {

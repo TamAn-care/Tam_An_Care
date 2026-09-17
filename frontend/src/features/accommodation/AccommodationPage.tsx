@@ -319,7 +319,7 @@ export default function AccommodationPage() {
   const isDirectorOrManager = actor.actorRole === 'SUPERVISOR' || actor.actorRole === 'CARE_MANAGER' || actor.actorRole === 'ADMIN';
 
   return (
-    <main className="page">
+    <main className="page printable-a4-sheet">
 
       {data && isDirectorOrManager && (
         <div className="kpi-grid">
@@ -330,13 +330,13 @@ export default function AccommodationPage() {
           </div>
           <div className="kpi-box">
             <div className="kpi-title">Đang sử dụng</div>
-            <div className="kpi-number" style={{ color: '#dc2626' }}>{data.summary.occupied}</div>
-            <div className="kpi-desc">Người cao tuổi đang lưu trú</div>
+            <div className="kpi-number" style={{ color: '#16a34a' }}>{data.summary.occupied}</div>
+            <div className="kpi-desc">Người cao tuổi đang ở</div>
           </div>
           <div className="kpi-box">
             <div className="kpi-title">Còn trống</div>
-            <div className="kpi-number" style={{ color: '#16a34a' }}>{data.summary.available}</div>
-            <div className="kpi-desc">Sẵn sàng tiếp nhận ngay</div>
+            <div className="kpi-number" style={{ color: '#2563eb' }}>{data.summary.available}</div>
+            <div className="kpi-desc">Sẵn sàng tiếp nhận</div>
           </div>
           <div className="kpi-box">
             <div className="kpi-title">Đã giữ chỗ</div>
@@ -361,11 +361,21 @@ export default function AccommodationPage() {
           <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#1e293b' }}>
             {canManage ? '⚡ Điều Phối & Phân Bổ Giường Nằm' : '👁️ Tra Cứu & Xem Sơ Đồ Phòng Giường'}
           </h2>
-          {currentResidentLocation && (
-            <span className="badge badge-info">
-              Vị trí hiện tại của cư dân: <b>{currentResidentLocation.roomName} / {currentResidentLocation.bedName}</b>
-            </span>
-          )}
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="btn btn-sm btn-neutral no-print"
+              style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+            >
+              🖨️ In Báo Cáo Sơ Đồ Phòng (A4)
+            </button>
+            {currentResidentLocation && (
+              <span className="badge badge-info">
+                Vị trí hiện tại của cư dân: <b>{currentResidentLocation.roomName} / {currentResidentLocation.bedName}</b>
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="filter-toolbar-grid">

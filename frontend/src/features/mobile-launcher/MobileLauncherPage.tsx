@@ -214,11 +214,12 @@ export function MobileLauncherPage() {
     },
     {
       id: 'health-reports',
-      title: 'Báo Cáo Y Tế',
-      icon: '📊',
+      title: 'Báo Cáo Định Kỳ',
+      icon: '📄',
       gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+      badge: 'Định Kỳ',
       category: 'Y Tế',
-      isAllowed: (role) => canAccessRoute(role, 'health-reports') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER',
+      isAllowed: (role) => canAccessRoute(role, 'health-reports'),
     },
     {
       id: 'pharmacy',
@@ -324,6 +325,8 @@ export function MobileLauncherPage() {
   const handleAppClick = (app: AppIconItem) => {
     if (app.id === 'residents') {
       navigate('/residents');
+    } else if (app.id === 'health-reports') {
+      navigate('/health-reports');
     } else if (app.id === 'billing') {
       navigate('/billing-invoicing');
     } else if (app.id === 'staff-access') {

@@ -82,6 +82,19 @@ export interface ClinicalAssessmentData {
     sleepQuality: 'GOOD' | 'INSOMNIA' | 'NIGHT_WAKING';
   };
 
+  // V-B. Đánh giá Tâm lý & Công tác xã hội (Chuyên sâu do Nhân viên tâm lý & CTXH thực hiện)
+  psychologicalAssessment?: {
+    isCompleted: boolean;
+    assessorName: string;
+    assessmentDate: string;
+    emotionalState: 'HAPPY_SOCIABLE' | 'STABLE_NORMAL' | 'ANXIOUS_DEPRESSED' | 'IRRITABLE_AGITATED';
+    socialInteraction: 'ACTIVE_COMMUNICATIVE' | 'PASSIVE_QUIET' | 'WITHDRAWN_REFUSED';
+    cognitiveMemoryScore: string;
+    behavioralNotes: string;
+    recommendations: string;
+    isManualSupplemented?: boolean;
+  };
+
   // VI. Dinh dưỡng & Nhai nuốt
   nutrition: {
     dietType: 'NORMAL_RICE' | 'PORRIDGE_SOUP' | 'SONDE';
@@ -165,6 +178,18 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
     memoryCognition: 'CONFUSED_SEVERE',
     emotionalState: 'HAPPY_SOCIABLE',
     sleepQuality: 'GOOD',
+  },
+
+  psychologicalAssessment: {
+    isCompleted: true,
+    assessorName: 'CN. Nguyễn Hoàng Nam (Chuyên viên Tâm lý & CTXH)',
+    assessmentDate: new Date().toISOString().slice(0, 10),
+    emotionalState: 'HAPPY_SOCIABLE',
+    socialInteraction: 'ACTIVE_COMMUNICATIVE',
+    cognitiveMemoryScore: 'MMSE: 22/30 (Suy giảm nhận thức nhẹ)',
+    behavioralNotes: 'Cụ vui vẻ, tinh thần thoải mái, tích cực tham gia hoạt động trò chuyện nhóm ca sáng. Tâm lý ổn định, gắn kết tốt với nhân viên.',
+    recommendations: 'Khuyến khích cụ tiếp tục tham gia CLB Đọc sách và sinh hoạt tập thể để tăng khả năng giao tiếp.',
+    isManualSupplemented: false,
   },
 
   nutrition: {
@@ -516,7 +541,7 @@ export default function HealthReportsPage() {
 
       {/* Reports Table */}
       <div className="table-responsive">
-        <table className="ui-table" style={{ minWidth: '1000px' }}>
+        <table className="ui-table table-wide-1000" style={{ minWidth: '1000px' }}>
           <thead>
             <tr>
               <th>Mã báo cáo / Người cao tuổi</th>
@@ -1133,15 +1158,187 @@ export default function HealthReportsPage() {
                   </div>
                 </div>
 
-                {/* V, VI, VII. TINH THẦN, DINH DƯỠNG & NGUY CƠ LÂM SÀNG */}
+                {/* V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI (CHUYÊN SÂU & THỦ CÔNG BỔ SUNG) */}
+                <div style={{ border: '1.5px solid #d97706', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem', backgroundColor: '#fffbeb' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#b45309', fontWeight: 700 }}>
+                      V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI (Do NV Tâm lý & CTXH thực hiện)
+                    </h3>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      {assessment.psychologicalAssessment?.isCompleted ? (
+                        <span className="badge badge-success">✓ Đã có đánh giá</span>
+                      ) : (
+                        <span className="badge badge-warning">⚠️ Thiếu đánh giá tâm lý</span>
+                      )}
+                      {assessment.psychologicalAssessment?.isManualSupplemented && (
+                        <span className="badge badge-info">📝 Bổ sung thủ công</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Warning if Missing */}
+                  {!assessment.psychologicalAssessment?.isCompleted && (
+                    <div style={{ backgroundColor: '#fef3c7', border: '1px solid #f59e0b', padding: '0.75rem', borderRadius: '0.375rem', marginBottom: '1rem', color: '#92400e', fontSize: '0.85rem' }}>
+                      <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>
+                        ⚠️ Mục đánh giá tâm lý hiện đang bị thiếu (Do Nhân viên tâm lý & CTXH quên chưa đánh giá).
+                      </div>
+                      <div>
+                        Chế độ <b>THỦ CÔNG</b> được kích hoạt: Nhân viên y tế, Quản lý, Ban Giám đốc hoặc Nhân viên tâm lý có thể tự điền/bổ sung đánh giá tâm lý bên dưới để hoàn thiện báo cáo gửi gia đình.
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAssessment(prev => ({
+                            ...prev,
+                            psychologicalAssessment: {
+                              isCompleted: true,
+                              assessorName: actor?.displayName || 'Nhân viên y tế (Bổ sung thủ công)',
+                              assessmentDate: new Date().toISOString().slice(0, 10),
+                              emotionalState: 'STABLE_NORMAL',
+                              socialInteraction: 'ACTIVE_COMMUNICATIVE',
+                              cognitiveMemoryScore: 'MMSE sơ bộ: Nhận thức bình thường',
+                              behavioralNotes: 'Đã bổ sung thủ công: Cụ giao tiếp ổn định, tinh thần thoải mái trong ca trực.',
+                              recommendations: 'Duy trì trò chuyện và theo dõi các cữ sinh hoạt hàng ngày.',
+                              isManualSupplemented: true,
+                            },
+                          }));
+                        }}
+                        className="btn btn-sm btn-warning"
+                        style={{ marginTop: '0.5rem', fontWeight: 700 }}
+                      >
+                        ➕ Bổ sung thủ công Đánh giá Tâm lý ngay
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Psychological Assessment Form Inputs */}
+                  {assessment.psychologicalAssessment?.isCompleted && (
+                    <div>
+                      <div className="form-row" style={{ marginBottom: '0.75rem' }}>
+                        <div>
+                          <label className="form-label">Chuyên viên đánh giá tâm lý / Người bổ sung:</label>
+                          <input
+                            type="text"
+                            value={assessment.psychologicalAssessment.assessorName}
+                            onChange={e => {
+                              const val = e.target.value;
+                              setAssessment(prev => ({
+                                ...prev,
+                                psychologicalAssessment: { ...prev.psychologicalAssessment!, assessorName: val },
+                              }));
+                            }}
+                            className="form-input"
+                            placeholder="Tên Nhân viên Tâm lý / CTXH hoặc Người bổ sung..."
+                          />
+                        </div>
+
+                        <div>
+                          <label className="form-label">Trạng thái cảm xúc người cao tuổi:</label>
+                          <select
+                            value={assessment.psychologicalAssessment.emotionalState}
+                            onChange={e => {
+                              const val = e.target.value as any;
+                              setAssessment(prev => ({
+                                ...prev,
+                                psychologicalAssessment: { ...prev.psychologicalAssessment!, emotionalState: val },
+                              }));
+                            }}
+                            className="form-select"
+                            style={{ width: '100%' }}
+                          >
+                            <option value="HAPPY_SOCIABLE">😀 Vui vẻ, cởi mở & hòa nhập tốt</option>
+                            <option value="STABLE_NORMAL">😐 Tinh thần bình thường, ổn định</option>
+                            <option value="ANXIOUS_DEPRESSED">🙁 Trầm cảm, lo âu hoặc thu mình</option>
+                            <option value="IRRITABLE_AGITATED">😡 Dễ kích động, cáu gắt hoặc bất an</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="form-row" style={{ marginBottom: '0.75rem' }}>
+                        <div>
+                          <label className="form-label">Khả năng giao tiếp & tương tác xã hội:</label>
+                          <select
+                            value={assessment.psychologicalAssessment.socialInteraction}
+                            onChange={e => {
+                              const val = e.target.value as any;
+                              setAssessment(prev => ({
+                                ...prev,
+                                psychologicalAssessment: { ...prev.psychologicalAssessment!, socialInteraction: val },
+                              }));
+                            }}
+                            className="form-select"
+                            style={{ width: '100%' }}
+                          >
+                            <option value="ACTIVE_COMMUNICATIVE">🗣️ Tích cực tham gia trò chuyện nhóm & sinh hoạt</option>
+                            <option value="PASSIVE_QUIET">🤫 Thụ động, chỉ giao tiếp khi nhân viên hỏi</option>
+                            <option value="WITHDRAWN_REFUSED">🚫 Từ chối giao tiếp, thu mình trong phòng</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="form-label">Đánh giá nhận thức / Thang điểm MMSE:</label>
+                          <input
+                            type="text"
+                            value={assessment.psychologicalAssessment.cognitiveMemoryScore}
+                            onChange={e => {
+                              const val = e.target.value;
+                              setAssessment(prev => ({
+                                ...prev,
+                                psychologicalAssessment: { ...prev.psychologicalAssessment!, cognitiveMemoryScore: val },
+                              }));
+                            }}
+                            className="form-input"
+                            placeholder="Ví dụ: MMSE 24/30 (Suy giảm nhẹ)"
+                          />
+                        </div>
+                      </div>
+
+                      <div style={{ marginBottom: '0.75rem' }}>
+                        <label className="form-label">Ghi nhận hành vi & diễn biến tâm lý cụ thể:</label>
+                        <textarea
+                          rows={2}
+                          value={assessment.psychologicalAssessment.behavioralNotes}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setAssessment(prev => ({
+                              ...prev,
+                              psychologicalAssessment: { ...prev.psychologicalAssessment!, behavioralNotes: val },
+                            }));
+                          }}
+                          placeholder="Mô tả tâm lý, giấc ngủ ca đêm, mức độ tương tác với bạn cùng phòng..."
+                          className="form-textarea"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="form-label">Lời khuyên & Đề xuất hỗ trợ tâm lý xã hội:</label>
+                        <textarea
+                          rows={2}
+                          value={assessment.psychologicalAssessment.recommendations}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setAssessment(prev => ({
+                              ...prev,
+                              psychologicalAssessment: { ...prev.psychologicalAssessment!, recommendations: val },
+                            }));
+                          }}
+                          placeholder="Kế hoạch trị liệu tâm lý, hoạt động câu lạc bộ đề xuất..."
+                          className="form-textarea"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* VI, VII. DINH DƯỠNG & NGUY CƠ LÂM SÀNG */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                    V, VI, VII. TRẠNG THÁI TINH THẦN, DINH DƯỠNG & NGUY CƠ LÂM SÀNG
+                    VI, VII. TRẠNG THÁI DINH DƯỠNG & NGUY CƠ LÂM SÀNG
                   </h3>
 
                   <div className="form-row">
                     <div>
-                      <label className="form-label">Trí nhớ / Nhận thức:</label>
+                      <label className="form-label">Trí nhớ / Nhận thức lâm sàng:</label>
                       <select
                         value={assessment.mental.memoryCognition}
                         onChange={e => setAssessment(prev => ({ ...prev, mental: { ...prev.mental, memoryCognition: e.target.value as any } }))}
@@ -1487,7 +1684,52 @@ export default function HealthReportsPage() {
                 </tbody>
               </table>
 
-              {/* VIII. KẾT LUẬN & HƯỚNG CHĂM SÓC */}
+              {/* V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI */}
+              <div className="section-header" style={{ background: '#fef3c7', border: '1px solid #fde68a', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#92400e' }}>
+                V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI (Chuyên viên Tâm lý & CTXH)
+              </div>
+              <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem', background: '#fffbeb', border: '1px solid #fef3c7', padding: '0.4rem 0.6rem', borderRadius: '0.25rem' }}>
+                {viewingReport.data.psychologicalAssessment?.isCompleted ? (
+                  <div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.3rem', marginBottom: '0.3rem' }}>
+                      <div>
+                        <b>Cảm xúc & Tinh thần:</b>{' '}
+                        {viewingReport.data.psychologicalAssessment.emotionalState === 'HAPPY_SOCIABLE'
+                          ? 'Vui vẻ, cởi mở & hòa nhập tốt'
+                          : viewingReport.data.psychologicalAssessment.emotionalState === 'ANXIOUS_DEPRESSED'
+                          ? 'Trầm cảm, lo âu hoặc thu mình'
+                          : viewingReport.data.psychologicalAssessment.emotionalState === 'IRRITABLE_AGITATED'
+                          ? 'Dễ kích động, cáu gắt'
+                          : 'Bình thường, ổn định'}
+                      </div>
+                      <div>
+                        <b>Tương tác xã hội:</b>{' '}
+                        {viewingReport.data.psychologicalAssessment.socialInteraction === 'ACTIVE_COMMUNICATIVE'
+                          ? 'Tích cực tham gia trò chuyện nhóm'
+                          : viewingReport.data.psychologicalAssessment.socialInteraction === 'WITHDRAWN_REFUSED'
+                          ? 'Từ chối giao tiếp'
+                          : 'Thụ động, chỉ trả lời khi được hỏi'}
+                      </div>
+                    </div>
+                    <div style={{ marginBottom: '0.25rem' }}>
+                      <b>Nhận thức / MMSE:</b> {viewingReport.data.psychologicalAssessment.cognitiveMemoryScore || 'MMSE bình thường'}
+                    </div>
+                    <div style={{ marginBottom: '0.25rem' }}>
+                      <b>Ghi nhận diễn biến tâm lý & hành vi:</b> {viewingReport.data.psychologicalAssessment.behavioralNotes || 'Tâm lý ổn định.'}
+                    </div>
+                    <div>
+                      <b>Đánh giá bởi:</b> <u>{viewingReport.data.psychologicalAssessment.assessorName || 'Chuyên viên Tâm lý & CTXH'}</u>
+                      {viewingReport.data.psychologicalAssessment.isManualSupplemented && (
+                        <span style={{ color: '#d97706', fontStyle: 'italic', marginLeft: '0.5rem' }}>(Bổ sung thủ công)</span>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ color: '#dc2626', fontStyle: 'italic' }}>
+                    ⚠️ Chưa có đánh giá tâm lý từ Nhân viên tâm lý & CTXH (Mục này bị thiếu khi lập phiếu).
+                  </div>
+                )}
+              </div>
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>

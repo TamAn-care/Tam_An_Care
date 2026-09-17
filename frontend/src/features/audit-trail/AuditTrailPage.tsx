@@ -227,7 +227,7 @@ export default function AuditTrailPage() {
       ) : (
         <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
           <div className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <table className="data-table table-wide-1100" style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
                   <th style={{ padding: '0.75rem 0.65rem', textAlign: 'left', minWidth: '150px' }}>Thời Gian</th>

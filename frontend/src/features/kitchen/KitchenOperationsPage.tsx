@@ -801,8 +801,8 @@ export default function KitchenOperationsPage() {
 
           {/* Batches Table */}
           <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="data-table table-wide-1000" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Mã Đợt / Giờ Nhận</th>
@@ -1039,8 +1039,9 @@ export default function KitchenOperationsPage() {
           </div>
 
           {/* Inventory Table */}
-          <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+          <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="data-table table-wide-900" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                   <th style={{ padding: '0.75rem 1rem' }}>Mặt Hàng Thực Phẩm</th>
@@ -1129,6 +1130,7 @@ export default function KitchenOperationsPage() {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       )}
 

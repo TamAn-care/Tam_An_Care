@@ -98,6 +98,9 @@ export default function ResidentLeavePage() {
   const [reviewAction, setReviewAction] = useState<'APPROVE' | 'REJECT' | null>(null);
   const [reviewNote, setReviewNote] = useState('');
 
+  // Printable A4 Leave Request Modal (RLA-BR-01)
+  const [viewingPrintItem, setViewingPrintItem] = useState<ResidentLeaveItem | null>(null);
+
   // --- QUERIES ---
   const { data: leaveData, isLoading } = useQuery({
     queryKey: ['resident-leave-requests', statusFilter, residentFilter, actorId],
@@ -354,7 +357,7 @@ export default function ResidentLeavePage() {
           onClick={() => setActiveTab('STAFF_LEAVE')}
           style={{ fontWeight: 600, fontSize: '0.95rem' }}
         >
-          📋 Tạo đơn xin nghỉ phép
+          📋 Xin nghỉ phép
         </button>
         <button
           className={`btn ${activeTab === 'RESIDENT_LEAVE' ? 'btn-primary' : 'btn-outline'}`}
@@ -368,26 +371,28 @@ export default function ResidentLeavePage() {
       {/* ==================== TAB 1: TẠO ĐƠN XIN NGHỈ PHÉP NHÂN VIÊN ==================== */}
       {activeTab === 'STAFF_LEAVE' && (
         <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+          <div style={{ marginBottom: '1.25rem' }}>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap' }}>
                 Tạo & Quản lý Đơn Xin Nghỉ Phép Nhân Viên
               </h2>
-              <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+              <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.8125rem', fontWeight: 400, color: 'var(--text-secondary)', lineHeight: '1.45' }}>
                 {isStaffApprover
                   ? 'Tiếp nhận, theo dõi và duyệt đơn xin nghỉ phép của nhân viên toàn trung tâm (Yêu cầu báo trước ≥ 2 ngày).'
                   : 'Gửi đơn xin nghỉ phép cá nhân và theo dõi trạng thái phê duyệt từ Quản lý & Ban Giám đốc.'}
               </p>
             </div>
-            <button
-              onClick={() => {
-                resetStaffForm();
-                setIsStaffRegisterOpen(true);
-              }}
-              className="btn btn-primary"
-            >
-              + Tạo đơn xin nghỉ phép
-            </button>
+            <div style={{ marginTop: '0.75rem' }}>
+              <button
+                onClick={() => {
+                  resetStaffForm();
+                  setIsStaffRegisterOpen(true);
+                }}
+                className="btn btn-primary"
+              >
+                + Tạo đơn xin nghỉ phép
+              </button>
+            </div>
           </div>
 
           {/* KPI Cards for Staff Leave */}
@@ -457,7 +462,7 @@ export default function ResidentLeavePage() {
             </div>
           ) : (
             <div className="table-responsive" style={{ background: '#ffffff', borderRadius: '0.75rem', border: '1px solid #cbd5e1' }}>
-              <table className="ui-table">
+              <table className="ui-table table-wide-950" style={{ minWidth: '950px' }}>
                 <thead>
                   <tr>
                     <th>Nhân viên xin nghỉ</th>
@@ -913,7 +918,7 @@ export default function ResidentLeavePage() {
             <>
               <div className="desktop-only-table">
                 <div className="table-responsive">
-                  <table className="ui-table">
+                  <table className="ui-table table-wide-1000" style={{ minWidth: '1000px' }}>
                     <thead>
                       <tr>
                         <th>Người cao tuổi</th>
@@ -1014,6 +1019,14 @@ export default function ResidentLeavePage() {
                                       Trở lại Tâm An
                                     </button>
                                   )}
+                                  <button
+                                    type="button"
+                                    onClick={() => setViewingPrintItem(item)}
+                                    className="btn btn-sm btn-neutral"
+                                    title="In phiếu tạm vắng & giảm trừ viện phí A4 (RLA-BR-01)"
+                                  >
+                                    🖨️ In Phiếu
+                                  </button>
                                   {canCancel && (
                                     <button
                                       onClick={() => {
@@ -1299,6 +1312,86 @@ export default function ResidentLeavePage() {
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* MODAL XEM TRƯỚC & IN PHIẾU TẠM VẮNG RLA-BR-01 */}
+          {viewingPrintItem && (
+            <div className="modal-overlay print-modal-overlay" onClick={() => setViewingPrintItem(null)} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+              <div className="modal-card printable-a4-sheet" onClick={(e) => e.stopPropagation()} style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '750px', width: '100%', padding: '1.75rem', color: '#0f172a' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>TRUNG TÂM DƯỠNG LÃO TÂM AN CARE — QUY TRÌNH RLA-BR-01</div>
+                    <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.25rem', color: '#0f172a' }}>PHIẾU ĐĂNG KÝ TẠM VẮNG & GIẢM TRỪ VIỆN PHÍ</h2>
+                  </div>
+                  <button type="button" className="no-print" onClick={() => setViewingPrintItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+                </div>
+
+                <div style={{ border: '1px solid #cbd5e1', padding: '1.25rem', borderRadius: '0.5rem', background: '#ffffff', marginBottom: '1.25rem' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ padding: '6px', fontWeight: 700, width: '35%' }}>Họ tên người cao tuổi:</td>
+                        <td style={{ padding: '6px' }}><b>{viewingPrintItem.residentName || viewingPrintItem.residentId}</b> ({viewingPrintItem.residentCode})</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px', fontWeight: 700 }}>Loại hình tạm vắng:</td>
+                        <td style={{ padding: '6px' }}>{LEAVE_TYPE_LABEL[viewingPrintItem.leaveType] || viewingPrintItem.leaveType}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px', fontWeight: 700 }}>Thời gian vắng dự kiến:</td>
+                        <td style={{ padding: '6px' }}>Từ <b>{new Date(viewingPrintItem.startDate).toLocaleDateString('vi-VN')}</b> đến <b>{new Date(viewingPrintItem.expectedEndDate).toLocaleDateString('vi-VN')}</b></td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px', fontWeight: 700 }}>Báo trước 48h (RLA-BR-01):</td>
+                        <td style={{ padding: '6px' }}>
+                          {viewingPrintItem.isAdvanceNotice48h ? '✅ Đủ điều kiện báo trước (≥ 48h)' : '⚠️ Báo trước < 48h (Ngày đầu tính phí trọn gói)'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px', fontWeight: 700 }}>Quyền lợi giảm trừ tiền ăn:</td>
+                        <td style={{ padding: '6px' }}>
+                          {viewingPrintItem.mealDeductionEligible ? '✅ Được giảm trừ tiền ăn theo quy chế' : '❌ Không thuộc diện giảm trừ tiền ăn'}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style={{ padding: '6px', fontWeight: 700 }}>Người báo / Thân nhân:</td>
+                        <td style={{ padding: '6px' }}>{viewingPrintItem.reportedBy || '—'} ({viewingPrintItem.reporterRelationship || 'Thân nhân'})</td>
+                      </tr>
+                      {viewingPrintItem.note && (
+                        <tr>
+                          <td style={{ padding: '6px', fontWeight: 700 }}>Ghi chú vận hành:</td>
+                          <td style={{ padding: '6px' }}>{viewingPrintItem.note}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+
+                  <div className="signature-box" style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center', fontSize: '0.82rem' }}>
+                    <div>
+                      <b>ĐẠI DIỆN THÂN NHÂN</b><br />
+                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>(Ký & ghi rõ họ tên)</span>
+                    </div>
+                    <div>
+                      <b>ĐIỀU DƯỠNG TRỰC CA</b><br />
+                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>(Ký & ghi rõ họ tên)</span>
+                    </div>
+                    <div>
+                      <b>BAN GIÁM ĐỐC / KẾ TOÁN</b><br />
+                      <span style={{ fontSize: '0.75rem', color: '#64748b' }}>(Duyệt & xác nhận)</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                  <button type="button" onClick={() => window.print()} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}>
+                    🖨️ In Phiếu (A4)
+                  </button>
+                  <button type="button" onClick={() => setViewingPrintItem(null)} className="btn btn-neutral">
+                    Đóng
+                  </button>
+                </div>
               </div>
             </div>
           )}

@@ -74,7 +74,7 @@ export default function AnalyticsPage() {
   const trendHistory = data.trendHistory || [];
 
   return (
-    <div style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
+    <div className="printable-a4-sheet" style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
       {/* Top Header Actions */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
 

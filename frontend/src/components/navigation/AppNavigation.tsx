@@ -26,11 +26,11 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
   {
     key: 'health-reports',
     to: '/health-reports',
-    label: 'Phê Duyệt & Chú Ý',
-    icon: '🚨',
+    label: 'Báo Cáo Định Kỳ',
+    icon: '📄',
     category: 'Lâm Sàng & Chăm Sóc',
-    gradient: 'linear-gradient(135deg, #dc2626, #991b1b)',
-    badge: 'Cần Duyệt',
+    gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+    badge: 'Gửi Gia Đình',
   },
   {
     key: 'admissions',

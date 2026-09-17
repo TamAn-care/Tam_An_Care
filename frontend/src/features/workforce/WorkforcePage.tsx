@@ -566,7 +566,7 @@ export default function WorkforcePage() {
   };
 
   return (
-    <div className="page-content">
+    <div className="page-content printable-a4-sheet">
       {/* Header */}
       <div className="page-header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -579,6 +579,15 @@ export default function WorkforcePage() {
 
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <NotificationBell currentActorId={actorId} />
+
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="btn btn-secondary no-print"
+              style={{ background: '#f8fafc', color: '#0f172a', borderColor: '#cbd5e1', fontWeight: 700 }}
+            >
+              🖨️ In Lịch Trực & Bàn Giao (A4)
+            </button>
 
             <button
               onClick={exportWorkforceShiftsCSV}
@@ -1718,7 +1727,7 @@ export default function WorkforcePage() {
 
             {/* Bảng Lịch Sử Đánh Giá KPI */}
             <div className="table-responsive">
-              <table className="ui-table">
+              <table className="ui-table table-wide-900">
                 <thead>
                   <tr>
                     <th>Nhân viên được đánh giá</th>
@@ -1812,7 +1821,7 @@ export default function WorkforcePage() {
               1. Bảng Đánh Giá KPI & Mức Độ Hoàn Thành Theo Từng Nhóm Chuyên Môn
             </h3>
             <div className="table-responsive">
-              <table className="ui-table">
+              <table className="ui-table table-wide-900">
                 <thead>
                   <tr>
                     <th>Khối / Nhóm chuyên môn</th>
@@ -1898,7 +1907,7 @@ export default function WorkforcePage() {
               2. Bảng Xếp Hạng Thi Đua & Hiệu Suất Từng Nhân Viên
             </h3>
             <div className="table-responsive">
-              <table className="ui-table">
+              <table className="ui-table table-wide-900">
                 <thead>
                   <tr>
                     <th>Xếp hạng</th>
@@ -2006,7 +2015,7 @@ export default function WorkforcePage() {
           </div>
 
           <div className="table-responsive">
-            <table className="ui-table">
+            <table className="ui-table table-wide-900">
               <thead>
                 <tr>
                   <th>Nhân sự được vinh danh</th>
