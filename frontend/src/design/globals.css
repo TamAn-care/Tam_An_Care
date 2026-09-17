@@ -2009,11 +2009,13 @@ transform: scale(1.28);
   }
 
   .topbar-title {
-    font-size: 1.05rem !important;
+    font-size: 0.9rem !important;
   }
 
   .topbar-subtitle {
-    display: none !important;
+    display: block !important;
+    font-size: 0.68rem !important;
+    color: #64748b !important;
   }
 
   .topbar-end {

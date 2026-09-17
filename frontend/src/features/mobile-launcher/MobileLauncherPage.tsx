@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
 import { ROLE_LABELS, hasCapability, canAccessRoute } from '../../auth/role-policy';
-import { OneTapActionSheet, ActionCategory } from './OneTapActionSheet';
 import type { HumanActorRole } from '../../types/actor';
 
 interface AppIconItem {
@@ -12,8 +11,8 @@ interface AppIconItem {
   gradient: string;
   badge?: string | number;
   badgeBg?: string;
+  category: string;
   isAllowed: (role: HumanActorRole | undefined | null) => boolean;
-  action: () => void;
 }
 
 export function MobileLauncherPage() {
@@ -22,13 +21,63 @@ export function MobileLauncherPage() {
 
   const actorRole = actor?.actorRole;
   const actorName = actor?.displayName || 'Nhân viên';
-  const roleLabel = (actorRole && ROLE_LABELS[actorRole]) || 'Điều dưỡng viên';
+  const roleLabel = (actorRole && ROLE_LABELS[actorRole]) || 'Nhân viên chuyên môn';
 
-  const [activeCategory, setActiveCategory] = useState<ActionCategory>(null);
+  // State: Currently selected icon ID for FULL SCREEN VIEW (null = show Icon Grid)
+  const [selectedAppId, setSelectedAppId] = useState<string | null>(null);
 
-  // Master List of iPhone Icons with Strict Role-Based Capability Check
+  // Dynamic state for task completions inside full-screen view
+  const [completedTaskIds, setCompletedTaskIds] = useState<Record<string, boolean>>({});
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Voice AI State
+  const [isRecording, setIsRecording] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const toggleTaskDone = (id: string, name: string) => {
+    setCompletedTaskIds((prev) => {
+      const nextState = !prev[id];
+      if (nextState) showToast(`✓ Đã xác nhận hoàn thành cho ${name}`);
+      return { ...prev, [id]: nextState };
+    });
+  };
+
+  const startVoiceAI = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const rec = new SpeechRecognition();
+      rec.lang = 'vi-VN';
+      rec.onstart = () => setIsRecording(true);
+      rec.onresult = (e: any) => {
+        const text = e.results[0][0].transcript;
+        setVoiceTranscript((prev) => (prev ? prev + ' ' + text : text));
+        setIsRecording(false);
+        showToast('✓ Đã thu âm thành công!');
+      };
+      rec.onerror = () => {
+        setIsRecording(false);
+        showToast('⚠️ Hãy thử lại thu âm giọng nói');
+      };
+      rec.onend = () => setIsRecording(false);
+      rec.start();
+    } else {
+      setIsRecording(true);
+      setTimeout(() => {
+        setIsRecording(false);
+        setVoiceTranscript('Cụ tỉnh táo, tinh thần vui vẻ, các tiêu chí đánh giá hoàn thành tốt.');
+        showToast('✓ Mô phỏng thu âm giọng nói thành công!');
+      }, 1600);
+    }
+  };
+
+  // Master List of iPhone Icons strictly mapped to Role Capability
   const allIcons: AppIconItem[] = useMemo(() => [
-    // --- 1. DÀNH CHO NHÂN VIÊN TÂM LÝ & CÔNG TÁC XÃ HỘI (PSYCHOLOGIST / SOCIAL_WORKER) ---
+    // --- 1. TÂM LÝ VÀ CÔNG TÁC XÃ HỘI ---
     {
       id: 'psychology-eval',
       title: 'Đánh Giá Tâm Lý',
@@ -36,30 +85,28 @@ export function MobileLauncherPage() {
       gradient: 'linear-gradient(135deg, #f59e0b, #d97706)',
       badge: 'MỚI',
       badgeBg: '#f59e0b',
+      category: 'Tâm Lý & CTXH',
       isAllowed: (role) => hasCapability(role, 'canEvaluatePsychology') || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
-      action: () => setActiveCategory('health'),
     },
     {
       id: 'counseling',
       title: 'Tư Vấn Tâm Lý',
       icon: '🗣️',
       gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9)',
+      category: 'Tâm Lý & CTXH',
       isAllowed: (role) => hasCapability(role, 'canEvaluatePsychology') || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
-      action: () => setActiveCategory('health'),
     },
 
-    // --- 2. CỨ DÂN (DÙNG CHUNG CHO TÂM LÝ, CÔNG TÁC XÃ HỘI, ĐIỀU DƯỠNG, BGĐ) ---
+    // --- 2. CƯ DÂN & GHI ÂM (DÙNG CHUNG) ---
     {
       id: 'residents',
       title: 'Hồ Sơ Cư Dân',
       icon: '👵',
       gradient: 'linear-gradient(135deg, #10b981, #059669)',
       badge: 15,
+      category: 'Hồ Sơ',
       isAllowed: (role) => canAccessRoute(role, 'residents'),
-      action: () => navigate('/residents'),
     },
-
-    // --- 3. GHI ÂM AI VOICE (TẤT CẢ VAI TRÒ DÙNG ĐƯỢC) ---
     {
       id: 'voice',
       title: 'Ghi Âm AI',
@@ -67,18 +114,18 @@ export function MobileLauncherPage() {
       gradient: 'linear-gradient(135deg, #a855f7, #7e22ce)',
       badge: 'AI',
       badgeBg: '#a855f7',
+      category: 'Công Cụ AI',
       isAllowed: () => true,
-      action: () => setActiveCategory('voice'),
     },
 
-    // --- 4. NHÓM CHĂM SÓC HÀNG NGÀY (CHỈ CAREGIVER / NURSE / BGĐ) ---
+    // --- 3. CHĂM SÓC HÀNG NGÀY (CHỈ CAREGIVER / NURSE / BGĐ) ---
     {
       id: 'hygiene',
       title: 'Tắm & Vệ Sinh',
       icon: '🚿',
       gradient: 'linear-gradient(135deg, #06b6d4, #0284c7)',
+      category: 'Chăm Sóc',
       isAllowed: (role) => (hasCapability(role, 'canLogDirectCare') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER') || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
-      action: () => setActiveCategory('hygiene'),
     },
     {
       id: 'meals',
@@ -87,19 +134,19 @@ export function MobileLauncherPage() {
       gradient: 'linear-gradient(135deg, #f97316, #ea580c)',
       badge: 'SÁNG',
       badgeBg: '#f59e0b',
+      category: 'Chăm Sóc',
       isAllowed: (role) => (hasCapability(role, 'canLogDirectCare') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER') || role === 'NUTRITIONIST' || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
-      action: () => setActiveCategory('meals'),
     },
 
-    // --- 5. NHÓM Y TẾ & DƯỢC PHẨM (TUYỆT ĐỐI KHÔNG HIỂN THỊ CHO TÂM LÝ / CTXH / TẠP VỤ) ---
+    // --- 4. Y TẾ & DƯỢC PHẨM (NURSE / Y TẾ) ---
     {
       id: 'meds',
       title: 'Uống Thuốc',
       icon: '💊',
       gradient: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
       badge: 3,
+      category: 'Y Tế',
       isAllowed: (role) => hasCapability(role, 'canAdministerMedication') || hasCapability(role, 'canPrescribeMedication') || role === 'ADMIN' || role === 'CARE_MANAGER',
-      action: () => setActiveCategory('meds'),
     },
     {
       id: 'vitals',
@@ -107,442 +154,569 @@ export function MobileLauncherPage() {
       icon: '🩺',
       gradient: 'linear-gradient(135deg, #f43f5e, #e11d48)',
       badge: 2,
+      category: 'Y Tế',
       isAllowed: (role) => hasCapability(role, 'canCreateHealthReport') || hasCapability(role, 'canAdministerMedication') || role === 'ADMIN' || role === 'CARE_MANAGER',
-      action: () => setActiveCategory('vitals'),
     },
     {
       id: 'health-reports',
       title: 'Báo Cáo Y Tế',
       icon: '📊',
       gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+      category: 'Y Tế',
       isAllowed: (role) => canAccessRoute(role, 'health-reports') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER',
-      action: () => navigate('/health-reports'),
     },
     {
       id: 'pharmacy',
       title: 'Kho Dược eMAR',
       icon: '💉',
       gradient: 'linear-gradient(135deg, #6366f1, #4338ca)',
+      category: 'Y Tế',
       isAllowed: (role) => hasCapability(role, 'canManagePharmacy') || (canAccessRoute(role, 'medication-inventory') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER'),
-      action: () => navigate('/medication-inventory'),
     },
 
-    // --- 6. NHÓM TÍN HIỆU CẢNH BÁO & VẬN HÀNH ---
+    // --- 5. TÍN HIỆU CẢNH BÁO & VẬN HÀNH ---
     {
       id: 'incident',
       title: 'Báo Sự Cố',
       icon: '🚨',
       gradient: 'linear-gradient(135deg, #dc2626, #991b1b)',
+      category: 'Cảnh Báo',
       isAllowed: () => true,
-      action: () => setActiveCategory('incident'),
     },
     {
       id: 'workforce',
       title: 'Lịch Trực Ca',
       icon: '📅',
       gradient: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
+      category: 'Ca Trực',
       isAllowed: (role) => canAccessRoute(role, 'workforce'),
-      action: () => navigate('/workforce'),
     },
     {
       id: 'leave',
       title: 'Xin Nghỉ Phép',
       icon: '🏖️',
       gradient: 'linear-gradient(135deg, #eab308, #ca8a04)',
+      category: 'Ca Trực',
       isAllowed: (role) => canAccessRoute(role, 'resident-leave'),
-      action: () => navigate('/resident-leave'),
-    },
-    {
-      id: 'accommodation',
-      title: 'Sơ Đồ Phòng',
-      icon: '🛌',
-      gradient: 'linear-gradient(135deg, #3b82f6, #1e40af)',
-      isAllowed: (role) => canAccessRoute(role, 'accommodation') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER',
-      action: () => navigate('/accommodation'),
-    },
-    {
-      id: 'admissions',
-      title: 'Tiếp Nhận Mới',
-      icon: '📝',
-      gradient: 'linear-gradient(135deg, #059669, #047857)',
-      isAllowed: (role) => canAccessRoute(role, 'admissions') && role !== 'PSYCHOLOGIST' && role !== 'SOCIAL_WORKER',
-      action: () => navigate('/admissions'),
     },
 
-    // --- 7. NHÓM DINH DƯỠNG BẾP (NUTRITIONIST / BGĐ) ---
+    // --- 6. DINH DƯỠNG BẾP ---
     {
       id: 'kitchen',
       title: 'Bếp Dinh Dưỡng',
       icon: '🍳',
       gradient: 'linear-gradient(135deg, #ea580c, #c2410c)',
+      category: 'Dinh Dưỡng',
       isAllowed: (role) => hasCapability(role, 'canManageKitchenOperations') || canAccessRoute(role, 'kitchen-operations'),
-      action: () => navigate('/kitchen-operations'),
     },
 
-    // --- 8. NHÓM KẾ TOÁN & VIỆN PHÍ (ACCOUNTANT / BGĐ) ---
+    // --- 7. KẾ TOÁN & LỄ TÂN ---
     {
       id: 'billing',
       title: 'Viện Phí',
       icon: '💳',
       gradient: 'linear-gradient(135deg, #10b981, #047857)',
+      category: 'Tài Chính',
       isAllowed: (role) => hasCapability(role, 'canManageBilling') || canAccessRoute(role, 'billing-invoicing'),
-      action: () => navigate('/billing-invoicing'),
+    },
+    {
+      id: 'reception',
+      title: 'Đón Thân Nhân',
+      icon: '🤝',
+      gradient: 'linear-gradient(135deg, #ec4899, #be185d)',
+      category: 'Lễ Tân',
+      isAllowed: (role) => role === 'RECEPTIONIST' || canAccessRoute(role, 'family-portal') || role === 'SUPERVISOR' || role === 'ADMIN',
+    },
+    {
+      id: 'rehab',
+      title: 'Tập Phục Hồi',
+      icon: '🏋️',
+      gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+      category: 'Phục Hồi',
+      isAllowed: (role) => role === 'REHABILITATION_SPECIALIST' || role === 'SUPERVISOR' || role === 'ADMIN',
     },
 
-    // --- 9. QUẢN TRỊ & THÂN NHÂN ---
-    {
-      id: 'family',
-      title: 'Thân Nhân',
-      icon: '👨‍👩‍👧',
-      gradient: 'linear-gradient(135deg, #ec4899, #be185d)',
-      isAllowed: (role) => canAccessRoute(role, 'family-portal'),
-      action: () => navigate('/family-portal'),
-    },
+    // --- 8. QUẢN TRỊ ---
     {
       id: 'analytics',
       title: 'Phân Tích KPI',
       icon: '📈',
       gradient: 'linear-gradient(135deg, #4f46e5, #3730a3)',
+      category: 'Quản Trị',
       isAllowed: (role) => hasCapability(role, 'canAccessAnalytics') || canAccessRoute(role, 'analytics-intelligence'),
-      action: () => navigate('/analytics-intelligence'),
     },
     {
       id: 'staff-access',
       title: 'Phân Quyền',
       icon: '🔑',
       gradient: 'linear-gradient(135deg, #334155, #0f172a)',
+      category: 'Quản Trị',
       isAllowed: (role) => hasCapability(role, 'canManageStaff') || canAccessRoute(role, 'staff-access'),
-      action: () => navigate('/staff-access'),
     },
-  ], [navigate]);
+  ], []);
 
-  // Strict filtering per actorRole
+  // Filter icons according to logged-in user's role
   const visibleIcons = useMemo(() => {
     return allIcons.filter((item) => item.isAllowed(actorRole));
   }, [allIcons, actorRole]);
+
+  // Find currently selected app object
+  const activeApp = useMemo(() => {
+    return allIcons.find((item) => item.id === selectedAppId) || null;
+  }, [allIcons, selectedAppId]);
+
+  // Icon Click Handler: HIDE GRID completely by setting selectedAppId
+  const handleAppClick = (app: AppIconItem) => {
+    if (app.id === 'residents') {
+      navigate('/residents');
+    } else if (app.id === 'billing') {
+      navigate('/billing-invoicing');
+    } else if (app.id === 'staff-access') {
+      navigate('/staff-access');
+    } else {
+      setSelectedAppId(app.id);
+    }
+  };
 
   return (
     <div
       style={{
         minHeight: '100vh',
-        backgroundColor: '#000000',
-        color: '#ffffff',
+        backgroundColor: '#ffffff', // Pure clean white background
+        color: '#0f172a',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'space-between',
         fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif',
         userSelect: 'none',
         WebkitUserSelect: 'none',
-        paddingBottom: '90px',
         boxSizing: 'border-box',
       }}
     >
-      {/* Top Header Bar */}
-      <div
-        style={{
-          padding: '16px 20px 12px 20px',
-          background: 'linear-gradient(180deg, rgba(15,23,42,0.9) 0%, rgba(0,0,0,0) 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '16px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#047857',
+            color: '#ffffff',
+            fontSize: '12px',
+            fontWeight: 800,
+            padding: '10px 20px',
+            borderRadius: '999px',
+            boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+            zIndex: 9999,
+          }}
+        >
+          {toastMessage}
+        </div>
+      )}
+
+      {/* 
+        CONDITION 1: IF AN ICON IS SELECTED -> ICONS GRID IS 100% HIDDEN.
+        ONLY RENDER FULL-SCREEN PROFESSIONAL TASK FORM & MONITORING BOARD 
+      */}
+      {activeApp ? (
+        <div
+          style={{
+            minHeight: '100vh',
+            backgroundColor: '#ffffff',
+            display: 'flex',
+            flexDirection: 'column',
+            boxSizing: 'border-box',
+          }}
+        >
+          {/* Clean Top Navigation Bar with Back Button */}
           <div
             style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '14px',
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              padding: '14px 16px',
+              backgroundColor: '#ffffff',
+              borderBottom: '1px solid #e2e8f0',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '22px',
+              justifyContent: 'space-between',
+              position: 'sticky',
+              top: 0,
+              zIndex: 10,
             }}
           >
-            👩‍⚕️
-          </div>
-          <div>
-            <div
+            <button
+              type="button"
+              onClick={() => setSelectedAppId(null)}
               style={{
-                fontSize: '10px',
-                fontWeight: 800,
-                color: '#34d399',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {roleLabel}
-            </div>
-            <div
-              style={{
-                fontSize: '15px',
-                fontWeight: 800,
+                backgroundColor: '#0f172a',
                 color: '#ffffff',
-                lineHeight: 1.2,
+                border: 'none',
+                padding: '8px 14px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: 800,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
               }}
             >
-              {actorName}
+              <span>← Quay lại Icon</span>
+            </button>
+
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '10px', fontWeight: 800, color: '#059669', textTransform: 'uppercase' }}>
+                {activeApp.category} • {roleLabel}
+              </div>
+              <div style={{ fontSize: '15px', fontWeight: 900, color: '#0f172a' }}>
+                {activeApp.icon} {activeApp.title}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          style={{
-            backgroundColor: 'rgba(16, 185, 129, 0.18)',
-            border: '1px solid rgba(52, 211, 153, 0.4)',
-            padding: '4px 10px',
-            borderRadius: '999px',
-            fontSize: '10px',
-            fontWeight: 700,
-            color: '#6ee7b7',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-          }}
-        >
-          <span
+          {/* Full-Screen Task & Monitoring Form Content */}
+          <div
             style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              backgroundColor: '#34d399',
+              flex: 1,
+              padding: '16px',
+              maxWidth: '480px',
+              margin: '0 auto',
+              width: '100%',
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
             }}
-          />
-          <span>Tâm An Care</span>
-        </div>
-      </div>
+          >
+            {/* Header info box */}
+            <div style={{ backgroundColor: '#ecfdf5', border: '1px solid #a7f3d0', padding: '14px', borderRadius: '18px' }}>
+              <div style={{ fontSize: '12px', fontWeight: 800, color: '#047857' }}>
+                📋 Tiêu Chí Giám Sát & Đánh Giá Hoàn Thành Công Việc Ca Trực
+              </div>
+              <div style={{ fontSize: '11px', color: '#065f46', marginTop: '4px' }}>
+                Vị trí: <strong>{roleLabel} ({actorName})</strong>. Yêu cầu xác nhận đã thực hiện và báo cáo kết quả đánh giá.
+              </div>
+            </div>
 
-      {/* Main iPhone 4-Column Squircle App Grid (GUARANTEED PERFECT GRID DISPLAY) */}
-      <div
-        style={{
-          flex: 1,
-          padding: '8px 16px 24px 16px',
-          maxWidth: '430px',
-          width: '100%',
-          margin: '0 auto',
-          boxSizing: 'border-box',
-        }}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '22px 14px',
-            alignItems: 'start',
-          }}
-        >
-          {visibleIcons.map((app) => (
-            <div
-              key={app.id}
-              onClick={app.action}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                cursor: 'pointer',
-                textAlign: 'center',
-              }}
-            >
-              {/* iPhone Squircle App Icon Frame (60px x 60px) */}
-              <div
-                style={{
-                  width: '60px',
-                  height: '60px',
-                  borderRadius: '18px',
-                  background: app.gradient,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '28px',
-                  color: '#ffffff',
-                  position: 'relative',
-                  boxShadow: '0 8px 20px rgba(0, 0, 0, 0.4)',
-                  border: '1px solid rgba(255, 255, 255, 0.25)',
-                  boxSizing: 'border-box',
-                }}
-              >
-                <span>{app.icon}</span>
+            {/* FORM TYPE 1: PSYCHOLOGY & SOCIAL WORK (TÂM LÝ & CTXH) */}
+            {(activeApp.id === 'psychology-eval' || activeApp.id === 'counseling') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {[
+                  { id: 'psy-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201 • Giường A', note: 'Thích trò chuyện về gia đình, tâm lý ổn định' },
+                  { id: 'psy-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203 • Giường B', note: 'Có biểu hiện lo âu ca đêm, cần động viên' },
+                  { id: 'psy-3', name: 'Cụ Lê Hoàng Nam', room: 'Phòng 205 • Giường A', note: 'Tham gia tích cực CLB Đọc sách ca sáng' },
+                ].map((item) => {
+                  const isDone = completedTaskIds[item.id];
+                  return (
+                    <div
+                      key={item.id}
+                      style={{
+                        backgroundColor: '#ffffff',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '18px',
+                        padding: '14px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '10px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{item.name}</div>
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>{item.room}</div>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: 800,
+                            padding: '3px 8px',
+                            borderRadius: '999px',
+                            backgroundColor: isDone ? '#dcfce7' : '#fef3c7',
+                            color: isDone ? '#15803d' : '#b45309',
+                          }}
+                        >
+                          {isDone ? '✓ ĐÃ ĐÁNH GIÁ' : 'CHỜ TƯ VẤN'}
+                        </span>
+                      </div>
 
-                {/* Red Circular iOS Badge */}
-                {app.badge !== undefined && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      top: '-6px',
-                      right: '-6px',
-                      backgroundColor: app.badgeBg || '#ef4444',
-                      color: '#ffffff',
-                      fontSize: '10px',
-                      fontWeight: 900,
-                      padding: '1px 6px',
-                      borderRadius: '999px',
-                      border: '2px solid #000000',
-                      boxShadow: '0 2px 5px rgba(0,0,0,0.5)',
-                      lineHeight: 1,
-                    }}
-                  >
-                    {app.badge}
-                  </span>
+                      <div style={{ fontSize: '12px', color: '#334155', backgroundColor: '#f8fafc', padding: '8px 12px', borderRadius: '12px' }}>
+                        <strong>Ghi chú tâm lý:</strong> {item.note}
+                      </div>
+
+                      {/* 1-Tap Emotion Criteria Selection */}
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button
+                          type="button"
+                          onClick={() => showToast(`✓ Đã ghi nhận ${item.name}: Tinh thần Tốt 😀`)}
+                          style={{ flex: 1, padding: '8px', borderRadius: '12px', border: '1px solid #10b981', backgroundColor: '#ecfdf5', fontSize: '11px', fontWeight: 700, color: '#047857', cursor: 'pointer' }}
+                        >
+                          😀 Vui Vẻ
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => showToast(`✓ Đã ghi nhận ${item.name}: Bình thường 😐`)}
+                          style={{ flex: 1, padding: '8px', borderRadius: '12px', border: '1px solid #cbd5e1', backgroundColor: '#ffffff', fontSize: '11px', fontWeight: 700, color: '#475569', cursor: 'pointer' }}
+                        >
+                          😐 Bình Thường
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => showToast(`⚠️ Đã báo cáo ${item.name}: Lo âu 🙁`)}
+                          style={{ flex: 1, padding: '8px', borderRadius: '12px', border: '1px solid #f43f5e', backgroundColor: '#fff1f2', fontSize: '11px', fontWeight: 700, color: '#be123c', cursor: 'pointer' }}
+                        >
+                          🙁 Lo Âm
+                        </button>
+                      </div>
+
+                      {/* Confirm Task Completion */}
+                      <button
+                        type="button"
+                        onClick={() => toggleTaskDone(item.id, item.name)}
+                        style={{
+                          width: '100%',
+                          padding: '10px',
+                          borderRadius: '14px',
+                          border: 'none',
+                          backgroundColor: isDone ? '#047857' : '#10b981',
+                          color: '#ffffff',
+                          fontSize: '12px',
+                          fontWeight: 800,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {isDone ? '✓ ĐÃ XÁC NHẬN TƯ VẤN CA NÀY' : '1-CHẠM XÁC NHẬN HOÀN THÀNH'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* FORM TYPE 2: NURSE & MEDICATION (Y TẾ & ĐIỀU DƯỠNG) */}
+            {(activeApp.id === 'meds' || activeApp.id === 'vitals') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {[
+                  { id: 'med-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201', detail: 'Thuốc Huyết Áp (1 Viên) • Ca 08:00' },
+                  { id: 'med-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203', detail: 'Thuốc Bổ Não (2 Viên) • Ca 08:00' },
+                ].map((m) => {
+                  const isDone = completedTaskIds[m.id];
+                  return (
+                    <div key={m.id} style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{m.name}</div>
+                        <div style={{ fontSize: '11px', color: '#64748b' }}>{m.room}</div>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#2563eb', marginTop: '4px' }}>{m.detail}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleTaskDone(m.id, m.name)}
+                        style={{ padding: '10px 16px', borderRadius: '12px', border: 'none', backgroundColor: isDone ? '#047857' : '#2563eb', color: '#ffffff', fontSize: '12px', fontWeight: 800, cursor: 'pointer' }}
+                      >
+                        {isDone ? '✓ ĐÃ UỐNG' : '1-CHẠM'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* FORM TYPE 3: CAREGIVER (CHĂM SÓC VIÊN) */}
+            {(activeApp.id === 'hygiene' || activeApp.id === 'meals') && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {[
+                  { id: 'cg-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201' },
+                  { id: 'cg-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203' },
+                ].map((cg) => (
+                  <div key={cg.id} style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '14px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{cg.name} ({cg.room})</div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                      <button type="button" onClick={() => showToast(`✓ Ghi nhận ${cg.name}: Ăn hết 100%`)} style={{ flex: 1, padding: '8px', borderRadius: '12px', backgroundColor: '#ecfdf5', border: '1px solid #10b981', fontSize: '11px', fontWeight: 700, color: '#047857' }}>Ăn 100%</button>
+                      <button type="button" onClick={() => showToast(`✓ Ghi nhận ${cg.name}: Ăn được 50%`)} style={{ flex: 1, padding: '8px', borderRadius: '12px', backgroundColor: '#fffbeb', border: '1px solid #f59e0b', fontSize: '11px', fontWeight: 700, color: '#b45309' }}>Ăn 50%</button>
+                      <button type="button" onClick={() => showToast(`⚠️ Đã báo cáo ${cg.name}: Bỏ Bữa`)} style={{ flex: 1, padding: '8px', borderRadius: '12px', backgroundColor: '#fff1f2', border: '1px solid #f43f5e', fontSize: '11px', fontWeight: 700, color: '#be123c' }}>Bỏ Bữa</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* FORM TYPE 4: VOICE AI */}
+            {activeApp.id === 'voice' && (
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '24px', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  onClick={startVoiceAI}
+                  style={{
+                    width: '76px',
+                    height: '76px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    backgroundColor: isRecording ? '#ef4444' : '#8b5cf6',
+                    color: '#ffffff',
+                    fontSize: '34px',
+                    margin: '0 auto 16px auto',
+                    cursor: 'pointer',
+                    boxShadow: '0 10px 25px rgba(139, 92, 246, 0.3)',
+                  }}
+                >
+                  🎙️
+                </button>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#4c1d95' }}>
+                  {isRecording ? '🔴 Đang lắng nghe... Nói trực tiếp' : 'Bấm vào Micro để thu âm báo cáo giọng nói'}
+                </div>
+                {voiceTranscript && (
+                  <div style={{ marginTop: '16px', padding: '12px', backgroundColor: '#f3e8ff', borderRadius: '14px', fontSize: '12px', color: '#6b21a8', textAlign: 'left' }}>
+                    <strong>Văn bản nhận diện:</strong> "{voiceTranscript}"
+                  </div>
                 )}
               </div>
+            )}
 
-              {/* Title Label Under Icon */}
-              <span
+            {/* GENERAL FORM FOR OTHER ROLES */}
+            {activeApp.id !== 'psychology-eval' && activeApp.id !== 'counseling' && activeApp.id !== 'meds' && activeApp.id !== 'vitals' && activeApp.id !== 'hygiene' && activeApp.id !== 'meals' && activeApp.id !== 'voice' && (
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '20px' }}>
+                <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
+                  📋 Form Hoạt Động & Tiêu Chí Đánh Giá Chuyên Môn
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px' }}>
+                  Yêu cầu xác nhận hoàn thành công việc chuyên môn của vị trí {roleLabel}.
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    showToast('✓ Đã báo cáo hoàn thành nhiệm vụ ca!');
+                    setSelectedAppId(null);
+                  }}
+                  style={{ width: '100%', padding: '14px', borderRadius: '16px', backgroundColor: '#047857', color: '#ffffff', fontSize: '13px', fontWeight: 900, border: 'none', cursor: 'pointer' }}
+                >
+                  XÁC NHẬN HOÀN THÀNH CA TRỰC
+                </button>
+              </div>
+            )}
+
+            {/* Final Confirmation Button to Complete & Return */}
+            <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  showToast('✓ Đã hoàn thành báo cáo & tiêu chí giám sát!');
+                  setSelectedAppId(null);
+                }}
                 style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  color: '#f8fafc',
-                  marginTop: '6px',
-                  lineHeight: 1.25,
-                  textAlign: 'center',
-                  wordBreak: 'break-word',
-                  letterSpacing: '-0.01em',
-                  textShadow: '0 1px 2px rgba(0,0,0,0.9)',
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '18px',
+                  backgroundColor: '#0f172a',
+                  color: '#ffffff',
+                  fontSize: '13px',
+                  fontWeight: 900,
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.12)',
                 }}
               >
-                {app.title}
-              </span>
+                XÁC NHẬN BÁO CÁO & QUAY LẠI MÀN HÌNH ICON
+              </button>
             </div>
-          ))}
-        </div>
 
-        {/* Page Dots Indicator */}
+          </div>
+        </div>
+      ) : (
+        /* 
+          CONDITION 2: DEFAULT VIEW -> CLEAN WHITE IPHONE 4-COLUMN MATRIX GRID
+          NO inner black top banner, NO dots ..., NO bottom dock bar, NO floating drawer elements!
+        */
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '6px',
-            marginTop: '32px',
-            opacity: 0.6,
+            maxWidth: '430px',
+            width: '100%',
+            margin: '0 auto',
+            padding: '20px 16px 36px 16px',
+            boxSizing: 'border-box',
           }}
         >
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#ffffff' }} />
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.4)' }} />
-          <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.4)' }} />
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '26px 12px',
+              alignItems: 'start',
+            }}
+          >
+            {visibleIcons.map((app) => (
+              <div
+                key={app.id}
+                onClick={() => handleAppClick(app)}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                }}
+              >
+                {/* iPhone Squircle App Icon (60px x 60px) */}
+                <div
+                  style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '18px',
+                    background: app.gradient,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '28px',
+                    color: '#ffffff',
+                    position: 'relative',
+                    boxShadow: '0 8px 18px rgba(0, 0, 0, 0.08)',
+                    border: '1px solid rgba(0, 0, 0, 0.05)',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <span>{app.icon}</span>
+
+                  {/* Red Circular Badge */}
+                  {app.badge !== undefined && (
+                    <span
+                      style={{
+                        position: 'absolute',
+                        top: '-6px',
+                        right: '-6px',
+                        backgroundColor: app.badgeBg || '#ef4444',
+                        color: '#ffffff',
+                        fontSize: '10px',
+                        fontWeight: 900,
+                        padding: '1px 6px',
+                        borderRadius: '999px',
+                        border: '2px solid #ffffff',
+                        boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
+                        lineHeight: 1,
+                      }}
+                    >
+                      {app.badge}
+                    </span>
+                  )}
+                </div>
+
+                {/* Title Label Under Icon on White Background */}
+                <span
+                  style={{
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#1e293b',
+                    marginTop: '7px',
+                    lineHeight: 1.25,
+                    textAlign: 'center',
+                    wordBreak: 'break-word',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {app.title}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Bottom Glassmorphism iOS Dock Bar */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '12px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'calc(100% - 32px)',
-          maxWidth: '400px',
-          backgroundColor: 'rgba(255, 255, 255, 0.22)',
-          backdropFilter: 'blur(24px)',
-          WebkitBackdropFilter: 'blur(24px)',
-          borderRadius: '32px',
-          padding: '10px 16px',
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          border: '1px solid rgba(255, 255, 255, 0.25)',
-          boxShadow: '0 15px 35px rgba(0, 0, 0, 0.6)',
-          zIndex: 100,
-          boxSizing: 'border-box',
-        }}
-      >
-        <button
-          type="button"
-          onClick={() => setActiveCategory('hygiene')}
-          style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #10b981, #059669)',
-            border: 'none',
-            fontSize: '24px',
-            color: '#ffffff',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-          }}
-          title="Nhận Ca"
-        >
-          📞
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate('/residents')}
-          style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #f1f5f9, #ffffff)',
-            border: 'none',
-            fontSize: '24px',
-            color: '#0f172a',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
-          }}
-          title="Cư Dân"
-        >
-          👵
-        </button>
-
-        <button
-          type="button"
-          onClick={() => navigate('/operations')}
-          style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #38bdf8, #0284c7)',
-            border: 'none',
-            fontSize: '24px',
-            color: '#ffffff',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
-          }}
-          title="Vận Hành"
-        >
-          🧭
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveCategory('voice')}
-          style={{
-            width: '48px',
-            height: '48px',
-            borderRadius: '16px',
-            background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
-            border: 'none',
-            fontSize: '24px',
-            color: '#ffffff',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
-          }}
-          title="Voice AI"
-        >
-          🎙️
-        </button>
-      </div>
-
-      {/* 1-Tap Action Sheet Modal */}
-      <OneTapActionSheet
-        category={activeCategory}
-        onClose={() => setActiveCategory(null)}
-        actorName={actorName}
-      />
+      )}
     </div>
   );
 }

@@ -251,7 +251,7 @@ export function AppShell() {
 
       <div className="main-shell">
         <header className="topbar">
-          <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0 }}>
             <MobileNavigationButton
               open={menuOpen}
               onToggle={() =>
@@ -261,11 +261,37 @@ export function AppShell() {
               }
             />
 
-
-
-            <div>
-              <div className="topbar-title">
-                {meta?.title ?? 'Tâm An Care'}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
+              <div
+                className="topbar-title"
+                style={{
+                  fontSize: 'clamp(0.85rem, 2.2vw, 1rem)',
+                  fontWeight: 700,
+                  color: '#0f172a',
+                  lineHeight: 1.2,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  letterSpacing: '-0.01em',
+                }}
+              >
+                Hệ thống quản trị Tâm An - Tâm An Care
+              </div>
+              <div
+                className="topbar-subtitle"
+                style={{
+                  fontSize: 'clamp(0.65rem, 1.6vw, 0.72rem)',
+                  fontWeight: 500,
+                  color: '#64748b',
+                  lineHeight: 1.1,
+                  letterSpacing: '0.02em',
+                  marginTop: '1px',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                Developed by Tam An
               </div>
             </div>
           </div>
@@ -561,11 +587,6 @@ export function AppShell() {
         onClose={() => setShowInstallModal(false)}
         deferredPrompt={deferredPrompt}
         onPromptTriggered={() => setDeferredPrompt(null)}
-      />
-
-      {/* FIXED MOBILE BOTTOM NAVIGATION BAR */}
-      <MobileBottomNav
-        onOpenMenu={() => setMenuOpen(true)}
       />
     </div>
   );
