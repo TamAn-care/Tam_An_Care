@@ -849,7 +849,7 @@ export default function WorkforcePage() {
           {/* Shifts Table & Mobile Cards */}
           <div className="desktop-only-table">
             <div className="table-responsive">
-              <table className="ui-table">
+              <table className="ui-table" style={{ minWidth: '1000px' }}>
                 <thead>
                   <tr>
                     <th>Nhân sự phân công</th>
@@ -1159,7 +1159,7 @@ export default function WorkforcePage() {
             </div>
 
             <div className="table-responsive">
-              <table className="ui-table" style={{ width: '100%', fontSize: '0.88rem' }}>
+              <table className="ui-table" style={{ width: '100%', minWidth: '1100px', fontSize: '0.88rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
                     <th>Bước 1: Người đề xuất</th>
@@ -1411,7 +1411,7 @@ export default function WorkforcePage() {
 
             {/* Bảng Danh Sách Đã Đăng Ký */}
             <div className="table-responsive">
-              <table className="ui-table">
+              <table className="ui-table" style={{ minWidth: '1000px' }}>
                 <thead>
                   <tr>
                     <th>Họ và Tên Nhân Viên</th>

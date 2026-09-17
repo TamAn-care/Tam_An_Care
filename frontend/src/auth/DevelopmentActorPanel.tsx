@@ -509,7 +509,7 @@ export function DevelopmentActorPanel() {
               <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#166534', fontWeight: 800 }}>
                 🔑 Cập Nhật Mật Khẩu Admin Tối Cao
               </h3>
-              <button onClick={() => setShowChangeAdminPasswordModal(false)} className="modal-close" style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>
+              <button type="button" onClick={() => setShowChangeAdminPasswordModal(false)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">
                 ✕
               </button>
             </div>

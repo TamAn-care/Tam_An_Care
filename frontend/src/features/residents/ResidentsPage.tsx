@@ -676,9 +676,10 @@ export function ResidentsPage() {
               </div>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setSelectedSupplyResident(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -897,9 +898,10 @@ export function ResidentsPage() {
               </div>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setSelectedPsyResident(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

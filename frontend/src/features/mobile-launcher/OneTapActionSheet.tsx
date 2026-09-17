@@ -139,7 +139,9 @@ export function OneTapActionSheet({ category, onClose, actorName = 'Điều dư�
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-slate-100 text-slate-500 font-bold text-base flex items-center justify-center hover:bg-slate-200 active:scale-95 transition"
+            className="modal-close"
+            title="Đóng cửa sổ"
+            aria-label="Đóng cửa sổ"
           >
             ✕
           </button>

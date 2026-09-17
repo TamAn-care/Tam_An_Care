@@ -1107,7 +1107,7 @@ export function AdmissionPage() {
 
       {/* Admissions Table */}
       <div className="table-responsive no-print">
-        <table className="ui-table">
+        <table className="ui-table" style={{ minWidth: '1000px' }}>
           <thead>
             <tr>
               <th>Mã hồ sơ / Người cao tuổi</th>
@@ -2838,7 +2838,7 @@ export function AdmissionPage() {
               <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span>📜</span> Lịch Sử Phiếu Bàn Giao Thuốc & Đồ Dùng Cá Nhân (Tiếp Nhận)
               </h2>
-              <button onClick={() => setShowHandoverHistoryModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+              <button type="button" onClick={() => setShowHandoverHistoryModal(false)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
             </div>
 
             {/* Filter Search */}
@@ -2854,8 +2854,8 @@ export function AdmissionPage() {
             </div>
 
             {/* Table of Handover Tickets */}
-            <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+              <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Mã & Tên Người Cao Tuổi</th>
@@ -2949,7 +2949,7 @@ export function AdmissionPage() {
               <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#166534' }}>
                 🖨️ Xem Trước & In Phiếu Bàn Giao (A4) — {selectedHandoverPrint.residentName}
               </h2>
-              <button onClick={() => setSelectedHandoverPrint(null)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+              <button type="button" onClick={() => setSelectedHandoverPrint(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
             </div>
 
             {/* Print Container A4 Sheet */}

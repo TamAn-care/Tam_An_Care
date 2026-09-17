@@ -1183,9 +1183,10 @@ export default function MedicationInventoryPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setExceptionModalAdmin(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -1271,9 +1272,10 @@ export default function MedicationInventoryPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setIsNewOrderModalOpen(false)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1.1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -1454,9 +1456,10 @@ export default function MedicationInventoryPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setIsTxModalOpen(false)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -1689,9 +1692,10 @@ export default function MedicationInventoryPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setIsWithdrawalModalOpen(false)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

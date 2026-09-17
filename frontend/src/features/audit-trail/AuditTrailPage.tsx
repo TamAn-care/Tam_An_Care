@@ -350,9 +350,10 @@ export default function AuditTrailPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setDetailLog(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

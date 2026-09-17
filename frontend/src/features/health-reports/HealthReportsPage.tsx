@@ -516,7 +516,7 @@ export default function HealthReportsPage() {
 
       {/* Reports Table */}
       <div className="table-responsive">
-        <table className="ui-table">
+        <table className="ui-table" style={{ minWidth: '1000px' }}>
           <thead>
             <tr>
               <th>Mã báo cáo / Người cao tuổi</th>
@@ -1014,7 +1014,8 @@ export default function HealthReportsPage() {
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
                     IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
                   </h3>
-                  <table className="ui-table" style={{ fontSize: '0.85rem', marginBottom: '1rem' }}>
+                  <div className="table-responsive" style={{ marginBottom: '1rem' }}>
+                    <table className="ui-table" style={{ fontSize: '0.85rem', minWidth: '800px', marginBottom: 0 }}>
                     <thead>
                       <tr>
                         <th>Hoạt động sinh hoạt thiết yếu</th>
@@ -1061,6 +1062,7 @@ export default function HealthReportsPage() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
 
                   <div className="form-row">
                     <div>

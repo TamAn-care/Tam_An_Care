@@ -1170,7 +1170,9 @@ export function NutritionBoard() {
               <button
                 type="button"
                 onClick={() => setShowCaregiverReportModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6b7280' }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -1390,7 +1392,9 @@ export function NutritionBoard() {
               <button
                 type="button"
                 onClick={() => setShowAddExtraModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#6b7280' }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

@@ -211,14 +211,17 @@ export function PWAInstallModal({
           <button
             type="button"
             onClick={onClose}
+            className="modal-close"
             style={{
-              background: 'rgba(255, 255, 255, 0.2)',
-              border: 'none',
+              background: 'rgba(255, 255, 255, 0.25)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
               borderRadius: '50%',
-              width: '30px',
-              height: '30px',
+              width: '38px',
+              height: '38px',
+              minWidth: '38px',
+              minHeight: '38px',
               color: '#ffffff',
-              fontSize: '1rem',
+              fontSize: '1.4rem',
               fontWeight: 'bold',
               cursor: 'pointer',
               display: 'flex',
@@ -226,6 +229,7 @@ export function PWAInstallModal({
               justifyContent: 'center',
             }}
             title="Đóng cửa sổ"
+            aria-label="Đóng cửa sổ"
           >
             ✕
           </button>

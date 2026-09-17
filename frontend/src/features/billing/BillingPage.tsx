@@ -633,7 +633,7 @@ export default function BillingPage() {
           ) : (
             <div className="card no-print data-table-card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <table className="data-table" style={{ width: '100%', minWidth: '1600px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Mã Bảng Kê</th>
@@ -1778,7 +1778,7 @@ export default function BillingPage() {
         <div>
           <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
             <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <table className="data-table" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Mã Phiếu Thu</th>
@@ -1905,9 +1905,10 @@ export default function BillingPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setDiscountModalInvoice(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -2038,9 +2039,10 @@ export default function BillingPage() {
               </div>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setDetailModalInvoice(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1.1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -2363,9 +2365,10 @@ export default function BillingPage() {
               </h3>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setPaymentModalInvoice(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -3382,9 +3385,10 @@ export default function BillingPage() {
               </div>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setManagerReviewInvoice(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1.1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>
@@ -3485,9 +3489,10 @@ Nếu có sai sót: Nhập chi tiết nội dung sai sót để báo cáo Ban Gi
               </div>
               <button
                 type="button"
-                className="btn btn-neutral"
+                className="modal-close"
                 onClick={() => setDirectorEditInvoice(null)}
-                style={{ padding: '0.2rem 0.6rem', fontSize: '1.1rem', lineHeight: 1 }}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

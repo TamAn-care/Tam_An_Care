@@ -322,7 +322,7 @@ export function NotificationBell() {
               <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span>📢</span> Soạn & Phát Thông Báo Nội Bộ
               </h2>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+              <button type="button" onClick={() => setShowCreateModal(false)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
             </div>
 
             <form onSubmit={handlePublishNotification}>

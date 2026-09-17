@@ -95,78 +95,118 @@ export function AppShell() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
         }}
       >
-        <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
-          {/* Brand Logo & Title */}
+        <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flexWrap: 'nowrap' }}>
+          {/* Brand Logo & Slogan on 1 Horizontal Line */}
           <Link
             to="/dashboard"
+            className="topbar-brand-row"
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.65rem',
+              gap: '0.55rem',
               textDecoration: 'none',
               color: 'inherit',
+              whiteSpace: 'nowrap',
+              minWidth: 0,
             }}
-            title="Quay lại Trang Chủ Icons Tâm An Care"
+            title="Tâm An Care — Nơi Tuổi Già An Nhiên"
           >
             <img
               src="/branding/tam-an-logo-master.png"
               alt="Tâm An Logo"
-              style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+              style={{ width: '32px', height: '32px', objectFit: 'contain', flexShrink: 0 }}
             />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#166534', lineHeight: 1.1 }}>
+            <div className="topbar-brand-text" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
+              <span className="topbar-brand-title" style={{ fontSize: '1.05rem', fontWeight: 800, color: '#166534', letterSpacing: '-0.01em', lineHeight: 1 }}>
                 Tâm An Care
               </span>
-              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', lineHeight: 1.1 }}>
+              <span className="topbar-brand-divider" style={{ color: '#cbd5e1', fontWeight: 300, fontSize: '0.85rem', lineHeight: 1 }}>—</span>
+              <span className="topbar-brand-slogan" style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', lineHeight: 1 }}>
                 Nơi Tuổi Già An Nhiên
               </span>
             </div>
           </Link>
 
-          {/* Quick Home Icons Launcher Button */}
+          {/* Vertical Separator */}
+          <div style={{ width: '1px', height: '18px', background: '#cbd5e1', flexShrink: 0, margin: '0 0.1rem' }} />
+
+          {/* Return / Back Arrow Icon Button */}
           <button
             type="button"
+            className={`topbar-back-btn ${isHome ? 'is-active' : ''}`}
             onClick={() => {
               navigate('/dashboard');
               window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
             }}
+            title="Quay lại Trang Chủ / Bảng điều khiển"
             style={{
-              background: isHome ? '#166534' : '#f1f5f9',
-              color: isHome ? '#ffffff' : '#1e293b',
-              border: isHome ? '1px solid #14532d' : '1px solid #cbd5e1',
+              background: isHome ? '#e2f4ea' : '#f1f5f9',
+              color: isHome ? '#166534' : '#334155',
+              border: isHome ? '1px solid #86efac' : '1px solid #cbd5e1',
               borderRadius: '0.5rem',
-              padding: '0.4rem 0.75rem',
-              fontSize: '0.82rem',
-              fontWeight: 700,
+              padding: '0.35rem 0.65rem',
+              fontSize: '0.8rem',
+              fontWeight: 600,
               cursor: 'pointer',
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
-              gap: '0.4rem',
+              gap: '0.35rem',
               transition: 'all 0.15s ease',
               whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
-            <span>🏠</span> Trang Chủ Icons
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+            <span>Trang Chủ</span>
           </button>
 
-          {!isHome && meta && (
-            <div
+          {/* Module / Subsystem Status Indicator on Same Line */}
+          <div
+            className={`topbar-module-badge ${isHome ? 'is-home' : ''}`}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              background: isHome ? '#f0fdf4' : '#f8fafc',
+              border: isHome ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
+              borderRadius: '0.5rem',
+              padding: '0.32rem 0.65rem',
+              fontSize: '0.8rem',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              minWidth: 0,
+              boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
+            }}
+          >
+            <span
               style={{
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: '#475569',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                width: '7px',
+                height: '7px',
+                borderRadius: '50%',
+                background: isHome ? '#16a34a' : '#2563eb',
+                display: 'inline-block',
+                flexShrink: 0,
+                boxShadow: isHome ? '0 0 0 2px #dcfce7' : '0 0 0 2px #dbeafe',
               }}
-            >
-              <span style={{ color: '#94a3b8' }}>/</span>
-              <span style={{ color: '#0f172a', fontWeight: 700 }}>{meta.title}</span>
-            </div>
-          )}
+            />
+            <span style={{ color: '#64748b', fontWeight: 500, fontSize: '0.75rem' }}>Phân hệ:</span>
+            <span style={{ color: '#0f172a', fontWeight: 700, textOverflow: 'ellipsis', overflow: 'hidden' }}>
+              {meta ? meta.title : 'Bảng Điều Khiển Trung Tâm'}
+            </span>
+          </div>
         </div>
 
         <div className="topbar-end" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -349,8 +389,11 @@ export function AppShell() {
                 <span>🔑</span> Thay Đổi Mật Khẩu Cá Nhân
               </h2>
               <button
+                type="button"
                 onClick={() => setShowPasswordModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

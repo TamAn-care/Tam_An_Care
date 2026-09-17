@@ -76,8 +76,11 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition"
+            className="modal-close"
+            title="Đóng cửa sổ"
+            aria-label="Đóng cửa sổ"
           >
             ✕
           </button>

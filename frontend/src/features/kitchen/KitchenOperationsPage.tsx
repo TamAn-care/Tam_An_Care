@@ -2332,7 +2332,7 @@ export default function KitchenOperationsPage() {
                 </h3>
                 <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Chỉnh sửa khẩu phần 5 bữa ăn áp dụng cho {editingDaySchedule.dayName}</span>
               </div>
-              <button onClick={() => setEditingDaySchedule(null)} style={{ border: 'none', background: 'transparent', fontSize: '1.3rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+              <button type="button" onClick={() => setEditingDaySchedule(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
@@ -2473,7 +2473,7 @@ export default function KitchenOperationsPage() {
                 </h3>
                 <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Cập nhật món ăn trực tiếp cho thực đơn</span>
               </div>
-              <button onClick={() => setEditingMealSlot(null)} style={{ border: 'none', background: 'transparent', fontSize: '1.3rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+              <button type="button" onClick={() => setEditingMealSlot(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginBottom: '1.25rem' }}>

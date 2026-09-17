@@ -579,8 +579,8 @@ export function CareViewPage() {
           </h3>
 
           {clinicalItems.length > 0 ? (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Thời gian đo</th>

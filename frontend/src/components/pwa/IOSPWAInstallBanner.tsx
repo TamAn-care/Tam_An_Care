@@ -99,19 +99,23 @@ export function IOSPWAInstallBanner() {
             type="button"
             onClick={handleDismiss}
             style={{
-              background: 'rgba(255,255,255,0.2)',
+              background: 'rgba(255,255,255,0.3)',
               color: '#ffffff',
-              border: 'none',
+              border: '1px solid rgba(255,255,255,0.5)',
               borderRadius: '50%',
-              width: '24px',
-              height: '24px',
+              width: '32px',
+              height: '32px',
+              minWidth: '32px',
+              minHeight: '32px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '0.8rem',
+              fontSize: '1.1rem',
+              fontWeight: 'bold',
               cursor: 'pointer',
             }}
             title="Đóng thông báo"
+            aria-label="Đóng thông báo"
           >
             ✕
           </button>
@@ -160,8 +164,11 @@ export function IOSPWAInstallBanner() {
                 <span>📱</span> Thêm vào Màn hình chính iOS
               </h3>
               <button
+                type="button"
                 onClick={() => setShowModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: '#64748b' }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >
                 ✕
               </button>

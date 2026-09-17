@@ -861,8 +861,8 @@ export function StaffAccessPage() {
 
           {/* Accounts Table */}
           <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Mã NV / Actor ID</th>
@@ -1747,8 +1747,8 @@ export function StaffAccessPage() {
                 <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
                   📜 LỊCH SỬ ĐÁNH GIÁ CA TRỰC GẦN ĐÂY ({kpiEvaluationsQuery.data?.length || 0})
                 </h4>
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="table" style={{ width: '100%', fontSize: '0.84rem' }}>
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table" style={{ width: '100%', minWidth: '1000px', fontSize: '0.84rem' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc' }}>
                         <th>ID / Ngày Ca</th>
@@ -1950,8 +1950,8 @@ export function StaffAccessPage() {
                 </div>
 
                 {/* Detailed Synthesis Table */}
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="table" style={{ width: '100%', fontSize: '0.84rem' }}>
+                <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="table" style={{ width: '100%', minWidth: '1100px', fontSize: '0.84rem' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc' }}>
                         <th>Mã & Nhân Viên</th>
@@ -2672,7 +2672,9 @@ export function StaffAccessPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmAssignModal(false)}
-                style={{ background: 'none', border: 'none', color: '#93c5fd', fontSize: '1.2rem', cursor: 'pointer', lineHeight: 1 }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >✕</button>
             </div>
 
@@ -2783,7 +2785,9 @@ export function StaffAccessPage() {
               <button
                 type="button"
                 onClick={() => setShowDeleteConfirmModal(null)}
-                style={{ background: 'none', border: 'none', color: '#fca5a5', fontSize: '1.2rem', cursor: 'pointer', lineHeight: 1 }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >✕</button>
             </div>
 
@@ -2868,7 +2872,9 @@ export function StaffAccessPage() {
               <button
                 type="button"
                 onClick={() => setShowRecogModal(false)}
-                style={{ background: 'none', border: 'none', color: '#86efac', fontSize: '1.2rem', cursor: 'pointer' }}
+                className="modal-close"
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
               >✕</button>
             </div>
 

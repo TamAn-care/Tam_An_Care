@@ -993,7 +993,7 @@ export default function FamilyPortalPage() {
               </div>
             ) : (
               <div className="table-wrapper">
-                <table className="data-table">
+                <table className="data-table" style={{ minWidth: '900px' }}>
                   <thead>
                     <tr>
                       <th>Lý do</th>
@@ -1216,7 +1216,7 @@ export default function FamilyPortalPage() {
             </h3>
 
             <div className="table-wrapper">
-              <table className="data-table">
+              <table className="data-table" style={{ minWidth: '900px' }}>
                 <thead>
                   <tr>
                     <th>Ngày thăm</th>

@@ -412,7 +412,7 @@ export function ServiceContractsPage() {
               <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span>📜</span> {isNew ? 'Soạn Thảo Hợp Đồng Dịch Vụ Mới' : `Chỉnh Sửa Hợp Đồng: ${editingContract.contractCode}`}
               </h2>
-              <button onClick={() => setEditingContract(null)} style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+              <button type="button" onClick={() => setEditingContract(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
             </div>
 
             <form
