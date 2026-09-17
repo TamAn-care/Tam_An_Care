@@ -308,6 +308,30 @@ export function AppShell() {
               >
                 <span>Tiếp tục</span> ▶
               </button>
+
+              {/* NÚT CHUYỂN NHANH CHẾ ĐỘ 1-CHẠM IPHONE */}
+              <button
+                type="button"
+                onClick={() => navigate('/mobile')}
+                style={{
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  border: 'none',
+                  borderRadius: '0.4rem',
+                  padding: '0.3rem 0.65rem',
+                  fontSize: '0.8rem',
+                  fontWeight: 800,
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.3rem',
+                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)',
+                  transition: 'all 0.15s ease',
+                }}
+                title="Mở giao diện Màn hình chính Icon Grid phong cách iPhone"
+              >
+                <span>📱 1-Chạm iPhone</span>
+              </button>
             </div>
 
             <div>

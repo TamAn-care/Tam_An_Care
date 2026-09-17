@@ -25,6 +25,10 @@ import {
 } from '../features/dashboard/DashboardPage';
 
 import {
+  MobileLauncherPage,
+} from '../features/mobile-launcher/MobileLauncherPage';
+
+import {
   ResidentsPage,
 } from '../features/residents/ResidentsPage';
 
@@ -54,6 +58,14 @@ export const router =
               to="/dashboard"
               replace
             />
+          ),
+        },
+        {
+          path: '/mobile',
+          element: (
+            <RequireActor>
+              <MobileLauncherPage />
+            </RequireActor>
           ),
         },
         {

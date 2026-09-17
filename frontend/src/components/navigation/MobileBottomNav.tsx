@@ -10,6 +10,7 @@ export function MobileBottomNav({ onOpenMenu }: MobileBottomNavProps) {
   const navigate = useNavigate();
 
   const navItems = [
+    { label: '1-Chạm 📱', icon: '📱', path: '/mobile' },
     { label: 'Trang Chủ', icon: '🏠', path: '/dashboard' },
     { label: 'Cư Dân', icon: '📋', path: '/residents' },
     { label: 'Chăm Sóc', icon: '🩺', path: '/operations' },
