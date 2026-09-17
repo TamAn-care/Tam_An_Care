@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
-import { canAccessRoute, type AppRouteKey } from '../../auth/role-policy';
+import { canAccessRoute, ROLE_LABELS, type AppRouteKey } from '../../auth/role-policy';
 
 export interface NavItem {
   key: AppRouteKey;
@@ -11,17 +11,25 @@ export interface NavItem {
   category: string;
   gradient: string;
   badge?: string;
+  badgeBg?: string;
 }
+
+export const CATEGORY_ICONS: Record<string, string> = {
+  'Lâm Sàng & Chăm Sóc': '🩺',
+  'Dược Phẩm & Ca Trực': '💊',
+  'Tài Chính & Thân Nhân': '💳',
+  'Quản Trị & Hệ Thống': '🛡️',
+};
 
 export const MODULE_NAV_ITEMS: NavItem[] = [
   // --- 1. LÂM SÀNG & CHĂM SÓC DIRECT CARE ---
   {
     key: 'dashboard',
     to: '/dashboard',
-    label: 'Tổng Quan Icons',
+    label: 'Tổng Quan',
     icon: '📊',
     category: 'Lâm Sàng & Chăm Sóc',
-    gradient: 'linear-gradient(135deg, #4f46e5, #3730a3)',
+    gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
   },
   {
     key: 'health-reports',
@@ -31,6 +39,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     category: 'Lâm Sàng & Chăm Sóc',
     gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
     badge: 'Gửi Gia Đình',
+    badgeBg: '#0284c7',
   },
   {
     key: 'admissions',
@@ -38,7 +47,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Tiếp Nhận & Đánh Giá',
     icon: '📋',
     category: 'Lâm Sàng & Chăm Sóc',
-    gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
+    gradient: 'linear-gradient(135deg, #0891b2, #0e7490)',
   },
   {
     key: 'accommodation',
@@ -48,6 +57,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     category: 'Lâm Sàng & Chăm Sóc',
     gradient: 'linear-gradient(135deg, #0369a1, #075985)',
     badge: '110 G',
+    badgeBg: '#0284c7',
   },
   {
     key: 'residents',
@@ -57,6 +67,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     category: 'Lâm Sàng & Chăm Sóc',
     gradient: 'linear-gradient(135deg, #10b981, #059669)',
     badge: '110 Cụ',
+    badgeBg: '#059669',
   },
   {
     key: 'resident-lifecycle',
@@ -84,6 +95,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     category: 'Dược Phẩm & Ca Trực',
     gradient: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
     badge: 'eMAR',
+    badgeBg: '#2563eb',
   },
   {
     key: 'kitchen-operations',
@@ -127,6 +139,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     category: 'Tài Chính & Thân Nhân',
     gradient: 'linear-gradient(135deg, #eab308, #ca8a04)',
     badge: 'RLA-BR-01',
+    badgeBg: '#d97706',
   },
   {
     key: 'service-contracts',
@@ -146,6 +159,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     category: 'Quản Trị & Hệ Thống',
     gradient: 'linear-gradient(135deg, #334155, #0f172a)',
     badge: 'RBAC',
+    badgeBg: '#334155',
   },
   {
     key: 'analytics-intelligence',
@@ -181,6 +195,9 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
   const { actor } = useActor();
   const navigate = useNavigate();
 
+  const roleLabel = (actor?.actorRole && ROLE_LABELS[actor.actorRole]) || 'Nhân viên hệ thống';
+  const roleName = actor?.displayName || actor?.actorId || 'Thành viên';
+
   const visibleItems = actor
     ? MODULE_NAV_ITEMS.filter((item) => canAccessRoute(actor.actorRole, item.key))
     : MODULE_NAV_ITEMS;
@@ -195,20 +212,54 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
         width: '100%',
         boxSizing: 'border-box',
         background: '#ffffff',
-        borderRadius: '1rem',
+        borderRadius: '1.25rem',
         border: '1px solid #e2e8f0',
-        padding: '1.25rem',
-        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+        padding: '1.5rem',
+        boxShadow: '0 10px 30px -5px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02)',
       }}
     >
-      {onOpenInstallModal && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginBottom: '0.85rem',
-          }}
-        >
+      {/* Launcher Header Bar */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem',
+          paddingBottom: '1rem',
+          borderBottom: '1px solid #f1f5f9',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div
+            style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              background: '#e2f4ea',
+              color: '#166534',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.25rem',
+              boxShadow: '0 2px 6px rgba(22, 101, 52, 0.12)',
+              flexShrink: 0,
+            }}
+          >
+            🎛️
+          </div>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.25 }}>
+              Danh Mục Phân Hệ Nghiệp Vụ
+            </h2>
+            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '2px', fontWeight: 500 }}>
+              Giao diện làm việc cho: <b style={{ color: '#166534' }}>{roleName}</b> • {roleLabel} ({visibleItems.length} phân hệ)
+            </div>
+          </div>
+        </div>
+
+        {onOpenInstallModal && (
           <button
             type="button"
             onClick={onOpenInstallModal}
@@ -218,53 +269,82 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
               fontWeight: 700,
               border: '1px solid #bae6fd',
               borderRadius: '0.5rem',
-              padding: '0.35rem 0.75rem',
+              padding: '0.4rem 0.85rem',
               fontSize: '0.78rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '0.35rem',
+              gap: '0.4rem',
               cursor: 'pointer',
+              transition: 'all 0.15s ease',
             }}
           >
             <span>📱</span> Cài Đặt PWA App
           </button>
-        </div>
-      )}
+        )}
+      </div>
 
       {categories.map((cat) => {
         const catItems = visibleItems.filter((item) => item.category === cat);
+        const catIcon = CATEGORY_ICONS[cat] || '📌';
+
         return (
-          <div key={cat} style={{ marginBottom: '1.75rem' }}>
+          <div
+            key={cat}
+            style={{
+              marginBottom: '1.5rem',
+              background: '#f8fafc',
+              borderRadius: '1rem',
+              border: '1px solid #e2e8f0',
+              padding: '1.25rem',
+            }}
+          >
+            {/* Category Header */}
             <div
               style={{
-                fontSize: '0.82rem',
-                fontWeight: 800,
-                color: '#166534',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                marginBottom: '1rem',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.4rem',
+                justifyContent: 'space-between',
+                marginBottom: '1.15rem',
+                paddingBottom: '0.65rem',
+                borderBottom: '1px solid #e2e8f0',
               }}
             >
+              <div
+                style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 800,
+                  color: '#166534',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                }}
+              >
+                <span style={{ fontSize: '1.1rem' }}>{catIcon}</span>
+                <span>{cat}</span>
+              </div>
+
               <span
                 style={{
-                  display: 'inline-block',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#166534',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  color: '#475569',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
+                  padding: '3px 10px',
+                  borderRadius: '999px',
                 }}
-              />
-              {cat} ({catItems.length})
+              >
+                {catItems.length} phân hệ
+              </span>
             </div>
 
             {/* SQUIRCLE MATRIX ICON GRID */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(92px, 1fr))',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(118px, 1fr))',
                 gap: '1.5rem 1rem',
                 alignItems: 'start',
               }}
@@ -282,34 +362,55 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
                     alignItems: 'center',
                     cursor: 'pointer',
                     textAlign: 'center',
-                    padding: '0.2rem',
+                    padding: '0.4rem 0.25rem',
+                    borderRadius: '12px',
+                    transition: 'background-color 0.18s ease',
+                    maxWidth: '128px',
+                    margin: '0 auto',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
                   }}
                 >
                   {/* SQUIRCLE ICON CONTAINER */}
                   <div
                     style={{
-                      width: '62px',
-                      height: '62px',
-                      borderRadius: '18px',
+                      width: '68px',
+                      height: '68px',
+                      borderRadius: '20px',
                       background: item.gradient,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '30px',
+                      fontSize: '32px',
                       color: '#ffffff',
                       position: 'relative',
-                      boxShadow: '0 8px 18px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)',
+                      boxShadow:
+                        '0 8px 20px -3px rgba(0, 0, 0, 0.16), 0 3px 6px -1px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35)',
                       border: '1px solid rgba(255, 255, 255, 0.25)',
                       boxSizing: 'border-box',
-                      transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+                      transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.08)';
-                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.18)';
+                      e.currentTarget.style.transform = 'translateY(-4px) scale(1.06)';
+                      e.currentTarget.style.boxShadow =
+                        '0 14px 28px -4px rgba(0, 0, 0, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.45)';
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.boxShadow = '0 8px 18px rgba(0, 0, 0, 0.12)';
+                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                      e.currentTarget.style.boxShadow =
+                        '0 8px 20px -3px rgba(0, 0, 0, 0.16), 0 3px 6px -1px rgba(0, 0, 0, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.35)';
+                    }}
+                    onMouseDown={(e) => {
+                      e.currentTarget.style.transform = 'scale(0.95)';
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-4px) scale(1.06)';
                     }}
                   >
                     <span>{item.icon}</span>
@@ -318,18 +419,19 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
                       <span
                         style={{
                           position: 'absolute',
-                          top: '-6px',
-                          right: '-8px',
-                          backgroundColor: '#ef4444',
+                          top: '-5px',
+                          right: '-6px',
+                          backgroundColor: item.badgeBg || '#ef4444',
                           color: '#ffffff',
-                          fontSize: '9px',
+                          fontSize: '9.5px',
                           fontWeight: 800,
                           padding: '2px 6px',
                           borderRadius: '999px',
-                          boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
+                          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.25)',
                           border: '1.5px solid #ffffff',
                           whiteSpace: 'nowrap',
                           lineHeight: 1,
+                          letterSpacing: '-0.01em',
                         }}
                       >
                         {item.badge}
@@ -340,13 +442,17 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
                   {/* ICON LABEL */}
                   <span
                     style={{
-                      fontSize: '0.78rem',
-                      fontWeight: 700,
-                      color: '#0f172a',
-                      marginTop: '0.55rem',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      color: '#1e293b',
+                      marginTop: '0.6rem',
                       lineHeight: 1.25,
-                      maxWidth: '90px',
+                      maxWidth: '112px',
                       wordBreak: 'break-word',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
                     }}
                   >
                     {item.label}
@@ -364,3 +470,4 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
 export function AppNavigation() {
   return null;
 }
+

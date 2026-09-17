@@ -2796,3 +2796,67 @@ input.form-input {
     font-size: 0.88rem;
   }
 }
+
+/* ========================================================================= */
+/* SERVICE CONTRACTS MOBILE RESPONSIVE LAYOUT ENHANCEMENTS                 */
+/* ========================================================================= */
+
+.contract-form-grid-3,
+.contract-form-grid-4,
+.contract-form-grid-2,
+.contract-form-grid-room,
+.contract-form-grid-discount {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.contract-form-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.contract-form-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.contract-form-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.contract-form-grid-room {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.contract-form-grid-discount {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .contract-form-grid-3,
+  .contract-form-grid-4,
+  .contract-form-grid-2,
+  .contract-form-grid-room,
+  .contract-form-grid-discount {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+.contract-service-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+@media (max-width: 520px) {
+  .contract-service-item {
+    flex-wrap: wrap;
+  }
+  .contract-service-item-name {
+    width: 100%;
+    margin-bottom: 0.2rem;
+  }
+}
+

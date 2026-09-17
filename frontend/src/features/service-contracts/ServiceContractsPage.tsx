@@ -296,8 +296,8 @@ export function ServiceContractsPage() {
         </div>
       </section>
 
-      {/* Contracts Table */}
-      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+      {/* Contracts Table & Mobile Card View */}
+      <div className="card" style={{ padding: 0 }}>
         <div style={{ padding: '1rem 1.25rem', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', fontWeight: 800, fontSize: '0.95rem', color: '#166534', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span>📋 Danh Sách Hợp Đồng Dịch Vụ Dưỡng Lão ({filteredContracts.length})</span>
         </div>
@@ -307,109 +307,198 @@ export function ServiceContractsPage() {
             Không tìm thấy Hợp đồng dịch vụ nào phù hợp.
           </div>
         ) : (
-          <div className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table className="table-wide-900" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-              <thead>
-                <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #cbd5e1', textAlign: 'left', color: '#334155' }}>
-                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Số Hợp Đồng</th>
-                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Cao Tuổi (Bên A)</th>
-                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Đại Diện Thân Nhân</th>
-                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Vị Trí / Mức Phí</th>
-                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Ngày Ký / Hiệu Lực</th>
-                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Trạng Thái</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Thao Tác</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredContracts.map((c) => {
-                  const statusObj = CONTRACT_STATUS_LABEL[c.status] || { label: c.status, badgeClass: 'badge badge-neutral' };
-                  return (
-                    <tr key={c.contractId} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '0.75rem 1rem', fontWeight: 800, color: '#0f172a' }}>
-                        {c.contractCode}
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
-                        <div style={{ fontWeight: 700, color: '#166534' }}>{c.partyA.residentName}</div>
-                        <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Sinh năm: {c.partyA.residentBirthYear || '—'}</div>
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
-                        <div><b>{c.partyA.relative1Name || '—'}</b></div>
-                        <div style={{ fontSize: '0.78rem', color: '#0284c7' }}>SĐT: {c.partyA.phone1 || '—'}</div>
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
-                        <div>{c.appendix.roomType} (Giường {c.appendix.bedCode || '—'})</div>
-                        <div style={{ fontWeight: 700, color: '#b45309', fontSize: '0.8rem' }}>
-                          {c.appendix.totalMonthlyFee.toLocaleString()} đ/tháng
-                        </div>
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#475569' }}>
-                        <div>Ký: {formatDateDDMMYYYY(c.signedDate)}</div>
-                        <div>Hiệu lực: {formatDateDDMMYYYY(c.effectiveDate)}</div>
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
-                        <span className={statusObj.badgeClass}>{statusObj.label}</span>
-                      </td>
-                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                          {c.status === 'DRAFT' && (
+          <>
+            {/* DESKTOP TABLE VIEW (>= 768px) */}
+            <div className="table-responsive desktop-only-table" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', margin: 0, border: 'none', borderRadius: 0 }}>
+              <table className="table-wide-900" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #cbd5e1', textAlign: 'left', color: '#334155' }}>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Số Hợp Đồng</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Cao Tuổi (Bên A)</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Đại Diện Thân Nhân</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Vị Trí / Mức Phí</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Ngày Ký / Hiệu Lực</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Thao Tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredContracts.map((c) => {
+                    const statusObj = CONTRACT_STATUS_LABEL[c.status] || { label: c.status, badgeClass: 'badge badge-neutral' };
+                    return (
+                      <tr key={c.contractId} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '0.75rem 1rem', fontWeight: 800, color: '#0f172a' }}>
+                          {c.contractCode}
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 700, color: '#166534' }}>{c.partyA.residentName}</div>
+                          <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Sinh năm: {c.partyA.residentBirthYear || '—'}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div><b>{c.partyA.relative1Name || '—'}</b></div>
+                          <div style={{ fontSize: '0.78rem', color: '#0284c7' }}>SĐT: {c.partyA.phone1 || '—'}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div>{c.appendix.roomType} (Giường {c.appendix.bedCode || '—'})</div>
+                          <div style={{ fontWeight: 700, color: '#b45309', fontSize: '0.8rem' }}>
+                            {c.appendix.totalMonthlyFee.toLocaleString()} đ/tháng
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#475569' }}>
+                          <div>Ký: {formatDateDDMMYYYY(c.signedDate)}</div>
+                          <div>Hiệu lực: {formatDateDDMMYYYY(c.effectiveDate)}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <span className={statusObj.badgeClass}>{statusObj.label}</span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                            {c.status === 'DRAFT' && (
+                              <button
+                                type="button"
+                                className="btn btn-sm"
+                                style={{ background: '#15803d', color: '#ffffff', fontWeight: 700 }}
+                                onClick={() => handleSignContract(c)}
+                                title="Chuyển hợp đồng từ Dự thảo sang Đang hiệu lực"
+                              >
+                                ✍️ Đã ký hợp đồng
+                              </button>
+                            )}
                             <button
                               type="button"
-                              className="btn btn-sm"
-                              style={{ background: '#15803d', color: '#ffffff', fontWeight: 700 }}
-                              onClick={() => handleSignContract(c)}
-                              title="Chuyển hợp đồng từ Dự thảo sang Đang hiệu lực"
+                              className="btn btn-sm btn-primary"
+                              onClick={() => setViewingContract(c)}
+                              title="Xem trước văn bản 10 trang & In ấn A4"
                             >
-                              ✍️ Đã ký hợp đồng
+                              👁️ In Hợp Đồng
                             </button>
-                          )}
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-primary"
-                            onClick={() => setViewingContract(c)}
-                            title="Xem trước văn bản 10 trang & In ấn A4"
-                          >
-                            👁️ In Hợp Đồng
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-secondary"
-                            onClick={() => {
-                              setIsNew(false);
-                              setEditingContract(c);
-                            }}
-                            title="Chỉnh sửa nội dung & điều khoản"
-                          >
-                            ✏️ Sửa
-                          </button>
-                          <button
-                            type="button"
-                            className="btn btn-sm btn-danger"
-                            onClick={() => {
-                              if (confirm(`Bạn có chắc chắn muốn xóa Hợp đồng ${c.contractCode}?`)) {
-                                deleteMutation.mutate(c.contractId);
-                              }
-                            }}
-                            title="Xóa hợp đồng"
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-secondary"
+                              onClick={() => {
+                                setIsNew(false);
+                                setEditingContract(c);
+                              }}
+                              title="Chỉnh sửa nội dung & điều khoản"
+                            >
+                              ✏️ Sửa
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-danger"
+                              onClick={() => {
+                                if (confirm(`Bạn có chắc chắn muốn xóa Hợp đồng ${c.contractCode}?`)) {
+                                  deleteMutation.mutate(c.contractId);
+                                }
+                              }}
+                              title="Xóa hợp đồng"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* MOBILE CARDS VIEW (< 768px) */}
+            <div className="mobile-only-cards" style={{ padding: '0.75rem' }}>
+              {filteredContracts.map((c) => {
+                const statusObj = CONTRACT_STATUS_LABEL[c.status] || { label: c.status, badgeClass: 'badge badge-neutral' };
+                return (
+                  <div key={c.contractId} className="mobile-card-item">
+                    <div className="mobile-card-header">
+                      <div className="mobile-card-title" style={{ color: '#166534', fontSize: '0.95rem' }}>
+                        📄 {c.contractCode}
+                      </div>
+                      <span className={statusObj.badgeClass}>{statusObj.label}</span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Người cao tuổi:</span>
+                      <span className="mobile-card-value" style={{ color: '#166534', fontWeight: 700 }}>
+                        {c.partyA.residentName} {c.partyA.residentBirthYear ? `(${c.partyA.residentBirthYear})` : ''}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Thân nhân:</span>
+                      <span className="mobile-card-value">
+                        {c.partyA.relative1Name || '—'} {c.partyA.phone1 ? `(${c.partyA.phone1})` : ''}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Vị trí & Phí:</span>
+                      <span className="mobile-card-value" style={{ color: '#b45309', fontWeight: 700 }}>
+                        {c.appendix.roomType} ({c.appendix.totalMonthlyFee.toLocaleString()} đ/th)
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Ngày ký / Hiệu lực:</span>
+                      <span className="mobile-card-value">
+                        {formatDateDDMMYYYY(c.signedDate)} → {formatDateDDMMYYYY(c.effectiveDate)}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-actions">
+                      {c.status === 'DRAFT' && (
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          style={{ background: '#15803d', color: '#ffffff', fontWeight: 700 }}
+                          onClick={() => handleSignContract(c)}
+                        >
+                          ✍️ Đã ký
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-primary"
+                        onClick={() => setViewingContract(c)}
+                      >
+                        👁️ In HĐ
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary"
+                        onClick={() => {
+                          setIsNew(false);
+                          setEditingContract(c);
+                        }}
+                      >
+                        ✏️ Sửa
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-danger"
+                        onClick={() => {
+                          if (confirm(`Bạn có chắc chắn muốn xóa Hợp đồng ${c.contractCode}?`)) {
+                            deleteMutation.mutate(c.contractId);
+                          }
+                        }}
+                      >
+                        🗑️ Xóa
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 
       {/* MODAL SOẠN THẢO / CHỈNH SỬA HỢP ĐỒNG */}
       {editingContract && (
-        <div className="modal-backdrop" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
-          <div className="modal-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '850px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
+        <div className="modal-backdrop" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '0.5rem' }}>
+          <div className="modal-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '850px', width: '100%', maxHeight: '92vh', overflowY: 'auto', padding: '1.25rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
-              <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                 <span>📜</span> {isNew ? 'Soạn Thảo Hợp Đồng Dịch Vụ Mới' : `Chỉnh Sửa Hợp Đồng: ${editingContract.contractCode}`}
               </h2>
               <button type="button" onClick={() => setEditingContract(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
@@ -442,7 +531,7 @@ export function ServiceContractsPage() {
               </div>
 
               {/* Basic Info */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div className="contract-form-grid-3">
                 <div>
                   <label className="form-label">Số Hợp đồng (Tự động) <span style={{ color: '#ef4444' }}>*</span></label>
                   <div style={{ display: 'flex', gap: '0.35rem' }}>
@@ -492,12 +581,12 @@ export function ServiceContractsPage() {
               </div>
 
               {/* Section I: Party A */}
-              <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem' }}>
+              <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '0.85rem', marginBottom: '1rem' }}>
                 <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem', color: '#166534' }}>
                   I. THÔNG TIN BÊN SỬ DỤNG DỊCH VỤ (BÊN A)
                 </h3>
 
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.35rem' }}>
                   <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155' }}>Người cao tuổi 1 (*)</div>
                   <label style={{ fontSize: '0.8rem', color: '#166534', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 700 }}>
                     <input
@@ -517,7 +606,7 @@ export function ServiceContractsPage() {
                   </label>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div className="contract-form-grid-3">
                   <input
                     type="text"
                     placeholder="Họ và tên Cụ 1 (*)"
@@ -553,7 +642,7 @@ export function ServiceContractsPage() {
                 {/* Optional Second Resident (Cụ 2 đi cùng) */}
                 {editingContract.partyA.hasSecondResident && (
                   <div style={{ background: '#f8fafc', border: '1px dashed #166534', borderRadius: '0.375rem', padding: '0.75rem', marginBottom: '0.75rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.35rem' }}>
                       <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#166534' }}>👵 / 👴 Người cao tuổi 2 (Cụ thứ hai đi cùng / Vợ-Chồng)</div>
                       <select
                         className="form-select"
@@ -568,7 +657,7 @@ export function ServiceContractsPage() {
                         ))}
                       </select>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <div className="contract-form-grid-3">
                       <input
                         type="text"
                         placeholder="Họ và tên Cụ 2"
@@ -603,7 +692,7 @@ export function ServiceContractsPage() {
                 )}
 
                 <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem' }}>Đại diện Thân nhân 1 (**)</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div className="contract-form-grid-4">
                   <input
                     type="text"
                     placeholder="Họ tên Thân nhân 1"
@@ -634,7 +723,7 @@ export function ServiceContractsPage() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div className="contract-form-grid-2">
                   <input
                     type="text"
                     placeholder="SĐT ưu tiên 1 (*)"
@@ -654,7 +743,7 @@ export function ServiceContractsPage() {
               </div>
 
               {/* Section: Appendix 01 */}
-              <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', background: '#f8fafc' }}>
+              <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '0.85rem', marginBottom: '1rem', background: '#f8fafc' }}>
                 <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem', color: '#166534' }}>
                   PHỤ LỤC 01: BIỂU PHÍ VÀ DANH MỤC CHĂM SÓC
                 </h3>
@@ -671,7 +760,7 @@ export function ServiceContractsPage() {
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1.5fr', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                <div className="contract-form-grid-room">
                   <div>
                     <label className="form-label">Loại phòng đăng ký</label>
                     <input
@@ -712,14 +801,14 @@ export function ServiceContractsPage() {
                   </div>
                 </div>
 
-                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Danh mục dịch vụ chăm sóc bổ sung (Giá tiền để mở - Tự do điều chỉnh giá):</span>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.25rem' }}>
+                  <span>Danh mục dịch vụ chăm sóc bổ sung (Giá tiền tự do điều chỉnh):</span>
                   <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>💡 Ô nhập giá tự do thay đổi</span>
                 </div>
 
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.375rem', padding: '0.5rem', maxHeight: '280px', overflowY: 'auto', marginBottom: '0.75rem' }}>
                   {editingContract.appendix.additionalServices.map((srv, idx) => (
-                    <div key={srv.stt} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <div key={srv.stt} className="contract-service-item">
                       <input
                         type="checkbox"
                         checked={srv.selected}
@@ -740,15 +829,15 @@ export function ServiceContractsPage() {
                           });
                         }}
                       />
-                      <span style={{ fontSize: '0.82rem', flex: 1, fontWeight: srv.selected ? 700 : 400, color: srv.selected ? '#166534' : '#334155' }}>
+                      <span className="contract-service-item-name" style={{ fontSize: '0.82rem', flex: 1, fontWeight: srv.selected ? 700 : 400, color: srv.selected ? '#166534' : '#334155' }}>
                         {srv.stt}. {srv.name}
                       </span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', flexShrink: 0 }}>
                         <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Đơn giá:</span>
                         <input
                           type="number"
                           className="form-input"
-                          style={{ width: '120px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', fontWeight: 700, color: srv.selected ? '#166534' : '#334155', textAlign: 'right' }}
+                          style={{ width: '110px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', fontWeight: 700, color: srv.selected ? '#166534' : '#334155', textAlign: 'right' }}
                           value={srv.fee}
                           onChange={(e) => {
                             const newFee = parseInt(e.target.value, 10) || 0;
@@ -773,7 +862,7 @@ export function ServiceContractsPage() {
                   ))}
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <div className="contract-form-grid-discount">
                   <div>
                     <label className="form-label">Mức giảm trừ / Ưu đãi (VNĐ)</label>
                     <input
@@ -920,14 +1009,14 @@ export function ServiceContractsPage() {
               }
             }
           `}</style>
-          <div className="modal-card modal-print-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '850px', width: '100%', maxHeight: '95vh', overflowY: 'auto', padding: '2rem 2.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
+          <div className="modal-card modal-print-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '850px', width: '100%', maxHeight: '95vh', overflowY: 'auto', padding: '1.25rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
             
             {/* Top Toolbar (Hide during print) */}
-            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.1rem' }}>
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.05rem' }}>
                 📄 Xem Trước Văn Bản Hợp Đồng 10 Trang (Số: {viewingContract.contractCode})
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                 {viewingContract.status === 'DRAFT' && (
                   <button
                     type="button"
@@ -989,24 +1078,24 @@ export function ServiceContractsPage() {
 
               {/* PART I: PARTY A */}
               <div style={{ fontWeight: 'bold', margin: '10px 0 5px 0' }}>I. BÊN SỬ DỤNG DỊCH VỤ (BÊN A):</div>
-              <div>Người cao tuổi 1 (*): <b>{viewingContract.partyA.residentName || '...................................................'}</b></div>
-              <div>Sinh năm: {viewingContract.partyA.residentBirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.residentCccd || '....................................'}</div>
+              <div>1. Người cao tuổi (*): <b>{viewingContract.partyA.residentName || '...................................................'}</b></div>
+              <div>Ngày tháng năm sinh: {viewingContract.partyA.residentBirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Số CCCD: {viewingContract.partyA.residentCccd || '....................................'} do Cục Cảnh sát quản lý hành chính về trật tự xã hội cấp ngày ..........</div>
               <div>Địa chỉ thường trú: {viewingContract.partyA.residentAddress || '...................................................................................................................................'}</div>
 
               {(viewingContract.partyA.hasSecondResident || viewingContract.partyA.resident2Name) && (
                 <div style={{ marginTop: '6px' }}>
                   <div>Và Người cao tuổi 2 (gửi cùng / Vợ-Chồng): <b>{viewingContract.partyA.resident2Name || '...................................................'}</b></div>
-                  <div>Sinh năm: {viewingContract.partyA.resident2BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.resident2Cccd || '....................................'}</div>
+                  <div>Ngày tháng năm sinh: {viewingContract.partyA.resident2BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Số CCCD: {viewingContract.partyA.resident2Cccd || '....................................'} do Cục Cảnh sát quản lý hành chính về trật tự xã hội cấp ngày ..........</div>
                   <div>Địa chỉ thường trú: {viewingContract.partyA.resident2Address || viewingContract.partyA.residentAddress || '...................................................................................................................................'}</div>
                 </div>
               )}
 
-              <div style={{ marginTop: '8px' }}>Và Ông/Bà (**): <b>{viewingContract.partyA.relative1Name || '...................................................'}</b></div>
-              <div>Sinh năm: {viewingContract.partyA.relative1BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.relative1Cccd || '....................................'}</div>
-              <div>Địa chỉ thường trú: {viewingContract.partyA.relative1Address || '...................................................................................................................................'}</div>
+              <div style={{ marginTop: '8px' }}>2. Và Ông/Bà (**): <b>{viewingContract.partyA.relative1Name || '...................................................'}</b></div>
+              <div>Ngày tháng năm sinh: {viewingContract.partyA.relative1BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Số CCCD: {viewingContract.partyA.relative1Cccd || '....................................'} do Cục Cảnh sát quản lý hành chính về trật tự xã hội cấp ngày ..........</div>
+              <div>Địa chỉ thường trú/ phòng: {viewingContract.partyA.relative1Address || '...................................................................................................................................'}</div>
               <div>Quan hệ với người cao tuổi: {viewingContract.partyA.relative1Relationship || '...................................................'}</div>
 
-              <div style={{ marginTop: '8px' }}>Và Ông/Bà (***): <b>{viewingContract.partyA.relative2Name || '...................................................'}</b></div>
+              <div style={{ marginTop: '8px' }}>3. Và Ông/Bà (***): <b>{viewingContract.partyA.relative2Name || '...................................................'}</b></div>
               <div>Sinh năm: {viewingContract.partyA.relative2BirthYear || '............'} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CCCD: {viewingContract.partyA.relative2Cccd || '....................................'}</div>
               <div>Địa chỉ thường trú: {viewingContract.partyA.relative2Address || '...................................................................................................................................'}</div>
               <div>Quan hệ với người cao tuổi: {viewingContract.partyA.relative2Relationship || '...................................................'}</div>
@@ -1031,7 +1120,7 @@ export function ServiceContractsPage() {
                 Sau khi bàn bạc và thống nhất, hai Bên thỏa thuận ký kết Hợp đồng dịch vụ chăm sóc Người cao tuổi với các nội dung sau:
               </div>
 
-              {/* ARTICLES 1 - 9 EXACT LEGAL TEXT */}
+              {/* ARTICLES 1 - 10 EXACT LEGAL TEXT */}
               <div style={{ textAlign: 'justify' }}>
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 1. Quy định chung:</div>
                 <div style={{ fontWeight: 'bold' }}>1.1. Giải thích thuật ngữ</div>
@@ -1049,7 +1138,7 @@ export function ServiceContractsPage() {
                 <div>Bên A hiểu rằng Người cao tuổi có nhiều rủi ro về bệnh tật tuổi già. Việc lưu trú, an dưỡng tại Trung tâm dưỡng lão Tâm An không đồng nghĩa loại trừ hoàn toàn các rủi ro phát bệnh tự nhiên. Trong trường hợp Bên B đã thực hiện đầy đủ trách nhiệm chăm sóc theo Hợp đồng, quy trình chuyên môn nội bộ và nghĩa vụ theo quy định của pháp luật, thì Bên A đồng ý rằng các trường hợp sức khỏe NCT suy giảm do: diễn tiến tự nhiên của tuổi già; diễn tiến của bệnh nền hoặc bệnh mạn tính; các biến cố sức khỏe không thể dự báo trước; hoặc các rủi ro từ hành vi tự phát của NCT mà Bên B không thể kiểm soát hoặc ngăn chặn bằng các biện pháp chăm sóc hợp lý, sẽ không được xem là hành vi vi phạm nghĩa vụ của Bên B và không làm phát sinh trách nhiệm bồi thường của Bên B.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>1.4. Sự kiện bất khả kháng tuổi già:</div>
-                <div>Bên A hiểu và đồng ý rằng, đối với người cao tuổi, các biến cố sức khỏe nghiêm trọng như đột quỵ, nhồi máu cơ tim, ngừng tuần hoàn, suy đa tạng, thuyên tắc mạch, xuất huyết脑 hoặc các diễn tiến đột ngột của bệnh nền có thể xảy ra bất kỳ thời điểm nào mà không có dấu hiệu báo trước không thể dự báo, phòng ngừa tuyệt đối bằng các biện pháp chăm sóc thông thường. Khi các biến cố này xảy ra dù Bên B đã thực hiện đúng quy trình chăm sóc, theo dõi thông thường, thì được coi là trường hợp Bất khả kháng. Bên B được miễn trừ toàn bộ trách nhiệm liên quan đến sự suy giảm sức khỏe hoặc tử vong của NCT do các nguyên nhân tự nhiên này.</div>
+                <div>Bên A hiểu và đồng ý rằng, đối với người cao tuổi, các biến cố sức khỏe nghiêm trọng như đột quỵ, nhồi máu cơ tim, ngừng tuần hoàn, suy đa tạng, thuyên tắc mạch, xuất huyết brain hoặc các diễn tiến đột ngột của bệnh nền có thể xảy ra bất kỳ thời điểm nào mà không có dấu hiệu báo trước không thể dự báo, phòng ngừa tuyệt đối bằng các biện pháp chăm sóc thông thường. Khi các biến cố này xảy ra dù Bên B đã thực hiện đúng quy trình chăm sóc, theo dõi thông thường, thì được coi là trường hợp Bất khả kháng. Bên B được miễn trừ toàn bộ trách nhiệm liên quan đến sự suy giảm sức khỏe hoặc tử vong của NCT do các nguyên nhân tự nhiên này.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 2. Nội dung, thời gian, địa điểm cung cấp dịch vụ</div>
                 <div style={{ fontWeight: 'bold' }}>2.1. Tiếp nhận chăm sóc</div>
@@ -1062,7 +1151,7 @@ export function ServiceContractsPage() {
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>2.2. Địa điểm cung cấp dịch vụ</div>
                 <div>Dịch vụ được cung cấp tại: <b>Trung tâm dưỡng lão Tâm An</b></div>
                 <div>Trực thuộc <b>Công ty Cổ phần Thương mại Dịch vụ An Thịnh Phát Group</b></div>
-                <div>Địa chỉ: Khu Phố Đông 8, Khu đô thị Vinhomes Ocean Park 2, xã Nghĩa Trụ, tỉnh Hưng Yên.</div>
+                <div>Địa chỉ: Khu Phố Đông 8, Khu đô thị Vinhomes Ocean Park 2, Xã Nghĩa Trụ, Tỉnh Hưng Yên.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 3. Chế độ chăm sóc NCT tại Trung tâm</div>
                 <div>NCT được chăm sóc theo các chế độ tiêu chuẩn quy định dưới đây:</div>
@@ -1072,36 +1161,36 @@ export function ServiceContractsPage() {
                 <div>- <b>Theo dõi sức khỏe thường quy:</b> Theo dõi các chỉ số sinh tồn hàng ngày theo tình trạng sức khỏe và kế hoạch chăm sóc của từng NCT; Quan sát, ghi nhận những thay đổi bất thường trong sinh hoạt hoặc sức khỏe; Hỗ trợ dùng thuốc theo đơn và hướng dẫn của cơ sở khám bệnh, chữa bệnh hoặc người đại diện hợp pháp; Thông báo kịp thời cho Bên A khi phát hiện dấu hiệu bất thường cần theo dõi hoặc chuyển khám, điều trị.</div>
                 <div>- <b>Chăm sóc tinh thần và phục hồi chức năng:</b> Tham gia các hoạt động sinh hoạt tập thể, phục hồi chức năng cơ bản, đọc sách, đi dạo tại khuôn viên, giao lưu cộng đồng và các hoạt động khác theo kế hoạch của Trung tâm.</div>
                 <div>- <b>Dịch vụ tiện ích:</b> Giặt giũ trang phục, vệ sinh phòng ở định kỳ, cung cấp vật tư tiêu hao thiết yếu (khăn mặt, bàn chải, kem đánh răng, dầu gội...). Mua hộ các vật tư quan trọng trong quá trình NCT ở tại Trung tâm do gia đình đề xuất.</div>
-                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>3.2. Dịch vụ hỗ trợ tăng cường:</div>
-                <div>Các dịch vụ hỗ trợ đặc biệt khác (phụ thuộc vào tình trạng sức khỏe cụ thể của từng NCT) được Bên A đăng ký chi tiết tại <i>Phụ lục hợp đồng</i>. Bên B không có trách nhiệm thực hiện các hạng mục Bên A không đăng ký.</div>
+                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>3.2. Dịch vụ chăm sóc hỗ trợ tăng cường bổ sung:</div>
+                <div>Các dịch vụ chăm sóc bổ sung, hỗ trợ đặc biệt khác (phụ thuộc vào tình trạng sức khỏe cụ thể của từng NCT) được Bên A đăng ký chi tiết tại Phụ lục hợp đồng. Bên B không có trách nhiệm thực hiện các hạng mục Bên A không đăng ký.</div>
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>3.3. Tình huống khẩn cấp:</div>
                 <div>Trong trường hợp khẩn cấp để đe dọa an toàn hoặc tính mạng của NCT, Bên B có quyền chủ động sử dụng các biện pháp cần thiết: gọi cấp cứu 115, đưa đến cơ sở y tế gần nhất, phối hợp với gia đình, cơ sở y tế để đảm bảo an toàn cao nhất cho NCT.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 4. Phí dịch vụ và các điều khoản thanh toán</div>
                 <div style={{ fontWeight: 'bold' }}>4.1. Phí dịch vụ</div>
-                <div>Mức phí dịch vụ chăm sóc cơ bản, phí các dịch vụ hỗ trợ tăng cường, các khoản chi phí phát sinh (nếu có), thời điểm thanh toán và các nội dung liên quan được quy định chi tiết tại Phụ lục hợp đồng là một phần không tách rời của Hợp đồng này.</div>
+                <div>Mức phí dịch vụ chăm sóc cơ bản, phí các dịch vụ hỗ trợ bổ sung, các khoản chi phí phát sinh (nếu có), thời điểm thanh toán và các nội dung liên quan được quy định chi tiết tại Phụ lục 01; Biểu phí và danh mục chăm sóc; Phụ lục 02: Bảng đánh giá tình trạng sức khỏe NCT tại thời điểm vào Trung tâm là một phần không tách rời của Hợp đồng này.</div>
                 <div>Mức phí có thể được điều chỉnh theo chính sách của Bên B hoặc theo yêu cầu thay đổi về chế độ chăm sóc của Bên A. Trong trường hợp có điều chỉnh, Bên B có trách nhiệm thông báo bằng văn bản hoặc hình thức điện tử cho Bên A trước ít nhất 30 (ba mươi) ngày, trừ trường hợp hai bên có thỏa thuận khác.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>4.2. Tiền đặt cọc</div>
                 <div>- Khi ký Hợp đồng, Bên A có trách nhiệm đặt cọc cho Bên B một khoản đảm bảo trị giá <b>20.000.000 đồng (hai mươi triệu đồng)</b>.</div>
-                <div>- Trường hợp Bên A chậm thanh toán phí dịch vụ quá 30 (ba mươi) ngày kể từ ngày đến hạn, Bên B có quyền chủ động khấu trừ khoản nợ từ tiền đặt cọc mà không cần có sự chấp thuận bổ sung của Bên A. Việc khấu trừ này không làm chấm dứt nghĩa vụ thanh toán đầy đủ của Bên A.</div>
+                <div>- Trường hợp Bên A chậm thanh toán phí dịch vụ quá 30 (ba mươi) ngày kể từ ngày đến hạn, Bên B có quyền chủ động khấu trừ khoản nợ từ tiền đặt cọc mà không cần có sự chấp thuận bổ sung của Bên A. Việc khấu trừ này không làm chậm chấm dứt nghĩa vụ thanh toán đầy đủ của Bên A.</div>
                 <div>- Sau khi khấu trừ tiền đặt cọc, Bên A có trách nhiệm hoàn lại số tiền đặt cọc về đúng mức quy định trong vòng 07 (bảy) ngày làm việc kể từ ngày nhận được thông báo của Bên B.</div>
                 <div>- Sau khi Hợp đồng được thanh lý và Bên A đã hoàn thành toàn bộ nghĩa vụ tài chính, Bên B hoàn trả phần tiền đặt cọc còn lại (nếu có) cho Bên A trong thời hạn 07 (bảy) ngày làm việc.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>4.3. Phương thức thanh toán</div>
-                <div>Bên A thanh toán phí dịch vụ đã thỏa thuận bằng hình thức chuyển khoản vào tài khoản của Bên B như sau:</div>
-                <div><b>Đơn vị hưởng:</b> {viewingContract.partyB.companyName}</div>
+                <div>Bên A thanh toán phí dịch vụ đã thỏa thuận bằng hình thức tiền mặt hoặc chuyển khoản vào tài khoản của Bên B như sau:</div>
+                <div><b>Đơn vị thụ hưởng:</b> {viewingContract.partyB.companyName}</div>
                 <div><b>Số tài khoản:</b> {viewingContract.partyB.bankAccount}</div>
                 <div><b>Ngân hàng:</b> {viewingContract.partyB.bankName}</div>
                 <div>Ngày thanh toán được xác định là ngày số tiền được ghi Có vào tài khoản của Bên B.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>4.4. Chậm thanh toán</div>
                 <div>Bên A có trách nhiệm thanh toán đầy đủ và đúng thời hạn theo Hợp đồng.</div>
-                <div>Trường hợp kết quả thời hạn thanh toán mà Bên A chưa thanh toán hoặc thanh toán không đầy đủ, Bên B có quyền:</div>
+                <div>Trường hợp quá thời hạn thanh toán mà Bên A chưa thanh toán hoặc thanh toán không đầy đủ, Bên B có quyền:</div>
                 <div>a) Gửi thông báo yêu cầu thanh toán cho Bên A;</div>
                 <div>b) Tạm dừng cung cấp các dịch vụ phát sinh ngoài gói chăm sóc cơ bản hoặc các dịch vụ hỗ trợ tăng cường chưa thanh toán (nếu có), nhưng vẫn bảo đảm các nhu cầu chăm sóc thiết yếu và an toàn của NCT;</div>
                 <div>c) Khấu trừ khoản nợ từ tiền đặt cọc theo quy định tại Điều 4.2;</div>
-                <div>d) Trường hợp Bên A chậm thanh toán quá 60 (sáu mươi) ngày kể từ ngày đến hạn và không khắc phục sau khi đã được Bên B thông báo, Bên B có quyền đơn phương chấm dứt Hợp đồng theo quy định tại Điều 9 của Hợp đồng sau khi đã thông báo trước cho Bên A ít nhất 07 (bảy) ngày.</div>
+                <div>d) Trường hợp Bên A chậm thanh toán quá 60 (sáu mươi) ngày kể từ ngày đến hạn và không khắc phục sau khi đã được Bên B thông báo, Bên B có quyền đơn phương chấm dứt Hợp đồng theo quy định tại Điều 10 của Hợp đồng sau khi đã thông báo trước cho Bên A ít nhất 07 (bảy) ngày.</div>
                 <div>Bên A vẫn có trách nhiệm thanh toán đầy đủ các khoản phí dịch vụ và chi phí phát sinh đến thời điểm Hợp đồng chấm dứt.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 5. Quyền và nghĩa vụ của Bên A</div>
@@ -1109,25 +1198,25 @@ export function ServiceContractsPage() {
                 <div>a) Bên A có quyền yêu cầu Bên B thực hiện đầy đủ, đúng chất lượng các cam kết chăm sóc theo các điều khoản đã thỏa thuận trong hợp đồng.</div>
                 <div>b) Bên A có quyền yêu cầu Bên B cung cấp thông tin về tình trạng sức khỏe, sinh hoạt và các diễn biến bất thường của (NCT) theo chế độ thông tin của Trung tâm hoặc khi có sự kiện cần thông báo khẩn cấp.</div>
                 <div>c) Bên A có quyền yêu cầu Bên B thực hiện đầy đủ, đúng phạm vi, chất lượng và tiêu chuẩn các dịch vụ chăm sóc theo Hợp đồng, Phụ lục hợp đồng và các quy định của Trung tâm.</div>
-                <div>d) Trong thời hạn 05 (năm) ngày kể từ ngày Hợp đồng có hiệu lực, Bên A có quyền đơn phương chấm dứt Hợp đồng mà không phải chịu phạt vi phạm. Sau thời gian trên, Bên A có quyền chấm dứt hợp đồng khi thông báo trước ít nhất ba mươi (30) ngày với điều kiện thanh toán đầy đủ các khoản phí dịch vụ và chi phí thực tế đã phát sinh đến thời điểm chấm dứt Hợp đồng.</div>
+                <div>d) Trong thời hạn 05 (năm) ngày kể từ ngày Hợp đồng có hiệu lực, Bên A có quyền đơn phương chấm dứt Hợp đồng mà không phải chịu phạt vi phạm. Sau thời gian này, Bên A có quyền chấm dứt hợp đồng khi thông báo trước ít nhất ba mươi (30) ngày với điều kiện thanh toán đầy đủ các khoản phí dịch vụ và chi phí thực tế đã phát sinh đến thời điểm chấm dứt Hợp đồng.</div>
                 <div>e) Được quyền thăm gặp, liên hệ và chăm sóc NCT theo thời gian, quy định và nội quy của Trung tâm, bảo đảm không ảnh hưởng đến việc chăm sóc, điều trị, nghỉ ngơi của NCT và hoạt động chung của Trung tâm.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>5.2. Nghĩa vụ của Bên A</div>
-                <div>a) Cung cấp đầy đủ, trung thực và chính xác thông tin cá nhân, tình trạng sức khỏe, hồ sơ bệnh án, thuốc đang sử dụng, các giấy tờ chứng minh quyền đại diện và nghĩa vụ nuôi dưỡng Người cao tuổi.</div>
+                <div>a) Cung cấp đầy đủ, trung thực và chính xác thông tin nhân thân, tình trạng sức khỏe, hồ sơ bệnh án, thuốc đang sử dụng, các giấy tờ chứng minh quyền đại diện và nghĩa vụ nuôi dưỡng Người cao tuổi.</div>
                 <div>b) Khai báo trung thực, đầy đủ tiền sử bệnh lý, bệnh nền, bệnh truyền nhiễm, tình trạng tinh thần, sa sút trí tuệ, dị ứng thuốc, tiền sử té ngã, hành vi nguy cơ hoặc các thông tin khác có ảnh hưởng đến việc chăm sóc NCT.</div>
                 <div>Trường hợp Bên A cố ý che giấu, khai báo không trung thực hoặc không đầy đủ làm ảnh hưởng đến việc chăm sóc, gây thiệt hại cho NCT, người khác hoặc Trung tâm, Bên A phải chịu mọi trách nhiệm và bồi thường toàn bộ thiệt hại phát sinh theo quy định của pháp luật.</div>
                 <div>Đối với trường hợp NCT mắc bệnh truyền nhiễm thuộc nhóm phải cách ly hoặc không phù hợp điều kiện tiếp nhận của Trung tâm mà Bên A cố ý che giấu, Bên B có quyền từ chối tiếp nhận hoặc đơn phương chấm dứt Hợp đồng và yêu cầu Bên A thanh toán toàn bộ chi phí phát sinh (nếu có).</div>
                 <div>c) Kê khai và bàn giao đầy đủ hồ sơ, thuốc, tư trang, đồ dùng cá nhân cho nhân viên tiếp đón của Trung tâm dưỡng lão Tâm An khi làm thủ tục tiếp nhận.</div>
-                <div>d) Không giao cho NCT quản lý mang theo tiền mặt, vàng, đá quý, giấy tờ hoặc tài sản có giá trị khác. Trung tâm không chịu trách nhiệm đối với tài sản không được kê khai, bàn giao.</div>
+                <div>d) Không giao cho NCT quản lý hoặc mang theo tiền mặt, vàng, đá quý, giấy tờ hoặc tài sản có giá trị khác. Trung tâm không chịu trách nhiệm đối với tài sản không được kê khai, bàn giao.</div>
                 <div>đ) Thanh toán đầy đủ, đúng thời hạn toàn bộ phí dịch vụ và các chi phí phát sinh theo Hợp đồng.</div>
                 <div>e) Duy trì ít nhất một người đại diện hợp pháp hoặc người liên hệ khẩn cấp có thể liên lạc 24/24. Khi nhận được thông báo về tình trạng khẩn cấp hoặc các vấn đề quan trọng liên quan đến NCT, Bên A có trách nhiệm phối hợp với Bên B trong thời gian sớm nhất. Trường hợp NCT tử vong, Bên A hoặc người được ủy quyền có trách nhiệm đến Trung tâm hoặc cơ sở y tế theo hướng dẫn của Bên B trong thời gian sớm nhất để thực hiện các thủ tục theo quy định của pháp luật.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 6. Quyền và nghĩa vụ của Bên B</div>
                 <div style={{ fontWeight: 'bold' }}>6.1. Quyền của Bên B</div>
                 <div>a) Yêu cầu Bên A và NCT tuân thủ Hợp đồng, Nội quy, Quy chế và các quy trình chăm sóc của Trung tâm.</div>
-                <div>b) Đề xuất thay đổi dịch vụ, chế độ chăm sóc hoặc chuyển đến cơ sở y tế phù hợp khi tình trạng sức khỏe của NCT có sự thay đổi đáng kể so với thời điểm ký Hợp đồng. Trường hợp Bên A không chấp thuận đề xuất phù hợp của Bên B, Bên B được miễn trách nhiệm đối với các hậu quả phát sinh từ việc không điều chỉnh này.</div>
+                <div>b) Đề xuất thay đổi gói dịch vụ, chế độ chăm sóc hoặc chuyển đến cơ sở y tế phù hợp khi tình trạng sức khỏe của NCT có sự thay đổi đáng kể so với thời điểm ký Hợp đồng. Trường hợp Bên A không chấp thuận đề xuất phù hợp của Bên B, Bên B được miễn trách nhiệm đối với các hậu quả phát sinh từ việc không điều chỉnh này.</div>
                 <div>c) Yêu cầu Bên A cung cấp đầy đủ, trung thực các thông tin về tình trạng sức khỏe, bệnh lý, tiền sử bệnh, thuốc đang sử dụng và các thông tin cần thiết khác của NCT để phục vụ công tác chăm sóc.</div>
-                <div>d) Từ chối tiếp nhận hoặc tạm ngừng cung cấp dịch vụ đối với NCT khi phát hiện mắc bệnh truyền nhiễm nguy hiểm, có hành vi gây nguy hiểm cho bản thân hoặc người khác, hoặc trường hợp vượt quá khả năng chuyên môn, điều kiện chăm sóc của Trung tâm.</div>
+                <div>d) Từ chối tiếp nhận hoặc tạm ngừng cung cấp dịch vụ đối với NCT khi phát hiện mắc bệnh truyền nhiễm nguy hiểm, có hành vi gây nguy hiểm cho bản thân hoặc người khác, hoặc trường hợp vượt quá phạm vi chuyên môn, điều kiện chăm sóc của Trung tâm.</div>
                 <div>đ) Đơn phương chấm dứt Hợp đồng khi Bên A vi phạm nghĩa vụ thanh toán, cố ý cung cấp thông tin sai sự thật, vi phạm nghiêm trọng Nội quy của Trung tâm hoặc có hành vi cản trở, xúc phạm, đe dọa nhân viên Trung tâm sau khi đã được nhắc nhở bằng văn bản nhưng không khắc phục.</div>
                 <div>e) Yêu cầu Bên A thanh toán đầy đủ các khoản phí dịch vụ, chi phí phát sinh theo Hợp đồng và bồi thường thiệt hại (nếu có) do lỗi của Bên A hoặc NCT gây ra theo quy định của pháp luật.</div>
 
@@ -1137,7 +1226,7 @@ export function ServiceContractsPage() {
                 <div>c) Thông báo kịp thời cho Bên A khi NCT có diễn biến bất thường về sức khỏe. Trường hợp khẩn cấp không liên lạc được với người đại diện của Bên A, Bên B được quyền chủ động đưa NCT đến cơ sở y tế gần nhất để cấp cứu; mọi chi phí phát sinh do Bên A thanh toán.</div>
                 <div>d) Cập nhật thông tin về tình trạng sức khỏe, sinh hoạt của NCT cho Bên A theo định kỳ hoặc khi có sự việc cần thông báo; bảo mật thông tin cá nhân và hồ sơ của NCT theo quy định của pháp luật.</div>
                 <div>đ) Quản lý, lưu giữ hồ sơ sức khỏe; phối hợp với Bên A và cơ sở y tế trong quá trình chăm sóc, điều trị và các vấn đề phát sinh liên quan đến NCT.</div>
-                <div>e) Thực hiện việc chăm sóc trong phạm vi dịch vụ đã cam kết; không chịu trách nhiệm đối với các rủi ro sức khỏe, diễn biến bệnh lý tự nhiên hoặc các sự kiện bất khả kháng nằm ngoài khả năng kiểm soát hợp lý của Bên B, trừ trường hợp do lỗi của Bên B.</div>
+                <div>e) Thực hiện việc chăm sóc trong phạm vi dịch vụ đã cam kết, không chịu trách nhiệm đối với các rủi ro sức khỏe, diễn biến bệnh lý tự nhiên hoặc các sự kiện bất khả kháng nằm ngoài khả năng kiểm soát hợp lý của Bên B, trừ trường hợp do lỗi của Bên B.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 7. Quy trình xử lý và giới hạn trách nhiệm khi NCT đi cấp cứu</div>
                 <div><b>7.1. Xác định tình trạng:</b> Ngay khi phát hiện NCT có dấu hiệu diễn biến bất thường có khả năng nguy hiểm đến tính mạng, nhân viên y tế của Trung tâm sẽ tiến hành các biện pháp cấp cứu khẩn cấp theo nghiệp vụ trong phạm vi cho phép, đồng thời liên hệ ngay với cơ sở y tế gần nhất hoặc cấp cứu 115 để đưa NCT đến cơ sở y tế gần nhất.</div>
@@ -1148,14 +1237,21 @@ export function ServiceContractsPage() {
                 <div><b>7.4. Bàn giao tài sản trong trường hợp NCT không quay trở lại Trung tâm sau cấp cứu:</b> Bên B có trách nhiệm lập biên bản kiểm kê, niêm phong và bàn giao lại toàn bộ trang phục, tư trang, đồ dùng cá nhân của cụ cho Bên A khi gia đình có yêu cầu.</div>
                 <div><b>7.5. Thanh toán các chi phí phát sinh:</b> Các chi phí phát sinh từ các dịch vụ trên, Bên A có trách nhiệm thanh toán cho Bên B trong vòng bảy (07) ngày.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 8: Sử dụng hình ảnh NCT</div>
-                <div>Bên B được phép sử dụng hình ảnh hoạt động hàng ngày của NCT tại Trung tâm, phục vụ mục đích hoạt động truyền thông kênh Online và trên các ấn phẩm của trung tâm. Tuyệt đối không được sử dụng vào mục đích khác làm ảnh hưởng đến uy tín, danh dự của NCT.</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 8. Sử dụng hình ảnh NCT</div>
+                <div>Bên B được phép sử dụng hình ảnh hoạt động hàng ngày của NCT tại Trung tâm, phục vụ mục đích hoạt động truyền thông Kênh Online và trên các ấn phẩm của trung tâm. Tuyệt đối không được sử dụng vào mục đích khác làm ảnh hưởng đến uy tín, danh dự của NCT.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 9: Chấm dứt, sửa đổi và giải quyết tranh chấp</div>
-                <div><b>9.1. Hợp đồng chấm dứt khi:</b> Hai bên đồng thuận; hết thời hạn hợp đồng; một bên đơn phương chấm dứt hợp đồng hợp pháp.</div>
-                <div><b>9.2. Thanh lý, chấm dứt hợp đồng do NCT tử vong:</b> Hợp đồng dịch vụ sẽ tự động chấm dứt tại thời điểm NCT qua đời. Trong vòng mười lăm (15) ngày làm việc kể từ ngày NCT qua đời, hai bên sẽ tiến hành chốt chi phí dịch vụ tính đến ngày NCT qua đời, hoàn trả phần tiền đặt cọc còn lại (sau khi trừ các chi phí phát sinh nếu có).</div>
-                <div><b>9.3. Sửa đổi hợp đồng:</b> Mọi thay đổi về điều khoản hoặc chế độ chăm sóc phải được lập bằng văn bản dưới dạng Phụ lục hợp đồng có chữ ký của hai bên.</div>
-                <div><b>9.4. Giải quyết tranh chấp:</b> Ưu tiên giải quyết thông qua thương lượng, hòa giải trên tinh thần thiện chí. Trường hợp không tự thỏa thuận được, tranh chấp sẽ được đưa ra Tòa án có thẩm quyền tại Việt Nam giải quyết .</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 9: Điều khoản về sự kiện bất khả kháng</div>
+                <div>a) "Sự kiện bất khả kháng" trong Hợp đồng này được hiểu là sự kiện xảy ra một cách khách quan, không thể lường trước và không thể khắc phục được mặc dù Bên bị ảnh hưởng đã áp dụng các biện pháp cần thiết và khả năng cho phép, theo quy định của pháp luật.</div>
+                <div>b) Sự kiện bất khả kháng có thể bao gồm nhưng không giới hạn ở: thiên tai, bão, lũ lụt, động đất, hỏa hoạn hoặc sự cố nghiêm trọng ngoài khả năng kiểm soát hợp lý của Bên B; chiến tranh, bạo loạn, khủng bố, dịch bệnh hoặc tình trạng khẩn cấp theo quyết định của cơ quan nhà nước có thẩm quyền; quyết định, yêu cầu hoặc biện pháp hành chính của cơ quan nhà nước có thẩm quyền làm cho việc thực hiện một phần hoặc toàn bộ nghĩa vụ theo Hợp đồng không thể thực hiện được; và các sự kiện khác đáp ứng đầy đủ điều kiện của sự kiện bất khả kháng theo quy định pháp luật.</div>
+                <div>c) Sự kiện bất khả kháng chỉ làm miễn hoặc giảm trách nhiệm của Bên B đối với phần nghĩa vụ bị ảnh hưởng trực tiếp bởi sự kiện bất khả kháng và trong thời gian chịu ảnh hưởng, với điều kiện Bên B đã áp dụng các biện pháp hợp lý để hạn chế, khắc phục hậu quả và tiếp tục thực hiện các nghĩa vụ còn có thể thực hiện.</div>
+                <div>d) Bên B có trách nhiệm thông báo cho Bên A trong thời gian hợp lý kể từ khi xảy ra hoặc kể từ khi có thể xác định được sự kiện bất khả kháng và mức độ ảnh hưởng của sự kiện đó đến việc cung cấp dịch vụ.</div>
+                <div>đ) Việc Người cao tuổi phát sinh bệnh, biến cố sức khỏe, suy giảm sức khỏe hoặc tử vong do tuổi cao, bệnh nền, bệnh mạn tính hoặc nguyên nhân nhân sự: sức khỏe tự nhiên không đương nhiên coi là sự kiện bất khả kháng. Việc xác định trách nhiệm của Bên B trong các trường hợp này được thực hiện theo Khoản 1.3 của Hợp đồng.</div>
+
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 10: Chấm dứt, sửa đổi và giải quyết tranh chấp</div>
+                <div><b>10.1. Hợp đồng chấm dứt khi:</b> Hai bên đồng thuận; hết thời hạn hợp đồng; một bên đơn phương chấm dứt hợp đồng hợp pháp.</div>
+                <div><b>10.2. Thanh lý, chấm dứt hợp đồng do NCT tử vong:</b> Hợp đồng dịch vụ sẽ tự động chấm dứt tại thời điểm NCT qua đời. Trong vòng mười lăm (15) ngày làm việc kể từ ngày NCT qua đời, hai bên sẽ tiến hành chốt chi phí dịch vụ tính đến ngày NCT qua đời, hoàn trả phần tiền đặt cọc còn lại (sau khi trừ các chi phí phát sinh nếu có).</div>
+                <div><b>10.3. Sửa đổi hợp đồng:</b> Mọi thay đổi về điều khoản hoặc chế độ chăm sóc phải được lập bằng văn bản dưới dạng Phụ lục hợp đồng có chữ ký của hai bên.</div>
+                <div><b>10.4. Giải quyết tranh chấp:</b> Ưu tiên giải quyết thông qua thương lượng, hòa giải trên tinh thần thiện chí. Trường hợp không tự thỏa thuận được, tranh chấp sẽ được đưa ra Tòa án có thẩm quyền tại Việt Nam giải quyết.</div>
                 <div style={{ margin: '8px 0', fontStyle: 'italic' }}>
                   Hợp đồng này được lập thành hai (02) bản có giá trị pháp lý tương đương, mỗi Bên giữ một (01) bản để thực hiện. Hợp đồng có hiệu lực kể từ ngày ký.
                 </div>
@@ -1191,6 +1287,9 @@ export function ServiceContractsPage() {
 
               <div>
                 <b>Tình trạng sức khỏe NCT tại thời điểm tiếp nhận vào Trung tâm dưỡng lão Tâm An:</b><br />
+                <div style={{ fontSize: '10.5pt', fontStyle: 'italic', margin: '3px 0' }}>
+                  Theo Phiếu đánh giá sức khỏe NCT ban đầu dành cho người cao tuổi ngày ......
+                </div>
                 <div style={{ padding: '6px 10px', borderBottom: '1px dotted #94a3b8', minHeight: '40px', fontStyle: viewingContract.appendix.healthStatusAtAdmission ? 'normal' : 'italic', color: viewingContract.appendix.healthStatusAtAdmission ? '#000' : '#64748b' }}>
                   {viewingContract.appendix.healthStatusAtAdmission || '........................................................................................................................................................................................................'}
                 </div>
@@ -1230,7 +1329,7 @@ export function ServiceContractsPage() {
                   ))}
                   <tr style={{ fontWeight: 'bold', background: '#e2e8f0' }}>
                     <td colSpan={2} style={{ border: '1px solid #000', padding: '6px', textAlign: 'right' }}>
-                      Tổng phí chăm sóc hỗ trợ bổ sung:
+                      Tổng phí chăm sóc hỗ trợ:
                     </td>
                     <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'right', color: '#166534' }}>
                       {viewingContract.appendix.additionalServices.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0).toLocaleString()} VNĐ
@@ -1244,22 +1343,22 @@ export function ServiceContractsPage() {
                 <b>3. Ưu đãi:</b> {viewingContract.appendix.discountReason || 'Theo chính sách ưu đãi của Trung tâm'} (Giảm {viewingContract.appendix.discount.toLocaleString()} VNĐ)
               </div>
               <div style={{ marginTop: '4px', fontSize: '13pt' }}>
-                <b>TỔNG PHÍ DỊCH VỤ SAU ƯU ĐÃI (1+2-3):</b> <b style={{ color: '#166534' }}>{viewingContract.appendix.totalMonthlyFee.toLocaleString()} VNĐ/tháng</b>
+                <b>Tổng phí dịch vụ: (1+2):</b> <b style={{ color: '#166534' }}>{viewingContract.appendix.totalMonthlyFee.toLocaleString()} VNĐ/tháng</b>
               </div>
               <div style={{ fontStyle: 'italic', marginTop: '2px' }}>
                 (Bằng chữ: <b>{viewingContract.appendix.totalMonthlyFeeText || numberToVietnameseText(viewingContract.appendix.totalMonthlyFee)}</b>)
               </div>
 
-              {/* APPENDIX CLAUSES 4 & 5 */}
+              {/* APPENDIX CLAUSES 3 & 4 */}
               <div style={{ textAlign: 'justify', marginTop: '12px' }}>
-                <div style={{ fontWeight: 'bold' }}>4. Các quy định bổ sung:</div>
+                <div style={{ fontWeight: 'bold' }}>3. Các quy định bổ sung:</div>
                 <div><b>a. Ưu đãi đóng phí chăm sóc cơ bản:</b> Giảm 5% khi đóng trước 12 tháng; 3% khi đóng trước 6 tháng.</div>
                 <div><b>b. Phụ thu ngày Lễ, Tết:</b> Tết dương lịch, Tết âm lịch, các ngày 10/3 Âm lịch; 30/4; 1/5; Quốc Khánh... (hoặc các ngày khác theo quy định từng năm của Nhà nước): 200.000/ngày/NCT lưu trú dài hạn; 300.000/ngày/NCT lưu trú ngắn hạn.</div>
                 <div><b>c. Vắng mặt bất khả kháng:</b> Giảm trừ 200.000 đồng/ngày khi NCT không lưu trú tại Trung tâm do đi cấp cứu hoặc điều trị tại bệnh viện.</div>
                 <div><b>d. Vắng mặt vì lý do khác:</b> Giảm trừ 100.000 đồng/ngày khi NCT rời trung tâm về nhà có việc riêng.</div>
-                <div><b>e. Thời hạn đóng phí:</b> Bên A có nghĩa vụ hoàn thành thanh toán Phí dịch vụ tháng hiện tại và chi phí phát sinh của tháng trước từ ngày mùng 01 đến ngày 05 hàng tháng.</div>
+                <div><b>e. Thời hạn đóng phí:</b> Bên A có nghĩa vụ hoàn thành thanh toán Phí dịch vụ tháng hiện tại và chi phí phát sinh của tháng trước từ ngày mùng 01 đến ngày mùng 05 hàng tháng.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '8px' }}>5. Điều chỉnh giá dịch vụ: <i>(khi có biến động thị trường và tình trạng sức khỏe của NCT)</i></div>
+                <div style={{ fontWeight: 'bold', marginTop: '8px' }}>4. Điều chỉnh giá dịch vụ: <i>(khi có biến động thị trường và tình trạng sức khỏe của NCT)</i></div>
                 <div><b>a) Nguyên tắc điều chỉnh:</b> Mức phí dịch vụ quy định tại Phụ lục 01 được xây dựng dựa trên giá cả thị trường và tình trạng NCT tại thời điểm ký hợp đồng.</div>
                 <div>- Trong quá trình thực hiện hợp đồng, nếu từ năm thứ 2 trở đi, chỉ số giá tiêu dùng (CPI) tăng hoặc giá cả các yếu tố đầu vào (thực phẩm, điện, nước, lương nhân viên y tế, vật tư tiêu hao) tăng đột biến.</div>
                 <div>- Hoặc trong bất kỳ thời điểm nào NCT có diễn biến thay đổi về sức khỏe và cần điều chỉnh chế độ chăm sóc.</div>
