@@ -9,8 +9,7 @@ export interface NavItem {
   label: string;
   icon: string;
   category: string;
-  description: string;
-  color: string;
+  gradient: string;
   badge?: string;
 }
 
@@ -22,8 +21,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Tổng Quan & KPI',
     icon: '📊',
     category: 'Lâm Sàng & Chăm Sóc',
-    description: 'Bảng điều hành số liệu y khoa & công suất giường',
-    color: '#166534',
+    gradient: 'linear-gradient(135deg, #4f46e5, #3730a3)',
   },
   {
     key: 'admissions',
@@ -31,27 +29,25 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Tiếp Nhận & Đánh Giá',
     icon: '📋',
     category: 'Lâm Sàng & Chăm Sóc',
-    description: 'Biểu mẫu tiếp nhận 2 trang & Khảo sát 12 vị trí',
-    color: '#0284c7',
+    gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
   },
   {
     key: 'accommodation',
     to: '/accommodation',
-    label: 'Sơ Đồ Phòng & Giường',
+    label: 'Sơ Đồ Phòng Giường',
     icon: '🛏️',
     category: 'Lâm Sàng & Chăm Sóc',
-    description: 'Sơ đồ cơ sở vật chất 29 phòng, 110 giường bệnh',
-    color: '#0369a1',
-    badge: '110 Giường',
+    gradient: 'linear-gradient(135deg, #0369a1, #075985)',
+    badge: '110 G',
   },
   {
     key: 'residents',
     to: '/residents',
     label: 'Hồ Sơ Cư Dân',
-    icon: '👴',
+    icon: '👵',
     category: 'Lâm Sàng & Chăm Sóc',
-    description: 'Quản lý thông tin & không gian chăm sóc người cao tuổi',
-    color: '#15803d',
+    gradient: 'linear-gradient(135deg, #10b981, #059669)',
+    badge: '110 Cụ',
   },
   {
     key: 'operations',
@@ -59,8 +55,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Chăm Sóc & Vận Hành',
     icon: '🩺',
     category: 'Lâm Sàng & Chăm Sóc',
-    description: 'Nhật ký công việc ADL & quy chuẩn chăm sóc hàng ngày',
-    color: '#059669',
+    gradient: 'linear-gradient(135deg, #059669, #047857)',
   },
   {
     key: 'health-reports',
@@ -68,38 +63,34 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Báo Cáo Sức Khỏe',
     icon: '📈',
     category: 'Lâm Sàng & Chăm Sóc',
-    description: 'Báo cáo y khoa 3 trang & Tiêu chuẩn lâm sàng',
-    color: '#0891b2',
+    gradient: 'linear-gradient(135deg, #0891b2, #0e7490)',
   },
 
   // --- 2. DƯỢC PHẨM, DINH DƯỠNG & CA TRỰC ---
   {
     key: 'medication-inventory',
     to: '/medication-inventory',
-    label: 'Dược Phẩm & Vật Tư',
+    label: 'Dược Phẩm eMAR',
     icon: '💊',
     category: 'Dược Phẩm & Ca Trực',
-    description: 'Quy tắc eMAR 5 Đúng & Quản lý tồn kho tối thiểu',
-    color: '#2563eb',
+    gradient: 'linear-gradient(135deg, #2563eb, #1d4ed8)',
     badge: 'eMAR',
   },
   {
     key: 'kitchen-operations',
     to: '/kitchen-operations',
-    label: 'Bếp Ăn & Dinh Dưỡng',
-    icon: '🍱',
+    label: 'Bếp Dinh Dưỡng',
+    icon: '🍳',
     category: 'Dược Phẩm & Ca Trực',
-    description: 'Thực đơn dinh dưỡng 3 ca & Tiêu chuẩn suất ăn',
-    color: '#d97706',
+    gradient: 'linear-gradient(135deg, #ea580c, #c2410c)',
   },
   {
     key: 'workforce',
     to: '/workforce',
-    label: 'Lịch Trực & Ca Kíp',
+    label: 'Lịch Trực Ca Kíp',
     icon: '📅',
     category: 'Dược Phẩm & Ca Trực',
-    description: 'Phân ca sáng/chiều/đêm & Bàn giao ca trực y khoa',
-    color: '#7c3aed',
+    gradient: 'linear-gradient(135deg, #7c3aed, #5b21b6)',
   },
 
   // --- 3. HÀNH CHÍNH, TÀI CHÍNH & THÂN NHÂN ---
@@ -109,17 +100,15 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Cổng Thân Nhân',
     icon: '👨‍👩‍👧',
     category: 'Tài Chính & Thân Nhân',
-    description: 'Kết nối gia đình, đăng ký thăm & theo dõi sức khỏe',
-    color: '#0284c7',
+    gradient: 'linear-gradient(135deg, #ec4899, #be185d)',
   },
   {
     key: 'billing-invoicing',
     to: '/billing-invoicing',
     label: 'Viện Phí & Kế Toán',
-    icon: '💰',
+    icon: '💳',
     category: 'Tài Chính & Thân Nhân',
-    description: 'Tính phí trọn gói, giảm trừ tạm vắng & Hóa đơn điện tử',
-    color: '#166534',
+    gradient: 'linear-gradient(135deg, #10b981, #047857)',
   },
   {
     key: 'resident-leave',
@@ -127,8 +116,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Nghỉ Phép & Tạm Vắng',
     icon: '✈️',
     category: 'Tài Chính & Thân Nhân',
-    description: 'Thủ tục RLA-BR-01 & Quy trình Trở lại Tâm An',
-    color: '#b45309',
+    gradient: 'linear-gradient(135deg, #eab308, #ca8a04)',
     badge: 'RLA-BR-01',
   },
   {
@@ -137,28 +125,25 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Hợp Đồng Dịch Vụ',
     icon: '📜',
     category: 'Tài Chính & Thân Nhân',
-    description: 'Quản lý hợp đồng 3 mức độ chăm sóc & Pháp lý',
-    color: '#4f46e5',
+    gradient: 'linear-gradient(135deg, #6366f1, #4338ca)',
   },
 
   // --- 4. QUẢN TRỊ, BẢO MẬT & HỆ THỐNG ---
   {
     key: 'staff-access',
     to: '/staff-access',
-    label: 'Nhân Sự & Phân Quyền',
-    icon: '👥',
+    label: 'Phân Quyền RBAC',
+    icon: '🔑',
     category: 'Quản Trị & Hệ Thống',
-    description: 'Ma trận phân quyền RBAC 12 vị trí việc làm bảo mật',
-    color: '#334155',
+    gradient: 'linear-gradient(135deg, #334155, #0f172a)',
   },
   {
     key: 'analytics-intelligence',
     to: '/analytics-intelligence',
-    label: 'Phân Tích & Quản Trị',
+    label: 'Phân Tích KPI BI',
     icon: '🧠',
     category: 'Quản Trị & Hệ Thống',
-    description: '4 trụ cột điều hành vĩ mô & Báo cáo BI thông minh',
-    color: '#1e40af',
+    gradient: 'linear-gradient(135deg, #1e40af, #1e3a8a)',
   },
   {
     key: 'audit-trail',
@@ -166,17 +151,15 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     label: 'Nhật Ký Truy Vết',
     icon: '🔍',
     category: 'Quản Trị & Hệ Thống',
-    description: 'Nhật ký kiểm toán hệ thống & Lưu vết tác động y khoa',
-    color: '#475569',
+    gradient: 'linear-gradient(135deg, #475569, #334155)',
   },
   {
     key: 'system-status',
     to: '/system-status',
-    label: 'Trạng Thái Hệ Thống',
+    label: 'Trạng Thái System',
     icon: '⚡',
     category: 'Quản Trị & Hệ Thống',
-    description: 'Giám sát hạ tầng, API endpoint & Kết nối PWA Offline',
-    color: '#0f172a',
+    gradient: 'linear-gradient(135deg, #0f172a, #020617)',
   },
 ];
 
@@ -196,7 +179,18 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
   const categories = Array.from(new Set(visibleItems.map((item) => item.category)));
 
   return (
-    <div className="module-launcher-container" style={{ width: '100%', boxSizing: 'border-box' }}>
+    <div
+      className="module-launcher-container"
+      style={{
+        width: '100%',
+        boxSizing: 'border-box',
+        background: '#ffffff',
+        borderRadius: '1rem',
+        border: '1px solid #e2e8f0',
+        padding: '1.25rem',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.04)',
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -205,13 +199,15 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
           marginBottom: '1.25rem',
           flexWrap: 'wrap',
           gap: '0.75rem',
+          borderBottom: '1px solid #f1f5f9',
+          paddingBottom: '0.85rem',
         }}
       >
         <div>
           <h2
             style={{
               margin: 0,
-              fontSize: '1.25rem',
+              fontSize: '1.15rem',
               fontWeight: 800,
               color: '#0f172a',
               display: 'flex',
@@ -221,8 +217,8 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
           >
             <span>📱</span> Danh Mục Phân Hệ Nghiệp Vụ Tâm An Care
           </h2>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.84rem', color: '#64748b' }}>
-            Hệ thống 17 phân hệ quản trị viện dưỡng lão — Chọn phân hệ để thao tác trực tiếp
+          <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+            Hệ thống 17 phân hệ quản trị viện dưỡng lão — Chạm icon để truy cập ứng dụng
           </p>
         </div>
 
@@ -257,10 +253,10 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
               style={{
                 fontSize: '0.82rem',
                 fontWeight: 800,
-                color: '#475569',
+                color: '#166534',
                 textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                marginBottom: '0.75rem',
+                letterSpacing: '0.04em',
+                marginBottom: '1rem',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.4rem',
@@ -278,11 +274,13 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
               {cat} ({catItems.length})
             </div>
 
+            {/* SQUIRCLE MATRIX ICON GRID */}
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-                gap: '1rem',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(92px, 1fr))',
+                gap: '1.5rem 1rem',
+                alignItems: 'start',
               }}
             >
               {catItems.map((item) => (
@@ -293,110 +291,80 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
                     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                   }}
                   style={{
-                    background: '#ffffff',
-                    border: '1px solid #cbd5e1',
-                    borderTop: `3.5px solid ${item.color}`,
-                    borderRadius: '0.75rem',
-                    padding: '1rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.18s ease-in-out',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
                     display: 'flex',
                     flexDirection: 'column',
-                    justifyContent: 'space-between',
-                    position: 'relative',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 8px 16px rgba(0,0,0,0.08)';
-                    e.currentTarget.style.borderColor = item.color;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.03)';
-                    e.currentTarget.style.borderColor = '#cbd5e1';
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    padding: '0.2rem',
                   }}
                 >
-                  <div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: '0.65rem',
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: '40px',
-                          height: '40px',
-                          borderRadius: '0.6rem',
-                          background: `${item.color}15`,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '1.4rem',
-                        }}
-                      >
-                        {item.icon}
-                      </div>
-
-                      {item.badge && (
-                        <span
-                          style={{
-                            fontSize: '0.7rem',
-                            fontWeight: 700,
-                            color: item.color,
-                            background: `${item.color}15`,
-                            padding: '0.15rem 0.5rem',
-                            borderRadius: '9999px',
-                            border: `1px solid ${item.color}40`,
-                          }}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </div>
-
-                    <h3
-                      style={{
-                        margin: '0 0 0.35rem 0',
-                        fontSize: '0.98rem',
-                        fontWeight: 700,
-                        color: '#0f172a',
-                        lineHeight: 1.3,
-                      }}
-                    >
-                      {item.label}
-                    </h3>
-
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: '0.78rem',
-                        color: '#64748b',
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {item.description}
-                    </p>
-                  </div>
-
+                  {/* SQUIRCLE ICON CONTAINER */}
                   <div
                     style={{
-                      marginTop: '0.85rem',
-                      paddingTop: '0.5rem',
-                      borderTop: '1px dashed #f1f5f9',
+                      width: '62px',
+                      height: '62px',
+                      borderRadius: '18px',
+                      background: item.gradient,
                       display: 'flex',
-                      justifyContent: 'flex-end',
                       alignItems: 'center',
-                      fontSize: '0.76rem',
-                      fontWeight: 700,
-                      color: item.color,
+                      justifyContent: 'center',
+                      fontSize: '30px',
+                      color: '#ffffff',
+                      position: 'relative',
+                      boxShadow: '0 8px 18px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.08)',
+                      border: '1px solid rgba(255, 255, 255, 0.25)',
+                      boxSizing: 'border-box',
+                      transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'scale(1.08)';
+                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.18)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.boxShadow = '0 8px 18px rgba(0, 0, 0, 0.12)';
                     }}
                   >
-                    Truy cập &rarr;
+                    <span>{item.icon}</span>
+
+                    {item.badge && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: '-6px',
+                          right: '-8px',
+                          backgroundColor: '#ef4444',
+                          color: '#ffffff',
+                          fontSize: '9px',
+                          fontWeight: 800,
+                          padding: '2px 6px',
+                          borderRadius: '999px',
+                          boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
+                          border: '1.5px solid #ffffff',
+                          whiteSpace: 'nowrap',
+                          lineHeight: 1,
+                        }}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
                   </div>
+
+                  {/* ICON LABEL */}
+                  <span
+                    style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: '#0f172a',
+                      marginTop: '0.55rem',
+                      lineHeight: 1.25,
+                      maxWidth: '90px',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {item.label}
+                  </span>
                 </div>
               ))}
             </div>
@@ -407,7 +375,6 @@ export function ModuleLauncherGrid({ onOpenInstallModal }: ModuleLauncherGridPro
   );
 }
 
-// Compact Header Quick Launcher dropdown or bar for topbar integration
 export function AppNavigation() {
-  return null; // Navigation is now integrated into Launcher Grid & Topbar Header
+  return null;
 }
