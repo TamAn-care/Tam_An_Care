@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
 import { ROLE_LABELS, hasCapability, canAccessRoute } from '../../auth/role-policy';
 import type { HumanActorRole } from '../../types/actor';
+import { createStaffLeaveRequest, StaffLeaveType } from '../../api/resident-leave';
 
 interface AppIconItem {
   id: string;
@@ -29,6 +30,16 @@ export function MobileLauncherPage() {
   // Dynamic state for task completions inside full-screen view
   const [completedTaskIds, setCompletedTaskIds] = useState<Record<string, boolean>>({});
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Leave Form State for "Tạo Đơn Xin Nghỉ Phép"
+  const [leaveType, setLeaveType] = useState<StaffLeaveType>('ANNUAL');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [isSpecialCase, setIsSpecialCase] = useState(false);
+  const [specialReason, setSpecialReason] = useState('');
+  const [reason, setReason] = useState('');
+  const [leaveFormError, setLeaveFormError] = useState<string | null>(null);
+  const [isSubmittingLeave, setIsSubmittingLeave] = useState(false);
 
   // Voice AI State
   const [isRecording, setIsRecording] = useState(false);
@@ -66,12 +77,56 @@ export function MobileLauncherPage() {
       rec.onend = () => setIsRecording(false);
       rec.start();
     } else {
-      setIsRecording(true);
-      setTimeout(() => {
-        setIsRecording(false);
-        setVoiceTranscript('Cụ tỉnh táo, tinh thần vui vẻ, các tiêu chí đánh giá hoàn thành tốt.');
-        showToast('✓ Mô phỏng thu âm giọng nói thành công!');
-      }, 1600);
+      showToast('⚠️ Trình duyệt chưa hỗ trợ Voice AI');
+    }
+  };
+
+  // Calculate notice hours for leave request
+  const staffNoticePreview = useMemo(() => {
+    if (!startDate) return null;
+    const startMs = new Date(startDate).getTime();
+    if (isNaN(startMs)) return null;
+    const hours = Math.round(((startMs - Date.now()) / (1000 * 60 * 60)) * 10) / 10;
+    return {
+      hours,
+      is48h: hours >= 48,
+    };
+  }, [startDate]);
+
+  const handleStaffLeaveSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLeaveFormError(null);
+    if (!startDate || !endDate || !reason.trim()) {
+      setLeaveFormError('Vui lòng điền đầy đủ các thông tin bắt buộc (*).');
+      return;
+    }
+    if (isSpecialCase && !specialReason.trim()) {
+      setLeaveFormError('Vui lòng nhập lý do giải trình cho trường hợp đặc biệt.');
+      return;
+    }
+
+    try {
+      setIsSubmittingLeave(true);
+      await createStaffLeaveRequest(actor?.actorId || 'staff-1', actorRole || 'CARE_STAFF', {
+        leaveType,
+        startDate: new Date(startDate).toISOString(),
+        endDate: new Date(endDate).toISOString(),
+        reason: reason.trim(),
+        isSpecialCase,
+        specialReason: isSpecialCase ? specialReason.trim() : undefined,
+      });
+      showToast('🎉 Đơn xin nghỉ phép đã được gửi thành công!');
+      setLeaveType('ANNUAL');
+      setStartDate('');
+      setEndDate('');
+      setIsSpecialCase(false);
+      setSpecialReason('');
+      setReason('');
+      setLeaveFormError(null);
+    } catch (err: any) {
+      setLeaveFormError(err.message || 'Lỗi gửi đơn xin nghỉ phép.');
+    } finally {
+      setIsSubmittingLeave(false);
     }
   };
 
@@ -193,11 +248,11 @@ export function MobileLauncherPage() {
     },
     {
       id: 'leave',
-      title: 'Xin Nghỉ Phép',
-      icon: '🏖️',
+      title: 'Tạo Đơn Xin Nghỉ Phép',
+      icon: '📝',
       gradient: 'linear-gradient(135deg, #eab308, #ca8a04)',
       category: 'Ca Trực',
-      isAllowed: (role) => canAccessRoute(role, 'resident-leave'),
+      isAllowed: () => true, // Áp dụng cho tất cả nhân viên
     },
 
     // --- 6. DINH DƯỠNG BẾP ---
@@ -570,8 +625,151 @@ export function MobileLauncherPage() {
               </div>
             )}
 
+            {/* FORM TYPE 5: TẠO ĐƠN XIN NGHỈ PHÉP NHÂN VIÊN */}
+            {activeApp.id === 'leave' && (
+              <div style={{ backgroundColor: '#ffffff', border: '1px solid #cbd5e1', borderRadius: '22px', padding: '20px', boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px' }}>
+                  <div>
+                    <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>
+                      📋 Mẫu Kê Khai Tạo Đơn Xin Nghỉ Phép
+                    </h3>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#64748b' }}>
+                      Áp dụng cho tất cả nhân viên ({actorName} • {roleLabel})
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/resident-leave')}
+                    style={{ backgroundColor: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '10px', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+                  >
+                    Danh sách đơn &rarr;
+                  </button>
+                </div>
+
+                <form onSubmit={handleStaffLeaveSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {leaveFormError && (
+                    <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fca5a5', padding: '10px 14px', borderRadius: '12px', color: '#991b1b', fontSize: '12px', fontWeight: 600 }}>
+                      ⚠️ {leaveFormError}
+                    </div>
+                  )}
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                      Loại nghỉ phép <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <select
+                      value={leaveType}
+                      onChange={(e) => setLeaveType(e.target.value as StaffLeaveType)}
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '13px', fontWeight: 600, backgroundColor: '#f8fafc', color: '#0f172a' }}
+                    >
+                      <option value="ANNUAL">Nghỉ phép năm</option>
+                      <option value="PERSONAL">Nghỉ việc riêng</option>
+                      <option value="SICK">Nghỉ ốm / Khẩn cấp y tế</option>
+                      <option value="UNPAID">Nghỉ không hưởng lương</option>
+                      <option value="OTHER">Lý do khác</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                      Thời gian bắt đầu nghỉ <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      required
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '13px', backgroundColor: '#ffffff', color: '#0f172a', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                      Thời gian kết thúc nghỉ <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      required
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '13px', backgroundColor: '#ffffff', color: '#0f172a', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  {/* Notice Preview Banner */}
+                  {staffNoticePreview && (
+                    <div style={{ backgroundColor: staffNoticePreview.is48h ? '#ecfdf5' : '#fffbeb', border: `1px solid ${staffNoticePreview.is48h ? '#a7f3d0' : '#fde68a'}`, padding: '10px 12px', borderRadius: '12px', fontSize: '12px', color: staffNoticePreview.is48h ? '#047857' : '#b45309' }}>
+                      <strong>Quy định báo trước ≥ 2 ngày (48h):</strong> Thời gian báo trước: <b>{staffNoticePreview.hours}h</b>. {staffNoticePreview.is48h ? '✓ Đạt quy định báo trước.' : '⚠️ Nhỏ hơn 48h (Tích chọn "Trường hợp đặc biệt").'}
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '4px' }}>
+                    <input
+                      type="checkbox"
+                      id="mobileIsSpecialCase"
+                      checked={isSpecialCase}
+                      onChange={(e) => setIsSpecialCase(e.target.checked)}
+                      style={{ width: '18px', height: '18px', accentColor: '#d97706', cursor: 'pointer' }}
+                    />
+                    <label htmlFor="mobileIsSpecialCase" style={{ fontSize: '12px', fontWeight: 700, color: '#d97706', cursor: 'pointer' }}>
+                      ⚡ Trường hợp đặc biệt (khẩn cấp / đột xuất &lt; 2 ngày)
+                    </label>
+                  </div>
+
+                  {isSpecialCase && (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#b45309', marginBottom: '6px' }}>
+                        Lý do trường hợp đặc biệt / khẩn cấp <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={specialReason}
+                        onChange={(e) => setSpecialReason(e.target.value)}
+                        placeholder="Ví dụ: Sốt đột xuất 39 độ, gia đình có việc khẩn cấp..."
+                        required={isSpecialCase}
+                        style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #f59e0b', fontSize: '13px', backgroundColor: '#fffbeb', color: '#0f172a', boxSizing: 'border-box' }}
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                      Lý do xin nghỉ phép <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <textarea
+                      value={reason}
+                      onChange={(e) => setReason(e.target.value)}
+                      rows={3}
+                      required
+                      placeholder="Nêu rõ lý do xin nghỉ phép, kế hoạch bàn giao công việc ca trực..."
+                      style={{ width: '100%', padding: '10px 12px', borderRadius: '12px', border: '1px solid #cbd5e1', fontSize: '13px', backgroundColor: '#ffffff', color: '#0f172a', boxSizing: 'border-box' }}
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmittingLeave}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: '16px',
+                      backgroundColor: isSubmittingLeave ? '#94a3b8' : '#ca8a04',
+                      color: '#ffffff',
+                      fontSize: '14px',
+                      fontWeight: 800,
+                      border: 'none',
+                      cursor: isSubmittingLeave ? 'not-allowed' : 'pointer',
+                      boxShadow: '0 4px 12px rgba(202, 138, 4, 0.3)',
+                    }}
+                  >
+                    {isSubmittingLeave ? '⏳ Đang gửi...' : '📝 GỬI ĐƠN XIN NGHỈ PHÉP'}
+                  </button>
+                </form>
+              </div>
+            )}
+
             {/* GENERAL FORM FOR OTHER ROLES */}
-            {activeApp.id !== 'psychology-eval' && activeApp.id !== 'counseling' && activeApp.id !== 'meds' && activeApp.id !== 'vitals' && activeApp.id !== 'hygiene' && activeApp.id !== 'meals' && activeApp.id !== 'voice' && (
+            {activeApp.id !== 'psychology-eval' && activeApp.id !== 'counseling' && activeApp.id !== 'meds' && activeApp.id !== 'vitals' && activeApp.id !== 'hygiene' && activeApp.id !== 'meals' && activeApp.id !== 'voice' && activeApp.id !== 'leave' && (
               <div style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '22px', padding: '20px' }}>
                 <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
                   📋 Form Hoạt Động & Tiêu Chí Đánh Giá Chuyên Môn

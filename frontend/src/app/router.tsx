@@ -55,7 +55,7 @@ export const router =
           path: '/',
           element: (
             <Navigate
-              to="/mobile"
+              to="/dashboard"
               replace
             />
           ),

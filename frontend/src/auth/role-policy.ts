@@ -510,6 +510,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   },
   SECURITY: {
     allowedRoutes: [
+      'dashboard',
       'resident-leave',
       'workforce',
     ],
@@ -614,6 +615,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   },
   GUARDIAN: {
     allowedRoutes: [
+      'dashboard',
       'family-portal',
     ],
     canManageStaff: false,

@@ -354,7 +354,7 @@ export default function ResidentLeavePage() {
           onClick={() => setActiveTab('STAFF_LEAVE')}
           style={{ fontWeight: 600, fontSize: '0.95rem' }}
         >
-          📋 Xin nghỉ phép Nhân viên
+          📋 Tạo đơn xin nghỉ phép
         </button>
         <button
           className={`btn ${activeTab === 'RESIDENT_LEAVE' ? 'btn-primary' : 'btn-outline'}`}
@@ -365,13 +365,13 @@ export default function ResidentLeavePage() {
         </button>
       </div>
 
-      {/* ==================== TAB 1: XIN NGHỈ PHÉP NHÂN VIÊN ==================== */}
+      {/* ==================== TAB 1: TẠO ĐƠN XIN NGHỈ PHÉP NHÂN VIÊN ==================== */}
       {activeTab === 'STAFF_LEAVE' && (
         <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
             <div>
               <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                Quản lý Xin Nghỉ Phép Nhân Viên
+                Tạo & Quản lý Đơn Xin Nghỉ Phép Nhân Viên
               </h2>
               <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
                 {isStaffApprover

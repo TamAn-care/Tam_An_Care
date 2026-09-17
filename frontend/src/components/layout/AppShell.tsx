@@ -1,85 +1,21 @@
-import {
-  useState,
-  useEffect,
-} from 'react';
-
-import {
-  Outlet,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
-
-import {
-  AppNavigation,
-} from '../navigation/AppNavigation';
-
-import {
-  MobileNavigationButton,
-} from '../navigation/MobileNavigationButton';
-
-import {
-  useActor,
-} from '../../auth/ActorContext';
-
-import {
-  DevelopmentActorPanel,
-} from '../../auth/DevelopmentActorPanel';
-
-import {
-  ROLE_LABELS,
-} from '../../auth/role-policy';
-
-import {
-  ConnectivityStatus,
-} from '../feedback/ConnectivityStatus';
-
-import {
-  PAGE_META,
-} from '../../app/page-meta';
-
-import {
-  changeSelfPassword,
-} from '../../api/staff-actors';
-
+import { useState, useEffect } from 'react';
+import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
+import { useActor } from '../../auth/ActorContext';
+import { DevelopmentActorPanel } from '../../auth/DevelopmentActorPanel';
+import { ROLE_LABELS } from '../../auth/role-policy';
+import { ConnectivityStatus } from '../feedback/ConnectivityStatus';
+import { PAGE_META } from '../../app/page-meta';
+import { changeSelfPassword } from '../../api/staff-actors';
 import { NotificationBell } from '../notifications/NotificationBell';
-import { MobileBottomNav } from '../navigation/MobileBottomNav';
 import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
 import { PWAInstallModal } from '../pwa/PWAInstallModal';
 
 export function AppShell() {
-  const {
-    actor,
-    isDevelopmentBootstrap,
-    clearActor,
-  } = useActor();
-
+  const { actor, clearActor } = useActor();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] =
-    useState(false);
   const [showTopLogin, setShowTopLogin] = useState(false);
-
-  // Desktop Collapsible Sidebar State with localStorage persistence
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem('taman_sidebar_collapsed') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  const toggleSidebarCollapse = () => {
-    setIsSidebarCollapsed((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('taman_sidebar_collapsed', String(next));
-      } catch {
-        // ignore storage errors
-      }
-      return next;
-    });
-  };
 
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -94,15 +30,10 @@ export function AppShell() {
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  // Auto-close mobile drawer menu and scroll to top whenever route changes
+  // Auto-scroll to top whenever route changes
   useEffect(() => {
-    setMenuOpen(false);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location.pathname]);
-
-  const handleInstallApp = () => {
-    setShowInstallModal(true);
-  };
 
   // Self-Service Change Password State
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -144,299 +75,250 @@ export function AppShell() {
     }
   };
 
-  const meta =
-    PAGE_META[location.pathname];
+  const isHome = location.pathname === '/' || location.pathname === '/dashboard';
+  const meta = PAGE_META[location.pathname];
 
   return (
-    <div className={isSidebarCollapsed ? "app-shell sidebar-collapsed" : "app-shell"}>
+    <div className="app-shell-fullwidth" style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
       <IOSPWAInstallBanner />
-      <div
-        className={menuOpen ? 'sidebar-backdrop active' : 'sidebar-backdrop'}
-        onClick={() => setMenuOpen(false)}
-        aria-hidden="true"
-      />
-      <aside
-        id="application-sidebar"
-        className={
-          menuOpen
-            ? 'sidebar sidebar-open'
-            : isSidebarCollapsed
-            ? 'sidebar collapsed'
-            : 'sidebar'
-        }
+
+      {/* TOPBAR HEADER - STANDALONE FULL WIDTH */}
+      <header
+        className="topbar"
+        style={{
+          background: '#ffffff',
+          borderBottom: '1px solid #cbd5e1',
+          padding: '0.65rem 1.25rem',
+          position: 'sticky',
+          top: 0,
+          zIndex: 1000,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        }}
       >
-        <div className="brand" style={{ display: 'flex', alignItems: 'center', justifyContent: isSidebarCollapsed ? 'center' : 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', minWidth: 0 }}>
-            <div className="brand-mark" title="Viện Dưỡng Lão Tâm An Care">
-              <img
-                src="/branding/tam-an-logo-master.png"
-                alt="Tâm An"
-                className="brand-logo"
-              />
-            </div>
-
-            {!isSidebarCollapsed && (
-              <div className="brand-text">
-                <h1 className="brand-title">
-                  Tâm An Care
-                </h1>
-
-                <div className="brand-subtitle">
-                  Nơi Tuổi Già An Nhiên
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <button
-              type="button"
-              onClick={toggleSidebarCollapse}
-              className="desktop-sidebar-toggle"
-              title={isSidebarCollapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng"}
-              aria-label={isSidebarCollapsed ? "Mở rộng thanh điều hướng" : "Thu gọn thanh điều hướng"}
-            >
-              {isSidebarCollapsed ? '▶' : '◀'}
-            </button>
-
-            {menuOpen && (
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                className="mobile-sidebar-close"
-                aria-label="Đóng menu"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-
-        <AppNavigation
-          onNavItemClick={() => setMenuOpen(false)}
-          onOpenInstallModal={() => setShowInstallModal(true)}
-          isCollapsed={isSidebarCollapsed}
-        />
-
-        <div
-          className="sidebar-footer"
-          style={{
-            marginTop: 'auto',
-            padding: isSidebarCollapsed ? '0.6rem 0.3rem' : '0.75rem 0.85rem',
-            borderTop: '1px solid #e2e8f0',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.4rem',
-            background: '#ffffff',
-          }}
-        >
-          <ConnectivityStatus isCollapsed={isSidebarCollapsed} />
-
-          <div
+        <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0 }}>
+          {/* Brand Logo & Title */}
+          <Link
+            to="/dashboard"
             style={{
-              fontSize: '0.7rem',
-              color: '#94a3b8',
-              fontWeight: 500,
-              textAlign: isSidebarCollapsed ? 'center' : 'left',
-              paddingLeft: isSidebarCollapsed ? 0 : '0.2rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.65rem',
+              textDecoration: 'none',
+              color: 'inherit',
+            }}
+            title="Quay lại Trang Chủ Icons Tâm An Care"
+          >
+            <img
+              src="/branding/tam-an-logo-master.png"
+              alt="Tâm An Logo"
+              style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#166534', lineHeight: 1.1 }}>
+                Tâm An Care
+              </span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#64748b', lineHeight: 1.1 }}>
+                Nơi Tuổi Già An Nhiên
+              </span>
+            </div>
+          </Link>
+
+          {/* Quick Home Icons Launcher Button */}
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/dashboard');
+              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+            }}
+            style={{
+              background: isHome ? '#166534' : '#f1f5f9',
+              color: isHome ? '#ffffff' : '#1e293b',
+              border: isHome ? '1px solid #14532d' : '1px solid #cbd5e1',
+              borderRadius: '0.5rem',
+              padding: '0.4rem 0.75rem',
+              fontSize: '0.82rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              transition: 'all 0.15s ease',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
             }}
           >
-            {isSidebarCollapsed ? 'v7.5 Dev' : 'Tâm An Care V7.5 Development'}
-          </div>
-        </div>
-      </aside>
+            <span>🏠</span> Trang Chủ Icons
+          </button>
 
-      <div className="main-shell">
-        <header className="topbar">
-          <div className="topbar-start" style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0 }}>
-            <MobileNavigationButton
-              open={menuOpen}
-              onToggle={() =>
-                setMenuOpen(
-                  (value) => !value,
-                )
-              }
-            />
-
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
-              <div
-                className="topbar-title"
-                style={{
-                  fontSize: 'clamp(0.85rem, 2.2vw, 1rem)',
-                  fontWeight: 700,
-                  color: '#0f172a',
-                  lineHeight: 1.2,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                Hệ thống quản trị Tâm An - Tâm An Care
-              </div>
-              <div
-                className="topbar-subtitle"
-                style={{
-                  fontSize: 'clamp(0.65rem, 1.6vw, 0.72rem)',
-                  fontWeight: 500,
-                  color: '#64748b',
-                  lineHeight: 1.1,
-                  letterSpacing: '0.02em',
-                  marginTop: '1px',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
-              >
-                Developed by Tam An
-              </div>
+          {!isHome && meta && (
+            <div
+              style={{
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                color: '#475569',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <span style={{ color: '#94a3b8' }}>/</span>
+              <span style={{ color: '#0f172a', fontWeight: 700 }}>{meta.title}</span>
             </div>
-          </div>
+          )}
+        </div>
 
-          <div className="topbar-end">
-            <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.6rem', width: '100%', flexWrap: 'wrap' }}>
-              <div className="actor-info-bar" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minWidth: 0, flexShrink: 1 }}>
-                <NotificationBell />
+        <div className="topbar-end" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            <NotificationBell />
 
-                <div className="actor-summary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap', minWidth: 0 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', lineHeight: 1.2 }}>
-                    <span style={{ fontSize: '0.82rem' }}>👤</span>
-                    <span className="actor-value" style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
-                      {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
-                    </span>
-                  </div>
-                  {actor && (
-                    <span className="actor-role" style={{ fontSize: '0.72rem', fontWeight: 600, color: '#166534', background: '#dcfce7', border: '1px solid #86efac', borderRadius: '9999px', padding: '0.08rem 0.45rem', whiteSpace: 'nowrap' }}>
-                      {ROLE_LABELS[actor.actorRole]}
-                    </span>
-                  )}
-                </div>
-              </div>
+            <div className="actor-summary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontSize: '0.85rem' }}>👤</span>
+              <span className="actor-value" style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0f172a' }}>
+                {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
+              </span>
+              {actor && (
+                <span
+                  className="actor-role"
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    color: '#166534',
+                    background: '#dcfce7',
+                    border: '1px solid #86efac',
+                    borderRadius: '9999px',
+                    padding: '0.1rem 0.5rem',
+                  }}
+                >
+                  {ROLE_LABELS[actor.actorRole] || actor.actorRole}
+                </span>
+              )}
+            </div>
 
-              <div className="topbar-action-group" style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', marginLeft: 'auto' }}>
-                {actor ? (
-                  <>
-                    <button
-                      type="button"
-                      className="button button-subtle"
-                      onClick={() => {
-                        setPasswordFeedback(null);
-                        setCurrentPassword('');
-                        setNewPassword('');
-                        setConfirmPassword('');
-                        setShowPasswordModal(true);
-                      }}
-                      style={{
-                        background: '#ffffff',
-                        border: '1px solid #cbd5e1',
-                        color: '#334155',
-                        fontWeight: 600,
-                        fontSize: '0.76rem',
-                        padding: '0.3rem 0.55rem',
-                        borderRadius: '0.375rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        height: '32px',
-                        whiteSpace: 'nowrap',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-                      }}
-                    >
-                      <span>🔑</span> Đổi Mật Khẩu
-                    </button>
-
-                    {actor?.actorRole === 'ADMIN' && (
-                      <button
-                        type="button"
-                        className="button button-subtle"
-                        onClick={() => setShowTopLogin((prev) => !prev)}
-                        style={{
-                          background: showTopLogin ? '#166534' : '#eff6ff',
-                          border: showTopLogin ? '1px solid #14532d' : '1px solid #93c5fd',
-                          color: showTopLogin ? '#ffffff' : '#1e40af',
-                          fontWeight: 600,
-                          fontSize: '0.76rem',
-                          padding: '0.3rem 0.55rem',
-                          borderRadius: '0.375rem',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem',
-                          height: '32px',
-                          whiteSpace: 'nowrap',
-                        }}
-                        title="Chuyển đổi vai trò nhân sự (Dành riêng cho Admin)"
-                      >
-                        <span>🛡️</span> {showTopLogin ? 'Ẩn Panel Admin' : 'Admin Panel'}
-                      </button>
-                    )}
-
-                    <button
-                      type="button"
-                      className="button button-subtle"
-                      onClick={() => clearActor()}
-                      style={{
-                        background: '#fef2f2',
-                        border: '1px solid #fca5a5',
-                        color: '#991b1b',
-                        fontWeight: 600,
-                        fontSize: '0.76rem',
-                        padding: '0.3rem 0.55rem',
-                        borderRadius: '0.375rem',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.25rem',
-                        height: '32px',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      <span>🚪</span> Đăng Xuất
-                    </button>
-                  </>
-                ) : (
+            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+              {actor ? (
+                <>
                   <button
                     type="button"
-                    className="button button-subtle"
-                    onClick={() => setShowTopLogin(true)}
+                    onClick={() => {
+                      setPasswordFeedback(null);
+                      setCurrentPassword('');
+                      setNewPassword('');
+                      setConfirmPassword('');
+                      setShowPasswordModal(true);
+                    }}
                     style={{
-                      background: '#166534',
-                      border: 'none',
-                      color: '#ffffff',
-                      fontWeight: 700,
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      color: '#334155',
+                      fontWeight: 600,
                       fontSize: '0.76rem',
-                      padding: '0.35rem 0.75rem',
+                      padding: '0.35rem 0.6rem',
                       borderRadius: '0.375rem',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '0.25rem',
-                      height: '32px',
-                      whiteSpace: 'nowrap',
                     }}
                   >
-                    <span>🔑</span> Đăng Nhập
+                    <span>🔑</span> Đổi Mật Khẩu
                   </button>
-                )}
-              </div>
+
+                  {actor?.actorRole === 'ADMIN' && (
+                    <button
+                      type="button"
+                      onClick={() => setShowTopLogin((prev) => !prev)}
+                      style={{
+                        background: showTopLogin ? '#166534' : '#eff6ff',
+                        border: showTopLogin ? '1px solid #14532d' : '1px solid #93c5fd',
+                        color: showTopLogin ? '#ffffff' : '#1e40af',
+                        fontWeight: 600,
+                        fontSize: '0.76rem',
+                        padding: '0.35rem 0.6rem',
+                        borderRadius: '0.375rem',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.25rem',
+                      }}
+                      title="Chuyển đổi vai trò nhân sự (Dành riêng cho Admin)"
+                    >
+                      <span>🛡️</span> {showTopLogin ? 'Ẩn Panel Admin' : 'Admin Panel'}
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => clearActor()}
+                    style={{
+                      background: '#fef2f2',
+                      border: '1px solid #fca5a5',
+                      color: '#991b1b',
+                      fontWeight: 600,
+                      fontSize: '0.76rem',
+                      padding: '0.35rem 0.6rem',
+                      borderRadius: '0.375rem',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                    }}
+                  >
+                    <span>🚪</span> Đăng Xuất
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowTopLogin(true)}
+                  style={{
+                    background: '#166534',
+                    border: 'none',
+                    color: '#ffffff',
+                    fontWeight: 700,
+                    fontSize: '0.76rem',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '0.375rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  🔑 Đăng Nhập
+                </button>
+              )}
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        <main className="page-content">
-          {/* ONLY ADMIN CAN TOGGLE OR SEE THE DEVELOPMENT ACTOR PANEL WHEN LOGGED IN */}
-          {(actor?.actorRole === 'ADMIN' && showTopLogin) && (
-            <div style={{ marginBottom: '1rem' }}>
-              <DevelopmentActorPanel />
-            </div>
-          )}
-          <Outlet />
-        </main>
-      </div>
+      {/* MAIN CONTENT CONTAINER - FULL WIDTH */}
+      <main className="page-content" style={{ flex: 1, padding: '1.25rem', maxWidth: '1440px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
+        {actor?.actorRole === 'ADMIN' && showTopLogin && (
+          <div style={{ marginBottom: '1.25rem' }}>
+            <DevelopmentActorPanel />
+          </div>
+        )}
+        <Outlet />
+      </main>
+
+      {/* FOOTER BAR */}
+      <footer
+        style={{
+          background: '#ffffff',
+          borderTop: '1px solid #e2e8f0',
+          padding: '0.75rem 1.25rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.75rem',
+          color: '#64748b',
+        }}
+      >
+        <div>
+          <b>Tâm An Care V7.5 Development</b> • Nơi Tuổi Già An Nhiên • 1 Tòa nhà, 4 tầng, 29 phòng, 110 giường
+        </div>
+        <ConnectivityStatus />
+      </footer>
 
       {/* SELF-SERVICE CHANGE PASSWORD MODAL */}
       {showPasswordModal && actor && (
@@ -474,7 +356,6 @@ export function AppShell() {
               </button>
             </div>
 
-            {/* Current user badge */}
             <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', marginBottom: '1.25rem', fontSize: '0.84rem' }}>
               <div>Thành viên: <b style={{ color: '#0f172a' }}>{actor.displayName || actor.actorId}</b></div>
               <div>Tên đăng nhập (ID): <b style={{ fontFamily: 'monospace' }}>{actor.actorId}</b></div>
@@ -581,7 +462,7 @@ export function AppShell() {
         </div>
       )}
 
-      {/* MODAL CÀI ĐẶT ỨNG DỤNG PWA ĐA NỀN TẢNG */}
+      {/* PWA INSTALL MODAL */}
       <PWAInstallModal
         isOpen={showInstallModal}
         onClose={() => setShowInstallModal(false)}

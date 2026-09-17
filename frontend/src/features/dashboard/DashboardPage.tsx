@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
 import { ROLE_LABELS, getAssignedResidentIdsForActor } from '../../auth/role-policy';
@@ -8,9 +8,10 @@ import { getAccommodationOverview } from '../../api/accommodation';
 import { fetchLeaveRequests } from '../../api/resident-leave';
 import { fetchShifts } from '../../api/workforce';
 import { listHealthReports } from '../health-reports/healthReportsApi';
-import { listWorkEvents, createWorkEvent } from '../../api/operational-work';
+import { listWorkEvents } from '../../api/operational-work';
 import { NutritionBoard } from '../nutrition/NutritionBoard';
 import { listResidentAccessAssignments } from '../../api/resident-access-administration';
+import { ModuleLauncherGrid } from '../../components/navigation/AppNavigation';
 
 export function DashboardPage() {
   const { actor } = useActor();
@@ -88,37 +89,7 @@ export function DashboardPage() {
     return shiftsData?.items?.filter(x => x.staffActorId === actorId) ?? [];
   }, [shiftsData, actorId]);
 
-  const queryClient = useQueryClient();
-  const [selectedQuickResident, setSelectedQuickResident] = useState('');
-  const [selectedEventType, setSelectedEventType] = useState('HYGIENE_BATHING');
-  const [quickNote, setQuickNote] = useState('✅ Hoàn thành tốt, cụ phối hợp vui vẻ');
-  const [quickSuccessMsg, setQuickSuccessMsg] = useState('');
-  const [isFocusDashboardMode, setIsFocusDashboardMode] = useState(false);
 
-  const createQuickEventMutation = useMutation({
-    mutationFn: (payload: any) => createWorkEvent(actor!, payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['dashboard-work-events'] });
-      queryClient.invalidateQueries({ queryKey: ['operational-work-events'] });
-      setQuickSuccessMsg('✅ Ghi nhận công việc thành công!');
-      setTimeout(() => setQuickSuccessMsg(''), 3500);
-    },
-  });
-
-  const handleQuickSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isNutritionist && !selectedQuickResident) {
-      alert('Vui lòng chọn Người cao tuổi trong danh sách!');
-      return;
-    }
-    createQuickEventMutation.mutate({
-      resident_id: isNutritionist ? (selectedQuickResident || 'KITCHEN_GLOBAL') : selectedQuickResident,
-      work_event_type_id: selectedEventType,
-      planned_classification: 'PLANNED',
-      note: quickNote,
-      performed_by: actorId,
-    });
-  };
 
   const isExecutive = actorRole === 'SUPERVISOR' || actorRole === 'ADMIN' || actorRole === 'CARE_MANAGER';
 
@@ -171,205 +142,7 @@ export function DashboardPage() {
 
   return (
     <div className="page-content">
-      {/* ⚡ BẢNG THAO TÁC 1-CHẠM THEO VAI TRÒ (ROLE QUICK ACTION PANEL) */}
-      <div style={{
-        background: '#ffffff',
-        border: '1px solid #cbd5e1',
-        borderRadius: '0.75rem',
-        padding: '1.25rem',
-        marginBottom: '1.5rem',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-          <div style={{ fontWeight: 700, fontSize: '1rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            <span>⚡</span> THAO TÁC NHANH 1-CHẠM (LIST & TICK) — VAI TRÒ: {ROLE_LABELS[actorRole as keyof typeof ROLE_LABELS] || actorRole}
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            {quickSuccessMsg && (
-              <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.3rem 0.75rem', borderRadius: '0.375rem', fontSize: '0.85rem', fontWeight: 600 }}>
-                {quickSuccessMsg}
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => setIsFocusDashboardMode(!isFocusDashboardMode)}
-              style={{
-                background: isFocusDashboardMode ? '#166534' : '#f1f5f9',
-                color: isFocusDashboardMode ? '#ffffff' : '#334155',
-                border: '1px solid #cbd5e1',
-                padding: '0.35rem 0.75rem',
-                borderRadius: '0.375rem',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              {isFocusDashboardMode ? '🎯 Đang bật Chế độ Tập trung (Ẩn thông tin khác)' : '🎯 Bật Chế độ Tập trung Tác vụ'}
-            </button>
-          </div>
-        </div>
 
-        <form onSubmit={handleQuickSubmit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', alignItems: 'flex-end' }}>
-          <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
-              {isNutritionist ? '🧑‍🍳 Phân Khu Bếp Ăn & Kho:' : '👴 Chọn Cụ / Người Cao Tuổi (Sổ xuống):'}
-            </label>
-            {isNutritionist ? (
-              <select
-                className="text-input"
-                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1', background: '#f8fafc' }}
-                value={selectedQuickResident}
-                onChange={(e) => setSelectedQuickResident(e.target.value)}
-              >
-                <option value="KITCHEN_GLOBAL">🍳 Bếp Trung Tâm & Kho Lưu Trực Tiếp</option>
-                <option value="KITCHEN_RECEIVING">📦 Khu Vực Tiếp Nhận & Kiểm Đếm</option>
-                <option value="KITCHEN_STORAGE">❄️ Tủ Chuyên Dụng & Kho Đông/Mát</option>
-                <option value="KITCHEN_PREP">🔪 Khu Vực Sơ Chế & Chế Biến</option>
-              </select>
-            ) : (
-              <select
-                className="text-input"
-                style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
-                value={selectedQuickResident}
-                onChange={(e) => setSelectedQuickResident(e.target.value)}
-              >
-                <option value="">-- Chọn Cụ trong danh sách phụ trách --</option>
-                {myAssignedResidentRows.map((r) => (
-                  <option key={r.resident.residentId} value={r.resident.residentId}>
-                    {r.resident.displayName} ({r.resident.residentCode}) — Phòng {r.resident.room || '—'}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
-              📋 Loại Công Việc / Hạng Mục (Sổ xuống):
-            </label>
-            <select
-              className="text-input"
-              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
-              value={selectedEventType}
-              onChange={(e) => setSelectedEventType(e.target.value)}
-            >
-              {isCaregiver && (
-                <>
-                  <option value="HYGIENE_BATHING">🛁 Tắm rửa & Vệ sinh thân thể</option>
-                  <option value="MEAL_ASSISTANCE">🥣 Hỗ trợ ăn uống & Bón cháo/cơm</option>
-                  <option value="DIAPER_TOILETING">🧼 Thay tã bỉm & Vệ sinh cá nhân</option>
-                  <option value="CLOTHING_CHANGE">👕 Thay quần áo & Ga giường</option>
-                  <option value="MOBILITY_ASSISTANCE">👩‍🦽 Hỗ trợ di chuyển / Dắt đi dạo</option>
-                </>
-              )}
-              {(actorRole === 'NURSE' || isExecutive) && (
-                <>
-                  <option value="VITAL_SIGNS_CHECK">🩺 Đo sinh hiệu & Huyết áp chuẩn y khoa</option>
-                  <option value="MEDICATION_ADMINISTRATION">💊 Cấp phát & Cho uống thuốc (5 Đúng eMAR)</option>
-                  <option value="WOUND_CARE">🩹 Chăm sóc & Thay băng vết thương</option>
-                </>
-              )}
-              {isNutritionist && (
-                <>
-                  <optgroup label="🧼 PHỤ TRÁCH BẾP (VỆ SINH & BỐ TRÍ)">
-                    <option value="KITCHEN_CLEANING_DISINFECTION">🧼 Vệ sinh & khử khuẩn khu vực bếp, khay ăn, bàn chế biến</option>
-                    <option value="KITCHEN_EQUIPMENT_ARRANGEMENT">🗄️ Sắp xếp đồ dùng, khay đĩa & bố trí thiết bị gọn gàng đúng nơi</option>
-                    <option value="KITCHEN_FIRE_SAFETY_CHECK">🧯 Kiểm tra an toàn điện, gas & phòng chống cháy nổ bếp</option>
-                  </optgroup>
-                  <optgroup label="🍳 PHỤ TRÁCH BỮA ĂN (SƠ CHẾ & CHẾ BIẾN)">
-                    <option value="MEAL_INGREDIENT_PREPARATION">🔪 Sơ chế nguyên liệu & thái băm theo chế độ ăn y khoa</option>
-                    <option value="MEAL_COOKING_MEDICAL">🍳 Chế biến bữa ăn y khoa (Cơm mềm, cháo xay, súp, sonde)</option>
-                    <option value="MEAL_PORTION_DISPATCH">🍱 Phân chia suất ăn đúng giờ & kiểm tra nhiệt độ, khẩu vị</option>
-                  </optgroup>
-                  <optgroup label="🥦 PHỤ TRÁCH THỰC PHẨM (TIẾP NHẬN & BẢO QUẢN)">
-                    <option value="FOOD_RECEIVING_INSPECTION">🥦 Tiếp nhận & kiểm đếm thực phẩm đầu vào (đo nhiệt độ delivery)</option>
-                    <option value="FOOD_SORTING_HACCP">🧺 Phân loại & xử lý thực phẩm đầu vào đạt chuẩn VietGAP/HACCP</option>
-                    <option value="FOOD_COLD_STORAGE">❄️ Phân bổ & lưu trữ kho mát (0-4°C) / kho đông (-18°C)</option>
-                    <option value="FOOD_SAMPLE_PRESERVATION">🧪 Lưu mẫu thức ăn 24 giờ đúng niêm phong & ghi nhãn y tế</option>
-                  </optgroup>
-                </>
-              )}
-              {isHousekeeping && (
-                <>
-                  <option value="ROOM_CLEANING">🧹 Vệ sinh buồng phòng & Khử khuẩn</option>
-                  <option value="LAUNDRY_SERVICE">🧺 Giặt ủi & Thu gom đồ bẩn</option>
-                </>
-              )}
-              {isRehab && (
-                <>
-                  <option value="REHAB_EXERCISE">🧘 Hướng dẫn bài tập vật lý trị liệu</option>
-                  <option value="MOBILITY_ASSISTANCE">🚶 Tập đi & Phục hồi chức năng vận động</option>
-                </>
-              )}
-              {(isPsychologist || isSocialWorker) && (
-                <>
-                  <option value="PSYCHOLOGICAL_SUPPORT">💬 Tham vấn tâm lý & Trò chuyện giải tỏa</option>
-                  <option value="COGNITIVE_ASSESSMENT_MMSE">🧠 Đánh giá nhận thức MMSE</option>
-                  <option value="FAMILY_RELATIONSHIP_CONNECT">👨‍👩‍👧 Kết nối thân nhân & Gọi điện cho gia đình</option>
-                </>
-              )}
-            </select>
-          </div>
-
-          <div>
-            <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.3rem' }}>
-              📝 Ghi Chú Nhanh (Gợi ý sẵn):
-            </label>
-            <select
-              className="text-input"
-              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.375rem', border: '1px solid #cbd5e1' }}
-              value={quickNote}
-              onChange={(e) => setQuickNote(e.target.value)}
-            >
-              {isNutritionist ? (
-                <>
-                  <option value="🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí">🧼 Sàn bếp & dụng cụ đã được khử khuẩn, đĩa khay sắp xếp gọn gàng đúng vị trí</option>
-                  <option value="🍳 Đã hoàn thành sơ chế & nấu nướng 100% suất ăn y khoa ca trực đúng thực đơn">🍳 Đã hoàn thành sơ chế & nấu nướng 100% suất ăn y khoa ca trực đúng thực đơn</option>
-                  <option value="🍱 Suất ăn đã phân chia đúng giờ, giữ ấm nhiệt độ >60°C & thử khẩu vị đạt chuẩn">🍱 Suất ăn đã phân chia đúng giờ, giữ ấm nhiệt độ &gt;60°C & thử khẩu vị đạt chuẩn</option>
-                  <option value="🥦 Tiếp nhận thực phẩm đầu vào đủ số lượng, nhiệt độ delivery đạt chuẩn & tem VietGAP">🥦 Tiếp nhận thực phẩm đầu vào đủ số lượng, nhiệt độ delivery đạt chuẩn & tem VietGAP</option>
-                  <option value="🧪 Đã niêm phong lưu mẫu thức ăn 24h đầy đủ nhãn mác người lưu & giờ lưu">🧪 Đã niêm phong lưu mẫu thức ăn 24h đầy đủ nhãn mác người lưu & giờ lưu</option>
-                </>
-              ) : (
-                <>
-                  <option value="✅ Hoàn thành tốt, cụ phối hợp vui vẻ">✅ Hoàn thành tốt, cụ phối hợp vui vẻ</option>
-                  <option value="👍 Đã hoàn thành theo đúng y lệnh ca trực">👍 Đã hoàn thành theo đúng y lệnh ca trực</option>
-                  <option value="⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau">⚠️ Cụ mệt nhẹ, cần chú ý theo dõi thêm ca sau</option>
-                  <option value="🥣 Cụ ăn hết 100% khẩu phần ăn">🥣 Cụ ăn hết 100% khẩu phần ăn</option>
-                  <option value="❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca">❌ Cụ từ chối, đã báo y bác sĩ / quản lý ca</option>
-                </>
-              )}
-            </select>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              disabled={createQuickEventMutation.isPending}
-              style={{
-                width: '100%',
-                padding: '0.55rem 1rem',
-                backgroundColor: '#166534',
-                color: '#ffffff',
-                fontWeight: 700,
-                fontSize: '0.9rem',
-                border: 'none',
-                borderRadius: '0.375rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.4rem',
-              }}
-            >
-              <span>{createQuickEventMutation.isPending ? 'Đang lưu...' : '⚡ Ghi Nhận 1-Chạm'}</span>
-            </button>
-          </div>
-        </form>
-      </div>
-
-      {/* 🎯 KHI BẬT CHẾ ĐỘ TẬP TRUNG: ẨN TOÀN BỘ THÔNG TIN VĨ MÔ KHÁC */}
-      {!isFocusDashboardMode && (
-        <>
           {/* Conditional KPI Row based on Role */}
       {isExecutive ? (
         /* Executive / Management Macro KPI Row (Restricted to Admin, Ban Giám đốc, Quản lý) */
@@ -575,6 +348,11 @@ export function DashboardPage() {
           </Link>
         </div>
       )}
+
+      {/* MODULE LAUNCHER GRID (HỆ THỐNG ICONS PHÂN HỆ MÀN HÌNH CHÍNH) */}
+      <div style={{ marginTop: '1.5rem', marginBottom: '1.75rem' }}>
+        <ModuleLauncherGrid />
+      </div>
 
       {/* EXECUTIVE COMMAND CENTER FOR BAN GIÁM ĐỐC & QUẢN LÝ */}
       {isExecutive && (
@@ -1209,8 +987,6 @@ export function DashboardPage() {
         <div style={{ marginBottom: '1.5rem' }}>
           <NutritionBoard />
         </div>
-      )}
-        </>
       )}
     </div>
   );
