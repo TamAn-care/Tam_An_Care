@@ -1,8 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
-import { ROLE_LABELS } from '../../auth/role-policy';
+import { ROLE_LABELS, hasCapability, canAccessRoute } from '../../auth/role-policy';
 import { OneTapActionSheet, ActionCategory } from './OneTapActionSheet';
+import type { HumanActorRole } from '../../types/actor';
+
+interface AppIconItem {
+  id: string;
+  title: string;
+  icon: string;
+  gradient: string;
+  badge?: string | number;
+  badgeBg?: string;
+  isAllowed: (role: HumanActorRole | undefined | null) => boolean;
+  action: () => void;
+}
 
 export function MobileLauncherPage() {
   const { actor } = useActor();
@@ -13,388 +25,298 @@ export function MobileLauncherPage() {
   const roleLabel = (actorRole && ROLE_LABELS[actorRole]) || 'Điều dưỡng viên';
 
   const [activeCategory, setActiveCategory] = useState<ActionCategory>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'care' | 'medical' | 'admin'>('all');
+
+  // Master List of iOS App Icons mapped to exact Role Capabilities
+  const allIcons: AppIconItem[] = useMemo(() => [
+    // 1. NHÓM CHĂM SÓC & TÂM LÝ
+    {
+      id: 'emotions',
+      title: 'Đánh Giá Tâm Lý',
+      icon: '😀',
+      gradient: 'from-amber-400 to-orange-500',
+      badge: 'MỚI',
+      badgeBg: 'bg-amber-500 text-amber-950 font-black',
+      isAllowed: (role) => hasCapability(role, 'canEvaluatePsychology') || role === 'CAREGIVER' || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
+      action: () => setActiveCategory('health'),
+    },
+    {
+      id: 'residents',
+      title: 'Hồ Sơ Cư Dân',
+      icon: '👵',
+      gradient: 'from-emerald-500 to-teal-600',
+      badge: 15,
+      isAllowed: (role) => canAccessRoute(role, 'residents'),
+      action: () => navigate('/residents'),
+    },
+    {
+      id: 'hygiene',
+      title: 'Tắm & Vệ Sinh',
+      icon: '🚿',
+      gradient: 'from-cyan-500 to-blue-600',
+      isAllowed: (role) => hasCapability(role, 'canLogDirectCare') || role === 'CAREGIVER' || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
+      action: () => setActiveCategory('hygiene'),
+    },
+    {
+      id: 'meals',
+      title: 'Bữa Ăn',
+      icon: '🥣',
+      gradient: 'from-amber-500 to-red-500',
+      badge: 'SÁNG',
+      badgeBg: 'bg-amber-300 text-amber-950 font-bold',
+      isAllowed: (role) => hasCapability(role, 'canLogDirectCare') || role === 'CAREGIVER' || role === 'NUTRITIONIST' || role === 'SUPERVISOR' || role === 'ADMIN' || role === 'CARE_MANAGER',
+      action: () => setActiveCategory('meals'),
+    },
+    {
+      id: 'voice',
+      title: 'Ghi Âm AI',
+      icon: '🎙️',
+      gradient: 'from-purple-600 to-violet-700',
+      badge: 'AI',
+      badgeBg: 'bg-purple-300 text-purple-950 font-extrabold',
+      isAllowed: () => true, // Tất cả nhân viên đều dùng được thu âm giọng nói
+      action: () => setActiveCategory('voice'),
+    },
+
+    // 2. NHÓM Y TẾ & DƯỢC PHẨM (ĐỘC QUYỀN Y TẾ / ĐIỀU DƯỠNG)
+    {
+      id: 'meds',
+      title: 'Uống Thuốc',
+      icon: '💊',
+      gradient: 'from-blue-600 to-indigo-700',
+      badge: 3,
+      isAllowed: (role) => hasCapability(role, 'canAdministerMedication') || hasCapability(role, 'canPrescribeMedication') || role === 'ADMIN' || role === 'CARE_MANAGER',
+      action: () => setActiveCategory('meds'),
+    },
+    {
+      id: 'vitals',
+      title: 'Đo Sinh Hiệu',
+      icon: '🩺',
+      gradient: 'from-rose-500 to-red-600',
+      badge: 2,
+      isAllowed: (role) => hasCapability(role, 'canCreateHealthReport') || hasCapability(role, 'canAdministerMedication') || role === 'ADMIN' || role === 'CARE_MANAGER',
+      action: () => setActiveCategory('vitals'),
+    },
+    {
+      id: 'health-reports',
+      title: 'Báo Cáo Y Tế',
+      icon: '📊',
+      gradient: 'from-sky-500 to-blue-700',
+      isAllowed: (role) => canAccessRoute(role, 'health-reports'),
+      action: () => navigate('/health-reports'),
+    },
+    {
+      id: 'pharmacy',
+      title: 'Kho Dược eMAR',
+      icon: '💉',
+      gradient: 'from-indigo-600 to-purple-800',
+      isAllowed: (role) => hasCapability(role, 'canManagePharmacy') || canAccessRoute(role, 'medication-inventory'),
+      action: () => navigate('/medication-inventory'),
+    },
+    {
+      id: 'incident',
+      title: 'Báo Sự Cố',
+      icon: '🚨',
+      gradient: 'from-red-600 to-rose-700',
+      isAllowed: () => true, // Tất cả các vai trò đều có quyền phát báo động sự cố
+      action: () => setActiveCategory('incident'),
+    },
+
+    // 3. NHÓM VẬN HÀNH & NGHỈ PHÉP
+    {
+      id: 'workforce',
+      title: 'Lịch Trực Ca',
+      icon: '📅',
+      gradient: 'from-violet-600 to-indigo-800',
+      isAllowed: (role) => canAccessRoute(role, 'workforce'),
+      action: () => navigate('/workforce'),
+    },
+    {
+      id: 'leave',
+      title: 'Xin Nghỉ Phép',
+      icon: '🏖️',
+      gradient: 'from-amber-400 to-yellow-600',
+      isAllowed: (role) => canAccessRoute(role, 'resident-leave'),
+      action: () => navigate('/resident-leave'),
+    },
+    {
+      id: 'accommodation',
+      title: 'Sơ Đồ Phòng',
+      icon: '🛌',
+      gradient: 'from-blue-600 to-slate-700',
+      isAllowed: (role) => canAccessRoute(role, 'accommodation'),
+      action: () => navigate('/accommodation'),
+    },
+    {
+      id: 'admissions',
+      title: 'Tiếp Nhận Mới',
+      icon: '📝',
+      gradient: 'from-emerald-600 to-teal-700',
+      isAllowed: (role) => canAccessRoute(role, 'admissions'),
+      action: () => navigate('/admissions'),
+    },
+
+    // 4. NHÓM DINH DƯỠNG & BẾP
+    {
+      id: 'kitchen',
+      title: 'Bếp Dinh Dưỡng',
+      icon: '🍳',
+      gradient: 'from-orange-500 to-red-600',
+      isAllowed: (role) => hasCapability(role, 'canManageKitchenOperations') || canAccessRoute(role, 'kitchen-operations'),
+      action: () => navigate('/kitchen-operations'),
+    },
+
+    // 5. NHÓM KẾ TOÁN & VIỆN PHÍ
+    {
+      id: 'billing',
+      title: 'Viện Phí',
+      icon: '💳',
+      gradient: 'from-emerald-500 to-green-700',
+      isAllowed: (role) => hasCapability(role, 'canManageBilling') || canAccessRoute(role, 'billing-invoicing'),
+      action: () => navigate('/billing-invoicing'),
+    },
+
+    // 6. NHÓM THÂN NHÂN & KHÁC
+    {
+      id: 'family',
+      title: 'Thân Nhân',
+      icon: '👨‍👩‍👧',
+      gradient: 'from-pink-500 to-rose-600',
+      isAllowed: (role) => canAccessRoute(role, 'family-portal'),
+      action: () => navigate('/family-portal'),
+    },
+    {
+      id: 'analytics',
+      title: 'Phân Tích KPI',
+      icon: '📈',
+      gradient: 'from-indigo-600 to-blue-900',
+      isAllowed: (role) => hasCapability(role, 'canAccessAnalytics') || canAccessRoute(role, 'analytics-intelligence'),
+      action: () => navigate('/analytics-intelligence'),
+    },
+    {
+      id: 'staff-access',
+      title: 'Phân Quyền',
+      icon: '🔑',
+      gradient: 'from-slate-700 to-slate-900',
+      isAllowed: (role) => hasCapability(role, 'canManageStaff') || canAccessRoute(role, 'staff-access'),
+      action: () => navigate('/staff-access'),
+    },
+  ], [navigate]);
+
+  // Filter icons according to logged-in user's role
+  const visibleIcons = useMemo(() => {
+    return allIcons.filter((item) => item.isAllowed(actorRole));
+  }, [allIcons, actorRole]);
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 flex flex-col pb-24 font-sans select-none">
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between font-sans select-none overflow-x-hidden pb-4">
       
-      {/* iOS App Top Header / Status Bar Bar */}
-      <div className="bg-gradient-to-b from-slate-900 to-slate-800 text-white pt-4 pb-5 px-4 rounded-b-[28px] shadow-lg border-b border-slate-700">
-        <div className="max-w-md mx-auto flex items-center justify-between">
+      {/* Top Section: User Header */}
+      <div className="pt-4 px-5 pb-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-2xl shadow-inner backdrop-blur">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-xl shadow-inner backdrop-blur">
               👩‍⚕️
             </div>
             <div>
-              <div className="text-[11px] font-semibold text-emerald-400 tracking-wide">TÂM AN CARE • {roleLabel.toUpperCase()}</div>
-              <div className="text-base font-black text-white leading-tight">{actorName}</div>
+              <div className="text-[10px] font-extrabold uppercase text-emerald-400 tracking-wider">
+                {roleLabel}
+              </div>
+              <div className="text-sm font-extrabold text-white leading-tight">
+                {actorName}
+              </div>
             </div>
           </div>
-
-          <div className="bg-emerald-500/20 border border-emerald-400/30 px-3 py-1 rounded-full text-[11px] font-bold text-emerald-300 flex items-center gap-1.5 backdrop-blur">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Ca Sáng</span>
-          </div>
-        </div>
-
-        {/* Search / Filter Bar iPhone Style */}
-        <div className="max-w-md mx-auto mt-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-1 flex items-center border border-white/15 text-xs font-bold text-slate-300">
-            <button
-              type="button"
-              onClick={() => setActiveTab('all')}
-              className={`flex-1 py-1.5 rounded-xl transition-all ${
-                activeTab === 'all' ? 'bg-white text-slate-900 shadow-md font-extrabold' : 'hover:text-white'
-              }`}
-            >
-              Tất Cả Icons
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('care')}
-              className={`flex-1 py-1.5 rounded-xl transition-all ${
-                activeTab === 'care' ? 'bg-white text-slate-900 shadow-md font-extrabold' : 'hover:text-white'
-              }`}
-            >
-              🟢 Chăm Sóc
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('medical')}
-              className={`flex-1 py-1.5 rounded-xl transition-all ${
-                activeTab === 'medical' ? 'bg-white text-slate-900 shadow-md font-extrabold' : 'hover:text-white'
-              }`}
-            >
-              🔵 Y Tế
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('admin')}
-              className={`flex-1 py-1.5 rounded-xl transition-all ${
-                activeTab === 'admin' ? 'bg-white text-slate-900 shadow-md font-extrabold' : 'hover:text-white'
-              }`}
-            >
-              🟠 Vận Hành
-            </button>
+          <div className="bg-emerald-500/20 border border-emerald-400/30 px-2.5 py-1 rounded-full text-[10px] font-bold text-emerald-300 flex items-center gap-1.5 backdrop-blur">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Tâm An Care</span>
           </div>
         </div>
       </div>
 
-      {/* Main iPhone App Grid Section */}
-      <div className="max-w-md mx-auto w-full px-4 pt-5 space-y-6 flex-1">
-        
-        {/* GROUP 1: CHĂM SÓC HÀNG NGÀY */}
-        {(activeTab === 'all' || activeTab === 'care') && (
-          <div>
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-1 flex items-center justify-between">
-              <span>Nghiệp vụ Chăm sóc hàng ngày</span>
-              <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">1-Chạm</span>
-            </div>
-
-            <div className="grid grid-cols-4 gap-3.5">
-              
-              {/* App 1: Uống Thuốc */}
+      {/* Main Content: iPhone 4-Column Squircle App Grid (Matching user's screenshot exactly) */}
+      <div className="flex-1 px-4 pt-2 pb-6 max-w-md mx-auto w-full">
+        <div className="grid grid-cols-4 gap-x-4 gap-y-6">
+          {visibleIcons.map((app) => (
+            <div
+              key={app.id}
+              onClick={app.action}
+              className="flex flex-col items-center cursor-pointer group"
+            >
+              {/* iOS Squircle App Icon Container */}
               <div
-                onClick={() => setActiveCategory('meds')}
-                className="flex flex-col items-center cursor-pointer group"
+                className={`w-[60px] h-[60px] rounded-[18px] bg-gradient-to-br ${app.gradient} text-white flex items-center justify-center text-3xl shadow-lg border border-white/25 relative active:scale-85 transition-all duration-150 group-hover:scale-105`}
               >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-md shadow-blue-500/20 border border-white/40 relative active:scale-90 transition-all">
-                  💊
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow">
-                    3
+                <span>{app.icon}</span>
+
+                {/* iOS Style Red Badge */}
+                {app.badge !== undefined && (
+                  <span
+                    className={`absolute -top-1.5 -right-1.5 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full border-2 border-black shadow-md ${
+                      app.badgeBg || 'bg-red-500'
+                    }`}
+                  >
+                    {app.badge}
                   </span>
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-blue-600">
-                  Uống Thuốc
-                </span>
+                )}
               </div>
 
-              {/* App 2: Bữa Ăn */}
-              <div
-                onClick={() => setActiveCategory('meals')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-2xl shadow-md shadow-amber-500/20 border border-white/40 relative active:scale-90 transition-all">
-                  🥣
-                  <span className="absolute -top-1 -right-1 bg-emerald-400 text-emerald-950 text-[9px] font-black px-1 rounded-full border-2 border-white">
-                    SÁNG
-                  </span>
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-amber-600">
-                  Bữa Ăn
-                </span>
-              </div>
-
-              {/* App 3: Đo Sinh Hiệu */}
-              <div
-                onClick={() => setActiveCategory('vitals')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-rose-500 to-red-600 text-white flex items-center justify-center text-2xl shadow-md shadow-rose-500/20 border border-white/40 relative active:scale-90 transition-all">
-                  🩺
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
-                    2
-                  </span>
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-rose-600">
-                  Đo Sinh Hiệu
-                </span>
-              </div>
-
-              {/* App 4: Tắm Rửa */}
-              <div
-                onClick={() => setActiveCategory('hygiene')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center text-2xl shadow-md shadow-teal-500/20 border border-white/40 active:scale-90 transition-all">
-                  🚿
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-teal-600">
-                  Tắm & Vệ Sinh
-                </span>
-              </div>
-
-              {/* App 5: Cảm Xúc */}
-              <div
-                onClick={() => setActiveCategory('health')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-cyan-500 to-blue-600 text-white flex items-center justify-center text-2xl shadow-md shadow-cyan-500/20 border border-white/40 active:scale-90 transition-all">
-                  😀
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-cyan-600">
-                  Sức Khỏe Cụ
-                </span>
-              </div>
-
-              {/* App 6: Ghi Âm Voice AI */}
-              <div
-                onClick={() => setActiveCategory('voice')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-purple-600 to-violet-700 text-white flex items-center justify-center text-2xl shadow-md shadow-purple-500/20 border border-white/40 relative active:scale-90 transition-all">
-                  🎙️
-                  <span className="absolute -top-1 -right-1 bg-purple-300 text-purple-950 text-[8px] font-black px-1 rounded-full border-2 border-white">
-                    AI
-                  </span>
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-purple-600">
-                  Ghi Âm Nói
-                </span>
-              </div>
-
-              {/* App 7: Vận Hành Chăm Sóc Chi Tiết */}
-              <div
-                onClick={() => navigate('/operations')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-emerald-600 to-green-700 text-white flex items-center justify-center text-2xl shadow-md shadow-emerald-600/20 border border-white/40 active:scale-90 transition-all">
-                  📋
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-emerald-700">
-                  Bảng Chăm Sóc
-                </span>
-              </div>
-
-              {/* App 8: Hồ Sơ Cư Dân */}
-              <div
-                onClick={() => navigate('/residents')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-amber-600 to-yellow-700 text-white flex items-center justify-center text-2xl shadow-md shadow-amber-600/20 border border-white/40 active:scale-90 transition-all">
-                  👵
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-amber-700">
-                  Cư Dân Tầng 2
-                </span>
-              </div>
-
+              {/* iOS Clean Title Label Under Icon */}
+              <span className="text-[11px] font-medium text-slate-100 text-center leading-tight tracking-tight mt-1.5 drop-shadow-sm opacity-95 group-hover:text-emerald-400">
+                {app.title}
+              </span>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
 
-        {/* GROUP 2: Y TẾ & CHUYÊN MÔN */}
-        {(activeTab === 'all' || activeTab === 'medical') && (
-          <div>
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-1">
-              Y tế & Khám bệnh chuyên môn
-            </div>
+        {/* Page Indicator Dots */}
+        <div className="flex justify-center items-center space-x-1.5 mt-8 opacity-60">
+          <div className="w-2 h-2 rounded-full bg-white"></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+          <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+        </div>
+      </div>
 
-            <div className="grid grid-cols-4 gap-3.5">
-              
-              {/* App 9: Báo Sự Cố */}
-              <div
-                onClick={() => setActiveCategory('incident')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl shadow-md shadow-red-500/20 border border-white/40 active:scale-90 transition-all">
-                  🚨
-                </div>
-                <span className="text-[11px] font-bold text-red-700 text-center leading-tight mt-1.5">
-                  Báo Sự Cố
-                </span>
-              </div>
+      {/* Bottom iOS Glassmorphism Dock Frame (Matching iPhone Dock in image 2) */}
+      <div className="max-w-md mx-auto w-full px-4 mb-2">
+        <div className="bg-white/20 backdrop-blur-2xl rounded-[32px] p-2.5 flex justify-around items-center border border-white/20 shadow-2xl">
+          
+          <button
+            type="button"
+            onClick={() => setActiveCategory('hygiene')}
+            className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-emerald-500 to-green-600 text-white text-2xl flex items-center justify-center shadow-md active:scale-90 transition"
+            title="Nhận Ca & Chăm Sóc"
+          >
+            📞
+          </button>
 
-              {/* App 10: Báo Cáo Sức Khỏe */}
-              <div
-                onClick={() => navigate('/health-reports')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-sky-500 to-blue-600 text-white flex items-center justify-center text-2xl shadow-md shadow-sky-500/20 border border-white/40 active:scale-90 transition-all">
-                  📊
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-sky-600">
-                  Báo Cáo Y Tế
-                </span>
-              </div>
+          <button
+            type="button"
+            onClick={() => navigate('/residents')}
+            className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-slate-200 to-white text-slate-800 text-2xl flex items-center justify-center shadow-md active:scale-90 transition"
+            title="Danh Sách Cư Dân"
+          >
+            👵
+          </button>
 
-              {/* App 11: Dược eMAR Kho */}
-              <div
-                onClick={() => navigate('/medication-inventory')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-500/20 border border-white/40 active:scale-90 transition-all">
-                  💊
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-indigo-600">
-                  Kho Dược eMAR
-                </span>
-              </div>
+          <button
+            type="button"
+            onClick={() => navigate('/operations')}
+            className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-sky-400 to-blue-600 text-white text-2xl flex items-center justify-center shadow-md active:scale-90 transition"
+            title="Vận Hành Chuyên Môn"
+          >
+            🧭
+          </button>
 
-              {/* App 12: Tiếp Nhận Cụ Mới */}
-              <div
-                onClick={() => navigate('/admissions')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center text-2xl shadow-md shadow-emerald-500/20 border border-white/40 active:scale-90 transition-all">
-                  📝
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-emerald-600">
-                  Tiếp Nhận Mới
-                </span>
-              </div>
+          <button
+            type="button"
+            onClick={() => setActiveCategory('voice')}
+            className="w-12 h-12 rounded-[16px] bg-gradient-to-br from-amber-400 to-orange-500 text-white text-2xl flex items-center justify-center shadow-md active:scale-90 transition"
+            title="Ghi Âm AI Voice"
+          >
+            🎙️
+          </button>
 
-            </div>
-          </div>
-        )}
-
-        {/* GROUP 3: VẬN HÀNH & HÀNH CHÍNH */}
-        {(activeTab === 'all' || activeTab === 'admin') && (
-          <div>
-            <div className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-3 px-1">
-              Vận hành ca & Hành chính
-            </div>
-
-            <div className="grid grid-cols-4 gap-3.5">
-              
-              {/* App 13: Sơ Đồ Giường */}
-              <div
-                onClick={() => navigate('/accommodation')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-blue-600 to-slate-700 text-white flex items-center justify-center text-2xl shadow-md shadow-blue-600/20 border border-white/40 active:scale-90 transition-all">
-                  🛌
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-blue-700">
-                  Sơ Đồ Phòng
-                </span>
-              </div>
-
-              {/* App 14: Lịch Trực Ca Kíp */}
-              <div
-                onClick={() => navigate('/workforce')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-violet-600 to-purple-800 text-white flex items-center justify-center text-2xl shadow-md shadow-violet-600/20 border border-white/40 active:scale-90 transition-all">
-                  📅
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-violet-700">
-                  Lịch Trực Ca
-                </span>
-              </div>
-
-              {/* App 15: Xin Nghỉ Phép */}
-              <div
-                onClick={() => navigate('/resident-leave')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-amber-500 to-yellow-600 text-white flex items-center justify-center text-2xl shadow-md shadow-amber-500/20 border border-white/40 active:scale-90 transition-all">
-                  🏖️
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-amber-600">
-                  Xin Nghỉ Phép
-                </span>
-              </div>
-
-              {/* App 16: Viện Phí */}
-              <div
-                onClick={() => navigate('/billing-invoicing')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center text-2xl shadow-md shadow-emerald-600/20 border border-white/40 active:scale-90 transition-all">
-                  💳
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-emerald-700">
-                  Viện Phí
-                </span>
-              </div>
-
-              {/* App 17: Cổng Thân Nhân */}
-              <div
-                onClick={() => navigate('/family-portal')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-pink-500 to-rose-600 text-white flex items-center justify-center text-2xl shadow-md shadow-pink-500/20 border border-white/40 active:scale-90 transition-all">
-                  👨‍👩‍👧
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-pink-600">
-                  Thân Nhân
-                </span>
-              </div>
-
-              {/* App 18: Bếp Ăn */}
-              <div
-                onClick={() => navigate('/kitchen-operations')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-orange-500 to-red-500 text-white flex items-center justify-center text-2xl shadow-md shadow-orange-500/20 border border-white/40 active:scale-90 transition-all">
-                  🍳
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-orange-600">
-                  Bếp Dinh Dưỡng
-                </span>
-              </div>
-
-              {/* App 19: Phân Tích KPI */}
-              <div
-                onClick={() => navigate('/analytics-intelligence')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-indigo-600 to-blue-800 text-white flex items-center justify-center text-2xl shadow-md shadow-indigo-600/20 border border-white/40 active:scale-90 transition-all">
-                  📈
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-indigo-600">
-                  Phân Tích KPI
-                </span>
-              </div>
-
-              {/* App 20: Phân Quyền */}
-              <div
-                onClick={() => navigate('/staff-access')}
-                className="flex flex-col items-center cursor-pointer group"
-              >
-                <div className="w-14 h-14 rounded-[20px] bg-gradient-to-br from-slate-700 to-slate-900 text-white flex items-center justify-center text-2xl shadow-md shadow-slate-700/20 border border-white/40 active:scale-90 transition-all">
-                  🔑
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 text-center leading-tight mt-1.5 group-hover:text-slate-900">
-                  Phân Quyền
-                </span>
-              </div>
-
-            </div>
-          </div>
-        )}
-
+        </div>
       </div>
 
       {/* 1-Tap Action Sheet Modal */}
