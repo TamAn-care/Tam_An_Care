@@ -261,54 +261,7 @@ export function AppShell() {
               }
             />
 
-            {/* GLOBAL NAVIGATION CONTROLS: QUAY LẠI & TIẾP TỤC */}
-            <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
-              <button
-                type="button"
-                onClick={() => navigate(-1)}
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '0.4rem',
-                  padding: '0.3rem 0.55rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  color: '#334155',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.25rem',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                  transition: 'all 0.15s ease',
-                }}
-                title="Quay lại trang hoặc thao tác trước đó"
-              >
-                <span>◀</span> Quay lại
-              </button>
 
-              <button
-                type="button"
-                onClick={() => navigate(1)}
-                style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '0.4rem',
-                  padding: '0.3rem 0.55rem',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  color: '#334155',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.25rem',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                  transition: 'all 0.15s ease',
-                }}
-                title="Tiếp tục tới trang tiếp theo trong lịch sử"
-              >
-                <span>Tiếp tục</span> ▶
-              </button>
-            </div>
 
             <div>
               <div className="topbar-title">

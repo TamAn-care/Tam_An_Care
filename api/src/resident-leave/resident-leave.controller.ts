@@ -113,4 +113,79 @@ export class ResidentLeaveController {
       body,
     );
   }
+
+  // --- STAFF LEAVE ENDPOINTS ---
+
+  @Post('staff-requests')
+  @HttpCode(201)
+  createStaffLeaveRequest(
+    @Headers('x-actor-id') actorId?: string,
+    @Headers('x-actor-role') actorRole?: string,
+    @Body() body: any = {},
+  ) {
+    this.rejectBodyActor(body);
+    return this.service.createStaffLeaveRequest(
+      this.actor(actorId, actorRole),
+      body,
+    );
+  }
+
+  @Get('staff-requests')
+  listStaffLeaveRequests(
+    @Headers('x-actor-id') actorId?: string,
+    @Headers('x-actor-role') actorRole?: string,
+    @Query() query: any = {},
+  ) {
+    return this.service.listStaffLeaveRequests(
+      this.actor(actorId, actorRole),
+      query,
+    );
+  }
+
+  @Patch('staff-requests/:id/approve')
+  approveStaffLeaveRequest(
+    @Headers('x-actor-id') actorId?: string,
+    @Headers('x-actor-role') actorRole?: string,
+    @Param('id') id?: string,
+    @Body() body: any = {},
+  ) {
+    this.rejectBodyActor(body);
+    return this.service.approveStaffLeaveRequest(
+      this.actor(actorId, actorRole),
+      id,
+      body,
+    );
+  }
+
+  @Patch('staff-requests/:id/reject')
+  rejectStaffLeaveRequest(
+    @Headers('x-actor-id') actorId?: string,
+    @Headers('x-actor-role') actorRole?: string,
+    @Param('id') id?: string,
+    @Body() body: any = {},
+  ) {
+    this.rejectBodyActor(body);
+    return this.service.rejectStaffLeaveRequest(
+      this.actor(actorId, actorRole),
+      id,
+      body,
+    );
+  }
+
+  @Post('staff-requests/:id/cancel')
+  @HttpCode(200)
+  cancelStaffLeaveRequest(
+    @Headers('x-actor-id') actorId?: string,
+    @Headers('x-actor-role') actorRole?: string,
+    @Param('id') id?: string,
+    @Body() body: any = {},
+  ) {
+    this.rejectBodyActor(body);
+    return this.service.cancelStaffLeaveRequest(
+      this.actor(actorId, actorRole),
+      id,
+      body,
+    );
+  }
 }
+

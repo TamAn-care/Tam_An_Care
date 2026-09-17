@@ -223,8 +223,8 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     allowedRoutes: [
       'dashboard',
       'residents',
-      'admissions',
       'resident-leave',
+      'admissions',
       'workforce',
       'operations',
     ],
@@ -260,6 +260,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     allowedRoutes: [
       'dashboard',
       'residents',
+      'resident-leave',
       'admissions',
       'workforce',
       'operations',
@@ -297,6 +298,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'dashboard',
       'accommodation',
       'residents',
+      'resident-leave',
       'workforce',
       'operations',
       'admissions',
@@ -335,6 +337,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     allowedRoutes: [
       'dashboard',
       'residents',
+      'resident-leave',
       'operations',
       'workforce',
     ],
@@ -369,6 +372,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   NUTRITIONIST: {
     allowedRoutes: [
       'dashboard',
+      'resident-leave',
       'kitchen-operations',
       'workforce',
     ],
@@ -403,6 +407,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   HOUSEKEEPING: {
     allowedRoutes: [
       'dashboard',
+      'resident-leave',
       'workforce',
     ],
     canManageStaff: false,
@@ -437,6 +442,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     allowedRoutes: [
       'dashboard',
       'residents',
+      'resident-leave',
       'operations',
       'workforce',
     ],
@@ -471,6 +477,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   COMMUNICATIONS: {
     allowedRoutes: [
       'dashboard',
+      'resident-leave',
       'operations',
     ],
     canManageStaff: false,
@@ -503,6 +510,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   },
   SECURITY: {
     allowedRoutes: [
+      'resident-leave',
       'workforce',
     ],
     canManageStaff: false,
@@ -536,6 +544,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
   ACCOUNTANT: {
     allowedRoutes: [
       'dashboard',
+      'resident-leave',
       'billing-invoicing',
     ],
     canManageStaff: false,

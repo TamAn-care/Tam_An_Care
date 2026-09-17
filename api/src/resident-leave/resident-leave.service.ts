@@ -12,7 +12,14 @@ import { DatabaseService } from '../database/database.service';
 type Actor = { actorId: string; actorRole: string };
 const HUMAN_ROLES = new Set(['CAREGIVER', 'NURSE', 'CARE_MANAGER', 'SUPERVISOR']);
 const MGMT_ROLES = new Set(['NURSE', 'CARE_MANAGER', 'SUPERVISOR']);
+const ALL_STAFF_ROLES = new Set([
+  'CAREGIVER', 'NURSE', 'CARE_MANAGER', 'SUPERVISOR', 'NUTRITIONIST',
+  'SOCIAL_WORKER', 'PSYCHOLOGIST', 'REHABILITATION_SPECIALIST',
+  'HOUSEKEEPING', 'SECURITY', 'ACCOUNTANT', 'RECEPTIONIST', 'ADMIN'
+]);
+const STAFF_LEAVE_APPROVER_ROLES = new Set(['CARE_MANAGER', 'SUPERVISOR', 'ADMIN']);
 const VALID_LEAVE_TYPES = new Set(['FAMILY_VISIT', 'MEDICAL_OUTING', 'TEMPORARY_HOSPITALIZATION', 'VACATION', 'OTHER']);
+const VALID_STAFF_LEAVE_TYPES = new Set(['ANNUAL', 'PERSONAL', 'SICK', 'UNPAID', 'OTHER']);
 
 @Injectable()
 export class ResidentLeaveService {
@@ -410,4 +417,319 @@ export class ResidentLeaveService {
       updatedAt: r.updated_at,
     };
   }
+
+  private tableEnsured = false;
+  private async ensureStaffLeaveTable() {
+    if (this.tableEnsured) return;
+    try {
+      await this.db.query(`
+        CREATE TABLE IF NOT EXISTS staff_leave_requests (
+          leave_id TEXT PRIMARY KEY,
+          staff_actor_id TEXT NOT NULL REFERENCES staff_actors(actor_id),
+          staff_role TEXT NOT NULL,
+          leave_type TEXT NOT NULL CHECK (leave_type IN ('ANNUAL', 'PERSONAL', 'SICK', 'UNPAID', 'OTHER')),
+          start_date TIMESTAMPTZ NOT NULL,
+          end_date TIMESTAMPTZ NOT NULL,
+          reason TEXT NOT NULL,
+          is_special_case BOOLEAN NOT NULL DEFAULT false,
+          special_reason TEXT,
+          notice_hours NUMERIC(8,2) NOT NULL,
+          is_advance_notice_48h BOOLEAN NOT NULL,
+          status TEXT NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
+          reviewed_by TEXT REFERENCES staff_actors(actor_id),
+          reviewed_by_role TEXT,
+          reviewed_at TIMESTAMPTZ,
+          review_note TEXT,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+          CONSTRAINT staff_leave_date_order CHECK (end_date >= start_date)
+        );
+      `);
+      this.tableEnsured = true;
+    } catch (e) {
+      // ignore table exists or race conditions
+    }
+  }
+
+  async createStaffLeaveRequest(a: Actor, body: any = {}) {
+    await this.ensureStaffLeaveTable();
+    await this.auth(a, ALL_STAFF_ROLES);
+
+    const leaveType = this.req(body?.leaveType, 'leaveType').toUpperCase();
+    if (!VALID_STAFF_LEAVE_TYPES.has(leaveType)) {
+      throw new BadRequestException(`leaveType phải thuộc các loại: ${Array.from(VALID_STAFF_LEAVE_TYPES).join(', ')}`);
+    }
+
+    const startDateStr = this.req(body?.startDate, 'startDate');
+    const endDateStr = this.req(body?.endDate, 'endDate');
+    const reason = this.req(body?.reason, 'reason');
+    const isSpecialCase = Boolean(body?.isSpecialCase);
+    const specialReason = body?.specialReason ? String(body.specialReason).trim() : null;
+
+    const startDate = new Date(startDateStr);
+    const endDate = new Date(endDateStr);
+    if (Number.isNaN(startDate.getTime())) throw new BadRequestException('startDate không hợp lệ');
+    if (Number.isNaN(endDate.getTime())) throw new BadRequestException('endDate không hợp lệ');
+    if (endDate < startDate) {
+      throw new BadRequestException('Ngày kết thúc không được nhỏ hơn ngày bắt đầu');
+    }
+
+    const now = new Date();
+    const diffMs = startDate.getTime() - now.getTime();
+    const noticeHours = Math.round((diffMs / (1000 * 60 * 60)) * 100) / 100;
+    const isAdvanceNotice48h = noticeHours >= 48.0;
+
+    if (!isAdvanceNotice48h && !isSpecialCase) {
+      throw new BadRequestException(
+        'Yêu cầu xin nghỉ phép phải được báo trước ít nhất 2 ngày (48 giờ) trừ trường hợp đặc biệt.',
+      );
+    }
+
+    if (isSpecialCase && !specialReason) {
+      throw new BadRequestException('Vui lòng nhập lý do giải trình cho trường hợp đặc biệt.');
+    }
+
+    const leaveId = `slr-${randomUUID()}`;
+
+    const inserted = await this.db.query(
+      `INSERT INTO staff_leave_requests (
+         leave_id, staff_actor_id, staff_role, leave_type, start_date, end_date,
+         reason, is_special_case, special_reason, notice_hours, is_advance_notice_48h,
+         status, created_at, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'PENDING', now(), now()
+       ) RETURNING *`,
+      [
+        leaveId,
+        a.actorId,
+        a.actorRole,
+        leaveType,
+        startDate,
+        endDate,
+        reason,
+        isSpecialCase,
+        specialReason,
+        noticeHours,
+        isAdvanceNotice48h,
+      ],
+    );
+
+    const qStaff = await this.db.query(
+      `SELECT display_name AS "staffName", staff_code AS "staffCode" FROM staff_actors WHERE actor_id = $1 LIMIT 1`,
+      [a.actorId],
+    );
+
+    const row = inserted.rows[0];
+    if (qStaff.rows[0]) {
+      row.staffName = qStaff.rows[0].staffName;
+      row.staffCode = qStaff.rows[0].staffCode;
+    }
+
+    return this.mapStaffLeaveDto(row);
+  }
+
+  async listStaffLeaveRequests(a: Actor, query: any = {}) {
+    await this.ensureStaffLeaveTable();
+    await this.auth(a, ALL_STAFF_ROLES);
+    const p = this.page(query?.limit, query?.offset);
+    const params: any[] = [];
+    const wheres: string[] = [];
+
+    const isApprover = STAFF_LEAVE_APPROVER_ROLES.has(a.actorRole);
+    if (!isApprover) {
+      params.push(a.actorId);
+      wheres.push(`s.staff_actor_id = $${params.length}`);
+    } else if (query?.staffActorId) {
+      params.push(String(query.staffActorId).trim());
+      wheres.push(`s.staff_actor_id = $${params.length}`);
+    }
+
+    if (query?.status && query.status !== 'ALL') {
+      params.push(String(query.status).trim().toUpperCase());
+      wheres.push(`s.status = $${params.length}`);
+    }
+
+    const whereSql = wheres.length ? `WHERE ${wheres.join(' AND ')}` : '';
+    params.push(p.limit, p.offset);
+
+    const q = await this.db.query(
+      `SELECT s.*, sa.display_name AS "staffName", sa.staff_code AS "staffCode",
+              rev.display_name AS "reviewerName",
+              COUNT(*) OVER()::int AS "totalCount"
+       FROM staff_leave_requests s
+       JOIN staff_actors sa ON sa.actor_id = s.staff_actor_id
+       LEFT JOIN staff_actors rev ON rev.actor_id = s.reviewed_by
+       ${whereSql}
+       ORDER BY s.created_at DESC
+       LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params,
+    );
+
+    return {
+      items: q.rows.map(x => this.mapStaffLeaveDto(x)),
+      total: q.rows[0]?.totalCount ?? 0,
+      limit: p.limit,
+      offset: p.offset,
+    };
+  }
+
+  async approveStaffLeaveRequest(a: Actor, id?: string, body: any = {}) {
+    await this.ensureStaffLeaveTable();
+    await this.auth(a, STAFF_LEAVE_APPROVER_ROLES);
+    const leaveId = this.req(id, 'leaveId');
+
+    const q = await this.db.query(`SELECT * FROM staff_leave_requests WHERE leave_id = $1 LIMIT 1`, [leaveId]);
+    if (q.rowCount !== 1) throw new NotFoundException('Đơn xin nghỉ phép không tồn tại');
+    const old = q.rows[0];
+
+    if (old.status !== 'PENDING') {
+      throw new ConflictException(`Đơn xin nghỉ phép đã ở trạng thái ${old.status}, không thể phê duyệt`);
+    }
+
+    const reviewNote = body?.reviewNote ? String(body.reviewNote).trim() : null;
+
+    const updated = await this.db.query(
+      `UPDATE staff_leave_requests
+       SET status = 'APPROVED',
+           reviewed_by = $2,
+           reviewed_by_role = $3,
+           reviewed_at = now(),
+           review_note = $4,
+           updated_at = now()
+       WHERE leave_id = $1
+       RETURNING *`,
+      [leaveId, a.actorId, a.actorRole, reviewNote],
+    );
+
+    const qStaff = await this.db.query(
+      `SELECT sa.display_name AS "staffName", sa.staff_code AS "staffCode", rev.display_name AS "reviewerName"
+       FROM staff_actors sa
+       LEFT JOIN staff_actors rev ON rev.actor_id = $2
+       WHERE sa.actor_id = $1 LIMIT 1`,
+      [old.staff_actor_id, a.actorId],
+    );
+
+    const row = updated.rows[0];
+    if (qStaff.rows[0]) {
+      row.staffName = qStaff.rows[0].staffName;
+      row.staffCode = qStaff.rows[0].staffCode;
+      row.reviewerName = qStaff.rows[0].reviewerName;
+    }
+
+    return this.mapStaffLeaveDto(row);
+  }
+
+  async rejectStaffLeaveRequest(a: Actor, id?: string, body: any = {}) {
+    await this.ensureStaffLeaveTable();
+    await this.auth(a, STAFF_LEAVE_APPROVER_ROLES);
+    const leaveId = this.req(id, 'leaveId');
+
+    const q = await this.db.query(`SELECT * FROM staff_leave_requests WHERE leave_id = $1 LIMIT 1`, [leaveId]);
+    if (q.rowCount !== 1) throw new NotFoundException('Đơn xin nghỉ phép không tồn tại');
+    const old = q.rows[0];
+
+    if (old.status !== 'PENDING') {
+      throw new ConflictException(`Đơn xin nghỉ phép đã ở trạng thái ${old.status}, không thể từ chối`);
+    }
+
+    const reviewNote = body?.reviewNote ? String(body.reviewNote).trim() : null;
+
+    const updated = await this.db.query(
+      `UPDATE staff_leave_requests
+       SET status = 'REJECTED',
+           reviewed_by = $2,
+           reviewed_by_role = $3,
+           reviewed_at = now(),
+           review_note = $4,
+           updated_at = now()
+       WHERE leave_id = $1
+       RETURNING *`,
+      [leaveId, a.actorId, a.actorRole, reviewNote],
+    );
+
+    const qStaff = await this.db.query(
+      `SELECT sa.display_name AS "staffName", sa.staff_code AS "staffCode", rev.display_name AS "reviewerName"
+       FROM staff_actors sa
+       LEFT JOIN staff_actors rev ON rev.actor_id = $2
+       WHERE sa.actor_id = $1 LIMIT 1`,
+      [old.staff_actor_id, a.actorId],
+    );
+
+    const row = updated.rows[0];
+    if (qStaff.rows[0]) {
+      row.staffName = qStaff.rows[0].staffName;
+      row.staffCode = qStaff.rows[0].staffCode;
+      row.reviewerName = qStaff.rows[0].reviewerName;
+    }
+
+    return this.mapStaffLeaveDto(row);
+  }
+
+  async cancelStaffLeaveRequest(a: Actor, id?: string, body: any = {}) {
+    await this.ensureStaffLeaveTable();
+    await this.auth(a, ALL_STAFF_ROLES);
+    const leaveId = this.req(id, 'leaveId');
+
+    const q = await this.db.query(`SELECT * FROM staff_leave_requests WHERE leave_id = $1 LIMIT 1`, [leaveId]);
+    if (q.rowCount !== 1) throw new NotFoundException('Đơn xin nghỉ phép không tồn tại');
+    const old = q.rows[0];
+
+    const isApprover = STAFF_LEAVE_APPROVER_ROLES.has(a.actorRole);
+    if (old.staff_actor_id !== a.actorId && !isApprover) {
+      throw new ForbiddenException('Bạn không có quyền hủy đơn của người khác');
+    }
+
+    if (old.status === 'CANCELLED') {
+      throw new ConflictException('Đơn xin nghỉ phép đã bị hủy trước đó');
+    }
+
+    const updated = await this.db.query(
+      `UPDATE staff_leave_requests
+       SET status = 'CANCELLED',
+           updated_at = now()
+       WHERE leave_id = $1
+       RETURNING *`,
+      [leaveId],
+    );
+
+    const qStaff = await this.db.query(
+      `SELECT sa.display_name AS "staffName", sa.staff_code AS "staffCode" FROM staff_actors sa WHERE sa.actor_id = $1 LIMIT 1`,
+      [old.staff_actor_id],
+    );
+
+    const row = updated.rows[0];
+    if (qStaff.rows[0]) {
+      row.staffName = qStaff.rows[0].staffName;
+      row.staffCode = qStaff.rows[0].staffCode;
+    }
+
+    return this.mapStaffLeaveDto(row);
+  }
+
+  private mapStaffLeaveDto(r: any) {
+    return {
+      leaveId: r.leave_id,
+      staffActorId: r.staff_actor_id,
+      staffRole: r.staff_role,
+      staffName: r.staffName,
+      staffCode: r.staffCode,
+      leaveType: r.leave_type,
+      startDate: r.start_date,
+      endDate: r.end_date,
+      reason: r.reason,
+      isSpecialCase: Boolean(r.is_special_case),
+      specialReason: r.special_reason,
+      noticeHours: Number(r.notice_hours),
+      isAdvanceNotice48h: Boolean(r.is_advance_notice_48h),
+      status: r.status,
+      reviewedBy: r.reviewed_by,
+      reviewedByRole: r.reviewed_by_role,
+      reviewerName: r.reviewerName,
+      reviewedAt: r.reviewed_at,
+      reviewNote: r.review_note,
+      createdAt: r.created_at,
+      updatedAt: r.updated_at,
+    };
+  }
 }
+

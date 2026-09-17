@@ -292,3 +292,280 @@ export async function cancelLeaveRequest(
   }
   throw new Error('Không tìm thấy đơn tạm vắng.');
 }
+
+// --- STAFF LEAVE APIS & TYPES ---
+
+export type StaffLeaveType = 'ANNUAL' | 'PERSONAL' | 'SICK' | 'UNPAID' | 'OTHER';
+export type StaffLeaveStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+
+export interface StaffLeaveItem {
+  leaveId: string;
+  staffActorId: string;
+  staffRole: string;
+  staffName?: string;
+  staffCode?: string;
+  leaveType: StaffLeaveType;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  isSpecialCase: boolean;
+  specialReason?: string;
+  noticeHours: number;
+  isAdvanceNotice48h: boolean;
+  status: StaffLeaveStatus;
+  reviewedBy?: string;
+  reviewedByRole?: string;
+  reviewerName?: string;
+  reviewedAt?: string;
+  reviewNote?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ListStaffLeaveRequestsResponse {
+  items: StaffLeaveItem[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export let mockStaffLeaveRequests: StaffLeaveItem[] = [
+  {
+    leaveId: 'slr-demo-001',
+    staffActorId: 'staff-001',
+    staffRole: 'CARE_MANAGER',
+    staffName: 'Lê Văn Tùng',
+    staffCode: 'NV-001',
+    leaveType: 'ANNUAL',
+    startDate: '2026-09-25T08:00:00.000Z',
+    endDate: '2026-09-27T17:00:00.000Z',
+    reason: 'Nghỉ phép năm đưa gia đình đi du lịch',
+    isSpecialCase: false,
+    noticeHours: 190,
+    isAdvanceNotice48h: true,
+    status: 'APPROVED',
+    reviewedBy: 'staff-000',
+    reviewedByRole: 'SUPERVISOR',
+    reviewerName: 'Trần Thị Mai (Giám đốc)',
+    reviewedAt: '2026-09-17T09:00:00.000Z',
+    reviewNote: 'Đồng ý duyệt phép. Đã bàn giao ca cho đ/c Y sĩ.',
+    createdAt: '2026-09-15T08:00:00.000Z',
+    updatedAt: '2026-09-17T09:00:00.000Z',
+  },
+  {
+    leaveId: 'slr-demo-002',
+    staffActorId: 'staff-002',
+    staffRole: 'NURSE',
+    staffName: 'Nguyễn Thị Hoa',
+    staffCode: 'NV-002',
+    leaveType: 'SICK',
+    startDate: '2026-09-17T14:00:00.000Z',
+    endDate: '2026-09-18T17:00:00.000Z',
+    reason: 'Sốt cao đột xuất',
+    isSpecialCase: true,
+    specialReason: 'Sốt vi rút cấp tính 39 độ C, có giấy xác nhận phòng khám',
+    noticeHours: 3.5,
+    isAdvanceNotice48h: false,
+    status: 'PENDING',
+    createdAt: '2026-09-17T10:30:00.000Z',
+    updatedAt: '2026-09-17T10:30:00.000Z',
+  },
+];
+
+export async function fetchStaffLeaveRequests(
+  actorId: string,
+  actorRole: string,
+  params: { status?: string; staffActorId?: string; limit?: number; offset?: number } = {},
+): Promise<ListStaffLeaveRequestsResponse> {
+  try {
+    const q = new URLSearchParams();
+    if (params.status) q.append('status', params.status);
+    if (params.staffActorId) q.append('staffActorId', params.staffActorId);
+    q.append('limit', String(params.limit ?? 50));
+    q.append('offset', String(params.offset ?? 0));
+
+    const res = await fetch(`${API_BASE_URL}/api/resident-leave/staff-requests?${q.toString()}`, {
+      headers: getHeaders(actorId, actorRole),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && Array.isArray(data.items)) return data;
+    }
+  } catch (error) {
+    console.warn('[TamAnCare API] Offline mode fetchStaffLeaveRequests:', error);
+  }
+
+  let filtered = [...mockStaffLeaveRequests];
+  const isApprover = actorRole === 'CARE_MANAGER' || actorRole === 'SUPERVISOR' || actorRole === 'ADMIN';
+  if (!isApprover) {
+    filtered = filtered.filter((i) => i.staffActorId === actorId);
+  } else if (params.staffActorId) {
+    filtered = filtered.filter((i) => i.staffActorId === params.staffActorId);
+  }
+
+  if (params.status && params.status !== 'ALL') {
+    filtered = filtered.filter((i) => i.status === params.status);
+  }
+
+  const limit = params.limit ?? 50;
+  const offset = params.offset ?? 0;
+
+  return {
+    items: filtered.slice(offset, offset + limit),
+    total: filtered.length,
+    limit,
+    offset,
+  };
+}
+
+export async function createStaffLeaveRequest(
+  actorId: string,
+  actorRole: string,
+  payload: {
+    leaveType: StaffLeaveType;
+    startDate: string;
+    endDate: string;
+    reason: string;
+    isSpecialCase?: boolean;
+    specialReason?: string;
+  },
+): Promise<StaffLeaveItem> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/resident-leave/staff-requests`, {
+      method: 'POST',
+      headers: getHeaders(actorId, actorRole),
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) return await res.json();
+    const errData = await res.json().catch(() => ({}));
+    if (errData?.message) throw new Error(errData.message);
+  } catch (error: any) {
+    if (error.message && !error.message.includes('fetch')) {
+      throw error;
+    }
+    console.warn('[TamAnCare API] Offline mode createStaffLeaveRequest:', error);
+  }
+
+  const startMs = new Date(payload.startDate).getTime();
+  const nowMs = Date.now();
+  const noticeHours = Math.round(((startMs - nowMs) / (1000 * 60 * 60)) * 100) / 100;
+  const isAdvanceNotice48h = noticeHours >= 48;
+
+  if (!isAdvanceNotice48h && !payload.isSpecialCase) {
+    throw new Error('Yêu cầu xin nghỉ phép phải được báo trước ít nhất 2 ngày (48 giờ) trừ trường hợp đặc biệt.');
+  }
+
+  if (payload.isSpecialCase && !payload.specialReason?.trim()) {
+    throw new Error('Vui lòng nhập lý do giải trình cho trường hợp đặc biệt.');
+  }
+
+  const newItem: StaffLeaveItem = {
+    leaveId: `slr-${Date.now()}`,
+    staffActorId: actorId,
+    staffRole: actorRole,
+    staffName: 'Nhân viên hiện tại',
+    staffCode: 'NV-CURRENT',
+    leaveType: payload.leaveType,
+    startDate: payload.startDate,
+    endDate: payload.endDate,
+    reason: payload.reason,
+    isSpecialCase: Boolean(payload.isSpecialCase),
+    specialReason: payload.specialReason,
+    noticeHours,
+    isAdvanceNotice48h,
+    status: 'PENDING',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  mockStaffLeaveRequests.unshift(newItem);
+  return newItem;
+}
+
+export async function approveStaffLeaveRequest(
+  actorId: string,
+  actorRole: string,
+  leaveId: string,
+  reviewNote?: string,
+): Promise<StaffLeaveItem> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/resident-leave/staff-requests/${leaveId}/approve`, {
+      method: 'PATCH',
+      headers: getHeaders(actorId, actorRole),
+      body: JSON.stringify({ reviewNote }),
+    });
+    if (res.ok) return await res.json();
+  } catch (error) {
+    console.warn('[TamAnCare API] Offline mode approveStaffLeaveRequest:', error);
+  }
+
+  const target = mockStaffLeaveRequests.find((r) => r.leaveId === leaveId);
+  if (target) {
+    target.status = 'APPROVED';
+    target.reviewedBy = actorId;
+    target.reviewedByRole = actorRole;
+    target.reviewerName = actorRole === 'SUPERVISOR' ? 'Ban Giám đốc' : 'Quản lý';
+    target.reviewedAt = new Date().toISOString();
+    target.reviewNote = reviewNote;
+    target.updatedAt = new Date().toISOString();
+    return target;
+  }
+  throw new Error('Không tìm thấy đơn xin nghỉ phép.');
+}
+
+export async function rejectStaffLeaveRequest(
+  actorId: string,
+  actorRole: string,
+  leaveId: string,
+  reviewNote?: string,
+): Promise<StaffLeaveItem> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/resident-leave/staff-requests/${leaveId}/reject`, {
+      method: 'PATCH',
+      headers: getHeaders(actorId, actorRole),
+      body: JSON.stringify({ reviewNote }),
+    });
+    if (res.ok) return await res.json();
+  } catch (error) {
+    console.warn('[TamAnCare API] Offline mode rejectStaffLeaveRequest:', error);
+  }
+
+  const target = mockStaffLeaveRequests.find((r) => r.leaveId === leaveId);
+  if (target) {
+    target.status = 'REJECTED';
+    target.reviewedBy = actorId;
+    target.reviewedByRole = actorRole;
+    target.reviewerName = actorRole === 'SUPERVISOR' ? 'Ban Giám đốc' : 'Quản lý';
+    target.reviewedAt = new Date().toISOString();
+    target.reviewNote = reviewNote;
+    target.updatedAt = new Date().toISOString();
+    return target;
+  }
+  throw new Error('Không tìm thấy đơn xin nghỉ phép.');
+}
+
+export async function cancelStaffLeaveRequest(
+  actorId: string,
+  actorRole: string,
+  leaveId: string,
+): Promise<StaffLeaveItem> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/resident-leave/staff-requests/${leaveId}/cancel`, {
+      method: 'POST',
+      headers: getHeaders(actorId, actorRole),
+      body: JSON.stringify({}),
+    });
+    if (res.ok) return await res.json();
+  } catch (error) {
+    console.warn('[TamAnCare API] Offline mode cancelStaffLeaveRequest:', error);
+  }
+
+  const target = mockStaffLeaveRequests.find((r) => r.leaveId === leaveId);
+  if (target) {
+    target.status = 'CANCELLED';
+    target.updatedAt = new Date().toISOString();
+    return target;
+  }
+  throw new Error('Không tìm thấy đơn xin nghỉ phép.');
+}
+
