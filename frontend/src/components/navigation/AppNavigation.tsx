@@ -18,10 +18,19 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
   {
     key: 'dashboard',
     to: '/dashboard',
-    label: 'Tổng Quan & KPI',
+    label: 'Tổng Quan Icons',
     icon: '📊',
     category: 'Lâm Sàng & Chăm Sóc',
     gradient: 'linear-gradient(135deg, #4f46e5, #3730a3)',
+  },
+  {
+    key: 'health-reports',
+    to: '/health-reports',
+    label: 'Phê Duyệt & Chú Ý',
+    icon: '🚨',
+    category: 'Lâm Sàng & Chăm Sóc',
+    gradient: 'linear-gradient(135deg, #dc2626, #991b1b)',
+    badge: 'Cần Duyệt',
   },
   {
     key: 'admissions',
@@ -50,20 +59,20 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     badge: '110 Cụ',
   },
   {
+    key: 'resident-lifecycle',
+    to: '/resident-lifecycle',
+    label: 'Vòng Đời & Xuất Viện',
+    icon: '🔄',
+    category: 'Lâm Sàng & Chăm Sóc',
+    gradient: 'linear-gradient(135deg, #0d9488, #0f766e)',
+  },
+  {
     key: 'operations',
     to: '/operations',
     label: 'Chăm Sóc & Vận Hành',
     icon: '🩺',
     category: 'Lâm Sàng & Chăm Sóc',
     gradient: 'linear-gradient(135deg, #059669, #047857)',
-  },
-  {
-    key: 'health-reports',
-    to: '/health-reports',
-    label: 'Báo Cáo Sức Khỏe',
-    icon: '📈',
-    category: 'Lâm Sàng & Chăm Sóc',
-    gradient: 'linear-gradient(135deg, #0891b2, #0e7490)',
   },
 
   // --- 2. DƯỢC PHẨM, DINH DƯỠNG & CA TRỰC ---
@@ -132,10 +141,11 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
   {
     key: 'staff-access',
     to: '/staff-access',
-    label: 'Phân Quyền RBAC',
-    icon: '🔑',
+    label: 'Giám Sát Phân Công',
+    icon: '🛡️',
     category: 'Quản Trị & Hệ Thống',
     gradient: 'linear-gradient(135deg, #334155, #0f172a)',
+    badge: 'RBAC',
   },
   {
     key: 'analytics-intelligence',
