@@ -858,15 +858,15 @@ export default function WorkforcePage() {
           {/* Shifts Table & Mobile Cards */}
           <div className="desktop-only-table">
             <div className="table-responsive">
-              <table className="ui-table" style={{ minWidth: '1000px' }}>
+              <table className="ui-table table-wide-1000" style={{ minWidth: '1000px' }}>
                 <thead>
                   <tr>
-                    <th>Nhân sự phân công</th>
-                    <th>Loại ca & Ngày trực</th>
-                    <th>Khung giờ quy định</th>
-                    <th>Thời gian thực tế</th>
-                    <th>Trạng thái</th>
-                    <th className="text-right">Thao tác & Đổi ca</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Nhân sự phân công</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Loại ca & Ngày trực</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Khung giờ quy định</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Thời gian thực tế</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Trạng thái</th>
+                    <th className="text-right" style={{ whiteSpace: 'nowrap' }}>Thao tác & Đổi ca</th>
                   </tr>
                 </thead>
                 <tbody>

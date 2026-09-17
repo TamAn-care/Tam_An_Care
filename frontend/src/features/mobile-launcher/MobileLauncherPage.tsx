@@ -458,9 +458,9 @@ export function MobileLauncherPage() {
             {(activeApp.id === 'psychology-eval' || activeApp.id === 'counseling') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {[
-                  { id: 'psy-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201 • Giường A', note: 'Thích trò chuyện về gia đình, tâm lý ổn định' },
-                  { id: 'psy-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203 • Giường B', note: 'Có biểu hiện lo âu ca đêm, cần động viên' },
-                  { id: 'psy-3', name: 'Cụ Lê Hoàng Nam', room: 'Phòng 205 • Giường A', note: 'Tham gia tích cực CLB Đọc sách ca sáng' },
+                  { id: 'psy-1', name: 'Bà Nguyễn Thị Mai', room: 'Phòng 201 • Giường A', note: 'Thích trò chuyện về gia đình, tâm lý ổn định' },
+                  { id: 'psy-2', name: 'Ông Trần Văn Bình', room: 'Phòng 203 • Giường B', note: 'Có biểu hiện lo âu ca đêm, cần động viên' },
+                  { id: 'psy-3', name: 'Ông Lê Hoàng Nam', room: 'Phòng 205 • Giường A', note: 'Tham gia tích cực CLB Đọc sách ca sáng' },
                 ].map((item) => {
                   const isDone = completedTaskIds[item.id];
                   return (
@@ -553,8 +553,8 @@ export function MobileLauncherPage() {
             {(activeApp.id === 'meds' || activeApp.id === 'vitals') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {[
-                  { id: 'med-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201', detail: 'Thuốc Huyết Áp (1 Viên) • Ca 08:00' },
-                  { id: 'med-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203', detail: 'Thuốc Bổ Não (2 Viên) • Ca 08:00' },
+                  { id: 'med-1', name: 'Bà Nguyễn Thị Mai', room: 'Phòng 201', detail: 'Thuốc Huyết Áp (1 Viên) • Ca 08:00' },
+                  { id: 'med-2', name: 'Ông Trần Văn Bình', room: 'Phòng 203', detail: 'Thuốc Bổ Não (2 Viên) • Ca 08:00' },
                 ].map((m) => {
                   const isDone = completedTaskIds[m.id];
                   return (
@@ -581,8 +581,8 @@ export function MobileLauncherPage() {
             {(activeApp.id === 'hygiene' || activeApp.id === 'meals') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {[
-                  { id: 'cg-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201' },
-                  { id: 'cg-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203' },
+                  { id: 'cg-1', name: 'Bà Nguyễn Thị Mai', room: 'Phòng 201' },
+                  { id: 'cg-2', name: 'Ông Trần Văn Bình', room: 'Phòng 203' },
                 ].map((cg) => (
                   <div key={cg.id} style={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '18px', padding: '14px' }}>
                     <div style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>{cg.name} ({cg.room})</div>

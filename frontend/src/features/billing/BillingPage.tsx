@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { hasCapability } from '../../auth/role-policy';
+import { formatResidentNameWithSalutation, getSalutation, isFemaleGender } from '../residents/resident-ui';
 import {
   fetchMonthlyInvoices,
   fetchPaymentReceipts,
@@ -1152,14 +1153,14 @@ export default function BillingPage() {
             </div>
 
             <div className="table-responsive">
-              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <table className="data-table table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#f0f9ff', borderBottom: '2px solid #bae6fd' }}>
-                    <th style={{ width: '50px', textAlign: 'center', padding: '0.65rem' }}>STT</th>
-                    <th style={{ padding: '0.65rem' }}>Nội Dung Dịch Vụ Hỗ Trợ</th>
-                    <th style={{ width: '100px', padding: '0.65rem' }}>Đơn Vị Tính</th>
-                    <th style={{ width: '180px', textAlign: 'right', padding: '0.65rem' }}>Mức Phí (đồng)</th>
-                    <th style={{ padding: '0.65rem' }}>Ghi Chú / Chi Tiết</th>
+                    <th style={{ width: '50px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>STT</th>
+                    <th style={{ padding: '0.65rem', whiteSpace: 'nowrap' }}>Nội Dung Dịch Vụ Hỗ Trợ</th>
+                    <th style={{ width: '100px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Đơn Vị Tính</th>
+                    <th style={{ width: '180px', textAlign: 'right', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mức Phí (đồng)</th>
+                    <th style={{ padding: '0.65rem', whiteSpace: 'nowrap' }}>Ghi Chú / Chi Tiết</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -3166,12 +3167,8 @@ export default function BillingPage() {
                 }
                 const formattedMonthDisplay = `${mNum}/${yNum}`;
 
-                const isFemale =
-                  printModalNotice.gender === 'FEMALE' ||
-                  printModalNotice.gender === 'Nữ' ||
-                  printModalNotice.residentName.includes('Thị') ||
-                  printModalNotice.residentName.includes('Bình');
-                const salutation = isFemale ? 'bà' : 'ông';
+                const isFemale = isFemaleGender(printModalNotice.gender, printModalNotice.residentName);
+                const salutation = getSalutation(printModalNotice.gender, printModalNotice.residentName);
                 const cleanResidentName = printModalNotice.residentName
                   .replace(/^(Cụ ông|Cụ bà|Cụ|Ông|Bà)\s+/i, '')
                   .trim();
@@ -3234,17 +3231,17 @@ export default function BillingPage() {
                     </div>
 
                     {/* Non-Zero Printable Items Table */}
-                    <div style={{ marginBottom: '0.65rem' }}>
+                    <div className="table-responsive" style={{ marginBottom: '0.65rem', overflowX: 'auto' }}>
                       <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
                         1. Chi tiết các khoản phí (Ghi có)
                       </div>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                      <table className="table-wide-700" style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                         <thead>
                           <tr style={{ background: '#0f172a', color: '#ffffff' }}>
-                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'center', width: '38px', fontWeight: 700, border: '1px solid #334155' }}>STT</th>
-                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'left', fontWeight: 700, border: '1px solid #334155' }}>Nội dung</th>
-                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'right', width: '135px', fontWeight: 700, border: '1px solid #334155' }}>Số tiền (VNĐ)</th>
-                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'left', width: '170px', fontWeight: 700, border: '1px solid #334155' }}>Ghi chú</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'center', width: '38px', fontWeight: 700, border: '1px solid #334155', whiteSpace: 'nowrap' }}>STT</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'left', fontWeight: 700, border: '1px solid #334155', whiteSpace: 'nowrap' }}>Nội dung</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'right', width: '135px', fontWeight: 700, border: '1px solid #334155', whiteSpace: 'nowrap' }}>Số tiền (VNĐ)</th>
+                            <th style={{ padding: '0.35rem 0.45rem', textAlign: 'left', width: '170px', fontWeight: 700, border: '1px solid #334155', whiteSpace: 'nowrap' }}>Ghi chú</th>
                           </tr>
                         </thead>
                         <tbody>

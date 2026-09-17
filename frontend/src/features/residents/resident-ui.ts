@@ -80,3 +80,46 @@ export function textFromRecord(
 
   return null;
 }
+
+export function isFemaleGender(gender?: string | null, name?: string | null): boolean {
+  if (gender) {
+    const gUpper = gender.trim().toUpperCase();
+    if (gUpper === 'FEMALE' || gUpper === 'NỮ' || gUpper === 'NU') {
+      return true;
+    }
+    if (gUpper === 'MALE' || gUpper === 'NAM') {
+      return false;
+    }
+  }
+  if (name) {
+    const n = name.trim();
+    if (/^(Cụ bà|Bà)\s+/i.test(n) || /\bThị\b/i.test(n)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function getSalutation(gender?: string | null, name?: string | null): string {
+  return isFemaleGender(gender, name) ? 'Bà' : 'Ông';
+}
+
+export function getElderIcon(gender?: string | null, name?: string | null): string {
+  return isFemaleGender(gender, name) ? '👵' : '👴';
+}
+
+export function cleanResidentName(name?: string | null): string {
+  if (!name) return '';
+  return name.replace(/^(Cụ ông|Cụ bà|Cụ|Ông|Bà)\s+/i, '').trim();
+}
+
+export function formatResidentNameWithSalutation(
+  name?: string | null,
+  gender?: string | null,
+): string {
+  if (!name) return '';
+  const cleaned = cleanResidentName(name);
+  const salutation = getSalutation(gender, name);
+  return `${salutation} ${cleaned}`;
+}
+

@@ -21,6 +21,7 @@ import {
   StaffLeaveStatus,
 } from '../../api/resident-leave';
 import { listResidents } from '../../api/residents';
+import { getElderIcon, formatResidentNameWithSalutation } from '../residents/resident-ui';
 
 const LEAVE_TYPE_LABEL: Record<string, string> = {
   FAMILY_VISIT: 'Thăm gia đình',
@@ -1065,7 +1066,7 @@ export default function ResidentLeavePage() {
                     <div key={item.leaveRequestId} className="mobile-card-item">
                       <div className="mobile-card-header">
                         <div className="mobile-card-title">
-                          👴 {item.residentName || item.residentId}{' '}
+                          {getElderIcon((item as any).gender, item.residentName || item.residentId)} {formatResidentNameWithSalutation(item.residentName || item.residentId, (item as any).gender)}{' '}
                           <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>({item.residentCode})</span>
                         </div>
                         <span className={statusMeta.className}>{statusMeta.label}</span>
@@ -1328,8 +1329,8 @@ export default function ResidentLeavePage() {
                   <button type="button" className="no-print" onClick={() => setViewingPrintItem(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
                 </div>
 
-                <div style={{ border: '1px solid #cbd5e1', padding: '1.25rem', borderRadius: '0.5rem', background: '#ffffff', marginBottom: '1.25rem' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <div className="table-responsive" style={{ border: '1px solid #cbd5e1', padding: '1.25rem', borderRadius: '0.5rem', background: '#ffffff', marginBottom: '1.25rem', overflowX: 'auto' }}>
+                  <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                     <tbody>
                       <tr>
                         <td style={{ padding: '6px', fontWeight: 700, width: '35%' }}>Họ tên người cao tuổi:</td>

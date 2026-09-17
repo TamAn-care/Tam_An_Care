@@ -1496,7 +1496,7 @@ export default function HealthReportsPage() {
       {viewingReport && (
         <div className="modal-overlay print-modal-overlay">
           <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
-            <div className="modal-header">
+            <div className="modal-header no-print">
               <h2 className="modal-title">Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
@@ -1554,64 +1554,66 @@ export default function HealthReportsPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                <thead>
-                  <tr style={{ background: '#334155', color: '#ffffff' }}>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Chỉ số sinh tồn</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Kết quả đo</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Phân loại / Đánh giá ban đầu</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.pulse}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
-                      [{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.bloodPressure}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
-                      [{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.temperature}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
-                      [{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SPO2 (%)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.spo2}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Cân nặng (kg):</b></td>
-                    <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      {viewingReport.data.weightRecords?.map(w => `Ngày ${w.date}: ${w.value}`).join('  |  ')}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Glucose máu mao mạch lúc đói:</b></td>
-                    <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      {viewingReport.data.glucoseRecords?.map(g => `Ngày ${g.date}: ${g.value}`).join('  |  ')}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <thead>
+                    <tr style={{ background: '#334155', color: '#ffffff' }}>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Chỉ số sinh tồn</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Kết quả đo</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Phân loại / Đánh giá ban đầu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.pulse}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
+                        [{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.bloodPressure}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
+                        [{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.temperature}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
+                        [{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SPO2 (%)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.spo2}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Cân nặng (kg):</b></td>
+                      <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        {viewingReport.data.weightRecords?.map(w => `Ngày ${w.date}: ${w.value}`).join('  |  ')}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Glucose máu mao mạch lúc đói:</b></td>
+                      <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        {viewingReport.data.glucoseRecords?.map(g => `Ngày ${g.date}: ${g.value}`).join('  |  ')}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               {/* III. BỆNH LÝ & THUỐC */}
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
@@ -1641,15 +1643,16 @@ export default function HealthReportsPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                <thead>
-                  <tr style={{ background: '#334155', color: '#ffffff' }}>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Hoạt động sinh hoạt thiết yếu</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Tự thực hiện</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Cần hỗ trợ một phần</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Phụ thuộc hoàn toàn</th>
-                  </tr>
-                </thead>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <thead>
+                    <tr style={{ background: '#334155', color: '#ffffff' }}>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Hoạt động sinh hoạt thiết yếu</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Tự thực hiện</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Cần hỗ trợ một phần</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Phụ thuộc hoàn toàn</th>
+                    </tr>
+                  </thead>
                 <tbody>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
@@ -1683,6 +1686,7 @@ export default function HealthReportsPage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
 
               {/* V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI */}
               <div className="section-header" style={{ background: '#fef3c7', border: '1px solid #fde68a', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#92400e' }}>

@@ -1415,14 +1415,14 @@ export function StaffAccessPage() {
                       }}>
                         🗂️ Lịch sử đã thu hồi ({revoked.length} phân công) — Nhấn để xem
                       </summary>
-                      <div style={{ marginTop: '0.5rem', overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                      <div className="table-responsive" style={{ marginTop: '0.5rem', overflowX: 'auto' }}>
+                        <table className="table-wide-700" style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                           <thead>
                             <tr style={{ background: '#f1f5f9' }}>
-                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'left', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0' }}>Nhân sự</th>
-                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'left', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0' }}>Vai trò</th>
-                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'left', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0' }}>Người cao tuổi</th>
-                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'center', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0' }}>Trạng thái</th>
+                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'left', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>Nhân sự</th>
+                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'left', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>Vai trò</th>
+                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'left', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>Người cao tuổi</th>
+                              <th style={{ padding: '0.4rem 0.6rem', textAlign: 'center', fontWeight: 600, color: '#475569', borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>Trạng thái</th>
                             </tr>
                           </thead>
                           <tbody>

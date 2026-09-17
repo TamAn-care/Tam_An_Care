@@ -332,17 +332,17 @@ export default function AnalyticsPage() {
                   📊 Cơ Cấu Công Suất Theo Từng Hạng Phòng Lưu Trú (Đồng bộ 110 Giường / 29 Phòng)
                 </h3>
 
-                <div className="table-wrapper" style={{ overflowX: 'auto' }}>
-                  <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="table-wrapper table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="data-table table-wide-750" style={{ width: '100%', minWidth: '750px', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', fontSize: '0.85rem' }}>
-                        <th style={{ padding: '0.75rem' }}>Hạng Phòng Lưu Trú</th>
-                        <th style={{ padding: '0.75rem' }}>Số lượng phòng</th>
-                        <th style={{ padding: '0.75rem' }}>Tổng số giường</th>
-                        <th style={{ padding: '0.75rem' }}>Đang sử dụng</th>
-                        <th style={{ padding: '0.75rem' }}>Còn trống</th>
-                        <th style={{ padding: '0.75rem' }}>Tỷ lệ lấp đầy (%)</th>
-                        <th style={{ padding: '0.75rem' }}>Trạng thái tiếp nhận</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Hạng Phòng Lưu Trú</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Số lượng phòng</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tổng số giường</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Đang sử dụng</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Còn trống</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tỷ lệ lấp đầy (%)</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Trạng thái tiếp nhận</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -711,14 +711,14 @@ export default function AnalyticsPage() {
                   📋 Phân Bổ Khối Lượng Chăm Sóc Theo Nhóm Nghiệp Vụ
                 </h3>
 
-                <div className="table-wrapper" style={{ overflowX: 'auto' }}>
-                  <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div className="table-wrapper table-responsive" style={{ overflowX: 'auto' }}>
+                  <table className="data-table table-wide-750" style={{ width: '100%', minWidth: '750px', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', fontSize: '0.85rem' }}>
-                        <th style={{ padding: '0.75rem' }}>Nhóm Nghiệp Vụ Chăm Sóc</th>
-                        <th style={{ padding: '0.75rem' }}>Số lượt công việc ghi nhận</th>
-                        <th style={{ padding: '0.75rem' }}>Tỷ trọng khối lượng</th>
-                        <th style={{ padding: '0.75rem' }}>Đánh giá vận hành</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Nhóm Nghiệp Vụ Chăm Sóc</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Số lượt công việc ghi nhận</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tỷ trọng khối lượng</th>
+                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Đánh giá vận hành</th>
                       </tr>
                     </thead>
                     <tbody>

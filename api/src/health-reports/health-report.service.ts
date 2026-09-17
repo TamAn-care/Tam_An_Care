@@ -333,7 +333,7 @@ export class HealthReportService {
       status: 'APPROVED',
       report_version: 1,
       summary: JSON.stringify({
-        residentName: 'Cụ Nguyễn Văn An',
+        residentName: 'Ông Nguyễn Văn An',
         residentCode: 'NCT-001',
         dateOfBirth: '01/01/1944',
         gender: 'Nam',

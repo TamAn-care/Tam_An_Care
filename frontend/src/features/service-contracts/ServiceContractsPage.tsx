@@ -307,17 +307,17 @@ export function ServiceContractsPage() {
             Không tìm thấy Hợp đồng dịch vụ nào phù hợp.
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          <div className="table-responsive" style={{ overflowX: 'auto' }}>
+            <table className="table-wide-900" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
                 <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #cbd5e1', textAlign: 'left', color: '#334155' }}>
-                  <th style={{ padding: '0.75rem 1rem' }}>Số Hợp Đồng</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Người Cao Tuổi (Bên A)</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Đại Diện Thân Nhân</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Vị Trí / Mức Phí</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Ngày Ký / Hiệu Lực</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Trạng Thái</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Thao Tác</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Số Hợp Đồng</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Cao Tuổi (Bên A)</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Đại Diện Thân Nhân</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Vị Trí / Mức Phí</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Ngày Ký / Hiệu Lực</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Thao Tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -846,7 +846,6 @@ export function ServiceContractsPage() {
 
               /* Hide all background app layout elements completely */
               body > *:not(#root),
-              #root > *:not(.app-shell),
               .app-shell > aside,
               .sidebar,
               .navigation,
@@ -854,8 +853,7 @@ export function ServiceContractsPage() {
               .no-print,
               button:not(.printable-button),
               .modal-backdrop:not(.print-modal-overlay),
-              .modal-overlay:not(.print-modal-overlay),
-              main.page > *:not(.print-modal-overlay) {
+              .modal-overlay:not(.print-modal-overlay) {
                 display: none !important;
                 height: 0 !important;
                 margin: 0 !important;

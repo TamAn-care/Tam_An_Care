@@ -2325,7 +2325,7 @@ export function AdmissionPage() {
       {viewingAssessment && (
         <div className="modal-overlay print-modal-overlay">
           <div className={`modal-dialog modal-dialog-lg print-target-${printTarget.toLowerCase()}`} style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
-            <div className="modal-header">
+            <div className="modal-header no-print">
               <h2 className="modal-title">Xem & In Phiếu Nhập Viện (Đánh Giá Sức Khỏe & Bàn Giao)</h2>
               <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
                 {viewingAssessment.c.status !== 'ADMITTED' && viewingAssessment.c.status !== 'COMPLETED' && (
@@ -2417,62 +2417,64 @@ export function AdmissionPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                <thead>
-                  <tr style={{ background: '#334155', color: '#ffffff' }}>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Chỉ số sinh tồn</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Kết quả đo</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Phân loại / Đánh giá ban đầu</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.pulse}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingAssessment.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingAssessment.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
-                      [{viewingAssessment.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.bloodPressure}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingAssessment.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingAssessment.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
-                      [{viewingAssessment.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.temperature}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingAssessment.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingAssessment.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
-                      [{viewingAssessment.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhịp thở / SPO2 (%)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.respiratoryOrSpo2}%</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingAssessment.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingAssessment.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Cân nặng / Chiều cao</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.weight} kg / {viewingAssessment.data.height} cm</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      BMI: <b>{viewingAssessment.data.bmi}</b> &nbsp;
-                      ([{viewingAssessment.data.bmiEvaluation === 'NORMAL' ? ' x ' : '   '}] Chuẩn &nbsp;
-                      [{viewingAssessment.data.bmiEvaluation === 'THIN' ? ' x ' : '   '}] Gầy &nbsp;
-                      [{viewingAssessment.data.bmiEvaluation === 'OVERWEIGHT' ? ' x ' : '   '}] Thừa cân)
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <thead>
+                    <tr style={{ background: '#334155', color: '#ffffff' }}>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Chỉ số sinh tồn</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Kết quả đo</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Phân loại / Đánh giá ban đầu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.pulse}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingAssessment.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingAssessment.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
+                        [{viewingAssessment.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.bloodPressure}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingAssessment.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingAssessment.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
+                        [{viewingAssessment.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.temperature}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingAssessment.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingAssessment.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
+                        [{viewingAssessment.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhịp thở / SPO2 (%)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.respiratoryOrSpo2}%</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingAssessment.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingAssessment.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Cân nặng / Chiều cao</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingAssessment.data.weight} kg / {viewingAssessment.data.height} cm</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        BMI: <b>{viewingAssessment.data.bmi}</b> &nbsp;
+                        ([{viewingAssessment.data.bmiEvaluation === 'NORMAL' ? ' x ' : '   '}] Chuẩn &nbsp;
+                        [{viewingAssessment.data.bmiEvaluation === 'THIN' ? ' x ' : '   '}] Gầy &nbsp;
+                        [{viewingAssessment.data.bmiEvaluation === 'OVERWEIGHT' ? ' x ' : '   '}] Thừa cân)
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               {/* III. TIỀN SỬ BỆNH LÝ & THUỐC */}
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
@@ -2502,15 +2504,16 @@ export function AdmissionPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                <thead>
-                  <tr style={{ background: '#334155', color: '#ffffff' }}>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Hoạt động sinh hoạt thiết yếu</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Tự thực hiện</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Cần hỗ trợ một phần</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Phụ thuộc hoàn toàn</th>
-                  </tr>
-                </thead>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <thead>
+                    <tr style={{ background: '#334155', color: '#ffffff' }}>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Hoạt động sinh hoạt thiết yếu</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Tự thực hiện</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Cần hỗ trợ một phần</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Phụ thuộc hoàn toàn</th>
+                    </tr>
+                  </thead>
                 <tbody>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
@@ -2544,6 +2547,7 @@ export function AdmissionPage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
 
               {/* V, VI, VII. TINH THẦN & NGUY CƠ */}
               <div style={{ fontSize: '0.8rem', marginBottom: '0.4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>

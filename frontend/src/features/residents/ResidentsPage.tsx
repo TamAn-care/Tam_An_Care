@@ -47,6 +47,7 @@ import {
   CARE_LEVEL_LABEL,
   formatVietnameseDate,
   GENDER_LABEL,
+  formatResidentNameWithSalutation,
 } from './resident-ui';
 
 import { getAssignedResidentIdsForActor, hasCapability } from '../../auth/role-policy';
@@ -479,7 +480,7 @@ export function ResidentsPage() {
                         <ElderlyAvatar gender={resident.gender} name={resident.displayName} size={42} />
                         <div>
                           <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
-                            {resident.displayName}
+                            {formatResidentNameWithSalutation(resident.displayName, resident.gender)}
                           </h3>
                           <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
                             Mã hồ sơ: <b>{resident.residentCode}</b>

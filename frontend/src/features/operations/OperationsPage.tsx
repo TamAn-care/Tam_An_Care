@@ -12,6 +12,10 @@ import {
   listResidents,
 } from '../../api/residents';
 import {
+  getElderIcon,
+  formatResidentNameWithSalutation,
+} from '../residents/resident-ui';
+import {
   amendWorkEvent,
   createWorkEvent,
   getWorkEvent,
@@ -430,18 +434,12 @@ export function OperationsPage() {
   // Search & Filter State
   const [residentId, setResidentId] = useState('');
   const [typeId, setTypeId] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState(userDomainCategory || '');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [performedBy, setPerformedBy] = useState('');
   const [status, setStatus] = useState<WorkEventStatus | ''>('');
   const [searchKeyword, setSearchKeyword] = useState('');
   const [sourceDomain, setSourceDomain] = useState('');
   const [limit, setLimit] = useState(100);
-
-  useEffect(() => {
-    if (userDomainCategory) {
-      setCategoryFilter(userDomainCategory);
-    }
-  }, [userDomainCategory]);
 
   // Selected Resident Comprehensive View Tab
   const [residentActiveTab, setResidentActiveTab] = useState<'VITALS' | 'MEDS' | 'TASKS' | 'EVENTS' | 'INCIDENTS'>('VITALS');
@@ -1043,7 +1041,7 @@ export function OperationsPage() {
   function clearFilters() {
     setResidentId('');
     setTypeId('');
-    setCategoryFilter(userDomainCategory || '');
+    setCategoryFilter('');
     setPerformedBy('');
     setStatus('');
     setSearchKeyword('');
@@ -1348,79 +1346,15 @@ export function OperationsPage() {
           </label>
 
           <label className="field-group">
-            <span className="field-label">Khối chuyên mục</span>
-            <select
-              className="text-input"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-            >
-              <option value="">Tất cả chuyên mục</option>
-              {Object.entries(CATEGORY_LABELS).map(([catKey, catName]) => (
-                <option key={catKey} value={catKey}>
-                  {catName}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field-group">
-            <span className="field-label">Loại công việc cụ thể</span>
-            <select
-              className="text-input"
-              value={typeId}
-              onChange={(event) => setTypeId(event.target.value)}
-            >
-              <option value="">Tất cả loại công việc</option>
-              {Object.entries(manualTypesByCategory).map(([catKey, typesInCat]) => (
-                <optgroup key={catKey} label={CATEGORY_LABELS[catKey] || catKey}>
-                  {typesInCat.map((type) => (
-                    <option key={type.work_event_type_id} value={type.work_event_type_id}>
-                      {type.display_name_vi}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-          </label>
-
-          <label className="field-group">
-            <span className="field-label">Trạng thái</span>
-            <select
-              className="text-input"
-              value={status}
-              onChange={(event) => setStatus(event.target.value as WorkEventStatus | '')}
-            >
-              <option value="">Tất cả trạng thái</option>
-              {Object.entries(STATUS_LABEL).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field-group">
-            <span className="field-label">Người thực hiện</span>
+            <span className="field-label" style={{ fontWeight: 600, color: '#1e293b' }}>
+              👷 Người thực hiện
+            </span>
             <input
               className="text-input"
               value={performedBy}
               placeholder="Tên / Mã nhân viên"
               onChange={(event) => setPerformedBy(event.target.value)}
             />
-          </label>
-
-          <label className="field-group">
-            <span className="field-label">Số bản ghi tối đa</span>
-            <select
-              className="text-input"
-              value={limit}
-              onChange={(event) => setLimit(Number(event.target.value))}
-            >
-              <option value={25}>25 bản ghi</option>
-              <option value={50}>50 bản ghi</option>
-              <option value={100}>100 bản ghi</option>
-              <option value={200}>200 bản ghi</option>
-            </select>
           </label>
         </div>
 
@@ -1710,8 +1644,8 @@ export function OperationsPage() {
               <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>
                 Hiển thị <b>{filteredEvents.length}</b> công việc điều dưỡng/chăm sóc viên đã thực hiện cho cụ <b>{selectedResident.displayName}</b>:
               </div>
-              <div className="operations-table-wrap">
-                <table className="operations-table">
+              <div className="operations-table-wrap table-responsive">
+                <table className="operations-table table-wide-900" style={{ minWidth: '900px' }}>
                   <thead>
                     <tr>
                       <th>Thời điểm</th>
@@ -2180,8 +2114,8 @@ export function OperationsPage() {
         {filteredEvents.length > 0 && (
           <>
             <div className="desktop-only-table">
-              <div className="operations-table-wrap">
-                <table className="operations-table">
+              <div className="operations-table-wrap table-responsive">
+                <table className="operations-table table-wide-950" style={{ minWidth: '950px' }}>
                   <thead>
                     <tr>
                       <th>Thời điểm</th>
@@ -2304,7 +2238,7 @@ export function OperationsPage() {
                       <div className="mobile-card-title">
                         {resident ? (
                           <>
-                            👴 {resident.displayName}{' '}
+                            {getElderIcon(resident.gender, resident.displayName)} {formatResidentNameWithSalutation(resident.displayName, resident.gender)}{' '}
                             <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>
                               {resident.room ? `(${resident.room})` : ''}
                             </span>

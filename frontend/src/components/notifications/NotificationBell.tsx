@@ -115,14 +115,17 @@ export function NotificationBell() {
           position: 'relative',
           background: isOpen ? '#f0fdf4' : '#ffffff',
           border: isOpen ? '1px solid #86efac' : '1px solid #cbd5e1',
-          borderRadius: '0.4rem',
-          padding: '0.4rem 0.65rem',
-          fontSize: '1.1rem',
+          borderRadius: '0.65rem',
+          height: '42px',
+          width: '42px',
+          minWidth: '42px',
+          fontSize: '1.2rem',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           transition: 'all 0.2s ease-in-out',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
         }}
         title="Thông báo nội bộ"
       >

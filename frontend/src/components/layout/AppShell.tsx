@@ -216,31 +216,59 @@ export function AppShell() {
         </div>
 
         <div className="topbar-end" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-          <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <NotificationBell />
+          <div className="actor-panel" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+            {/* Balanced Block: Bell Notice + 2-line Staff Info */}
+            <div
+              className="actor-profile-bell-block"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.55rem',
+                minHeight: '42px',
+              }}
+            >
+              <NotificationBell />
 
-            <div className="actor-summary" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <span style={{ fontSize: '0.85rem' }}>👤</span>
-              <span className="actor-value" style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a' }}>
-                {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
-              </span>
-              {actor && (
-                <span
-                  className="actor-role"
+              <div
+                className="actor-summary-2lines"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  minWidth: 0,
+                  lineHeight: 1.25,
+                }}
+              >
+                <div
+                  className="actor-name-line"
                   style={{
-                    fontSize: '0.7rem',
+                    fontSize: '0.85rem',
                     fontWeight: 700,
-                    color: '#166534',
-                    background: '#dcfce7',
-                    border: '1px solid #86efac',
-                    borderRadius: '9999px',
-                    padding: '0.1rem 0.45rem',
+                    color: '#0f172a',
                     whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
                   }}
                 >
-                  {ROLE_LABELS[actor.actorRole] || actor.actorRole}
-                </span>
-              )}
+                  {actor ? actor.displayName || actor.actorId : 'Chưa đăng nhập'}
+                </div>
+                {actor && (
+                  <div
+                    className="actor-role-line"
+                    style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 600,
+                      color: '#166534',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      marginTop: '1px',
+                    }}
+                  >
+                    {ROLE_LABELS[actor.actorRole] || actor.actorRole}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexWrap: 'wrap' }}>

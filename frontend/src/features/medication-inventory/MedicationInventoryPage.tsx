@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { hasCapability } from '../../auth/role-policy';
 import { listResidents } from '../../api/residents';
+import { getElderIcon, formatResidentNameWithSalutation } from '../residents/resident-ui';
 import {
   fetchMedicationOrders,
   createMedicationOrder,
@@ -597,7 +598,7 @@ export default function MedicationInventoryPage() {
                     <div style={{ flex: 1, minWidth: '280px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
                         <span style={{ fontWeight: 800, color: '#0f172a', fontSize: '1.05rem' }}>
-                          👵 {admin.residentName}
+                          {getElderIcon((admin as any).gender, admin.residentName)} {formatResidentNameWithSalutation(admin.residentName, (admin as any).gender)}
                         </span>
                         <span className="badge badge-neutral" style={{ fontSize: '0.8rem' }}>
                           Phòng {admin.room} — Giường {admin.bed}
@@ -764,7 +765,7 @@ export default function MedicationInventoryPage() {
                   {ordersQuery.data?.map((order) => (
                     <tr key={order.orderId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
                       <td style={{ padding: '0.75rem 1rem' }}>
-                        <div style={{ fontWeight: 800, color: '#0f172a' }}>👵 {order.residentName}</div>
+                        <div style={{ fontWeight: 800, color: '#0f172a' }}>{getElderIcon((order as any).gender, order.residentName)} {formatResidentNameWithSalutation(order.residentName, (order as any).gender)}</div>
                         <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 600 }}>P.{order.room} ({order.bed})</div>
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
@@ -1147,7 +1148,7 @@ export default function MedicationInventoryPage() {
                         👤 {tx.performedBy}
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
-                        {tx.residentName ? <span style={{ fontWeight: 700, color: '#0f172a' }}>👵 {tx.residentName}</span> : <span style={{ color: '#94a3b8' }}>—</span>}
+                        {tx.residentName ? <span style={{ fontWeight: 700, color: '#0f172a' }}>{getElderIcon((tx as any).gender, tx.residentName)} {formatResidentNameWithSalutation(tx.residentName, (tx as any).gender)}</span> : <span style={{ color: '#94a3b8' }}>—</span>}
                       </td>
                       <td style={{ padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#475569' }}>
                         {tx.reason || '—'}

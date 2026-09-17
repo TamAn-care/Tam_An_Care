@@ -12,6 +12,7 @@ import { fetchDetailedFeeNotices, updateFeeNoticePayment } from '../../api/billi
 import { fetchResidentIntegrationOverview } from '../../api/integration';
 import { LoadingState, ErrorState, EmptyState } from '../../components/feedback/FeedbackStates';
 import ElderlyAvatar from '../../components/common/ElderlyAvatar';
+import { formatResidentNameWithSalutation, getSalutation, isFemaleGender } from '../residents/resident-ui';
 
 const CARE_LEVEL_CONFIG: Record<string, { label: string; badgeClass: string; desc: string }> = {
   INDEPENDENT: { label: 'Chăm sóc Cấp độ 1', badgeClass: 'badge-success', desc: 'Tự chủ sinh hoạt cơ bản, cần hỗ trợ nhẹ' },
@@ -1565,13 +1566,14 @@ export default function FamilyPortalPage() {
                         <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.5rem' }}>
                           📋 Bảng Chi Tiết Phí Viện Phí & Các Hạng Mục Phát Sinh (Chỉ liệt kê các khoản có chi phí thực tế):
                         </div>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
-                          <thead>
-                            <tr style={{ background: '#f0fdf4', color: '#166534', textAlign: 'left' }}>
-                              <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5' }}>Nội dung chi phí</th>
-                              <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5', textAlign: 'right' }}>Số tiền (VNĐ)</th>
-                            </tr>
-                          </thead>
+                        <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                          <table className="table-wide-700" style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                            <thead>
+                              <tr style={{ background: '#f0fdf4', color: '#166534', textAlign: 'left' }}>
+                                <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5', whiteSpace: 'nowrap' }}>Nội dung chi phí</th>
+                                <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5', textAlign: 'right', whiteSpace: 'nowrap' }}>Số tiền (VNĐ)</th>
+                              </tr>
+                            </thead>
                           <tbody>
                             {feeItemsList.map((item, idx) => (
                               <tr key={idx} style={{ borderBottom: '1px solid #f0fdf4' }}>
@@ -1615,8 +1617,9 @@ export default function FamilyPortalPage() {
                         )}
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                );
+              })}
               </div>
             )}
           </div>
@@ -1869,7 +1872,7 @@ export default function FamilyPortalPage() {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0' }}>
+            <div className="modal-header no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem', borderBottom: '1px solid #e2e8f0' }}>
               <h2 className="modal-title" style={{ margin: 0, fontSize: '1.15rem', color: '#1e293b', fontWeight: 800 }}>
                 📋 Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa Tâm An
               </h2>
@@ -1922,7 +1925,7 @@ export default function FamilyPortalPage() {
                 I. THÔNG TIN HÀNH CHÍNH
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
-                <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem', fontWeight: 700 }}>{viewingReport.data.residentName}</span></div>
+                <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem', fontWeight: 700 }}>{formatResidentNameWithSalutation(viewingReport.data.residentName, viewingReport.data.gender)}</span></div>
                 <div><b>Mã số hồ sơ NCT:</b> {viewingReport.data.residentCode}</div>
                 <div><b>Ngày tháng năm sinh:</b> {viewingReport.data.dateOfBirth}</div>
                 <div><b>Giới tính:</b> {viewingReport.data.gender}</div>
@@ -1932,64 +1935,66 @@ export default function FamilyPortalPage() {
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>
                 II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                <thead>
-                  <tr style={{ background: '#334155', color: '#ffffff' }}>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'left' }}>Chỉ số sinh tồn</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Kết quả đo</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'left' }}>Phân loại / Đánh giá ban đầu</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.pulse}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
-                      [{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.bloodPressure}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
-                      [{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.temperature}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
-                      [{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SPO2 (%)</td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.spo2}</b></td>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      [{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                      [{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Cân nặng (kg):</b></td>
-                    <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      {viewingReport.data.weightRecords?.map((w: any) => `Ngày ${w.date}: ${w.value}`).join('  |  ')}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Glucose máu mao mạch lúc đói:</b></td>
-                    <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                      {viewingReport.data.glucoseRecords?.map((g: any) => `Ngày ${g.date}: ${g.value}`).join('  |  ')}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <thead>
+                    <tr style={{ background: '#334155', color: '#ffffff' }}>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'left', whiteSpace: 'nowrap' }}>Chỉ số sinh tồn</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Kết quả đo</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'left', whiteSpace: 'nowrap' }}>Phân loại / Đánh giá ban đầu</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.pulse}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
+                        [{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.bloodPressure}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
+                        [{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.temperature}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
+                        [{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SPO2 (%)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.spo2}</b></td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        [{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
+                        [{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Cân nặng (kg):</b></td>
+                      <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        {viewingReport.data.weightRecords?.map((w: any) => `Ngày ${w.date}: ${w.value}`).join('  |  ')}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Glucose máu mao mạch lúc đói:</b></td>
+                      <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
+                        {viewingReport.data.glucoseRecords?.map((g: any) => `Ngày ${g.date}: ${g.value}`).join('  |  ')}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               {/* III. BỆNH LÝ & THUỐC */}
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>
@@ -2016,15 +2021,16 @@ export default function FamilyPortalPage() {
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>
                 IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                <thead>
-                  <tr style={{ background: '#334155', color: '#ffffff' }}>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'left' }}>Hoạt động sinh hoạt thiết yếu</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Tự thực hiện</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Cần hỗ trợ một phần</th>
-                    <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Phụ thuộc hoàn toàn</th>
-                  </tr>
-                </thead>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                  <thead>
+                    <tr style={{ background: '#334155', color: '#ffffff' }}>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'left', whiteSpace: 'nowrap' }}>Hoạt động sinh hoạt thiết yếu</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Tự thực hiện</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Cần hỗ trợ một phần</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Phụ thuộc hoàn toàn</th>
+                    </tr>
+                  </thead>
                 <tbody>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
@@ -2052,6 +2058,7 @@ export default function FamilyPortalPage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
 
               {/* VIII. KẾT LUẬN & HƯỚNG CHĂM SÓC */}
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>

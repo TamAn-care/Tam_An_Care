@@ -1184,18 +1184,18 @@ export default function KitchenOperationsPage() {
           </div>
 
           {/* Samples Table */}
-          <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+          <div className="card table-responsive" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <table className="table-wide-950" style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
-                  <th style={{ padding: '0.75rem 1rem' }}>Mã Mẫu / Bữa Ăn</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Tên Món Ăn Lưu Mẫu</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Dung Lượng / Dụng Cụ</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Vị Trí Tủ / Nhiệt Độ</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Người Lấy Mẫu</th>
-                  <th style={{ padding: '0.75rem 1rem' }}>Thời Gian Lưu (24 Giờ)</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
-                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Thao Tác</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã Mẫu / Bữa Ăn</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Tên Món Ăn Lưu Mẫu</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Dung Lượng / Dụng Cụ</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Vị Trí Tủ / Nhiệt Độ</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Lấy Mẫu</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Thời Gian Lưu (24 Giờ)</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Thao Tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -1300,16 +1300,16 @@ export default function KitchenOperationsPage() {
             <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.05rem', color: '#0f172a' }}>
               1. Bảng Đánh Giá Nhà Cung Cấp & Sai Lệch Khối Lượng Giao Nhận
             </h3>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
-                    <th style={{ padding: '0.75rem 1rem' }}>Mã & Tên Nhà Cung Cấp</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Số Hợp Đồng / Mặt Hàng</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Chứng Nhận An Toàn</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Lịch Giao Hàng</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Đánh Giá Uy Tín</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã & Tên Nhà Cung Cấp</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Số Hợp Đồng / Mặt Hàng</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Chứng Nhận An Toàn</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Lịch Giao Hàng</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Đánh Giá Uy Tín</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1351,16 +1351,16 @@ export default function KitchenOperationsPage() {
             <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.05rem', color: '#0f172a' }}>
               2. Nhật Ký Xuất Kho Thực Phẩm Chế Biến Hàng Ngày
             </h3>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
-                    <th style={{ padding: '0.75rem 1rem' }}>Mã Xuất / Ngày</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Bữa Ăn & Thực Đơn</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Số Suất Ăn</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Nguyên Liệu Xuất Kho</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Người Thực Hiện</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã Xuất / Ngày</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Bữa Ăn & Thực Đơn</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Số Suất Ăn</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Nguyên Liệu Xuất Kho</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Thực Hiện</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1580,20 +1580,20 @@ export default function KitchenOperationsPage() {
                 </button>
               </div>
 
-              <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+              <div className="table-responsive" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+                <table className="table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
-                      <th style={{ padding: '0.5rem', textAlign: 'left' }}>Tên mặt hàng</th>
-                      <th style={{ padding: '0.5rem', width: '90px' }}>Phiếu (kg/đv)</th>
-                      <th style={{ padding: '0.5rem', width: '90px' }}>Cân thực tế</th>
-                      <th style={{ padding: '0.5rem', width: '70px' }}>Lệch $\pm\%$</th>
-                      {canViewFinancials && <th style={{ padding: '0.5rem', width: '95px' }}>Đơn giá (đ)</th>}
-                      <th style={{ padding: '0.5rem', width: '70px' }}>Nhiệt độ</th>
-                      <th style={{ padding: '0.5rem', width: '100px' }}>Hạn dùng</th>
-                      <th style={{ padding: '0.5rem', width: '110px' }}>Kho lưu</th>
-                      <th style={{ padding: '0.5rem', width: '110px' }}>Kết luận</th>
-                      <th style={{ padding: '0.5rem', width: '40px' }}>Xóa</th>
+                      <th style={{ padding: '0.5rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Tên mặt hàng</th>
+                      <th style={{ padding: '0.5rem', width: '90px', whiteSpace: 'nowrap' }}>Phiếu (kg/đv)</th>
+                      <th style={{ padding: '0.5rem', width: '90px', whiteSpace: 'nowrap' }}>Cân thực tế</th>
+                      <th style={{ padding: '0.5rem', width: '70px', whiteSpace: 'nowrap' }}>Lệch $\pm\%$</th>
+                      {canViewFinancials && <th style={{ padding: '0.5rem', width: '95px', whiteSpace: 'nowrap' }}>Đơn giá (đ)</th>}
+                      <th style={{ padding: '0.5rem', width: '70px', whiteSpace: 'nowrap' }}>Nhiệt độ</th>
+                      <th style={{ padding: '0.5rem', width: '100px', whiteSpace: 'nowrap' }}>Hạn dùng</th>
+                      <th style={{ padding: '0.5rem', width: '110px', whiteSpace: 'nowrap' }}>Kho lưu</th>
+                      <th style={{ padding: '0.5rem', width: '110px', whiteSpace: 'nowrap' }}>Kết luận</th>
+                      <th style={{ padding: '0.5rem', width: '40px', whiteSpace: 'nowrap' }}>Xóa</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1844,14 +1844,14 @@ export default function KitchenOperationsPage() {
 
             {/* Items Table */}
             <h3 style={{ fontSize: '0.95rem', margin: '0 0 0.5rem 0', color: '#0f172a' }}>Chi tiết kiểm đếm từng mặt hàng:</h3>
-            <div style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem', marginBottom: '1.25rem' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem', marginBottom: '1.25rem' }}>
+              <table className="table-wide-800" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                 <thead>
                   <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
-                    <th style={{ padding: '0.5rem 0.75rem' }}>Tên Mặt Hàng</th>
-                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Phiếu Giao</th>
-                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Cân Thực Tế</th>
-                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Lệch</th>
+                    <th style={{ padding: '0.5rem 0.75rem', whiteSpace: 'nowrap' }}>Tên Mặt Hàng</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phiếu Giao</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Cân Thực Tế</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Lệch</th>
                     {canViewFinancials && (
                       <>
                         <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Đơn Giá</th>

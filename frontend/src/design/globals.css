@@ -450,6 +450,42 @@ transform: scale(1.28);
   font-size: 0.75rem;
 }
 
+/* Balanced 2-Line Mobile & Desktop Staff Info + Bell Notice Block */
+.actor-profile-bell-block {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 42px;
+}
+
+.actor-summary-2lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.actor-name-line {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.actor-role-line {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #166534;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
 .mobile-menu-button {
   display: none;
   align-items: center;
@@ -1880,48 +1916,15 @@ transform: scale(1.28);
     margin: 6mm 10mm 6mm 10mm;
   }
 
-  html,
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-    font-size: 9.5pt !important;
-    line-height: 1.25 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    overflow: visible !important;
-  }
-
-  /* 1. Hide non-printable navigation, sidebar, topbar, filters, and non-printable buttons */
-  .app-shell > aside,
-  .sidebar,
-  .navigation,
-  .topbar,
-  .tab-nav,
-  .filter-toolbar,
-  .no-print,
-  button:not(.printable-button),
-  .modal-overlay:not(.print-modal-overlay),
-  .modal-backdrop:not(.print-modal-overlay),
-  .modal-footer:not(.printable-a4-sheet) {
-    display: none !important;
-  }
-
-  /* 2. Hide background app page content ONLY when a print modal overlay is active */
-  body:has(.print-modal-overlay) .page-content > *:not(.print-modal-overlay),
-  body:has(.print-modal-overlay) .main-shell > *:not(.print-modal-overlay),
-  body:has(.print-modal-overlay) .content > *:not(.print-modal-overlay) {
-    display: none !important;
-  }
-
-  /* 3. Universal layout container reset for print flow */
+  /* 1. Reset document root & layout wrappers to static block print flow */
   html,
   body,
   #root,
+  .app-shell-fullwidth,
   .app-shell,
   .main-shell,
   .content,
+  main,
   .page-content,
   .page-container,
   .modal-overlay,
@@ -1930,7 +1933,8 @@ transform: scale(1.28);
   .modal-dialog-lg,
   .modal-card,
   .modal-body,
-  .print-modal-overlay {
+  .print-modal-overlay,
+  .printable-a4-sheet {
     display: block !important;
     position: static !important;
     float: none !important;
@@ -1959,43 +1963,63 @@ transform: scale(1.28);
     z-index: auto !important;
   }
 
-  /* 4. Ensure single-page and multi-page A4 print sheets render crisp */
-  .printable-a4-sheet {
-    padding: 0 !important;
-    margin: 0 !important;
-    font-size: 9.5pt !important;
-    line-height: 1.22 !important;
-    background: #ffffff !important;
-    color: #000000 !important;
+  /* 2. Hide non-printable navigation, sidebar, topbar, filters, and non-printable controls */
+  header.topbar,
+  header,
+  footer,
+  aside,
+  .sidebar,
+  .navigation,
+  .tab-nav,
+  .filter-toolbar,
+  .no-print,
+  .modal-close,
+  button:not(.printable-button),
+  .modal-overlay:not(.print-modal-overlay),
+  .modal-backdrop:not(.print-modal-overlay) {
+    display: none !important;
   }
 
+  /* 3. When a print modal is active, hide background elements that don't contain the modal */
+  body:has(.print-modal-overlay) .page-content > *:not(:has(.print-modal-overlay)),
+  body:has(.print-modal-overlay) .main-shell > *:not(:has(.print-modal-overlay)),
+  body:has(.print-modal-overlay) .content > *:not(:has(.print-modal-overlay)) {
+    display: none !important;
+  }
+
+  /* 4. Table & typography formatting for A4 print sheets */
   .printable-a4-sheet table,
   .data-table-card table,
   .table-responsive table {
     font-size: 8.8pt !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 6px !important;
     border-collapse: collapse !important;
     width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
   }
 
   .printable-a4-sheet th,
   .printable-a4-sheet td,
   .data-table-card th,
   .data-table-card td {
-    padding: 3px 6px !important;
-    line-height: 1.18 !important;
-    border: 1px solid #cbd5e1 !important;
+    padding: 4px 6px !important;
+    line-height: 1.2 !important;
+    border: 1px solid #94a3b8 !important;
+    color: #000000 !important;
+    background: #ffffff !important;
   }
 
   .printable-a4-sheet .section-header {
-    padding: 3px 6px !important;
-    margin-bottom: 3px !important;
-    margin-top: 4px !important;
-    font-size: 9.2pt !important;
+    padding: 4px 6px !important;
+    margin-bottom: 4px !important;
+    margin-top: 6px !important;
+    font-size: 9.5pt !important;
+    font-weight: bold !important;
   }
 
   .printable-a4-sheet .signature-box {
-    margin-top: 14px !important;
+    margin-top: 18px !important;
     margin-bottom: 0 !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -2279,6 +2303,15 @@ div:has(> table),
   scrollbar-color: #cbd5e1 #f8fafc;
 }
 
+/* Ensure all tables inside scroll wrappers have a readable minimum width fallback */
+.table-responsive > table,
+.table-container > table,
+.table-wrapper > table,
+.operations-table-wrap > table,
+div:has(> table) > table {
+  min-width: 720px;
+}
+
 .table-responsive::-webkit-scrollbar,
 .table-container::-webkit-scrollbar,
 div:has(> table)::-webkit-scrollbar {
@@ -2315,6 +2348,7 @@ div:has(> table)::-webkit-scrollbar-thumb:hover {
 .table-wide-1000 { min-width: 1000px !important; }
 .table-wide-900  { min-width: 900px  !important; }
 .table-wide-800  { min-width: 800px  !important; }
+.table-wide-750  { min-width: 750px  !important; }
 .table-wide-700  { min-width: 700px  !important; }
 .table-wide-650  { min-width: 650px  !important; }
 

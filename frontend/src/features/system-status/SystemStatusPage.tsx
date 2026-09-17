@@ -133,16 +133,16 @@ export function SystemStatusPage() {
           📋 Ma Trận Chứng Nhận Nghiệm Thu 10 Phân Hệ Nghiệp Vụ (Master Roadmap Certification)
         </h3>
 
-        <div className="table-wrapper">
-          <table className="data-table">
+        <div className="table-wrapper table-responsive" style={{ overflowX: 'auto' }}>
+          <table className="data-table table-wide-800" style={{ width: '100%', minWidth: '800px' }}>
             <thead>
               <tr>
-                <th>Mã Phân Hệ</th>
-                <th>Tên Phân Hệ Nghiệp Vụ</th>
-                <th>Đường dẫn Route</th>
-                <th>Phân quyền Thẩm quyền (RBAC)</th>
-                <th>Trạng thái Nghiệm thu</th>
-                <th>Mô tả chức năng</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Mã Phân Hệ</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Tên Phân Hệ Nghiệp Vụ</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Đường dẫn Route</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Phân quyền Thẩm quyền (RBAC)</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Trạng thái Nghiệm thu</th>
+                <th style={{ whiteSpace: 'nowrap' }}>Mô tả chức năng</th>
               </tr>
             </thead>
             <tbody>

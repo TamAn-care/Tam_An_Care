@@ -1,4 +1,5 @@
 import React from 'react';
+import { isFemaleGender, cleanResidentName, getSalutation } from '../../features/residents/resident-ui';
 
 export interface ElderlyAvatarProps {
   gender?: string | null;
@@ -15,11 +16,9 @@ export function ElderlyAvatar({
   className = '',
   style = {},
 }: ElderlyAvatarProps) {
-  const isFemale =
-    gender === 'FEMALE' ||
-    gender === 'Nữ' ||
-    gender === 'female' ||
-    (typeof gender === 'string' && gender.toUpperCase() === 'FEMALE');
+  const isFemale = isFemaleGender(gender, name);
+  const cleanName = cleanResidentName(name) || name;
+  const salutation = getSalutation(gender, name);
 
   let pxSize = 40;
   let fontSize = '1.1rem';
@@ -48,9 +47,9 @@ export function ElderlyAvatar({
   return (
     <div
       className={`elderly-avatar ${className}`}
-      title={`${name} (${isFemale ? 'Nữ' : 'Nam'})`}
+      title={`${salutation} ${cleanName} (${isFemale ? 'Nữ' : 'Nam'})`}
       role="img"
-      aria-label={`Icon ${isFemale ? 'Cụ bà' : 'Cụ ông'} ${name}`}
+      aria-label={`Icon ${isFemale ? 'Cụ bà' : 'Cụ ông'} ${salutation} ${cleanName}`}
       style={{
         width: `${pxSize}px`,
         height: `${pxSize}px`,

@@ -13,6 +13,7 @@ import {
   AVAILABILITY_LABEL,
   formatVietnameseDate,
   textFromRecord,
+  formatResidentNameWithSalutation,
 } from '../residents/resident-ui';
 
 function availabilityClass(value: 'AVAILABLE' | 'EMPTY' | 'UNAVAILABLE'): string {
@@ -285,7 +286,7 @@ export function CareViewPage() {
           <div style={{ flex: 1, minWidth: '260px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
               <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 800, color: '#ffffff' }}>
-                {residentName}
+                {formatResidentNameWithSalutation(residentName, gender)}
               </h1>
               <span
                 style={{
@@ -642,15 +643,15 @@ export function CareViewPage() {
               💊 Danh Mục Y Lệnh Thuốc Đang Dùng (Medication Orders)
             </h3>
             {(data.medication?.orders || []).length > 0 ? (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-800" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Mã / Tên thuốc</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Liều dùng & Đường dùng</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Tần suất / Thời gian</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Bác sĩ kê đơn</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Trạng thái</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Mã / Tên thuốc</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Liều dùng & Đường dùng</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Tần suất / Thời gian</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Bác sĩ kê đơn</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Trạng thái</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -667,10 +668,10 @@ export function CareViewPage() {
                         <td style={{ padding: '0.65rem 0.85rem', color: '#334155' }}>
                           {ord.frequency || '1 lần/ngày'}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>
                           {ord.prescriberName || 'BS. Viện Tâm An'}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', whiteSpace: 'nowrap' }}>
                           <span className="badge badge-success">● ĐANG DÙNG</span>
                         </td>
                       </tr>
@@ -689,33 +690,33 @@ export function CareViewPage() {
               📋 Nhật Ký Cho Uống Thuốc Trong Ngày (eMAR Administrations)
             </h3>
             {(data.medication?.administrations || []).length > 0 ? (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="table-wide-800" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Giờ dự kiến</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Giờ uống thực tế</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Nhân viên y tế thực hiện</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Giờ dự kiến</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Giờ uống thực tế</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Nhân viên y tế thực hiện</th>
                       <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Ghi chú lâm sàng</th>
-                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Trạng thái</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>Trạng thái</th>
                     </tr>
                   </thead>
                   <tbody>
                     {(data.medication?.administrations || []).map((adm: any, idx: number) => (
                       <tr key={adm.medicationAdministrationId || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.65rem 0.85rem', color: '#64748b' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', color: '#64748b', whiteSpace: 'nowrap' }}>
                           {adm.scheduledAt ? new Date(adm.scheduledAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '—'}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
                           {adm.administeredAt ? new Date(adm.administeredAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Chưa uống'}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', color: '#475569', whiteSpace: 'nowrap' }}>
                           {adm.assignedTo || 'Nhân viên y tế ca'}
                         </td>
                         <td style={{ padding: '0.65rem 0.85rem', color: '#334155' }}>
                           {adm.administrationNote || 'Đã uống đúng liều'}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', whiteSpace: 'nowrap' }}>
                           <span className={adm.status === 'COMPLETED' ? 'badge badge-success' : 'badge badge-warning'}>
                             {adm.status === 'COMPLETED' ? '✓ Đã hoàn thành' : '⏳ Chờ uống'}
                           </span>
@@ -738,8 +739,8 @@ export function CareViewPage() {
             📝 Danh Mục Công Việc Chăm Sóc Trong Ngày
           </h3>
           {(data.workQueue || []).length > 0 ? (
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="table-wide-750" style={{ width: '100%', minWidth: '750px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Thời gian</th>

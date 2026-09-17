@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getElderIcon, formatResidentNameWithSalutation } from '../residents/resident-ui';
 
 export type ActionCategory = 
   | 'meds' 
@@ -154,19 +155,20 @@ export function OneTapActionSheet({ category, onClose, actorName = 'Điều dư�
           {category === 'meds' && (
             <>
               {[
-                { id: 'res-1', name: 'Cụ Nguyễn Thị Mai', room: 'Phòng 201 • Giường A', med: 'Thuốc Huyết áp (1 Viên)' },
-                { id: 'res-2', name: 'Cụ Trần Văn Bình', room: 'Phòng 203 • Giường B', med: 'Thuốc Bổ não (2 Viên)' },
-                { id: 'res-3', name: 'Cụ Lê Hoàng Nam', room: 'Phòng 205 • Giường A', med: 'Thuốc Tiểu đường (1 Viên)' },
+                { id: 'res-1', name: 'Nguyễn Thị Mai', gender: 'FEMALE', room: 'Phòng 201 • Giường A', med: 'Thuốc Huyết áp (1 Viên)' },
+                { id: 'res-2', name: 'Trần Văn Bình', gender: 'MALE', room: 'Phòng 203 • Giường B', med: 'Thuốc Bổ não (2 Viên)' },
+                { id: 'res-3', name: 'Lê Hoàng Nam', gender: 'MALE', room: 'Phòng 205 • Giường A', med: 'Thuốc Tiểu đường (1 Viên)' },
               ].map((res) => {
                 const isDone = completedItems[res.id];
+                const displayName = formatResidentNameWithSalutation(res.name, res.gender);
                 return (
                   <div key={res.id} className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm">
                     <div className="flex items-center space-x-3">
                       <div className="w-11 h-11 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold">
-                        {res.name.includes('Nguyễn') ? '👵' : '👴'}
+                        {getElderIcon(res.gender, res.name)}
                       </div>
                       <div>
-                        <div className="font-bold text-sm text-slate-800">{res.name}</div>
+                        <div className="font-bold text-sm text-slate-800">{displayName}</div>
                         <div className="text-xs text-slate-500">{res.room}</div>
                         <div className="text-[11px] font-semibold text-blue-700 mt-0.5">💊 {res.med}</div>
                       </div>
