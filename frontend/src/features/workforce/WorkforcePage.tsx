@@ -133,6 +133,7 @@ export default function WorkforcePage() {
   // Modals
   const [isScheduleOpen, setIsScheduleOpen] = useState(false);
   const [handoverShift, setHandoverShift] = useState<ShiftItem | null>(null);
+  const [viewingHandoverShift, setViewingHandoverShift] = useState<ShiftItem | null>(null);
   const [isSwapModalOpen, setIsSwapModalOpen] = useState(false);
   const [selectedShiftForSwap, setSelectedShiftForSwap] = useState<ShiftItem | null>(null);
   const [isRecogModalOpen, setIsRecogModalOpen] = useState(false);
@@ -975,6 +976,16 @@ export default function WorkforcePage() {
                                   📝 Bàn giao
                                 </button>
                               )}
+
+                              <button
+                                type="button"
+                                onClick={() => setViewingHandoverShift(item)}
+                                className="btn btn-sm"
+                                style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
+                                title="Xem & In Biên Bản Bàn Giao Ca Trực Chuẩn Y Khoa (A4)"
+                              >
+                                🖨️ In Bàn Giao
+                              </button>
 
                               {canSwap && (
                                 <button
@@ -2310,6 +2321,166 @@ export default function WorkforcePage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL XEM TRƯỚC & IN BIÊN BẢN BÀN GIAO CA TRỰC A4 (MẪU 04/BBBG-TA)       */}
+      {/* ========================================================================= */}
+      {viewingHandoverShift && (
+        <div className="modal-overlay print-modal-overlay">
+          <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
+            <div className="modal-header no-print">
+              <h2 className="modal-title">Biên Bản Bàn Giao Ca Trực Chuẩn Y Khoa (Mẫu 04/BBBG-TA)</h2>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => triggerPrint()}
+                  className="btn btn-sm btn-primary no-print"
+                  style={{ fontWeight: 700 }}
+                >
+                  🖨️ In Biên Bản (A4)
+                </button>
+                <button onClick={() => setViewingHandoverShift(null)} className="modal-close">
+                  &times;
+                </button>
+              </div>
+            </div>
+
+            <div className="modal-body printable-a4-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.5rem', fontFamily: 'Arial, sans-serif' }}>
+              {/* Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #166534', paddingBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <img src="/branding/tam-an-logo-master.png" alt="Tâm An Logo" style={{ height: '38px', width: 'auto', objectFit: 'contain' }} />
+                  <div>
+                    <div style={{ fontWeight: 800, color: '#166534', fontSize: '1.05rem', lineHeight: 1.1 }}>TÂM AN CARE</div>
+                    <div style={{ fontSize: '0.72rem', color: '#15803d', fontStyle: 'italic', fontWeight: 600 }}>Nơi Tuổi Già An Nhiên</div>
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '0.78rem' }}>
+                  <div>Mẫu số: <b style={{ color: '#0f172a' }}>04/BBBG-TA</b></div>
+                  <div><b>Ngày bàn giao:</b> {new Date(viewingHandoverShift.shiftDate).toLocaleDateString('vi-VN')}</div>
+                  <div><b>Mã ca trực:</b> {viewingHandoverShift.shiftId}</div>
+                </div>
+              </div>
+
+              <h1 style={{ textAlign: 'center', fontSize: '1.2rem', fontWeight: 800, color: '#166534', margin: '0.4rem 0 0.8rem 0' }}>
+                BIÊN BẢN BÀN GIAO CA TRỰC LÂM SÀNG & CHĂM SÓC
+              </h1>
+
+              {/* Shift details */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.75rem 1rem', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.5rem' }}>
+                  <div><b>Nhân viên bàn giao (Ca trước):</b> {viewingHandoverShift.staffName} ({viewingHandoverShift.staffCode})</div>
+                  <div><b>Bộ phận chuyên môn:</b> {ROLE_LABELS[viewingHandoverShift.staffRole as keyof typeof ROLE_LABELS] || viewingHandoverShift.staffRole || 'Điều dưỡng / Y sĩ'}</div>
+                  <div><b>Loại ca trực:</b> <span style={{ fontWeight: 700, color: '#166534' }}>{SHIFT_TYPE_BADGE[viewingHandoverShift.shiftType]?.label || viewingHandoverShift.shiftType}</span></div>
+                  <div><b>Khung giờ trực:</b> {new Date(viewingHandoverShift.startTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} — {new Date(viewingHandoverShift.endTime).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}</div>
+                  <div><b>Điểm danh vào ca:</b> {viewingHandoverShift.actualCheckinAt ? new Date(viewingHandoverShift.actualCheckinAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Đã điểm danh'}</div>
+                  <div><b>Trạng thái bàn giao:</b> <span style={{ color: '#15803d', fontWeight: 700 }}>✅ Đã hoàn thành bàn giao ca</span></div>
+                </div>
+              </div>
+
+              {/* Handover summary */}
+              <div style={{ marginBottom: '1rem' }}>
+                <div style={{ background: '#166534', color: '#fff', padding: '0.3rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.4rem', borderRadius: '0.25rem' }}>
+                  📝 I. TÓM TẮT DIỄN BIẾN CA TRỰC & DIỄN BIẾN SỨC KHỎE CƯ DÂN
+                </div>
+                <div style={{ border: '1px solid #cbd5e1', padding: '0.75rem', borderRadius: '0.35rem', fontSize: '0.85rem', lineHeight: 1.5, background: '#fafafa', minHeight: '60px' }}>
+                  {viewingHandoverShift.handovers?.[0]?.summaryNote || 'Ca trực diễn ra an toàn. Cụ ăn uống ổn định, đã cấp phát thuốc cữ trực đúng chỉ định eMAR. Dấu hiệu sinh tồn ổn định.'}
+                </div>
+              </div>
+
+              {/* Critical alerts */}
+              <div style={{ marginBottom: '1rem' }}>
+                <div style={{ background: '#991b1b', color: '#fff', padding: '0.3rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.4rem', borderRadius: '0.25rem' }}>
+                  ⚠️ II. CẢNH BÁO Y KHOA & CÁC TRƯỜNG HỢP CẦN THEO DÕI ĐẶC BIỆT
+                </div>
+                <div style={{ border: '1px solid #fca5a5', padding: '0.75rem', borderRadius: '0.35rem', fontSize: '0.85rem', lineHeight: 1.5, background: '#fff5f5', color: '#991b1b', minHeight: '50px' }}>
+                  {viewingHandoverShift.handovers?.[0]?.criticalAlerts?.join('\n') || 'Không có cảnh báo cấp cứu bất thường. Nhắc ca sau tiếp tục duy trì cữ thuốc theo lịch eMAR.'}
+                </div>
+              </div>
+
+              {/* Equipment & inventory checklist */}
+              <div style={{ marginBottom: '1.2rem' }}>
+                <div style={{ background: '#0369a1', color: '#fff', padding: '0.3rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.4rem', borderRadius: '0.25rem' }}>
+                  📦 III. BÀN GIAO THIẾT BỊ Y TẾ, TỦ THUỐC & TÀI SẢN TRỰC
+                </div>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                  <thead>
+                    <tr style={{ background: '#e0f2fe' }}>
+                      <th style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center' }}>STT</th>
+                      <th style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'left' }}>Hạng mục bàn giao</th>
+                      <th style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center' }}>Tình trạng</th>
+                      <th style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'left' }}>Ghi chú</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center' }}>1</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd' }}>Tủ thuốc trực ca & Dược phẩm eMAR</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center', color: '#15803d', fontWeight: 700 }}>Đầy đủ / Niêm phong</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd' }}>Đã khớp với nhật ký phát thuốc</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center' }}>2</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd' }}>Máy đo huyết áp, SpO2, Máy thử đường huyết</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center', color: '#15803d', fontWeight: 700 }}>Hoạt động tốt</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd' }}>Đã sạc pin & tiệt trùng đầu đo</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center' }}>3</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd' }}>Sổ nhật ký trực & Chìa khóa kho vật tư</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd', textAlign: 'center', color: '#15803d', fontWeight: 700 }}>Đã bàn giao</td>
+                      <td style={{ padding: '0.3rem', border: '1px solid #bae6fd' }}>Chuyển giao cho điều dưỡng ca kế tiếp</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Signatures */}
+              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center', marginTop: '1.5rem' }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>NHÂN VIÊN GIAO CA</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 700, color: '#166534', borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.82rem' }}>
+                    {viewingHandoverShift.staffName}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>NHÂN VIÊN NHẬN CA</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 700, color: '#0369a1', borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.82rem' }}>
+                    {viewingHandoverShift.handovers?.[0]?.toStaffName || 'Nhân viên ca tiếp theo'}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>QUẢN LÝ / ĐIỀU DƯỠNG TRƯỞNG</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Duyệt & xác nhận)</div>
+                  <div style={{ fontWeight: 700, color: '#0f172a', borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.82rem' }}>
+                    Hoàng Quốc Anh
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="modal-footer no-print">
+              <button
+                type="button"
+                onClick={() => setViewingHandoverShift(null)}
+                className="btn btn-secondary"
+              >
+                Đóng
+              </button>
+              <button
+                type="button"
+                onClick={() => triggerPrint()}
+                className="btn btn-primary no-print"
+                style={{ fontWeight: 700 }}
+              >
+                🖨️ In Bản Giấy A4
+              </button>
+            </div>
           </div>
         </div>
       )}

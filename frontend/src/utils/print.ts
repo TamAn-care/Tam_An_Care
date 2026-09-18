@@ -9,18 +9,22 @@ export function triggerPrint(onComplete?: () => void): void {
     document.activeElement.blur();
   }
 
-  // Request frame + small delay to let React DOM updates finish rendering
+  // Double animation frame + 150ms delay ensures React component state, conditional renders,
+  // and CSS @media print styling are completely painted before opening native print dialog.
   requestAnimationFrame(() => {
-    setTimeout(() => {
-      try {
-        window.print();
-      } catch (err) {
-        console.error('[TamAnCare Print] Error triggering window.print():', err);
-      } finally {
-        if (onComplete) {
-          onComplete();
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        try {
+          window.print();
+        } catch (err) {
+          console.error('[TamAnCare Print] Error triggering window.print():', err);
+        } finally {
+          if (onComplete) {
+            onComplete();
+          }
         }
-      }
-    }, 100);
+      }, 150);
+    });
   });
 }
+

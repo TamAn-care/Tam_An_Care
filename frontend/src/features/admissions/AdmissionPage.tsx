@@ -663,7 +663,9 @@ export function AdmissionPage() {
 
   const handleTriggerPrint = useCallback((target: 'ALL' | 'ASSESSMENT' | 'HANDOVER') => {
     setPrintTarget(target);
-    triggerPrint();
+    requestAnimationFrame(() => {
+      triggerPrint();
+    });
   }, []);
 
   // Handover History Modals
@@ -1288,7 +1290,7 @@ export function AdmissionPage() {
       {/* ========================================================================= */}
       {isCreateOpen && (
         <div className="modal-overlay">
-          <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '920px', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="modal-dialog modal-dialog-lg initial-assessment-modal" style={{ maxWidth: '920px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
                 <h2 className="modal-title">Phiếu Đánh Giá Sức Khỏe Ban Đầu Cho Người Cao Tuổi</h2>
@@ -1307,7 +1309,7 @@ export function AdmissionPage() {
               <div className="modal-body">
                 {/* Header Information */}
                 <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1rem', color: '#166534', fontWeight: 700 }}>
                       I. THÔNG TIN HÀNH CHÍNH & NGƯỜI BẢO HỘ
                     </h3>
@@ -1370,7 +1372,7 @@ export function AdmissionPage() {
                   <div className="form-row" style={{ marginTop: '0.75rem' }}>
                     <div>
                       <label className="form-label">Họ tên người bảo hộ (NBH) & Mối quan hệ</label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.5rem' }}>
+                      <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.5rem' }}>
                         <input
                           type="text"
                           value={form.guardianName}
@@ -1390,7 +1392,7 @@ export function AdmissionPage() {
 
                     <div>
                       <label className="form-label">Số điện thoại NBH & Địa chỉ liên hệ</label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: '0.5rem' }}>
+                      <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1.2fr 2fr', gap: '0.5rem' }}>
                         <input
                           type="text"
                           value={form.guardianPhone}
@@ -1696,7 +1698,7 @@ export function AdmissionPage() {
                   <div className="form-row">
                     <div>
                       <span className="form-label">Tình trạng bài tiết:</span>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
+                      <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem', flexWrap: 'wrap' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                           <input
                             type="radio"
@@ -1729,7 +1731,7 @@ export function AdmissionPage() {
 
                     <div>
                       <span className="form-label">Dụng cụ hỗ trợ di chuyển:</span>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
+                      <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem', flexWrap: 'wrap' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                           <input
                             type="radio"
@@ -1762,7 +1764,7 @@ export function AdmissionPage() {
                   </div>
                 </div>
 
-                {/* V, VI, VII. TINH THẦN, DINH DƯỠNG & NGUY CƠ LÂM SÀNG */}
+                {/* V, VI, VII. TRẠNG THÁI TINH THẦN, DINH DƯỠNG & NGUY CƠ LÂM SÀNG */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
                     V, VI, VII. TRẠNG THÁI TINH THẦN, DINH DƯỠNG & NGUY CƠ LÂM SÀNG
@@ -1829,7 +1831,7 @@ export function AdmissionPage() {
 
                   <div style={{ marginTop: '0.75rem' }}>
                     <label className="form-label">Tổn thương da / Loét tì đè & Ghi chú xuất huyết:</label>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.5rem' }}>
+                    <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '0.5rem' }}>
                       <select
                         value={form.skinRisk.hasUlcer ? 'YES' : 'NO'}
                         onChange={e => setForm(prev => ({ ...prev, skinRisk: { ...prev.skinRisk, hasUlcer: e.target.value === 'YES' } }))}
@@ -2408,7 +2410,7 @@ export function AdmissionPage() {
       {/* ========================================================================= */}
       {viewingAssessment && (
         <div className="modal-overlay print-modal-overlay">
-          <div className={`modal-dialog modal-dialog-lg print-target-${printTarget.toLowerCase()}`} style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
+          <div className={`modal-dialog modal-dialog-lg initial-assessment-modal print-target-${printTarget.toLowerCase()}`} style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header no-print">
               <h2 className="modal-title">Xem & In Phiếu Nhập Viện (Đánh Giá Sức Khỏe & Bàn Giao)</h2>
               <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -2454,10 +2456,10 @@ export function AdmissionPage() {
               </div>
             </div>
 
-            <div className="modal-body printable-a4-sheet print-section-assessment" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
+            <div className="modal-body printable-a4-sheet print-section-assessment initial-assessment-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
               {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <div className="initial-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
                     <img
                       src="/branding/tam-an-logo-master.png"
@@ -2471,7 +2473,7 @@ export function AdmissionPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                  <div className="initial-meta-info" style={{ textAlign: 'right', fontSize: '0.78rem' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>02/PĐG-TA</b></div>
                     <div><b>Ngày tiếp nhận:</b> {viewingAssessment.data.intakeDate}</div>
                     <div><b>Người đánh giá:</b> {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
@@ -2486,7 +2488,7 @@ export function AdmissionPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 I. THÔNG TIN HÀNH CHÍNH
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
+              <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
                 <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem' }}>{viewingAssessment.data.prospectiveResidentName}</span></div>
                 <div><b>Giới tính (Nam/Nữ):</b> {viewingAssessment.data.gender === 'FEMALE' ? 'Nữ' : 'Nam'}</div>
                 <div><b>Ngày tháng năm sinh:</b> {formatDateDisplay(viewingAssessment.data.dateOfBirth)}</div>
@@ -2566,7 +2568,7 @@ export function AdmissionPage() {
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Tiền sử bệnh nền:</b>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
+                <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
                   <div>[{viewingAssessment.data.conditions.hypertension ? ' x ' : '   '}] Cao huyết áp</div>
                   <div>[{viewingAssessment.data.conditions.diabetes ? ' x ' : '   '}] Đái tháo đường</div>
                   <div>[{viewingAssessment.data.conditions.cardiovascular ? ' x ' : '   '}] Tim mạch (Suy tim, bệnh mạch vành)</div>
@@ -2634,7 +2636,7 @@ export function AdmissionPage() {
             </div>
 
               {/* V, VI, VII. TINH THẦN & NGUY CƠ */}
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+              <div className="initial-grid-2col" style={{ fontSize: '0.8rem', marginBottom: '0.4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 <div>
                   <b>V. Tinh thần & Nhận thức:</b><br />
                   • Tiếp xúc: [{viewingAssessment.data.mental.alertAndResponsive ? ' x ' : '   '}] Tỉnh táo &nbsp; [{!viewingAssessment.data.mental.alertAndResponsive ? ' x ' : '   '}] Lẫn<br />
@@ -2652,7 +2654,7 @@ export function AdmissionPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC BAN ĐẦU
               </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
+              <div className="initial-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b> &nbsp;
                 <span style={{ background: viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? '#fef08a' : 'transparent', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', fontWeight: viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? 700 : 400 }}>
                   [{viewingAssessment.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ
@@ -2682,11 +2684,11 @@ export function AdmissionPage() {
 
                 return (
                   <div style={{ fontSize: '0.78rem', marginBottom: '0.5rem', background: '#fffbeb', border: '1px solid #fef08a', padding: '0.4rem 0.6rem', borderRadius: '0.25rem' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.3rem', marginBottom: '0.35rem' }}>
+                    <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.3rem', marginBottom: '0.35rem' }}>
                       <div><b>1. Gói chăm sóc cơ bản:</b> {basicPkgName} ({basicFee.toLocaleString('vi-VN')} đ/tháng)</div>
                       <div><b>2. Phí chăm sóc hỗ trợ (Mục II):</b> {supportSvcName} ({supportFee.toLocaleString('vi-VN')} đ/tháng)</div>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #fde047', paddingTop: '0.3rem', marginTop: '0.2rem' }}>
+                    <div className="initial-flex-between" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #fde047', paddingTop: '0.3rem', marginTop: '0.2rem' }}>
                       <div>
                         <b>Đặt cọc ban đầu:</b> {(fin.depositAmount ?? 20000000).toLocaleString('vi-VN')} VNĐ &nbsp;|&nbsp;
                         <b>Hạn thanh toán:</b> {fin.paymentCycleDay || 'Từ ngày 01 đến ngày 05 hàng tháng'}
@@ -2700,7 +2702,7 @@ export function AdmissionPage() {
               })()}
 
               {/* Triple Signatures */}
-              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
+              <div className="signature-box initial-signature-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Gia đình / Thân nhân</div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
@@ -2731,9 +2733,9 @@ export function AdmissionPage() {
             {/* PHIẾU BÀN GIAO THUỐC & ĐỒ DÙNG CÁ NHÂN — PHẦN IN RIÊNG          */}
             {/* ================================================================= */}
             {viewingAssessment.data.handoverRecord && (
-              <div className="modal-body printable-a4-sheet print-section-handover" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem', borderTop: printTarget === 'ALL' ? '2px dashed #bae6fd' : 'none', marginTop: '0' }}>
+              <div className="modal-body printable-a4-sheet print-section-handover initial-assessment-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem', borderTop: printTarget === 'ALL' ? '2px dashed #bae6fd' : 'none', marginTop: '0' }}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', borderBottom: '2px solid #0369a1', paddingBottom: '0.5rem' }}>
+                <div className="initial-header-flex" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', borderBottom: '2px solid #0369a1', paddingBottom: '0.5rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                     <img src="/branding/tam-an-logo-master.png" alt="Tâm An Logo" style={{ height: '36px', width: 'auto', objectFit: 'contain' }} />
                     <div>
@@ -2741,7 +2743,7 @@ export function AdmissionPage() {
                       <div style={{ fontSize: '0.7rem', color: '#15803d', fontStyle: 'italic', fontWeight: 600 }}>Nơi Tuổi Già An Nhiên</div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                  <div className="initial-meta-info" style={{ textAlign: 'right', fontSize: '0.78rem' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>03/BBBG-TA</b></div>
                     <div><b>Ngày bàn giao:</b> {viewingAssessment.data.handoverRecord.handoverDate}</div>
                     <div><b>Người tiếp nhận:</b> {viewingAssessment.data.handoverRecord.nurseReceiverName}</div>
@@ -2839,7 +2841,7 @@ export function AdmissionPage() {
                 )}
 
                 {/* Triple Signatures for Handover */}
-                <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
+                <div className="signature-box initial-signature-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', textAlign: 'center', marginTop: '1.2rem', gap: '0.5rem' }}>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>Bên bàn giao</div>
                     <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
@@ -3035,7 +3037,7 @@ export function AdmissionPage() {
       {selectedHandoverPrint && (
         <div className="modal-backdrop print-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 99999, padding: '1rem' }}>
           <div className="modal-card" style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1rem' }}>
               <h2 style={{ margin: 0, fontSize: '1.1rem', color: '#166534' }}>
                 🖨️ Xem Trước & In Phiếu Bàn Giao (A4) — {selectedHandoverPrint.residentName}
               </h2>

@@ -412,7 +412,7 @@ export function ResidentsPage() {
 
   return (
     <div className="printable-a4-sheet">
-      <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
+      <div className="no-print" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
         <button
           type="button"
           onClick={() => triggerPrint()}

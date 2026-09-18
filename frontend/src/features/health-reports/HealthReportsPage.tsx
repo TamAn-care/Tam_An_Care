@@ -1767,7 +1767,7 @@ export default function HealthReportsPage() {
               </div>
             </div>
 
-            <div className="modal-footer">
+            <div className="modal-footer no-print">
               <button
                 type="button"
                 onClick={() => setViewingReport(null)}
