@@ -24,7 +24,6 @@ export type AppRouteKey =
   | 'dashboard'
   | 'accommodation'
   | 'residents'
-  | 'resident-lifecycle'
   | 'resident-leave'
   | 'workforce'
   | 'operations'
@@ -77,7 +76,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'dashboard',
       'accommodation',
       'residents',
-      'resident-lifecycle',
       'resident-leave',
       'workforce',
       'operations',
@@ -126,7 +124,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'dashboard',
       'accommodation',
       'residents',
-      'resident-lifecycle',
       'resident-leave',
       'workforce',
       'operations',
@@ -175,7 +172,6 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'dashboard',
       'accommodation',
       'residents',
-      'resident-lifecycle',
       'resident-leave',
       'workforce',
       'operations',

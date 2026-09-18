@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { triggerPrint } from '../../utils/print';
 import type { HumanActorRole } from '../../types/actor';
 import {
   listStaffActors,
@@ -859,187 +860,381 @@ export function StaffAccessPage() {
             )}
           </div>
 
-          {/* Accounts Table */}
-          <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
-                <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
-                    <th style={{ padding: '0.75rem 1rem' }}>Mã NV / Actor ID</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Họ & Tên Nhân Sự</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Bộ Phận / Phòng Ban</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Vai Trò Hệ Thống</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Email & Điện Thoại</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao Tác Quản Trị</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {staffList.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
-                        Không tìm thấy tài khoản nhân sự nào phù hợp với bộ lọc tìm kiếm.
-                      </td>
+          {/* Accounts Table & Mobile Cards */}
+          <div className="desktop-only-table">
+            <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+              <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y' }}>
+                <table style={{ width: '100%', minWidth: '1100px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left', whiteSpace: 'nowrap' }}>
+                      <th style={{ padding: '0.75rem 1rem' }}>Mã NV / Actor ID</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Họ & Tên Nhân Sự</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Bộ Phận / Phòng Ban</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Vai Trò Hệ Thống</th>
+                      <th style={{ padding: '0.75rem 1rem' }}>Email & Điện Thoại</th>
+                      <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
+                      <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao Tác Quản Trị</th>
                     </tr>
-                  ) : (
-                    staffList.map((item) => {
-                      const isAdminAccount = item.primaryOperationalRole === 'ADMIN';
-                      const isDirectorAccount = item.primaryOperationalRole === 'SUPERVISOR';
-                      const canManageThisAccount = isAdmin || (isDirector && !isAdminAccount) || (!isDirectorAccount && !isAdminAccount && isManager);
+                  </thead>
+                  <tbody>
+                    {staffList.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                          Không tìm thấy tài khoản nhân sự nào phù hợp với bộ lọc tìm kiếm.
+                        </td>
+                      </tr>
+                    ) : (
+                      staffList.map((item) => {
+                        const isAdminAccount = item.primaryOperationalRole === 'ADMIN';
+                        const isDirectorAccount = item.primaryOperationalRole === 'SUPERVISOR';
+                        const canManageThisAccount = isAdmin || (isDirector && !isAdminAccount) || (!isDirectorAccount && !isAdminAccount && isManager);
 
-                      return (
-                        <tr key={item.actorId} style={{ borderBottom: '1px solid #f1f5f9', background: isAdminAccount ? '#fef2f2' : isDirectorAccount ? '#fffdf7' : '#ffffff' }}>
-                          <td style={{ padding: '0.75rem 1rem' }}>
-                            <div style={{ fontWeight: 700, color: '#0f172a', fontFamily: 'monospace' }}>{item.actorId}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Mã NV: <b>{item.staffCode}</b></div>
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem' }}>
-                            <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>{item.displayName}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Tham chiếu: {item.employmentReference ?? 'Hợp đồng chính thức'}</div>
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem' }}>
-                            <div style={{ color: '#334155' }}>{item.department}</div>
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem' }}>
-                            <span
-                              style={{
-                                display: 'inline-block',
-                                padding: '0.25rem 0.6rem',
-                                borderRadius: '0.4rem',
-                                fontSize: '0.75rem',
-                                fontWeight: 700,
-                                background: isAdminAccount ? '#fee2e2' : isDirectorAccount ? '#fef3c7' : item.primaryOperationalRole === 'CARE_MANAGER' ? '#eff6ff' : item.primaryOperationalRole === 'NURSE' ? '#e0f2fe' : '#f1f5f9',
-                                color: isAdminAccount ? '#b91c1c' : isDirectorAccount ? '#92400e' : item.primaryOperationalRole === 'CARE_MANAGER' ? '#1e40af' : item.primaryOperationalRole === 'NURSE' ? '#0369a1' : '#334155',
-                              }}
-                            >
-                              {ROLE_LABEL[item.primaryOperationalRole] || item.primaryOperationalRole}
-                            </span>
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem' }}>
-                            <div style={{ fontSize: '0.8rem', color: '#0f172a' }}>{item.email}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{item.phone}</div>
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                            <span
-                              style={{
-                                display: 'inline-block',
-                                padding: '0.2rem 0.55rem',
-                                borderRadius: '0.35rem',
-                                fontSize: '0.74rem',
-                                fontWeight: 700,
-                                background: item.status === 'ACTIVE' ? '#dcfce7' : item.status === 'SUSPENDED' ? '#fee2e2' : '#f1f5f9',
-                                color: item.status === 'ACTIVE' ? '#15803d' : item.status === 'SUSPENDED' ? '#b91c1c' : '#64748b',
-                              }}
-                            >
-                              {STATUS_LABEL[item.status] || item.status}
-                            </span>
-                          </td>
-                          <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                            {canManageThisAccount ? (
-                              <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                {/* Handover Modal button */}
-                                <button
-                                  onClick={() => setShowHandoverModal(item)}
-                                  title="Bàn giao tài khoản & In phiếu"
-                                  style={{
-                                    background: '#f0fdf4',
-                                    border: '1px solid #86efac',
-                                    color: '#166534',
-                                    padding: '0.28rem 0.6rem',
-                                    borderRadius: '0.35rem',
-                                    fontSize: '0.76rem',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  📋 Bàn Giao
-                                </button>
-
-                                {/* Reset Password button */}
-                                <button
-                                  onClick={() => {
-                                    setNewResetPassword(generateSecurePassword());
-                                    setShowResetModal(item);
-                                  }}
-                                  title="Đặt lại mật khẩu"
-                                  style={{
-                                    background: '#eff6ff',
-                                    border: '1px solid #bfdbfe',
-                                    color: '#1e40af',
-                                    padding: '0.28rem 0.6rem',
-                                    borderRadius: '0.35rem',
-                                    fontSize: '0.76rem',
-                                    fontWeight: 700,
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  🔑 Đổi MK
-                                </button>
-
-                                 {/* Lock/Unlock button (Admin account cannot be locked) */}
-                                {!isAdminAccount && (
-                                  <button
-                                    onClick={() => toggleStatusMutation.mutate({ actorId: item.actorId, currentStatus: item.status })}
-                                    title={item.status === 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
-                                    style={{
-                                      background: item.status === 'ACTIVE' ? '#fef2f2' : '#ecfdf5',
-                                      border: `1px solid ${item.status === 'ACTIVE' ? '#fecaca' : '#a7f3d0'}`,
-                                      color: item.status === 'ACTIVE' ? '#b91c1c' : '#047857',
-                                      padding: '0.28rem 0.6rem',
-                                      borderRadius: '0.35rem',
-                                      fontSize: '0.76rem',
-                                      fontWeight: 700,
-                                      cursor: 'pointer',
-                                    }}
-                                  >
-                                    {item.status === 'ACTIVE' ? '🔒 Khóa' : '🔓 Mở'}
-                                  </button>
-                                )}
-
-                                {/* Delete / Remove button (Admin & Ban Giám đốc) */}
-                                {canDeleteStaff && !isAdminAccount && item.actorId !== 'Admin' && item.actorId !== 'SYSTEM-ROOT' && (
-                                  <button
-                                    onClick={() => setShowDeleteConfirmModal(item)}
-                                    title="Bớt / Xoá tài khoản nhân sự khỏi hệ thống"
-                                    style={{
-                                      background: '#fef2f2',
-                                      border: '1px solid #fecaca',
-                                      color: '#b91c1c',
-                                      padding: '0.28rem 0.6rem',
-                                      borderRadius: '0.35rem',
-                                      fontSize: '0.76rem',
-                                      fontWeight: 700,
-                                      cursor: 'pointer',
-                                    }}
-                                  >
-                                    🗑️ Xoá
-                                  </button>
-                                )}
-                              </div>
-                            ) : (
+                        return (
+                          <tr key={item.actorId} style={{ borderBottom: '1px solid #f1f5f9', background: isAdminAccount ? '#fef2f2' : isDirectorAccount ? '#fffdf7' : '#ffffff' }}>
+                            <td style={{ padding: '0.75rem 1rem' }}>
+                              <div style={{ fontWeight: 700, color: '#0f172a', fontFamily: 'monospace' }}>{item.actorId}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Mã NV: <b>{item.staffCode}</b></div>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem' }}>
+                              <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.9rem' }}>{item.displayName}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Tham chiếu: {item.employmentReference ?? 'Hợp đồng chính thức'}</div>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem' }}>
+                              <div style={{ color: '#334155' }}>{item.department}</div>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem' }}>
                               <span
                                 style={{
                                   display: 'inline-block',
                                   padding: '0.25rem 0.6rem',
                                   borderRadius: '0.4rem',
-                                  fontSize: '0.74rem',
+                                  fontSize: '0.75rem',
                                   fontWeight: 700,
-                                  background: isAdminAccount ? '#fee2e2' : '#fef3c7',
-                                  color: isAdminAccount ? '#b91c1c' : '#92400e',
-                                  border: `1px solid ${isAdminAccount ? '#fca5a5' : '#fde68a'}`,
+                                  background: isAdminAccount ? '#fee2e2' : isDirectorAccount ? '#fef3c7' : item.primaryOperationalRole === 'CARE_MANAGER' ? '#eff6ff' : item.primaryOperationalRole === 'NURSE' ? '#e0f2fe' : '#f1f5f9',
+                                  color: isAdminAccount ? '#b91c1c' : isDirectorAccount ? '#92400e' : item.primaryOperationalRole === 'CARE_MANAGER' ? '#1e40af' : item.primaryOperationalRole === 'NURSE' ? '#0369a1' : '#334155',
                                 }}
                               >
-                                {isAdminAccount ? '🔒 Quyền Admin' : '🔒 Quyền Ban Giám Đốc'}
+                                {ROLE_LABEL[item.primaryOperationalRole] || item.primaryOperationalRole}
                               </span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })
-                  )}
-                </tbody>
-              </table>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem' }}>
+                              <div style={{ fontSize: '0.8rem', color: '#0f172a' }}>{item.email}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{item.phone}</div>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                              <span
+                                style={{
+                                  display: 'inline-block',
+                                  padding: '0.2rem 0.55rem',
+                                  borderRadius: '0.35rem',
+                                  fontSize: '0.74rem',
+                                  fontWeight: 700,
+                                  background: item.status === 'ACTIVE' ? '#dcfce7' : item.status === 'SUSPENDED' ? '#fee2e2' : '#f1f5f9',
+                                  color: item.status === 'ACTIVE' ? '#15803d' : item.status === 'SUSPENDED' ? '#b91c1c' : '#64748b',
+                                }}
+                              >
+                                {STATUS_LABEL[item.status] || item.status}
+                              </span>
+                            </td>
+                            <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                              {canManageThisAccount ? (
+                                <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                                  {/* Handover Modal button */}
+                                  <button
+                                    onClick={() => setShowHandoverModal(item)}
+                                    title="Bàn giao tài khoản & In phiếu"
+                                    style={{
+                                      background: '#f0fdf4',
+                                      border: '1px solid #86efac',
+                                      color: '#166534',
+                                      padding: '0.28rem 0.6rem',
+                                      borderRadius: '0.35rem',
+                                      fontSize: '0.76rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    📋 Bàn Giao
+                                  </button>
+
+                                  {/* Reset Password button */}
+                                  <button
+                                    onClick={() => {
+                                      setNewResetPassword(generateSecurePassword());
+                                      setShowResetModal(item);
+                                    }}
+                                    title="Đặt lại mật khẩu"
+                                    style={{
+                                      background: '#eff6ff',
+                                      border: '1px solid #bfdbfe',
+                                      color: '#1e40af',
+                                      padding: '0.28rem 0.6rem',
+                                      borderRadius: '0.35rem',
+                                      fontSize: '0.76rem',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    🔑 Đổi MK
+                                  </button>
+
+                                  {/* Lock/Unlock button (Admin account cannot be locked) */}
+                                  {!isAdminAccount && (
+                                    <button
+                                      onClick={() => toggleStatusMutation.mutate({ actorId: item.actorId, currentStatus: item.status })}
+                                      title={item.status === 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
+                                      style={{
+                                        background: item.status === 'ACTIVE' ? '#fef2f2' : '#ecfdf5',
+                                        border: `1px solid ${item.status === 'ACTIVE' ? '#fecaca' : '#a7f3d0'}`,
+                                        color: item.status === 'ACTIVE' ? '#b91c1c' : '#047857',
+                                        padding: '0.28rem 0.6rem',
+                                        borderRadius: '0.35rem',
+                                        fontSize: '0.76rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      {item.status === 'ACTIVE' ? '🔒 Khóa' : '🔓 Mở'}
+                                    </button>
+                                  )}
+
+                                  {/* Delete / Remove button (Admin & Ban Giám đốc) */}
+                                  {canDeleteStaff && !isAdminAccount && item.actorId !== 'Admin' && item.actorId !== 'SYSTEM-ROOT' && (
+                                    <button
+                                      onClick={() => setShowDeleteConfirmModal(item)}
+                                      title="Bớt / Xoá tài khoản nhân sự khỏi hệ thống"
+                                      style={{
+                                        background: '#fef2f2',
+                                        border: '1px solid #fecaca',
+                                        color: '#b91c1c',
+                                        padding: '0.28rem 0.6rem',
+                                        borderRadius: '0.35rem',
+                                        fontSize: '0.76rem',
+                                        fontWeight: 700,
+                                        cursor: 'pointer',
+                                      }}
+                                    >
+                                      🗑️ Xoá
+                                    </button>
+                                  )}
+                                </div>
+                              ) : (
+                                <span
+                                  style={{
+                                    display: 'inline-block',
+                                    padding: '0.25rem 0.6rem',
+                                    borderRadius: '0.4rem',
+                                    fontSize: '0.74rem',
+                                    fontWeight: 700,
+                                    background: isAdminAccount ? '#fee2e2' : '#fef3c7',
+                                    color: isAdminAccount ? '#b91c1c' : '#92400e',
+                                    border: `1px solid ${isAdminAccount ? '#fca5a5' : '#fde68a'}`,
+                                  }}
+                                >
+                                  {isAdminAccount ? '🔒 Quyền Admin' : '🔒 Quyền Ban Giám Đốc'}
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
+          </div>
+
+          {/* Mobile Cards View (< 768px) */}
+          <div className="mobile-only-cards">
+            {staffList.length === 0 ? (
+              <div className="card" style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                Không tìm thấy tài khoản nhân sự nào phù hợp với bộ lọc tìm kiếm.
+              </div>
+            ) : (
+              staffList.map((item) => {
+                const isAdminAccount = item.primaryOperationalRole === 'ADMIN';
+                const isDirectorAccount = item.primaryOperationalRole === 'SUPERVISOR';
+                const canManageThisAccount = isAdmin || (isDirector && !isAdminAccount) || (!isDirectorAccount && !isAdminAccount && isManager);
+
+                return (
+                  <div
+                    key={item.actorId}
+                    className="mobile-card-item"
+                    style={{
+                      background: isAdminAccount ? '#fef2f2' : isDirectorAccount ? '#fffdf7' : '#ffffff',
+                      borderColor: isAdminAccount ? '#fecaca' : isDirectorAccount ? '#fef3c7' : '#cbd5e1',
+                    }}
+                  >
+                    {/* Header: Name & Status */}
+                    <div className="mobile-card-header">
+                      <div>
+                        <div className="mobile-card-title">👤 {item.displayName}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.1rem' }}>
+                          Tham chiếu: {item.employmentReference ?? 'Hợp đồng chính thức'}
+                        </div>
+                      </div>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.2rem 0.55rem',
+                          borderRadius: '0.35rem',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          background: item.status === 'ACTIVE' ? '#dcfce7' : item.status === 'SUSPENDED' ? '#fee2e2' : '#f1f5f9',
+                          color: item.status === 'ACTIVE' ? '#15803d' : item.status === 'SUSPENDED' ? '#b91c1c' : '#64748b',
+                        }}
+                      >
+                        {STATUS_LABEL[item.status] || item.status}
+                      </span>
+                    </div>
+
+                    {/* Information fields */}
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Mã NV / ID:</span>
+                      <span className="mobile-card-value" style={{ fontFamily: 'monospace' }}>
+                        <b>{item.staffCode}</b> ({item.actorId})
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Bộ phận:</span>
+                      <span className="mobile-card-value">{item.department}</span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Vai trò hệ thống:</span>
+                      <span className="mobile-card-value">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '0.2rem 0.55rem',
+                            borderRadius: '0.35rem',
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            background: isAdminAccount ? '#fee2e2' : isDirectorAccount ? '#fef3c7' : item.primaryOperationalRole === 'CARE_MANAGER' ? '#eff6ff' : item.primaryOperationalRole === 'NURSE' ? '#e0f2fe' : '#f1f5f9',
+                            color: isAdminAccount ? '#b91c1c' : isDirectorAccount ? '#92400e' : item.primaryOperationalRole === 'CARE_MANAGER' ? '#1e40af' : item.primaryOperationalRole === 'NURSE' ? '#0369a1' : '#334155',
+                          }}
+                        >
+                          {ROLE_LABEL[item.primaryOperationalRole] || item.primaryOperationalRole}
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Email & SĐT:</span>
+                      <span className="mobile-card-value">
+                        <div>{item.email}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>{item.phone}</div>
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="mobile-card-actions">
+                      {canManageThisAccount ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setShowHandoverModal(item)}
+                            title="Bàn giao tài khoản & In phiếu"
+                            style={{
+                              background: '#f0fdf4',
+                              border: '1px solid #86efac',
+                              color: '#166534',
+                              padding: '0.4rem 0.6rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            📋 Bàn Giao
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setNewResetPassword(generateSecurePassword());
+                              setShowResetModal(item);
+                            }}
+                            title="Đặt lại mật khẩu"
+                            style={{
+                              background: '#eff6ff',
+                              border: '1px solid #bfdbfe',
+                              color: '#1e40af',
+                              padding: '0.4rem 0.6rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.8rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            🔑 Đổi MK
+                          </button>
+
+                          {!isAdminAccount && (
+                            <button
+                              type="button"
+                              onClick={() => toggleStatusMutation.mutate({ actorId: item.actorId, currentStatus: item.status })}
+                              title={item.status === 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
+                              style={{
+                                background: item.status === 'ACTIVE' ? '#fef2f2' : '#ecfdf5',
+                                border: `1px solid ${item.status === 'ACTIVE' ? '#fecaca' : '#a7f3d0'}`,
+                                color: item.status === 'ACTIVE' ? '#b91c1c' : '#047857',
+                                padding: '0.4rem 0.6rem',
+                                borderRadius: '0.35rem',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              {item.status === 'ACTIVE' ? '🔒 Khóa' : '🔓 Mở'}
+                            </button>
+                          )}
+
+                          {canDeleteStaff && !isAdminAccount && item.actorId !== 'Admin' && item.actorId !== 'SYSTEM-ROOT' && (
+                            <button
+                              type="button"
+                              onClick={() => setShowDeleteConfirmModal(item)}
+                              title="Bớt / Xoá tài khoản nhân sự khỏi hệ thống"
+                              style={{
+                                background: '#fef2f2',
+                                border: '1px solid #fecaca',
+                                color: '#b91c1c',
+                                padding: '0.4rem 0.6rem',
+                                borderRadius: '0.35rem',
+                                fontSize: '0.8rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                              }}
+                            >
+                              🗑️ Xoá
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <div style={{ textAlign: 'center', width: '100%' }}>
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              padding: '0.3rem 0.75rem',
+                              borderRadius: '0.4rem',
+                              fontSize: '0.78rem',
+                              fontWeight: 700,
+                              background: isAdminAccount ? '#fee2e2' : '#fef3c7',
+                              color: isAdminAccount ? '#b91c1c' : '#92400e',
+                              border: `1px solid ${isAdminAccount ? '#fca5a5' : '#fde68a'}`,
+                            }}
+                          >
+                            {isAdminAccount ? '🔒 Quyền Admin' : '🔒 Quyền Ban Giám Đốc'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       )}
@@ -1455,28 +1650,25 @@ export function StaffAccessPage() {
       {activeMainTab === 'KPI_EVALUATION' && (
         <div>
           {/* Sub-mode Selector */}
-          <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '0.5rem', borderRadius: '0.65rem', border: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
+          <div className="kpi-submode-nav">
             <button
               type="button"
               onClick={() => setKpiSubMode('DAILY_CHECKLIST')}
-              className={`btn btn-sm ${kpiSubMode === 'DAILY_CHECKLIST' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ fontWeight: 700, borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              className={`btn btn-sm kpi-submode-btn ${kpiSubMode === 'DAILY_CHECKLIST' ? 'btn-primary' : 'btn-secondary'}`}
             >
               📝 1. Giám Sát & Tick KPI Ca/Ngày Theo Nhóm Công Việc
             </button>
             <button
               type="button"
               onClick={() => setKpiSubMode('PERIOD_SYNTHESIS')}
-              className={`btn btn-sm ${kpiSubMode === 'PERIOD_SYNTHESIS' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ fontWeight: 700, borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              className={`btn btn-sm kpi-submode-btn ${kpiSubMode === 'PERIOD_SYNTHESIS' ? 'btn-primary' : 'btn-secondary'}`}
             >
               📊 2. Bảng Tổng Hợp Đánh Giá KPI (Tháng / Quý / Năm)
             </button>
             <button
               type="button"
               onClick={() => setKpiSubMode('FACILITY_OVERVIEW')}
-              className={`btn btn-sm ${kpiSubMode === 'FACILITY_OVERVIEW' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ fontWeight: 700, borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+              className={`btn btn-sm kpi-submode-btn ${kpiSubMode === 'FACILITY_OVERVIEW' ? 'btn-primary' : 'btn-secondary'}`}
             >
               📈 3. Giám Sát Mức Độ Hoàn Thành Toàn Viện
             </button>
@@ -1484,25 +1676,25 @@ export function StaffAccessPage() {
 
           {/* SUB-MODE 1: DAILY CHECKLIST */}
           {kpiSubMode === 'DAILY_CHECKLIST' && (
-            <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="card kpi-card">
+              <div className="kpi-card-header">
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <h3 className="kpi-card-title">
                     📝 Đánh Giá KPI Ca Trực Hàng Ngày Cho Nhân Viên
                   </h3>
-                  <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                  <p className="kpi-card-subtitle">
                     Nhân viên quản lý quan sát thực tế, kiểm tra ca trực và tick chọn các tiêu chí để phục vụ tổng hợp KPI tháng/quý/năm.
                   </p>
                 </div>
-                <span className="badge badge-info" style={{ fontSize: '0.78rem' }}>
+                <span className="badge badge-info" style={{ fontSize: '0.75rem' }}>
                   🔒 Thẩm quyền Quản lý & Ban Giám đốc
                 </span>
               </div>
 
               {/* Selection Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '1rem', borderRadius: '0.55rem', border: '1px solid #e2e8f0' }}>
+              <div className="kpi-form-grid">
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                     1. CHỌN NHÂN VIÊN ĐƯỢC ĐÁNH GIÁ *
                   </label>
                   <select
@@ -1525,7 +1717,7 @@ export function StaffAccessPage() {
                         setKpiTickResults({});
                       }
                     }}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   >
                     <option value="">-- Chọn nhân sự ({staffQuery.data?.length || 0}) --</option>
                     {staffQuery.data?.map((s) => (
@@ -1537,7 +1729,7 @@ export function StaffAccessPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                     2. NHÓM CÔNG VIỆC CHUYÊN MÔN
                   </label>
                   <select
@@ -1547,7 +1739,7 @@ export function StaffAccessPage() {
                       setKpiJobGroup(e.target.value as JobGroup);
                       setKpiTickResults({});
                     }}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700, color: '#166534' }}
                   >
                     {(Object.keys(JOB_GROUP_LABELS) as JobGroup[]).map((g) => (
                       <option key={g} value={g}>{JOB_GROUP_LABELS[g]}</option>
@@ -1556,7 +1748,7 @@ export function StaffAccessPage() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                     3. NGÀY ĐÁNH GIÁ
                   </label>
                   <input
@@ -1564,19 +1756,19 @@ export function StaffAccessPage() {
                     className="form-control"
                     value={kpiShiftDate}
                     onChange={(e) => setKpiShiftDate(e.target.value)}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                  <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                     4. CA TRỰC GIÁM SÁT
                   </label>
                   <select
                     className="form-select"
                     value={kpiShiftName}
                     onChange={(e) => setKpiShiftName(e.target.value)}
-                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                    style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   >
                     <option value="Ca Sáng (06:00 - 14:00)">Ca Sáng (06:00 - 14:00)</option>
                     <option value="Ca Chiều (14:00 - 22:00)">Ca Chiều (14:00 - 22:00)</option>
@@ -1590,11 +1782,11 @@ export function StaffAccessPage() {
               {/* Criteria Checklist */}
               {kpiStaffId ? (
                 <div style={{ marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                    <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0f172a' }}>
+                  <div className="kpi-criteria-header">
+                    <div className="kpi-criteria-title" style={{ fontWeight: 800, fontSize: '0.9rem', color: '#0f172a' }}>
                       📋 BỘ TIÊU CHÍ HOẠT ĐỘNG TRONG CA TRỰC — {JOB_GROUP_LABELS[kpiJobGroup].toUpperCase()}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                    <div className="kpi-criteria-staff" style={{ fontSize: '0.78rem', color: '#64748b' }}>
                       Ghi nhận cho nhân viên: <strong style={{ color: '#166534' }}>{kpiStaffName}</strong>
                     </div>
                   </div>
@@ -1605,49 +1797,39 @@ export function StaffAccessPage() {
                       return (
                         <div
                           key={criterion.id}
+                          className="kpi-criterion-item"
                           style={{
-                            padding: '0.85rem 1rem',
-                            borderRadius: '0.5rem',
                             background: currentStatus === 'FAILED' ? '#fff5f5' : currentStatus === 'EXCELLENT' ? '#f0fdf4' : '#fafafa',
                             border: `1px solid ${currentStatus === 'FAILED' ? '#fecaca' : currentStatus === 'EXCELLENT' ? '#86efac' : '#e2e8f0'}`,
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            gap: '1rem',
-                            flexWrap: 'wrap',
                           }}
                         >
-                          <div style={{ flex: 1, minWidth: '240px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                              <span className="badge badge-secondary" style={{ fontFamily: 'monospace', fontWeight: 700 }}>
+                          <div className="kpi-criterion-info">
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+                              <span className="badge badge-secondary" style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '0.72rem' }}>
                                 {criterion.code}
                               </span>
-                              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#166534', background: '#dcfce7', padding: '0.1rem 0.45rem', borderRadius: '4px', border: '1px solid #bbf7d0' }}>
+                              <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#166534', background: '#dcfce7', padding: '0.1rem 0.4rem', borderRadius: '4px', border: '1px solid #bbf7d0' }}>
                                 {criterion.category}
                               </span>
-                              <strong style={{ fontSize: '0.9rem', color: '#0f172a' }}>{criterion.title}</strong>
-                              <span style={{ fontSize: '0.75rem', color: '#64748b', background: '#e2e8f0', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
+                              <strong className="kpi-criterion-title" style={{ fontSize: '0.88rem', color: '#0f172a' }}>{criterion.title}</strong>
+                              <span style={{ fontSize: '0.72rem', color: '#64748b', background: '#e2e8f0', padding: '0.1rem 0.35rem', borderRadius: '4px' }}>
                                 Trọng số: {criterion.weight}%
                               </span>
                             </div>
-                            <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.2rem' }}>
+                            <div className="kpi-criterion-desc" style={{ fontSize: '0.78rem', color: '#475569', marginTop: '0.2rem' }}>
                               {criterion.description}
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                          <div className="kpi-criterion-actions">
                             <button
                               type="button"
                               onClick={() => setKpiTickResults((prev) => ({ ...prev, [criterion.id]: 'PASSED' }))}
+                              className="kpi-criterion-btn"
                               style={{
-                                padding: '0.4rem 0.75rem',
-                                borderRadius: '0.4rem',
-                                fontSize: '0.8rem',
-                                fontWeight: 700,
                                 border: currentStatus === 'PASSED' ? '2px solid #16a34a' : '1px solid #cbd5e1',
                                 background: currentStatus === 'PASSED' ? '#dcfce7' : '#fff',
                                 color: currentStatus === 'PASSED' ? '#15803d' : '#64748b',
-                                cursor: 'pointer',
                               }}
                             >
                               🟢 ĐẠT YÊU CẦU
@@ -1656,15 +1838,11 @@ export function StaffAccessPage() {
                             <button
                               type="button"
                               onClick={() => setKpiTickResults((prev) => ({ ...prev, [criterion.id]: 'EXCELLENT' }))}
+                              className="kpi-criterion-btn"
                               style={{
-                                padding: '0.4rem 0.75rem',
-                                borderRadius: '0.4rem',
-                                fontSize: '0.8rem',
-                                fontWeight: 700,
                                 border: currentStatus === 'EXCELLENT' ? '2px solid #2563eb' : '1px solid #cbd5e1',
                                 background: currentStatus === 'EXCELLENT' ? '#dbeafe' : '#fff',
                                 color: currentStatus === 'EXCELLENT' ? '#1e40af' : '#64748b',
-                                cursor: 'pointer',
                               }}
                             >
                               ⭐ XUẤT SẮC
@@ -1673,15 +1851,11 @@ export function StaffAccessPage() {
                             <button
                               type="button"
                               onClick={() => setKpiTickResults((prev) => ({ ...prev, [criterion.id]: 'FAILED' }))}
+                              className="kpi-criterion-btn"
                               style={{
-                                padding: '0.4rem 0.75rem',
-                                borderRadius: '0.4rem',
-                                fontSize: '0.8rem',
-                                fontWeight: 700,
                                 border: currentStatus === 'FAILED' ? '2px solid #dc2626' : '1px solid #cbd5e1',
                                 background: currentStatus === 'FAILED' ? '#fee2e2' : '#fff',
                                 color: currentStatus === 'FAILED' ? '#b91c1c' : '#64748b',
-                                cursor: 'pointer',
                               }}
                             >
                               🔴 CHƯA ĐẠT
@@ -1693,7 +1867,7 @@ export function StaffAccessPage() {
                   </div>
 
                   <div style={{ marginTop: '1.25rem' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#475569', marginBottom: '0.35rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#475569', marginBottom: '0.35rem' }}>
                       NHẬN XÉT & GHI CHÚ QUAN SÁT THỰC TẾ CỦA QUẢN LÝ
                     </label>
                     <textarea
@@ -1702,7 +1876,7 @@ export function StaffAccessPage() {
                       placeholder="Ghi nhận chi tiết quan sát thực tế ca trực (ví dụ: Chăm sóc chu đáo, tuân thủ đúng 5 đúng eMAR, nhắc nhở thu gom túi rác y tế)..."
                       value={kpiEvaluationNotes}
                       onChange={(e) => setKpiEvaluationNotes(e.target.value)}
-                      style={{ width: '100%', padding: '0.65rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                      style={{ width: '100%', padding: '0.55rem 0.65rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.84rem' }}
                     />
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
@@ -1728,8 +1902,8 @@ export function StaffAccessPage() {
                             notes: kpiEvaluationNotes,
                           });
                         }}
-                        className="btn btn-primary"
-                        style={{ padding: '0.65rem 1.5rem', fontWeight: 700, fontSize: '0.92rem', borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+                        className="btn btn-primary kpi-submit-btn"
+                        style={{ padding: '0.6rem 1.4rem', fontWeight: 700, fontSize: '0.9rem', borderRadius: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                       >
                         {submitKpiMutation.isPending ? '⏳ Đang ghi nhận...' : '✅ Hoàn Tất Đánh Giá & Phát Bell Notice'}
                       </button>
@@ -1737,18 +1911,18 @@ export function StaffAccessPage() {
                   </div>
                 </div>
               ) : (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#64748b', background: '#f8fafc', borderRadius: '0.5rem', border: '1px dashed #cbd5e1' }}>
+                <div style={{ textAlign: 'center', padding: '1.75rem 1rem', color: '#64748b', background: '#f8fafc', borderRadius: '0.5rem', border: '1px dashed #cbd5e1', fontSize: '0.85rem' }}>
                   👈 Vui lòng chọn <strong>Nhân viên</strong> ở trên để hiển thị bộ tiêu chí KPI ca trực theo đúng nhóm công việc chuyên môn.
                 </div>
               )}
 
               {/* Lịch sử Đánh giá gần đây */}
               <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid #e2e8f0' }}>
-                <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '0.95rem', fontWeight: 800, color: '#0f172a' }}>
+                <h4 style={{ margin: '0 0 0.85rem 0', fontSize: '0.92rem', fontWeight: 800, color: '#0f172a' }}>
                   📜 LỊCH SỬ ĐÁNH GIÁ CA TRỰC GẦN ĐÂY ({kpiEvaluationsQuery.data?.length || 0})
                 </h4>
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="table" style={{ width: '100%', minWidth: '1000px', fontSize: '0.84rem' }}>
+                  <table className="table kpi-history-table" style={{ width: '100%', minWidth: '900px', fontSize: '0.84rem' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc' }}>
                         <th>ID / Ngày Ca</th>
@@ -1773,7 +1947,7 @@ export function StaffAccessPage() {
                           <td>{rec.shiftName}</td>
                           <td>{rec.evaluatorName}</td>
                           <td>
-                            <span style={{ fontSize: '1rem', fontWeight: 800, color: rec.totalScore >= 90 ? '#166534' : rec.totalScore >= 70 ? '#1e40af' : '#b91c1c' }}>
+                            <span style={{ fontSize: '0.95rem', fontWeight: 800, color: rec.totalScore >= 90 ? '#166534' : rec.totalScore >= 70 ? '#1e40af' : '#b91c1c' }}>
                               {rec.totalScore}/100
                             </span>
                           </td>
@@ -1801,18 +1975,18 @@ export function StaffAccessPage() {
             );
 
             return (
-              <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
-                <div style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '0.85rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div className="card kpi-card">
+                <div className="kpi-card-header">
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <h3 className="kpi-card-title">
                       📊 Bảng Tổng Hợp Đánh Giá KPI Nhân Sự ({summary.items[0]?.periodLabel || synthesisPeriodValue})
                     </h3>
-                    <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                    <p className="kpi-card-subtitle">
                       Tự động tổng hợp dữ liệu ca trực hàng ngày thành kết quả đánh giá thi đua Tháng, Quý và Năm của từng nhân viên.
                     </p>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <div className="kpi-synthesis-actions">
                     <button
                       onClick={async () => {
                         const count = await publishPeriodKPIHonorNotices(actor!, summary);
@@ -1824,7 +1998,7 @@ export function StaffAccessPage() {
                         }
                       }}
                       className="btn btn-secondary"
-                      style={{ background: '#eff6ff', color: '#1e40af', borderColor: '#bfdbfe', fontWeight: 700, fontSize: '0.82rem' }}
+                      style={{ background: '#eff6ff', color: '#1e40af', borderColor: '#bfdbfe', fontWeight: 700, fontSize: '0.8rem' }}
                     >
                       🔔 Phát Bell Notice Vinh Danh Thi Đua Kỳ ({summary.items.filter(i => i.finalRank === 'A+').length} NV A+)
                     </button>
@@ -1832,7 +2006,7 @@ export function StaffAccessPage() {
                     <button
                       onClick={() => exportKPISynthesisCSV(summary)}
                       className="btn btn-secondary"
-                      style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700, fontSize: '0.82rem' }}
+                      style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700, fontSize: '0.8rem' }}
                     >
                       📥 Xuất Báo Cáo KPI Excel/CSV
                     </button>
@@ -1840,9 +2014,9 @@ export function StaffAccessPage() {
                 </div>
 
                 {/* Period Selectors */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem', background: '#f8fafc', padding: '1rem', borderRadius: '0.55rem', border: '1px solid #e2e8f0' }}>
+                <div className="kpi-form-grid">
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                       KỲ TỔNG HỢP (THÁNG / QUÝ / NĂM)
                     </label>
                     <select
@@ -1855,7 +2029,7 @@ export function StaffAccessPage() {
                         else if (type === 'QUARTER') setSynthesisPeriodValue('2026-Q3');
                         else setSynthesisPeriodValue('2026');
                       }}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700 }}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700 }}
                     >
                       <option value="MONTH">📅 Đánh Giá Theo Tháng</option>
                       <option value="QUARTER">🏛️ Đánh Giá Theo Quý</option>
@@ -1864,14 +2038,14 @@ export function StaffAccessPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                       CHỌN KỲ ĐÁNH GIÁ CỤ THỂ
                     </label>
                     <select
                       className="form-select"
                       value={synthesisPeriodValue}
                       onChange={(e) => setSynthesisPeriodValue(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem', fontWeight: 700, color: '#166534' }}
                     >
                       {synthesisPeriodType === 'MONTH' && (
                         <>
@@ -1897,14 +2071,14 @@ export function StaffAccessPage() {
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
+                    <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>
                       LỌC THEO NHÓM CÔNG VIỆC
                     </label>
                     <select
                       className="form-select"
                       value={synthesisJobGroupFilter}
                       onChange={(e) => setSynthesisJobGroupFilter(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.88rem' }}
+                      style={{ width: '100%', padding: '0.5rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                     >
                       <option value="ALL">Tất cả nhóm công việc (6 nhóm)</option>
                       {(Object.keys(JOB_GROUP_LABELS) as JobGroup[]).map((g) => (
@@ -1915,43 +2089,43 @@ export function StaffAccessPage() {
                 </div>
 
                 {/* Metric Overview Cards */}
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
-                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>TỔNG NHÂN VIÊN ĐÃ ĐÁNH GIÁ</div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.2rem 0' }}>
-                      {summary.totalStaffEvaluated} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>nhân sự</span>
+                <div className="kpi-metric-grid">
+                  <div className="card kpi-metric-card" style={{ padding: '0.85rem 1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+                    <div className="kpi-metric-title" style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>TỔNG NHÂN VIÊN ĐÃ ĐÁNH GIÁ</div>
+                    <div className="kpi-metric-number" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', margin: '0.2rem 0' }}>
+                      {summary.totalStaffEvaluated} <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>nhân sự</span>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Đã ghi nhận dữ liệu ca trực</div>
+                    <div className="kpi-metric-subtext" style={{ fontSize: '0.72rem', color: '#64748b' }}>Đã ghi nhận dữ liệu ca trực</div>
                   </div>
 
-                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.65rem' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>ĐIỂM KPI TRUNG BÌNH TOÀN VIỆN</div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>
-                      {summary.averageFacilityScore}/100 <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>điểm</span>
+                  <div className="card kpi-metric-card" style={{ padding: '0.85rem 1rem', background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.65rem' }}>
+                    <div className="kpi-metric-title" style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 700, textTransform: 'uppercase' }}>ĐIỂM KPI TRUNG BÌNH TOÀN VIỆN</div>
+                    <div className="kpi-metric-number" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#166534', margin: '0.2rem 0' }}>
+                      {summary.averageFacilityScore}/100 <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>điểm</span>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600 }}>Chỉ số hiệu suất tổng hợp</div>
+                    <div className="kpi-metric-subtext" style={{ fontSize: '0.72rem', color: '#15803d', fontWeight: 600 }}>Chỉ số hiệu suất tổng hợp</div>
                   </div>
 
-                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: '#e0f2fe', border: '1px solid #bae6fd', borderRadius: '0.65rem' }}>
-                    <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 700, textTransform: 'uppercase' }}>XUẤT SẮC VƯỢT BẬC (A+)</div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0369a1', margin: '0.2rem 0' }}>
-                      {summary.excellentStaffCount} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>cá nhân</span>
+                  <div className="card kpi-metric-card" style={{ padding: '0.85rem 1rem', background: '#e0f2fe', border: '1px solid #bae6fd', borderRadius: '0.65rem' }}>
+                    <div className="kpi-metric-title" style={{ fontSize: '0.7rem', color: '#0369a1', fontWeight: 700, textTransform: 'uppercase' }}>XUẤT SẮC VƯỢT BẬC (A+)</div>
+                    <div className="kpi-metric-number" style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0369a1', margin: '0.2rem 0' }}>
+                      {summary.excellentStaffCount} <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>cá nhân</span>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#0369a1' }}>Đủ tiêu chuẩn khen thưởng</div>
+                    <div className="kpi-metric-subtext" style={{ fontSize: '0.72rem', color: '#0369a1' }}>Đủ tiêu chuẩn khen thưởng</div>
                   </div>
 
-                  <div className="card" style={{ padding: '0.9rem 1.1rem', background: summary.warningStaffCount > 0 ? '#fef2f2' : '#f8fafc', border: `1px solid ${summary.warningStaffCount > 0 ? '#fecaca' : '#e2e8f0'}`, borderRadius: '0.65rem' }}>
-                    <div style={{ fontSize: '0.72rem', color: summary.warningStaffCount > 0 ? '#b91c1c' : '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>CẦN CẢI THIỆN / CẢNH BÁO</div>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color: summary.warningStaffCount > 0 ? '#b91c1c' : '#0f172a', margin: '0.2rem 0' }}>
-                      {summary.warningStaffCount} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>cá nhân</span>
+                  <div className="card kpi-metric-card" style={{ padding: '0.85rem 1rem', background: summary.warningStaffCount > 0 ? '#fef2f2' : '#f8fafc', border: `1px solid ${summary.warningStaffCount > 0 ? '#fecaca' : '#e2e8f0'}`, borderRadius: '0.65rem' }}>
+                    <div className="kpi-metric-title" style={{ fontSize: '0.7rem', color: summary.warningStaffCount > 0 ? '#b91c1c' : '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>CẦN CẢI THIỆN / CẢNH BÁO</div>
+                    <div className="kpi-metric-number" style={{ fontSize: '1.4rem', fontWeight: 800, color: summary.warningStaffCount > 0 ? '#b91c1c' : '#0f172a', margin: '0.2rem 0' }}>
+                      {summary.warningStaffCount} <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>cá nhân</span>
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: summary.warningStaffCount > 0 ? '#b91c1c' : '#64748b' }}>Phát hiện tiêu chí chưa đạt</div>
+                    <div className="kpi-metric-subtext" style={{ fontSize: '0.72rem', color: summary.warningStaffCount > 0 ? '#b91c1c' : '#64748b' }}>Phát hiện tiêu chí chưa đạt</div>
                   </div>
                 </div>
 
                 {/* Detailed Synthesis Table */}
                 <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="table" style={{ width: '100%', minWidth: '1100px', fontSize: '0.84rem' }}>
+                  <table className="table kpi-synthesis-table" style={{ width: '100%', minWidth: '950px', fontSize: '0.84rem' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc' }}>
                         <th>Mã & Nhân Viên</th>
@@ -1977,13 +2151,13 @@ export function StaffAccessPage() {
                             <td><strong>{item.periodLabel}</strong></td>
                             <td>{item.totalEvaluatedShifts} ca</td>
                             <td>
-                              <span style={{ fontSize: '1rem', fontWeight: 800, color: item.averageScore >= 90 ? '#166534' : item.averageScore >= 75 ? '#1e40af' : '#b91c1c' }}>
+                              <span style={{ fontSize: '0.95rem', fontWeight: 800, color: item.averageScore >= 90 ? '#166534' : item.averageScore >= 75 ? '#1e40af' : '#b91c1c' }}>
                                 {item.averageScore}/100
                               </span>
                             </td>
                             <td>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden', minWidth: '40px' }}>
                                   <div style={{ width: `${item.criterionPassRatePercent}%`, height: '100%', background: item.criterionPassRatePercent >= 90 ? '#16a34a' : '#2563eb' }} />
                                 </div>
                                 <span style={{ fontWeight: 700, fontSize: '0.78rem' }}>{item.criterionPassRatePercent}%</span>
@@ -2001,7 +2175,7 @@ export function StaffAccessPage() {
                                 {item.finalRankLabel}
                               </span>
                             </td>
-                            <td style={{ maxWidth: '240px', fontSize: '0.78rem', color: '#475569' }}>{item.evaluationSummary}</td>
+                            <td style={{ maxWidth: '220px', fontSize: '0.78rem', color: '#475569' }}>{item.evaluationSummary}</td>
                           </tr>
                         ))
                       ) : (
@@ -2020,22 +2194,22 @@ export function StaffAccessPage() {
 
           {/* SUB-MODE 3: FACILITY OVERVIEW */}
           {kpiSubMode === 'FACILITY_OVERVIEW' && (
-            <div className="card" style={{ padding: '1.25rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
-              <h3 style={{ margin: '0 0 0.85rem 0', fontSize: '1.05rem', fontWeight: 800, color: '#166534' }}>
+            <div className="card kpi-card">
+              <h3 className="kpi-card-title" style={{ marginBottom: '0.4rem' }}>
                 📈 Giám Sát Mức Độ Hoàn Thành & Tuân Thủ Tiêu Chí Toàn Viện
               </h3>
-              <p style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '1.25rem' }}>
+              <p className="kpi-card-subtitle" style={{ marginBottom: '1.25rem' }}>
                 Tổng quan chỉ số hiệu suất theo các phòng ban chuyên môn và tỷ lệ tuân thủ quy chuẩn y tế Viện Dưỡng Lão Tâm An.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              <div className="kpi-facility-grid">
                 {(workforceKpiQuery.data?.teams || []).map((team) => (
-                  <div key={team.role} style={{ border: '1px solid #e2e8f0', borderRadius: '0.55rem', padding: '1rem', background: '#f8fafc' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <strong style={{ fontSize: '0.92rem', color: '#0f172a' }}>{team.role}</strong>
-                      <span className="badge badge-success">{team.completionRate}% hoàn thành</span>
+                  <div key={team.role} style={{ border: '1px solid #e2e8f0', borderRadius: '0.55rem', padding: '0.85rem 1rem', background: '#f8fafc' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.35rem' }}>
+                      <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>{team.role}</strong>
+                      <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>{team.completionRate}% hoàn thành</span>
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: '#475569', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
+                    <div style={{ fontSize: '0.78rem', color: '#475569', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem' }}>
                       <div>Tổng nhân sự: <b>{team.totalStaff}</b></div>
                       <div>Tổng ca trực: <b>{team.totalShifts}</b></div>
                       <div>Ca hoàn thành: <b>{team.completedShifts}</b></div>
@@ -2507,7 +2681,8 @@ export function StaffAccessPage() {
 
               <button
                 type="button"
-                onClick={() => window.print()}
+                className="no-print"
+                onClick={() => triggerPrint()}
                 style={{
                   padding: '0.55rem 1.1rem',
                   borderRadius: '0.4rem',

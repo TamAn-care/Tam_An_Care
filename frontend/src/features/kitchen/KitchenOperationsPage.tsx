@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { hasCapability } from '../../auth/role-policy';
 import {
   fetchFoodReceivingBatches,
@@ -240,6 +241,44 @@ export default function KitchenOperationsPage() {
       return true;
     });
   }, [inventory, zoneFilter, categoryFilter]);
+
+  // Vendor Performance & Weight Variance Aggregation for Audit Table
+  const vendorAuditMetrics = useMemo(() => {
+    return vendors.map((v) => {
+      const vBatches = batches.filter(
+        (b) => b.vendorId === v.id || b.vendorName.toLowerCase().includes(v.vendorName.toLowerCase())
+      );
+      const totalDeliveries = vBatches.length;
+      const totalOrderedWeight = vBatches.reduce((acc, b) => acc + (b.totalOrderedWeight || 0), 0);
+      const totalActualWeight = vBatches.reduce((acc, b) => acc + (b.totalActualWeight || 0), 0);
+      const weightVarianceKg = Number((totalActualWeight - totalOrderedWeight).toFixed(2));
+      const weightVariancePercent =
+        totalOrderedWeight > 0 ? Number(((weightVarianceKg / totalOrderedWeight) * 100).toFixed(2)) : 0;
+      const acceptedBatches = vBatches.filter((b) => b.overallStatus === 'ACCEPTED').length;
+      const acceptanceRate = totalDeliveries > 0 ? Math.round((acceptedBatches / totalDeliveries) * 100) : 100;
+      const totalValue = vBatches.reduce((acc, b) => acc + (b.totalValue || 0), 0);
+      const deductionValue = vBatches.reduce((acc, b) => {
+        const itemLoss =
+          b.items?.reduce((iAcc, item) => {
+            return iAcc + (item.variance < 0 ? Math.abs(item.variance) * item.unitPrice : 0);
+          }, 0) || 0;
+        return acc + itemLoss;
+      }, 0);
+
+      return {
+        ...v,
+        totalDeliveries,
+        totalOrderedWeight,
+        totalActualWeight,
+        weightVarianceKg,
+        weightVariancePercent,
+        acceptedBatches,
+        acceptanceRate,
+        totalValue,
+        deductionValue,
+      };
+    });
+  }, [vendors, batches]);
 
   // Form State for New Receiving Batch
   const [newBatchVendorId, setNewBatchVendorId] = useState(vendors[0]?.id || 'VND-001');
@@ -554,28 +593,23 @@ export default function KitchenOperationsPage() {
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
                 {canUpdateMenu ? (
-                  <>
-                    <span className="badge badge-success" style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}>
-                      <span>✓</span> Thẩm quyền Cập nhật: Dinh dưỡng / Quản lý / BGĐ
-                    </span>
-                    <button
-                      className="btn"
-                      onClick={() => handleOpenEditDayModal(selectedDaySchedule)}
-                      style={{ background: '#166534', color: '#ffffff', fontWeight: 700, borderRadius: '0.5rem', padding: '0.55rem 1.1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.88rem', boxShadow: '0 2px 4px rgba(22,101,52,0.2)' }}
-                    >
-                      <span>📝</span> Cập Nhật Thực Đơn {selectedDaySchedule.dayName}
-                    </button>
-                  </>
+                  <button
+                    className="btn"
+                    onClick={() => handleOpenEditDayModal(selectedDaySchedule)}
+                    style={{ background: '#166534', color: '#ffffff', fontWeight: 700, borderRadius: '0.5rem', padding: '0.55rem 1.1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.88rem', boxShadow: '0 2px 4px rgba(22,101,52,0.2)' }}
+                  >
+                    <span>📝</span> Cập Nhật Thực Đơn {selectedDaySchedule.dayName}
+                  </button>
                 ) : (
                   <span className="badge badge-warning" style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fef3c7', fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}>
-                    🔒 Chế độ Chỉ Xem (Thẩm quyền sửa thuộc Nhân viên Dinh dưỡng, Quản lý & BGĐ)
+                    🔒 Chế độ Chỉ Xem
                   </span>
                 )}
               </div>
             </div>
 
             {/* Day Selector Pills (Thứ 2 -> Chủ Nhật) */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.25rem', overflowX: 'auto', paddingBottom: '4px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '1.25rem', width: '100%' }}>
               {weeklySchedule.map((day) => {
                 const isToday = day.dayId === todayDayId;
                 const isSelected = day.dayId === selectedDayId;
@@ -584,17 +618,20 @@ export default function KitchenOperationsPage() {
                     key={day.dayId}
                     onClick={() => setSelectedDayId(day.dayId as any)}
                     style={{
-                      padding: '0.6rem 1.1rem',
+                      flex: '1 1 auto',
+                      minWidth: '75px',
+                      padding: '0.55rem 0.85rem',
                       borderRadius: '0.5rem',
                       border: isSelected ? '2px solid #166534' : isToday ? '2px solid #22c55e' : '1px solid #cbd5e1',
                       background: isSelected ? '#166534' : isToday ? '#f0fdf4' : '#ffffff',
                       color: isSelected ? '#ffffff' : '#334155',
                       fontWeight: isSelected || isToday ? 700 : 500,
                       cursor: 'pointer',
-                      fontSize: '0.88rem',
+                      fontSize: '0.86rem',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.4rem',
+                      justifyContent: 'center',
+                      gap: '0.35rem',
                       whiteSpace: 'nowrap',
                       boxShadow: isSelected ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
                       transition: 'all 0.15s ease',
@@ -602,7 +639,7 @@ export default function KitchenOperationsPage() {
                   >
                     <span>{day.dayName}</span>
                     {isToday && (
-                      <span style={{ fontSize: '0.7rem', padding: '0.15rem 0.45rem', borderRadius: '0.25rem', background: isSelected ? '#dcfce7' : '#166534', color: isSelected ? '#166534' : '#ffffff', fontWeight: 800 }}>
+                      <span style={{ fontSize: '0.68rem', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', background: isSelected ? '#dcfce7' : '#166534', color: isSelected ? '#166534' : '#ffffff', fontWeight: 800 }}>
                         ⭐ Hôm nay
                       </span>
                     )}
@@ -1296,25 +1333,50 @@ export default function KitchenOperationsPage() {
           </div>
 
           {/* Vendors Scorecard Table */}
-          <div className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem', marginBottom: '1.5rem' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.05rem', color: '#0f172a' }}>
-              1. Bảng Đánh Giá Nhà Cung Cấp & Sai Lệch Khối Lượng Giao Nhận
-            </h3>
-            <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table className="table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+          <div className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem', marginBottom: '1.5rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 800 }}>
+                1. Bảng Đánh Giá Nhà Cung Cấp & Sai Lệch Khối Lượng Giao Nhận
+              </h3>
+              <span className="badge badge-success" style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                Đối Soát Realtime 100%
+              </span>
+            </div>
+
+            {/* Mobile Swipe Hint */}
+            <div style={{ fontSize: '0.76rem', color: '#15803d', background: '#f0fdf4', padding: '0.4rem 0.75rem', borderRadius: '0.4rem', border: '1px solid #bbf7d0', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>👉</span> <b>Mẹo trên di động:</b> Vuốt sang ngang để xem đầy đủ {canViewFinancials ? '9' : '8'} cột thông tin sai lệch khối lượng & khấu trừ tài chính.
+            </div>
+
+            <div
+              className="table-responsive"
+              style={{
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+                width: '100%',
+                maxWidth: '100%',
+                borderRadius: '0.5rem',
+                border: '1px solid #e2e8f0',
+              }}
+            >
+              <table className="table-wide-1200" style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã & Tên Nhà Cung Cấp</th>
                     <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Số Hợp Đồng / Mặt Hàng</th>
-                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Chứng Nhận An Toàn</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Lịch Giao Hàng</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>KL Theo Phiếu (kg)</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Cân Thực Tế (kg)</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Sai Lệch Khối Lượng (±kg / ±%)</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Đợt Giao & Tỷ Lệ Đạt</th>
+                    {canViewFinancials && <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Khấu Trừ / Trừ Hao Hụt</th>}
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Đánh Giá Uy Tín</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái Hợp Đồng</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {vendors.map((v) => (
-                    <tr key={v.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  {vendorAuditMetrics.map((v) => (
+                    <tr key={v.id} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <div style={{ fontWeight: 700, color: '#166534' }}>{v.vendorName}</div>
                         <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Mã: {v.vendorCode} | ĐT: {v.contactPhone}</div>
@@ -1323,20 +1385,54 @@ export default function KitchenOperationsPage() {
                         <div style={{ fontWeight: 600 }}>{v.contractNumber}</div>
                         <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{v.categoryLabel}</div>
                       </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>
-                        <span style={{ display: 'inline-block', padding: '0.2rem 0.5rem', background: '#dcfce7', color: '#15803d', fontWeight: 700, borderRadius: '0.35rem', fontSize: '0.74rem' }}>
-                          {v.certification}
-                        </span>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 600, color: '#334155' }}>
+                        {v.totalOrderedWeight > 0 ? `${v.totalOrderedWeight} kg` : '0 kg'}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
+                        {v.totalActualWeight > 0 ? `${v.totalActualWeight} kg` : '0 kg'}
                       </td>
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                        {v.deliverySchedule}
+                        {v.totalDeliveries === 0 ? (
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Chưa phát sinh</span>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '0.2rem 0.55rem',
+                                borderRadius: '0.35rem',
+                                fontSize: '0.76rem',
+                                fontWeight: 800,
+                                background: v.weightVarianceKg === 0 ? '#f1f5f9' : v.weightVarianceKg > 0 ? '#dcfce7' : '#fee2e2',
+                                color: v.weightVarianceKg === 0 ? '#475569' : v.weightVarianceKg > 0 ? '#15803d' : '#b91c1c',
+                              }}
+                            >
+                              {v.weightVarianceKg > 0 ? `+${v.weightVarianceKg} kg` : `${v.weightVarianceKg} kg`} ({v.weightVariancePercent > 0 ? `+${v.weightVariancePercent}%` : `${v.weightVariancePercent}%`})
+                            </span>
+                          </div>
+                        )}
                       </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{v.acceptedBatches}/{v.totalDeliveries || 0} đợt đạt</div>
+                        <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700 }}>Tỷ lệ đạt {v.acceptanceRate}%</div>
+                      </td>
+                      {canViewFinancials && (
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700 }}>
+                          {v.deductionValue > 0 ? (
+                            <span style={{ color: '#b91c1c', background: '#fee2e2', padding: '0.2rem 0.5rem', borderRadius: '0.3rem', fontSize: '0.76rem' }}>
+                              - {v.deductionValue.toLocaleString('vi-VN')} đ
+                            </span>
+                          ) : (
+                            <span style={{ color: '#166534', fontSize: '0.76rem' }}>0 đ (Chuẩn)</span>
+                          )}
+                        </td>
+                      )}
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'center', color: '#f59e0b', fontWeight: 800 }}>
                         {'★'.repeat(Math.round(v.ratingScore))} <span style={{ color: '#0f172a', fontSize: '0.8rem' }}>({v.ratingScore}/5)</span>
                       </td>
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
                         <span style={{ display: 'inline-block', padding: '0.2rem 0.5rem', background: '#ecfdf5', color: '#047857', fontWeight: 700, borderRadius: '0.35rem', fontSize: '0.74rem' }}>
-                          Đang hiệu lực
+                          {v.certification} • Đang hiệu lực
                         </span>
                       </td>
                     </tr>
@@ -1347,27 +1443,50 @@ export default function KitchenOperationsPage() {
           </div>
 
           {/* Daily Cooking Dispatches Table */}
-          <div className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.05rem', color: '#0f172a' }}>
-              2. Nhật Ký Xuất Kho Thực Phẩm Chế Biến Hàng Ngày
-            </h3>
-            <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table className="table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+          <div className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 800 }}>
+                2. Nhật Ký Xuất Kho Thực Phẩm Chế Biến Hàng Ngày
+              </h3>
+              <span className="badge badge-info" style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                Định Mức Dinh Dưỡng Y Tế
+              </span>
+            </div>
+
+            {/* Mobile Swipe Hint */}
+            <div style={{ fontSize: '0.76rem', color: '#0369a1', background: '#f0f9ff', padding: '0.4rem 0.75rem', borderRadius: '0.4rem', border: '1px solid #bae6fd', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>👉</span> <b>Mẹo trên di động:</b> Vuốt sang ngang để xem đầy đủ 7 cột thông tin nguyên liệu xuất kho & định mức suất ăn.
+            </div>
+
+            <div
+              className="table-responsive"
+              style={{
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+                width: '100%',
+                maxWidth: '100%',
+                borderRadius: '0.5rem',
+                border: '1px solid #e2e8f0',
+              }}
+            >
+              <table className="table-wide-1050" style={{ width: '100%', minWidth: '1050px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã Xuất / Ngày</th>
                     <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Bữa Ăn & Thực Đơn</th>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Số Suất Ăn</th>
                     <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Nguyên Liệu Xuất Kho</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Định Mức & Ghi Chú</th>
                     <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Thực Hiện</th>
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
                   </tr>
                 </thead>
                 <tbody>
                   {dispatches.map((d) => (
-                    <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
                       <td style={{ padding: '0.75rem 1rem' }}>
-                        <div style={{ fontWeight: 700 }}>{d.id}</div>
+                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{d.id}</div>
                         <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{d.dispatchDate}</div>
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
@@ -1378,16 +1497,26 @@ export default function KitchenOperationsPage() {
                         {d.residentCount} suất
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
-                        {d.items.map((i, idx) => (
-                          <span key={idx} style={{ display: 'inline-block', background: '#f1f5f9', padding: '0.15rem 0.4rem', borderRadius: '0.3rem', fontSize: '0.75rem', marginRight: '0.35rem', marginBottom: '0.2rem' }}>
-                            {i.itemName}: <b>{i.quantity} {i.unit}</b>
-                          </span>
-                        ))}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                          {d.items.map((i, idx) => (
+                            <span key={idx} style={{ display: 'inline-block', background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '0.35rem', fontSize: '0.76rem', color: '#1e293b', border: '1px solid #e2e8f0' }}>
+                              {i.itemName}: <b>{i.quantity} {i.unit}</b>
+                            </span>
+                          ))}
+                        </div>
                       </td>
-                      <td style={{ padding: '0.75rem 1rem' }}>{d.dispatchedBy}</td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontSize: '0.78rem', color: '#475569' }}>
+                          {d.notes || 'Đã cân đúng định mức khẩu phần dinh dưỡng dưỡng lão'}
+                        </div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{d.dispatchedBy}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Bộ phận Dinh dưỡng</div>
+                      </td>
                       <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                        <span style={{ display: 'inline-block', padding: '0.2rem 0.5rem', background: '#dcfce7', color: '#15803d', fontWeight: 700, borderRadius: '0.35rem', fontSize: '0.74rem' }}>
-                          {d.status === 'SERVED' ? 'Đã phục vụ' : 'Đã nấu chín'}
+                        <span style={{ display: 'inline-block', padding: '0.25rem 0.6rem', background: '#dcfce7', color: '#15803d', fontWeight: 700, borderRadius: '0.35rem', fontSize: '0.75rem' }}>
+                          {d.status === 'SERVED' ? '✅ Đã phục vụ' : '🍳 Đã nấu chín'}
                         </span>
                       </td>
                     </tr>
@@ -1912,7 +2041,9 @@ export default function KitchenOperationsPage() {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', marginTop: '1.5rem' }}>
               <button
-                onClick={() => window.print()}
+                type="button"
+                className="no-print"
+                onClick={() => triggerPrint()}
                 style={{
                   padding: '0.5rem 1.25rem',
                   borderRadius: '0.4rem',

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { triggerPrint } from '../../utils/print';
 import {
   useMutation,
   useQuery,
@@ -364,7 +365,7 @@ export default function AccommodationPage() {
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <button
               type="button"
-              onClick={() => window.print()}
+              onClick={() => triggerPrint()}
               className="btn btn-sm btn-neutral no-print"
               style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}
             >

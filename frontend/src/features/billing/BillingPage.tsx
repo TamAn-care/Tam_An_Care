@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { hasCapability } from '../../auth/role-policy';
 import { formatResidentNameWithSalutation, getSalutation, isFemaleGender } from '../residents/resident-ui';
 import {
@@ -633,8 +634,12 @@ export default function BillingPage() {
             </div>
           ) : (
             <div className="card no-print data-table-card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="data-table" style={{ width: '100%', minWidth: '1600px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <div className="mobile-scroll-hint" style={{ padding: '0.45rem 0.75rem', background: '#f0f9ff', borderBottom: '1px solid #bae6fd', color: '#0369a1', fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span>👈 Vuốt trượt sang ngang để xem đầy đủ 19 trường thông tin bảng kê thu phí 👉</span>
+                <span className="badge badge-info" style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}>19 cột chi phí</span>
+              </div>
+              <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+                <table className="data-table table-wide-1600" style={{ width: '100%', minWidth: '1600px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
                       <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Mã Bảng Kê</th>
@@ -1053,28 +1058,39 @@ export default function BillingPage() {
 
           {/* Section I: Phí Dịch Vụ Chăm Sóc Cơ Bản */}
           <div className="card" style={{ marginBottom: '1.25rem', padding: '1.25rem', borderRadius: '0.65rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', borderBottom: '2px solid #15803d', paddingBottom: '0.5rem' }}>
-              <span style={{ fontSize: '1.3rem' }}>🏨</span>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
-                I. PHÍ DỊCH VỤ CHĂM SÓC CƠ BẢN
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', borderBottom: '2px solid #15803d', paddingBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.3rem' }}>🏨</span>
+                <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                  I. PHÍ DỊCH VỤ CHĂM SÓC CƠ BẢN
+                </h2>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#15803d', background: '#f0fdf4', padding: '0.25rem 0.6rem', borderRadius: '1rem', border: '1px solid #bbf7d0', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span>↔️</span> Trượt sang ngang để xem đầy đủ các trường thông tin
+              </div>
             </div>
 
-            <div className="table-responsive">
-              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+              <table className="data-table table-wide-1200" style={{ width: '100%', minWidth: '1250px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#f0fdf4', borderBottom: '2px solid #bbf7d0' }}>
-                    <th style={{ width: '50px', textAlign: 'center', padding: '0.65rem' }}>STT</th>
-                    <th style={{ padding: '0.65rem' }}>Nội Dung Dịch Vụ / Loại Phòng</th>
-                    <th style={{ width: '130px', padding: '0.65rem' }}>Quy Cách</th>
-                    <th style={{ width: '180px', textAlign: 'right', padding: '0.65rem' }}>Mức Phí / Tháng (đồng)</th>
-                    <th style={{ padding: '0.65rem' }}>Ghi Chú & Tiện Ích</th>
+                    <th style={{ width: '45px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>STT</th>
+                    <th style={{ width: '85px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mã Gói</th>
+                    <th style={{ minWidth: '170px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Tên Gói Dịch Vụ</th>
+                    <th style={{ minWidth: '140px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Loại Phòng</th>
+                    <th style={{ width: '110px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Quy Cách</th>
+                    <th style={{ width: '170px', textAlign: 'right', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mức Phí / Tháng (đồng)</th>
+                    <th style={{ minWidth: '280px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mô Tả Chi Tiết & Tiện Ích</th>
+                    <th style={{ minWidth: '160px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Ghi Chú</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(isEditingPricing && pricingForm ? pricingForm.basicCarePackages : pricingData.basicCarePackages).map((pkg, idx) => (
                     <tr key={pkg.id} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
                       <td style={{ textAlign: 'center', fontWeight: 700, padding: '0.65rem' }}>{pkg.stt}</td>
+                      <td style={{ textAlign: 'center', padding: '0.65rem' }}>
+                        <span className="badge badge-neutral" style={{ fontSize: '0.75rem', fontWeight: 700 }}>{pkg.id}</span>
+                      </td>
                       <td style={{ padding: '0.65rem' }}>
                         {isEditingPricing && pricingForm ? (
                           <input
@@ -1090,10 +1106,38 @@ export default function BillingPage() {
                         ) : (
                           <div style={{ fontWeight: 700, color: '#1e293b' }}>{pkg.name}</div>
                         )}
-                        <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem' }}>{pkg.description}</div>
                       </td>
                       <td style={{ padding: '0.65rem' }}>
-                        <span className="badge badge-neutral" style={{ whiteSpace: 'nowrap' }}>{pkg.bedCount}</span>
+                        {isEditingPricing && pricingForm ? (
+                          <input
+                            type="text"
+                            className="text-input"
+                            value={pkg.roomType}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.basicCarePackages];
+                              updated[idx].roomType = e.target.value;
+                              setPricingForm({ ...pricingForm, basicCarePackages: updated });
+                            }}
+                          />
+                        ) : (
+                          <span className="badge badge-info" style={{ whiteSpace: 'nowrap', fontWeight: 600 }}>{pkg.roomType}</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.65rem' }}>
+                        {isEditingPricing && pricingForm ? (
+                          <input
+                            type="text"
+                            className="text-input"
+                            value={pkg.bedCount}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.basicCarePackages];
+                              updated[idx].bedCount = e.target.value;
+                              setPricingForm({ ...pricingForm, basicCarePackages: updated });
+                            }}
+                          />
+                        ) : (
+                          <span className="badge badge-neutral" style={{ whiteSpace: 'nowrap' }}>{pkg.bedCount}</span>
+                        )}
                       </td>
                       <td style={{ textAlign: 'right', padding: '0.65rem' }}>
                         {isEditingPricing && pricingForm ? (
@@ -1113,6 +1157,23 @@ export default function BillingPage() {
                           <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#15803d', fontVariantNumeric: 'tabular-nums' }}>
                             {formatNum(pkg.monthlyFee)}
                           </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.65rem' }}>
+                        {isEditingPricing && pricingForm ? (
+                          <textarea
+                            className="text-input"
+                            rows={2}
+                            style={{ fontSize: '0.8rem', width: '100%' }}
+                            value={pkg.description}
+                            onChange={(e) => {
+                              const updated = [...pricingForm.basicCarePackages];
+                              updated[idx].description = e.target.value;
+                              setPricingForm({ ...pricingForm, basicCarePackages: updated });
+                            }}
+                          />
+                        ) : (
+                          <div style={{ fontSize: '0.8rem', color: '#475569', lineHeight: '1.45' }}>{pkg.description}</div>
                         )}
                       </td>
                       <td style={{ padding: '0.65rem' }}>
@@ -1145,28 +1206,38 @@ export default function BillingPage() {
 
           {/* Section II: Phí Dịch Vụ Chăm Sóc Hỗ Trợ */}
           <div className="card" style={{ marginBottom: '1.25rem', padding: '1.25rem', borderRadius: '0.65rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', borderBottom: '2px solid #0284c7', paddingBottom: '0.5rem' }}>
-              <span style={{ fontSize: '1.3rem' }}>🩺</span>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#0369a1', fontWeight: 800 }}>
-                II. PHÍ DỊCH VỤ CHĂM SÓC HỖ TRỢ
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', borderBottom: '2px solid #0284c7', paddingBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.3rem' }}>🩺</span>
+                <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#0369a1', fontWeight: 800 }}>
+                  II. PHÍ DỊCH VỤ CHĂM SÓC HỖ TRỢ
+                </h2>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#0284c7', background: '#f0f9ff', padding: '0.25rem 0.6rem', borderRadius: '1rem', border: '1px solid #bae6fd', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span>↔️</span> Trượt sang ngang để xem đầy đủ các trường thông tin
+              </div>
             </div>
 
-            <div className="table-responsive">
-              <table className="data-table table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+              <table className="data-table table-wide-1200" style={{ width: '100%', minWidth: '1250px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#f0f9ff', borderBottom: '2px solid #bae6fd' }}>
-                    <th style={{ width: '50px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>STT</th>
-                    <th style={{ padding: '0.65rem', whiteSpace: 'nowrap' }}>Nội Dung Dịch Vụ Hỗ Trợ</th>
+                    <th style={{ width: '45px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>STT</th>
+                    <th style={{ width: '80px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mã DV</th>
+                    <th style={{ minWidth: '220px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Nội Dung Dịch Vụ Hỗ Trợ</th>
                     <th style={{ width: '100px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Đơn Vị Tính</th>
-                    <th style={{ width: '180px', textAlign: 'right', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mức Phí (đồng)</th>
-                    <th style={{ padding: '0.65rem', whiteSpace: 'nowrap' }}>Ghi Chú / Chi Tiết</th>
+                    <th style={{ width: '190px', textAlign: 'right', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mức Phí (đồng)</th>
+                    <th style={{ minWidth: '240px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Chi Tiết Áp Dụng / Đơn Giá</th>
+                    <th style={{ minWidth: '180px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Ghi Chú</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(isEditingPricing && pricingForm ? pricingForm.supportServices : pricingData.supportServices).map((ss, idx) => (
                     <tr key={ss.id} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
                       <td style={{ textAlign: 'center', fontWeight: 700, padding: '0.65rem' }}>{ss.stt}</td>
+                      <td style={{ textAlign: 'center', padding: '0.65rem' }}>
+                        <span className="badge badge-neutral" style={{ fontSize: '0.75rem', fontWeight: 700 }}>{ss.id}</span>
+                      </td>
                       <td style={{ padding: '0.65rem' }}>
                         {isEditingPricing && pricingForm ? (
                           <input
@@ -1182,33 +1253,89 @@ export default function BillingPage() {
                         ) : (
                           <div style={{ fontWeight: 600, color: '#0f172a' }}>{ss.name}</div>
                         )}
-                        {ss.pricingDetail && (
-                          <div style={{ fontSize: '0.78rem', color: '#0369a1', marginTop: '0.2rem' }}>
-                            • {ss.pricingDetail}
-                          </div>
-                        )}
                       </td>
                       <td style={{ padding: '0.65rem' }}>
-                        <span className="badge badge-neutral" style={{ whiteSpace: 'nowrap' }}>{ss.unit}</span>
-                      </td>
-                      <td style={{ textAlign: 'right', padding: '0.65rem' }}>
                         {isEditingPricing && pricingForm ? (
                           <input
-                            type="number"
+                            type="text"
                             className="text-input"
-                            style={{ textAlign: 'right' }}
-                            value={ss.priceMin}
+                            style={{ width: '80px' }}
+                            value={ss.unit}
                             onChange={(e) => {
                               const updated = [...pricingForm.supportServices];
-                              updated[idx].priceMin = Number(e.target.value);
-                              updated[idx].priceDisplay = `${formatNum(Number(e.target.value))}`;
+                              updated[idx].unit = e.target.value;
                               setPricingForm({ ...pricingForm, supportServices: updated });
                             }}
                           />
                         ) : (
+                          <span className="badge badge-neutral" style={{ whiteSpace: 'nowrap' }}>{ss.unit}</span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: 'right', padding: '0.65rem' }}>
+                        {isEditingPricing && pricingForm ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Giá từ:</span>
+                              <input
+                                type="number"
+                                className="text-input"
+                                style={{ textAlign: 'right', width: '110px' }}
+                                value={ss.priceMin}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  const updated = [...pricingForm.supportServices];
+                                  updated[idx].priceMin = val;
+                                  updated[idx].priceDisplay = updated[idx].priceMax ? `${formatNum(val)} - ${formatNum(updated[idx].priceMax!)}` : `${formatNum(val)}`;
+                                  setPricingForm({ ...pricingForm, supportServices: updated });
+                                }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Đến:</span>
+                              <input
+                                type="number"
+                                className="text-input"
+                                style={{ textAlign: 'right', width: '110px' }}
+                                value={ss.priceMax || ''}
+                                placeholder="Tối đa"
+                                onChange={(e) => {
+                                  const val = e.target.value ? Number(e.target.value) : undefined;
+                                  const updated = [...pricingForm.supportServices];
+                                  updated[idx].priceMax = val;
+                                  updated[idx].priceDisplay = val ? `${formatNum(updated[idx].priceMin)} - ${formatNum(val)}` : `${formatNum(updated[idx].priceMin)}`;
+                                  setPricingForm({ ...pricingForm, supportServices: updated });
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ) : (
                           <div style={{ fontWeight: 700, color: '#0284c7', fontVariantNumeric: 'tabular-nums' }}>
                             {ss.priceDisplay}
                           </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.65rem' }}>
+                        {isEditingPricing && pricingForm ? (
+                          <textarea
+                            className="text-input"
+                            rows={2}
+                            style={{ fontSize: '0.8rem', width: '100%' }}
+                            value={ss.pricingDetail || ''}
+                            placeholder="Quy tắc áp dụng chi tiết (nếu có)..."
+                            onChange={(e) => {
+                              const updated = [...pricingForm.supportServices];
+                              updated[idx].pricingDetail = e.target.value;
+                              setPricingForm({ ...pricingForm, supportServices: updated });
+                            }}
+                          />
+                        ) : (
+                          ss.pricingDetail ? (
+                            <div style={{ fontSize: '0.8rem', color: '#0369a1', lineHeight: '1.4' }}>
+                              • {ss.pricingDetail}
+                            </div>
+                          ) : (
+                            <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>—</span>
+                          )
                         )}
                       </td>
                       <td style={{ padding: '0.65rem' }}>
@@ -1236,28 +1363,37 @@ export default function BillingPage() {
 
           {/* Section III: Phí Chăm Sóc Mở Rộng */}
           <div className="card" style={{ marginBottom: '1.25rem', padding: '1.25rem', borderRadius: '0.65rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', borderBottom: '2px solid #7c3aed', paddingBottom: '0.5rem' }}>
-              <span style={{ fontSize: '1.3rem' }}>🌟</span>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#6d28d9', fontWeight: 800 }}>
-                III. PHÍ DỊCH VỤ CHĂM SÓC MỞ RỘNG
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', borderBottom: '2px solid #7c3aed', paddingBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '1.3rem' }}>🌟</span>
+                <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#6d28d9', fontWeight: 800 }}>
+                  III. PHÍ DỊCH VỤ CHĂM SÓC MỞ RỘNG
+                </h2>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#7c3aed', background: '#faf5ff', padding: '0.25rem 0.6rem', borderRadius: '1rem', border: '1px solid #e9d5ff', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                <span>↔️</span> Trượt sang ngang để xem đầy đủ các trường thông tin
+              </div>
             </div>
 
-            <div className="table-responsive">
-              <table className="data-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+              <table className="data-table table-wide-1100" style={{ width: '100%', minWidth: '1150px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#faf5ff', borderBottom: '2px solid #e9d5ff' }}>
-                    <th style={{ width: '50px', textAlign: 'center', padding: '0.65rem' }}>STT</th>
-                    <th style={{ padding: '0.65rem' }}>Nội Dung Dịch Vụ Mở Rộng</th>
-                    <th style={{ width: '100px', padding: '0.65rem' }}>Đơn Vị Tính</th>
-                    <th style={{ width: '180px', textAlign: 'right', padding: '0.65rem' }}>Mức Phí (đồng)</th>
-                    <th style={{ padding: '0.65rem' }}>Ghi Chú</th>
+                    <th style={{ width: '45px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>STT</th>
+                    <th style={{ width: '80px', textAlign: 'center', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mã DV</th>
+                    <th style={{ minWidth: '240px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Nội Dung Dịch Vụ Mở Rộng</th>
+                    <th style={{ width: '100px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Đơn Vị Tính</th>
+                    <th style={{ width: '190px', textAlign: 'right', padding: '0.65rem', whiteSpace: 'nowrap' }}>Mức Phí (đồng)</th>
+                    <th style={{ minWidth: '220px', padding: '0.65rem', whiteSpace: 'nowrap' }}>Ghi Chú & Hướng Dẫn</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(isEditingPricing && pricingForm ? pricingForm.extendedCare : pricingData.extendedCare).map((ec, idx) => (
                     <tr key={ec.id} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
                       <td style={{ textAlign: 'center', fontWeight: 700, padding: '0.65rem' }}>{ec.stt}</td>
+                      <td style={{ textAlign: 'center', padding: '0.65rem' }}>
+                        <span className="badge badge-neutral" style={{ fontSize: '0.75rem', fontWeight: 700 }}>{ec.id}</span>
+                      </td>
                       <td style={{ fontWeight: 600, color: '#1e293b', padding: '0.65rem' }}>
                         {isEditingPricing && pricingForm ? (
                           <input
@@ -1293,19 +1429,41 @@ export default function BillingPage() {
                       </td>
                       <td style={{ textAlign: 'right', padding: '0.65rem' }}>
                         {isEditingPricing && pricingForm ? (
-                          <input
-                            type="number"
-                            className="text-input"
-                            style={{ textAlign: 'right', width: '130px' }}
-                            value={ec.priceMin}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              const updated = [...pricingForm.extendedCare];
-                              updated[idx].priceMin = val;
-                              updated[idx].priceDisplay = ec.priceMax ? `${formatNum(val)} - ${formatNum(ec.priceMax)}` : `${formatNum(val)}`;
-                              setPricingForm({ ...pricingForm, extendedCare: updated });
-                            }}
-                          />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Giá từ:</span>
+                              <input
+                                type="number"
+                                className="text-input"
+                                style={{ textAlign: 'right', width: '110px' }}
+                                value={ec.priceMin}
+                                onChange={(e) => {
+                                  const val = Number(e.target.value);
+                                  const updated = [...pricingForm.extendedCare];
+                                  updated[idx].priceMin = val;
+                                  updated[idx].priceDisplay = updated[idx].priceMax ? `${formatNum(val)} - ${formatNum(updated[idx].priceMax!)}` : `${formatNum(val)}`;
+                                  setPricingForm({ ...pricingForm, extendedCare: updated });
+                                }}
+                              />
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                              <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Đến:</span>
+                              <input
+                                type="number"
+                                className="text-input"
+                                style={{ textAlign: 'right', width: '110px' }}
+                                value={ec.priceMax || ''}
+                                placeholder="Tối đa"
+                                onChange={(e) => {
+                                  const val = e.target.value ? Number(e.target.value) : undefined;
+                                  const updated = [...pricingForm.extendedCare];
+                                  updated[idx].priceMax = val;
+                                  updated[idx].priceDisplay = val ? `${formatNum(updated[idx].priceMin)} - ${formatNum(val)}` : `${formatNum(updated[idx].priceMin)}`;
+                                  setPricingForm({ ...pricingForm, extendedCare: updated });
+                                }}
+                              />
+                            </div>
+                          </div>
                         ) : (
                           <div style={{ fontWeight: 700, color: '#7c3aed', fontVariantNumeric: 'tabular-nums' }}>
                             {ec.priceDisplay}
@@ -1775,11 +1933,37 @@ export default function BillingPage() {
       {/* ========================================================================= */}
       {/* TAB 4: PHIẾU THU & LỊCH SỬ THANH TOÁN */}
       {/* ========================================================================= */}
+      {/* ========================================================================= */}
+      {/* TAB 4: PHIẾU THU & LỊCH SỬ THANH TOÁN */}
+      {/* ========================================================================= */}
       {activeTab === 'receipts' && (
         <div>
-          <div className="card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
-            <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table className="data-table" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+          {/* Top Header Card for Receipts Tab */}
+          <div className="card no-print" style={{ padding: '1rem 1.25rem', marginBottom: '1.25rem', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderRadius: '0.65rem', border: '1px solid #e2e8f0' }}>
+            <div>
+              <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🧾</span> Nhật Ký & Lịch Sử Thu Tiền
+              </h3>
+              <p style={{ margin: '0.2rem 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                Nhật ký chi tiết các giao dịch thu tiền, phiếu thu viện phí & đối soát của người cao tuổi.
+              </p>
+            </div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#15803d', background: '#f0fdf4', padding: '0.35rem 0.75rem', borderRadius: '1rem', border: '1px solid #bbf7d0' }}>
+              Tổng số: {receiptsQuery.data?.length || 0} phiếu thu
+            </div>
+          </div>
+
+          {/* TABLE CONTAINER & MOBILE CARD LIST */}
+          <div className="card no-print data-table-card" style={{ padding: 0, overflow: 'hidden', borderRadius: '0.65rem', border: '1px solid #e2e8f0', marginBottom: '1.25rem' }}>
+            {/* Mobile Scroll Hint Banner */}
+            <div className="mobile-scroll-hint" style={{ padding: '0.45rem 0.75rem', background: '#f0f9ff', borderBottom: '1px solid #bae6fd', color: '#0369a1', fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>👈 Vuốt trượt sang ngang để xem đầy đủ 8 trường thông tin phiếu thu 👉</span>
+              <span className="badge badge-info" style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem' }}>8 cột thông tin</span>
+            </div>
+
+            {/* TABLE VIEW (Tablet & Desktop / Mobile horizontal scroll) */}
+            <div className="table-responsive desktop-only-table" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', width: '100%', margin: 0 }}>
+              <table className="data-table table-wide-1000" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '0.75rem 0.6rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Mã Phiếu Thu</th>
@@ -1793,28 +1977,98 @@ export default function BillingPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {(receiptsQuery.data || []).map((rec) => (
-                    <tr key={rec.receiptId} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
-                      <td style={{ padding: '0.65rem 0.6rem' }}><code style={{ fontWeight: 700 }}>{rec.receiptCode}</code></td>
-                      <td style={{ padding: '0.65rem 0.6rem' }}><code>{rec.invoiceCode}</code></td>
-                      <td style={{ padding: '0.65rem 0.6rem', fontWeight: 600 }}>{rec.residentName}</td>
-                      <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontWeight: 800, color: '#15803d', fontSize: '0.98rem', fontVariantNumeric: 'tabular-nums' }}>
-                        {formatNum(rec.amount)}
-                      </td>
-                      <td style={{ padding: '0.65rem 0.6rem' }}>
-                        <span className="badge badge-info" style={{ whiteSpace: 'nowrap' }}>
-                          {PAYMENT_METHOD_LABELS[rec.paymentMethod] || rec.paymentMethod}
-                        </span>
-                      </td>
-                      <td style={{ padding: '0.65rem 0.6rem' }}><code>{rec.transactionReference}</code></td>
-                      <td style={{ padding: '0.65rem 0.6rem' }}>{rec.receivedBy}</td>
-                      <td style={{ padding: '0.65rem 0.6rem', textAlign: 'center', fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap' }}>
-                        {new Date(rec.paidAt).toLocaleString('vi-VN')}
+                  {(!receiptsQuery.data || receiptsQuery.data.length === 0) ? (
+                    <tr>
+                      <td colSpan={8} style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
+                        Chưa có dữ liệu phiếu thu tiền nào.
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    receiptsQuery.data.map((rec) => (
+                      <tr key={rec.receiptId} style={{ borderBottom: '1px solid #f1f5f9', verticalAlign: 'middle' }}>
+                        <td style={{ padding: '0.65rem 0.6rem', whiteSpace: 'nowrap' }}><code style={{ fontWeight: 700, color: '#0f172a' }}>{rec.receiptCode}</code></td>
+                        <td style={{ padding: '0.65rem 0.6rem', whiteSpace: 'nowrap' }}><code>{rec.invoiceCode}</code></td>
+                        <td style={{ padding: '0.65rem 0.6rem', fontWeight: 600, color: '#166534', whiteSpace: 'nowrap' }}>{rec.residentName}</td>
+                        <td style={{ padding: '0.65rem 0.6rem', textAlign: 'right', fontWeight: 800, color: '#15803d', fontSize: '0.98rem', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                          {formatNum(rec.amount)} đ
+                        </td>
+                        <td style={{ padding: '0.65rem 0.6rem', whiteSpace: 'nowrap' }}>
+                          <span className="badge badge-info" style={{ whiteSpace: 'nowrap' }}>
+                            {PAYMENT_METHOD_LABELS[rec.paymentMethod] || rec.paymentMethod}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.65rem 0.6rem', whiteSpace: 'nowrap' }}><code>{rec.transactionReference}</code></td>
+                        <td style={{ padding: '0.65rem 0.6rem', whiteSpace: 'nowrap' }}>{rec.receivedBy}</td>
+                        <td style={{ padding: '0.65rem 0.6rem', textAlign: 'center', fontSize: '0.8rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                          {new Date(rec.paidAt).toLocaleString('vi-VN')}
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
+            </div>
+
+            {/* MOBILE ONLY CARDS VIEW (< 768px) */}
+            <div className="mobile-only-cards" style={{ padding: '0.75rem' }}>
+              {(!receiptsQuery.data || receiptsQuery.data.length === 0) ? (
+                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#64748b' }}>
+                  Chưa có dữ liệu phiếu thu tiền nào.
+                </div>
+              ) : (
+                receiptsQuery.data.map((rec) => (
+                  <div key={rec.receiptId} className="mobile-card-item">
+                    <div className="mobile-card-header">
+                      <div className="mobile-card-title" style={{ color: '#0f172a', fontSize: '0.95rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span>🧾</span> {rec.receiptCode}
+                      </div>
+                      <span className="badge badge-info" style={{ whiteSpace: 'nowrap' }}>
+                        {PAYMENT_METHOD_LABELS[rec.paymentMethod] || rec.paymentMethod}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Người cao tuổi:</span>
+                      <span className="mobile-card-value" style={{ color: '#166534', fontWeight: 700 }}>
+                        {rec.residentName}
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Số tiền thu:</span>
+                      <span className="mobile-card-value" style={{ color: '#15803d', fontWeight: 800, fontSize: '1.05rem', fontVariantNumeric: 'tabular-nums' }}>
+                        {formatNum(rec.amount)} đ
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Mã bảng kê:</span>
+                      <span className="mobile-card-value">
+                        <code>{rec.invoiceCode}</code>
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Mã tham chiếu:</span>
+                      <span className="mobile-card-value">
+                        <code>{rec.transactionReference}</code>
+                      </span>
+                    </div>
+
+                    <div className="mobile-card-row">
+                      <span className="mobile-card-label">Người lập phiếu:</span>
+                      <span className="mobile-card-value">{rec.receivedBy}</span>
+                    </div>
+
+                    <div className="mobile-card-row" style={{ borderTop: '1px dashed #f1f5f9', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
+                      <span className="mobile-card-label">Thời gian thu:</span>
+                      <span className="mobile-card-value" style={{ color: '#64748b', fontSize: '0.8rem' }}>
+                        {new Date(rec.paidAt).toLocaleString('vi-VN')}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -3083,8 +3337,8 @@ export default function BillingPage() {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-primary"
-                  onClick={() => window.print()}
+                  className="btn btn-primary no-print"
+                  onClick={() => triggerPrint()}
                   style={{ fontWeight: 700, padding: '0.45rem 1.15rem', display: 'flex', alignItems: 'center', gap: '0.4rem', background: '#166534', borderColor: '#15803d' }}
                 >
                   🖨️ In Bản Giấy A4 (Print)
@@ -3231,11 +3485,16 @@ export default function BillingPage() {
                     </div>
 
                     {/* Non-Zero Printable Items Table */}
-                    <div className="table-responsive" style={{ marginBottom: '0.65rem', overflowX: 'auto' }}>
-                      <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
-                        1. Chi tiết các khoản phí (Ghi có)
+                    <div className="table-responsive fee-table-responsive" style={{ marginBottom: '0.65rem', overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#0f172a', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                          1. Chi tiết các khoản phí (Ghi có)
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: '#0369a1', background: '#f0f9ff', padding: '0.15rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #bae6fd', fontWeight: 700 }}>
+                          ↔️ Vuốt sang ngang để xem đầy đủ thông tin
+                        </div>
                       </div>
-                      <table className="table-wide-700" style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+                      <table className="table-wide-750" style={{ width: '100%', minWidth: '750px', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
                         <thead>
                           <tr style={{ background: '#0f172a', color: '#ffffff' }}>
                             <th style={{ padding: '0.35rem 0.45rem', textAlign: 'center', width: '38px', fontWeight: 700, border: '1px solid #334155', whiteSpace: 'nowrap' }}>STT</th>

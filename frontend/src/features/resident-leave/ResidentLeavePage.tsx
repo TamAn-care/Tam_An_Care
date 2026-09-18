@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import {
   cancelLeaveRequest,
   confirmSubsequentDays,
@@ -1386,7 +1387,7 @@ export default function ResidentLeavePage() {
                 </div>
 
                 <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-                  <button type="button" onClick={() => window.print()} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}>
+                  <button type="button" onClick={() => triggerPrint()} className="btn btn-primary no-print" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}>
                     🖨️ In Phiếu (A4)
                   </button>
                   <button type="button" onClick={() => setViewingPrintItem(null)} className="btn btn-neutral">

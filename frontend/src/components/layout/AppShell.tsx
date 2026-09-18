@@ -181,11 +181,12 @@ export function AppShell() {
               border: isHome ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
               borderRadius: '9999px',
               padding: '0.3rem 0.75rem',
-              fontSize: 'clamp(0.78rem, 2.2vw, 0.88rem)',
+              fontSize: 'clamp(0.75rem, 2.2vw, 0.88rem)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               minWidth: 0,
+              maxWidth: 'calc(100vw - 175px)',
               boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
             }}
           >

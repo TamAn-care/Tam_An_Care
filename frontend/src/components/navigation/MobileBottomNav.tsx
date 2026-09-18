@@ -12,7 +12,7 @@ export function MobileBottomNav({ onOpenMenu }: MobileBottomNavProps) {
   const navItems = [
     { label: '1-Chạm 📱', icon: '📱', path: '/mobile' },
     { label: 'Trang Chủ', icon: '🏠', path: '/dashboard' },
-    { label: 'Cư Dân', icon: '📋', path: '/residents' },
+    { label: 'Danh Sách Cư Dân', icon: '📋', path: '/residents' },
     { label: 'Chăm Sóc', icon: '🩺', path: '/operations' },
     { label: 'Dược eMAR', icon: '💊', path: '/medication-inventory' },
   ];
@@ -25,8 +25,8 @@ export function MobileBottomNav({ onOpenMenu }: MobileBottomNavProps) {
         bottom: 0,
         left: 0,
         right: 0,
-        height: 'calc(62px + env(safe-area-inset-bottom, 0px))',
-        background: 'rgba(255, 255, 255, 0.92)',
+        height: 'calc(68px + env(safe-area-inset-bottom, 0px))',
+        background: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(16px)',
         WebkitBackdropFilter: 'blur(16px)',
         borderTop: '1px solid rgba(203, 213, 225, 0.8)',
@@ -81,7 +81,22 @@ export function MobileBottomNav({ onOpenMenu }: MobileBottomNavProps) {
               />
             )}
             <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>{item.icon}</span>
-            <span style={{ letterSpacing: '-0.01em' }}>{item.label}</span>
+            <span
+              style={{
+                letterSpacing: '-0.01em',
+                lineHeight: 1.15,
+                textAlign: 'center',
+                whiteSpace: 'normal',
+                wordBreak: 'break-word',
+                fontSize: '0.62rem',
+                maxHeight: '2.4em',
+                overflow: 'visible',
+                display: 'block',
+                padding: '0 1px',
+              }}
+            >
+              {item.label}
+            </span>
           </button>
         );
       })}

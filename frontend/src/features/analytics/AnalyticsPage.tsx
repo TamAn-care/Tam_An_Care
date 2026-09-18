@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import {
   fetchExecutiveAnalytics,
   GranularityType,
@@ -17,6 +18,7 @@ export default function AnalyticsPage() {
   const [activeTab, setActiveTab] = useState<'occupancy' | 'clinical' | 'financial' | 'workforce'>('occupancy');
   const [viewMode, setViewMode] = useState<'kpi' | 'charts'>('kpi');
   const [hoveredPoint, setHoveredPoint] = useState<TrendDataPoint | null>(null);
+  const [occupancyViewFormat, setOccupancyViewFormat] = useState<'table' | 'cards'>('table');
 
   // Period options generator
   const getPeriodOptions = (gran: GranularityType) => {
@@ -149,8 +151,8 @@ export default function AnalyticsPage() {
 
             <button
               type="button"
-              className="btn btn-neutral"
-              onClick={() => window.print()}
+              className="btn btn-neutral no-print"
+              onClick={() => triggerPrint()}
               style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, fontSize: '0.85rem' }}
             >
               🖨️ Xuất Báo Cáo In
@@ -326,143 +328,194 @@ export default function AnalyticsPage() {
                 </div>
               </div>
 
-              {/* Occupancy by Room Tier Table */}
-              <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem' }}>
-                <h3 style={{ margin: '0 0 1rem 0', color: '#1e293b', fontSize: '1.15rem' }}>
-                  📊 Cơ Cấu Công Suất Theo Từng Hạng Phòng Lưu Trú (Đồng bộ 110 Giường / 29 Phòng)
-                </h3>
+              {/* Occupancy by Room Tier Table / Mobile Cards */}
+              <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', minWidth: 0, boxSizing: 'border-box' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+                  <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span>📊</span> Cơ Cấu Công Suất Theo Từng Hạng Phòng Lưu Trú <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b' }}>(Đồng bộ 110 Giường / 29 Phòng)</span>
+                  </h3>
 
-                <div className="table-wrapper table-responsive" style={{ overflowX: 'auto' }}>
-                  <table className="data-table table-wide-750" style={{ width: '100%', minWidth: '750px', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', fontSize: '0.85rem' }}>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Hạng Phòng Lưu Trú</th>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Số lượng phòng</th>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tổng số giường</th>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Đang sử dụng</th>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Còn trống</th>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tỷ lệ lấp đầy (%)</th>
-                        <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Trạng thái tiếp nhận</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {/* 1. Phòng Đơn (1 Giường) */}
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>🏠 Phòng Đơn (1 Giường)</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            Phòng: <b>{data.occupancy.byTier.SINGLE_BED.roomNumbers}</b>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.SINGLE_BED.totalRooms} phòng</td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.SINGLE_BED.totalBeds} giường</td>
-                        <td style={{ padding: '0.75rem' }}><b>{data.occupancy.byTier.SINGLE_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}><b style={{ color: '#2563eb' }}>{data.occupancy.byTier.SINGLE_BED.totalBeds - data.occupancy.byTier.SINGLE_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span><b>{data.occupancy.byTier.SINGLE_BED.occupancyRate}%</b></span>
-                            <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                              <div style={{ width: `${data.occupancy.byTier.SINGLE_BED.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}><span className="badge badge-success" style={{ background: '#dcfce7', color: '#15803d' }}>Sẵn sàng đón tiếp</span></td>
-                      </tr>
-
-                      {/* 2. Phòng Đôi (2 Giường) */}
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>🏡 Phòng Đôi (2 Giường)</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            Phòng: <b>{data.occupancy.byTier.DOUBLE_BED.roomNumbers}</b>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.DOUBLE_BED.totalRooms} phòng</td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.DOUBLE_BED.totalBeds} giường</td>
-                        <td style={{ padding: '0.75rem' }}><b>{data.occupancy.byTier.DOUBLE_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}><b style={{ color: '#2563eb' }}>{data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span><b>{data.occupancy.byTier.DOUBLE_BED.occupancyRate}%</b></span>
-                            <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                              <div style={{ width: `${data.occupancy.byTier.DOUBLE_BED.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}><span className="badge badge-warning" style={{ background: '#fef3c7', color: '#b45309' }}>Còn 1 giường</span></td>
-                      </tr>
-
-                      {/* 3. Phòng 3 Giường */}
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>🏢 Phòng 3 Giường</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            Phòng: <b>{data.occupancy.byTier.TRIPLE_BED.roomNumbers}</b>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.TRIPLE_BED.totalRooms} phòng</td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.TRIPLE_BED.totalBeds} giường</td>
-                        <td style={{ padding: '0.75rem' }}><b>{data.occupancy.byTier.TRIPLE_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}><b style={{ color: '#2563eb' }}>{data.occupancy.byTier.TRIPLE_BED.totalBeds - data.occupancy.byTier.TRIPLE_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span><b>{data.occupancy.byTier.TRIPLE_BED.occupancyRate}%</b></span>
-                            <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                              <div style={{ width: `${data.occupancy.byTier.TRIPLE_BED.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}><span className="badge badge-success" style={{ background: '#dcfce7', color: '#15803d' }}>Sẵn sàng đón tiếp</span></td>
-                      </tr>
-
-                      {/* 4. Phòng 4 Giường */}
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>🏬 Phòng 4 Giường</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            Phòng: <b>{data.occupancy.byTier.QUAD_BED.roomNumbers}</b>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.QUAD_BED.totalRooms} phòng</td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.QUAD_BED.totalBeds} giường</td>
-                        <td style={{ padding: '0.75rem' }}><b>{data.occupancy.byTier.QUAD_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}><b style={{ color: '#2563eb' }}>{data.occupancy.byTier.QUAD_BED.totalBeds - data.occupancy.byTier.QUAD_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span><b>{data.occupancy.byTier.QUAD_BED.occupancyRate}%</b></span>
-                            <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                              <div style={{ width: `${data.occupancy.byTier.QUAD_BED.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}><span className="badge badge-success" style={{ background: '#dcfce7', color: '#15803d' }}>Sẵn sàng đón tiếp</span></td>
-                      </tr>
-
-                      {/* 5. Phòng 6 Giường */}
-                      <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>🏥 Phòng 6 Giường</div>
-                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                            Phòng: <b>{data.occupancy.byTier.SIX_BED.roomNumbers}</b>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.SIX_BED.totalRooms} phòng</td>
-                        <td style={{ padding: '0.75rem' }}>{data.occupancy.byTier.SIX_BED.totalBeds} giường</td>
-                        <td style={{ padding: '0.75rem' }}><b>{data.occupancy.byTier.SIX_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}><b style={{ color: '#2563eb' }}>{data.occupancy.byTier.SIX_BED.totalBeds - data.occupancy.byTier.SIX_BED.occupiedBeds}</b></td>
-                        <td style={{ padding: '0.75rem' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <span><b>{data.occupancy.byTier.SIX_BED.occupancyRate}%</b></span>
-                            <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-                              <div style={{ width: `${data.occupancy.byTier.SIX_BED.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
-                            </div>
-                          </div>
-                        </td>
-                        <td style={{ padding: '0.75rem' }}><span className="badge badge-success" style={{ background: '#dcfce7', color: '#15803d' }}>Sẵn sàng đón tiếp</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  {/* Format Toggle: Table vs Cards for Mobile */}
+                  <div style={{ display: 'flex', background: '#f1f5f9', borderRadius: '0.5rem', padding: '0.2rem', border: '1px solid #cbd5e1' }}>
+                    <button
+                      type="button"
+                      onClick={() => setOccupancyViewFormat('table')}
+                      style={{
+                        padding: '0.3rem 0.65rem',
+                        borderRadius: '0.375rem',
+                        border: 'none',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: occupancyViewFormat === 'table' ? '#ffffff' : 'transparent',
+                        color: occupancyViewFormat === 'table' ? '#15803d' : '#64748b',
+                        boxShadow: occupancyViewFormat === 'table' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+                      }}
+                      title="Hiển thị dạng Bảng số liệu trượt ngang (Sticky column)"
+                    >
+                      📊 Bảng (Sticky Trượt)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setOccupancyViewFormat('cards')}
+                      style={{
+                        padding: '0.3rem 0.65rem',
+                        borderRadius: '0.375rem',
+                        border: 'none',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        background: occupancyViewFormat === 'cards' ? '#ffffff' : 'transparent',
+                        color: occupancyViewFormat === 'cards' ? '#15803d' : '#64748b',
+                        boxShadow: occupancyViewFormat === 'cards' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+                      }}
+                      title="Hiển thị dạng Thẻ Mobile iOS đầy đủ chỉ số"
+                    >
+                      📱 Thẻ iOS (Chi Tiết)
+                    </button>
+                  </div>
                 </div>
+
+                {occupancyViewFormat === 'table' ? (
+                  <>
+                    {/* Mobile Scroll Guide Hint */}
+                    <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '0.5rem 0.75rem', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem', fontSize: '0.78rem', color: '#166534' }}>
+                      <span>👈 <b>Vuốt ngang</b> để xem đủ 7 trường thông tin (Số phòng, Tổng giường, Đang dùng, Còn trống, % Lấp đầy, Trạng thái). Cột <b>Hạng Phòng</b> được ghim cố định. 👉</span>
+                    </div>
+
+                    <div className="table-wrapper table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', width: '100%', maxWidth: '100%', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                      <table className="data-table table-wide-750" style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', fontSize: '0.85rem' }}>
+                            <th className="sticky-col-first-th" style={{ padding: '0.75rem', whiteSpace: 'nowrap', position: 'sticky', left: 0, zIndex: 10, background: '#f8fafc', boxShadow: '2px 0 5px -2px rgba(15, 23, 42, 0.12)' }}>Hạng Phòng Lưu Trú</th>
+                            <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Số lượng phòng</th>
+                            <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tổng số giường</th>
+                            <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Đang sử dụng</th>
+                            <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Còn trống</th>
+                            <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Tỷ lệ lấp đầy (%)</th>
+                            <th style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>Trạng thái tiếp nhận</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { id: 'SINGLE_BED', title: 'Phòng Đơn (1 Giường)', icon: '🏠', tier: data.occupancy.byTier.SINGLE_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                            { id: 'DOUBLE_BED', title: 'Phòng Đôi (2 Giường)', icon: '🏡', tier: data.occupancy.byTier.DOUBLE_BED, badgeText: (data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds) === 1 ? 'Còn 1 giường' : 'Sẵn sàng đón tiếp', badgeBg: (data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds) === 1 ? '#fef3c7' : '#dcfce7', badgeColor: (data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds) === 1 ? '#b45309' : '#15803d' },
+                            { id: 'TRIPLE_BED', title: 'Phòng 3 Giường', icon: '🏢', tier: data.occupancy.byTier.TRIPLE_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                            { id: 'QUAD_BED', title: 'Phòng 4 Giường', icon: '🏬', tier: data.occupancy.byTier.QUAD_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                            { id: 'SIX_BED', title: 'Phòng 6 Giường', icon: '🏥', tier: data.occupancy.byTier.SIX_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                          ].map((item) => {
+                            const available = item.tier.totalBeds - item.tier.occupiedBeds;
+                            return (
+                              <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                <td className="sticky-col-first-td" style={{ padding: '0.75rem', position: 'sticky', left: 0, zIndex: 10, background: '#ffffff', boxShadow: '2px 0 5px -2px rgba(15, 23, 42, 0.12)' }}>
+                                  <div style={{ fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>{item.icon} {item.title}</div>
+                                  <div style={{ fontSize: '0.75rem', color: '#64748b', whiteSpace: 'nowrap' }}>
+                                    Phòng: <b>{item.tier.roomNumbers}</b>
+                                  </div>
+                                </td>
+                                <td style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>{item.tier.totalRooms} phòng</td>
+                                <td style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>{item.tier.totalBeds} giường</td>
+                                <td style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}><b>{item.tier.occupiedBeds}</b></td>
+                                <td style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}><b style={{ color: '#2563eb' }}>{available}</b></td>
+                                <td style={{ padding: '0.75rem', minWidth: '160px' }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <span><b>{item.tier.occupancyRate}%</b></span>
+                                    <div style={{ flex: 1, height: '6px', background: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
+                                      <div style={{ width: `${item.tier.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
+                                    </div>
+                                  </div>
+                                </td>
+                                <td style={{ padding: '0.75rem', whiteSpace: 'nowrap' }}>
+                                  <span className="badge" style={{ background: item.badgeBg, color: item.badgeColor, padding: '0.35rem 0.65rem', borderRadius: '0.375rem', fontWeight: 700, fontSize: '0.75rem' }}>
+                                    {item.badgeText}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                ) : (
+                  /* Cards Format for Mobile Screen View */
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+                    {[
+                      { id: 'SINGLE_BED', title: 'Phòng Đơn (1 Giường)', icon: '🏠', tier: data.occupancy.byTier.SINGLE_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                      { id: 'DOUBLE_BED', title: 'Phòng Đôi (2 Giường)', icon: '🏡', tier: data.occupancy.byTier.DOUBLE_BED, badgeText: (data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds) === 1 ? 'Còn 1 giường' : 'Sẵn sàng đón tiếp', badgeBg: (data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds) === 1 ? '#fef3c7' : '#dcfce7', badgeColor: (data.occupancy.byTier.DOUBLE_BED.totalBeds - data.occupancy.byTier.DOUBLE_BED.occupiedBeds) === 1 ? '#b45309' : '#15803d' },
+                      { id: 'TRIPLE_BED', title: 'Phòng 3 Giường', icon: '🏢', tier: data.occupancy.byTier.TRIPLE_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                      { id: 'QUAD_BED', title: 'Phòng 4 Giường', icon: '🏬', tier: data.occupancy.byTier.QUAD_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                      { id: 'SIX_BED', title: 'Phòng 6 Giường', icon: '🏥', tier: data.occupancy.byTier.SIX_BED, badgeText: 'Sẵn sàng đón tiếp', badgeBg: '#dcfce7', badgeColor: '#15803d' },
+                    ].map((item) => {
+                      const available = item.tier.totalBeds - item.tier.occupiedBeds;
+                      return (
+                        <div
+                          key={item.id}
+                          style={{
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '0.75rem',
+                            padding: '1rem',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                            <div>
+                              <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#0f172a' }}>
+                                {item.icon} {item.title}
+                              </div>
+                              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.15rem' }}>
+                                Phòng: <b style={{ color: '#0f172a' }}>{item.tier.roomNumbers}</b>
+                              </div>
+                            </div>
+                            <span
+                              style={{
+                                background: item.badgeBg,
+                                color: item.badgeColor,
+                                padding: '0.25rem 0.55rem',
+                                borderRadius: '0.375rem',
+                                fontWeight: 700,
+                                fontSize: '0.72rem',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {item.badgeText}
+                            </span>
+                          </div>
+
+                          <div style={{ marginBottom: '0.75rem', background: '#ffffff', padding: '0.6rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', fontWeight: 700, marginBottom: '0.3rem' }}>
+                              <span style={{ color: '#64748b' }}>Tỷ lệ lấp đầy:</span>
+                              <span style={{ color: '#15803d' }}>{item.tier.occupancyRate}%</span>
+                            </div>
+                            <div style={{ height: '7px', background: '#e2e8f0', borderRadius: '3.5px', overflow: 'hidden' }}>
+                              <div style={{ width: `${item.tier.occupancyRate}%`, height: '100%', background: '#16a34a' }} />
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+                            <div style={{ background: '#ffffff', padding: '0.5rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}>
+                              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>SỐ PHÒNG</div>
+                              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', marginTop: '0.1rem' }}>{item.tier.totalRooms} phòng</div>
+                            </div>
+                            <div style={{ background: '#ffffff', padding: '0.5rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}>
+                              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>TỔNG GIƯỜNG</div>
+                              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a', marginTop: '0.1rem' }}>{item.tier.totalBeds} giường</div>
+                            </div>
+                            <div style={{ background: '#ffffff', padding: '0.5rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}>
+                              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>ĐANG DÙNG</div>
+                              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#15803d', marginTop: '0.1rem' }}>{item.tier.occupiedBeds} giường</div>
+                            </div>
+                            <div style={{ background: '#ffffff', padding: '0.5rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}>
+                              <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 600 }}>CÒN TRỐNG</div>
+                              <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#2563eb', marginTop: '0.1rem' }}>{available} giường</div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}

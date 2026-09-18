@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router-dom';
 import { getResidentCareView } from '../../api/residents';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { ROLE_LABELS, getAssignedResidentIdsForActor, getAssignedResidentIdsForGuardian } from '../../auth/role-policy';
 import { ApiError } from '../../api/errors';
 import { EmptyState, ErrorState, LoadingState } from '../../components/feedback/FeedbackStates';
@@ -252,7 +253,7 @@ export function CareViewPage() {
 
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={() => triggerPrint()}
           className="btn btn-primary no-print"
           style={{ fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
         >
@@ -260,7 +261,7 @@ export function CareViewPage() {
         </button>
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn btn-secondary no-print"
           disabled={query.isFetching}
           onClick={() => void query.refetch()}
           style={{ fontSize: '0.85rem' }}

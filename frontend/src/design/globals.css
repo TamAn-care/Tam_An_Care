@@ -1980,10 +1980,25 @@ transform: scale(1.28);
     display: none !important;
   }
 
+  /* Force display of print modal overlays and containers */
+  .print-modal-overlay,
+  .modal-overlay.print-modal-overlay,
+  .modal-backdrop.print-modal-overlay {
+    display: block !important;
+    position: static !important;
+    background: #ffffff !important;
+    width: 100% !important;
+    height: auto !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+  }
+
   /* 3. When a print modal is active, hide background elements that don't contain the modal */
   body:has(.print-modal-overlay) .page-content > *:not(:has(.print-modal-overlay)),
   body:has(.print-modal-overlay) .main-shell > *:not(:has(.print-modal-overlay)),
-  body:has(.print-modal-overlay) .content > *:not(:has(.print-modal-overlay)) {
+  body:has(.print-modal-overlay) .content > *:not(:has(.print-modal-overlay)),
+  body:has(.print-modal-overlay) .page-container > *:not(:has(.print-modal-overlay)) {
     display: none !important;
   }
 
@@ -2170,27 +2185,36 @@ transform: scale(1.28);
     margin-bottom: 0.75rem !important;
   }
 
+  .card.data-table-card,
+  .data-table-card {
+    padding: 0 !important;
+  }
+
   /* Touch-friendly Data Tables with Smooth Horizontal Scroll */
   .table-responsive,
-  .table-container {
+  .table-container,
+  .fee-table-responsive {
     display: block !important;
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
     overscroll-behavior-x: contain !important;
     border-radius: 0.5rem;
+    box-sizing: border-box !important;
   }
 
   .table-responsive table,
   .table-container table,
+  .fee-table-responsive table,
   table.table,
   table.data-table,
   table.ui-table,
   table.operations-table {
     display: table !important;
     width: 100% !important;
-    min-width: 900px !important;
+    min-width: 750px !important;
     table-layout: auto !important;
   }
 
@@ -2338,13 +2362,40 @@ div:has(> table)::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
 
+/* Sticky first column helper for mobile touch scroll */
+.sticky-col-first-th,
+.sticky-col-first-td {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 10 !important;
+}
+
+th.sticky-col-first-th {
+  background-color: #f8fafc !important;
+  box-shadow: 2px 0 5px -2px rgba(15, 23, 42, 0.12) !important;
+}
+
+td.sticky-col-first-td {
+  background-color: #ffffff !important;
+  box-shadow: 2px 0 5px -2px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Touch Pan & Overscroll containment for mobile table containers */
+.table-wrapper,
+.table-responsive {
+  touch-action: pan-x pan-y !important;
+  overscroll-behavior-x: contain !important;
+}
+
 /* Width Helper Classes for Wide Tables & Overflow Protection */
 .table-wide-1600 { min-width: 1600px !important; }
 .table-wide-1500 { min-width: 1500px !important; }
 .table-wide-1400 { min-width: 1400px !important; }
 .table-wide-1300 { min-width: 1300px !important; }
 .table-wide-1200 { min-width: 1200px !important; }
+.table-wide-1150 { min-width: 1150px !important; }
 .table-wide-1100 { min-width: 1100px !important; }
+.table-wide-1050 { min-width: 1050px !important; }
 .table-wide-1000 { min-width: 1000px !important; }
 .table-wide-900  { min-width: 900px  !important; }
 .table-wide-800  { min-width: 800px  !important; }
@@ -2859,4 +2910,436 @@ input.form-input {
     margin-bottom: 0.2rem;
   }
 }
+
+/* ========================================================================== */
+/* RESPONSIVE MOBILE LAYOUT: PHIẾU ĐÁNH GIÁ SỨC KHỎE ĐỊNH KỲ (06/PTDYS-TA)   */
+/* ========================================================================== */
+@media screen and (max-width: 767px) {
+  /* Scale & bounds reduction for health report sheet on mobile screen */
+  .printable-a4-sheet.health-report-sheet,
+  .health-report-sheet {
+    padding: 0.65rem !important;
+    font-size: 0.8rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Header vertical presentation */
+  .health-report-sheet .health-report-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 0.5rem !important;
+  }
+
+  .health-report-sheet .health-report-header-right {
+    text-align: left !important;
+    font-size: 0.75rem !important;
+    width: 100% !important;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 0.35rem;
+    margin-top: 0.25rem;
+  }
+
+  .health-report-sheet h1 {
+    font-size: 0.98rem !important;
+    text-align: center !important;
+    line-height: 1.3 !important;
+    margin: 0.4rem 0 !important;
+  }
+
+  /* Vertical Stacking for Admin Info, Grids, and Conditions */
+  .health-report-sheet .health-report-admin-grid,
+  .health-report-sheet .health-report-grid-2col,
+  .health-report-sheet .health-report-conditions-grid,
+  .health-report-sheet .health-report-psych-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  /* Override table min-width 650px on mobile viewports so it fits screen frame */
+  .health-report-sheet .table-wide-650,
+  .health-report-sheet table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    font-size: 0.76rem !important;
+  }
+
+  /* Transform table rows & cells into stacked vertical cards for mobile */
+  .health-report-sheet table thead {
+    display: none !important; /* Hide wide table header on mobile */
+  }
+
+  .health-report-sheet table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .health-report-sheet table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 0.65rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .health-report-sheet table td {
+    border: none !important;
+    padding: 0.2rem 0 !important;
+    display: block !important;
+    text-align: left !important;
+    word-break: break-word !important;
+  }
+
+  .health-report-sheet table td:first-child {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    font-size: 0.82rem !important;
+    border-bottom: 1px dashed #e2e8f0 !important;
+    padding-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  /* Care Level proposal options vertical stack */
+  .health-report-sheet .health-report-care-levels {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* Signature Box centered/stacked on mobile */
+  .health-report-sheet .signature-box,
+  .health-report-sheet .health-report-signature {
+    justify-content: center !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+  }
+
+  .health-report-sheet .signature-box > div,
+  .health-report-sheet .health-report-signature > div {
+    width: 100% !important;
+    max-width: 260px !important;
+    margin: 0 auto !important;
+  }
+
+  /* Modal Dialog for Health Report Creation/Editing on Mobile */
+  .health-report-editor-modal {
+    width: 96vw !important;
+    max-width: 96vw !important;
+    padding: 0.75rem !important;
+    margin: 0.25rem auto !important;
+  }
+
+  /* KPI Supervision & Synthesis Mobile Responsive Rules */
+  .kpi-submode-nav {
+    flex-direction: column !important;
+    gap: 0.4rem !important;
+    padding: 0.4rem !important;
+  }
+
+  .kpi-submode-btn {
+    width: 100% !important;
+    font-size: 0.78rem !important;
+    padding: 0.45rem 0.6rem !important;
+    justify-content: flex-start !important;
+  }
+
+  .kpi-card {
+    padding: 0.85rem 0.65rem !important;
+    border-radius: 0.55rem !important;
+  }
+
+  .kpi-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.4rem !important;
+    padding-bottom: 0.65rem !important;
+  }
+
+  .kpi-card-title {
+    font-size: 0.92rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .kpi-card-subtitle {
+    font-size: 0.76rem !important;
+  }
+
+  .kpi-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+    padding: 0.65rem !important;
+  }
+
+  .kpi-form-grid label {
+    font-size: 0.72rem !important;
+  }
+
+  .kpi-form-grid select,
+  .kpi-form-grid input {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.55rem !important;
+  }
+
+  .kpi-criteria-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+  }
+
+  .kpi-criteria-title {
+    font-size: 0.8rem !important;
+  }
+
+  .kpi-criteria-staff {
+    font-size: 0.74rem !important;
+  }
+
+  .kpi-criterion-item {
+    padding: 0.65rem 0.65rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+
+  .kpi-criterion-info {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .kpi-criterion-title {
+    font-size: 0.82rem !important;
+    word-break: break-word !important;
+  }
+
+  .kpi-criterion-desc {
+    font-size: 0.75rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .kpi-criterion-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.3rem !important;
+    width: 100% !important;
+    flex-shrink: 1 !important;
+  }
+
+  .kpi-criterion-btn {
+    padding: 0.4rem 0.15rem !important;
+    font-size: 0.68rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .kpi-submit-btn {
+    width: 100% !important;
+    padding: 0.6rem 0.85rem !important;
+    font-size: 0.84rem !important;
+    justify-content: center !important;
+  }
+
+  .kpi-synthesis-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.4rem !important;
+  }
+
+  .kpi-synthesis-actions button {
+    width: 100% !important;
+    font-size: 0.76rem !important;
+    padding: 0.45rem 0.6rem !important;
+    justify-content: center !important;
+  }
+
+  .kpi-metric-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .kpi-metric-card {
+    padding: 0.65rem 0.65rem !important;
+  }
+
+  .kpi-metric-title {
+    font-size: 0.64rem !important;
+  }
+
+  .kpi-metric-number {
+    font-size: 1.15rem !important;
+  }
+
+  .kpi-metric-subtext {
+    font-size: 0.68rem !important;
+  }
+
+  .kpi-facility-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .kpi-history-table th,
+  .kpi-history-table td,
+  .kpi-synthesis-table th,
+  .kpi-synthesis-table td {
+    font-size: 0.76rem !important;
+    padding: 0.4rem 0.45rem !important;
+  }
+}
+
+/* KPI Supervision & Synthesis Desktop Base Classes */
+.kpi-submode-nav {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  padding: 0.5rem;
+  border-radius: 0.65rem;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.kpi-submode-btn {
+  font-weight: 700;
+  border-radius: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kpi-card {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kpi-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kpi-card-subtitle {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.kpi-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border: 1px solid #e2e8f0;
+}
+
+.kpi-criteria-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.kpi-criterion-item {
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.kpi-criterion-info {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.kpi-criterion-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.kpi-criterion-btn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.kpi-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-synthesis-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kpi-facility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Ensure print mode retains standard paper sheet formatting */
+@media print {
+  .health-report-sheet table thead {
+    display: table-header-group !important;
+  }
+  .health-report-sheet table tbody {
+    display: table-row-group !important;
+  }
+  .health-report-sheet table tr {
+    display: table-row !important;
+  }
+  .health-report-sheet table td {
+    display: table-cell !important;
+  }
+}
+
 

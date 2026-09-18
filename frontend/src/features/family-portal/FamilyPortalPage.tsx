@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { listResidents } from '../../api/residents';
 import { fetchLeaveRequests, createLeaveRequest, LeaveType } from '../../api/resident-leave';
 import { listHealthReports, downloadHealthReportPdf, HealthReportRow } from '../health-reports/healthReportsApi';
@@ -1490,23 +1491,23 @@ export default function FamilyPortalPage() {
 
                   // Chỉ hiển thị các mục có phí > 0 ("Ghi có"), tuyệt đối không hiển thị mục bằng 0 ("Ghi không")
                   const feeItemsList = [
-                    { name: 'Phí chăm sóc cơ bản', amount: notice.basicFee },
-                    ...(includeParentSupport ? [{ name: 'Phí dịch vụ chăm sóc hỗ trợ', amount: notice.supportFee }] : []),
-                    { name: 'Hỗ trợ tắm gội', amount: notice.bathingLaundryFee },
-                    { name: 'Hỗ trợ nâng đỡ, di chuyển', amount: notice.mobilityFee },
-                    { name: 'Hỗ trợ vệ sinh', amount: notice.hygieneFee },
-                    { name: 'Hỗ trợ xúc ăn / ăn qua sonde', amount: notice.feedingSondeFee },
-                    { name: 'Chăm sóc NCT bị lẫn tuổi già', amount: notice.dementiaCareFee },
-                    { name: 'Chăm sóc các ổ loét', amount: notice.soreCareFee },
-                    { name: 'Chăm sóc sonde bàng quang', amount: notice.catheterCareFee },
-                    { name: 'Chăm sóc nội khí quản', amount: notice.tracheostomyCareFee },
-                    { name: 'Thay băng, rửa vết thương', amount: notice.woundDressingFee },
-                    { name: 'Vật lý trị liệu - PHCN', amount: notice.rehabFee },
-                    { name: 'Phí phát sinh', amount: notice.incurredFee, note: notice.incurredContent },
-                    { name: 'Nợ tháng trước', amount: notice.previousMonthDebt, note: notice.debtNotes },
-                    { name: 'Suất ăn thân nhân', amount: notice.familyMealsFee },
-                    { name: 'Vật tư y tế tiêu hao', amount: notice.consumablesFee },
-                    { name: 'Nợ tiền đặt cọc tiếp nhận lưu trú', amount: notice.unpaidDepositDebt || (notice.depositStatus === 'UNPAID' ? 20000000 : 0), note: 'Chưa nộp tiền đặt cọc' },
+                    { name: 'Phí chăm sóc cơ bản', category: 'Gói lưu trú', badgeBg: '#dcfce7', badgeColor: '#15803d', amount: notice.basicFee, note: 'Theo hợp đồng lưu trú' },
+                    ...(includeParentSupport ? [{ name: 'Phí dịch vụ chăm sóc hỗ trợ', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.supportFee, note: 'Trọn gói hỗ trợ' }] : []),
+                    { name: 'Hỗ trợ tắm gội', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.bathingLaundryFee, note: 'Theo tần suất đăng ký' },
+                    { name: 'Hỗ trợ nâng đỡ, di chuyển', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.mobilityFee, note: 'Hỗ trợ di chuyển an toàn' },
+                    { name: 'Hỗ trợ vệ sinh', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.hygieneFee, note: 'Phụ thuộc mức chăm sóc' },
+                    { name: 'Hỗ trợ xúc ăn / ăn qua sonde', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.feedingSondeFee, note: 'Hỗ trợ dinh dưỡng' },
+                    { name: 'Chăm sóc NCT bị lẫn tuổi già', category: 'CS hỗ trợ', badgeBg: '#fef3c7', badgeColor: '#b45309', amount: notice.dementiaCareFee, note: 'Theo dõi & giám sát an toàn' },
+                    { name: 'Chăm sóc các ổ loét', category: 'CS chuyên khoa', badgeBg: '#fee2e2', badgeColor: '#b91c1c', amount: notice.soreCareFee, note: 'Điều trị & thay băng ổ loét' },
+                    { name: 'Chăm sóc sonde bàng quang', category: 'CS chuyên khoa', badgeBg: '#fee2e2', badgeColor: '#b91c1c', amount: notice.catheterCareFee, note: 'Vệ sinh & thay sonde định kỳ' },
+                    { name: 'Chăm sóc nội khí quản', category: 'CS chuyên khoa', badgeBg: '#fee2e2', badgeColor: '#b91c1c', amount: notice.tracheostomyCareFee, note: 'Hút đờm & chăm sóc chuyên khoa' },
+                    { name: 'Thay băng, rửa vết thương', category: 'CS y tế', badgeBg: '#e0e7ff', badgeColor: '#4338ca', amount: notice.woundDressingFee, note: 'Xử lý vết thương hàng ngày' },
+                    { name: 'Vật lý trị liệu - PHCN', category: 'CS y tế', badgeBg: '#e0e7ff', badgeColor: '#4338ca', amount: notice.rehabFee, note: 'Tập PHCN theo phác đồ' },
+                    { name: 'Phí phát sinh trong tháng', category: 'Mục phát sinh', badgeBg: '#ffedd5', badgeColor: '#c2410c', amount: notice.incurredFee, note: notice.incurredContent || 'Phát sinh cấp cứu / đi viện / mua thêm vật tư' },
+                    { name: 'Nợ tháng trước chuyển sang', category: 'Công nợ cũ', badgeBg: '#fecdd3', badgeColor: '#be123c', amount: notice.previousMonthDebt, note: notice.debtNotes || 'Chưa hoàn tất kỳ trước' },
+                    { name: 'Suất ăn thân nhân đăng ký', category: 'Dịch vụ gia đình', badgeBg: '#f3e8ff', badgeColor: '#6b21a8', amount: notice.familyMealsFee, note: 'Cơm thân nhân ăn cùng Cụ' },
+                    { name: 'Vật tư y tế tiêu hao', category: 'Vật tư & Y tế', badgeBg: '#f1f5f9', badgeColor: '#334155', amount: notice.consumablesFee, note: 'Bổ sung vật tư thực tế' },
+                    { name: 'Nợ tiền đặt cọc tiếp nhận lưu trú', category: 'Ký quỹ lưu trú', badgeBg: '#fffbebf0', badgeColor: '#92400e', amount: notice.unpaidDepositDebt || (notice.depositStatus === 'UNPAID' ? 20000000 : 0), note: 'Chưa nộp tiền đặt cọc ký quỹ (1 lần)' },
                   ].filter((item) => (item.amount || 0) > 0);
 
                   const statusClass = notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger';
@@ -1517,7 +1518,7 @@ export default function FamilyPortalPage() {
                       style={{
                         border: '2px solid #a7f3d0',
                         borderRadius: '0.75rem',
-                        padding: '1.5rem',
+                        padding: '1.25rem',
                         background: '#ffffff',
                         boxShadow: '0 4px 12px rgba(16, 185, 129, 0.05)',
                       }}
@@ -1561,44 +1562,70 @@ export default function FamilyPortalPage() {
                         </div>
                       )}
 
-                      {/* Chi tiết các mục phát sinh (chỉ hiển thị mục ghi có > 0) */}
+                      {/* Chi tiết các mục phát sinh (hiển thị đầy đủ thông tin 5 cột + vuốt ngang mobile) */}
                       <div style={{ marginBottom: '1.25rem' }}>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '0.5rem' }}>
-                          📋 Bảng Chi Tiết Phí Viện Phí & Các Hạng Mục Phát Sinh (Chỉ liệt kê các khoản có chi phí thực tế):
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                          <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#1e293b' }}>
+                            📋 Bảng Chi Tiết Phí Viện Phí & Các Hạng Mục Phát Sinh (Chỉ liệt kê các khoản có chi phí thực tế):
+                          </div>
+                          <div style={{ fontSize: '0.78rem', color: '#0369a1', background: '#f0f9ff', padding: '0.25rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #bae6fd', fontWeight: 700 }}>
+                            ↔️ Vuốt sang ngang để xem đầy đủ thông tin (STT, Phân loại, Số tiền, Ghi chú)
+                          </div>
                         </div>
-                        <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                          <table className="table-wide-700" style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+
+                        <div className="table-responsive fee-table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', width: '100%', maxWidth: '100%', borderRadius: '0.5rem', border: '1px solid #cbd5e1' }}>
+                          <table className="table-wide-800" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                             <thead>
-                              <tr style={{ background: '#f0fdf4', color: '#166534', textAlign: 'left' }}>
-                                <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5', whiteSpace: 'nowrap' }}>Nội dung chi phí</th>
-                                <th style={{ padding: '0.5rem 0.75rem', border: '1px solid #d1fae5', textAlign: 'right', whiteSpace: 'nowrap' }}>Số tiền (VNĐ)</th>
+                              <tr style={{ background: '#f0fdf4', color: '#166534', textAlign: 'left', borderBottom: '2px solid #a7f3d0' }}>
+                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', textAlign: 'center', width: '45px', whiteSpace: 'nowrap' }}>STT</th>
+                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', whiteSpace: 'nowrap', width: '240px' }}>Nội dung chi phí / Hạng mục</th>
+                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', textAlign: 'center', width: '130px', whiteSpace: 'nowrap' }}>Phân loại</th>
+                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', textAlign: 'right', width: '150px', whiteSpace: 'nowrap' }}>Số tiền (VNĐ)</th>
+                                <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left', minWidth: '200px' }}>Ghi chú & Chi tiết phát sinh</th>
                               </tr>
                             </thead>
-                          <tbody>
-                            {feeItemsList.map((item, idx) => (
-                              <tr key={idx} style={{ borderBottom: '1px solid #f0fdf4' }}>
-                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0' }}>
-                                  <b>{idx + 1}. {item.name}</b> {item.note ? <span style={{ color: '#0284c7', fontStyle: 'italic' }}>({item.note})</span> : ''}
-                                </td>
-                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 600 }}>
-                                  {(item.amount || 0).toLocaleString('vi-VN')} đ
-                                </td>
-                              </tr>
-                            ))}
+                            <tbody>
+                              {feeItemsList.map((item, idx) => (
+                                <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
+                                    {idx + 1}
+                                  </td>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', fontWeight: 700, color: '#0f172a' }}>
+                                    {item.name}
+                                  </td>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
+                                    <span className="badge" style={{ background: item.badgeBg, color: item.badgeColor, fontSize: '0.75rem', padding: '0.25rem 0.5rem', fontWeight: 700 }}>
+                                      {item.category}
+                                    </span>
+                                  </td>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#166534', fontVariantNumeric: 'tabular-nums' }}>
+                                    {(item.amount || 0).toLocaleString('vi-VN')} đ
+                                  </td>
+                                  <td style={{ padding: '0.5rem 0.75rem', color: '#475569', fontSize: '0.82rem', fontStyle: 'italic' }}>
+                                    {item.note || '---'}
+                                  </td>
+                                </tr>
+                              ))}
 
-                            {/* Giảm trừ nếu có */}
-                            {notice.deductionFee > 0 && (
-                              <tr style={{ background: '#fff1f2', color: '#be123c' }}>
-                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', fontWeight: 700 }}>
-                                  ➖ Chi phí giảm trừ {notice.deductionNotes ? `(${notice.deductionNotes})` : ''}
-                                </td>
-                                <td style={{ padding: '0.45rem 0.75rem', border: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 700 }}>
-                                  - {notice.deductionFee.toLocaleString('vi-VN')} đ
-                                </td>
-                              </tr>
-                            )}
-                          </tbody>
-                        </table>
+                              {/* Giảm trừ nếu có */}
+                              {notice.deductionFee > 0 && (
+                                <tr style={{ background: '#fff1f2', color: '#be123c', borderTop: '2px solid #fecdd3' }}>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', textAlign: 'center', fontWeight: 700 }}>➖</td>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', fontWeight: 800 }}>Chi phí giảm trừ / Khuyến mãi</td>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', textAlign: 'center' }}>
+                                    <span className="badge" style={{ background: '#fecdd3', color: '#9f1239', fontSize: '0.75rem', padding: '0.25rem 0.5rem', fontWeight: 700 }}>Giảm trừ</span>
+                                  </td>
+                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', textAlign: 'right', fontWeight: 800, color: '#be123c', fontVariantNumeric: 'tabular-nums' }}>
+                                    - {notice.deductionFee.toLocaleString('vi-VN')} đ
+                                  </td>
+                                  <td style={{ padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontStyle: 'italic', fontWeight: 600 }}>
+                                    {notice.deductionNotes || 'Theo phê duyệt Giám đốc / Giảm trừ vắng mặt'}
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
 
                       {/* Tổng Hợp Thu Phí */}
@@ -1617,9 +1644,8 @@ export default function FamilyPortalPage() {
                         )}
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1879,8 +1905,8 @@ export default function FamilyPortalPage() {
               <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => window.print()}
-                  className="btn btn-primary"
+                  onClick={() => triggerPrint()}
+                  className="btn btn-primary no-print"
                   style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, padding: '0.4rem 0.85rem' }}
                 >
                   🖨️ In / Xuất PDF
@@ -1896,10 +1922,10 @@ export default function FamilyPortalPage() {
               </div>
             </div>
 
-            <div className="modal-body printable-a4-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
+            <div className="modal-body printable-a4-sheet health-report-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
               {/* Header */}
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <div className="health-report-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
                     <img src="/branding/tam-an-logo-master.png" alt="Logo Tâm An" style={{ height: '48px', width: 'auto', objectFit: 'contain' }} />
                     <div>
@@ -1909,7 +1935,7 @@ export default function FamilyPortalPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                  <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
                     <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy (Nhân viên y tế)'}</div>
@@ -1924,7 +1950,7 @@ export default function FamilyPortalPage() {
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>
                 I. THÔNG TIN HÀNH CHÍNH
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
+              <div className="health-report-admin-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
                 <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem', fontWeight: 700 }}>{formatResidentNameWithSalutation(viewingReport.data.residentName, viewingReport.data.gender)}</span></div>
                 <div><b>Mã số hồ sơ NCT:</b> {viewingReport.data.residentCode}</div>
                 <div><b>Ngày tháng năm sinh:</b> {viewingReport.data.dateOfBirth}</div>
@@ -2002,7 +2028,7 @@ export default function FamilyPortalPage() {
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
                 <b>1. Tiền sử bệnh nền:</b>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
+                <div className="health-report-conditions-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
                   <div>[{viewingReport.data.conditions?.hypertension ? ' x ' : '   '}] Cao huyết áp</div>
                   <div>[{viewingReport.data.conditions?.diabetes ? ' x ' : '   '}] Đái tháo đường (Tuýp: {viewingReport.data.conditions?.diabetesType || '2'})</div>
                   <div>[{viewingReport.data.conditions?.cardiovascular ? ' x ' : '   '}] Tim mạch (Suy tim, bệnh mạch vành)</div>
@@ -2031,44 +2057,44 @@ export default function FamilyPortalPage() {
                       <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Phụ thuộc hoàn toàn</th>
                     </tr>
                   </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.eating === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.eating === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.eating === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Tắm rửa / Vệ sinh cá nhân</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.bathing === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.bathing === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.bathing === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mặc quần áo</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.dressing === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.dressing === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.dressing === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Đi vệ sinh</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.toileting === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.toileting === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.toileting === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.eating === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.eating === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.eating === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Tắm rửa / Vệ sinh cá nhân</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.bathing === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.bathing === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.bathing === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mặc quần áo</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.dressing === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.dressing === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.dressing === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Đi vệ sinh</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.toileting === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.toileting === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
+                      <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl?.toileting === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               {/* VIII. KẾT LUẬN & HƯỚNG CHĂM SÓC */}
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>
                 VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
+              <div className="health-report-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b> &nbsp;
-                [{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ &nbsp;
-                <span style={{ background: '#fef08a' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span> &nbsp;
-                [{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện
+                <span>[{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ</span> &nbsp;
+                <span style={{ background: '#fef08a', padding: '2px 4px', borderRadius: '4px' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span> &nbsp;
+                <span>[{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện</span>
               </div>
 
               <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
@@ -2101,8 +2127,8 @@ export default function FamilyPortalPage() {
               </button>
               <button
                 type="button"
-                onClick={() => window.print()}
-                className="btn btn-primary"
+                onClick={() => triggerPrint()}
+                className="btn btn-primary no-print"
                 style={{ fontWeight: 700 }}
               >
                 🖨️ In Phiếu Đánh Giá (A4)

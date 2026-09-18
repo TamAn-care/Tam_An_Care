@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { hasCapability } from '../../auth/role-policy';
 import { listResidents } from '../../api/residents';
 import { getElderIcon, formatResidentNameWithSalutation } from '../residents/resident-ui';
@@ -306,8 +307,8 @@ export default function MedicationInventoryPage() {
     return list;
   }, [emarQuery.data, selectedSlot, selectedResidentId, searchTerm]);
 
-  // Filtered Inventory items
-  const filteredInventory = useMemo(() => {
+  // Base Inventory list filtered by selectedItemGroup and selectedCategory (before tab filter)
+  const baseInventoryList = useMemo(() => {
     let list = inventoryQuery.data || [];
     if (selectedItemGroup !== 'ALL') {
       list = list.filter((i) => (i.itemGroup || (i.category === 'DIAGNOSTIC' || i.category === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES')) === selectedItemGroup);
@@ -315,6 +316,12 @@ export default function MedicationInventoryPage() {
     if (selectedCategory !== 'ALL') {
       list = list.filter((i) => i.category === selectedCategory);
     }
+    return list;
+  }, [inventoryQuery.data, selectedItemGroup, selectedCategory]);
+
+  // Filtered Inventory items after applying tab filter ('ALL' | 'LOW_STOCK' | 'EXPIRING')
+  const filteredInventory = useMemo(() => {
+    let list = baseInventoryList;
     if (inventoryFilter === 'LOW_STOCK') {
       list = list.filter((i) => i.currentStock <= i.minStockThreshold);
     } else if (inventoryFilter === 'EXPIRING') {
@@ -325,7 +332,7 @@ export default function MedicationInventoryPage() {
       });
     }
     return list;
-  }, [inventoryQuery.data, selectedItemGroup, selectedCategory, inventoryFilter]);
+  }, [baseInventoryList, inventoryFilter]);
 
   // eMAR Progress calculation
   const totalDoses = emarQuery.data?.length || 0;
@@ -333,15 +340,14 @@ export default function MedicationInventoryPage() {
   const heldDoses = emarQuery.data?.filter((a) => a.status === 'HELD' || a.status === 'REFUSED').length || 0;
   const completionPercentage = totalDoses > 0 ? Math.round((givenDoses / totalDoses) * 100) : 0;
 
-  // Inventory KPI counts
+  // Inventory KPI counts (dynamic for selected group/category tabs)
   const inventoryItemsList = inventoryQuery.data || [];
-  const lowStockCount = inventoryItemsList.filter((i) => i.currentStock <= i.minStockThreshold).length;
-  const expiringCount = inventoryItemsList.filter((i) => {
+  const lowStockCount = useMemo(() => baseInventoryList.filter((i) => i.currentStock <= i.minStockThreshold).length, [baseInventoryList]);
+  const expiringCount = useMemo(() => baseInventoryList.filter((i) => {
     const exp = new Date(i.expiryDate).getTime();
-    const now = Date.now();
-    const daysLeft = (exp - now) / (1000 * 60 * 60 * 24);
+    const daysLeft = (exp - Date.now()) / (1000 * 60 * 60 * 24);
     return daysLeft <= 30;
-  }).length;
+  }).length, [baseInventoryList]);
 
   if (emarQuery.isLoading || ordersQuery.isLoading || inventoryQuery.isLoading) {
     return <LoadingState title="Đang tải dữ liệu Dược phẩm & Tồn kho y tế..." />;
@@ -554,8 +560,8 @@ export default function MedicationInventoryPage() {
 
               <button
                 type="button"
-                className="btn btn-sm btn-neutral"
-                onClick={() => window.print()}
+                className="btn btn-sm btn-neutral no-print"
+                onClick={() => triggerPrint()}
                 title="In bảng cấp phát thuốc trực ca"
                 style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontWeight: 600 }}
               >
@@ -815,44 +821,299 @@ export default function MedicationInventoryPage() {
       {/* TAB 3: MEDICAL CONSUMABLES INVENTORY */}
       {activeTab === 'inventory' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Inventory KPI Summary Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
-            <div className="card" style={{ background: '#ffffff', padding: '1rem', borderLeft: '4px solid #10b981' }}>
+          {/* Inventory KPI Summary Cards (Interactive Tabs for Mobile & Desktop) */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem', width: '100%' }}>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setInventoryFilter('ALL')}
+              className="card"
+              style={{
+                background: inventoryFilter === 'ALL' ? '#f0fdf4' : '#ffffff',
+                padding: '1rem 1.25rem',
+                borderLeft: '4px solid #10b981',
+                border: inventoryFilter === 'ALL' ? '2px solid #10b981' : '1px solid #cbd5e1',
+                borderLeftWidth: '4px',
+                borderRadius: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: inventoryFilter === 'ALL' ? '0 4px 12px rgba(16, 185, 129, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+                touchAction: 'manipulation',
+              }}
+            >
               <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>TỔNG MẶT HÀNG TRONG KHO</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1e293b', marginTop: '0.2rem' }}>
-                {inventoryItemsList.length} <span style={{ fontSize: '0.85rem', fontWeight: 400 }}>danh mục</span>
+                {baseInventoryList.length} <span style={{ fontSize: '0.85rem', fontWeight: 400 }}>danh mục</span>
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#16a34a', marginTop: '0.2rem' }}>Đang quản lý theo số lô & hạn dùng</div>
+              <div style={{ fontSize: '0.78rem', color: '#16a34a', marginTop: '0.2rem', fontWeight: 700 }}>
+                {inventoryFilter === 'ALL' ? '✓ Đang hiển thị tất cả' : '👉 Click chọn xem tất cả'}
+              </div>
             </div>
 
-            <div className="card" style={{ background: '#ffffff', padding: '1rem', borderLeft: '4px solid #ef4444' }}>
-              <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>CẢNH BÁO SẮP HẾT HÀNG</div>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setInventoryFilter('LOW_STOCK')}
+              className="card"
+              style={{
+                background: inventoryFilter === 'LOW_STOCK' ? '#fef2f2' : '#ffffff',
+                padding: '1rem 1.25rem',
+                borderLeft: '4px solid #ef4444',
+                border: inventoryFilter === 'LOW_STOCK' ? '2px solid #ef4444' : '1px solid #cbd5e1',
+                borderLeftWidth: '4px',
+                borderRadius: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: inventoryFilter === 'LOW_STOCK' ? '0 4px 12px rgba(239, 68, 68, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+                touchAction: 'manipulation',
+              }}
+            >
+              <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>CẢNH BÁO SẮP HẾT HẠN / TỒN THẤP</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: lowStockCount > 0 ? '#dc2626' : '#16a34a', marginTop: '0.2rem' }}>
                 {lowStockCount} <span style={{ fontSize: '0.85rem', fontWeight: 400 }}>mặt hàng</span>
               </div>
-              <div style={{ fontSize: '0.78rem', color: lowStockCount > 0 ? '#b91c1c' : '#16a34a', marginTop: '0.2rem' }}>
-                {lowStockCount > 0 ? 'Cần làm đề xuất nhập kho gấp' : 'Mức tồn kho an toàn'}
+              <div style={{ fontSize: '0.78rem', color: lowStockCount > 0 ? '#b91c1c' : '#16a34a', marginTop: '0.2rem', fontWeight: 700 }}>
+                {inventoryFilter === 'LOW_STOCK' ? '✓ Đang xem danh sách sắp hết' : lowStockCount > 0 ? '👉 Click chọn tab Sắp hết hạn' : 'Mức tồn kho an toàn'}
               </div>
             </div>
 
-            <div className="card" style={{ background: '#ffffff', padding: '1rem', borderLeft: '4px solid #f59e0b' }}>
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => setInventoryFilter('EXPIRING')}
+              className="card"
+              style={{
+                background: inventoryFilter === 'EXPIRING' ? '#fffbeb' : '#ffffff',
+                padding: '1rem 1.25rem',
+                borderLeft: '4px solid #f59e0b',
+                border: inventoryFilter === 'EXPIRING' ? '2px solid #f59e0b' : '1px solid #cbd5e1',
+                borderLeftWidth: '4px',
+                borderRadius: '0.75rem',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease',
+                boxShadow: inventoryFilter === 'EXPIRING' ? '0 4px 12px rgba(245, 158, 11, 0.15)' : '0 1px 3px rgba(0,0,0,0.04)',
+                touchAction: 'manipulation',
+              }}
+            >
               <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>VẬT TƯ CẬN HẠN SỬ DỤNG (&lt;30 NGÀY)</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 800, color: expiringCount > 0 ? '#d97706' : '#16a34a', marginTop: '0.2rem' }}>
                 {expiringCount} <span style={{ fontSize: '0.85rem', fontWeight: 400 }}>mặt hàng</span>
               </div>
-              <div style={{ fontSize: '0.78rem', color: expiringCount > 0 ? '#b45309' : '#16a34a', marginTop: '0.2rem' }}>
-                {expiringCount > 0 ? 'Ưu tiên xuất dùng trước' : 'Hạn dùng đạt chuẩn'}
+              <div style={{ fontSize: '0.78rem', color: expiringCount > 0 ? '#b45309' : '#16a34a', marginTop: '0.2rem', fontWeight: 700 }}>
+                {inventoryFilter === 'EXPIRING' ? '✓ Đang xem danh sách Cận hạn' : expiringCount > 0 ? '👉 Click chọn tab Cận hạn' : 'Hạn dùng đạt chuẩn'}
+              </div>
+            </div>
+          </div>
+
+          {/* Action Tabs Block Banner - Layout 3 block nền đồng nhất kích thước & kéo dài bằng đúng bề ngang giao diện mobile */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1rem',
+              width: '100%',
+              marginBottom: '1.25rem',
+              alignItems: 'stretch',
+            }}
+          >
+            {/* Block 1: Nhập Kho Dược Phẩm */}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (canManagePharmacy) {
+                  setTxType('IMPORT');
+                  setIsTxModalOpen(true);
+                }
+              }}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
+                border: '1.5px solid #86efac',
+                borderRadius: '0.75rem',
+                padding: '1.15rem 1.25rem',
+                boxShadow: '0 2px 8px rgba(22, 101, 52, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.85rem',
+                cursor: canManagePharmacy ? 'pointer' : 'default',
+                transition: 'all 0.2s ease',
+                minHeight: '155px',
+                boxSizing: 'border-box',
+                touchAction: 'manipulation',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '0.3rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.35rem' }}>💊</span>
+                    <span style={{ fontWeight: 800, fontSize: '1rem', color: '#14532d' }}>Nhập Kho Dược Phẩm</span>
+                  </div>
+                  <span className="badge badge-info" style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.5rem' }}>
+                    Chỉ NV Y Tế
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.45 }}>
+                  Cập nhật số lượng nhập kho cho danh mục Dược phẩm, Dung dịch & Thuốc tủ trực cấp cứu.
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.6rem', borderTop: '1px solid #dcfce7', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700 }}>
+                  {canManagePharmacy ? '👉 Click để mở biểu mẫu nhập kho' : '🔒 Quyền xem giám sát'}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-primary"
+                  disabled={!canManagePharmacy}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (canManagePharmacy) {
+                      setTxType('IMPORT');
+                      setIsTxModalOpen(true);
+                    }
+                  }}
+                  style={{ fontWeight: 700, padding: '0.4rem 0.85rem', borderRadius: '0.45rem', touchAction: 'manipulation' }}
+                >
+                  📥 Nhập Kho Thuốc
+                </button>
+              </div>
+            </div>
+
+            {/* Block 2: Quản Lý Nhập Kho Vật Tư */}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (canManageCareSuppliesImport || canManageInv) {
+                  setTxType('IMPORT');
+                  setIsTxModalOpen(true);
+                }
+              }}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)',
+                border: '1.5px solid #7dd3fc',
+                borderRadius: '0.75rem',
+                padding: '1.15rem 1.25rem',
+                boxShadow: '0 2px 8px rgba(2, 132, 199, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.85rem',
+                cursor: (canManageCareSuppliesImport || canManageInv) ? 'pointer' : 'default',
+                transition: 'all 0.2s ease',
+                minHeight: '155px',
+                boxSizing: 'border-box',
+                touchAction: 'manipulation',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '0.3rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.35rem' }}>📦</span>
+                    <span style={{ fontWeight: 800, fontSize: '1rem', color: '#0369a1' }}>Quản Lý Nhập Kho Vật Tư</span>
+                  </div>
+                  <span className="badge badge-success" style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.5rem' }}>
+                    Quản Lý & Y Tế
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.45 }}>
+                  Ghi nhận nhập kho vật tư chăm sóc người cao tuổi (tã bỉm, găng tay, băng gạc, dung dịch).
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.6rem', borderTop: '1px solid #e0f2fe', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.78rem', color: '#0369a1', fontWeight: 700 }}>
+                  {(canManageCareSuppliesImport || canManageInv) ? '👉 Click để mở biểu mẫu nhập kho' : '🔒 Quyền xem giám sát'}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  disabled={!(canManageCareSuppliesImport || canManageInv)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (canManageCareSuppliesImport || canManageInv) {
+                      setTxType('IMPORT');
+                      setIsTxModalOpen(true);
+                    }
+                  }}
+                  style={{ background: '#0284c7', color: '#ffffff', borderColor: '#0284c7', fontWeight: 700, padding: '0.4rem 0.85rem', borderRadius: '0.45rem', touchAction: 'manipulation' }}
+                >
+                  📥 Nhập Kho Vật Tư
+                </button>
+              </div>
+            </div>
+
+            {/* Block 3: Khai Báo Xuất Sử Dụng Vật Tư */}
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={() => {
+                if (canWithdrawCareSupply) {
+                  setIsWithdrawalModalOpen(true);
+                }
+              }}
+              style={{
+                width: '100%',
+                background: 'linear-gradient(135deg, #ffffff 0%, #fefce8 100%)',
+                border: '1.5px solid #fde047',
+                borderRadius: '0.75rem',
+                padding: '1.15rem 1.25rem',
+                boxShadow: '0 2px 8px rgba(161, 98, 7, 0.08)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.85rem',
+                cursor: canWithdrawCareSupply ? 'pointer' : 'default',
+                transition: 'all 0.2s ease',
+                minHeight: '155px',
+                boxSizing: 'border-box',
+                touchAction: 'manipulation',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '0.3rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.35rem' }}>📝</span>
+                    <span style={{ fontWeight: 800, fontSize: '1rem', color: '#854d0e' }}>Khai Báo Xuất Sử Dụng Vật Tư</span>
+                  </div>
+                  <span className="badge badge-warning" style={{ fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.5rem', background: '#fef08a', color: '#854d0e' }}>
+                    Mọi Nhân Viên
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.82rem', color: '#475569', lineHeight: 1.45 }}>
+                  Tất cả nhân viên chủ động khai báo trên App khi lấy vật tư tiêu hao xuất dùng chăm sóc Cụ.
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.6rem', borderTop: '1px solid #fef9c3', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.78rem', color: '#854d0e', fontWeight: 700 }}>
+                  {canWithdrawCareSupply ? '👉 Click để khai báo xuất dùng' : '🔒 Không có quyền'}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-primary"
+                  disabled={!canWithdrawCareSupply}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (canWithdrawCareSupply) {
+                      setIsWithdrawalModalOpen(true);
+                    }
+                  }}
+                  style={{ background: '#ca8a04', borderColor: '#ca8a04', color: '#ffffff', fontWeight: 700, padding: '0.4rem 0.85rem', borderRadius: '0.45rem', touchAction: 'manipulation' }}
+                >
+                  📝 Khai Báo Xuất
+                </button>
               </div>
             </div>
           </div>
 
           {/* Inventory Group Sub-Tabs (Item 7: Tách Nhóm Thuốc & Vật Tư Y Tế) */}
-          <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.35rem', borderRadius: '0.5rem', border: '1px solid #cbd5e1' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', background: '#f1f5f9', padding: '0.4rem', borderRadius: '0.5rem', border: '1px solid #cbd5e1', flexWrap: 'wrap', width: '100%' }}>
             <button
               type="button"
               className={`btn btn-sm ${selectedItemGroup === 'ALL' ? 'btn-primary' : 'btn-neutral'}`}
               onClick={() => setSelectedItemGroup('ALL')}
-              style={{ fontWeight: 700 }}
+              style={{ fontWeight: 700, minHeight: '36px', touchAction: 'manipulation' }}
             >
               🌐 Tất Cả Kho ({inventoryItemsList.length})
             </button>
@@ -860,7 +1121,7 @@ export default function MedicationInventoryPage() {
               type="button"
               className={`btn btn-sm ${selectedItemGroup === 'PHARMACEUTICALS' ? 'btn-primary' : 'btn-neutral'}`}
               onClick={() => setSelectedItemGroup('PHARMACEUTICALS')}
-              style={{ fontWeight: 700 }}
+              style={{ fontWeight: 700, minHeight: '36px', touchAction: 'manipulation' }}
             >
               💊 (1) Dược Phẩm ({inventoryItemsList.filter((i) => (i.itemGroup || (i.category === 'DIAGNOSTIC' || i.category === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES')) === 'PHARMACEUTICALS').length})
               <span className="badge badge-info" style={{ marginLeft: '0.3rem', fontSize: '0.7rem' }}>Chỉ Nhân viên Y tế</span>
@@ -869,7 +1130,7 @@ export default function MedicationInventoryPage() {
               type="button"
               className={`btn btn-sm ${selectedItemGroup === 'CARE_SUPPLIES' ? 'btn-primary' : 'btn-neutral'}`}
               onClick={() => setSelectedItemGroup('CARE_SUPPLIES')}
-              style={{ fontWeight: 700 }}
+              style={{ fontWeight: 700, minHeight: '36px', touchAction: 'manipulation' }}
             >
               📦 (2) Vật Tư Chăm Sóc NCT ({inventoryItemsList.filter((i) => (i.itemGroup || (i.category === 'DIAGNOSTIC' || i.category === 'MEDICINE_SUPPLY' ? 'PHARMACEUTICALS' : 'CARE_SUPPLIES')) === 'CARE_SUPPLIES').length})
               <span className="badge badge-success" style={{ marginLeft: '0.3rem', fontSize: '0.7rem' }}>Mọi nhân viên xuất dùng</span>
@@ -877,7 +1138,7 @@ export default function MedicationInventoryPage() {
           </div>
 
           {/* Inventory Table & Filters */}
-          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem' }}>
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
               <div>
                 <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem' }}>
@@ -888,30 +1149,49 @@ export default function MedicationInventoryPage() {
                     : '📦 Quản Lý Kho Dược Phẩm & Vật Tư Chăm Sóc'}
                 </h3>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.2rem' }}>
-                  Hiển thị {filteredInventory.length}/{inventoryItemsList.length} mặt hàng
+                  Hiển thị {filteredInventory.length}/{baseInventoryList.length} mặt hàng
                 </div>
               </div>
 
               {/* Inventory Filter Tabs */}
-              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                 <button
                   type="button"
                   className={`btn btn-sm ${inventoryFilter === 'ALL' ? 'btn-primary' : 'btn-neutral'}`}
                   onClick={() => setInventoryFilter('ALL')}
+                  style={{ minHeight: '38px', padding: '0.45rem 0.85rem', fontWeight: 700, touchAction: 'manipulation' }}
                 >
-                  Tất cả ({inventoryItemsList.length})
+                  🌐 Tất cả ({baseInventoryList.length})
                 </button>
                 <button
                   type="button"
                   className={`btn btn-sm ${inventoryFilter === 'LOW_STOCK' ? 'btn-danger' : 'btn-neutral'}`}
                   onClick={() => setInventoryFilter('LOW_STOCK')}
+                  style={{
+                    minHeight: '38px',
+                    padding: '0.45rem 0.85rem',
+                    fontWeight: 700,
+                    touchAction: 'manipulation',
+                    background: inventoryFilter === 'LOW_STOCK' ? '#dc2626' : undefined,
+                    color: inventoryFilter === 'LOW_STOCK' ? '#ffffff' : undefined,
+                    borderColor: inventoryFilter === 'LOW_STOCK' ? '#b91c1c' : undefined,
+                  }}
                 >
-                  ⚠️ Sắp hết ({lowStockCount})
+                  ⚠️ Sắp hết hạn ({lowStockCount})
                 </button>
                 <button
                   type="button"
                   className={`btn btn-sm ${inventoryFilter === 'EXPIRING' ? 'btn-warning' : 'btn-neutral'}`}
                   onClick={() => setInventoryFilter('EXPIRING')}
+                  style={{
+                    minHeight: '38px',
+                    padding: '0.45rem 0.85rem',
+                    fontWeight: 700,
+                    touchAction: 'manipulation',
+                    background: inventoryFilter === 'EXPIRING' ? '#d97706' : undefined,
+                    color: inventoryFilter === 'EXPIRING' ? '#ffffff' : undefined,
+                    borderColor: inventoryFilter === 'EXPIRING' ? '#b45309' : undefined,
+                  }}
                 >
                   ⌛ Cận hạn ({expiringCount})
                 </button>
@@ -920,7 +1200,7 @@ export default function MedicationInventoryPage() {
                   className="text-input"
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value as any)}
-                  style={{ padding: '0.35rem 0.6rem', fontSize: '0.85rem' }}
+                  style={{ minHeight: '38px', padding: '0.35rem 0.65rem', fontSize: '0.85rem' }}
                 >
                   <option value="ALL">Tất cả nhóm vật tư</option>
                   {Object.entries(CATEGORY_LABELS).map(([k, label]) => (
@@ -928,68 +1208,43 @@ export default function MedicationInventoryPage() {
                   ))}
                 </select>
               </div>
+            </div>
 
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {/* Quyền (1) Dược phẩm: NURSE/DOCTOR/ADMIN */}
-                {canManagePharmacy && (
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => {
-                      setTxType('IMPORT');
-                      setIsTxModalOpen(true);
-                    }}
-                    title="Nhân viên Y tế nhập kho Dược phẩm & Thuốc tủ trực"
-                  >
-                    📥 Nhập Kho Dược Phẩm
-                  </button>
-                )}
-
-                {/* Quyền (2) Vật tư chăm sóc: CARE_MANAGER nhập kho */}
-                {canManageCareSuppliesImport && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      setTxType('IMPORT');
-                      setIsTxModalOpen(true);
-                    }}
-                    style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
-                    title="Quản lý (CARE_MANAGER) nhập kho vật tư chăm sóc (tã bỉm, găng tay, bông gạc)"
-                  >
-                    📥 Quản Lý Nhập Kho Vật Tư
-                  </button>
-                )}
-
-                {/* Quyền (2) Khai báo xuất sử dụng vật tư: TẤT CẢ nhân viên trong trung tâm */}
-                {canWithdrawCareSupply && (
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => setIsWithdrawalModalOpen(true)}
-                    style={{ background: '#2563eb', color: '#ffffff', fontWeight: 700 }}
-                    title="Khai báo trên App khi lấy vật tư chăm sóc (tã, găng tay, sữa...) xuất dùng cho Cụ"
-                  >
-                    📝 Khai Báo Xuất Sử Dụng Vật Tư
-                  </button>
-                )}
+            {/* Scroll instruction banner & horizontal table container */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                <span>↔️</span> <span>Màn hình xem: Vuốt/Cuộn sang ngang để xem đầy đủ 10 cột thông tin</span>
+              </div>
+              <div style={{ fontSize: '0.75rem', color: '#0284c7', background: '#f0f9ff', padding: '0.2rem 0.55rem', borderRadius: '0.3rem', border: '1px solid #bae6fd', fontWeight: 600 }}>
+                10 Cột Trường Thông Tin
               </div>
             </div>
 
-            <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-              <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+            <div
+              style={{
+                width: '100%',
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+                border: '1px solid #cbd5e1',
+                borderRadius: '0.65rem',
+                background: '#ffffff',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+              }}
+            >
+              <table style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Mã VT</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Tên Vật Tư / Dụng Cụ Y Tế</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Phân Loại Nhóm</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Số Lượng Tồn</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Ngưỡng Tối Thiểu</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Số Lô & Hạn Dùng</th>
-                    <th style={{ padding: '0.75rem 1rem' }}>Vị Trí Tủ Thuốc</th>
-                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Đơn Giá</th>
-                    {canManageInv && <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao Tác</th>}
+                  <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#334155', textAlign: 'left' }}>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap', fontWeight: 700 }}>Mã VT</th>
+                    <th style={{ padding: '0.85rem 1rem', whiteSpace: 'nowrap', fontWeight: 700, minWidth: '220px' }}>Tên Vật Tư / Dụng Cụ Y Tế</th>
+                    <th style={{ padding: '0.85rem 1rem', whiteSpace: 'nowrap', fontWeight: 700, minWidth: '180px' }}>Phân Loại Nhóm</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap', fontWeight: 700 }}>Số Lượng Tồn</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap', fontWeight: 700 }}>Ngưỡng Tối Thiểu</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap', fontWeight: 700 }}>Trạng Thái</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap', fontWeight: 700, minWidth: '150px' }}>Số Lô & Hạn Dùng</th>
+                    <th style={{ padding: '0.85rem 1rem', whiteSpace: 'nowrap', fontWeight: 700, minWidth: '160px' }}>Vị Trí Tủ Thuốc</th>
+                    <th style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap', fontWeight: 700 }}>Đơn Giá</th>
+                    {canManageInv && <th style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap', fontWeight: 700 }}>Thao Tác</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -1001,25 +1256,25 @@ export default function MedicationInventoryPage() {
 
                     return (
                       <tr key={item.itemId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
-                          <code style={{ background: '#f1f5f9', padding: '0.15rem 0.4rem', borderRadius: '0.25rem', color: '#334155', fontWeight: 600, fontSize: '0.78rem' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
+                          <code style={{ background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '0.3rem', color: '#334155', fontWeight: 700, fontSize: '0.8rem' }}>
                             {item.itemCode}
                           </code>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <div style={{ fontWeight: 700, color: '#0f172a' }}>{item.name}</div>
+                        <td style={{ padding: '0.85rem 1rem' }}>
+                          <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>{item.name}</div>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem' }}>
-                          <span className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+                        <td style={{ padding: '0.85rem 1rem', whiteSpace: 'nowrap' }}>
+                          <span className="badge badge-neutral" style={{ fontSize: '0.78rem' }}>
                             {CATEGORY_LABELS[item.category]}
                           </span>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <b style={{ color: isLow ? '#dc2626' : '#15803d', fontSize: '0.95rem', fontWeight: 800 }}>
                             {item.currentStock} {item.unit}
                           </b>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>
                           <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem' }}>
                             <span style={{ fontWeight: 600, color: '#475569' }}>
                               {item.minStockThreshold} {item.unit}
@@ -1049,7 +1304,7 @@ export default function MedicationInventoryPage() {
                             )}
                           </div>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           {isLow ? (
                             <span className="badge badge-danger" style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem' }}>
                               ⚠️ Sắp hết
@@ -1064,7 +1319,7 @@ export default function MedicationInventoryPage() {
                             </span>
                           )}
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
                           <div style={{ fontWeight: 600, color: isExpiring ? '#b45309' : '#1e293b' }}>
                             {item.expiryDate}
                           </div>
@@ -1072,14 +1327,14 @@ export default function MedicationInventoryPage() {
                             Lô: <code>{item.lotNumber}</code>
                           </div>
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', color: '#334155', fontSize: '0.82rem' }}>
+                        <td style={{ padding: '0.85rem 1rem', color: '#334155', fontSize: '0.82rem', whiteSpace: 'nowrap' }}>
                           📍 {item.location}
                         </td>
-                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 600, color: '#0f172a' }}>
+                        <td style={{ padding: '0.85rem 1rem', textAlign: 'right', fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap' }}>
                           {item.unitPrice.toLocaleString('vi-VN')} đ
                         </td>
                         {canManageInv && (
-                          <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          <td style={{ padding: '0.85rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>
                             <button
                               type="button"
                               className="btn btn-sm btn-neutral"

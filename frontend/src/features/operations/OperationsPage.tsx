@@ -3,6 +3,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { triggerPrint } from '../../utils/print';
 import {
   useMutation,
   useQuery,
@@ -1237,10 +1238,10 @@ export function OperationsPage() {
 
   return (
     <div className="printable-a4-sheet">
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
+      <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={() => triggerPrint()}
           className="btn btn-secondary no-print"
           style={{ background: '#f8fafc', color: '#0f172a', borderColor: '#cbd5e1', fontWeight: 700 }}
         >
@@ -1248,7 +1249,7 @@ export function OperationsPage() {
         </button>
         <button
           type="button"
-          className="btn btn-primary"
+          className="btn btn-primary no-print"
           onClick={() => {
             if (residentId) setCreateResidentId(residentId);
             setShowCreateSection(!showCreateSection);

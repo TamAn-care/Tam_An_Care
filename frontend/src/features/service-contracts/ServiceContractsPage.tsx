@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { listResidents } from '../../api/residents';
 import {
   ServiceContract,
@@ -198,7 +199,7 @@ export function ServiceContractsPage() {
   };
 
   const handlePrint = () => {
-    window.print();
+    triggerPrint();
   };
 
   const handleSignContract = (contract: ServiceContract) => {
@@ -1028,7 +1029,7 @@ export function ServiceContractsPage() {
                     ✍️ Đã ký hợp đồng
                   </button>
                 )}
-                <button type="button" onClick={handlePrint} className="btn btn-primary" style={{ fontWeight: 700 }}>
+                <button type="button" onClick={handlePrint} className="btn btn-primary no-print" style={{ fontWeight: 700 }}>
                   🖨️ In Hợp Đồng (A4)
                 </button>
                 <button type="button" onClick={() => setViewingContract(null)} className="btn btn-secondary">
@@ -1305,39 +1306,41 @@ export function ServiceContractsPage() {
               </div>
 
               {/* APPENDIX SERVICES TABLE */}
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11pt', margin: '8px 0' }}>
-                <thead>
-                  <tr style={{ background: '#f1f5f9' }}>
-                    <th style={{ border: '1px solid #000', padding: '5px', width: '40px', textAlign: 'center' }}>STT</th>
-                    <th style={{ border: '1px solid #000', padding: '5px', textAlign: 'left' }}>Nội dung dịch vụ</th>
-                    <th style={{ border: '1px solid #000', padding: '5px', width: '140px', textAlign: 'right' }}>Mức phí (VNĐ)<br />đồng/người/tháng</th>
-                    <th style={{ border: '1px solid #000', padding: '5px', width: '180px', textAlign: 'left' }}>Ghi chú</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {viewingContract.appendix.additionalServices.map((srv) => (
-                    <tr key={srv.stt} style={{ background: srv.selected ? '#f0fdf4' : 'transparent' }}>
-                      <td style={{ border: '1px solid #000', padding: '4px', textAlign: 'center' }}>{srv.stt}</td>
-                      <td style={{ border: '1px solid #000', padding: '4px', fontWeight: srv.selected ? 'bold' : 'normal' }}>
-                        {srv.name} {srv.selected && '✓'}
-                      </td>
-                      <td style={{ border: '1px solid #000', padding: '4px', textAlign: 'right', fontWeight: srv.selected ? 'bold' : 'normal' }}>
-                        {srv.selected ? `${srv.fee.toLocaleString()}` : '—'}
-                      </td>
-                      <td style={{ border: '1px solid #000', padding: '4px', fontSize: '9.5pt' }}>{srv.note}</td>
+              <div className="table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', margin: '8px 0' }}>
+                <table style={{ width: '100%', minWidth: '600px', borderCollapse: 'collapse', fontSize: '11pt' }}>
+                  <thead>
+                    <tr style={{ background: '#f1f5f9' }}>
+                      <th style={{ border: '1px solid #000', padding: '5px', width: '40px', textAlign: 'center' }}>STT</th>
+                      <th style={{ border: '1px solid #000', padding: '5px', textAlign: 'left' }}>Nội dung dịch vụ</th>
+                      <th style={{ border: '1px solid #000', padding: '5px', width: '140px', textAlign: 'right' }}>Mức phí (VNĐ)<br />đồng/người/tháng</th>
+                      <th style={{ border: '1px solid #000', padding: '5px', width: '180px', textAlign: 'left' }}>Ghi chú</th>
                     </tr>
-                  ))}
-                  <tr style={{ fontWeight: 'bold', background: '#e2e8f0' }}>
-                    <td colSpan={2} style={{ border: '1px solid #000', padding: '6px', textAlign: 'right' }}>
-                      Tổng phí chăm sóc hỗ trợ:
-                    </td>
-                    <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'right', color: '#166534' }}>
-                      {viewingContract.appendix.additionalServices.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0).toLocaleString()} VNĐ
-                    </td>
-                    <td style={{ border: '1px solid #000', padding: '6px' }}></td>
-                  </tr>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {viewingContract.appendix.additionalServices.map((srv) => (
+                      <tr key={srv.stt} style={{ background: srv.selected ? '#f0fdf4' : 'transparent' }}>
+                        <td style={{ border: '1px solid #000', padding: '4px', textAlign: 'center' }}>{srv.stt}</td>
+                        <td style={{ border: '1px solid #000', padding: '4px', fontWeight: srv.selected ? 'bold' : 'normal' }}>
+                          {srv.name} {srv.selected && '✓'}
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: '4px', textAlign: 'right', fontWeight: srv.selected ? 'bold' : 'normal' }}>
+                          {srv.selected ? `${srv.fee.toLocaleString()}` : '—'}
+                        </td>
+                        <td style={{ border: '1px solid #000', padding: '4px', fontSize: '9.5pt' }}>{srv.note}</td>
+                      </tr>
+                    ))}
+                    <tr style={{ fontWeight: 'bold', background: '#e2e8f0' }}>
+                      <td colSpan={2} style={{ border: '1px solid #000', padding: '6px', textAlign: 'right' }}>
+                        Tổng phí chăm sóc hỗ trợ:
+                      </td>
+                      <td style={{ border: '1px solid #000', padding: '6px', textAlign: 'right', color: '#166534' }}>
+                        {viewingContract.appendix.additionalServices.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0).toLocaleString()} VNĐ
+                      </td>
+                      <td style={{ border: '1px solid #000', padding: '6px' }}></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               <div style={{ marginTop: '8px' }}>
                 <b>3. Ưu đãi:</b> {viewingContract.appendix.discountReason || 'Theo chính sách ưu đãi của Trung tâm'} (Giảm {viewingContract.appendix.discount.toLocaleString()} VNĐ)

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { listResidents, ResidentContextResponse } from '../../api/residents';
+import { triggerPrint } from '../../utils/print';
 import {
   approveHealthReport,
   createHealthReport,
@@ -1500,8 +1501,9 @@ export default function HealthReportsPage() {
               <h2 className="modal-title">Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
-                  onClick={() => window.print()}
-                  className="btn btn-sm btn-primary"
+                  type="button"
+                  onClick={() => triggerPrint()}
+                  className="btn btn-sm btn-primary no-print"
                 >
                   🖨️ In / Xuất PDF
                 </button>
@@ -1511,10 +1513,10 @@ export default function HealthReportsPage() {
               </div>
             </div>
 
-            <div className="modal-body printable-a4-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
+            <div className="modal-body printable-a4-sheet health-report-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
               {/* Clinical Assessment Header */}
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <div className="health-report-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
                     <img
                       src="/branding/tam-an-logo-master.png"
@@ -1528,7 +1530,7 @@ export default function HealthReportsPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                  <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
                     <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
@@ -1543,7 +1545,7 @@ export default function HealthReportsPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 I. THÔNG TIN HÀNH CHÍNH
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
+              <div className="health-report-admin-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
                 <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem' }}>{viewingReport.data.residentName}</span></div>
                 <div><b>Mã số hồ sơ NCT:</b> {viewingReport.data.residentCode}</div>
                 <div><b>Ngày tháng năm sinh:</b> {viewingReport.data.dateOfBirth}</div>
@@ -1621,7 +1623,7 @@ export default function HealthReportsPage() {
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
                 <b>1. Tiền sử bệnh nền:</b>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
+                <div className="health-report-conditions-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
                   <div>[{viewingReport.data.conditions.hypertension ? ' x ' : '   '}] Cao huyết áp</div>
                   <div>[{viewingReport.data.conditions.diabetes ? ' x ' : '   '}] Đái tháo đường (Tuýp: {viewingReport.data.conditions.diabetesType || '2'})</div>
                   <div>[{viewingReport.data.conditions.cardiovascular ? ' x ' : '   '}] Tim mạch (Suy tim, bệnh mạch vành)</div>
@@ -1653,7 +1655,7 @@ export default function HealthReportsPage() {
                       <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Phụ thuộc hoàn toàn</th>
                     </tr>
                   </thead>
-                <tbody>
+                  <tbody>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
                     <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
@@ -1695,7 +1697,7 @@ export default function HealthReportsPage() {
               <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem', background: '#fffbeb', border: '1px solid #fef3c7', padding: '0.4rem 0.6rem', borderRadius: '0.25rem' }}>
                 {viewingReport.data.psychologicalAssessment?.isCompleted ? (
                   <div>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.3rem', marginBottom: '0.3rem' }}>
+                    <div className="health-report-psych-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.3rem', marginBottom: '0.3rem' }}>
                       <div>
                         <b>Cảm xúc & Tinh thần:</b>{' '}
                         {viewingReport.data.psychologicalAssessment.emotionalState === 'HAPPY_SOCIABLE'
@@ -1737,11 +1739,11 @@ export default function HealthReportsPage() {
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
                 VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
+              <div className="health-report-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b> &nbsp;
-                [{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ &nbsp;
-                <span style={{ background: '#fef08a' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span> &nbsp;
-                [{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện
+                <span>[{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ</span> &nbsp;
+                <span style={{ background: '#fef08a', padding: '2px 4px', borderRadius: '4px' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span> &nbsp;
+                <span>[{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện</span>
               </div>
 
               <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
@@ -1775,8 +1777,8 @@ export default function HealthReportsPage() {
               </button>
               <button
                 type="button"
-                onClick={() => window.print()}
-                className="btn btn-primary"
+                onClick={() => triggerPrint()}
+                className="btn btn-primary no-print"
               >
                 🖨️ In Phiếu Đánh Giá (A4)
               </button>

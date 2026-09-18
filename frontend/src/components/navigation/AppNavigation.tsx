@@ -24,14 +24,6 @@ export const CATEGORY_ICONS: Record<string, string> = {
 export const MODULE_NAV_ITEMS: NavItem[] = [
   // --- 1. LÂM SÀNG & CHĂM SÓC DIRECT CARE ---
   {
-    key: 'dashboard',
-    to: '/dashboard',
-    label: 'Tổng Quan',
-    icon: '📊',
-    category: 'Lâm Sàng & Chăm Sóc',
-    gradient: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-  },
-  {
     key: 'health-reports',
     to: '/health-reports',
     label: 'Báo Cáo Định Kỳ',
@@ -68,14 +60,6 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     gradient: 'linear-gradient(135deg, #10b981, #059669)',
     badge: '110 Cụ',
     badgeBg: '#059669',
-  },
-  {
-    key: 'resident-lifecycle',
-    to: '/resident-lifecycle',
-    label: 'Vòng Đời & Xuất Viện',
-    icon: '🔄',
-    category: 'Lâm Sàng & Chăm Sóc',
-    gradient: 'linear-gradient(135deg, #0d9488, #0f766e)',
   },
   {
     key: 'operations',

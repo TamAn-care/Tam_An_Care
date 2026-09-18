@@ -16,14 +16,9 @@ export const PAGE_META:
         'Quản lý toà nhà, tầng, phòng và điều phối phân bổ giường nằm.',
     },
     '/residents': {
-      title: 'Người cao tuổi',
+      title: 'Danh sách cư dân',
       description:
         'Tra cứu hồ sơ và truy cập không gian chăm sóc theo phân quyền.',
-    },
-    '/resident-lifecycle': {
-      title: 'Vòng đời & Bàn giao cư dân',
-      description:
-        'Cập nhật kế hoạch chăm sóc và kết thúc dịch vụ có kiểm soát.',
     },
     '/resident-leave': {
       title: 'Nghỉ phép & Tạm vắng',

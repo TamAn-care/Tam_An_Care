@@ -13,6 +13,8 @@ import {
   Link,
 } from 'react-router-dom';
 
+import { triggerPrint } from '../../utils/print';
+
 import {
   listResidents,
 } from '../../api/residents';
@@ -301,48 +303,131 @@ export function ResidentsPage() {
         ? query.error.message
         : 'Không thể tải danh sách người cao tuổi.';
 
-  const exportResidentsCSV = () => {
-    if (!residents) return;
-    const headers = ['STT', 'Mã Cư Dân', 'Họ Và Tên', 'Ngày Sinh', 'Giới Tính', 'Phòng & Giường', 'Cấp Độ Chăm Sóc', 'Trạng Thái'];
-    const rows = residents.map((item: any, index: number) => {
-      const res = item.resident;
-      return [
-        index + 1,
-        res.residentCode,
-        `"${res.displayName}"`,
-        res.dateOfBirth ? formatVietnameseDate(res.dateOfBirth) : '',
-        GENDER_LABEL[res.gender as keyof typeof GENDER_LABEL] || res.gender,
-        `"${res.room ? `Phòng ${res.room}` : ''} ${res.bed ? `Giường ${res.bed}` : ''}"`.trim(),
-        CARE_LEVEL_LABEL[res.careLevel as keyof typeof CARE_LEVEL_LABEL] || res.careLevel,
-        res.activeStatus ? 'Đang ở viện' : 'Đã ra viện',
-      ];
-    });
+  const exportResidentsExcel = () => {
+    if (!residents || residents.length === 0) {
+      alert('Không có dữ liệu cư dân để xuất báo cáo.');
+      return;
+    }
 
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((e: any) => e.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Bao_Cao_Danh_Sach_Cu_Dan_TamAnCare_${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
+    try {
+      const currentDateStr = new Date().toISOString().slice(0, 10);
+      const formattedDate = formatVietnameseDate(currentDateStr);
+
+      const tableRowsHtml = residents
+        .map((item: any, index: number) => {
+          const res = item?.resident ?? item ?? {};
+          const stt = index + 1;
+          const code = res.residentCode || '—';
+          const name = formatResidentNameWithSalutation(res.displayName || 'Chưa đặt tên', res.gender);
+          const dob = res.dateOfBirth ? formatVietnameseDate(res.dateOfBirth) : '—';
+          const gender = GENDER_LABEL[res.gender as keyof typeof GENDER_LABEL] || res.gender || '—';
+          const roomBed = res.room ? `Phòng ${res.room}${res.bed ? ` - Giường ${res.bed}` : ''}` : 'Chưa xếp';
+          const careLevel = CARE_LEVEL_LABEL[res.careLevel as keyof typeof CARE_LEVEL_LABEL] || res.careLevel || 'Tiêu chuẩn';
+          const status = res.activeStatus ? 'Đang lưu trú' : 'Đã ra viện';
+          const statusBg = res.activeStatus ? '#dcfce7' : '#f1f5f9';
+          const statusColor = res.activeStatus ? '#15803d' : '#475569';
+
+          return `
+            <tr>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px;">${stt}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">${code}</td>
+              <td style="border: 1px solid #cbd5e1; padding: 8px; font-weight: bold;">${name}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px;">${dob}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px;">${gender}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px;">${roomBed}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px; color: #0369a1; font-weight: bold;">${careLevel}</td>
+              <td style="text-align: center; border: 1px solid #cbd5e1; padding: 8px; background-color: ${statusBg}; color: ${statusColor}; font-weight: bold;">${status}</td>
+            </tr>
+          `;
+        })
+        .join('');
+
+      const excelTemplate = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="utf-8" />
+          <!--[if gte mso 9]>
+          <xml>
+            <x:ExcelWorkbook>
+              <x:ExcelWorksheets>
+                <x:ExcelWorksheet>
+                  <x:Name>Danh Sách Cư Dân</x:Name>
+                  <x:WorksheetOptions>
+                    <x:DisplayGridlines/>
+                  </x:WorksheetOptions>
+                </x:ExcelWorksheet>
+              </x:ExcelWorksheets>
+            </x:ExcelWorkbook>
+          </xml>
+          <![endif]-->
+          <style>
+            body { font-family: Arial, sans-serif; }
+            table { border-collapse: collapse; width: 100%; }
+            th { background-color: #166534; color: #ffffff; font-weight: bold; border: 1px solid #14532d; padding: 10px; text-align: center; }
+            td { vertical-align: middle; }
+            .header-title { font-size: 18px; font-weight: bold; color: #166534; text-align: center; margin-bottom: 5px; }
+            .header-sub { font-size: 12px; color: #475569; text-align: center; margin-bottom: 15px; }
+          </style>
+        </head>
+        <body>
+          <div class="header-title">VIỆN DƯỠNG LÃO TÂM AN CARE — BÁO CÁO DANH SÁCH CƯ DÂN</div>
+          <div class="header-sub">Ngày xuất báo cáo: ${formattedDate} | Tổng số hồ sơ xuất: ${residents.length} cư dân</div>
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 50px;">STT</th>
+                <th style="width: 110px;">Mã Cư Dân</th>
+                <th style="width: 200px;">Họ Và Tên Cụ</th>
+                <th style="width: 120px;">Ngày Sinh</th>
+                <th style="width: 90px;">Giới Tính</th>
+                <th style="width: 160px;">Vị Trí (Phòng / Giường)</th>
+                <th style="width: 160px;">Cấp Độ Chăm Sóc</th>
+                <th style="width: 130px;">Trạng Thái Lưu Trú</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tableRowsHtml}
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const blob = new Blob(['\uFEFF' + excelTemplate], {
+        type: 'application/vnd.ms-excel;charset=utf-8;',
+      });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `Bao_Cao_Danh_Sach_Cu_Dan_TamAnCare_${currentDateStr}.xls`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error('Lỗi khi xuất báo cáo cư dân Excel:', err);
+      alert(`❌ Không thể xuất báo cáo Excel: ${err.message || 'Lỗi không xác định'}`);
+    }
   };
 
   return (
     <div className="printable-a4-sheet">
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
+      <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', marginBottom: '1.25rem' }}>
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={() => triggerPrint()}
           className="btn btn-secondary no-print"
           style={{ background: '#f8fafc', color: '#0f172a', borderColor: '#cbd5e1', fontWeight: 700 }}
         >
           🖨️ In Danh Sách Cư Dân (A4)
         </button>
         <button
-          onClick={exportResidentsCSV}
-          className="btn btn-secondary"
+          type="button"
+          onClick={exportResidentsExcel}
+          className="btn btn-secondary no-print"
           style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
         >
-          📥 Xuất Báo Cáo Cư Dân Excel/CSV
+          📥 Xuất Báo Cáo Cư Dân Excel
         </button>
       </div>
 

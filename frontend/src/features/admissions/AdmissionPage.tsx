@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import {
   approveClassification,
   completeAssessment,
@@ -662,9 +663,7 @@ export function AdmissionPage() {
 
   const handleTriggerPrint = useCallback((target: 'ALL' | 'ASSESSMENT' | 'HANDOVER') => {
     setPrintTarget(target);
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    triggerPrint();
   }, []);
 
   // Handover History Modals
@@ -1057,19 +1056,104 @@ export function AdmissionPage() {
   return (
     <div className="page-content">
       {!isPsychologyOrSocialWorker && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '1rem',
+            width: '100%',
+            marginBottom: '1.25rem',
+            alignItems: 'stretch'
+          }}
+        >
+          {/* Tab Block 1: Lịch sử Phiếu tiếp nhận thuốc & Đồ dùng */}
           <button
+            type="button"
             onClick={() => setShowHandoverHistoryModal(true)}
-            className="btn btn-secondary"
-            style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
+            style={{
+              background: '#f0fdf4',
+              border: '1.5px solid #86efac',
+              borderRadius: '0.75rem',
+              padding: '1rem 1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease-in-out',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.03)',
+              width: '100%',
+              textAlign: 'left',
+              color: '#166534'
+            }}
           >
-            📜 Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '0.5rem',
+                background: '#dcfce7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.35rem',
+                flexShrink: 0
+              }}
+            >
+              📜
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: '0.98rem', color: '#166534', marginBottom: '0.15rem' }}>
+                Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng
+              </div>
+              <div style={{ fontSize: '0.82rem', color: '#15803d', fontWeight: 400 }}>
+                Tra cứu nhật ký bàn giao thuốc & vật phẩm cá nhân
+              </div>
+            </div>
           </button>
+
+          {/* Tab Block 2: Tiếp nhận người cao tuổi mới */}
           <button
+            type="button"
             onClick={handleOpenCreate}
-            className="btn btn-primary"
+            style={{
+              background: '#15803d',
+              border: '1.5px solid #166534',
+              borderRadius: '0.75rem',
+              padding: '1rem 1.25rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease-in-out',
+              boxShadow: '0 2px 6px rgba(21, 128, 61, 0.2)',
+              width: '100%',
+              textAlign: 'left',
+              color: '#ffffff'
+            }}
           >
-            + Tiếp nhận người cao tuổi mới
+            <div
+              style={{
+                width: '42px',
+                height: '42px',
+                borderRadius: '0.5rem',
+                background: 'rgba(255, 255, 255, 0.2)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.35rem',
+                flexShrink: 0
+              }}
+            >
+              ➕
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontWeight: 700, fontSize: '0.98rem', color: '#ffffff', marginBottom: '0.15rem' }}>
+                Tiếp Nhận Người Cao Tuổi Mới
+              </div>
+              <div style={{ fontSize: '0.82rem', color: '#dcfce7', fontWeight: 400 }}>
+                Lập hồ sơ tiếp nhận & phiếu đánh giá sức khỏe đầu vào
+              </div>
+            </div>
           </button>
         </div>
       )}
@@ -3067,9 +3151,9 @@ export function AdmissionPage() {
               </div>
             </div>
 
-            <div className="modal-footer" style={{ marginTop: '1rem' }}>
+            <div className="modal-footer no-print" style={{ marginTop: '1rem' }}>
               <button type="button" onClick={() => setSelectedHandoverPrint(null)} className="btn btn-secondary">Đóng</button>
-              <button type="button" onClick={() => window.print()} className="btn btn-primary">🖨️ In Phiếu (A4)</button>
+              <button type="button" onClick={() => triggerPrint()} className="btn btn-primary no-print">🖨️ In Phiếu (A4)</button>
             </div>
           </div>
         </div>

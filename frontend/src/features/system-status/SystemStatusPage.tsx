@@ -21,11 +21,11 @@ const SYSTEM_MODULES: ModuleStatus[] = [
   },
   {
     series: 'Series Y',
-    name: 'Tiếp nhận & Vòng đời Cư dân',
-    route: '/admissions & /resident-lifecycle',
+    name: 'Tiếp Nhận & Đánh Giá Cư Dân',
+    route: '/admissions',
     status: 'ACCEPTED',
     rbacRoles: 'SUPERVISOR, CARE_MANAGER, NURSE, SOCIAL_WORKER',
-    description: 'Đánh giá tiếp nhận 2 trang, báo cáo sức khỏe 3 trang PDF, phân cấp Cấp 1-3, xuất viện có kiểm soát.',
+    description: 'Đánh giá tiếp nhận 2 trang, báo cáo sức khỏe 3 trang PDF, phân cấp Cấp 1-3.',
   },
   {
     series: 'Series RLA',

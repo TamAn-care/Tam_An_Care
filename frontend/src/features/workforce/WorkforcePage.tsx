@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
 import { NotificationBell } from '../notifications/NotificationBell';
 import {
   acknowledgeHandover,
@@ -582,7 +583,7 @@ export default function WorkforcePage() {
 
             <button
               type="button"
-              onClick={() => window.print()}
+              onClick={() => triggerPrint()}
               className="btn btn-secondary no-print"
               style={{ background: '#f8fafc', color: '#0f172a', borderColor: '#cbd5e1', fontWeight: 700 }}
             >
@@ -590,8 +591,9 @@ export default function WorkforcePage() {
             </button>
 
             <button
+              type="button"
               onClick={exportWorkforceShiftsCSV}
-              className="btn btn-secondary"
+              className="btn btn-secondary no-print"
               style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
             >
               📥 Xuất Báo Cáo Lịch Trực Excel/CSV
