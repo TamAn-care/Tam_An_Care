@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { listResidents, ResidentContextResponse } from '../../api/residents';
 import { triggerPrint } from '../../utils/print';
+import { calculateMonthlyVitalMinMax, getResidentADL } from '../../utils/vitals-calculator';
 import {
   approveHealthReport,
   createHealthReport,
@@ -125,13 +126,13 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
   gender: 'Nữ',
   room: '',
 
-  pulse: '82',
+  pulse: '70 – 85',
   pulseEvaluation: 'NORMAL',
-  bloodPressure: '134/92',
+  bloodPressure: '118/75 – 134/88',
   bpEvaluation: 'HIGH',
-  temperature: '36.3',
+  temperature: '36.2 – 36.8',
   tempEvaluation: 'NORMAL',
-  spo2: '97',
+  spo2: '95 – 99',
   spo2Evaluation: 'NORMAL',
   weightRecords: [
     { id: '1', date: '07/07/2026', value: '47 kg' },
@@ -207,7 +208,7 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
 
   careLevelProposal: 'LEVEL_2',
   specificEvaluation:
-    'Huyết áp: Chỉ số huyết áp hàng ngày trong khoảng từ 118/70 mmHg đến 146/94 mmHg (nhiều lần > 120/80 mmHg) => Cần đi khám chuyên sâu về huyết áp.\nNhịp tim: Ổn định trong khoảng 74 đến 94 lần/phút.\nSPO2: Ổn định trong khoảng 95% đến 98% => Tình trạng hô hấp bình thường.\nĐường huyết: Đã ổn định ~7.0 mmol/L => Tiếp tục duy trì thuốc theo đơn.\nSa sút trí tuệ: Bà nhận diện được người thân, nhưng hay nhầm lẫn đồ đạc của cụ cùng phòng. Cần nhân viên bao quát khi tập thể dục ngoài trời.',
+    'Huyết áp (Khoảng Min - Max): 118/75 – 134/88 mmHg (Cao - cần theo dõi & duy trì kiểm soát).\nNhịp tim/Mạch (Khoảng Min - Max): 70 – 85 lần/phút (Ổn định bình thường).\nThân nhiệt (Khoảng Min - Max): 36.2 – 36.8°C | SpO2 (Khoảng Min - Max): 95 – 99%.\nĐường huyết mao mạch (Khoảng Min - Max): 7.0 – 12.49 mmol/L.\nSa sút trí tuệ: Bà nhận diện được người thân, nhưng hay nhầm lẫn đồ đạc của cụ cùng phòng. Cần nhân viên bao quát khi tập thể dục ngoài trời.',
   additionalNotesAndCareInstructions:
     '- Duy trì chế độ chăm sóc, dinh dưỡng giảm tinh bột tăng đạm và cấp phát thuốc hàng ngày theo đơn.\n- Nhân viên chăm sóc thay quần áo hàng ngày và hỗ trợ tắm rửa theo lịch.\n- Đại tiện cần nhân viên hỗ trợ lau rửa để đảm bảo vệ sinh do bà hay quên cách làm sạch.\n- Đề xuất: Tháng 8 trung tâm hỗ trợ miễn phí công tác vệ sinh cho bà. Từ tháng 9 tùy mức độ hỗ trợ sẽ đề xuất chi phí phù hợp chi trả cho nhân viên chăm sóc.',
 };
@@ -268,24 +269,13 @@ export default function HealthReportsPage() {
     void refreshReports();
   }, [refreshReports]);
 
-  // Handle Resident Selection in Form with automatic activity aggregation
+  // Handle Resident Selection in Form with automatic activity & vitals min-max aggregation
   const handleResidentSelect = (resId: string) => {
     setSelectedResidentId(resId);
     const item = residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === resId)?.resident;
     if (item) {
-      // 1. Retrieve recorded vitals for this resident from localStorage
-      let storedVitals: any = null;
-      try {
-        const raw = localStorage.getItem(`taman_care_mock_vitals_${resId}`);
-        if (raw) storedVitals = JSON.parse(raw);
-      } catch {}
-
-      const sysBP = storedVitals?.sysBP ?? 126;
-      const diaBP = storedVitals?.diaBP ?? 82;
-      const pulse = storedVitals?.heartRate ? String(storedVitals.heartRate) : '78';
-      const temp = storedVitals?.temp ? String(storedVitals.temp) : '36.5';
-      const spo2 = storedVitals?.spo2 ? String(storedVitals.spo2) : '98';
-      const bpStr = `${sysBP}/${diaBP}`;
+      // 1. Retrieve recorded vitals & compute Min-Max summary for this resident across the month
+      const vitalsSummary = calculateMonthlyVitalMinMax(resId);
 
       // 2. Retrieve recorded work events for this resident
       const activitySummaries: string[] = [];
@@ -306,15 +296,10 @@ export default function HealthReportsPage() {
         }
       } catch {}
 
-      // Calculate evaluations
-      const bpEval = sysBP > 120 || diaBP > 80 ? 'HIGH' : sysBP < 90 || diaBP < 60 ? 'LOW' : 'NORMAL';
-      const pulseEval = Number(pulse) < 60 ? 'SLOW' : Number(pulse) > 90 ? 'FAST' : 'NORMAL';
-      const tempEval = Number(temp) > 37.5 ? 'FEVER' : Number(temp) < 36.0 ? 'HYPOTHERMIA' : 'NORMAL';
-      const spo2Eval = Number(spo2) < 95 ? 'DYSPNEA' : 'NORMAL';
-
       const generatedEvalText = [
-        `Huyết áp đo gần nhất: ${bpStr} mmHg (${bpEval === 'HIGH' ? 'Cao - cần theo dõi & duy trì kiểm soát' : 'Bình thường'}).`,
-        `Nhịp tim/Mạch: ${pulse} lần/phút (${pulseEval === 'NORMAL' ? 'Ổn định bình thường' : pulseEval === 'FAST' ? 'Nhanh' : 'Chậm'}). Thân nhiệt: ${temp}°C, SpO2: ${spo2}%.`,
+        `Huyết áp (Khoảng Min - Max trong kỳ): ${vitalsSummary.bpMinMax} mmHg (${vitalsSummary.bpEval === 'HIGH' ? 'Cao - cần theo dõi & duy trì kiểm soát' : 'Bình thường'}).`,
+        `Nhịp tim/Mạch (Khoảng Min - Max): ${vitalsSummary.pulseMinMax} lần/phút (${vitalsSummary.pulseEval === 'NORMAL' ? 'Ổn định bình thường' : vitalsSummary.pulseEval === 'FAST' ? 'Nhanh' : 'Chậm'}). Thân nhiệt (Min - Max): ${vitalsSummary.tempMinMax}°C, SpO2 (Min - Max): ${vitalsSummary.spo2MinMax}%.`,
+        `Cân nặng theo dõi (Min - Max): ${vitalsSummary.weightMinMax} kg | Glucose máu (Min - Max): ${vitalsSummary.glucoseMinMax} mmol/L.`,
         activitySummaries.length > 0
           ? `Tổng hợp các hoạt động chăm sóc & sinh hoạt đã ghi nhận cho cụ:\n${activitySummaries.slice(0, 6).join('\n')}`
           : `Đã ghi nhận các hoạt động đo sinh hiệu, cấp phát thuốc & chăm sóc sinh hoạt hàng ngày tuân thủ phác đồ y khoa Tâm An Care.`
@@ -328,18 +313,42 @@ export default function HealthReportsPage() {
         gender: item.gender === 'FEMALE' ? 'Nữ' : 'Nam',
         room: item.room || '',
         assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
-        pulse,
-        pulseEvaluation: pulseEval,
-        bloodPressure: bpStr,
-        bpEvaluation: bpEval,
-        temperature: temp,
-        tempEvaluation: tempEval,
-        spo2,
-        spo2Evaluation: spo2Eval,
+        pulse: vitalsSummary.pulseMinMax,
+        pulseEvaluation: vitalsSummary.pulseEval,
+        bloodPressure: vitalsSummary.bpMinMax,
+        bpEvaluation: vitalsSummary.bpEval,
+        temperature: vitalsSummary.tempMinMax,
+        tempEvaluation: vitalsSummary.tempEval,
+        spo2: vitalsSummary.spo2MinMax,
+        spo2Evaluation: vitalsSummary.spo2Eval,
+        weightRecords: vitalsSummary.weightRecords,
+        glucoseRecords: vitalsSummary.glucoseRecords,
+        adl: {
+          ...prev.adl,
+          ...getResidentADL(resId),
+        },
         specificEvaluation: generatedEvalText,
         additionalNotesAndCareInstructions: `- Duy trì phác đồ theo dõi sức khỏe và nhật ký chăm sóc hàng ngày cho cụ ${item.displayName}.\n- Đánh giá chung: Tình trạng thể trạng và tâm lý tinh thần ổn định. Nhân viên y tế tiếp tục bao quát các cữ sinh hoạt, đo sinh hiệu & cấp phát thuốc theo y lệnh.`,
       }));
     }
+  };
+
+  const syncMonthlyVitals = () => {
+    if (!selectedResidentId) return;
+    const vitalsSummary = calculateMonthlyVitalMinMax(selectedResidentId);
+    setAssessment(prev => ({
+      ...prev,
+      pulse: vitalsSummary.pulseMinMax,
+      pulseEvaluation: vitalsSummary.pulseEval,
+      bloodPressure: vitalsSummary.bpMinMax,
+      bpEvaluation: vitalsSummary.bpEval,
+      temperature: vitalsSummary.tempMinMax,
+      tempEvaluation: vitalsSummary.tempEval,
+      spo2: vitalsSummary.spo2MinMax,
+      spo2Evaluation: vitalsSummary.spo2Eval,
+      weightRecords: vitalsSummary.weightRecords,
+      glucoseRecords: vitalsSummary.glucoseRecords,
+    }));
   };
 
   // Helper to auto-evaluate vitals on number input
@@ -385,12 +394,13 @@ export default function HealthReportsPage() {
   // Auto generate evaluation summary text
   const generateEvaluationText = () => {
     const lines: string[] = [];
-    lines.push(`Huyết áp: Chỉ số đo gần nhất ${assessment.bloodPressure} mmHg (${assessment.bpEvaluation === 'HIGH' ? 'Cao - cần theo dõi & khám chuyên sâu' : 'Bình thường'}).`);
-    lines.push(`Nhịp tim: ${assessment.pulse} lần/phút (${assessment.pulseEvaluation === 'NORMAL' ? 'Ổn định bình thường' : assessment.pulseEvaluation === 'FAST' ? 'Nhanh' : 'Chậm'}).`);
-    lines.push(`SPO2: ${assessment.spo2}% (${assessment.spo2Evaluation === 'NORMAL' ? 'Tình trạng hô hấp ổn định' : 'Cần chú ý khó thở'}).`);
+    lines.push(`Huyết áp (Khoảng Min - Max): ${assessment.bloodPressure} mmHg (${assessment.bpEvaluation === 'HIGH' ? 'Cao - cần theo dõi & khám chuyên sâu' : 'Bình thường'}).`);
+    lines.push(`Nhịp tim/Mạch (Khoảng Min - Max): ${assessment.pulse} lần/phút (${assessment.pulseEvaluation === 'NORMAL' ? 'Ổn định bình thường' : assessment.pulseEvaluation === 'FAST' ? 'Nhanh' : 'Chậm'}).`);
+    lines.push(`Thân nhiệt (Khoảng Min - Max): ${assessment.temperature}°C, SpO2 (Khoảng Min - Max): ${assessment.spo2}%.`);
     if (assessment.glucoseRecords.length > 0) {
-      const latestGluc = assessment.glucoseRecords[assessment.glucoseRecords.length - 1];
-      lines.push(`Đường huyết mao mạch lúc đói: ${latestGluc.value} (${latestGluc.date}) => Tiếp tục kiểm soát chế độ ăn & thuốc theo đơn.`);
+      const glucVals = assessment.glucoseRecords.map(r => parseFloat(r.value)).filter(n => !isNaN(n));
+      const glucRange = glucVals.length > 0 ? (Math.min(...glucVals) === Math.max(...glucVals) ? `${Math.min(...glucVals)}` : `${Math.min(...glucVals)} – ${Math.max(...glucVals)}`) : assessment.glucoseRecords[assessment.glucoseRecords.length - 1].value;
+      lines.push(`Đường huyết mao mạch (Khoảng Min - Max): ${glucRange} mmol/L => Tiếp tục kiểm soát chế độ ăn & thuốc theo đơn.`);
     }
     if (assessment.conditions.dementiaAlzheimer) {
       lines.push('Sa sút trí tuệ: Có dấu hiệu suy giảm trí nhớ, cần nhân viên chăm sóc bao quát an toàn.');
@@ -753,18 +763,28 @@ export default function HealthReportsPage() {
 
                 {/* II. DẤU HIỆU SINH TỒN & THỂ TRẠNG */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
-                  <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                    II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (NHẬP SỐ LIỆU)
-                  </h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
+                      II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (HIỂN THỊ DẠNG MIN-MAX THÁNG)
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={syncMonthlyVitals}
+                      className="btn btn-sm btn-success"
+                      style={{ background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+                    >
+                      🔄 Đồng bộ Min-Max từ Nhật ký đo hàng ngày
+                    </button>
+                  </div>
 
-                  <div className="health-report-vitals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+                  <div className="health-report-vitals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem' }}>
                     <div>
-                      <label className="form-label">Mạch (lần/phút)</label>
+                      <label className="form-label">Mạch (Min – Max bpm)</label>
                       <input
-                        type="number"
+                        type="text"
                         value={assessment.pulse}
                         onChange={e => handlePulseChange(e.target.value)}
-                        placeholder="82"
+                        placeholder="70 – 85"
                         className="form-input"
                       />
                       <div style={{ marginTop: '0.35rem', fontSize: '0.78rem' }}>
@@ -775,12 +795,12 @@ export default function HealthReportsPage() {
                     </div>
 
                     <div>
-                      <label className="form-label">Huyết áp (mmHg)</label>
+                      <label className="form-label">Huyết áp (Min – Max mmHg)</label>
                       <input
                         type="text"
                         value={assessment.bloodPressure}
                         onChange={e => handleBpChange(e.target.value)}
-                        placeholder="134/92"
+                        placeholder="118/75 – 134/88"
                         className="form-input"
                       />
                       <div style={{ marginTop: '0.35rem', fontSize: '0.78rem' }}>
@@ -791,13 +811,12 @@ export default function HealthReportsPage() {
                     </div>
 
                     <div>
-                      <label className="form-label">Nhiệt độ (°C)</label>
+                      <label className="form-label">Nhiệt độ (Min – Max °C)</label>
                       <input
-                        type="number"
-                        step="0.1"
+                        type="text"
                         value={assessment.temperature}
                         onChange={e => handleTempChange(e.target.value)}
-                        placeholder="36.3"
+                        placeholder="36.2 – 36.8"
                         className="form-input"
                       />
                       <div style={{ marginTop: '0.35rem', fontSize: '0.78rem' }}>
@@ -808,12 +827,12 @@ export default function HealthReportsPage() {
                     </div>
 
                     <div>
-                      <label className="form-label">SPO2 (%)</label>
+                      <label className="form-label">SPO2 (Min – Max %)</label>
                       <input
-                        type="number"
+                        type="text"
                         value={assessment.spo2}
                         onChange={e => handleSpo2Change(e.target.value)}
-                        placeholder="97"
+                        placeholder="95 – 99"
                         className="form-input"
                       />
                       <div style={{ marginTop: '0.35rem', fontSize: '0.78rem' }}>
@@ -1035,9 +1054,14 @@ export default function HealthReportsPage() {
 
                 {/* IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL) */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
-                  <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                    IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
-                  </h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
+                      IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
+                    </h3>
+                    <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700, background: '#dcfce7', padding: '0.2rem 0.65rem', borderRadius: '9999px', border: '1px solid #bbf7d0' }}>
+                      👩‍⚕️ Phân quyền đánh giá: Nhân viên chăm sóc / Điều dưỡng
+                    </span>
+                  </div>
                   <div className="table-responsive" style={{ marginBottom: '1rem' }}>
                     <table className="ui-table health-report-editor-adl-table" style={{ fontSize: '0.85rem', marginBottom: 0 }}>
                     <thead>
@@ -1401,10 +1425,10 @@ export default function HealthReportsPage() {
                   </div>
                 </div>
 
-                {/* VIII. KẾT LUẬN & DẶN DÒ ĐỀ XUẤT */}
+                {/* VI. KẾT LUẬN & DẶN DÒ ĐỀ XUẤT */}
                 <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem' }}>
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#0f172a', fontWeight: 700 }}>
-                    VIII. KẾT LUẬN, HƯỚNG CHĂM SÓC, GHI CHÚ THÊM & DẶN DÒ ĐỀ XUẤT
+                    VI. KẾT LUẬN, HƯỚNG CHĂM SÓC, GHI CHÚ THÊM & DẶN DÒ ĐỀ XUẤT
                   </h3>
 
                   <div style={{ marginBottom: '1rem' }}>
@@ -1757,7 +1781,7 @@ export default function HealthReportsPage() {
                 )}
               </div>
               <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
-                VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
+                VI. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>
               <div className="health-report-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b>

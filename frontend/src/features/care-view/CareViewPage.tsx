@@ -16,6 +16,14 @@ import {
   textFromRecord,
   formatResidentNameWithSalutation,
 } from '../residents/resident-ui';
+import {
+  calculateMonthlyVitalMinMax,
+  getResidentVitalHistory,
+  saveVitalRecord,
+  getResidentADL,
+  saveResidentADL,
+  type ADLEvaluation,
+} from '../../utils/vitals-calculator';
 
 function availabilityClass(value: 'AVAILABLE' | 'EMPTY' | 'UNAVAILABLE'): string {
   if (value === 'AVAILABLE') return 'availability availability-available';
@@ -30,6 +38,24 @@ export function CareViewPage() {
   const [activeTab, setActiveTab] = useState<
     'profile' | 'carePlan' | 'clinical' | 'medication' | 'workQueue' | 'incidents'
   >('profile');
+
+  // Daily vitals modal state for Caregiver/Nurse
+  const [showVitalsModal, setShowVitalsModal] = useState(false);
+  const [vitalsSysBP, setVitalsSysBP] = useState('120');
+  const [vitalsDiaBP, setVitalsDiaBP] = useState('80');
+  const [vitalsHeartRate, setVitalsHeartRate] = useState('75');
+  const [vitalsTemp, setVitalsTemp] = useState('36.5');
+  const [vitalsSpo2, setVitalsSpo2] = useState('98');
+  const [vitalsRespRate, setVitalsRespRate] = useState('18');
+  const [vitalsWeight, setVitalsWeight] = useState('');
+  const [vitalsGlucose, setVitalsGlucose] = useState('');
+  const [vitalsNote, setVitalsNote] = useState('');
+  const [vitalsSaveSuccess, setVitalsSaveSuccess] = useState(false);
+
+  // ADL evaluation state for Caregiver
+  const [showAdlModal, setShowAdlModal] = useState(false);
+  const [adlData, setAdlData] = useState<ADLEvaluation>(() => getResidentADL(normalizedResidentId));
+  const [adlSaveSuccess, setAdlSaveSuccess] = useState(false);
 
   const query = useQuery({
     queryKey: [
@@ -243,6 +269,49 @@ export function CareViewPage() {
   const displayTemp: string | number = typeof tempObs?.numericValue === 'number' || typeof tempObs?.numericValue === 'string' ? tempObs.numericValue : 36.6;
   const displaySpo2: string | number = typeof spo2Obs?.numericValue === 'number' || typeof spo2Obs?.numericValue === 'string' ? spo2Obs.numericValue : 98;
 
+  const monthlyVitalsSummary = useMemo(() => {
+    return calculateMonthlyVitalMinMax(normalizedResidentId);
+  }, [normalizedResidentId, vitalsSaveSuccess]);
+
+  const vitalHistory = useMemo(() => {
+    return getResidentVitalHistory(normalizedResidentId);
+  }, [normalizedResidentId, vitalsSaveSuccess]);
+
+  const handleSaveVitals = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!normalizedResidentId) return;
+
+    saveVitalRecord(normalizedResidentId, {
+      sysBP: Number(vitalsSysBP) || 120,
+      diaBP: Number(vitalsDiaBP) || 80,
+      heartRate: Number(vitalsHeartRate) || 75,
+      temp: Number(vitalsTemp) || 36.5,
+      spo2: Number(vitalsSpo2) || 98,
+      respRate: Number(vitalsRespRate) || 18,
+      weight: vitalsWeight ? Number(vitalsWeight) : undefined,
+      bloodGlucose: vitalsGlucose ? Number(vitalsGlucose) : undefined,
+      recordedBy: actor?.displayName || 'Nhân viên chăm sóc',
+      recordedByRole: (actor?.actorRole as string) || 'CAREGIVER',
+      note: vitalsNote.trim(),
+    });
+
+    setVitalsSaveSuccess((prev) => !prev);
+    setShowVitalsModal(false);
+    setVitalsNote('');
+  };
+
+  const currentAdl = useMemo(() => {
+    return getResidentADL(normalizedResidentId);
+  }, [normalizedResidentId, adlSaveSuccess]);
+
+  const handleSaveAdl = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!normalizedResidentId) return;
+    saveResidentADL(normalizedResidentId, adlData, actor?.displayName, (actor?.actorRole as string));
+    setAdlSaveSuccess((prev) => !prev);
+    setShowAdlModal(false);
+  };
+
   return (
     <div className="printable-a4-sheet" style={{ paddingBottom: '3rem' }}>
       {/* NAVIGATION TOP BAR */}
@@ -251,32 +320,55 @@ export function CareViewPage() {
           &larr; Danh sách người cao tuổi
         </Link>
 
-        <button
-          type="button"
-          onClick={() => triggerPrint()}
-          className="btn btn-primary no-print"
-          style={{ fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-        >
-          🖨️ In Hồ Sơ Chăm Sóc (A4)
-        </button>
-        <button
-          type="button"
-          className="btn btn-secondary no-print"
-          disabled={query.isFetching}
-          onClick={() => void query.refetch()}
-          style={{ fontSize: '0.85rem' }}
-        >
-          {query.isFetching ? '⏳ Đang làm mới…' : '🔄 Làm mới dữ liệu'}
-        </button>
+        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <button
+            type="button"
+            onClick={() => setShowVitalsModal(true)}
+            className="btn btn-success no-print"
+            style={{
+              fontSize: '0.88rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              background: '#166534',
+              color: '#ffffff',
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.375rem',
+              cursor: 'pointer',
+              boxShadow: '0 2px 4px rgba(22, 101, 52, 0.2)',
+            }}
+          >
+            🩺 Ghi Nhận Sinh Hiệu Hàng Ngày
+          </button>
+          <button
+            type="button"
+            onClick={() => triggerPrint()}
+            className="btn btn-primary no-print"
+            style={{ fontSize: '0.88rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            🖨️ In Hồ Sơ Chăm Sóc (A4)
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary no-print"
+            disabled={query.isFetching}
+            onClick={() => void query.refetch()}
+            style={{ fontSize: '0.85rem' }}
+          >
+            {query.isFetching ? '⏳ Đang làm mới…' : '🔄 Làm mới dữ liệu'}
+          </button>
+        </div>
       </div>
 
       {/* ELDERLY PROFILE HERO CARD */}
       <section
         style={{
-          background: 'linear-gradient(135deg, #166534 0%, #14532d 100%)',
-          color: '#ffffff',
+          background: 'linear-gradient(135deg, #15803d 0%, #166534 100%)',
           borderRadius: '0.85rem',
-          padding: '1.75rem',
+          padding: '1.35rem 1.6rem',
+          color: '#ffffff',
           boxShadow: '0 10px 25px -5px rgba(22, 101, 52, 0.25)',
           marginBottom: '1.5rem',
         }}
@@ -322,38 +414,56 @@ export function CareViewPage() {
         </div>
       </section>
 
-      {/* QUICK VITALS SUMMARY BAR */}
-      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.5rem' }}>
+      {/* QUICK VITALS SUMMARY BAR WITH MONTHLY MIN-MAX */}
+      <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '0.85rem', marginBottom: '1.5rem' }}>
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.65rem', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>❤️ Huyết Áp</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
-            {displayBp} <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>mmHg</span>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>❤️ Huyết Áp (mmHg)</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+            {displayBp}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600, marginTop: '0.25rem' }}>● Chỉ số ổn định</div>
+          <div style={{ fontSize: '0.75rem', color: '#0369a1', fontWeight: 700, marginTop: '0.35rem', background: '#e0f2fe', padding: '0.2rem 0.45rem', borderRadius: '0.25rem', display: 'inline-block' }}>
+            Min-Max tháng: <b>{monthlyVitalsSummary.bpMinMax}</b>
+          </div>
         </div>
 
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.65rem', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>💓 Nhịp Tim (Mạch)</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
-            {displayHeart} <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>lần/phút</span>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>💓 Mạch (lần/phút)</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+            {displayHeart}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600, marginTop: '0.25rem' }}>● Nhịp đều bình thường</div>
+          <div style={{ fontSize: '0.75rem', color: '#0369a1', fontWeight: 700, marginTop: '0.35rem', background: '#e0f2fe', padding: '0.2rem 0.45rem', borderRadius: '0.25rem', display: 'inline-block' }}>
+            Min-Max tháng: <b>{monthlyVitalsSummary.pulseMinMax}</b>
+          </div>
         </div>
 
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.65rem', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>🌡️ Thân Nhiệt</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
-            {displayTemp} <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>°C</span>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>🌡️ Thân Nhiệt (°C)</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+            {displayTemp}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600, marginTop: '0.25rem' }}>● Nhiệt độ bình thường</div>
+          <div style={{ fontSize: '0.75rem', color: '#0369a1', fontWeight: 700, marginTop: '0.35rem', background: '#e0f2fe', padding: '0.2rem 0.45rem', borderRadius: '0.25rem', display: 'inline-block' }}>
+            Min-Max tháng: <b>{monthlyVitalsSummary.tempMinMax}</b>
+          </div>
         </div>
 
         <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.65rem', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>🫁 SpO2 (Nồng độ Oxy)</div>
-          <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
-            {displaySpo2} <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 500 }}>%</span>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>🫁 SpO2 (%)</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+            {displaySpo2}
           </div>
-          <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600, marginTop: '0.25rem' }}>● Đạt chuẩn an toàn</div>
+          <div style={{ fontSize: '0.75rem', color: '#0369a1', fontWeight: 700, marginTop: '0.35rem', background: '#e0f2fe', padding: '0.2rem 0.45rem', borderRadius: '0.25rem', display: 'inline-block' }}>
+            Min-Max tháng: <b>{monthlyVitalsSummary.spo2MinMax}</b>
+          </div>
+        </div>
+
+        <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.65rem', padding: '1rem', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase' }}>⚖️ Cân Nặng (kg)</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', marginTop: '0.2rem' }}>
+            {monthlyVitalsSummary.weightMinMax}
+          </div>
+          <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700, marginTop: '0.35rem', background: '#dcfce7', padding: '0.2rem 0.45rem', borderRadius: '0.25rem', display: 'inline-block' }}>
+            Theo dõi tháng ({monthlyVitalsSummary.weightRecords.length} lần đo)
+          </div>
         </div>
       </section>
 
@@ -529,6 +639,68 @@ export function CareViewPage() {
               <li><b>Tinh thần & Nhận thức:</b> Tỉnh táo, tiếp xúc tốt, giao tiếp vui vẻ với nhân viên viện.</li>
             </ul>
           </div>
+
+          {/* Card 3: Đánh giá ADL cho NVCS */}
+          <div className="card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', padding: '1.25rem', gridColumn: '1 / -1' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span>📋</span> Đánh Giá Chức Năng Sinh Hoạt Hàng Ngày (ADL)
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#64748b' }}>
+                  👩‍⚕️ Thực hiện đánh giá & cập nhật phân quyền: <b>Nhân viên chăm sóc / Điều dưỡng</b>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setAdlData(getResidentADL(normalizedResidentId));
+                  setShowAdlModal(true);
+                }}
+                className="btn btn-sm btn-success"
+                style={{ background: '#166534', color: '#ffffff', fontWeight: 700 }}
+              >
+                ✏️ Cập nhật Đánh giá ADL
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.86rem' }}>
+              <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>1. ĂN UỐNG</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                  {currentAdl.eating === 'INDEPENDENT' ? '✅ Tự thực hiện' : currentAdl.eating === 'PARTIAL_ASSIST' ? '🤝 Cần hỗ trợ 1 phần' : '🆘 Phụ thuộc hoàn toàn'}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>2. TẮM RỬA / VỆ SINH</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                  {currentAdl.bathing === 'INDEPENDENT' ? '✅ Tự thực hiện' : currentAdl.bathing === 'PARTIAL_ASSIST' ? '🤝 Cần hỗ trợ 1 phần' : '🆘 Phụ thuộc hoàn toàn'}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>3. MẶC QUẦN ÁO</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                  {currentAdl.dressing === 'INDEPENDENT' ? '✅ Tự thực hiện' : currentAdl.dressing === 'PARTIAL_ASSIST' ? '🤝 Cần hỗ trợ 1 phần' : '🆘 Phụ thuộc hoàn toàn'}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>4. ĐI VỆ SINH</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                  {currentAdl.toileting === 'INDEPENDENT' ? '✅ Tự thực hiện' : currentAdl.toileting === 'PARTIAL_ASSIST' ? '🤝 Cần hỗ trợ 1 phần' : '🆘 Phụ thuộc hoàn toàn'}
+                </span>
+              </div>
+              <div style={{ background: '#f8fafc', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>5. DI CHUYỂN</span>
+                <span style={{ fontWeight: 700, color: '#0f172a' }}>
+                  {currentAdl.mobility === 'INDEPENDENT' ? '✅ Tự thực hiện' : currentAdl.mobility === 'PARTIAL_ASSIST' ? '🤝 Cần hỗ trợ 1 phần' : '🆘 Phụ thuộc hoàn toàn'}
+                </span>
+              </div>
+            </div>
+            {currentAdl.assessedBy && (
+              <div style={{ marginTop: '0.75rem', fontSize: '0.78rem', color: '#64748b', textAlign: 'right' }}>
+                Đánh giá gần nhất bởi: <b>{currentAdl.assessedBy}</b> ({(ROLE_LABELS as Record<string, string>)[currentAdl.assessedByRole || ''] || currentAdl.assessedByRole})
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -584,55 +756,113 @@ export function CareViewPage() {
       )}
 
       {activeTab === 'clinical' && (
-        <div className="card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', padding: '1.25rem' }}>
-          <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 700, color: '#166534' }}>
-            🩺 Theo Dõi Sinh Hiệu & Chỉ Số Lâm Sàng
-          </h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Summary Min-Max Banner for Monthly Periodic Report */}
+          <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '0.75rem', padding: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#166534', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>📊</span> Dải Chỉ Số Min – Max Tháng (Đồng Bộ Báo Cáo Định Kỳ)
+              </h3>
+              <span style={{ fontSize: '0.8rem', color: '#15803d', fontWeight: 700, background: '#dcfce7', padding: '0.2rem 0.6rem', borderRadius: '9999px' }}>
+                Tổng số {monthlyVitalsSummary.totalMeasurementsCount} lần đo trong kỳ
+              </span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', fontSize: '0.86rem' }}>
+              <div style={{ background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>MẠCH (lần/phút)</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{monthlyVitalsSummary.pulseMinMax}</span>
+              </div>
+              <div style={{ background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>HUYẾT ÁP (mmHg)</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{monthlyVitalsSummary.bpMinMax}</span>
+              </div>
+              <div style={{ background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>THÂN NHIỆT (°C)</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{monthlyVitalsSummary.tempMinMax}</span>
+              </div>
+              <div style={{ background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>SPO2 (%)</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{monthlyVitalsSummary.spo2MinMax}</span>
+              </div>
+              <div style={{ background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>CÂN NẶNG (kg)</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{monthlyVitalsSummary.weightMinMax}</span>
+              </div>
+              <div style={{ background: '#ffffff', padding: '0.65rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #dcfce7' }}>
+                <span style={{ color: '#64748b', display: 'block', fontSize: '0.76rem', fontWeight: 600 }}>GLUCOSE MAO MẠCH</span>
+                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>{monthlyVitalsSummary.glucoseMinMax} mmol/L</span>
+              </div>
+            </div>
+          </div>
 
-          {clinicalItems.length > 0 ? (
-            <div className="table-responsive" style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
-                <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
-                    <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Thời gian đo</th>
-                    <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Loại chỉ số</th>
-                    <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Kết quả đo</th>
-                    <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Người ghi nhận</th>
-                    <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Đánh giá</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clinicalItems.map((obs: any, idx: number) => {
-                    const isAbnormal = obs.abnormalFlag || obs.status === 'ABNORMAL';
-                    const val = obs.textValue || (obs.numericValue !== undefined ? `${obs.numericValue} ${obs.unit || ''}` : '—');
-                    return (
-                      <tr key={obs.clinicalObservationId || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.65rem 0.85rem', color: '#64748b' }}>
-                          {obs.measuredAt ? new Date(obs.measuredAt).toLocaleString('vi-VN') : 'Mới đây'}
+          <div className="card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', padding: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#166534' }}>
+                🩺 Nhật Ký Theo Dõi & Lịch Sử Đo Sinh Hiệu Hàng Ngày
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowVitalsModal(true)}
+                className="btn btn-sm btn-success"
+                style={{ background: '#166534', color: '#ffffff', fontWeight: 700 }}
+              >
+                + Thêm lượt đo mới
+              </button>
+            </div>
+
+            {vitalHistory.length > 0 ? (
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Thời gian đo</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Huyết áp (mmHg)</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Mạch (bpm)</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Nhiệt độ (°C)</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>SpO2 (%)</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Cân nặng / Đường huyết</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Người đo / Vai trò</th>
+                      <th style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>Ghi chú</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vitalHistory.map((vrec) => (
+                      <tr key={vrec.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '0.65rem 0.85rem', color: '#64748b', fontSize: '0.82rem' }}>
+                          {new Date(vrec.measuredAt).toLocaleString('vi-VN')}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600, color: '#0f172a' }}>
-                          {obs.observationType || obs.observationCode}
+                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                          {vrec.sysBP && vrec.diaBP ? `${vrec.sysBP}/${vrec.diaBP}` : '—'}
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: isAbnormal ? '#b91c1c' : '#0f172a' }}>
-                          {val}
+                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                          {vrec.heartRate ?? '—'}
+                        </td>
+                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                          {vrec.temp ? `${vrec.temp}°C` : '—'}
+                        </td>
+                        <td style={{ padding: '0.65rem 0.85rem', fontWeight: 700, color: '#0f172a' }}>
+                          {vrec.spo2 ? `${vrec.spo2}%` : '—'}
+                        </td>
+                        <td style={{ padding: '0.65rem 0.85rem', color: '#334155' }}>
+                          {vrec.weight ? `${vrec.weight} kg` : ''}
+                          {vrec.weight && vrec.bloodGlucose ? ' | ' : ''}
+                          {vrec.bloodGlucose ? `GLU: ${vrec.bloodGlucose} mmol/L` : (!vrec.weight ? '—' : '')}
                         </td>
                         <td style={{ padding: '0.65rem 0.85rem', color: '#475569' }}>
-                          {obs.recordedBy || 'Nhân viên y tế'}
+                          <b>{vrec.recordedBy}</b> ({(ROLE_LABELS as Record<string, string>)[vrec.recordedByRole] || vrec.recordedByRole})
                         </td>
-                        <td style={{ padding: '0.65rem 0.85rem' }}>
-                          <span className={isAbnormal ? 'badge badge-danger' : 'badge badge-success'}>
-                            {isAbnormal ? '⚠️ Cần chú ý' : '✓ Bình thường'}
-                          </span>
+                        <td style={{ padding: '0.65rem 0.85rem', color: '#64748b', fontSize: '0.82rem' }}>
+                          {vrec.note || 'Theo dõi bình thường'}
                         </td>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <EmptyState title="Chưa có dữ liệu sinh hiệu" description="Chưa có bản ghi sinh hiệu lâm sàng cho cư dân này." />
-          )}
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <EmptyState title="Chưa có dữ liệu sinh hiệu" description="Chưa có bản ghi sinh hiệu lâm sàng cho cư dân này." />
+            )}
+          </div>
         </div>
       )}
 
@@ -863,6 +1093,129 @@ export function CareViewPage() {
           <span className="badge badge-success" style={{ fontSize: '0.75rem' }}>✓ Server Verified</span>
         </div>
       </section>
+
+      {/* DAILY VITALS RECORDING MODAL FOR CAREGIVER */}
+      {showVitalsModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+          <div style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '650px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.25)' }}>
+            <div style={{ padding: '1.25rem 1.5rem', background: '#166534', color: '#ffffff', borderRadius: '0.75rem 0.75rem 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>🩺 Ghi Nhận Dấu Hiệu Sinh Tồn Hàng Ngày</h3>
+              <button type="button" onClick={() => setShowVitalsModal(false)} style={{ background: 'transparent', border: 'none', color: '#ffffff', fontSize: '1.5rem', cursor: 'pointer', lineHeight: 1 }}>&times;</button>
+            </div>
+            <form onSubmit={handleSaveVitals} style={{ padding: '1.5rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Huyết áp tâm thu (mmHg) *</label>
+                  <input type="number" value={vitalsSysBP} onChange={e => setVitalsSysBP(e.target.value)} required placeholder="120" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Huyết áp tâm trương (mmHg) *</label>
+                  <input type="number" value={vitalsDiaBP} onChange={e => setVitalsDiaBP(e.target.value)} required placeholder="80" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Mạch / Nhịp tim (lần/phút) *</label>
+                  <input type="number" value={vitalsHeartRate} onChange={e => setVitalsHeartRate(e.target.value)} required placeholder="75" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Thân nhiệt (°C) *</label>
+                  <input type="number" step="0.1" value={vitalsTemp} onChange={e => setVitalsTemp(e.target.value)} required placeholder="36.5" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Nồng độ SpO2 (%) *</label>
+                  <input type="number" value={vitalsSpo2} onChange={e => setVitalsSpo2(e.target.value)} required placeholder="98" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Nhịp thở (lần/phút)</label>
+                  <input type="number" value={vitalsRespRate} onChange={e => setVitalsRespRate(e.target.value)} placeholder="18" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Cân nặng (kg)</label>
+                  <input type="number" step="0.1" value={vitalsWeight} onChange={e => setVitalsWeight(e.target.value)} placeholder="48.5" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Đường huyết mao mạch (mmol/L)</label>
+                  <input type="number" step="0.1" value={vitalsGlucose} onChange={e => setVitalsGlucose(e.target.value)} placeholder="6.5" style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+                </div>
+              </div>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Ghi chú diễn biến & theo dõi sức khỏe</label>
+                <textarea rows={3} value={vitalsNote} onChange={e => setVitalsNote(e.target.value)} placeholder="Tình trạng tinh thần, triệu chứng bất thường nếu có..." style={{ width: '100%', padding: '0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.375rem' }} />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button type="button" onClick={() => setShowVitalsModal(false)} className="btn btn-secondary">Hủy</button>
+                <button type="submit" className="btn btn-success" style={{ background: '#166534', color: '#fff', fontWeight: 700 }}>💾 Lưu & Đồng Bộ Báo Cáo</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADL EVALUATION MODAL FOR CAREGIVER */}
+      {showAdlModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.65)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: '1rem' }}>
+          <div style={{ background: '#ffffff', borderRadius: '0.75rem', maxWidth: '650px', width: '100%', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.25)' }}>
+            <div style={{ padding: '1.25rem 1.5rem', background: '#166534', color: '#ffffff', borderRadius: '0.75rem 0.75rem 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>📋 Đánh Giá Chức Năng Sinh Hoạt Hàng Ngày (ADL)</h3>
+              <button type="button" onClick={() => setShowAdlModal(false)} style={{ background: 'transparent', border: 'none', color: '#ffffff', fontSize: '1.5rem', cursor: 'pointer', lineHeight: 1 }}>&times;</button>
+            </div>
+            <form onSubmit={handleSaveAdl} style={{ padding: '1.5rem' }}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
+                      <th style={{ padding: '0.65rem' }}>Hoạt động thiết yếu</th>
+                      <th style={{ padding: '0.65rem', textAlign: 'center' }}>Tự thực hiện</th>
+                      <th style={{ padding: '0.65rem', textAlign: 'center' }}>Hỗ trợ 1 phần</th>
+                      <th style={{ padding: '0.65rem', textAlign: 'center' }}>Phụ thuộc</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { key: 'eating', label: '1. Ăn uống' },
+                      { key: 'bathing', label: '2. Tắm rửa / Vệ sinh' },
+                      { key: 'dressing', label: '3. Mặc quần áo' },
+                      { key: 'toileting', label: '4. Đi vệ sinh' },
+                      { key: 'mobility', label: '5. Di chuyển đi lại' },
+                    ].map((item) => (
+                      <tr key={item.key} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '0.65rem', fontWeight: 700 }}>{item.label}</td>
+                        <td style={{ padding: '0.65rem', textAlign: 'center' }}>
+                          <input
+                            type="radio"
+                            name={`adl_modal_${item.key}`}
+                            checked={(adlData as any)[item.key] === 'INDEPENDENT'}
+                            onChange={() => setAdlData((prev) => ({ ...prev, [item.key]: 'INDEPENDENT' }))}
+                          />
+                        </td>
+                        <td style={{ padding: '0.65rem', textAlign: 'center' }}>
+                          <input
+                            type="radio"
+                            name={`adl_modal_${item.key}`}
+                            checked={(adlData as any)[item.key] === 'PARTIAL_ASSIST'}
+                            onChange={() => setAdlData((prev) => ({ ...prev, [item.key]: 'PARTIAL_ASSIST' }))}
+                          />
+                        </td>
+                        <td style={{ padding: '0.65rem', textAlign: 'center' }}>
+                          <input
+                            type="radio"
+                            name={`adl_modal_${item.key}`}
+                            checked={(adlData as any)[item.key] === 'FULL_DEPEND'}
+                            onChange={() => setAdlData((prev) => ({ ...prev, [item.key]: 'FULL_DEPEND' }))}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+                <button type="button" onClick={() => setShowAdlModal(false)} className="btn btn-secondary">Hủy</button>
+                <button type="submit" className="btn btn-success" style={{ background: '#166534', color: '#fff', fontWeight: 700 }}>💾 Lưu Đánh Giá ADL</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

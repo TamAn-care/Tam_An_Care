@@ -9,6 +9,7 @@ import { changeSelfPassword } from '../../api/staff-actors';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
 import { PWAInstallModal } from '../pwa/PWAInstallModal';
+import { GlobalModalResizer } from '../common/GlobalModalResizer';
 
 export function AppShell() {
   const { actor, clearActor } = useActor();
@@ -80,6 +81,7 @@ export function AppShell() {
 
   return (
     <div className="app-shell-fullwidth" style={{ minHeight: '100vh', background: '#f8fafc', display: 'flex', flexDirection: 'column' }}>
+      <GlobalModalResizer />
       <IOSPWAInstallBanner />
 
       {/* TOPBAR HEADER - STANDALONE FULL WIDTH */}

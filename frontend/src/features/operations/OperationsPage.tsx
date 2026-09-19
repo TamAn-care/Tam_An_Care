@@ -38,6 +38,7 @@ import {
 import {
   ROLE_LABELS,
 } from '../../auth/role-policy';
+import { saveVitalRecord } from '../../utils/vitals-calculator';
 import {
   ApiError,
 } from '../../api/errors';
@@ -464,6 +465,7 @@ export function OperationsPage() {
   const [temp, setTemp] = useState('36.8');
   const [spo2, setSpo2] = useState('98');
   const [respRate, setRespRate] = useState('18');
+  const [weight, setWeight] = useState('');
   const [bloodGlucose, setBloodGlucose] = useState('');
 
   const [medName, setMedName] = useState('');
@@ -796,6 +798,11 @@ export function OperationsPage() {
             </div>
 
             <div>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Cân nặng (kg)</label>
+              <input type="number" step="0.1" placeholder="48.5" className="text-input" value={weight} onChange={(e) => setWeight(e.target.value)} />
+            </div>
+
+            <div>
               <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Đường huyết (mmol/L - nếu có)</label>
               <input type="number" step="0.1" placeholder="5.6" className="text-input" value={bloodGlucose} onChange={(e) => setBloodGlucose(e.target.value)} />
             </div>
@@ -1099,11 +1106,28 @@ export function OperationsPage() {
         const tp = Number(temp) || 36.8;
         const sp = Number(spo2) || 98;
         const resp = Number(respRate) || 18;
+        const wt = weight.trim() ? Number(weight) : undefined;
         const bg = bloodGlucose.trim() ? Number(bloodGlucose) : undefined;
 
-        metricsPayload = { sysBP: sys, diaBP: dia, heartRate: hr, temp: tp, spo2: sp, respRate: resp, bloodGlucose: bg };
-        const vitalsSummary = `📊 Sinh hiệu: HA ${sys}/${dia} mmHg | Mạch ${hr} bpm | Thân nhiệt ${tp}°C | SpO2 ${sp}% | Nhịp thở ${resp} bpm${bg ? ` | GLU ${bg} mmol/L` : ''}`;
+        metricsPayload = { sysBP: sys, diaBP: dia, heartRate: hr, temp: tp, spo2: sp, respRate: resp, weight: wt, bloodGlucose: bg };
+        const vitalsSummary = `📊 Sinh hiệu: HA ${sys}/${dia} mmHg | Mạch ${hr} bpm | Thân nhiệt ${tp}°C | SpO2 ${sp}% | Nhịp thở ${resp} bpm${wt ? ` | Cân nặng ${wt} kg` : ''}${bg ? ` | GLU ${bg} mmol/L` : ''}`;
         formattedAutoNote = formattedAutoNote ? `${vitalsSummary} — ${formattedAutoNote}` : vitalsSummary;
+
+        if (residentId) {
+          saveVitalRecord(residentId, {
+            sysBP: sys,
+            diaBP: dia,
+            heartRate: hr,
+            temp: tp,
+            spo2: sp,
+            respRate: resp,
+            weight: wt,
+            bloodGlucose: bg,
+            recordedBy: actor?.displayName || 'Nhân viên chăm sóc',
+            recordedByRole: (actor?.actorRole as string) || 'CAREGIVER',
+            note: note.trim(),
+          });
+        }
       } else if (code === 'MEDICATION_ADMINISTRATION') {
         metricsPayload = { medName: medName.trim() || 'Amlodipine 5mg', medDose: medDose.trim() || '1 viên', medStatus };
         const medSummary = `💊 Thuốc: ${metricsPayload.medName} (${metricsPayload.medDose}) | Trạng thái: ${medStatus === 'FULL' ? 'Đã uống đủ 5 Đúng' : medStatus === 'REFUSED' ? 'Từ chối uống' : 'Uống 1 phần'}`;

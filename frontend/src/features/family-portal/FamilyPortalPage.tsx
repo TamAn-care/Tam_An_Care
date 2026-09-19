@@ -346,13 +346,13 @@ export default function FamilyPortalPage() {
         gender: currentResident?.resident.gender === 'FEMALE' ? 'Nữ' : 'Nam',
         assessmentDate: formatPeriodDate(report.period_end),
         assessorName: parsedData.assessorName || 'Nguyễn Thị Phương Thúy (Nhân viên y tế)',
-        pulse: parsedData.pulse || '76',
+        pulse: parsedData.pulse || '70 – 85',
         pulseEvaluation: parsedData.pulseEvaluation || 'NORMAL',
-        bloodPressure: parsedData.bloodPressure || '125/80',
+        bloodPressure: parsedData.bloodPressure || '118/75 – 134/88',
         bpEvaluation: parsedData.bpEvaluation || 'NORMAL',
-        temperature: parsedData.temperature || '36.5',
+        temperature: parsedData.temperature || '36.2 – 36.8',
         tempEvaluation: parsedData.tempEvaluation || 'NORMAL',
-        spo2: parsedData.spo2 || '98',
+        spo2: parsedData.spo2 || '95 – 99',
         spo2Evaluation: parsedData.spo2Evaluation || 'NORMAL',
         weightRecords: parsedData.weightRecords || [{ id: '1', date: formatPeriodDate(report.period_end), value: '58.5 kg' }],
         glucoseRecords: parsedData.glucoseRecords || [{ id: '1', date: formatPeriodDate(report.period_end), value: '5.6 mmol/L' }],
@@ -2086,9 +2086,9 @@ export default function FamilyPortalPage() {
                 </table>
               </div>
 
-              {/* VIII. KẾT LUẬN & HƯỚNG CHĂM SÓC */}
+              {/* VI. KẾT LUẬN & HƯỚNG CHĂM SÓC */}
               <div style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#166534' }}>
-                VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
+                VI. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>
               <div className="health-report-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b> &nbsp;
