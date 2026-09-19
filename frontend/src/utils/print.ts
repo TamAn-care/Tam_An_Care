@@ -1,30 +1,50 @@
 /**
  * Utility helper for triggering high-fidelity window print across Tam An Care.
- * Handles DOM flush and animation frame delays to ensure React component state
- * and CSS @media print styling are fully applied before opening native print dialog.
+ * Handles DOM flush and animation frame delays for desktop browsers,
+ * while executing synchronously on mobile devices to preserve user gesture context
+ * required by iOS Safari and Android Chrome to open the native print preview & printer selection screen.
  */
 export function triggerPrint(onComplete?: () => void): void {
   // Ensure keyboard focus is cleared from triggering button to avoid visual artifact
-  if (document.activeElement instanceof HTMLElement) {
+  if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
     document.activeElement.blur();
   }
 
-  // Double animation frame + 150ms delay ensures React component state, conditional renders,
-  // and CSS @media print styling are completely painted before opening native print dialog.
-  requestAnimationFrame(() => {
+  // Detect mobile environment (iOS Safari, Android Chrome, mobile webviews, touch screens, screen width < 768px)
+  const isMobile = typeof window !== 'undefined' && (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+    window.matchMedia('(max-width: 767px)').matches ||
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  );
+
+  const executePrint = () => {
+    try {
+      if (typeof window !== 'undefined' && typeof window.print === 'function') {
+        window.print();
+      } else {
+        alert('Trình duyệt hiện tại không hỗ trợ chức năng in (window.print). Vui lòng thử lại trên Safari hoặc Google Chrome.');
+      }
+    } catch (err) {
+      console.error('[TamAnCare Print] Lỗi khi kích hoạt window.print():', err);
+      alert('Không thể mở giao diện in. Vui lòng kiểm tra quyền truy cập máy in trên thiết bị.');
+    } finally {
+      if (onComplete) {
+        onComplete();
+      }
+    }
+  };
+
+  if (isMobile) {
+    // On mobile devices, window.print MUST execute synchronously in response to user tap/click gesture
+    executePrint();
+  } else {
+    // On desktop browsers, double rAF + short timeout ensures React state & CSS @media print styling finish rendering
     requestAnimationFrame(() => {
-      setTimeout(() => {
-        try {
-          window.print();
-        } catch (err) {
-          console.error('[TamAnCare Print] Error triggering window.print():', err);
-        } finally {
-          if (onComplete) {
-            onComplete();
-          }
-        }
-      }, 150);
+      requestAnimationFrame(() => {
+        setTimeout(executePrint, 50);
+      });
     });
-  });
+  }
 }
+
 

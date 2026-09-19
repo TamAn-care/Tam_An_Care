@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useActor } from '../../auth/ActorContext';
 import { triggerPrint } from '../../utils/print';
 import {
@@ -662,10 +663,14 @@ export function AdmissionPage() {
   const [decisionCase, setDecisionCase] = useState<AdmissionCase | null>(null);
 
   const handleTriggerPrint = useCallback((target: 'ALL' | 'ASSESSMENT' | 'HANDOVER') => {
-    setPrintTarget(target);
-    requestAnimationFrame(() => {
-      triggerPrint();
-    });
+    try {
+      flushSync(() => {
+        setPrintTarget(target);
+      });
+    } catch {
+      setPrintTarget(target);
+    }
+    triggerPrint();
   }, []);
 
   // Handover History Modals

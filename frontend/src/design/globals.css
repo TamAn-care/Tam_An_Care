@@ -2250,6 +2250,42 @@ transform: scale(1.28);
     align-items: flex-end !important;
   }
 
+  /* Exception & Optimization for Print Preview Modals on Mobile */
+  .modal-overlay.print-modal-overlay,
+  .modal-backdrop.print-modal-overlay,
+  .print-modal-overlay {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 0.5rem !important;
+    z-index: 999999 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .print-modal-overlay .modal-dialog,
+  .print-modal-overlay .modal-card,
+  .print-modal-overlay .modal-dialog-lg {
+    max-height: 98vh !important;
+    border-radius: 0.75rem !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* Sticky Header inside Print Preview Modals so Print/Printer Action buttons are ALWAYS 1-tap reachable */
+  .print-modal-overlay .no-print:first-child,
+  .print-modal-overlay .modal-header.no-print {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.75rem 0.85rem !important;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+  }
+
   .modal-dialog,
   .modal-card {
     max-width: 100% !important;
