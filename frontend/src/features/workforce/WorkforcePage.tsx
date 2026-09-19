@@ -79,6 +79,13 @@ const SWAP_STATUS_BADGE: Record<string, { label: string; className: string }> = 
   CANCELLED: { label: 'Đã hủy', className: 'badge badge-neutral' },
 };
 
+const FLOOR_LABELS: Record<string, string> = {
+  FLOOR_1: 'Tầng 1 - Khu Chăm Sóc Đắc Thọ',
+  FLOOR_2: 'Tầng 2 - Khu Chăm Sóc An Hòa',
+  FLOOR_3: 'Tầng 3 - Khu Phục Hồi Chức Năng',
+  FLOOR_4: 'Tầng 4 - Khu Chăm Sóc Tăng Cường & Tự Nhận Thức',
+};
+
 export default function WorkforcePage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
@@ -140,12 +147,17 @@ export default function WorkforcePage() {
   const [rejectingSwapId, setRejectingSwapId] = useState<string | null>(null);
   const [rejectionReasonInput, setRejectionReasonInput] = useState('');
 
-  // Form State - Schedule
+  // Form State - Schedule & Floor Rotation (Ma trận 1 tháng/lần)
   const [staffActorId, setStaffActorId] = useState('');
   const [shiftType, setShiftType] = useState<ShiftType>('MORNING');
   const [startTime, setStartTime] = useState(`${todayStr}T06:00`);
   const [endTime, setEndTime] = useState(`${todayStr}T14:00`);
   const [notes, setNotes] = useState('');
+  const [assignedFloor, setAssignedFloor] = useState<string>('FLOOR_1');
+  const [currentStaffFloor, setCurrentStaffFloor] = useState<string>('FLOOR_1');
+  const [staffTenureDays, setStaffTenureDays] = useState<number>(18);
+  const [allowEarlyRotationOverride, setAllowEarlyRotationOverride] = useState<boolean>(false);
+  const [rotationOverrideReason, setRotationOverrideReason] = useState<string>('');
   const [scheduleError, setScheduleError] = useState<string | null>(null);
 
   // Form State - Handover
@@ -501,13 +513,37 @@ export default function WorkforcePage() {
       setScheduleError('Vui lòng điền đầy đủ thông tin phân ca.');
       return;
     }
+
+    // Tính toán số ngày trong tháng của ngày được phân ca (28, 29, 30 hoặc 31 ngày)
+    const d = new Date(selectedDate);
+    const requiredDaysInMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    const isRotatingToNewFloor = assignedFloor !== currentStaffFloor;
+    const isTenureInsufficient = staffTenureDays < requiredDaysInMonth;
+
+    if (isRotatingToNewFloor && isTenureInsufficient) {
+      if (!allowEarlyRotationOverride) {
+        setScheduleError(
+          `⚠️ CẢNH BÁO LUÂN CHUYỂN TẦNG: Nhân sự chưa đủ thời hạn 1 tháng (${staffTenureDays}/${requiredDaysInMonth} ngày) tại ${FLOOR_LABELS[currentStaffFloor] || currentStaffFloor}. Cần Quản lý / Ban Giám đốc phê duyệt điều động đặc biệt.`
+        );
+        return;
+      }
+      if (!rotationOverrideReason.trim()) {
+        setScheduleError('⚠️ Bắt buộc phải nhập Lý do điều động đặc biệt khi phê duyệt luân chuyển trước thời hạn.');
+        return;
+      }
+    }
+
+    const notePayload = `${notes ? notes + ' | ' : ''}Phân tầng: ${FLOOR_LABELS[assignedFloor] || assignedFloor}${
+      allowEarlyRotationOverride ? ` (Điều động đặc biệt trước thời hạn 1 tháng. Lý do: ${rotationOverrideReason})` : ''
+    }`;
+
     scheduleMutation.mutate({
       staffActorId,
       shiftDate: selectedDate,
       shiftType,
       startTime: new Date(startTime).toISOString(),
       endTime: new Date(endTime).toISOString(),
-      notes: notes || undefined,
+      notes: notePayload,
     });
   };
 
@@ -2197,7 +2233,101 @@ export default function WorkforcePage() {
                   </div>
                 </div>
 
-                <div>
+                <div style={{ marginTop: '0.75rem' }}>
+                  <label className="form-label">
+                    Tầng Phân Công Luân Chuyển <span className="req">*</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
+                      (Luân chuyển 1 tháng/lần)
+                    </span>
+                  </label>
+                  <select
+                    value={assignedFloor}
+                    onChange={e => setAssignedFloor(e.target.value)}
+                    required
+                    className="form-select"
+                    style={{ width: '100%' }}
+                  >
+                    {Object.entries(FLOOR_LABELS).map(([code, label]) => (
+                      <option key={code} value={code}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Cảnh Báo Ma Trận Luân Chuyển Tầng < 1 Tháng & Trao Quyền Quản Lý / BGĐ */}
+                {assignedFloor !== currentStaffFloor && (
+                  <div
+                    className="alert-card alert-warning"
+                    style={{
+                      marginTop: '0.75rem',
+                      padding: '0.75rem 1rem',
+                      borderRadius: '8px',
+                      borderLeft: '4px solid #f59e0b',
+                      background: '#fffbeb',
+                    }}
+                  >
+                    <div style={{ fontWeight: 600, color: '#b45309', marginBottom: '0.25rem' }}>
+                      ⚠️ CẢNH BÁO LUÂN CHUYỂN TẦNG CHƯA ĐỦ THỜI HẠN TỐI THIỂU 1 THÁNG
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#92400e', lineHeight: 1.4 }}>
+                      Nhân sự chưa làm việc đủ thời gian quy định 1 tháng ({staffTenureDays}/
+                      {new Date(selectedDate || Date.now()).getMonth() + 1 === 2
+                        ? '28-29'
+                        : [4, 6, 9, 11].includes(new Date(selectedDate || Date.now()).getMonth() + 1)
+                        ? '30'
+                        : '31'}{' '}
+                      ngày) tại {FLOOR_LABELS[currentStaffFloor] || currentStaffFloor}.
+                    </div>
+
+                    {isSupervisor && (
+                      <div
+                        style={{
+                          marginTop: '0.5rem',
+                          paddingTop: '0.5rem',
+                          borderTop: '1px solid #fde68a',
+                        }}
+                      >
+                        <label
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            fontWeight: 600,
+                            color: '#78350f',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={allowEarlyRotationOverride}
+                            onChange={e => setAllowEarlyRotationOverride(e.target.checked)}
+                          />
+                          Cho phép điều động đặc biệt trước thời hạn (Trao quyền Quản lý / BGĐ)
+                        </label>
+
+                        {allowEarlyRotationOverride && (
+                          <div style={{ marginTop: '0.5rem' }}>
+                            <label className="form-label" style={{ fontSize: '0.85rem', color: '#78350f' }}>
+                              Lý do điều động đặc biệt <span className="req">*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={rotationOverrideReason}
+                              onChange={e => setRotationOverrideReason(e.target.value)}
+                              placeholder="Ví dụ: Điều phối khẩn cấp hỗ trợ ca bệnh F3, yêu cầu từ Quản lý..."
+                              required={allowEarlyRotationOverride}
+                              className="form-input"
+                              style={{ width: '100%', fontSize: '0.85rem' }}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div style={{ marginTop: '0.75rem' }}>
                   <label className="form-label">Ghi chú phân ca</label>
                   <input
                     type="text"

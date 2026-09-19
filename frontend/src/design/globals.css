@@ -1750,6 +1750,19 @@ transform: scale(1.28);
   gap: var(--space-3);
 }
 
+.adl-option-text {
+  display: none;
+}
+
+.adl-radio-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
 .form-label {
   display: block;
   font-size: 0.82rem;
@@ -3039,12 +3052,110 @@ input.form-input {
     margin: 0 auto !important;
   }
 
-  /* Modal Dialog for Health Report Creation/Editing on Mobile */
+  /* Modal Dialog & Form for Health Report Creation/Editing on Mobile */
   .health-report-editor-modal {
     width: 96vw !important;
     max-width: 96vw !important;
     padding: 0.75rem !important;
     margin: 0.25rem auto !important;
+    max-height: 92vh !important;
+  }
+
+  .health-report-editor-modal .table-responsive {
+    overflow-x: visible !important;
+  }
+
+  /* ADL Table conversion to Vertical Mobile Cards when editing */
+  .health-report-editor-adl-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .health-report-editor-adl-table thead {
+    display: none !important;
+  }
+
+  .health-report-editor-adl-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+
+  .health-report-editor-adl-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 0.6rem !important;
+    padding: 0.75rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .health-report-editor-adl-table td {
+    border: none !important;
+    padding: 0.25rem 0 !important;
+    display: block !important;
+    text-align: left !important;
+    width: 100% !important;
+  }
+
+  .health-report-editor-adl-table td:first-child {
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .adl-radio-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    padding: 0.6rem 0.75rem !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.4rem !important;
+    background: #f8fafc !important;
+    font-size: 0.85rem !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .adl-radio-label:has(input:checked) {
+    background: #f0fdf4 !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+    font-weight: 600 !important;
+  }
+
+  .adl-option-text {
+    display: inline-block !important;
+  }
+
+  .health-report-radio-group,
+  .health-report-allergy-row,
+  .health-report-record-row {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+  }
+
+  .health-report-radio-group label {
+    padding: 0.5rem 0.75rem !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   /* ========================================================================== */

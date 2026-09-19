@@ -672,7 +672,7 @@ export default function HealthReportsPage() {
       {/* ========================================================================= */}
       {isEditorOpen && (
         <div className="modal-overlay">
-          <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto' }}>
+          <div className="modal-dialog modal-dialog-lg health-report-editor-modal" style={{ maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <h2 className="modal-title">Phiếu Đánh Giá Sức Khỏe Định Kỳ Cho Người Cao Tuổi</h2>
               <button onClick={() => setIsEditorOpen(false)} className="modal-close">
@@ -1041,7 +1041,7 @@ export default function HealthReportsPage() {
                     IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
                   </h3>
                   <div className="table-responsive" style={{ marginBottom: '1rem' }}>
-                    <table className="ui-table" style={{ fontSize: '0.85rem', minWidth: '800px', marginBottom: 0 }}>
+                    <table className="ui-table health-report-editor-adl-table" style={{ fontSize: '0.85rem', marginBottom: 0 }}>
                     <thead>
                       <tr>
                         <th>Hoạt động sinh hoạt thiết yếu</th>
@@ -1061,28 +1061,37 @@ export default function HealthReportsPage() {
                         <tr key={item.key}>
                           <td><b>{item.label}</b></td>
                           <td style={{ textAlign: 'center' }}>
-                            <input
-                              type="radio"
-                              name={item.key}
-                              checked={(assessment.adl as any)[item.key] === 'INDEPENDENT'}
-                              onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'INDEPENDENT' } }))}
-                            />
+                            <label className="adl-radio-label">
+                              <input
+                                type="radio"
+                                name={item.key}
+                                checked={(assessment.adl as any)[item.key] === 'INDEPENDENT'}
+                                onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'INDEPENDENT' } }))}
+                              />
+                              <span className="adl-option-text">Tự thực hiện</span>
+                            </label>
                           </td>
                           <td style={{ textAlign: 'center' }}>
-                            <input
-                              type="radio"
-                              name={item.key}
-                              checked={(assessment.adl as any)[item.key] === 'PARTIAL_ASSIST'}
-                              onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'PARTIAL_ASSIST' } }))}
-                            />
+                            <label className="adl-radio-label">
+                              <input
+                                type="radio"
+                                name={item.key}
+                                checked={(assessment.adl as any)[item.key] === 'PARTIAL_ASSIST'}
+                                onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'PARTIAL_ASSIST' } }))}
+                              />
+                              <span className="adl-option-text">Cần hỗ trợ một phần</span>
+                            </label>
                           </td>
                           <td style={{ textAlign: 'center' }}>
-                            <input
-                              type="radio"
-                              name={item.key}
-                              checked={(assessment.adl as any)[item.key] === 'FULL_DEPEND'}
-                              onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'FULL_DEPEND' } }))}
-                            />
+                            <label className="adl-radio-label">
+                              <input
+                                type="radio"
+                                name={item.key}
+                                checked={(assessment.adl as any)[item.key] === 'FULL_DEPEND'}
+                                onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'FULL_DEPEND' } }))}
+                              />
+                              <span className="adl-option-text">Phụ thuộc hoàn toàn</span>
+                            </label>
                           </td>
                         </tr>
                       ))}
@@ -1093,7 +1102,7 @@ export default function HealthReportsPage() {
                   <div className="form-row">
                     <div>
                       <span className="form-label">Tình trạng bài tiết:</span>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
+                      <div className="health-report-radio-group" style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                           <input
                             type="radio"
@@ -1126,7 +1135,7 @@ export default function HealthReportsPage() {
 
                     <div>
                       <span className="form-label">Dụng cụ hỗ trợ di chuyển:</span>
-                      <div style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
+                      <div className="health-report-radio-group" style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
                         <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                           <input
                             type="radio"
