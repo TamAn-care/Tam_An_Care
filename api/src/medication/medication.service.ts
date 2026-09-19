@@ -532,4 +532,66 @@ export class MedicationService {
       },
     );
   }
+
+  async copyDailyOrders(
+    residentId: string,
+    sourceOrderIds: string[],
+    targetDate: string,
+    actorId: string,
+  ) {
+    return this.db.withTransaction(async client => {
+      const createdOrders = [];
+      for (const sourceId of sourceOrderIds) {
+        const sourceRes = await client.query(
+          `SELECT * FROM medication_orders WHERE medication_order_id = $1 AND resident_id = $2`,
+          [sourceId, residentId],
+        );
+        const source = sourceRes.rows[0];
+        if (!source) continue;
+
+        const newId = randomUUID();
+        const newCode = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+        const insertRes = await client.query(
+          `
+          INSERT INTO medication_orders (
+            medication_order_id, resident_id, order_code, medication_name, generic_name, strength,
+            dose, dose_unit, route, frequency, instructions, indication, prescriber_name,
+            prescribed_at, effective_from, status, high_risk, double_check_required, created_at, updated_at
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, now(), $14, 'ACTIVE', $15, $16, now(), now()
+          ) RETURNING *
+          `,
+          [
+            newId,
+            source.resident_id,
+            newCode,
+            source.medication_name,
+            source.generic_name,
+            source.strength,
+            source.dose,
+            source.dose_unit,
+            source.route,
+            source.frequency,
+            source.instructions,
+            source.indication,
+            source.prescriber_name,
+            targetDate,
+            source.high_risk || false,
+            source.double_check_required || false,
+          ],
+        );
+        createdOrders.push(insertRes.rows[0]);
+      }
+      return createdOrders;
+    });
+  }
+
+  assertOrderImmutable(orderStatus: string) {
+    if (['VERIFIED', 'ACTIVE', 'COMPLETED'].includes(orderStatus.toUpperCase())) {
+      throw new Error(
+        'Y lệnh đã lưu và duyệt (Locked/Immutable). Không cho phép sửa đổi nội dung trực tiếp. Vui lòng ngưng y lệnh cũ và tạo y lệnh mới.',
+      );
+    }
+  }
 }

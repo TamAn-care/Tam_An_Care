@@ -8,7 +8,7 @@ export type MedicationRoute =
   | 'OPHTHALMIC'
   | 'INHALATION';
 
-export type TimingSlot = 'MORNING' | 'NOON' | 'AFTERNOON' | 'EVENING';
+export type TimingSlot = 'MORNING' | 'NOON' | 'AFTERNOON' | 'EVENING' | 'PRN';
 
 export type MealInstruction =
   | 'BEFORE_MEAL'
@@ -42,6 +42,9 @@ export interface MedicationOrder {
   startDate: string;
   endDate?: string;
   status: MedicationStatus;
+  orderDate?: string;
+  isLocked?: boolean;
+  copiedFromOrderId?: string;
   allergyWarning?: string;
   diagnosisNote?: string;
 }
@@ -548,8 +551,10 @@ export async function createMedicationOrder(
 ): Promise<MedicationOrder> {
   const newOrder: MedicationOrder = {
     ...payload,
-    orderId: `med-ord-${Date.now()}`,
+    orderId: `med-ord-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
     status: 'ACTIVE',
+    orderDate: payload.orderDate || payload.startDate || todayStr,
+    isLocked: true, // Immutability: Once saved/approved, order is locked
   };
   medicationOrders = [newOrder, ...medicationOrders];
 
@@ -559,9 +564,10 @@ export async function createMedicationOrder(
     if (slot === 'NOON') time = '11:30';
     if (slot === 'AFTERNOON') time = '16:30';
     if (slot === 'EVENING') time = '20:00';
+    if (slot === 'PRN') time = 'Khi cần';
 
     medicationAdmins.push({
-      adminId: `adm-${Date.now()}-${slot}`,
+      adminId: `adm-${Date.now()}-${slot}-${Math.floor(Math.random() * 1000)}`,
       orderId: newOrder.orderId,
       residentId: newOrder.residentId,
       residentName: newOrder.residentName,
@@ -571,7 +577,7 @@ export async function createMedicationOrder(
       dosage: newOrder.dosage,
       route: newOrder.route,
       timingSlot: slot,
-      scheduledDate: todayStr,
+      scheduledDate: newOrder.orderDate || todayStr,
       scheduledTime: time,
       instruction: newOrder.instruction,
       status: 'PENDING',
@@ -580,6 +586,110 @@ export async function createMedicationOrder(
   }
 
   return newOrder;
+}
+
+export async function fetchPreviousDayOrders(
+  actor: HumanActorSession,
+  residentId?: string,
+  targetDate?: string,
+): Promise<MedicationOrder[]> {
+  let orders = medicationOrders.filter((o) => o.status === 'ACTIVE');
+  if (residentId) {
+    orders = orders.filter((o) => o.residentId === residentId);
+  }
+  return orders;
+}
+
+export async function copyMedicationOrders(
+  actor: HumanActorSession,
+  payload: {
+    residentId: string;
+    sourceOrderIds: string[];
+    targetDate?: string;
+    customizations?: Record<string, Partial<MedicationOrder>>;
+  },
+): Promise<MedicationOrder[]> {
+  const targetDateStr = payload.targetDate || todayStr;
+  const createdOrders: MedicationOrder[] = [];
+
+  for (const sourceId of payload.sourceOrderIds) {
+    const source = medicationOrders.find((o) => o.orderId === sourceId);
+    if (!source) continue;
+
+    const custom = payload.customizations?.[sourceId] || {};
+    const newOrderPayload: Omit<MedicationOrder, 'orderId' | 'status'> = {
+      residentId: source.residentId,
+      residentName: source.residentName,
+      room: source.room,
+      bed: source.bed,
+      drugName: custom.drugName || source.drugName,
+      brandName: custom.brandName !== undefined ? custom.brandName : source.brandName,
+      dosage: custom.dosage || source.dosage,
+      route: custom.route || source.route,
+      timingSlots: custom.timingSlots || [...source.timingSlots],
+      instruction: custom.instruction || source.instruction,
+      prescribedBy: actor.displayName || source.prescribedBy || 'Bác sĩ điều trị',
+      startDate: targetDateStr,
+      orderDate: targetDateStr,
+      isLocked: true,
+      allergyWarning: source.allergyWarning,
+      diagnosisNote: source.diagnosisNote,
+      copiedFromOrderId: source.orderId,
+    };
+
+    const created = await createMedicationOrder(actor, newOrderPayload);
+    createdOrders.push(created);
+  }
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-DOC-001',
+    actorName: actor.displayName || 'Bác sĩ / Y tế',
+    actorRole: actor.actorRole || 'NURSE',
+    actorRoleLabel: actor.actorRole === 'NURSE' ? 'Nhân viên y tế' : 'Bác sĩ điều trị',
+    actionType: 'PRESCRIPTION_ADDED',
+    actionLabel: 'Sao chép Y Lệnh hôm trước',
+    module: 'MEDICATION_EMAR',
+    moduleLabel: 'Y Lệnh Thuốc & eMAR',
+    targetEntityId: payload.residentId,
+    targetEntityName: `Cụ ID: ${payload.residentId}`,
+    residentId: payload.residentId,
+    summary: `Sao chép ${createdOrders.length} y lệnh thuốc cho cụ ${payload.residentId} cho ngày ${targetDateStr}`,
+    severity: 'NORMAL',
+  });
+
+  return createdOrders;
+}
+
+export async function discontinueMedicationOrder(
+  actor: HumanActorSession,
+  orderId: string,
+  reason?: string,
+): Promise<MedicationOrder> {
+  const orderIndex = medicationOrders.findIndex((o) => o.orderId === orderId);
+  if (orderIndex === -1) throw new Error('Không tìm thấy y lệnh thuốc');
+  
+  medicationOrders[orderIndex] = {
+    ...medicationOrders[orderIndex],
+    status: 'DISCONTINUED',
+    isLocked: true,
+  };
+
+  await recordSystemAuditLog({
+    actorId: actor.actorId || 'STAFF-DOC-001',
+    actorName: actor.displayName || 'Bác sĩ / Y tế',
+    actorRole: actor.actorRole || 'NURSE',
+    actorRoleLabel: actor.actorRole === 'NURSE' ? 'Nhân viên y tế' : 'Bác sĩ điều trị',
+    actionType: 'PRESCRIPTION_ADDED',
+    actionLabel: 'Ngưng Y Lệnh Thuốc',
+    module: 'MEDICATION_EMAR',
+    moduleLabel: 'Y Lệnh Thuốc & eMAR',
+    targetEntityId: orderId,
+    targetEntityName: `Y lệnh: ${medicationOrders[orderIndex].drugName}`,
+    summary: `Ngưng y lệnh ${medicationOrders[orderIndex].drugName} (${orderId}). Lý do: ${reason || 'Chỉ định bác sĩ'}`,
+    severity: 'IMPORTANT',
+  });
+
+  return medicationOrders[orderIndex];
 }
 
 export async function fetchDailyAdministrations(

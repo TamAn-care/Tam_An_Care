@@ -194,7 +194,7 @@ let mockStaffKPIEvaluations: StaffKPIEvaluationRecord[] = [
     overallGradeLabel: 'Cần Nhắc Nhở - Chưa Đạt',
     warningSent: true,
     honorSent: false,
-    notes: 'Quên thu gom túi rác y tế màu vàng khu tầng 3 đúng cữ 20:00, đã nhắc nhở trực tiếp.',
+    notes: 'Quên thu gom túi rác y tế màu vàng Tầng 3 đúng cữ 20:00, đã nhắc nhở trực tiếp.',
     results: [
       { criterionId: 'KPI-HK-01', criterionCode: 'HK01', criterionTitle: 'Làm sạch & khử khuẩn phòng ở NCT, hành lang, nhà vệ sinh', status: 'PASSED' },
       { criterionId: 'KPI-HK-02', criterionCode: 'HK02', criterionTitle: 'Thu gom & phân loại rác thải sinh hoạt/y tế đúng quy định', status: 'FAILED' },

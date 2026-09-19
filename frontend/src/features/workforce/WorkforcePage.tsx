@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { triggerPrint } from '../../utils/print';
+import { exportWorkforceScheduleExcel } from '../../utils/workforceExcelExport';
 import { NotificationBell } from '../notifications/NotificationBell';
 import {
   acknowledgeHandover,
@@ -80,10 +81,10 @@ const SWAP_STATUS_BADGE: Record<string, { label: string; className: string }> = 
 };
 
 const FLOOR_LABELS: Record<string, string> = {
-  FLOOR_1: 'Tầng 1 - Khu Chăm Sóc Đắc Thọ',
-  FLOOR_2: 'Tầng 2 - Khu Chăm Sóc An Hòa',
-  FLOOR_3: 'Tầng 3 - Khu Phục Hồi Chức Năng',
-  FLOOR_4: 'Tầng 4 - Khu Chăm Sóc Tăng Cường & Tự Nhận Thức',
+  FLOOR_1: 'Tầng 1',
+  FLOOR_2: 'Tầng 2',
+  FLOOR_3: 'Tầng 3',
+  FLOOR_4: 'Tầng 4',
 };
 
 export default function WorkforcePage() {
@@ -408,6 +409,24 @@ export default function WorkforcePage() {
     onError: (err: any) => setRecogError(err.message || 'Lỗi ghi nhận thành tích'),
   });
 
+  const updateShiftTimeMutation = useMutation({
+    mutationFn: (updatedConfig: ShiftTimeConfig) =>
+      updateShiftTimeConfig(
+        (actor as any) || {
+          actorId: actorId || 'STAFF-MGR-001',
+          displayName: 'Nhân viên Quản lý',
+          actorRole: actorRole || 'CARE_MANAGER',
+        },
+        updatedConfig
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shift-time-configs'] });
+      setEditingConfigGroup(null);
+      alert('Đã cập nhật khung giờ ca trực thành công!');
+    },
+    onError: (err: any) => alert(err.message || 'Lỗi cập nhật khung giờ ca trực'),
+  });
+
   const resetScheduleForm = () => {
     setStaffActorId('');
     setShiftType('MORNING');
@@ -458,30 +477,21 @@ export default function WorkforcePage() {
     );
   }, [shiftsData?.items, search, isSupervisor, actorId, actor?.displayName]);
 
-  const exportWorkforceShiftsCSV = () => {
-    const items = shiftsData?.items ?? [];
-    if (!items.length) return;
+  const exportWorkforceShiftsExcel = () => {
+    const items = filteredItems;
+    if (!items || items.length === 0) {
+      alert('Không có dữ liệu lịch trực để xuất báo cáo Excel.');
+      return;
+    }
 
-    const headers = ['STT', 'Mã Ca Trực', 'Ngày Phân Ca', 'Loại Ca', 'Tên Nhân Viên', 'Vai Trò', 'Khu Vực', 'Thời Gian Bắt Đầu', 'Thời Gian Kết Thúc', 'Trạng Thái'];
-    const rows = items.map((item, index) => [
-      index + 1,
-      item.shiftId,
-      item.shiftDate,
-      item.shiftType === 'MORNING' ? 'Ca Sáng (06:00-14:00)' : item.shiftType === 'AFTERNOON' ? 'Ca Chiều (14:00-22:00)' : 'Ca Đêm (22:00-06:00)',
-      `"${item.staffName}"`,
-      ROLE_LABELS[item.staffRole as keyof typeof ROLE_LABELS] || item.staffRole,
-      `"${item.notes || 'Chăm sóc nội trú'}"`,
-      item.startTime ? new Date(item.startTime).toLocaleString('vi-VN') : '',
-      item.endTime ? new Date(item.endTime).toLocaleString('vi-VN') : '',
-      item.status === 'COMPLETED' ? 'Đã hoàn thành ca' : item.status === 'IN_PROGRESS' ? 'Đang trực ca' : 'Đã phân ca',
-    ]);
-
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `Bao_Cao_Lich_Truc_TamAnCare_${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
+    exportWorkforceScheduleExcel({
+      items,
+      selectedDate: selectedDate || todayStr,
+      creatorName: actor?.displayName || 'Quản lý Nhân sự',
+      creatorRole: ROLE_LABELS[actorRole as keyof typeof ROLE_LABELS] || actorRole || 'Quản lý ca trực',
+      statusFilter,
+      typeFilter,
+    });
   };
 
   const kpis = useMemo(() => {
@@ -629,11 +639,11 @@ export default function WorkforcePage() {
 
             <button
               type="button"
-              onClick={exportWorkforceShiftsCSV}
+              onClick={exportWorkforceShiftsExcel}
               className="btn btn-secondary no-print"
               style={{ background: '#f0fdf4', color: '#166534', borderColor: '#86efac', fontWeight: 700 }}
             >
-              📥 Xuất Báo Cáo Lịch Trực Excel/CSV
+              📊 Xuất Báo Cáo Lịch Trực Excel (.xls)
             </button>
 
             <button
@@ -2331,7 +2341,7 @@ export default function WorkforcePage() {
                   <label className="form-label">Ghi chú phân ca</label>
                   <input
                     type="text"
-                    placeholder="Ví dụ: Trực khu dưỡng lão tầng 2, theo dõi đặc biệt phòng 204..."
+                    placeholder="Ví dụ: Trực tầng 2, theo dõi đặc biệt phòng 204..."
                     value={notes}
                     onChange={e => setNotes(e.target.value)}
                     className="form-input"
@@ -2883,6 +2893,96 @@ export default function WorkforcePage() {
                 {rejectSwapMutation.isPending ? 'Đang xử lý...' : 'Xác nhận từ chối'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 6: CHỈNH SỬA KHUNG GIỜ CA TRỰC */}
+      {/* ========================================================================= */}
+      {editingConfigGroup && (
+        <div className="modal-overlay">
+          <div className="modal-dialog" style={{ maxWidth: '500px' }}>
+            <div className="modal-header">
+              <h2 className="modal-title">
+                ✏️ Chỉnh Sửa Khung Giờ Ca Trực — {editingConfigGroup.jobGroupLabel}
+              </h2>
+              <button onClick={() => setEditingConfigGroup(null)} className="modal-close">
+                &times;
+              </button>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateShiftTimeMutation.mutate({
+                  ...editingConfigGroup,
+                  morningShiftHours: morningHoursInput,
+                  afternoonShiftHours: afternoonHoursInput,
+                  nightShiftHours: nightHoursInput,
+                });
+              }}
+            >
+              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div>
+                  <label className="form-label">
+                    🌅 Khung giờ Ca Sáng <span className="req">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={morningHoursInput}
+                    onChange={(e) => setMorningHoursInput(e.target.value)}
+                    placeholder="06:00 - 14:00"
+                    required
+                    className="form-input"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">
+                    ☀️ Khung giờ Ca Chiều <span className="req">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={afternoonHoursInput}
+                    onChange={(e) => setAfternoonHoursInput(e.target.value)}
+                    placeholder="14:00 - 22:00"
+                    required
+                    className="form-input"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+                <div>
+                  <label className="form-label">
+                    🌙 Khung giờ Ca Đêm <span className="req">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={nightHoursInput}
+                    onChange={(e) => setNightHoursInput(e.target.value)}
+                    placeholder="22:00 - 06:00 (hoặc 'Không áp dụng')"
+                    required
+                    className="form-input"
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  onClick={() => setEditingConfigGroup(null)}
+                  className="btn btn-secondary"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  disabled={updateShiftTimeMutation.isPending}
+                  className="btn btn-primary"
+                >
+                  {updateShiftTimeMutation.isPending ? 'Đang lưu...' : 'Lưu Thay Đổi'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

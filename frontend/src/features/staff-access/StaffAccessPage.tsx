@@ -2598,7 +2598,7 @@ export function StaffAccessPage() {
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
             }}
           >
-            <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
               <div>
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>TRUNG TÂM DƯỠNG LÃO TÂM AN CARE — BẢO MẬT & PHÂN QUYỀN</div>
                 <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.25rem', color: '#0f172a' }}>PHIẾU BÀN GIAO TÀI KHOẢN ĐĂNG NHẬP</h2>

@@ -42,8 +42,8 @@ Testers có thể bấm nút **`⚡ Đăng Nhập Vai Trò Này`** để chuyể
 | **3** | **Quản Lý Vận Hành** | `STAFF-MGR-001` | Phạm Minh Đức | Quản lý lịch trực ca kíp, phân công nhân sự, duyệt đổi ca |
 | **4** | **Điều Dưỡng Trưởng** | `STAFF-NUR-001` | Lê Thị Lan | Đánh giá sức khỏe ban đầu, lập tủ thuốc eMAR, kiểm tra sinh hiệu |
 | **5** | **Điều Dưỡng Ca Trực** | `STAFF-NUR-003` | Trần Thị Bích | Theo dõi sinh hiệu, cấp phát thuốc, điểm danh ca trực & lập biên bản bàn giao |
-| **6** | **Chăm Sóc Viên (Khu A)**| `cg-mai-001` | Trần Thị Mai | Ghi nhật ký ADL (ăn uống, tắm giặt, thay bỉm, trở mình) khu A |
-| **7** | **Chăm Sóc Viên (Khu B)**| `cg-hoa-003` | Đặng Thị Hoa | Ghi nhận hoạt động sinh hoạt và chăm sóc các cụ khu B |
+| **6** | **Chăm Sóc Viên (Tầng 1)**| `cg-mai-001` | Trần Thị Mai | Ghi nhật ký ADL (ăn uống, tắm giặt, thay bỉm, trở mình) Tầng 1 |
+| **7** | **Chăm Sóc Viên (Tầng 2)**| `cg-hoa-003` | Đặng Thị Hoa | Ghi nhận hoạt động sinh hoạt và chăm sóc các cụ Tầng 2 |
 | **8** | **Chuyên Gia Dinh Dưỡng**| `STAFF-NUT-001` | Vũ Thị Dung | Bảng suất ăn kiêng y khoa, quản lý tồn kho bếp & hủy mẫu HACCP 24H |
 | **9** | **Phòng Kế Toán** | `STAFF-ACC-001` | Hoàng Bích Ngọc | Quản lý hóa đơn lưu trú, chi phí y tế & viện phí người cao tuổi |
 | **10**| **Lễ Tân Tiếp Đón** | `STAFF-REC-001` | Lê Thu Hà | Đăng ký khách thăm, hướng dẫn thân nhân & nhận đơn đăng ký |

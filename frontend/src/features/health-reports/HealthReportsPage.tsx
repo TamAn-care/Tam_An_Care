@@ -733,7 +733,7 @@ export default function HealthReportsPage() {
                     </div>
                     <div>
                       <label className="form-label">Khoảng thời gian kỳ báo cáo</label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                      <div className="health-report-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                         <input
                           type="date"
                           value={periodStart}
@@ -757,7 +757,7 @@ export default function HealthReportsPage() {
                     II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (NHẬP SỐ LIỆU)
                   </h3>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                  <div className="health-report-vitals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
                     <div>
                       <label className="form-label">Mạch (lần/phút)</label>
                       <input
@@ -843,7 +843,7 @@ export default function HealthReportsPage() {
                         </button>
                       </div>
                       {assessment.weightRecords.map((r, idx) => (
-                        <div key={r.id} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <div key={r.id} className="health-report-record-row" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
                           <input
                             type="text"
                             value={r.date}
@@ -889,7 +889,7 @@ export default function HealthReportsPage() {
                         </button>
                       </div>
                       {assessment.glucoseRecords.map((r, idx) => (
-                        <div key={r.id} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
+                        <div key={r.id} className="health-report-record-row" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
                           <input
                             type="text"
                             value={r.date}
@@ -926,7 +926,7 @@ export default function HealthReportsPage() {
                     III. BỆNH LÝ & THUỐC ĐANG SỬ DỤNG
                   </h3>
                   <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>1. Tiền sử bệnh nền:</div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <div className="health-report-conditions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
                       <input
                         type="checkbox"
@@ -995,7 +995,7 @@ export default function HealthReportsPage() {
 
                   <div style={{ marginBottom: '1rem' }}>
                     <label className="form-label">2. Tiền sử dị ứng</label>
-                    <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                    <div className="health-report-allergy-row" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.88rem' }}>
                         <input
                           type="checkbox"
@@ -1009,16 +1009,14 @@ export default function HealthReportsPage() {
                         placeholder="Dị ứng thuốc (nếu có)..."
                         value={assessment.allergy.drugAllergy || ''}
                         onChange={e => setAssessment(prev => ({ ...prev, allergy: { ...prev.allergy, drugAllergy: e.target.value, none: false } }))}
-                        className="form-input"
-                        style={{ width: '220px' }}
+                        className="form-input health-report-allergy-input"
                       />
                       <input
                         type="text"
                         placeholder="Dị ứng thức ăn (nếu có)..."
                         value={assessment.allergy.foodAllergy || ''}
                         onChange={e => setAssessment(prev => ({ ...prev, allergy: { ...prev.allergy, foodAllergy: e.target.value, none: false } }))}
-                        className="form-input"
-                        style={{ width: '220px' }}
+                        className="form-input health-report-allergy-input"
                       />
                     </div>
                   </div>
@@ -1505,7 +1503,7 @@ export default function HealthReportsPage() {
       {/* ========================================================================= */}
       {viewingReport && (
         <div className="modal-overlay print-modal-overlay">
-          <div className="modal-dialog modal-dialog-lg" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
+          <div className="modal-dialog modal-dialog-lg health-report-sheet-modal" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header no-print">
               <h2 className="modal-title">Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
               <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -1539,7 +1537,7 @@ export default function HealthReportsPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                  <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
                     <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
@@ -1566,12 +1564,12 @@ export default function HealthReportsPage() {
                 II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG
               </div>
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                <table className="table-wide-650" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
                   <thead>
                     <tr style={{ background: '#334155', color: '#ffffff' }}>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Chỉ số sinh tồn</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Kết quả đo</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Phân loại / Đánh giá ban đầu</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Chỉ số sinh tồn</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Kết quả đo</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Phân loại / Đánh giá ban đầu</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1579,35 +1577,43 @@ export default function HealthReportsPage() {
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.pulse}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        [{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                        [{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;
-                        [{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
+                        <div className="health-report-eval-options">
+                          <span className="health-report-eval-option">[{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh</span>
+                        </div>
                       </td>
                     </tr>
                     <tr>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.bloodPressure}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        [{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                        [{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;
-                        [{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
+                        <div className="health-report-eval-options">
+                          <span className="health-report-eval-option">[{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp</span>
+                        </div>
                       </td>
                     </tr>
                     <tr>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.temperature}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        [{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                        [{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;
-                        [{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
+                        <div className="health-report-eval-options">
+                          <span className="health-report-eval-option">[{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt</span>
+                        </div>
                       </td>
                     </tr>
                     <tr>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SPO2 (%)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.spo2}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        [{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;
-                        [{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
+                        <div className="health-report-eval-options">
+                          <span className="health-report-eval-option">[{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
+                          <span className="health-report-eval-option">[{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở</span>
+                        </div>
                       </td>
                     </tr>
                     <tr>
@@ -1644,7 +1650,12 @@ export default function HealthReportsPage() {
                 </div>
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
-                <b>2. Tiền sử dị ứng:</b> [{viewingReport.data.allergy.none ? ' x ' : '   '}] Không có &nbsp; [{viewingReport.data.allergy.drugAllergy ? ' x ' : '   '}] Dị ứng thuốc: {viewingReport.data.allergy.drugAllergy || '...'} &nbsp; [{viewingReport.data.allergy.foodAllergy ? ' x ' : '   '}] Dị ứng thức ăn: {viewingReport.data.allergy.foodAllergy || '...'}
+                <b>2. Tiền sử dị ứng:</b>
+                <div className="health-report-allergy-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem 1rem', marginTop: '0.15rem' }}>
+                  <span>[{viewingReport.data.allergy.none ? ' x ' : '   '}] Không có</span>
+                  <span>[{viewingReport.data.allergy.drugAllergy ? ' x ' : '   '}] Dị ứng thuốc: {viewingReport.data.allergy.drugAllergy || '...'}</span>
+                  <span>[{viewingReport.data.allergy.foodAllergy ? ' x ' : '   '}] Dị ứng thức ăn: {viewingReport.data.allergy.foodAllergy || '...'}</span>
+                </div>
               </div>
               <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}>
                 <b>3. Thuốc đang dùng hàng ngày:</b> {viewingReport.data.medicationsNotes || 'Theo đơn chỉ định hiện tại.'}
@@ -1655,45 +1666,45 @@ export default function HealthReportsPage() {
                 IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
               </div>
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table-wide-650" style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                <table className="table-wide-650" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
                   <thead>
                     <tr style={{ background: '#334155', color: '#ffffff' }}>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', whiteSpace: 'nowrap' }}>Hoạt động sinh hoạt thiết yếu</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Tự thực hiện</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Cần hỗ trợ một phần</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center', whiteSpace: 'nowrap' }}>Phụ thuộc hoàn toàn</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Hoạt động sinh hoạt thiết yếu</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Tự thực hiện</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Cần hỗ trợ một phần</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Phụ thuộc hoàn toàn</th>
                     </tr>
                   </thead>
                   <tbody>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.eating === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.eating === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.eating === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Tắm rửa / Vệ sinh cá nhân</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.bathing === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.bathing === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.bathing === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mặc quần áo</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.dressing === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.dressing === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.dressing === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Đi vệ sinh (Tiểu / Đại tiện)</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.toileting === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.toileting === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.toileting === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
                   </tr>
                   <tr>
                     <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Di chuyển (Đi lại, thay đổi tư thế)</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'INDEPENDENT' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'PARTIAL_ASSIST' ? '[ x ]' : '[   ]'}</td>
-                    <td style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'FULL_DEPEND' ? '[ x ]' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.mobility === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.mobility === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
+                    <td className={viewingReport.data.adl.mobility === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
                   </tr>
                 </tbody>
               </table>
@@ -1749,10 +1760,12 @@ export default function HealthReportsPage() {
                 VIII. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>
               <div className="health-report-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
-                <b>1. Mức độ chăm sóc đề xuất:</b> &nbsp;
-                <span>[{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ</span> &nbsp;
-                <span style={{ background: '#fef08a', padding: '2px 4px', borderRadius: '4px' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span> &nbsp;
-                <span>[{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện</span>
+                <b>1. Mức độ chăm sóc đề xuất:</b>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem 0.75rem', marginTop: '0.15rem' }}>
+                  <span>[{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ</span>
+                  <span style={{ background: '#fef08a', padding: '2px 4px', borderRadius: '4px' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span>
+                  <span>[{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện</span>
+                </div>
               </div>
 
               <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>

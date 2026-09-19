@@ -8,6 +8,9 @@ import { getElderIcon, formatResidentNameWithSalutation } from '../residents/res
 import {
   fetchMedicationOrders,
   createMedicationOrder,
+  copyMedicationOrders,
+  discontinueMedicationOrder,
+  fetchPreviousDayOrders,
   fetchDailyAdministrations,
   updateAdministrationStatus,
   fetchInventoryItems,
@@ -40,6 +43,7 @@ const TIMING_SLOT_CONFIG: Record<TimingSlot, { label: string; icon: string; time
   NOON: { label: 'Cữ Trưa', icon: '☀️', time: '11:30', color: '#10b981' },
   AFTERNOON: { label: 'Cữ Chiều', icon: '🍵', time: '16:30', color: '#3b82f6' },
   EVENING: { label: 'Cữ Tối', icon: '🌙', time: '20:00', color: '#8b5cf6' },
+  PRN: { label: 'Khi Cần (PRN)', icon: '🚨', time: 'Khi có chỉ định', color: '#ef4444' },
 };
 
 const INSTRUCTION_LABELS: Record<MealInstruction, string> = {
@@ -97,6 +101,12 @@ export default function MedicationInventoryPage() {
   const [exceptionModalAdmin, setExceptionModalAdmin] = useState<MedicationAdministration | null>(null);
   const [exceptionStatus, setExceptionStatus] = useState<AdministrationStatus>('HELD');
   const [exceptionNote, setExceptionNote] = useState<string>('');
+
+  // Copy Order / Suggestion Modal state
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
+  const [copyResidentId, setCopyResidentId] = useState<string>('');
+  const [selectedSourceOrderIds, setSelectedSourceOrderIds] = useState<string[]>([]);
+  const [copyTargetDate, setCopyTargetDate] = useState<string>(new Date().toISOString().slice(0, 10));
 
   // New Order Form state
   const [newOrderResidentId, setNewOrderResidentId] = useState<string>('');
@@ -185,6 +195,38 @@ export default function MedicationInventoryPage() {
       setNewOrderBrandName('');
       setNewOrderDiagnosis('');
       setNewOrderAllergy('');
+    },
+  });
+
+  const copyOrdersMutation = useMutation({
+    mutationFn: async () => {
+      if (!copyResidentId) {
+        throw new Error('Vui lòng chọn Người cao tuổi để sao chép y lệnh.');
+      }
+      if (selectedSourceOrderIds.length === 0) {
+        throw new Error('Vui lòng chọn ít nhất 1 y lệnh để sao chép.');
+      }
+      return copyMedicationOrders(actor!, {
+        residentId: copyResidentId,
+        sourceOrderIds: selectedSourceOrderIds,
+        targetDate: copyTargetDate,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['med-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['med-daily-admins'] });
+      setIsCopyModalOpen(false);
+      setSelectedSourceOrderIds([]);
+    },
+  });
+
+  const discontinueOrderMutation = useMutation({
+    mutationFn: async (orderId: string) => {
+      return discontinueMedicationOrder(actor!, orderId, 'Bác sĩ chỉ định ngưng phác đồ y lệnh');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['med-orders'] });
+      queryClient.invalidateQueries({ queryKey: ['med-daily-admins'] });
     },
   });
 
@@ -738,14 +780,29 @@ export default function MedicationInventoryPage() {
               </div>
 
               {canPrescribe ? (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => setIsNewOrderModalOpen(true)}
-                  style={{ fontWeight: 700 }}
-                >
-                  ➕ Kê Đơn / Thêm Y Lệnh Mới
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="btn btn-neutral"
+                    onClick={() => {
+                      setIsCopyModalOpen(true);
+                      if (residentsQuery.data && residentsQuery.data.length > 0 && !copyResidentId) {
+                        setCopyResidentId(residentsQuery.data[0].resident.residentId);
+                      }
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}
+                  >
+                    📋 Gợi ý / Sao Chép Y Lệnh Hôm Trước
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setIsNewOrderModalOpen(true)}
+                    style={{ fontWeight: 700 }}
+                  >
+                    ➕ Kê Đơn / Thêm Y Lệnh Mới
+                  </button>
+                </div>
               ) : (
                 <span className="badge badge-neutral">
                   Chỉ Nhân viên y tế mới có quyền phân chia thuốc
@@ -754,7 +811,7 @@ export default function MedicationInventoryPage() {
             </div>
 
             <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
-              <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+              <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                     <th style={{ padding: '0.75rem 1rem' }}>Người Cao Tuổi & Vị Trí</th>
@@ -765,18 +822,22 @@ export default function MedicationInventoryPage() {
                     <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thời Điểm Ăn</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Bác Sĩ Chỉ Định</th>
                     <th style={{ padding: '0.75rem 1rem' }}>Chẩn Đoán</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái & Thao Tác</th>
                   </tr>
                 </thead>
                 <tbody>
                   {ordersQuery.data?.map((order) => (
-                    <tr key={order.orderId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                    <tr key={order.orderId} style={{ borderBottom: '1px solid #f1f5f9', background: order.status === 'DISCONTINUED' ? '#f8fafc' : '#ffffff' }}>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <div style={{ fontWeight: 800, color: '#0f172a' }}>{getElderIcon((order as any).gender, order.residentName)} {formatResidentNameWithSalutation(order.residentName, (order as any).gender)}</div>
                         <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 600 }}>P.{order.room} ({order.bed})</div>
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
-                        <div style={{ fontWeight: 700, color: '#15803d', fontSize: '0.88rem' }}>💊 {order.drugName}</div>
+                        <div style={{ fontWeight: 700, color: order.status === 'DISCONTINUED' ? '#64748b' : '#15803d', fontSize: '0.88rem', textDecoration: order.status === 'DISCONTINUED' ? 'line-through' : 'none' }}>💊 {order.drugName}</div>
                         {order.brandName && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>({order.brandName})</div>}
+                        {order.copiedFromOrderId && (
+                          <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 600, marginTop: '0.1rem' }}>📋 Sao chép từ y lệnh trước</div>
+                        )}
                         {order.allergyWarning && (
                           <div style={{ fontSize: '0.75rem', color: '#dc2626', fontWeight: 700, marginTop: '0.15rem' }}>⚠️ {order.allergyWarning}</div>
                         )}
@@ -805,9 +866,37 @@ export default function MedicationInventoryPage() {
                       </td>
                       <td style={{ padding: '0.75rem 1rem' }}>
                         <div style={{ fontWeight: 600, color: '#334155' }}>🩺 {order.prescribedBy}</div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b' }}>Cấp ngày: {order.orderDate || order.startDate}</div>
                       </td>
                       <td style={{ padding: '0.75rem 1rem', fontSize: '0.82rem', color: '#4b5563' }}>
                         {order.diagnosisNote || '—'}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        {order.status === 'DISCONTINUED' ? (
+                          <span className="badge badge-neutral" style={{ fontSize: '0.72rem', color: '#dc2626', background: '#fef2f2' }}>
+                            🛑 Đã ngưng Y Lệnh
+                          </span>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem' }}>
+                            <span className="badge badge-success" style={{ fontSize: '0.72rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0', padding: '0.2rem 0.45rem' }} title="Không thể sửa trực tiếp sau khi lưu. Muốn thay đổi cần Ngưng y lệnh cũ & Kê y lệnh mới.">
+                              🔒 Đã duyệt & Lưu (Không sửa)
+                            </span>
+                            {canPrescribe && (
+                              <button
+                                type="button"
+                                className="btn btn-neutral"
+                                style={{ fontSize: '0.72rem', padding: '0.2rem 0.45rem', color: '#b91c1c', borderColor: '#fca5a5' }}
+                                onClick={() => {
+                                  if (window.confirm(`Bạn có chắc chắn muốn ngưng Y lệnh thuốc "${order.drugName}" cho cụ ${order.residentName}?`)) {
+                                    discontinueOrderMutation.mutate(order.orderId);
+                                  }
+                                }}
+                              >
+                                🛑 Ngưng Y Lệnh
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -1686,6 +1775,186 @@ export default function MedicationInventoryPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: SAO CHÉP / GỢI Ý Y LỆNH HÔM TRƯỚC */}
+      {isCopyModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsCopyModalOpen(false)}>
+          <div
+            className="modal-card"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.75rem',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              border: '1px solid #e2e8f0',
+              maxWidth: '680px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem' }}>
+              <div>
+                <h3 style={{ margin: 0, color: '#166534', fontSize: '1.2rem', fontWeight: 700 }}>
+                  📋 Gợi Ý / Sao Chép Y Lệnh Hôm Trước
+                </h3>
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem' }}>
+                  Sao chép y lệnh điều trị giống hệt hoặc giống một phần từ hôm trước sang ngày hôm nay
+                </div>
+              </div>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setIsCopyModalOpen(false)}
+                title="Đóng cửa sổ"
+                aria-label="Đóng cửa sổ"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+              <label className="field-group">
+                <span className="field-label">Chọn Người cao tuổi *</span>
+                <select
+                  className="text-input"
+                  value={copyResidentId}
+                  onChange={(e) => {
+                    setCopyResidentId(e.target.value);
+                    setSelectedSourceOrderIds([]);
+                  }}
+                >
+                  <option value="">-- Chọn Cụ --</option>
+                  {residentsQuery.data?.map((r) => (
+                    <option key={r.resident.residentId} value={r.resident.residentId}>
+                      {r.resident.displayName} — P.{r.resident.room || '101'}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="field-group">
+                <span className="field-label">Ngày Cấp Y Lệnh Mới *</span>
+                <input
+                  type="date"
+                  className="text-input"
+                  value={copyTargetDate}
+                  onChange={(e) => setCopyTargetDate(e.target.value)}
+                />
+              </label>
+            </div>
+
+            {/* List of active/previous orders for selected resident */}
+            {copyResidentId ? (
+              <div style={{ marginBottom: '1.25rem' }}>
+                {(() => {
+                  const residentOrders = ordersQuery.data?.filter(
+                    (o) => o.residentId === copyResidentId && o.status === 'ACTIVE'
+                  ) || [];
+
+                  const allSelected = residentOrders.length > 0 && selectedSourceOrderIds.length === residentOrders.length;
+
+                  if (residentOrders.length === 0) {
+                    return (
+                      <div style={{ padding: '1.5rem', textAlign: 'center', background: '#f8fafc', borderRadius: '0.5rem', border: '1px border-dashed #cbd5e1', color: '#64748b' }}>
+                        🚫 Chưa có y lệnh khả dụng nào của cụ này từ hôm trước để sao chép.
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', background: '#f0fdf4', padding: '0.6rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #bbf7d0' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 700, color: '#166534', cursor: 'pointer', fontSize: '0.88rem' }}>
+                          <input
+                            type="checkbox"
+                            checked={allSelected}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedSourceOrderIds(residentOrders.map((o) => o.orderId));
+                              } else {
+                                setSelectedSourceOrderIds([]);
+                              }
+                            }}
+                          />
+                          ⚡ Chọn Tất Cả ({residentOrders.length} Y Lệnh) — Sao Chép Giống Hệt
+                        </label>
+                        <span style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 600 }}>
+                          Đã chọn: {selectedSourceOrderIds.length}/{residentOrders.length}
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '280px', overflowY: 'auto' }}>
+                        {residentOrders.map((ord) => {
+                          const isChecked = selectedSourceOrderIds.includes(ord.orderId);
+                          return (
+                            <div
+                              key={ord.orderId}
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem',
+                                padding: '0.75rem',
+                                borderRadius: '0.5rem',
+                                border: isChecked ? '1px solid #166534' : '1px solid #e2e8f0',
+                                background: isChecked ? '#f0fdf4' : '#ffffff',
+                              }}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedSourceOrderIds([...selectedSourceOrderIds, ord.orderId]);
+                                  } else {
+                                    setSelectedSourceOrderIds(selectedSourceOrderIds.filter((id) => id !== ord.orderId));
+                                  }
+                                }}
+                              />
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.88rem' }}>
+                                  💊 {ord.drugName} {ord.brandName ? `(${ord.brandName})` : ''} — <span style={{ color: '#166534' }}>{ord.dosage}</span>
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.15rem' }}>
+                                  Đường dùng: <strong>{ROUTE_LABELS[ord.route]}</strong> | Bữa: <strong>{INSTRUCTION_LABELS[ord.instruction]}</strong> | Cữ: {ord.timingSlots.map((s) => TIMING_SLOT_CONFIG[s].label).join(', ')}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            ) : (
+              <div style={{ padding: '1.5rem', textAlign: 'center', background: '#f8fafc', borderRadius: '0.5rem', color: '#64748b', marginBottom: '1.25rem' }}>
+                👈 Vui lòng chọn Người cao tuổi ở trên để tải danh sách Y lệnh hôm trước.
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                className="btn btn-neutral"
+                onClick={() => setIsCopyModalOpen(false)}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                disabled={copyOrdersMutation.isPending || selectedSourceOrderIds.length === 0}
+                onClick={() => copyOrdersMutation.mutate()}
+                style={{ fontWeight: 700, background: '#166534', borderColor: '#166534' }}
+              >
+                {copyOrdersMutation.isPending ? 'Đang tạo Y lệnh...' : `📋 Duyệt & Sao Chép (${selectedSourceOrderIds.length}) Y Lệnh Mới`}
+              </button>
+            </div>
           </div>
         </div>
       )}
