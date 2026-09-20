@@ -43,6 +43,7 @@ export interface CreateHealthReportInput {
   periodStart: string;
   periodEnd: string;
   summary?: string;
+  initialStatus?: HealthReportStatus;
 }
 
 export interface DeliveryInput {
@@ -149,7 +150,7 @@ export async function createHealthReport(
   input: CreateHealthReportInput,
 ): Promise<HealthReportRow> {
   const initialStatus: HealthReportStatus =
-    actor.actorRole === 'MEDICAL_HEAD' ? 'APPROVED' : 'UNDER_REVIEW';
+    input.initialStatus || (actor.actorRole === 'MEDICAL_HEAD' ? 'APPROVED' : 'DRAFT');
 
   const newReport: HealthReportRow = {
     health_report_id: `hr-${Date.now()}`,
@@ -168,7 +169,7 @@ export async function createHealthReport(
     const res = await apiRequest<HealthReportRow>('/health-reports', {
       actor,
       method: 'POST',
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...input, initialStatus }),
     });
     if (res && res.health_report_id) {
       mockHealthReports = [res, ...mockHealthReports];
@@ -208,7 +209,35 @@ export async function updateHealthReport(
     console.warn('[TamAnCare API] Offline mode active for updateHealthReport:', error);
   }
 
-  return mockHealthReports[idx] || { health_report_id: id, status: status || 'UNDER_REVIEW', summary: summaryData } as any;
+  return mockHealthReports[idx] || { health_report_id: id, status: status || 'DRAFT', summary: summaryData } as any;
+}
+
+export async function submitHealthReportForReview(
+  actor: HumanActorSession,
+  id: string,
+  summaryData?: string,
+): Promise<HealthReportRow> {
+  const idx = mockHealthReports.findIndex((item) => item.health_report_id === id);
+  if (idx !== -1) {
+    mockHealthReports[idx] = {
+      ...mockHealthReports[idx],
+      summary: summaryData || mockHealthReports[idx].summary,
+      status: 'UNDER_REVIEW',
+      updated_at: new Date().toISOString(),
+    };
+  }
+
+  try {
+    await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/start-review`, {
+      actor,
+      method: 'POST',
+      body: summaryData ? JSON.stringify({ summary: summaryData }) : undefined,
+    });
+  } catch (error) {
+    console.warn('[TamAnCare API] Offline mode active for submitHealthReportForReview:', error);
+  }
+
+  return mockHealthReports[idx] || { health_report_id: id, status: 'UNDER_REVIEW' } as any;
 }
 
 export async function approveHealthReport(

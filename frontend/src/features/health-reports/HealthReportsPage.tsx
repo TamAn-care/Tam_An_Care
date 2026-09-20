@@ -241,6 +241,14 @@ const STATUS_BADGES: Record<HealthReportStatus, { label: string; className: stri
 export default function HealthReportsPage() {
   const { actor } = useActor();
 
+  // Role-based Access Control (RBAC) Definitions
+  const isMedicalHead =
+    actor?.actorRole === 'MEDICAL_HEAD' ||
+    actor?.actorRole === 'SUPERVISOR' ||
+    actor?.actorRole === 'CARE_MANAGER' ||
+    actor?.actorRole === 'ADMIN';
+  const isNurseOrStaff = !isMedicalHead;
+
   // Top level 2-Tab Navigation State
   const [activeTab, setActiveTab] = useState<'DAILY_HEALTH' | 'PERIODIC_SUMMARY'>('DAILY_HEALTH');
 
@@ -455,6 +463,23 @@ export default function HealthReportsPage() {
     }
   };
 
+  // Submit report to Medical Head for review (Nurse action)
+  const handleSubmitForReviewDirectly = async (reportId: string) => {
+    if (!actor) return;
+    try {
+      setBusy(true);
+      setMessage('');
+      await startHealthReportReview(actor, reportId);
+      await refreshReports();
+      setMessage('✅ Đã chuyển/trình Phụ trách Y tế phê duyệt thành công báo cáo sức khỏe định kỳ!');
+    } catch (err: any) {
+      console.error('Lỗi khi trình Phụ trách Y tế duyệt:', err);
+      setMessage(`❌ Không trình duyệt được: ${err.message || 'Lỗi hệ thống'}`);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   // Helper to auto-evaluate vitals on number input
   const handlePulseChange = (val: string) => {
     const num = parseFloat(val);
@@ -496,24 +521,27 @@ export default function HealthReportsPage() {
   };
 
   // Submit Assessment Form to Create/Update Report (Tab 2)
-  const handleSaveReport = async (e: React.FormEvent, isFinalApprove: boolean = false) => {
+  const handleSaveReport = async (
+    e: React.FormEvent,
+    actionType: 'SAVE_DRAFT' | 'SUBMIT_REVIEW' | 'APPROVE' = 'SAVE_DRAFT'
+  ) => {
     e.preventDefault();
     if (!actor) return;
     if (!selectedResidentId) {
-      setMessage('Vui lòng chọn người cao tuổi cần lập báo cáo tổng hợp sức khỏe.');
+      setMessage('⚠️ Vui lòng chọn người cao tuổi cần lập báo cáo tổng hợp sức khỏe.');
       return;
     }
     if (!periodStart || !periodEnd) {
-      setMessage('Vui lòng chọn khoảng thời gian kỳ báo cáo.');
+      setMessage('⚠️ Vui lòng chọn khoảng thời gian kỳ báo cáo.');
       return;
     }
 
     try {
       setBusy(true);
       setMessage('');
-      
+
       const currentAssessment = { ...assessment };
-      if (isFinalApprove) {
+      if (actionType === 'APPROVE') {
         currentAssessment.medicalHeadApproval = {
           approvedBy: actor.displayName || 'BS. Lê Hoàng Nam',
           approvedRole: 'Phụ trách Y tế',
@@ -525,27 +553,39 @@ export default function HealthReportsPage() {
 
       if (editingReportId) {
         // Update existing report
-        if (isFinalApprove) {
+        if (actionType === 'APPROVE') {
           await approveHealthReport(actor, editingReportId, serializedData);
           setMessage('✅ Phụ trách Y tế đã rà soát, chỉnh sửa và phê duyệt ký số thành công báo cáo!');
-        } else {
+        } else if (actionType === 'SUBMIT_REVIEW') {
+          await startHealthReportReview(actor, editingReportId);
           await updateHealthReport(actor, editingReportId, serializedData, 'UNDER_REVIEW');
-          setMessage('✅ Đã lưu thông tin bổ sung/chỉnh sửa của Phụ trách Y tế!');
+          setMessage('✅ Đã trình Phụ trách Y tế phê duyệt báo cáo sức khỏe định kỳ thành công!');
+        } else {
+          await updateHealthReport(actor, editingReportId, serializedData, isMedicalHead ? 'UNDER_REVIEW' : 'DRAFT');
+          setMessage('✅ Đã lưu thành công bản nháp / cập nhật thông tin báo cáo sức khỏe!');
         }
       } else {
         // Create new report
+        const createdStatus: HealthReportStatus =
+          actionType === 'APPROVE' ? 'APPROVED' : actionType === 'SUBMIT_REVIEW' ? 'UNDER_REVIEW' : 'DRAFT';
+
         const created = await createHealthReport(actor, {
           residentId: selectedResidentId,
           reportType: 'MONTHLY',
           periodStart: `${periodStart}T00:00:00.000Z`,
           periodEnd: `${periodEnd}T23:59:59.999Z`,
           summary: serializedData,
+          initialStatus: createdStatus,
         });
 
-        if (isFinalApprove && created && created.health_report_id) {
+        if (actionType === 'APPROVE' && created && created.health_report_id) {
           await approveHealthReport(actor, created.health_report_id, serializedData);
+          setMessage('✅ Phụ trách Y tế đã khởi tạo & phê duyệt thành công Báo Cáo Sức Khỏe!');
+        } else if (actionType === 'SUBMIT_REVIEW') {
+          setMessage('✅ Đã khởi tạo và trình Phụ trách Y tế phê duyệt thành công Báo Cáo Sức Khỏe!');
+        } else {
+          setMessage('✅ Đã khởi tạo và lưu bản nháp thành công Báo Cáo Sức Khỏe Định Kỳ!');
         }
-        setMessage('✅ Đã khởi tạo và lưu thành công Báo Cáo Sức Khỏe Định Kỳ!');
       }
 
       await refreshReports();
@@ -1022,28 +1062,54 @@ export default function HealthReportsPage() {
                               📄 Xem & In Báo Cáo
                             </button>
 
-                            {/* Phụ trách Y tế Editing/Reviewing Button */}
-                            {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED' || report.status === 'REVISION_REQUIRED') && (
-                              <button
-                                onClick={() => openMedicalHeadReview(report)}
-                                className="btn btn-sm btn-warning"
-                                style={{ fontWeight: 700 }}
-                                title="Phụ trách Y tế rà soát, chỉnh sửa thông tin chưa đúng và bổ sung nội dung trước khi duyệt"
-                              >
-                                ✏️ Rà Soát & Sửa (Phụ trách Y tế)
-                              </button>
+                            {/* NURSE / STAFF ACTION BUTTONS */}
+                            {isNurseOrStaff && (report.status === 'DRAFT' || report.status === 'GENERATED' || report.status === 'REVISION_REQUIRED') && (
+                              <>
+                                <button
+                                  onClick={() => openMedicalHeadReview(report)}
+                                  className="btn btn-sm btn-secondary"
+                                  title="Chỉnh sửa bản nháp trước khi chuyển Phụ trách Y tế duyệt"
+                                >
+                                  ✏️ Chỉnh Sửa
+                                </button>
+                                <button
+                                  onClick={() => handleSubmitForReviewDirectly(report.health_report_id)}
+                                  className="btn btn-sm btn-warning"
+                                  style={{ fontWeight: 700 }}
+                                  title="Chuyển/trình Phụ trách Y tế rà soát & phê duyệt"
+                                >
+                                  📤 Trình Phụ trách Y tế duyệt
+                                </button>
+                              </>
                             )}
 
-                            {/* Quick Approval Button for Medical Head */}
-                            {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED' || report.status === 'REVISION_REQUIRED') && (
-                              <button
-                                onClick={() => handleQuickApproveMedical(report.health_report_id)}
-                                className="btn btn-sm btn-success"
-                                style={{ fontWeight: 700 }}
-                                title="Phụ trách y tế phê duyệt chuyên môn & ký số"
-                              >
-                                🩺 Phụ trách Y tế Phê Duyệt
-                              </button>
+                            {isNurseOrStaff && report.status === 'UNDER_REVIEW' && (
+                              <span className="badge badge-warning" style={{ fontSize: '0.78rem', padding: '0.35rem 0.6rem' }} title="Báo cáo đã gửi trình Phụ trách Y tế duyệt, không thể sửa">
+                                🔒 Đã trình Phụ trách Y tế
+                              </span>
+                            )}
+
+                            {/* MEDICAL HEAD ACTION BUTTONS */}
+                            {isMedicalHead && (report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED' || report.status === 'REVISION_REQUIRED') && (
+                              <>
+                                <button
+                                  onClick={() => openMedicalHeadReview(report)}
+                                  className="btn btn-sm btn-warning"
+                                  style={{ fontWeight: 700 }}
+                                  title="Phụ trách Y tế rà soát, chỉnh sửa thông tin chưa đúng và bổ sung nội dung trước khi duyệt"
+                                >
+                                  ✏️ Rà Soát & Sửa (Phụ trách Y tế)
+                                </button>
+
+                                <button
+                                  onClick={() => handleQuickApproveMedical(report.health_report_id)}
+                                  className="btn btn-sm btn-success"
+                                  style={{ fontWeight: 700 }}
+                                  title="Phụ trách Y tế phê duyệt chuyên môn & ký số"
+                                >
+                                  🩺 Phụ trách Y tế Phê Duyệt
+                                </button>
+                              </>
                             )}
 
                             {/* Family Delivery Button after Approval */}
@@ -1080,10 +1146,16 @@ export default function HealthReportsPage() {
             <div className="modal-header">
               <div>
                 <h2 className="modal-title" style={{ margin: 0 }}>
-                  {editingReportId ? `Rà Soát, Bổ Sung & Phê Duyệt Báo Cáo Sức Khỏe (Mã: ${editingReportId})` : 'Lập Báo Cáo Sức Khỏe Định Kỳ Gửi Gia Đình'}
+                  {editingReportId
+                    ? isMedicalHead
+                      ? `Rà Soát, Bổ Sung & Phê Duyệt Báo Cáo Sức Khỏe (Mã: ${editingReportId})`
+                      : `Chỉnh Sửa Bản Nháp Báo Cáo Sức Khỏe (Mã: ${editingReportId})`
+                    : 'Lập Báo Cáo Sức Khỏe Định Kỳ Gửi Gia Đình'}
                 </h2>
                 <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, marginTop: '0.2rem' }}>
-                  Phụ trách Y tế kiểm tra, điều chỉnh thông tin chưa đúng, bổ sung nội dung còn thiếu từ phiếu tổng hợp trước khi phê duyệt.
+                  {isMedicalHead
+                    ? 'Phụ trách Y tế kiểm tra, điều chỉnh thông tin chưa đúng, bổ sung nội dung còn thiếu từ phiếu tổng hợp trước khi phê duyệt.'
+                    : 'Nhân viên y tế tổng hợp thông tin sinh hiệu hàng ngày, tự điều chỉnh và gửi trình Phụ trách Y tế duyệt.'}
                 </div>
               </div>
               <button onClick={() => setIsEditorOpen(false)} className="modal-close">
@@ -1091,7 +1163,7 @@ export default function HealthReportsPage() {
               </button>
             </div>
 
-            <form onSubmit={(e) => handleSaveReport(e, false)}>
+            <form onSubmit={(e) => handleSaveReport(e, 'SAVE_DRAFT')}>
               <div className="modal-body">
                 {/* Synthesis Notification Banner */}
                 {selectedResidentId && (
@@ -1349,23 +1421,51 @@ export default function HealthReportsPage() {
                 </button>
 
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button
-                    type="submit"
-                    disabled={busy || synthesizing}
-                    className="btn btn-secondary"
-                  >
-                    💾 Lưu Chỉnh Sửa
-                  </button>
+                  {isNurseOrStaff ? (
+                    <>
+                      <button
+                        type="button"
+                        disabled={busy || synthesizing}
+                        onClick={(e) => handleSaveReport(e as any, 'SAVE_DRAFT')}
+                        className="btn btn-secondary"
+                        style={{ fontWeight: 600 }}
+                      >
+                        💾 Lưu Bản Nháp
+                      </button>
 
-                  <button
-                    type="button"
-                    disabled={busy || synthesizing}
-                    onClick={(e) => handleSaveReport(e as any, true)}
-                    className="btn btn-success"
-                    style={{ fontWeight: 800, background: '#166534', color: '#ffffff' }}
-                  >
-                    🩺 Phụ Trách Y Tế Phê Duyệt & Ký Số
-                  </button>
+                      <button
+                        type="button"
+                        disabled={busy || synthesizing}
+                        onClick={(e) => handleSaveReport(e as any, 'SUBMIT_REVIEW')}
+                        className="btn btn-warning"
+                        style={{ fontWeight: 700 }}
+                      >
+                        📤 Trình Phụ trách Y tế duyệt
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        disabled={busy || synthesizing}
+                        onClick={(e) => handleSaveReport(e as any, 'SAVE_DRAFT')}
+                        className="btn btn-secondary"
+                        style={{ fontWeight: 600 }}
+                      >
+                        💾 Lưu Chỉnh Sửa
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={busy || synthesizing}
+                        onClick={(e) => handleSaveReport(e as any, 'APPROVE')}
+                        className="btn btn-success"
+                        style={{ fontWeight: 800, background: '#166534', color: '#ffffff' }}
+                      >
+                        🩺 Phụ Trách Y Tế Phê Duyệt & Ký Số
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </form>
