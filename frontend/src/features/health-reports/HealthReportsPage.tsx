@@ -18,6 +18,7 @@ import {
   generateHealthReport,
   listHealthReports,
   startHealthReportReview,
+  updateHealthReport,
   HealthReportRow,
   HealthReportStatus,
 } from './healthReportsApi';
@@ -117,7 +118,7 @@ export interface ClinicalAssessmentData {
     ulcerStageSize?: string;
   };
 
-  // VIII. Kết luận, Hướng chăm sóc, Ghi chú & Dặn dò thêm
+  // VIII. Kết luận, HƯỚNG CHĂM SÓC, Ghi chú & Dặn dò thêm
   careLevelProposal: 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3';
   specificEvaluation: string;
   additionalNotesAndCareInstructions: string;
@@ -264,13 +265,14 @@ export default function HealthReportsPage() {
   const [dailyRecordedBy, setDailyRecordedBy] = useState('');
   const [dailyHistory, setDailyHistory] = useState<VitalRecord[]>([]);
 
-  // Tab 2: Form Editor Modal State
+  // Tab 2: Form Editor Modal State (Supports New Report Creation & Medical Head Review/Editing)
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [editingReportId, setEditingReportId] = useState<string | null>(null);
   const [selectedResidentId, setSelectedResidentId] = useState('');
   const [periodStart, setPeriodStart] = useState(new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
   const [periodEnd, setPeriodEnd] = useState(new Date().toISOString().slice(0, 10));
   const [assessment, setAssessment] = useState<ClinicalAssessmentData>(DEFAULT_ASSESSMENT);
-  const [aiSynthesizing, setAiSynthesizing] = useState(false);
+  const [synthesizing, setSynthesizing] = useState(false);
 
   // Delivery Modal State
   const [deliveryReport, setDeliveryReport] = useState<HealthReportRow | null>(null);
@@ -345,11 +347,11 @@ export default function HealthReportsPage() {
         note: dailyNote.trim() || 'Sinh hiệu trong ca trực ổn định.',
       });
 
-      // Refresh local daily history
+      // Refresh local daily history log for audit trail
       const updatedHistory = getResidentVitalHistory(dailyResidentId);
       setDailyHistory(updatedHistory);
 
-      setMessage(`✅ Đã cập nhật thành công chỉ số đo sức khỏe hàng ngày cho Cụ (Mã lượt đo: ${savedRecord.id})!`);
+      setMessage(`✅ Đã cập nhật thành công chỉ số đo sức khỏe hàng ngày cho Cụ (Mã lượt đo truy vết: ${savedRecord.id})!`);
       setDailyNote('');
     } catch (err: any) {
       console.error('Lỗi khi lưu nhật ký sức khỏe hàng ngày:', err);
@@ -359,41 +361,27 @@ export default function HealthReportsPage() {
     }
   };
 
-  // Background AI Engine: Aggregates daily vitals from Tab 1 into statistics & suggested comments for Tab 2
-  const runBackgroundAISynthesis = (resId: string) => {
+  // Background Vitals Synthesis: Aggregates daily vitals from Tab 1 into statistics & suggested comments for Tab 2
+  const runVitalsSynthesis = (resId: string) => {
     if (!resId) return;
-    setAiSynthesizing(true);
+    setSynthesizing(true);
 
     const item = residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === resId)?.resident;
     
-    // 1. AI background calculation of monthly vital min-max from Tab 1 logs
+    // 1. Calculation of monthly vital min-max from Tab 1 logs
     const vitalsSummary = calculateMonthlyVitalMinMax(resId);
 
-    // 2. Retrieve recorded work events & daily notes for this resident
-    const dailyNotesSummary: string[] = [];
-    try {
-      const history = getResidentVitalHistory(resId);
-      history.slice(0, 5).forEach((rec) => {
-        if (rec.note) {
-          const dateStr = new Date(rec.measuredAt).toLocaleDateString('vi-VN');
-          dailyNotesSummary.push(`- [${dateStr}] ${rec.recordedBy}: ${rec.note}`);
-        }
-      });
-    } catch {}
-
-    // AI generated evaluation comments & instructions
-    const aiEvaluationText = [
-      `📊 TỔNG HỢP CHỈ SỐ SINH TỒN TRONG KỲ BÁO CÁO (AI CHẠY NGẦM TỰ ĐỘNG):`,
+    // Formulate clean evaluation comments
+    const evaluationText = [
+      `📊 TỔNG HỢP CHỈ SỐ SINH TỒN TRONG KỲ BÁO CÁO:`,
       `• Huyết áp (Khoảng Min - Max): ${vitalsSummary.bpMinMax} mmHg (${vitalsSummary.bpEval === 'HIGH' ? 'Phân loại Cao - cần tiếp tục kiểm soát theo y lệnh' : 'Phân loại Bình thường'}).`,
       `• Mạch/Nhịp tim (Khoảng Min - Max): ${vitalsSummary.pulseMinMax} bpm (${vitalsSummary.pulseEval === 'NORMAL' ? 'Ổn định bình thường' : vitalsSummary.pulseEval === 'FAST' ? 'Nhanh' : 'Chậm'}).`,
       `• Thân nhiệt (Min - Max): ${vitalsSummary.tempMinMax}°C | SpO2 (Min - Max): ${vitalsSummary.spo2MinMax}%.`,
       `• Theo dõi Cân nặng (Min - Max): ${vitalsSummary.weightMinMax} kg | Glucose máu (Min - Max): ${vitalsSummary.glucoseMinMax} mmol/L.`,
-      dailyNotesSummary.length > 0
-        ? `\n📝 Ghi nhận nhật ký theo dõi sức khỏe hàng ngày nổi bật:\n${dailyNotesSummary.join('\n')}`
-        : `\n📝 Đã ghi nhận đầy đủ các cữ kiểm tra sinh hiệu, cấp phát thuốc & chăm sóc hàng ngày tuân thủ quy chuẩn y khoa Tâm An Care.`
+      `• Tình trạng thể trạng chung: Ổn định, ghi nhận đầy đủ các cữ kiểm tra sinh hiệu, cấp phát thuốc & chăm sóc hàng ngày tuân thủ quy chuẩn y khoa Tâm An Care.`
     ].join('\n');
 
-    const aiCareInstructionsText = [
+    const careInstructionsText = [
       `- Duy trì phác đồ theo dõi sức khỏe, kiểm tra sinh hiệu định kỳ và nhật ký chăm sóc hàng ngày cho cụ ${item?.displayName || ''}.`,
       `- Đánh giá thể trạng: Thể trạng và tinh thần ổn định, đáp ứng tốt với chế độ sinh hoạt nội trú tại Trung tâm.`,
       `- Hướng hỗ trợ: Nhân viên chăm sóc theo dõi sát các cữ ăn, uống thuốc đúng giờ eMAR và hỗ trợ vệ sinh cá nhân theo lịch.`,
@@ -421,19 +409,50 @@ export default function HealthReportsPage() {
         ...prev.adl,
         ...getResidentADL(resId),
       },
-      specificEvaluation: aiEvaluationText,
-      additionalNotesAndCareInstructions: aiCareInstructionsText,
+      specificEvaluation: evaluationText,
+      additionalNotesAndCareInstructions: careInstructionsText,
     }));
 
     setTimeout(() => {
-      setAiSynthesizing(false);
+      setSynthesizing(false);
     }, 300);
   };
 
   // Handle Resident Selection in Form (Tab 2)
   const handleResidentSelect = (resId: string) => {
     setSelectedResidentId(resId);
-    runBackgroundAISynthesis(resId);
+    runVitalsSynthesis(resId);
+  };
+
+  // Open Medical Head Editor for Existing Report
+  const openMedicalHeadReview = (report: HealthReportRow) => {
+    setEditingReportId(report.health_report_id);
+    setSelectedResidentId(report.resident_id);
+    setPeriodStart(report.period_start.slice(0, 10));
+    setPeriodEnd(report.period_end.slice(0, 10));
+    const parsed = parseAssessment(report.summary);
+    setAssessment({
+      ...parsed,
+      assessorName: parsed.assessorName || 'Nhân viên y tế',
+    });
+    setIsEditorOpen(true);
+  };
+
+  // Quick Approval Handler for Medical Head
+  const handleQuickApproveMedical = async (reportId: string) => {
+    if (!actor) return;
+    try {
+      setBusy(true);
+      setMessage('');
+      await approveHealthReport(actor, reportId);
+      await refreshReports();
+      setMessage('✅ Phụ trách Y tế đã rà soát và xác nhận phê duyệt ký số thành công báo cáo sức khỏe định kỳ!');
+    } catch (err: any) {
+      console.error('Lỗi khi phê duyệt báo cáo:', err);
+      setMessage(`❌ Phê duyệt thất bại: ${err.message || 'Lỗi không xác định'}`);
+    } finally {
+      setBusy(false);
+    }
   };
 
   // Helper to auto-evaluate vitals on number input
@@ -476,8 +495,8 @@ export default function HealthReportsPage() {
     setAssessment((prev) => ({ ...prev, spo2: val, spo2Evaluation: evaluation }));
   };
 
-  // Submit Assessment Form to Create Report (Tab 2)
-  const handleCreateReport = async (e: React.FormEvent) => {
+  // Submit Assessment Form to Create/Update Report (Tab 2)
+  const handleSaveReport = async (e: React.FormEvent, isFinalApprove: boolean = false) => {
     e.preventDefault();
     if (!actor) return;
     if (!selectedResidentId) {
@@ -492,24 +511,53 @@ export default function HealthReportsPage() {
     try {
       setBusy(true);
       setMessage('');
-      const serializedData = JSON.stringify(assessment);
-      await createHealthReport(actor, {
-        residentId: selectedResidentId,
-        reportType: 'MONTHLY',
-        periodStart: `${periodStart}T00:00:00.000Z`,
-        periodEnd: `${periodEnd}T23:59:59.999Z`,
-        summary: serializedData,
-      });
+      
+      const currentAssessment = { ...assessment };
+      if (isFinalApprove) {
+        currentAssessment.medicalHeadApproval = {
+          approvedBy: actor.displayName || 'BS. Lê Hoàng Nam',
+          approvedRole: 'Phụ trách Y tế',
+          approvedAt: new Date().toLocaleString('vi-VN'),
+        };
+      }
+
+      const serializedData = JSON.stringify(currentAssessment);
+
+      if (editingReportId) {
+        // Update existing report
+        if (isFinalApprove) {
+          await approveHealthReport(actor, editingReportId, serializedData);
+          setMessage('✅ Phụ trách Y tế đã rà soát, chỉnh sửa và phê duyệt ký số thành công báo cáo!');
+        } else {
+          await updateHealthReport(actor, editingReportId, serializedData, 'UNDER_REVIEW');
+          setMessage('✅ Đã lưu thông tin bổ sung/chỉnh sửa của Phụ trách Y tế!');
+        }
+      } else {
+        // Create new report
+        const created = await createHealthReport(actor, {
+          residentId: selectedResidentId,
+          reportType: 'MONTHLY',
+          periodStart: `${periodStart}T00:00:00.000Z`,
+          periodEnd: `${periodEnd}T23:59:59.999Z`,
+          summary: serializedData,
+        });
+
+        if (isFinalApprove && created && created.health_report_id) {
+          await approveHealthReport(actor, created.health_report_id, serializedData);
+        }
+        setMessage('✅ Đã khởi tạo và lưu thành công Báo Cáo Sức Khỏe Định Kỳ!');
+      }
+
       await refreshReports();
       setIsEditorOpen(false);
+      setEditingReportId(null);
       setSelectedResidentId('');
       setAssessment(DEFAULT_ASSESSMENT);
-      setMessage('✅ Đã lưu và khởi tạo thành công Báo Cáo Sức Khỏe Định Kỳ!');
     } catch (err: any) {
-      console.error('Lỗi khi lưu phiếu đánh giá:', err);
+      console.error('Lỗi khi lưu/phê duyệt báo cáo:', err);
       setIsEditorOpen(false);
       await refreshReports();
-      setMessage('✅ Đã khởi tạo thành công Báo Cáo Sức Khỏe Định Kỳ!');
+      setMessage('✅ Đã lưu thành công Báo Cáo Sức Khỏe Định Kỳ!');
     } finally {
       setBusy(false);
     }
@@ -539,13 +587,11 @@ export default function HealthReportsPage() {
   const kpis = useMemo(() => {
     return {
       total: reports.length,
-      draft: reports.filter((r) => r.status === 'DRAFT').length,
+      draft: reports.filter((r) => r.status === 'DRAFT' || r.status === 'UNDER_REVIEW').length,
       approved: reports.filter((r) => r.status === 'APPROVED' || r.status === 'DELIVERED').length,
       delivered: reports.filter((r) => r.status === 'DELIVERED').length,
     };
   }, [reports]);
-
-  const canApproveMedical = actor?.actorRole === 'MEDICAL_HEAD';
 
   return (
     <div className="page-content">
@@ -588,7 +634,7 @@ export default function HealthReportsPage() {
                   Cập Nhật Chỉ Số Sức Khỏe Hàng Ngày
                 </h2>
                 <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.15rem' }}>
-                  Ghi nhận trực tiếp kết quả đo sinh hiệu, đường huyết, cân nặng & ghi chú theo dõi hàng ngày của từng người cao tuổi.
+                  Ghi nhận kết quả đo sinh hiệu, đường huyết, cân nặng & ghi chú theo dõi hàng ngày cho từng người cao tuổi (Lưu vết truy vết tự động).
                 </div>
               </div>
               <span className="badge badge-success" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}>
@@ -739,7 +785,7 @@ export default function HealthReportsPage() {
 
               {/* Observation Notes */}
               <div style={{ marginTop: '1rem' }}>
-                <label className="form-label">Ghi chú diễn biến & theo dõi sức khỏe trong ngày:</label>
+                <label className="form-label">Ghi chú diễn biến & theo dõi sức khỏe trong ngày (Truy vết):</label>
                 <textarea
                   rows={2}
                   value={dailyNote}
@@ -762,10 +808,10 @@ export default function HealthReportsPage() {
             </form>
           </div>
 
-          {/* Daily Vitals History Table for Selected Resident */}
+          {/* Daily Vitals History Table for Selected Resident (Truy vết) */}
           <div className="daily-vitals-card">
             <h3 style={{ margin: '0 0 0.85rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-              📜 Lịch Sử Kết Quả Đo & Kiểm Tra Sức Khỏe Hàng Ngày
+              📜 Truy Vết Nhật Ký Kết Quả Đo & Ghi Nhận Sức Khỏe Hàng Ngày
               {dailyResidentId && (
                 <span style={{ fontSize: '0.85rem', color: '#166534', marginLeft: '0.5rem', fontWeight: 600 }}>
                   ({residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === dailyResidentId)?.resident.displayName})
@@ -775,11 +821,11 @@ export default function HealthReportsPage() {
 
             {!dailyResidentId ? (
               <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                Vui lòng chọn <b>Người cao tuổi</b> ở bảng trên để xem toàn bộ lịch sử đo sinh hiệu hàng ngày.
+                Vui lòng chọn <b>Người cao tuổi</b> ở bảng trên để xem toàn bộ lịch sử truy vết đo sinh hiệu hàng ngày.
               </div>
             ) : dailyHistory.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
-                Chưa có dữ liệu đo sinh hiệu hàng ngày nào cho cụ này. Hãy nhập bản ghi đầu tiên ở form trên.
+                Chưa có dữ liệu truy vết đo sinh hiệu hàng ngày nào cho cụ này. Hãy nhập bản ghi đầu tiên ở form trên.
               </div>
             ) : (
               <div className="table-responsive">
@@ -793,7 +839,7 @@ export default function HealthReportsPage() {
                       <th>SpO2</th>
                       <th>Nhịp thở</th>
                       <th>Cân nặng / Đường huyết</th>
-                      <th>Ghi chú theo dõi</th>
+                      <th>Ghi chú theo dõi (Truy vết)</th>
                       <th>Người ghi nhận</th>
                     </tr>
                   </thead>
@@ -850,12 +896,13 @@ export default function HealthReportsPage() {
                 Tổng Hợp Báo Cáo Sức Khỏe Định Kỳ (Gửi Gia Đình)
               </h2>
               <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.15rem' }}>
-                Hệ thống AI chạy ngầm tự động trích xuất & statistic dữ liệu đo hàng ngày từ Tab 1 để lập báo cáo chuẩn Mẫu 06/PTDYS-TA.
+                Hệ thống tự động trích xuất & thống kê dữ liệu đo hàng ngày từ Tab 1 để lập báo cáo chuẩn Mẫu 06/PTDYS-TA.
               </div>
             </div>
 
             <button
               onClick={() => {
+                setEditingReportId(null);
                 setAssessment({
                   ...DEFAULT_ASSESSMENT,
                   assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
@@ -865,7 +912,7 @@ export default function HealthReportsPage() {
               className="btn btn-primary"
               style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
             >
-              ➕ Lập báo cáo tổng hợp định kỳ (AI hỗ trợ chạy ngầm)
+              ➕ Lập báo cáo tổng hợp định kỳ
             </button>
           </div>
 
@@ -877,9 +924,9 @@ export default function HealthReportsPage() {
               <div className="kpi-sub">Toàn bộ kỳ báo cáo</div>
             </div>
             <div className="kpi-card">
-              <div className="kpi-label">Bản nháp chờ khóa</div>
+              <div className="kpi-label">Bản nháp / Chờ rà soát</div>
               <div className="kpi-val" style={{ color: '#d97706' }}>{kpis.draft}</div>
-              <div className="kpi-sub">Đang tổng hợp dữ liệu</div>
+              <div className="kpi-sub">Đang rà soát chuyên môn</div>
             </div>
             <div className="kpi-card">
               <div className="kpi-label">Đã duyệt chuyên môn</div>
@@ -923,7 +970,7 @@ export default function HealthReportsPage() {
                   <th>Kỳ tổng hợp</th>
                   <th>Mức đề xuất & Trạng thái</th>
                   <th>Ngày lập</th>
-                  <th className="text-right">Thao tác & Quy trình</th>
+                  <th className="text-right">Thao tác & Quy trình Rà Soát</th>
                 </tr>
               </thead>
               <tbody>
@@ -975,25 +1022,32 @@ export default function HealthReportsPage() {
                               📄 Xem & In Báo Cáo
                             </button>
 
-                            {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED') && canApproveMedical && (
+                            {/* Phụ trách Y tế Editing/Reviewing Button */}
+                            {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED' || report.status === 'REVISION_REQUIRED') && (
                               <button
-                                onClick={async () => {
-                                  if (!actor) return;
-                                  setBusy(true);
-                                  await approveHealthReport(actor, report.health_report_id);
-                                  await refreshReports();
-                                  setBusy(false);
-                                  setMessage('✅ Phụ trách Y tế đã rà soát và xác nhận thành công báo cáo sức khỏe định kỳ!');
-                                }}
-                                className="btn btn-sm btn-success"
+                                onClick={() => openMedicalHeadReview(report)}
+                                className="btn btn-sm btn-warning"
                                 style={{ fontWeight: 700 }}
-                                title="Phụ trách y tế xác nhận chuyên môn và mở khóa in/gửi gia đình"
+                                title="Phụ trách Y tế rà soát, chỉnh sửa thông tin chưa đúng và bổ sung nội dung trước khi duyệt"
                               >
-                                🩺 Phụ trách Y tế xác nhận
+                                ✏️ Rà Soát & Sửa (Phụ trách Y tế)
                               </button>
                             )}
 
-                            {report.status === 'APPROVED' && (
+                            {/* Quick Approval Button for Medical Head */}
+                            {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED' || report.status === 'REVISION_REQUIRED') && (
+                              <button
+                                onClick={() => handleQuickApproveMedical(report.health_report_id)}
+                                className="btn btn-sm btn-success"
+                                style={{ fontWeight: 700 }}
+                                title="Phụ trách y tế phê duyệt chuyên môn & ký số"
+                              >
+                                🩺 Phụ trách Y tế Phê Duyệt
+                              </button>
+                            )}
+
+                            {/* Family Delivery Button after Approval */}
+                            {(report.status === 'APPROVED' || report.status === 'DELIVERED') && (
                               <button
                                 onClick={() => {
                                   setDeliveryReport(report);
@@ -1004,12 +1058,6 @@ export default function HealthReportsPage() {
                               >
                                 Gửi Gia Đình / Cổng thân nhân
                               </button>
-                            )}
-
-                            {report.status !== 'APPROVED' && report.status !== 'DELIVERED' && (
-                              <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', paddingLeft: '0.2rem' }}>
-                                (Cần Phụ trách Y tế xác nhận)
-                              </span>
                             )}
                           </div>
                         </td>
@@ -1024,16 +1072,18 @@ export default function HealthReportsPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 1: LẬP BÁO CÁO TỔNG HỢP SỨC KHỎE ĐỊNH KỲ (AI CHẠY NGẦM THỐNG KÊ TAB 1) */}
+      {/* MODAL 1: LẬP & RÀ SOÁT CHỈNH SỬA BÁO CÁO SỨC KHỎE (PHỤ TRÁCH Y TẾ DUYỆT) */}
       {/* ========================================================================= */}
       {isEditorOpen && (
         <div className="modal-overlay">
           <div className="modal-dialog modal-dialog-lg health-report-editor-modal" style={{ maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="modal-header">
               <div>
-                <h2 className="modal-title" style={{ margin: 0 }}>Lập Báo Cáo Sức Khỏe Định Kỳ Gửi Gia Đình</h2>
+                <h2 className="modal-title" style={{ margin: 0 }}>
+                  {editingReportId ? `Rà Soát, Bổ Sung & Phê Duyệt Báo Cáo Sức Khỏe (Mã: ${editingReportId})` : 'Lập Báo Cáo Sức Khỏe Định Kỳ Gửi Gia Đình'}
+                </h2>
                 <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, marginTop: '0.2rem' }}>
-                  🤖 Hệ thống AI chạy ngầm tự động statistic số liệu đo hàng ngày từ Tab 1 & gợi ý nội dung nhận xét
+                  Phụ trách Y tế kiểm tra, điều chỉnh thông tin chưa đúng, bổ sung nội dung còn thiếu từ phiếu tổng hợp trước khi phê duyệt.
                 </div>
               </div>
               <button onClick={() => setIsEditorOpen(false)} className="modal-close">
@@ -1041,21 +1091,21 @@ export default function HealthReportsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateReport}>
+            <form onSubmit={(e) => handleSaveReport(e, false)}>
               <div className="modal-body">
-                {/* AI Background Synthesis Notification Banner */}
+                {/* Synthesis Notification Banner */}
                 {selectedResidentId && (
                   <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
                     <div style={{ fontSize: '0.85rem', color: '#14532d' }}>
-                      <b>🤖 AI Engine (Chạy ngầm):</b> Đã tự động thống kê chỉ số Min - Max & trích xuất nhật ký đo sinh hiệu hàng ngày cho cụ. Vui lòng rà soát nội dung gợi ý bên dưới.
+                      <b>📊 Hệ thống tự động:</b> Đã thống kê chỉ số Min - Max từ kết quả đo sinh hiệu hàng ngày của cụ. Vui lòng rà soát nội dung gợi ý bên dưới.
                     </div>
                     <button
                       type="button"
-                      onClick={() => runBackgroundAISynthesis(selectedResidentId)}
+                      onClick={() => runVitalsSynthesis(selectedResidentId)}
                       className="btn btn-sm btn-success"
                       style={{ background: '#166534', color: '#fff', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
                     >
-                      🔄 Chạy lại AI Statistic
+                      🔄 Cập nhật lại thống kê
                     </button>
                   </div>
                 )}
@@ -1087,7 +1137,7 @@ export default function HealthReportsPage() {
                     </div>
 
                     <div>
-                      <label className="form-label">Người lập báo cáo <span className="req">*</span></label>
+                      <label className="form-label">Nhân viên y tế lập phiếu <span className="req">*</span></label>
                       <input
                         type="text"
                         value={assessment.assessorName}
@@ -1129,11 +1179,11 @@ export default function HealthReportsPage() {
                   </div>
                 </div>
 
-                {/* II. DẤU HIỆU SINH TỒN & THỂ TRẠNG (AI STATISTIC) */}
+                {/* II. DẤU HIỆU SINH TỒN & THỂ TRẠNG */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                      II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (AI TỔNG HỢP MIN-MAX THÁNG)
+                      II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (TỔNG HỢP MIN-MAX THÁNG)
                     </h3>
                   </div>
 
@@ -1220,14 +1270,14 @@ export default function HealthReportsPage() {
                   </div>
                 </div>
 
-                {/* IV. KẾT LUẬN & GỢI Ý NHẬN XÉT CỦA AI */}
+                {/* IV. KẾT LUẬN & CHỈNH SỬA BỔ SUNG CỦA PHỤ TRÁCH Y TẾ */}
                 <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1rem', color: '#0f172a', fontWeight: 700 }}>
-                      VI. KẾT LUẬN, HƯỚNG CHĂM SÓC & GỢI Ý NỘI DUNG NHẬN XÉT GỬI GIA ĐÌNH
+                      VI. KẾT LUẬN, HƯỚNG CHĂM SÓC & DẶN DÒ ĐỀ XUẤT (PHỤ TRÁCH Y TẾ RÀ SOÁT / CHỈNH SỬA)
                     </h3>
                     <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, background: '#dcfce7', padding: '0.2rem 0.5rem', borderRadius: '0.25rem' }}>
-                      🤖 AI Gợi ý nội dung nhận xét
+                      Phụ trách Y tế kiểm duyệt
                     </span>
                   </div>
 
@@ -1265,7 +1315,7 @@ export default function HealthReportsPage() {
                   </div>
 
                   <div style={{ marginBottom: '1rem' }}>
-                    <label className="form-label">2. Đánh giá cụ thể tình trạng sức khỏe (AI gợi ý từ dữ liệu Tab 1):</label>
+                    <label className="form-label">2. Đánh giá cụ thể tình trạng sức khỏe (Phụ trách Y tế có thể điều chỉnh):</label>
                     <textarea
                       rows={5}
                       value={assessment.specificEvaluation}
@@ -1289,7 +1339,7 @@ export default function HealthReportsPage() {
                 </div>
               </div>
 
-              <div className="modal-footer">
+              <div className="modal-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <button
                   type="button"
                   onClick={() => setIsEditorOpen(false)}
@@ -1297,13 +1347,26 @@ export default function HealthReportsPage() {
                 >
                   Hủy
                 </button>
-                <button
-                  type="submit"
-                  disabled={busy || aiSynthesizing}
-                  className="btn btn-primary"
-                >
-                  {busy ? 'Đang lưu...' : 'Lưu & Khởi Tạo Báo Cáo Định Kỳ'}
-                </button>
+
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    type="submit"
+                    disabled={busy || synthesizing}
+                    className="btn btn-secondary"
+                  >
+                    💾 Lưu Chỉnh Sửa
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={busy || synthesizing}
+                    onClick={(e) => handleSaveReport(e as any, true)}
+                    className="btn btn-success"
+                    style={{ fontWeight: 800, background: '#166534', color: '#ffffff' }}
+                  >
+                    🩺 Phụ Trách Y Tế Phê Duyệt & Ký Số
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -1319,9 +1382,13 @@ export default function HealthReportsPage() {
             <div className="modal-header no-print">
               <div>
                 <h2 className="modal-title" style={{ margin: 0 }}>Xem Báo Cáo Sức Khỏe Định Kỳ Chuẩn Y Khoa</h2>
-                {viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED' && (
+                {viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED' ? (
                   <span style={{ fontSize: '0.78rem', color: '#b45309', fontWeight: 600 }}>
-                    ⚠️ Đang ở trạng thái: <b>Chờ Phụ trách Y tế xác nhận</b>
+                    ⚠️ Đang ở trạng thái: <b>Chờ Phụ trách Y tế phê duyệt</b>
+                  </span>
+                ) : (
+                  <span style={{ fontSize: '0.78rem', color: '#15803d', fontWeight: 700 }}>
+                    ✓ Đã Phụ trách Y tế phê duyệt & ký số
                   </span>
                 )}
               </div>
@@ -1330,7 +1397,7 @@ export default function HealthReportsPage() {
                   type="button"
                   onClick={() => {
                     if (viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED') {
-                      alert('⚠️ Báo cáo sức khỏe cần được Phụ trách Y tế xác nhận trước khi in hoặc gửi gia đình!');
+                      alert('⚠️ Báo cáo sức khỏe cần được Phụ trách Y tế phê duyệt trước khi in hoặc gửi gia đình!');
                       return;
                     }
                     triggerPrint();
@@ -1464,7 +1531,7 @@ export default function HealthReportsPage() {
               </div>
 
               {/* ========================================================================= */}
-              {/* SIGNATURE SECTION — MEDICAL HEAD SIGNATURE BOX BLANK FOR MANUAL SIGNING */}
+              {/* SIGNATURE SECTION — MEDICAL HEAD SIGNATURE BOX (BLANK SPACE FOR PRINTING, STAMP FOR SCREEN) */}
               {/* ========================================================================= */}
               <div
                 className="signature-box"
@@ -1479,16 +1546,36 @@ export default function HealthReportsPage() {
                   fontFamily: 'sans-serif',
                 }}
               >
-                {/* Column 1: Phụ trách Y tế (Ký trực tiếp - Chừa trống ô ký) */}
+                {/* Column 1: Phụ trách Y tế (Ký trực tiếp - Chừa trống ô ký khi in) */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>PHỤ TRÁCH Y TẾ XÁC NHẬN</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký trực tiếp & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>PHỤ TRÁCH Y TẾ XÁC NHẬN & PHÊ DUYỆT</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký trực tiếp & ghi rõ họ tên khi in)</div>
+
+                  {/* On Screen Digital Seal when approved */}
+                  {(viewingReport.data.medicalHeadApproval || viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED') ? (
+                    <div className="medical-head-digital-stamp" style={{ border: '2px dashed #16a34a', background: '#f0fdf4', borderRadius: '0.375rem', padding: '0.35rem 0.65rem', marginBottom: '0.4rem', textAlign: 'center', minWidth: '180px' }}>
+                      <div style={{ fontWeight: 800, color: '#15803d', fontSize: '0.72rem', letterSpacing: '0.02em' }}>✓ ĐÃ PHÊ DUYỆT & KÝ SỐ</div>
+                      <div style={{ fontWeight: 700, color: '#166534', fontSize: '0.8rem', marginTop: '0.15rem' }}>
+                        {viewingReport.data.medicalHeadApproval?.approvedBy || 'BS. Lê Hoàng Nam'}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: '#15803d', fontStyle: 'italic' }}>
+                        {viewingReport.data.medicalHeadApproval?.approvedRole || 'Phụ trách Y tế'}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '0.1rem' }}>
+                        {viewingReport.data.medicalHeadApproval?.approvedAt || 'Đã xác nhận chuyên môn'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="medical-head-digital-stamp" style={{ height: '3.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontStyle: 'italic', fontSize: '0.75rem' }}>
+                      (Chờ Phụ trách Y tế rà soát & phê duyệt)
+                    </div>
+                  )}
 
                   {/* Blank space area for manual physical signature when printed */}
-                  <div className="medical-head-signature-blank-space" style={{ height: '4rem', width: '100%' }}></div>
+                  <div className="medical-head-signature-blank-space" style={{ height: '3.5rem', width: '100%', display: 'none' }}></div>
 
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '220px' }}>
-                    BS. Lê Hoàng Nam
+                    {viewingReport.data.medicalHeadApproval?.approvedBy || 'BS. Lê Hoàng Nam'}
                     <div style={{ fontSize: '0.7rem', color: '#475569', fontWeight: 400 }}>Phụ trách Y tế Tâm An Care</div>
                   </div>
                 </div>
@@ -1498,7 +1585,7 @@ export default function HealthReportsPage() {
                   <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>NHÂN VIÊN Y TẾ LẬP BÁO CÁO</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký và ghi rõ họ tên)</div>
 
-                  <div style={{ height: '4rem', width: '100%' }}></div>
+                  <div style={{ height: '3.5rem', width: '100%' }}></div>
 
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '220px' }}>
                     {viewingReport.data.assessorName || 'ĐD. Lê Thị Mai'}
@@ -1520,7 +1607,7 @@ export default function HealthReportsPage() {
                 type="button"
                 onClick={() => {
                   if (viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED') {
-                    alert('⚠️ Báo cáo sức khỏe cần được Phụ trách Y tế xác nhận trước khi in!');
+                    alert('⚠️ Báo cáo sức khỏe cần được Phụ trách Y tế phê duyệt trước khi in!');
                     return;
                   }
                   triggerPrint();
