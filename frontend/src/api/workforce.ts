@@ -1049,6 +1049,14 @@ let mockShiftTimeConfigs: ShiftTimeConfig[] = [
     allowFlexibleShift: true,
   },
   {
+    jobGroup: 'MEDICAL_HEAD',
+    jobGroupLabel: 'Phụ trách Y tế',
+    morningShiftHours: '07:00 - 16:30',
+    afternoonShiftHours: '13:00 - 21:00',
+    nightShiftHours: 'Thường trực / On-call',
+    allowFlexibleShift: true,
+  },
+  {
     jobGroup: 'NURSE',
     jobGroupLabel: 'Nhân viên y tế',
     morningShiftHours: '06:30 - 14:30',

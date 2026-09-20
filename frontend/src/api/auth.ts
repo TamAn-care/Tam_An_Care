@@ -22,11 +22,13 @@ export const ADMIN_DEMO_ACCOUNT: ActiveStaffMember = {
 export const MOCK_ACTIVE_STAFF_ACCOUNTS: ActiveStaffMember[] = [
   ADMIN_DEMO_ACCOUNT,
 
-  // Ban Giám đốc & Quản lý chung
+  // Ban Giám đốc & Quản lý chung & Phụ trách y tế
   { actorId: 'TA-DIR-01', staffCode: 'TA-DIR-01', displayName: 'Hoàng Quốc Anh', actorRole: 'SUPERVISOR', status: 'ACTIVE' },
   { actorId: 'STAFF-DIR-001', staffCode: 'NV-DIR-001', displayName: 'Hà Quang Anh', actorRole: 'SUPERVISOR', status: 'ACTIVE' },
   { actorId: 'TA-MGR-01', staffCode: 'TA-MGR-01', displayName: 'Nguyễn Thị Thu Hà', actorRole: 'CARE_MANAGER', status: 'ACTIVE' },
   { actorId: 'STAFF-MGR-001', staffCode: 'MGR-001', displayName: 'Phạm Minh Đức', actorRole: 'CARE_MANAGER', status: 'ACTIVE' },
+  { actorId: 'TA-MED-01', staffCode: 'TA-MED-01', displayName: 'BS. Lê Hoàng Nam', actorRole: 'MEDICAL_HEAD', status: 'ACTIVE' },
+  { actorId: 'STAFF-MED-001', staffCode: 'MED-001', displayName: 'BS. Trần Quốc Tuấn', actorRole: 'MEDICAL_HEAD', status: 'ACTIVE' },
 
   // Nhân viên y tế
   { actorId: 'TA-NUR-01', staffCode: 'TA-NUR-01', displayName: 'Trần Thị Mai', actorRole: 'NURSE', status: 'ACTIVE' },
@@ -180,6 +182,7 @@ export async function resolveStaffActor(actorIdOrCode: string): Promise<ActiveSt
     const roleMap: Record<string, { role: HumanActorRole; name: string }> = {
       DIR: { role: 'SUPERVISOR', name: 'Cán Bộ Ban Giám Đốc' },
       MGR: { role: 'CARE_MANAGER', name: 'Cán Bộ Quản Lý Vận Hành' },
+      MED: { role: 'MEDICAL_HEAD', name: 'Phụ trách Y tế' },
       NUR: { role: 'NURSE', name: 'Điều Dưỡng Viên' },
       CG: { role: 'CAREGIVER', name: 'Chăm Sóc Viên' },
       NUT: { role: 'NUTRITIONIST', name: 'Chuyên Gia Dinh Dưỡng' },

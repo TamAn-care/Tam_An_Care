@@ -1635,6 +1635,7 @@ export default function WorkforcePage() {
                       }}
                     >
                       <option value="CAREGIVER">Nhân viên chăm sóc</option>
+                      <option value="MEDICAL_HEAD">Phụ trách y tế</option>
                       <option value="NURSE">Nhân viên y tế</option>
                       <option value="NUTRITIONIST">Nhân viên dinh dưỡng</option>
                       <option value="HOUSEKEEPING">Nhân viên tạp vụ</option>

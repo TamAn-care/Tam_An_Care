@@ -115,6 +115,14 @@ export interface ClinicalAssessmentData {
   careLevelProposal: 'LEVEL_1' | 'LEVEL_2' | 'LEVEL_3';
   specificEvaluation: string;
   additionalNotesAndCareInstructions: string;
+
+  // Medical approval metadata.
+  // Optional for reports that have not been approved.
+  medicalHeadApproval?: {
+    approvedBy: string;
+    approvedRole: string;
+    approvedAt: string;
+  };
 }
 
 const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
@@ -216,9 +224,9 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
 const STATUS_BADGES: Record<HealthReportStatus, { label: string; className: string }> = {
   DRAFT: { label: 'Bản nháp', className: 'badge badge-neutral' },
   GENERATED: { label: 'Đã khóa dữ liệu', className: 'badge badge-info' },
-  UNDER_REVIEW: { label: 'Đang rà soát', className: 'badge badge-warning' },
+  UNDER_REVIEW: { label: '⏳ Chờ Phụ trách Y tế duyệt', className: 'badge badge-warning' },
   REVISION_REQUIRED: { label: 'Yêu cầu sửa', className: 'badge badge-danger' },
-  APPROVED: { label: 'Đã phê duyệt', className: 'badge badge-success' },
+  APPROVED: { label: '✓ Phụ trách Y tế đã duyệt', className: 'badge badge-success' },
   DELIVERED: { label: 'Đã gửi gia đình', className: 'badge badge-purple' },
   SUPERSEDED: { label: 'Đã thay thế', className: 'badge badge-neutral' },
   CANCELLED: { label: 'Đã hủy', className: 'badge badge-neutral' },
@@ -478,7 +486,7 @@ export default function HealthReportsPage() {
   }, [reports]);
 
   const canCreate = true; // Cho phép lập phiếu đánh giá mới trên hệ thống
-  const canApprove = actor?.actorRole === 'CARE_MANAGER' || actor?.actorRole === 'SUPERVISOR' || true;
+  const canApproveMedical = actor?.actorRole === 'MEDICAL_HEAD';
 
   return (
     <div className="page-content">
@@ -602,7 +610,7 @@ export default function HealthReportsPage() {
                       <div className="cell-secondary">Bởi: {parsed.assessorName || 'Nhân viên y tế'}</div>
                     </td>
                     <td className="text-right">
-                      <div className="btn-group">
+                      <div className="btn-group" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                         <button
                           onClick={() => setViewingReport({ report, data: parsed })}
                           className="btn btn-sm btn-secondary"
@@ -611,37 +619,7 @@ export default function HealthReportsPage() {
                           📄 Xem & In Phiếu
                         </button>
 
-                        {report.status === 'DRAFT' && canCreate && (
-                          <button
-                            onClick={async () => {
-                              if (!actor) return;
-                              setBusy(true);
-                              await generateHealthReport(actor, report.health_report_id);
-                              await refreshReports();
-                              setBusy(false);
-                            }}
-                            className="btn btn-sm btn-primary"
-                          >
-                            Khóa dữ liệu
-                          </button>
-                        )}
-
-                        {report.status === 'GENERATED' && (canCreate || canApprove) && (
-                          <button
-                            onClick={async () => {
-                              if (!actor) return;
-                              setBusy(true);
-                              await startHealthReportReview(actor, report.health_report_id);
-                              await refreshReports();
-                              setBusy(false);
-                            }}
-                            className="btn btn-sm btn-warning"
-                          >
-                            Rà soát
-                          </button>
-                        )}
-
-                        {report.status === 'UNDER_REVIEW' && canApprove && (
+                        {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED') && canApproveMedical && (
                           <button
                             onClick={async () => {
                               if (!actor) return;
@@ -649,10 +627,13 @@ export default function HealthReportsPage() {
                               await approveHealthReport(actor, report.health_report_id);
                               await refreshReports();
                               setBusy(false);
+                              setMessage('✅ Phụ trách Y tế đã kiểm duyệt và phê duyệt ký số thành công báo cáo đánh giá!');
                             }}
                             className="btn btn-sm btn-success"
+                            style={{ fontWeight: 700 }}
+                            title="Phụ trách y tế kiểm duyệt nội dung và ký duyệt điện tử"
                           >
-                            Phê duyệt
+                            🩺 Phụ trách Y tế duyệt & Ký số
                           </button>
                         )}
 
@@ -663,9 +644,16 @@ export default function HealthReportsPage() {
                               setDeliveryContactId('contact-' + report.resident_id);
                             }}
                             className="btn btn-sm btn-purple"
+                            title="Chuyển báo cáo đã phê duyệt tới Cổng thông tin Thân nhân"
                           >
-                            Gửi gia đình
+                            Chuyển Cổng thân nhân
                           </button>
+                        )}
+
+                        {report.status !== 'APPROVED' && report.status !== 'DELIVERED' && (
+                          <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', paddingLeft: '0.2rem' }}>
+                            (Cần Phụ trách Y tế duyệt)
+                          </span>
                         )}
                       </div>
                     </td>
@@ -1529,12 +1517,26 @@ export default function HealthReportsPage() {
         <div className="modal-overlay print-modal-overlay">
           <div className="modal-dialog modal-dialog-lg health-report-sheet-modal" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header no-print">
-              <h2 className="modal-title">Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div>
+                <h2 className="modal-title" style={{ margin: 0 }}>Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
+                {viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED' && (
+                  <span style={{ fontSize: '0.78rem', color: '#b45309', fontWeight: 600 }}>
+                    ⚠️ Đang ở trạng thái: <b>Chờ Phụ trách Y tế duyệt</b>
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                 <button
                   type="button"
-                  onClick={() => triggerPrint()}
-                  className="btn btn-sm btn-primary no-print"
+                  onClick={() => {
+                    if (viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED') {
+                      alert('⚠️ Phiếu đánh giá cần qua bước kiểm duyệt của Phụ trách Y tế trước khi in hoặc xuất file PDF!');
+                      return;
+                    }
+                    triggerPrint();
+                  }}
+                  className={`btn btn-sm ${viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? 'btn-primary' : 'btn-secondary'} no-print`}
+                  title={viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? 'In chuẩn A4' : 'Cần Phụ trách Y tế duyệt trước khi in'}
                 >
                   🖨️ In / Xuất PDF
                 </button>
@@ -1801,13 +1803,43 @@ export default function HealthReportsPage() {
                 <b style={{ color: '#b91c1c' }}>Đề xuất & Dặn dò thêm:</b> {viewingReport.data.additionalNotesAndCareInstructions || 'Tiếp tục duy trì chế độ chăm sóc và theo dõi sát sao.'}
               </div>
 
-              {/* Signature */}
-              <div className="signature-box" style={{ display: 'flex', justifyContent: 'flex-end', textAlign: 'center', marginTop: '0.6rem' }}>
-                <div style={{ width: '220px' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Nhân viên y tế lập báo cáo</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.82rem' }}>
-                    {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}
+              {/* Signature Section — 2-Column Medical Oversight */}
+              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', textAlign: 'center', marginTop: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
+                {/* Cột 1: Phụ trách Y tế duyệt */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>Phụ trách Y tế duyệt</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
+
+                  {viewingReport.data.medicalHeadApproval || viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? (
+                    <div style={{ border: '2px solid #16a34a', background: '#f0fdf4', borderRadius: '0.375rem', padding: '0.35rem 0.65rem', marginTop: '0.25rem', marginBottom: '0.4rem', textAlign: 'center', minWidth: '180px' }}>
+                      <div style={{ fontWeight: 800, color: '#15803d', fontSize: '0.72rem', letterSpacing: '0.02em' }}>✓ ĐÃ KIỂM DUYỆT & PHÊ DUYỆT</div>
+                      <div style={{ fontWeight: 700, color: '#166534', fontSize: '0.8rem', marginTop: '0.15rem' }}>
+                        {viewingReport.data.medicalHeadApproval?.approvedBy || 'BS. Lê Hoàng Nam'}
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: '#15803d', fontStyle: 'italic' }}>
+                        {viewingReport.data.medicalHeadApproval?.approvedRole || 'Phụ trách Y tế'}
+                      </div>
+                      <div style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '0.1rem' }}>
+                        {viewingReport.data.medicalHeadApproval?.approvedAt || 'Đã ký số điện tử'}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ height: '3.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontStyle: 'italic', fontSize: '0.75rem' }}>
+                      (Chờ Phụ trách Y tế duyệt & ký số)
+                    </div>
+                  )}
+
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '200px' }}>
+                    {viewingReport.data.medicalHeadApproval?.approvedBy || 'BS. Lê Hoàng Nam (Phụ trách Y tế)'}
+                  </div>
+                </div>
+
+                {/* Cột 2: Nhân viên y tế lập báo cáo */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>Nhân viên y tế lập báo cáo</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '2.8rem' }}>(Ký và ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '200px' }}>
+                    {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy (Điều dưỡng)'}
                   </div>
                 </div>
               </div>
@@ -1823,8 +1855,14 @@ export default function HealthReportsPage() {
               </button>
               <button
                 type="button"
-                onClick={() => triggerPrint()}
-                className="btn btn-primary no-print"
+                onClick={() => {
+                  if (viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED') {
+                    alert('⚠️ Phiếu đánh giá cần qua bước kiểm duyệt của Phụ trách Y tế trước khi in!');
+                    return;
+                  }
+                  triggerPrint();
+                }}
+                className={`btn ${viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? 'btn-primary' : 'btn-secondary'} no-print`}
               >
                 🖨️ In Phiếu Đánh Giá (A4)
               </button>

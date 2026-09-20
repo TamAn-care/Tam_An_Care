@@ -2,6 +2,7 @@ export type HumanActorRole =
   | 'ADMIN'                     // Quản trị viên hệ thống
   | 'SUPERVISOR'                // Ban Giám đốc
   | 'CARE_MANAGER'              // Quản lý chung
+  | 'MEDICAL_HEAD'              // Phụ trách y tế
   | 'PSYCHOLOGIST'              // Nhân viên tâm lý và công tác xã hội
   | 'SOCIAL_WORKER'             // Nhân viên tâm lý và công tác xã hội
   | 'NURSE'                     // Nhân viên y tế

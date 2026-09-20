@@ -203,7 +203,7 @@ export default function FamilyPortalPage() {
 
   const residentReports = useMemo(() => {
     const all = healthReportsQuery.data || [];
-    return all.filter((r: HealthReportRow) => r.resident_id === activeResId);
+    return all.filter((r: HealthReportRow) => r.resident_id === activeResId && (r.status === 'APPROVED' || r.status === 'DELIVERED'));
   }, [healthReportsQuery.data, activeResId]);
 
   // Fetch Resident Integration Overview to retrieve assigned Caregiver

@@ -23,6 +23,7 @@ export type HealthReportActorRole =
   | 'CAREGIVER'
   | 'NURSE'
   | 'CARE_MANAGER'
+  | 'MEDICAL_HEAD'
   | 'SUPERVISOR'
   | 'GUARDIAN'
   | 'FAMILY'
@@ -1073,10 +1074,7 @@ export class HealthReportService {
   ): Promise<HealthReportRow> {
     await this.authorize(
       actor,
-      [
-        'CARE_MANAGER',
-        'SUPERVISOR',
-      ],
+      ['MEDICAL_HEAD'],
     );
 
     const report =

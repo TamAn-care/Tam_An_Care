@@ -116,6 +116,11 @@ let mockHealthReports: HealthReportRow[] = [
       careLevelProposal: 'LEVEL_2',
       specificEvaluation: 'Tình trạng sức khỏe Cụ Nguyễn Văn An tháng 08/2026 ổn định tốt. Huyết áp (Khoảng Min - Max): 118/75 – 134/88 mmHg, Nhịp tim/Mạch (Khoảng Min - Max): 70 – 85 lần/phút, Thân nhiệt (Min - Max): 36.2 – 36.8°C, SpO2 (Min - Max): 95 – 99%, Đường huyết mao mạch (Min - Max): 6.2 – 8.5 mmol/L.',
       additionalNotesAndCareInstructions: 'Tiếp tục duy trì chế độ ăn cơm thường giảm tinh bột, theo dõi huyết áp cữ sáng.',
+      medicalHeadApproval: {
+        approvedBy: 'BS. Lê Hoàng Nam',
+        approvedRole: 'Phụ trách y tế',
+        approvedAt: '31/08/2026 10:30',
+      },
     }),
     created_at: '2026-08-31T09:00:00Z',
     updated_at: '2026-08-31T09:00:00Z',
@@ -154,13 +159,18 @@ export async function createHealthReport(
     console.warn('[TamAnCare API] Offline/Fallback mode active for createHealthReport:', error);
   }
 
+  const initialStatus: HealthReportStatus =
+    actor.actorRole === 'MEDICAL_HEAD' || actor.actorRole === 'SUPERVISOR' || actor.actorRole === 'CARE_MANAGER'
+      ? 'APPROVED'
+      : 'UNDER_REVIEW';
+
   const newReport: HealthReportRow = {
     health_report_id: `hr-${Date.now()}`,
     resident_id: input.residentId,
     report_type: input.reportType,
     period_start: input.periodStart,
     period_end: input.periodEnd,
-    status: 'APPROVED',
+    status: initialStatus,
     report_version: 1,
     summary: input.summary || null,
     created_at: new Date().toISOString(),
@@ -196,13 +206,19 @@ export async function approveHealthReport(
   actor: HumanActorSession,
   id: string,
 ) {
-  try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/approve`, { actor, method: 'POST' });
-  } catch (error) {
-    const r = mockHealthReports.find(item => item.health_report_id === id);
-    if (r) r.status = 'APPROVED';
-    return { status: 'OK' };
+  if (actor.actorRole !== 'MEDICAL_HEAD') {
+    throw new Error(
+      'Chỉ Phụ trách Y tế được phép phê duyệt báo cáo sức khỏe.'
+    );
   }
+
+  return await apiRequest<Record<string, unknown>>(
+    `/health-reports/${encodeURIComponent(id)}/approve`,
+    {
+      actor,
+      method: 'POST',
+    }
+  );
 }
 
 export async function deliverHealthReport(

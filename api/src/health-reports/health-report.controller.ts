@@ -42,6 +42,7 @@ export class HealthReportController {
         'CAREGIVER',
         'NURSE',
         'CARE_MANAGER',
+        'MEDICAL_HEAD',
         'SUPERVISOR',
         'GUARDIAN',
         'FAMILY',

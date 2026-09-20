@@ -316,6 +316,7 @@ export function StaffAccessPage() {
       ADMIN: { prefix: 'ADM', dept: 'Ban Quản Trị Hệ Thống' },
       SUPERVISOR: { prefix: 'DIR', dept: 'Ban Giám đốc' },
       CARE_MANAGER: { prefix: 'MGR', dept: 'Khối Quản Lý Vận Hành' },
+      MEDICAL_HEAD: { prefix: 'MED', dept: 'Khối Y Tế' },
       NURSE: { prefix: 'NUR', dept: 'Khối Y Tế' },
       CAREGIVER: { prefix: 'CG', dept: 'Khối Chăm Sóc Trực Tiếp' },
       NUTRITIONIST: { prefix: 'NUT', dept: 'Bộ Phận Dinh Dưỡng & Bếp Ăn' },

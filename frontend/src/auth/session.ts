@@ -64,6 +64,7 @@ const ALL_ROLES: readonly HumanActorRole[] = [
   'ADMIN',
   'SUPERVISOR',
   'CARE_MANAGER',
+  'MEDICAL_HEAD',
   'PSYCHOLOGIST',
   'SOCIAL_WORKER',
   'NURSE',
