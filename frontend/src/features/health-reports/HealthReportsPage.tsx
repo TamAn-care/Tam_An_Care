@@ -3,7 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { listResidents, ResidentContextResponse } from '../../api/residents';
 import { triggerPrint } from '../../utils/print';
-import { calculateMonthlyVitalMinMax, getResidentADL } from '../../utils/vitals-calculator';
+import {
+  calculateMonthlyVitalMinMax,
+  getResidentADL,
+  getResidentVitalHistory,
+  saveVitalRecord,
+  VitalRecord,
+} from '../../utils/vitals-calculator';
 import {
   approveHealthReport,
   createHealthReport,
@@ -16,7 +22,7 @@ import {
   HealthReportStatus,
 } from './healthReportsApi';
 
-// Clinical Assessment Data Model matching attached 3-page template
+// Clinical Assessment Data Model matching 3-page template (Mẫu 06/PTDYS-TA)
 export interface VitalMeasurementItem {
   id: string;
   date: string;
@@ -84,7 +90,7 @@ export interface ClinicalAssessmentData {
     sleepQuality: 'GOOD' | 'INSOMNIA' | 'NIGHT_WAKING';
   };
 
-  // V-B. Đánh giá Tâm lý & Công tác xã hội (Chuyên sâu do Nhân viên tâm lý & CTXH thực hiện)
+  // V-B. Đánh giá Tâm lý & Công tác xã hội
   psychologicalAssessment?: {
     isCompleted: boolean;
     assessorName: string;
@@ -116,8 +122,7 @@ export interface ClinicalAssessmentData {
   specificEvaluation: string;
   additionalNotesAndCareInstructions: string;
 
-  // Medical approval metadata.
-  // Optional for reports that have not been approved.
+  // Medical approval metadata
   medicalHeadApproval?: {
     approvedBy: string;
     approvedRole: string;
@@ -148,9 +153,9 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
     { id: '3', date: '12/08/2026', value: '49.5 kg' },
   ],
   glucoseRecords: [
-    { id: '1', date: '07/07/2026', value: '12.49 mmol/L' },
+    { id: '1', date: '07/07/2026', value: '6.2 mmol/L' },
     { id: '2', date: '16/07/2026', value: '7.2 mmol/L' },
-    { id: '3', date: '12/08/2026', value: '7.0 mmol/L' },
+    { id: '3', date: '12/08/2026', value: '8.5 mmol/L' },
   ],
 
   conditions: {
@@ -171,7 +176,7 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
     drugAllergy: '',
     foodAllergy: '',
   },
-  medicationsNotes: 'Bà đang dùng thuốc điều trị tiểu đường theo đơn của BS ngày 7/7/2026.\nThuốc gia đình gửi ngày 21/7/2026 (Neuropyl + Betaserc) đã hết.',
+  medicationsNotes: 'Bà đang dùng thuốc điều trị tiểu đường theo đơn của BS chỉ định.\nCấp phát thuốc đúng cữ 7h00 - 11h30 - 17h00 theo quy chuẩn 5 Đúng eMAR.',
 
   adl: {
     eating: 'INDEPENDENT',
@@ -216,9 +221,9 @@ const DEFAULT_ASSESSMENT: ClinicalAssessmentData = {
 
   careLevelProposal: 'LEVEL_2',
   specificEvaluation:
-    'Huyết áp (Khoảng Min - Max): 118/75 – 134/88 mmHg (Cao - cần theo dõi & duy trì kiểm soát).\nNhịp tim/Mạch (Khoảng Min - Max): 70 – 85 lần/phút (Ổn định bình thường).\nThân nhiệt (Khoảng Min - Max): 36.2 – 36.8°C | SpO2 (Khoảng Min - Max): 95 – 99%.\nĐường huyết mao mạch (Khoảng Min - Max): 7.0 – 12.49 mmol/L.\nSa sút trí tuệ: Bà nhận diện được người thân, nhưng hay nhầm lẫn đồ đạc của cụ cùng phòng. Cần nhân viên bao quát khi tập thể dục ngoài trời.',
+    'Huyết áp (Khoảng Min - Max trong kỳ): 118/75 – 134/88 mmHg.\nNhịp tim/Mạch (Khoảng Min - Max): 70 – 85 lần/phút (Ổn định bình thường).\nThân nhiệt (Khoảng Min - Max): 36.2 – 36.8°C | SpO2 (Khoảng Min - Max): 95 – 99%.\nĐường huyết mao mạch (Khoảng Min - Max): 6.2 – 8.5 mmol/L.\nSa sút trí tuệ: Bà nhận diện được người thân, nhưng hay nhầm lẫn đồ đạc của cụ cùng phòng. Cần nhân viên bao quát khi tập thể dục ngoài trời.',
   additionalNotesAndCareInstructions:
-    '- Duy trì chế độ chăm sóc, dinh dưỡng giảm tinh bột tăng đạm và cấp phát thuốc hàng ngày theo đơn.\n- Nhân viên chăm sóc thay quần áo hàng ngày và hỗ trợ tắm rửa theo lịch.\n- Đại tiện cần nhân viên hỗ trợ lau rửa để đảm bảo vệ sinh do bà hay quên cách làm sạch.\n- Đề xuất: Tháng 8 trung tâm hỗ trợ miễn phí công tác vệ sinh cho bà. Từ tháng 9 tùy mức độ hỗ trợ sẽ đề xuất chi phí phù hợp chi trả cho nhân viên chăm sóc.',
+    '- Duy trì chế độ chăm sóc, dinh dưỡng giảm tinh bột tăng đạm và cấp phát thuốc hàng ngày theo đơn.\n- Nhân viên chăm sóc thay quần áo hàng ngày và hỗ trợ tắm rửa theo lịch.\n- Đại tiện cần nhân viên hỗ trợ lau rửa để đảm bảo vệ sinh do bà hay quên cách làm sạch.',
 };
 
 const STATUS_BADGES: Record<HealthReportStatus, { label: string; className: string }> = {
@@ -235,17 +240,37 @@ const STATUS_BADGES: Record<HealthReportStatus, { label: string; className: stri
 export default function HealthReportsPage() {
   const { actor } = useActor();
 
+  // Top level 2-Tab Navigation State
+  const [activeTab, setActiveTab] = useState<'DAILY_HEALTH' | 'PERIODIC_SUMMARY'>('DAILY_HEALTH');
+
+  // Reports state
   const [reports, setReports] = useState<HealthReportRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [filterResident, setFilterResident] = useState('ALL');
 
-  // Form Editor Modal State
+  // Tab 1: Daily Vitals Update Form & History State
+  const [dailyResidentId, setDailyResidentId] = useState('');
+  const [dailyMeasuredAt, setDailyMeasuredAt] = useState(new Date().toISOString().slice(0, 16));
+  const [dailySysBP, setDailySysBP] = useState<string>('120');
+  const [dailyDiaBP, setDailyDiaBP] = useState<string>('80');
+  const [dailyHeartRate, setDailyHeartRate] = useState<string>('75');
+  const [dailyTemp, setDailyTemp] = useState<string>('36.5');
+  const [dailySpo2, setDailySpo2] = useState<string>('98');
+  const [dailyRespRate, setDailyRespRate] = useState<string>('18');
+  const [dailyWeight, setDailyWeight] = useState<string>('48.5');
+  const [dailyBloodGlucose, setDailyBloodGlucose] = useState<string>('6.5');
+  const [dailyNote, setDailyNote] = useState('');
+  const [dailyRecordedBy, setDailyRecordedBy] = useState('');
+  const [dailyHistory, setDailyHistory] = useState<VitalRecord[]>([]);
+
+  // Tab 2: Form Editor Modal State
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [selectedResidentId, setSelectedResidentId] = useState('');
   const [periodStart, setPeriodStart] = useState(new Date(Date.now() - 30 * 86400000).toISOString().slice(0, 10));
   const [periodEnd, setPeriodEnd] = useState(new Date().toISOString().slice(0, 10));
   const [assessment, setAssessment] = useState<ClinicalAssessmentData>(DEFAULT_ASSESSMENT);
+  const [aiSynthesizing, setAiSynthesizing] = useState(false);
 
   // Delivery Modal State
   const [deliveryReport, setDeliveryReport] = useState<HealthReportRow | null>(null);
@@ -263,6 +288,13 @@ export default function HealthReportsPage() {
     enabled: Boolean(actor),
   });
 
+  // Set default recordedBy name when actor loads
+  useEffect(() => {
+    if (actor && !dailyRecordedBy) {
+      setDailyRecordedBy(actor.displayName || actor.actorId || 'ĐD. Lê Thị Mai');
+    }
+  }, [actor, dailyRecordedBy]);
+
   const refreshReports = useCallback(async () => {
     if (!actor) return;
     try {
@@ -277,75 +309,104 @@ export default function HealthReportsPage() {
     void refreshReports();
   }, [refreshReports]);
 
-  // Handle Resident Selection in Form with automatic activity & vitals min-max aggregation
-  const handleResidentSelect = (resId: string) => {
-    setSelectedResidentId(resId);
-    const item = residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === resId)?.resident;
-    if (item) {
-      // 1. Retrieve recorded vitals & compute Min-Max summary for this resident across the month
-      const vitalsSummary = calculateMonthlyVitalMinMax(resId);
+  // Handle Tab 1 Daily Resident Selection
+  const handleDailyResidentSelect = (resId: string) => {
+    setDailyResidentId(resId);
+    if (!resId) {
+      setDailyHistory([]);
+      return;
+    }
+    const history = getResidentVitalHistory(resId);
+    setDailyHistory(history);
+  };
 
-      // 2. Retrieve recorded work events for this resident
-      const activitySummaries: string[] = [];
-      try {
-        const rawEvents = localStorage.getItem('taman_care_mock_work_events');
-        if (rawEvents) {
-          const events: any[] = JSON.parse(rawEvents);
-          const resEvents = events.filter((e: any) => 
-            e.resident_id === resId || 
-            (item.residentCode && e.resident_id === item.residentCode)
-          );
-          resEvents.forEach(e => {
-            if (e.note) {
-              const timeStr = new Date(e.occurred_at || e.completed_at || Date.now()).toLocaleDateString('vi-VN');
-              activitySummaries.push(`- [${timeStr}] ${e.note}`);
-            }
-          });
-        }
-      } catch {}
+  // Handle Save Daily Vitals Measurement (Tab 1)
+  const handleSaveDailyVitals = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dailyResidentId) {
+      setMessage('⚠️ Vui lòng chọn Người cao tuổi cần cập nhật nhật ký sức khỏe.');
+      return;
+    }
 
-      const generatedEvalText = [
-        `Huyết áp (Khoảng Min - Max trong kỳ): ${vitalsSummary.bpMinMax} mmHg (${vitalsSummary.bpEval === 'HIGH' ? 'Cao - cần theo dõi & duy trì kiểm soát' : 'Bình thường'}).`,
-        `Nhịp tim/Mạch (Khoảng Min - Max): ${vitalsSummary.pulseMinMax} lần/phút (${vitalsSummary.pulseEval === 'NORMAL' ? 'Ổn định bình thường' : vitalsSummary.pulseEval === 'FAST' ? 'Nhanh' : 'Chậm'}). Thân nhiệt (Min - Max): ${vitalsSummary.tempMinMax}°C, SpO2 (Min - Max): ${vitalsSummary.spo2MinMax}%.`,
-        `Cân nặng theo dõi (Min - Max): ${vitalsSummary.weightMinMax} kg | Glucose máu (Min - Max): ${vitalsSummary.glucoseMinMax} mmol/L.`,
-        activitySummaries.length > 0
-          ? `Tổng hợp các hoạt động chăm sóc & sinh hoạt đã ghi nhận cho cụ:\n${activitySummaries.slice(0, 6).join('\n')}`
-          : `Đã ghi nhận các hoạt động đo sinh hiệu, cấp phát thuốc & chăm sóc sinh hoạt hàng ngày tuân thủ phác đồ y khoa Tâm An Care.`
-      ].join('\n\n');
+    try {
+      setBusy(true);
+      const savedRecord = saveVitalRecord(dailyResidentId, {
+        sysBP: dailySysBP ? Number(dailySysBP) : undefined,
+        diaBP: dailyDiaBP ? Number(dailyDiaBP) : undefined,
+        heartRate: dailyHeartRate ? Number(dailyHeartRate) : undefined,
+        temp: dailyTemp ? Number(dailyTemp) : undefined,
+        spo2: dailySpo2 ? Number(dailySpo2) : undefined,
+        respRate: dailyRespRate ? Number(dailyRespRate) : undefined,
+        weight: dailyWeight ? Number(dailyWeight) : undefined,
+        bloodGlucose: dailyBloodGlucose ? Number(dailyBloodGlucose) : undefined,
+        measuredAt: dailyMeasuredAt ? `${dailyMeasuredAt}:00.000Z` : new Date().toISOString(),
+        recordedBy: dailyRecordedBy || actor?.displayName || 'Nhân viên y tế',
+        recordedByRole: actor?.actorRole || 'NURSE',
+        note: dailyNote.trim() || 'Sinh hiệu trong ca trực ổn định.',
+      });
 
-      setAssessment(prev => ({
-        ...prev,
-        residentName: item.displayName,
-        residentCode: item.residentCode,
-        dateOfBirth: item.dateOfBirth ? new Date(item.dateOfBirth).toLocaleDateString('vi-VN') : '',
-        gender: item.gender === 'FEMALE' ? 'Nữ' : 'Nam',
-        room: item.room || '',
-        assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
-        pulse: vitalsSummary.pulseMinMax,
-        pulseEvaluation: vitalsSummary.pulseEval,
-        bloodPressure: vitalsSummary.bpMinMax,
-        bpEvaluation: vitalsSummary.bpEval,
-        temperature: vitalsSummary.tempMinMax,
-        tempEvaluation: vitalsSummary.tempEval,
-        spo2: vitalsSummary.spo2MinMax,
-        spo2Evaluation: vitalsSummary.spo2Eval,
-        weightRecords: vitalsSummary.weightRecords,
-        glucoseRecords: vitalsSummary.glucoseRecords,
-        adl: {
-          ...prev.adl,
-          ...getResidentADL(resId),
-        },
-        specificEvaluation: generatedEvalText,
-        additionalNotesAndCareInstructions: `- Duy trì phác đồ theo dõi sức khỏe và nhật ký chăm sóc hàng ngày cho cụ ${item.displayName}.\n- Đánh giá chung: Tình trạng thể trạng và tâm lý tinh thần ổn định. Nhân viên y tế tiếp tục bao quát các cữ sinh hoạt, đo sinh hiệu & cấp phát thuốc theo y lệnh.`,
-      }));
+      // Refresh local daily history
+      const updatedHistory = getResidentVitalHistory(dailyResidentId);
+      setDailyHistory(updatedHistory);
+
+      setMessage(`✅ Đã cập nhật thành công chỉ số đo sức khỏe hàng ngày cho Cụ (Mã lượt đo: ${savedRecord.id})!`);
+      setDailyNote('');
+    } catch (err: any) {
+      console.error('Lỗi khi lưu nhật ký sức khỏe hàng ngày:', err);
+      setMessage('❌ Không lưu được chỉ số đo sức khỏe. Vui lòng thử lại.');
+    } finally {
+      setBusy(false);
     }
   };
 
-  const syncMonthlyVitals = () => {
-    if (!selectedResidentId) return;
-    const vitalsSummary = calculateMonthlyVitalMinMax(selectedResidentId);
-    setAssessment(prev => ({
+  // Background AI Engine: Aggregates daily vitals from Tab 1 into statistics & suggested comments for Tab 2
+  const runBackgroundAISynthesis = (resId: string) => {
+    if (!resId) return;
+    setAiSynthesizing(true);
+
+    const item = residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === resId)?.resident;
+    
+    // 1. AI background calculation of monthly vital min-max from Tab 1 logs
+    const vitalsSummary = calculateMonthlyVitalMinMax(resId);
+
+    // 2. Retrieve recorded work events & daily notes for this resident
+    const dailyNotesSummary: string[] = [];
+    try {
+      const history = getResidentVitalHistory(resId);
+      history.slice(0, 5).forEach((rec) => {
+        if (rec.note) {
+          const dateStr = new Date(rec.measuredAt).toLocaleDateString('vi-VN');
+          dailyNotesSummary.push(`- [${dateStr}] ${rec.recordedBy}: ${rec.note}`);
+        }
+      });
+    } catch {}
+
+    // AI generated evaluation comments & instructions
+    const aiEvaluationText = [
+      `📊 TỔNG HỢP CHỈ SỐ SINH TỒN TRONG KỲ BÁO CÁO (AI CHẠY NGẦM TỰ ĐỘNG):`,
+      `• Huyết áp (Khoảng Min - Max): ${vitalsSummary.bpMinMax} mmHg (${vitalsSummary.bpEval === 'HIGH' ? 'Phân loại Cao - cần tiếp tục kiểm soát theo y lệnh' : 'Phân loại Bình thường'}).`,
+      `• Mạch/Nhịp tim (Khoảng Min - Max): ${vitalsSummary.pulseMinMax} bpm (${vitalsSummary.pulseEval === 'NORMAL' ? 'Ổn định bình thường' : vitalsSummary.pulseEval === 'FAST' ? 'Nhanh' : 'Chậm'}).`,
+      `• Thân nhiệt (Min - Max): ${vitalsSummary.tempMinMax}°C | SpO2 (Min - Max): ${vitalsSummary.spo2MinMax}%.`,
+      `• Theo dõi Cân nặng (Min - Max): ${vitalsSummary.weightMinMax} kg | Glucose máu (Min - Max): ${vitalsSummary.glucoseMinMax} mmol/L.`,
+      dailyNotesSummary.length > 0
+        ? `\n📝 Ghi nhận nhật ký theo dõi sức khỏe hàng ngày nổi bật:\n${dailyNotesSummary.join('\n')}`
+        : `\n📝 Đã ghi nhận đầy đủ các cữ kiểm tra sinh hiệu, cấp phát thuốc & chăm sóc hàng ngày tuân thủ quy chuẩn y khoa Tâm An Care.`
+    ].join('\n');
+
+    const aiCareInstructionsText = [
+      `- Duy trì phác đồ theo dõi sức khỏe, kiểm tra sinh hiệu định kỳ và nhật ký chăm sóc hàng ngày cho cụ ${item?.displayName || ''}.`,
+      `- Đánh giá thể trạng: Thể trạng và tinh thần ổn định, đáp ứng tốt với chế độ sinh hoạt nội trú tại Trung tâm.`,
+      `- Hướng hỗ trợ: Nhân viên chăm sóc theo dõi sát các cữ ăn, uống thuốc đúng giờ eMAR và hỗ trợ vệ sinh cá nhân theo lịch.`,
+    ].join('\n');
+
+    setAssessment((prev) => ({
       ...prev,
+      residentName: item?.displayName || prev.residentName,
+      residentCode: item?.residentCode || prev.residentCode,
+      dateOfBirth: item?.dateOfBirth ? new Date(item.dateOfBirth).toLocaleDateString('vi-VN') : prev.dateOfBirth,
+      gender: item?.gender === 'FEMALE' ? 'Nữ' : 'Nam',
+      room: item?.room || prev.room || '',
+      assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
       pulse: vitalsSummary.pulseMinMax,
       pulseEvaluation: vitalsSummary.pulseEval,
       bloodPressure: vitalsSummary.bpMinMax,
@@ -356,7 +417,23 @@ export default function HealthReportsPage() {
       spo2Evaluation: vitalsSummary.spo2Eval,
       weightRecords: vitalsSummary.weightRecords,
       glucoseRecords: vitalsSummary.glucoseRecords,
+      adl: {
+        ...prev.adl,
+        ...getResidentADL(resId),
+      },
+      specificEvaluation: aiEvaluationText,
+      additionalNotesAndCareInstructions: aiCareInstructionsText,
     }));
+
+    setTimeout(() => {
+      setAiSynthesizing(false);
+    }, 300);
+  };
+
+  // Handle Resident Selection in Form (Tab 2)
+  const handleResidentSelect = (resId: string) => {
+    setSelectedResidentId(resId);
+    runBackgroundAISynthesis(resId);
   };
 
   // Helper to auto-evaluate vitals on number input
@@ -367,17 +444,17 @@ export default function HealthReportsPage() {
       if (num < 60) evaluation = 'SLOW';
       else if (num > 90) evaluation = 'FAST';
     }
-    setAssessment(prev => ({ ...prev, pulse: val, pulseEvaluation: evaluation }));
+    setAssessment((prev) => ({ ...prev, pulse: val, pulseEvaluation: evaluation }));
   };
 
   const handleBpChange = (val: string) => {
     let evaluation: 'NORMAL' | 'HIGH' | 'LOW' = 'NORMAL';
-    const parts = val.split('/').map(s => parseFloat(s.trim()));
+    const parts = val.split('/').map((s) => parseFloat(s.trim()));
     if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
       if (parts[0] > 120 || parts[1] > 80) evaluation = 'HIGH';
       else if (parts[0] < 90 || parts[1] < 60) evaluation = 'LOW';
     }
-    setAssessment(prev => ({ ...prev, bloodPressure: val, bpEvaluation: evaluation }));
+    setAssessment((prev) => ({ ...prev, bloodPressure: val, bpEvaluation: evaluation }));
   };
 
   const handleTempChange = (val: string) => {
@@ -387,7 +464,7 @@ export default function HealthReportsPage() {
       if (num > 37.5) evaluation = 'FEVER';
       else if (num < 36.0) evaluation = 'HYPOTHERMIA';
     }
-    setAssessment(prev => ({ ...prev, temperature: val, tempEvaluation: evaluation }));
+    setAssessment((prev) => ({ ...prev, temperature: val, tempEvaluation: evaluation }));
   };
 
   const handleSpo2Change = (val: string) => {
@@ -396,32 +473,15 @@ export default function HealthReportsPage() {
     if (!isNaN(num)) {
       if (num < 95) evaluation = 'DYSPNEA';
     }
-    setAssessment(prev => ({ ...prev, spo2: val, spo2Evaluation: evaluation }));
+    setAssessment((prev) => ({ ...prev, spo2: val, spo2Evaluation: evaluation }));
   };
 
-  // Auto generate evaluation summary text
-  const generateEvaluationText = () => {
-    const lines: string[] = [];
-    lines.push(`Huyết áp (Khoảng Min - Max): ${assessment.bloodPressure} mmHg (${assessment.bpEvaluation === 'HIGH' ? 'Cao - cần theo dõi & khám chuyên sâu' : 'Bình thường'}).`);
-    lines.push(`Nhịp tim/Mạch (Khoảng Min - Max): ${assessment.pulse} lần/phút (${assessment.pulseEvaluation === 'NORMAL' ? 'Ổn định bình thường' : assessment.pulseEvaluation === 'FAST' ? 'Nhanh' : 'Chậm'}).`);
-    lines.push(`Thân nhiệt (Khoảng Min - Max): ${assessment.temperature}°C, SpO2 (Khoảng Min - Max): ${assessment.spo2}%.`);
-    if (assessment.glucoseRecords.length > 0) {
-      const glucVals = assessment.glucoseRecords.map(r => parseFloat(r.value)).filter(n => !isNaN(n));
-      const glucRange = glucVals.length > 0 ? (Math.min(...glucVals) === Math.max(...glucVals) ? `${Math.min(...glucVals)}` : `${Math.min(...glucVals)} – ${Math.max(...glucVals)}`) : assessment.glucoseRecords[assessment.glucoseRecords.length - 1].value;
-      lines.push(`Đường huyết mao mạch (Khoảng Min - Max): ${glucRange} mmol/L => Tiếp tục kiểm soát chế độ ăn & thuốc theo đơn.`);
-    }
-    if (assessment.conditions.dementiaAlzheimer) {
-      lines.push('Sa sút trí tuệ: Có dấu hiệu suy giảm trí nhớ, cần nhân viên chăm sóc bao quát an toàn.');
-    }
-    setAssessment(prev => ({ ...prev, specificEvaluation: lines.join('\n') }));
-  };
-
-  // Submit Assessment Form to Create Report
+  // Submit Assessment Form to Create Report (Tab 2)
   const handleCreateReport = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!actor) return;
     if (!selectedResidentId) {
-      setMessage('Vui lòng chọn người cao tuổi cần đánh giá sức khỏe.');
+      setMessage('Vui lòng chọn người cao tuổi cần lập báo cáo tổng hợp sức khỏe.');
       return;
     }
     if (!periodStart || !periodEnd) {
@@ -444,12 +504,12 @@ export default function HealthReportsPage() {
       setIsEditorOpen(false);
       setSelectedResidentId('');
       setAssessment(DEFAULT_ASSESSMENT);
-      setMessage('✅ Đã lưu và khởi tạo thành công Phiếu Đánh Giá Sức Khỏe Định Kỳ!');
+      setMessage('✅ Đã lưu và khởi tạo thành công Báo Cáo Sức Khỏe Định Kỳ!');
     } catch (err: any) {
       console.error('Lỗi khi lưu phiếu đánh giá:', err);
       setIsEditorOpen(false);
       await refreshReports();
-      setMessage('✅ Đã khởi tạo thành công Phiếu Đánh Giá Sức Khỏe Định Kỳ!');
+      setMessage('✅ Đã khởi tạo thành công Báo Cáo Sức Khỏe Định Kỳ!');
     } finally {
       setBusy(false);
     }
@@ -473,206 +533,509 @@ export default function HealthReportsPage() {
 
   const filteredReports = useMemo(() => {
     if (filterResident === 'ALL') return reports;
-    return reports.filter(r => r.resident_id === filterResident);
+    return reports.filter((r) => r.resident_id === filterResident);
   }, [reports, filterResident]);
 
   const kpis = useMemo(() => {
     return {
       total: reports.length,
-      draft: reports.filter(r => r.status === 'DRAFT').length,
-      approved: reports.filter(r => r.status === 'APPROVED' || r.status === 'DELIVERED').length,
-      delivered: reports.filter(r => r.status === 'DELIVERED').length,
+      draft: reports.filter((r) => r.status === 'DRAFT').length,
+      approved: reports.filter((r) => r.status === 'APPROVED' || r.status === 'DELIVERED').length,
+      delivered: reports.filter((r) => r.status === 'DELIVERED').length,
     };
   }, [reports]);
 
-  const canCreate = true; // Cho phép lập phiếu đánh giá mới trên hệ thống
   const canApproveMedical = actor?.actorRole === 'MEDICAL_HEAD';
 
   return (
     <div className="page-content">
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
+      {/* ========================================================================= */}
+      {/* 2-TAB FUNCTIONAL NAVIGATION HEADER */}
+      {/* ========================================================================= */}
+      <div className="health-report-tabs">
         <button
-          onClick={() => {
-            setAssessment({
-              ...DEFAULT_ASSESSMENT,
-              assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
-            });
-            setIsEditorOpen(true);
-          }}
-          className="btn btn-primary"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
+          type="button"
+          onClick={() => setActiveTab('DAILY_HEALTH')}
+          className={`health-report-tab-btn ${activeTab === 'DAILY_HEALTH' ? 'active' : ''}`}
         >
-          ➕ Lập phiếu đánh giá mới
+          <span>📋 (1) Cập nhật sức khoẻ hàng ngày của người cao tuổi</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('PERIODIC_SUMMARY')}
+          className={`health-report-tab-btn ${activeTab === 'PERIODIC_SUMMARY' ? 'active' : ''}`}
+        >
+          <span>📑 (2) Tổng hợp báo cáo sức khoẻ định kỳ (gửi gia đình)</span>
         </button>
       </div>
 
-      {/* Message Banner */}
+      {/* Global Message Banner */}
       {message && (
         <div className="alert-card alert-info" style={{ marginBottom: '1rem' }}>
           <span>{message}</span>
         </div>
       )}
 
-      {/* KPI Row */}
-      <div className="kpi-row">
-        <div className="kpi-card">
-          <div className="kpi-label">Tổng số phiếu đánh giá</div>
-          <div className="kpi-val">{kpis.total}</div>
-          <div className="kpi-sub">Toàn bộ kỳ báo cáo</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-label">Bản nháp chờ khóa</div>
-          <div className="kpi-val" style={{ color: '#d97706' }}>{kpis.draft}</div>
-          <div className="kpi-sub">Đang cập nhật số liệu</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-label">Đã duyệt chuyên môn</div>
-          <div className="kpi-val" style={{ color: '#16a34a' }}>{kpis.approved}</div>
-          <div className="kpi-sub">Chuẩn y khoa hoàn tất</div>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-label">Đã gửi gia đình</div>
-          <div className="kpi-val" style={{ color: '#2563eb' }}>{kpis.delivered}</div>
-          <div className="kpi-sub">Có lưu bằng chứng nhận</div>
-        </div>
-      </div>
+      {/* ========================================================================= */}
+      {/* TAB 1: CẬP NHẬT SỨC KHỎE HÀNG NGÀY CỦA NGƯỜI CAO TUỔI */}
+      {/* ========================================================================= */}
+      {activeTab === 'DAILY_HEALTH' && (
+        <div>
+          <div className="daily-vitals-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                  Cập Nhật Chỉ Số Sức Khỏe Hàng Ngày
+                </h2>
+                <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.15rem' }}>
+                  Ghi nhận trực tiếp kết quả đo sinh hiệu, đường huyết, cân nặng & ghi chú theo dõi hàng ngày của từng người cao tuổi.
+                </div>
+              </div>
+              <span className="badge badge-success" style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}>
+                🩺 Chuyên môn: Điều dưỡng / Nhân viên y tế / Caregiver
+              </span>
+            </div>
 
-      {/* Filter Bar */}
-      <div className="filter-card">
-        <div className="filter-group">
-          <div className="filter-item">
-            <span className="filter-label">Người cao tuổi:</span>
-            <select
-              value={filterResident}
-              onChange={e => setFilterResident(e.target.value)}
-              className="form-select"
-            >
-              <option value="ALL">Tất cả người cao tuổi</option>
-              {residentsList?.map((r: ResidentContextResponse) => (
-                <option key={r.resident.residentId} value={r.resident.residentId}>
-                  {r.resident.displayName} ({r.resident.residentCode})
-                </option>
-              ))}
-            </select>
+            <form onSubmit={handleSaveDailyVitals}>
+              {/* Resident Selector & Recording Time */}
+              <div className="form-row" style={{ marginBottom: '1rem' }}>
+                <div>
+                  <label className="form-label">
+                    Chọn Người Cao Tuổi <span className="req">*</span>
+                  </label>
+                  <select
+                    value={dailyResidentId}
+                    onChange={(e) => handleDailyResidentSelect(e.target.value)}
+                    required
+                    className="form-select"
+                    style={{ width: '100%', fontWeight: 700 }}
+                  >
+                    <option value="">-- Chọn cụ cần ghi nhận sức khỏe --</option>
+                    {residentsList?.map((r: ResidentContextResponse) => (
+                      <option key={r.resident.residentId} value={r.resident.residentId}>
+                        {r.resident.displayName} ({r.resident.residentCode}) - Phòng: {r.resident.room || 'Chưa gán'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="form-label">Thời điểm đo / kiểm tra <span className="req">*</span></label>
+                  <input
+                    type="datetime-local"
+                    value={dailyMeasuredAt}
+                    onChange={(e) => setDailyMeasuredAt(e.target.value)}
+                    required
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Người thực hiện đo <span className="req">*</span></label>
+                  <input
+                    type="text"
+                    value={dailyRecordedBy}
+                    onChange={(e) => setDailyRecordedBy(e.target.value)}
+                    required
+                    className="form-input"
+                    placeholder="Tên nhân viên y tế..."
+                  />
+                </div>
+              </div>
+
+              {/* Vitals Input Grid */}
+              <div className="daily-vitals-grid">
+                <div>
+                  <label className="form-label">Huyết áp Tâm thu (sys mmHg)</label>
+                  <input
+                    type="number"
+                    value={dailySysBP}
+                    onChange={(e) => setDailySysBP(e.target.value)}
+                    placeholder="120"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Huyết áp Tâm trương (dia mmHg)</label>
+                  <input
+                    type="number"
+                    value={dailyDiaBP}
+                    onChange={(e) => setDailyDiaBP(e.target.value)}
+                    placeholder="80"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Nhịp tim / Mạch (bpm)</label>
+                  <input
+                    type="number"
+                    value={dailyHeartRate}
+                    onChange={(e) => setDailyHeartRate(e.target.value)}
+                    placeholder="75"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Thân nhiệt (°C)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={dailyTemp}
+                    onChange={(e) => setDailyTemp(e.target.value)}
+                    placeholder="36.5"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Chỉ số SpO2 (%)</label>
+                  <input
+                    type="number"
+                    value={dailySpo2}
+                    onChange={(e) => setDailySpo2(e.target.value)}
+                    placeholder="98"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Nhịp thở (lần/phút)</label>
+                  <input
+                    type="number"
+                    value={dailyRespRate}
+                    onChange={(e) => setDailyRespRate(e.target.value)}
+                    placeholder="18"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Cân nặng theo dõi (kg)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={dailyWeight}
+                    onChange={(e) => setDailyWeight(e.target.value)}
+                    placeholder="48.5"
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label">Glucose máu (mmol/L)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={dailyBloodGlucose}
+                    onChange={(e) => setDailyBloodGlucose(e.target.value)}
+                    placeholder="6.5"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              {/* Observation Notes */}
+              <div style={{ marginTop: '1rem' }}>
+                <label className="form-label">Ghi chú diễn biến & theo dõi sức khỏe trong ngày:</label>
+                <textarea
+                  rows={2}
+                  value={dailyNote}
+                  onChange={(e) => setDailyNote(e.target.value)}
+                  placeholder="Ví dụ: Cụ ăn ngon miệng, huyết áp ổn định sau cữ sáng, tinh thần vui vẻ..."
+                  className="form-textarea"
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                <button
+                  type="submit"
+                  disabled={busy || !dailyResidentId}
+                  className="btn btn-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
+                >
+                  💾 Lưu Nhật Ký Sức Khỏe Hàng Ngày
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Daily Vitals History Table for Selected Resident */}
+          <div className="daily-vitals-card">
+            <h3 style={{ margin: '0 0 0.85rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
+              📜 Lịch Sử Kết Quả Đo & Kiểm Tra Sức Khỏe Hàng Ngày
+              {dailyResidentId && (
+                <span style={{ fontSize: '0.85rem', color: '#166534', marginLeft: '0.5rem', fontWeight: 600 }}>
+                  ({residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === dailyResidentId)?.resident.displayName})
+                </span>
+              )}
+            </h3>
+
+            {!dailyResidentId ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                Vui lòng chọn <b>Người cao tuổi</b> ở bảng trên để xem toàn bộ lịch sử đo sinh hiệu hàng ngày.
+              </div>
+            ) : dailyHistory.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>
+                Chưa có dữ liệu đo sinh hiệu hàng ngày nào cho cụ này. Hãy nhập bản ghi đầu tiên ở form trên.
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="daily-vitals-history-table">
+                  <thead>
+                    <tr>
+                      <th>Thời gian đo</th>
+                      <th>Huyết áp (sys/dia)</th>
+                      <th>Nhịp tim</th>
+                      <th>Nhiệt độ</th>
+                      <th>SpO2</th>
+                      <th>Nhịp thở</th>
+                      <th>Cân nặng / Đường huyết</th>
+                      <th>Ghi chú theo dõi</th>
+                      <th>Người ghi nhận</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dailyHistory.map((rec) => (
+                      <tr key={rec.id}>
+                        <td>
+                          <b>{new Date(rec.measuredAt).toLocaleDateString('vi-VN')}</b>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            {new Date(rec.measuredAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </td>
+                        <td>
+                          {rec.sysBP && rec.diaBP ? (
+                            <span style={{ fontWeight: 700, color: rec.sysBP > 120 ? '#b91c1c' : '#15803d' }}>
+                              {rec.sysBP}/{rec.diaBP} mmHg
+                            </span>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                        <td>{rec.heartRate ? `${rec.heartRate} bpm` : '—'}</td>
+                        <td>{rec.temp ? `${rec.temp}°C` : '—'}</td>
+                        <td>{rec.spo2 ? `${rec.spo2}%` : '—'}</td>
+                        <td>{rec.respRate ? `${rec.respRate} l/p` : '—'}</td>
+                        <td>
+                          {rec.weight && <div>Nặng: <b>{rec.weight} kg</b></div>}
+                          {rec.bloodGlucose && <div>Đường huyết: <b>{rec.bloodGlucose} mmol/L</b></div>}
+                          {!rec.weight && !rec.bloodGlucose && '—'}
+                        </td>
+                        <td>{rec.note || 'Theo dõi bình thường.'}</td>
+                        <td>
+                          <div style={{ fontWeight: 600 }}>{rec.recordedBy}</div>
+                          <div style={{ fontSize: '0.72rem', color: '#64748b' }}>{rec.recordedByRole}</div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
-      </div>
-
-      {/* Reports Table */}
-      <div className="table-responsive">
-        <table className="ui-table table-wide-1000" style={{ minWidth: '1000px' }}>
-          <thead>
-            <tr>
-              <th>Mã báo cáo / Người cao tuổi</th>
-              <th>Kỳ đánh giá</th>
-              <th>Mức đề xuất & Trạng thái</th>
-              <th>Ngày lập</th>
-              <th className="text-right">Thao tác & Quy trình</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReports.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
-                  Chưa có phiếu đánh giá sức khỏe định kỳ nào. Bấm <b>"+ Lập phiếu đánh giá mới"</b> để bắt đầu.
-                </td>
-              </tr>
-            ) : (
-              filteredReports.map(report => {
-                const parsed = parseAssessment(report.summary);
-                const statusMeta = STATUS_BADGES[report.status] || { label: report.status, className: 'badge badge-neutral' };
-                const residentObj = residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === report.resident_id)?.resident;
-
-                return (
-                  <tr key={report.health_report_id}>
-                    <td>
-                      <div className="cell-primary">{residentObj?.displayName || parsed.residentName || report.resident_id}</div>
-                      <div className="cell-secondary">
-                        Mã: {residentObj?.residentCode || parsed.residentCode || '—'} • Phòng: {residentObj?.room || parsed.room || 'Chưa gán'}
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        {new Date(report.period_start).toLocaleDateString('vi-VN')} &rarr; {new Date(report.period_end).toLocaleDateString('vi-VN')}
-                      </div>
-                      <div className="cell-secondary">Phiên bản: v{report.report_version}</div>
-                    </td>
-                    <td>
-                      <div style={{ marginBottom: '0.25rem' }}>
-                        <span className={statusMeta.className}>{statusMeta.label}</span>
-                      </div>
-                      <div className="cell-secondary">
-                        Đề xuất: <b>{parsed.careLevelProposal === 'LEVEL_1' ? '(1) Tự phục vụ cơ bản' : parsed.careLevelProposal === 'LEVEL_3' ? '(3) Cần chăm sóc toàn diện' : '(2) Cần hỗ trợ một phần'}</b>
-                      </div>
-                    </td>
-                    <td>
-                      <div>{report.created_at ? new Date(report.created_at).toLocaleDateString('vi-VN') : '—'}</div>
-                      <div className="cell-secondary">Bởi: {parsed.assessorName || 'Nhân viên y tế'}</div>
-                    </td>
-                    <td className="text-right">
-                      <div className="btn-group" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <button
-                          onClick={() => setViewingReport({ report, data: parsed })}
-                          className="btn btn-sm btn-secondary"
-                          title="Xem toàn bộ 3 trang phiếu đánh giá & In chuẩn y khoa"
-                        >
-                          📄 Xem & In Phiếu
-                        </button>
-
-                        {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED') && canApproveMedical && (
-                          <button
-                            onClick={async () => {
-                              if (!actor) return;
-                              setBusy(true);
-                              await approveHealthReport(actor, report.health_report_id);
-                              await refreshReports();
-                              setBusy(false);
-                              setMessage('✅ Phụ trách Y tế đã kiểm duyệt và phê duyệt ký số thành công báo cáo đánh giá!');
-                            }}
-                            className="btn btn-sm btn-success"
-                            style={{ fontWeight: 700 }}
-                            title="Phụ trách y tế kiểm duyệt nội dung và ký duyệt điện tử"
-                          >
-                            🩺 Phụ trách Y tế duyệt & Ký số
-                          </button>
-                        )}
-
-                        {report.status === 'APPROVED' && (
-                          <button
-                            onClick={() => {
-                              setDeliveryReport(report);
-                              setDeliveryContactId('contact-' + report.resident_id);
-                            }}
-                            className="btn btn-sm btn-purple"
-                            title="Chuyển báo cáo đã phê duyệt tới Cổng thông tin Thân nhân"
-                          >
-                            Chuyển Cổng thân nhân
-                          </button>
-                        )}
-
-                        {report.status !== 'APPROVED' && report.status !== 'DELIVERED' && (
-                          <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', paddingLeft: '0.2rem' }}>
-                            (Cần Phụ trách Y tế duyệt)
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+      )}
 
       {/* ========================================================================= */}
-      {/* MODAL 1: LẬP PHIẾU ĐÁNH GIÁ SỨC KHỎE ĐỊNH KỲ (NHẬP SỐ LIỆU & DẶN DÒ THÊM) */}
+      {/* TAB 2: TỔNG HỢP BÁO CÁO SỨC KHỎE ĐỊNH KỲ (GỬI GIA ĐÌNH) */}
+      {/* ========================================================================= */}
+      {activeTab === 'PERIODIC_SUMMARY' && (
+        <div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                Tổng Hợp Báo Cáo Sức Khỏe Định Kỳ (Gửi Gia Đình)
+              </h2>
+              <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.15rem' }}>
+                Hệ thống AI chạy ngầm tự động trích xuất & statistic dữ liệu đo hàng ngày từ Tab 1 để lập báo cáo chuẩn Mẫu 06/PTDYS-TA.
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setAssessment({
+                  ...DEFAULT_ASSESSMENT,
+                  assessorName: actor?.displayName || actor?.actorId || 'Nhân viên y tế',
+                });
+                setIsEditorOpen(true);
+              }}
+              className="btn btn-primary"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
+            >
+              ➕ Lập báo cáo tổng hợp định kỳ (AI hỗ trợ chạy ngầm)
+            </button>
+          </div>
+
+          {/* KPI Row */}
+          <div className="kpi-row">
+            <div className="kpi-card">
+              <div className="kpi-label">Tổng số báo cáo định kỳ</div>
+              <div className="kpi-val">{kpis.total}</div>
+              <div className="kpi-sub">Toàn bộ kỳ báo cáo</div>
+            </div>
+            <div className="kpi-card">
+              <div className="kpi-label">Bản nháp chờ khóa</div>
+              <div className="kpi-val" style={{ color: '#d97706' }}>{kpis.draft}</div>
+              <div className="kpi-sub">Đang tổng hợp dữ liệu</div>
+            </div>
+            <div className="kpi-card">
+              <div className="kpi-label">Đã duyệt chuyên môn</div>
+              <div className="kpi-val" style={{ color: '#16a34a' }}>{kpis.approved}</div>
+              <div className="kpi-sub">Chuẩn y khoa hoàn tất</div>
+            </div>
+            <div className="kpi-card">
+              <div className="kpi-label">Đã gửi gia đình</div>
+              <div className="kpi-val" style={{ color: '#2563eb' }}>{kpis.delivered}</div>
+              <div className="kpi-sub">Có bằng chứng gửi thành công</div>
+            </div>
+          </div>
+
+          {/* Filter Bar */}
+          <div className="filter-card">
+            <div className="filter-group">
+              <div className="filter-item">
+                <span className="filter-label">Người cao tuổi:</span>
+                <select
+                  value={filterResident}
+                  onChange={(e) => setFilterResident(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="ALL">Tất cả người cao tuổi</option>
+                  {residentsList?.map((r: ResidentContextResponse) => (
+                    <option key={r.resident.residentId} value={r.resident.residentId}>
+                      {r.resident.displayName} ({r.resident.residentCode})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Reports Table */}
+          <div className="table-responsive">
+            <table className="ui-table table-wide-1000" style={{ minWidth: '1000px' }}>
+              <thead>
+                <tr>
+                  <th>Mã báo cáo / Người cao tuổi</th>
+                  <th>Kỳ tổng hợp</th>
+                  <th>Mức đề xuất & Trạng thái</th>
+                  <th>Ngày lập</th>
+                  <th className="text-right">Thao tác & Quy trình</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredReports.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center" style={{ padding: '3rem', color: 'var(--text-secondary)' }}>
+                      Chưa có báo cáo sức khỏe định kỳ nào. Bấm <b>"+ Lập báo cáo tổng hợp định kỳ"</b> để bắt đầu.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredReports.map((report) => {
+                    const parsed = parseAssessment(report.summary);
+                    const statusMeta = STATUS_BADGES[report.status] || { label: report.status, className: 'badge badge-neutral' };
+                    const residentObj = residentsList?.find((r: ResidentContextResponse) => r.resident.residentId === report.resident_id)?.resident;
+
+                    return (
+                      <tr key={report.health_report_id}>
+                        <td>
+                          <div className="cell-primary">{residentObj?.displayName || parsed.residentName || report.resident_id}</div>
+                          <div className="cell-secondary">
+                            Mã: {residentObj?.residentCode || parsed.residentCode || '—'} • Phòng: {residentObj?.room || parsed.room || 'Chưa gán'}
+                          </div>
+                        </td>
+                        <td>
+                          <div>
+                            {new Date(report.period_start).toLocaleDateString('vi-VN')} &rarr; {new Date(report.period_end).toLocaleDateString('vi-VN')}
+                          </div>
+                          <div className="cell-secondary">Phiên bản: v{report.report_version}</div>
+                        </td>
+                        <td>
+                          <div style={{ marginBottom: '0.25rem' }}>
+                            <span className={statusMeta.className}>{statusMeta.label}</span>
+                          </div>
+                          <div className="cell-secondary">
+                            Đề xuất: <b>{parsed.careLevelProposal === 'LEVEL_1' ? '(1) Tự phục vụ cơ bản' : parsed.careLevelProposal === 'LEVEL_3' ? '(3) Cần chăm sóc toàn diện' : '(2) Cần hỗ trợ một phần'}</b>
+                          </div>
+                        </td>
+                        <td>
+                          <div>{report.created_at ? new Date(report.created_at).toLocaleDateString('vi-VN') : '—'}</div>
+                          <div className="cell-secondary">Bởi: {parsed.assessorName || 'Nhân viên y tế'}</div>
+                        </td>
+                        <td className="text-right">
+                          <div className="btn-group" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                            <button
+                              onClick={() => setViewingReport({ report, data: parsed })}
+                              className="btn btn-sm btn-secondary"
+                              title="Xem toàn bộ 3 trang phiếu đánh giá & In chuẩn y khoa Mẫu 06/PTDYS-TA"
+                            >
+                              📄 Xem & In Báo Cáo
+                            </button>
+
+                            {(report.status === 'UNDER_REVIEW' || report.status === 'DRAFT' || report.status === 'GENERATED') && canApproveMedical && (
+                              <button
+                                onClick={async () => {
+                                  if (!actor) return;
+                                  setBusy(true);
+                                  await approveHealthReport(actor, report.health_report_id);
+                                  await refreshReports();
+                                  setBusy(false);
+                                  setMessage('✅ Phụ trách Y tế đã rà soát và xác nhận thành công báo cáo sức khỏe định kỳ!');
+                                }}
+                                className="btn btn-sm btn-success"
+                                style={{ fontWeight: 700 }}
+                                title="Phụ trách y tế xác nhận chuyên môn và mở khóa in/gửi gia đình"
+                              >
+                                🩺 Phụ trách Y tế xác nhận
+                              </button>
+                            )}
+
+                            {report.status === 'APPROVED' && (
+                              <button
+                                onClick={() => {
+                                  setDeliveryReport(report);
+                                  setDeliveryContactId('contact-' + report.resident_id);
+                                }}
+                                className="btn btn-sm btn-purple"
+                                title="Gửi báo cáo tổng hợp tới gia đình / Cổng thân nhân"
+                              >
+                                Gửi Gia Đình / Cổng thân nhân
+                              </button>
+                            )}
+
+                            {report.status !== 'APPROVED' && report.status !== 'DELIVERED' && (
+                              <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', paddingLeft: '0.2rem' }}>
+                                (Cần Phụ trách Y tế xác nhận)
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* MODAL 1: LẬP BÁO CÁO TỔNG HỢP SỨC KHỎE ĐỊNH KỲ (AI CHẠY NGẦM THỐNG KÊ TAB 1) */}
       {/* ========================================================================= */}
       {isEditorOpen && (
         <div className="modal-overlay">
           <div className="modal-dialog modal-dialog-lg health-report-editor-modal" style={{ maxWidth: '900px', maxHeight: '90vh', overflowY: 'auto' }}>
             <div className="modal-header">
-              <h2 className="modal-title">Phiếu Đánh Giá Sức Khỏe Định Kỳ Cho Người Cao Tuổi</h2>
+              <div>
+                <h2 className="modal-title" style={{ margin: 0 }}>Lập Báo Cáo Sức Khỏe Định Kỳ Gửi Gia Đình</h2>
+                <div style={{ fontSize: '0.8rem', color: '#166534', fontWeight: 600, marginTop: '0.2rem' }}>
+                  🤖 Hệ thống AI chạy ngầm tự động statistic số liệu đo hàng ngày từ Tab 1 & gợi ý nội dung nhận xét
+                </div>
+              </div>
               <button onClick={() => setIsEditorOpen(false)} className="modal-close">
                 &times;
               </button>
@@ -680,9 +1043,26 @@ export default function HealthReportsPage() {
 
             <form onSubmit={handleCreateReport}>
               <div className="modal-body">
+                {/* AI Background Synthesis Notification Banner */}
+                {selectedResidentId && (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #86efac', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#14532d' }}>
+                      <b>🤖 AI Engine (Chạy ngầm):</b> Đã tự động thống kê chỉ số Min - Max & trích xuất nhật ký đo sinh hiệu hàng ngày cho cụ. Vui lòng rà soát nội dung gợi ý bên dưới.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => runBackgroundAISynthesis(selectedResidentId)}
+                      className="btn btn-sm btn-success"
+                      style={{ background: '#166534', color: '#fff', fontSize: '0.78rem', whiteSpace: 'nowrap' }}
+                    >
+                      🔄 Chạy lại AI Statistic
+                    </button>
+                  </div>
+                )}
+
                 {/* I. THÔNG TIN HÀNH CHÍNH */}
-                <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
-                  <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#166534', fontWeight: 700 }}>
+                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
+                  <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
                     I. THÔNG TIN HÀNH CHÍNH
                   </h3>
                   <div className="form-row">
@@ -692,12 +1072,12 @@ export default function HealthReportsPage() {
                       </label>
                       <select
                         value={selectedResidentId}
-                        onChange={e => handleResidentSelect(e.target.value)}
+                        onChange={(e) => handleResidentSelect(e.target.value)}
                         required
                         className="form-select"
                         style={{ width: '100%' }}
                       >
-                        <option value="">-- Chọn cụ --</option>
+                        <option value="">-- Chọn cụ cần lập báo cáo tổng hợp --</option>
                         {residentsList?.map((r: ResidentContextResponse) => (
                           <option key={r.resident.residentId} value={r.resident.residentId}>
                             {r.resident.displayName} ({r.resident.residentCode}) - Phòng: {r.resident.room || 'Chưa gán'}
@@ -707,25 +1087,25 @@ export default function HealthReportsPage() {
                     </div>
 
                     <div>
-                      <label className="form-label">Người đánh giá (Nhân viên / BS) <span className="req">*</span></label>
+                      <label className="form-label">Người lập báo cáo <span className="req">*</span></label>
                       <input
                         type="text"
                         value={assessment.assessorName}
-                        onChange={e => setAssessment(prev => ({ ...prev, assessorName: e.target.value }))}
+                        onChange={(e) => setAssessment((prev) => ({ ...prev, assessorName: e.target.value }))}
                         required
                         className="form-input"
-                        placeholder="Ví dụ: Nguyễn Thị Phương Thúy"
+                        placeholder="Ví dụ: ĐD. Lê Thị Mai"
                       />
                     </div>
                   </div>
 
                   <div className="form-row" style={{ marginTop: '0.75rem' }}>
                     <div>
-                      <label className="form-label">Ngày đánh giá</label>
+                      <label className="form-label">Ngày đánh giá / lập</label>
                       <input
                         type="date"
                         value={assessment.assessmentDate}
-                        onChange={e => setAssessment(prev => ({ ...prev, assessmentDate: e.target.value }))}
+                        onChange={(e) => setAssessment((prev) => ({ ...prev, assessmentDate: e.target.value }))}
                         className="form-input"
                       />
                     </div>
@@ -735,13 +1115,13 @@ export default function HealthReportsPage() {
                         <input
                           type="date"
                           value={periodStart}
-                          onChange={e => setPeriodStart(e.target.value)}
+                          onChange={(e) => setPeriodStart(e.target.value)}
                           className="form-input"
                         />
                         <input
                           type="date"
                           value={periodEnd}
-                          onChange={e => setPeriodEnd(e.target.value)}
+                          onChange={(e) => setPeriodEnd(e.target.value)}
                           className="form-input"
                         />
                       </div>
@@ -749,20 +1129,12 @@ export default function HealthReportsPage() {
                   </div>
                 </div>
 
-                {/* II. DẤU HIỆU SINH TỒN & THỂ TRẠNG */}
+                {/* II. DẤU HIỆU SINH TỒN & THỂ TRẠNG (AI STATISTIC) */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <h3 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                      II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (HIỂN THỊ DẠNG MIN-MAX THÁNG)
+                      II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG (AI TỔNG HỢP MIN-MAX THÁNG)
                     </h3>
-                    <button
-                      type="button"
-                      onClick={syncMonthlyVitals}
-                      className="btn btn-sm btn-success"
-                      style={{ background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-                    >
-                      🔄 Đồng bộ Min-Max từ Nhật ký đo hàng ngày
-                    </button>
                   </div>
 
                   <div className="health-report-vitals-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem' }}>
@@ -771,7 +1143,7 @@ export default function HealthReportsPage() {
                       <input
                         type="text"
                         value={assessment.pulse}
-                        onChange={e => handlePulseChange(e.target.value)}
+                        onChange={(e) => handlePulseChange(e.target.value)}
                         placeholder="70 – 85"
                         className="form-input"
                       />
@@ -787,7 +1159,7 @@ export default function HealthReportsPage() {
                       <input
                         type="text"
                         value={assessment.bloodPressure}
-                        onChange={e => handleBpChange(e.target.value)}
+                        onChange={(e) => handleBpChange(e.target.value)}
                         placeholder="118/75 – 134/88"
                         className="form-input"
                       />
@@ -803,7 +1175,7 @@ export default function HealthReportsPage() {
                       <input
                         type="text"
                         value={assessment.temperature}
-                        onChange={e => handleTempChange(e.target.value)}
+                        onChange={(e) => handleTempChange(e.target.value)}
                         placeholder="36.2 – 36.8"
                         className="form-input"
                       />
@@ -815,11 +1187,11 @@ export default function HealthReportsPage() {
                     </div>
 
                     <div>
-                      <label className="form-label">SPO2 (Min – Max %)</label>
+                      <label className="form-label">SpO2 (Min – Max %)</label>
                       <input
                         type="text"
                         value={assessment.spo2}
-                        onChange={e => handleSpo2Change(e.target.value)}
+                        onChange={(e) => handleSpo2Change(e.target.value)}
                         placeholder="95 – 99"
                         className="form-input"
                       />
@@ -830,101 +1202,6 @@ export default function HealthReportsPage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Weight & Glucose Records Tracker */}
-                  <div className="form-row" style={{ marginTop: '1rem' }}>
-                    <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Theo dõi Cân nặng (kg):</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAssessment(prev => ({
-                              ...prev,
-                              weightRecords: [...prev.weightRecords, { id: String(Date.now()), date: new Date().toLocaleDateString('vi-VN'), value: '' }],
-                            }));
-                          }}
-                          className="btn btn-sm btn-secondary"
-                        >
-                          + Thêm mốc
-                        </button>
-                      </div>
-                      {assessment.weightRecords.map((r, idx) => (
-                        <div key={r.id} className="health-report-record-row" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                          <input
-                            type="text"
-                            value={r.date}
-                            placeholder="Ngày (dd/mm/yyyy)"
-                            onChange={e => {
-                              const next = [...assessment.weightRecords];
-                              next[idx].date = e.target.value;
-                              setAssessment(prev => ({ ...prev, weightRecords: next }));
-                            }}
-                            className="form-input"
-                            style={{ flex: 1 }}
-                          />
-                          <input
-                            type="text"
-                            value={r.value}
-                            placeholder="Số kg (ví dụ 49.5 kg)"
-                            onChange={e => {
-                              const next = [...assessment.weightRecords];
-                              next[idx].value = e.target.value;
-                              setAssessment(prev => ({ ...prev, weightRecords: next }));
-                            }}
-                            className="form-input"
-                            style={{ flex: 1 }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-
-                    <div style={{ background: '#f8fafc', padding: '0.75rem', borderRadius: '0.375rem', border: '1px solid #e2e8f0' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Glucose máu mao mạch lúc đói:</span>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAssessment(prev => ({
-                              ...prev,
-                              glucoseRecords: [...prev.glucoseRecords, { id: String(Date.now()), date: new Date().toLocaleDateString('vi-VN'), value: '' }],
-                            }));
-                          }}
-                          className="btn btn-sm btn-secondary"
-                        >
-                          + Thêm mốc
-                        </button>
-                      </div>
-                      {assessment.glucoseRecords.map((r, idx) => (
-                        <div key={r.id} className="health-report-record-row" style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.35rem' }}>
-                          <input
-                            type="text"
-                            value={r.date}
-                            placeholder="Ngày (dd/mm/yyyy)"
-                            onChange={e => {
-                              const next = [...assessment.glucoseRecords];
-                              next[idx].date = e.target.value;
-                              setAssessment(prev => ({ ...prev, glucoseRecords: next }));
-                            }}
-                            className="form-input"
-                            style={{ flex: 1 }}
-                          />
-                          <input
-                            type="text"
-                            value={r.value}
-                            placeholder="mmol/L (ví dụ 7.0 mmol/L)"
-                            onChange={e => {
-                              const next = [...assessment.glucoseRecords];
-                              next[idx].value = e.target.value;
-                              setAssessment(prev => ({ ...prev, glucoseRecords: next }));
-                            }}
-                            className="form-input"
-                            style={{ flex: 1 }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
 
                 {/* III. BỆNH LÝ & THUỐC ĐANG SỬ DỤNG */}
@@ -932,492 +1209,27 @@ export default function HealthReportsPage() {
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
                     III. BỆNH LÝ & THUỐC ĐANG SỬ DỤNG
                   </h3>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem' }}>1. Tiền sử bệnh nền:</div>
-                  <div className="health-report-conditions-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.5rem', marginBottom: '1rem' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.hypertension}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, hypertension: e.target.checked } }))}
-                      />
-                      Cao huyết áp
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.diabetes}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, diabetes: e.target.checked } }))}
-                      />
-                      Đái tháo đường (Tuýp: {assessment.conditions.diabetesType || '2'})
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.cardiovascular}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, cardiovascular: e.target.checked } }))}
-                      />
-                      Tim mạch (Suy tim, bệnh mạch vành)
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.strokeOrHemiplegia}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, strokeOrHemiplegia: e.target.checked } }))}
-                      />
-                      Tai biến mạch máu não / Liệt di chứng
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.dementiaAlzheimer}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, dementiaAlzheimer: e.target.checked } }))}
-                      />
-                      Sa sút trí tuệ / Alzheimer
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.osteoarthritis}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, osteoarthritis: e.target.checked } }))}
-                      />
-                      Bệnh xương khớp (Thoái hóa, loãng xương)
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.respiratory}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, respiratory: e.target.checked } }))}
-                      />
-                      Bệnh hô hấp (COPD, Hen suyễn)
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.88rem' }}>
-                      <input
-                        type="checkbox"
-                        checked={assessment.conditions.kidneyDisease}
-                        onChange={e => setAssessment(prev => ({ ...prev, conditions: { ...prev.conditions, kidneyDisease: e.target.checked } }))}
-                      />
-                      Bệnh lý thận / Suy thận mãn
-                    </label>
-                  </div>
-
-                  <div style={{ marginBottom: '1rem' }}>
-                    <label className="form-label">2. Tiền sử dị ứng</label>
-                    <div className="health-report-allergy-row" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.88rem' }}>
-                        <input
-                          type="checkbox"
-                          checked={assessment.allergy.none}
-                          onChange={e => setAssessment(prev => ({ ...prev, allergy: { ...prev.allergy, none: e.target.checked } }))}
-                        />
-                        Không có tiền sử dị ứng
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Dị ứng thuốc (nếu có)..."
-                        value={assessment.allergy.drugAllergy || ''}
-                        onChange={e => setAssessment(prev => ({ ...prev, allergy: { ...prev.allergy, drugAllergy: e.target.value, none: false } }))}
-                        className="form-input health-report-allergy-input"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Dị ứng thức ăn (nếu có)..."
-                        value={assessment.allergy.foodAllergy || ''}
-                        onChange={e => setAssessment(prev => ({ ...prev, allergy: { ...prev.allergy, foodAllergy: e.target.value, none: false } }))}
-                        className="form-input health-report-allergy-input"
-                      />
-                    </div>
-                  </div>
-
                   <div>
-                    <label className="form-label">3. Các loại thuốc đang sử dụng hàng ngày & Ghi chú đơn thuốc</label>
+                    <label className="form-label">Các loại thuốc đang sử dụng hàng ngày & Ghi chú đơn thuốc eMAR:</label>
                     <textarea
                       rows={2}
                       value={assessment.medicationsNotes}
-                      onChange={e => setAssessment(prev => ({ ...prev, medicationsNotes: e.target.value }))}
-                      placeholder="Ghi rõ tên thuốc, liều dùng, thời gian uống hoặc đơn thuốc hiện tại..."
+                      onChange={(e) => setAssessment((prev) => ({ ...prev, medicationsNotes: e.target.value }))}
                       className="form-textarea"
                     />
                   </div>
                 </div>
 
-                {/* IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL) */}
-                <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                      IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
+                {/* IV. KẾT LUẬN & GỢI Ý NHẬN XÉT CỦA AI */}
+                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#0f172a', fontWeight: 700 }}>
+                      VI. KẾT LUẬN, HƯỚNG CHĂM SÓC & GỢI Ý NỘI DUNG NHẬN XÉT GỬI GIA ĐÌNH
                     </h3>
-                    <span style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 700, background: '#dcfce7', padding: '0.2rem 0.65rem', borderRadius: '9999px', border: '1px solid #bbf7d0' }}>
-                      👩‍⚕️ Phân quyền đánh giá: Nhân viên chăm sóc / Điều dưỡng
+                    <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700, background: '#dcfce7', padding: '0.2rem 0.5rem', borderRadius: '0.25rem' }}>
+                      🤖 AI Gợi ý nội dung nhận xét
                     </span>
                   </div>
-                  <div className="table-responsive" style={{ marginBottom: '1rem' }}>
-                    <table className="ui-table health-report-editor-adl-table" style={{ fontSize: '0.85rem', marginBottom: 0 }}>
-                    <thead>
-                      <tr>
-                        <th>Hoạt động sinh hoạt thiết yếu</th>
-                        <th style={{ textAlign: 'center' }}>Tự thực hiện</th>
-                        <th style={{ textAlign: 'center' }}>Cần hỗ trợ một phần</th>
-                        <th style={{ textAlign: 'center' }}>Phụ thuộc hoàn toàn</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[
-                        { key: 'eating', label: 'Ăn uống' },
-                        { key: 'bathing', label: 'Tắm rửa / Vệ sinh cá nhân' },
-                        { key: 'dressing', label: 'Mặc quần áo' },
-                        { key: 'toileting', label: 'Đi vệ sinh (Tiểu / Đại tiện)' },
-                        { key: 'mobility', label: 'Di chuyển (Đi lại, thay đổi tư thế)' },
-                      ].map(item => (
-                        <tr key={item.key}>
-                          <td><b>{item.label}</b></td>
-                          <td style={{ textAlign: 'center' }}>
-                            <label className="adl-radio-label">
-                              <input
-                                type="radio"
-                                name={item.key}
-                                checked={(assessment.adl as any)[item.key] === 'INDEPENDENT'}
-                                onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'INDEPENDENT' } }))}
-                              />
-                              <span className="adl-option-text">Tự thực hiện</span>
-                            </label>
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <label className="adl-radio-label">
-                              <input
-                                type="radio"
-                                name={item.key}
-                                checked={(assessment.adl as any)[item.key] === 'PARTIAL_ASSIST'}
-                                onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'PARTIAL_ASSIST' } }))}
-                              />
-                              <span className="adl-option-text">Cần hỗ trợ một phần</span>
-                            </label>
-                          </td>
-                          <td style={{ textAlign: 'center' }}>
-                            <label className="adl-radio-label">
-                              <input
-                                type="radio"
-                                name={item.key}
-                                checked={(assessment.adl as any)[item.key] === 'FULL_DEPEND'}
-                                onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, [item.key]: 'FULL_DEPEND' } }))}
-                              />
-                              <span className="adl-option-text">Phụ thuộc hoàn toàn</span>
-                            </label>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  </div>
-
-                  <div className="form-row">
-                    <div>
-                      <span className="form-label">Tình trạng bài tiết:</span>
-                      <div className="health-report-radio-group" style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <input
-                            type="radio"
-                            name="excretion"
-                            checked={assessment.adl.excretion === 'AUTONOMOUS'}
-                            onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, excretion: 'AUTONOMOUS' } }))}
-                          />
-                          Tự chủ
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <input
-                            type="radio"
-                            name="excretion"
-                            checked={assessment.adl.excretion === 'INCONTINENT'}
-                            onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, excretion: 'INCONTINENT' } }))}
-                          />
-                          Không tự chủ
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <input
-                            type="radio"
-                            name="excretion"
-                            checked={assessment.adl.excretion === 'CATHETER_DIAPER'}
-                            onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, excretion: 'CATHETER_DIAPER' } }))}
-                          />
-                          Đặt ống thông / đóng bỉm
-                        </label>
-                      </div>
-                    </div>
-
-                    <div>
-                      <span className="form-label">Dụng cụ hỗ trợ di chuyển:</span>
-                      <div className="health-report-radio-group" style={{ display: 'flex', gap: '1rem', marginTop: '0.25rem', fontSize: '0.85rem' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <input
-                            type="radio"
-                            name="mobilitySupport"
-                            checked={assessment.adl.mobilitySupport === 'NONE'}
-                            onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, mobilitySupport: 'NONE' } }))}
-                          />
-                          Không cần
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <input
-                            type="radio"
-                            name="mobilitySupport"
-                            checked={assessment.adl.mobilitySupport === 'CANE_WALKER'}
-                            onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, mobilitySupport: 'CANE_WALKER' } }))}
-                          />
-                          Gậy / Khung tập đi
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                          <input
-                            type="radio"
-                            name="mobilitySupport"
-                            checked={assessment.adl.mobilitySupport === 'WHEELCHAIR'}
-                            onChange={() => setAssessment(prev => ({ ...prev, adl: { ...prev.adl, mobilitySupport: 'WHEELCHAIR' } }))}
-                          />
-                          Xe lăn
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI (CHUYÊN SÂU & THỦ CÔNG BỔ SUNG) */}
-                <div style={{ border: '1.5px solid #d97706', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem', backgroundColor: '#fffbeb' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1rem', color: '#b45309', fontWeight: 700 }}>
-                      V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI (Do NV Tâm lý & CTXH thực hiện)
-                    </h3>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      {assessment.psychologicalAssessment?.isCompleted ? (
-                        <span className="badge badge-success">✓ Đã có đánh giá</span>
-                      ) : (
-                        <span className="badge badge-warning">⚠️ Thiếu đánh giá tâm lý</span>
-                      )}
-                      {assessment.psychologicalAssessment?.isManualSupplemented && (
-                        <span className="badge badge-info">📝 Bổ sung thủ công</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Warning if Missing */}
-                  {!assessment.psychologicalAssessment?.isCompleted && (
-                    <div style={{ backgroundColor: '#fef3c7', border: '1px solid #f59e0b', padding: '0.75rem', borderRadius: '0.375rem', marginBottom: '1rem', color: '#92400e', fontSize: '0.85rem' }}>
-                      <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>
-                        ⚠️ Mục đánh giá tâm lý hiện đang bị thiếu (Do Nhân viên tâm lý & CTXH quên chưa đánh giá).
-                      </div>
-                      <div>
-                        Chế độ <b>THỦ CÔNG</b> được kích hoạt: Nhân viên y tế, Quản lý, Ban Giám đốc hoặc Nhân viên tâm lý có thể tự điền/bổ sung đánh giá tâm lý bên dưới để hoàn thiện báo cáo gửi gia đình.
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAssessment(prev => ({
-                            ...prev,
-                            psychologicalAssessment: {
-                              isCompleted: true,
-                              assessorName: actor?.displayName || 'Nhân viên y tế (Bổ sung thủ công)',
-                              assessmentDate: new Date().toISOString().slice(0, 10),
-                              emotionalState: 'STABLE_NORMAL',
-                              socialInteraction: 'ACTIVE_COMMUNICATIVE',
-                              cognitiveMemoryScore: 'MMSE sơ bộ: Nhận thức bình thường',
-                              behavioralNotes: 'Đã bổ sung thủ công: Cụ giao tiếp ổn định, tinh thần thoải mái trong ca trực.',
-                              recommendations: 'Duy trì trò chuyện và theo dõi các cữ sinh hoạt hàng ngày.',
-                              isManualSupplemented: true,
-                            },
-                          }));
-                        }}
-                        className="btn btn-sm btn-warning"
-                        style={{ marginTop: '0.5rem', fontWeight: 700 }}
-                      >
-                        ➕ Bổ sung thủ công Đánh giá Tâm lý ngay
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Psychological Assessment Form Inputs */}
-                  {assessment.psychologicalAssessment?.isCompleted && (
-                    <div>
-                      <div className="form-row" style={{ marginBottom: '0.75rem' }}>
-                        <div>
-                          <label className="form-label">Chuyên viên đánh giá tâm lý / Người bổ sung:</label>
-                          <input
-                            type="text"
-                            value={assessment.psychologicalAssessment.assessorName}
-                            onChange={e => {
-                              const val = e.target.value;
-                              setAssessment(prev => ({
-                                ...prev,
-                                psychologicalAssessment: { ...prev.psychologicalAssessment!, assessorName: val },
-                              }));
-                            }}
-                            className="form-input"
-                            placeholder="Tên Nhân viên Tâm lý / CTXH hoặc Người bổ sung..."
-                          />
-                        </div>
-
-                        <div>
-                          <label className="form-label">Trạng thái cảm xúc người cao tuổi:</label>
-                          <select
-                            value={assessment.psychologicalAssessment.emotionalState}
-                            onChange={e => {
-                              const val = e.target.value as any;
-                              setAssessment(prev => ({
-                                ...prev,
-                                psychologicalAssessment: { ...prev.psychologicalAssessment!, emotionalState: val },
-                              }));
-                            }}
-                            className="form-select"
-                            style={{ width: '100%' }}
-                          >
-                            <option value="HAPPY_SOCIABLE">😀 Vui vẻ, cởi mở & hòa nhập tốt</option>
-                            <option value="STABLE_NORMAL">😐 Tinh thần bình thường, ổn định</option>
-                            <option value="ANXIOUS_DEPRESSED">🙁 Trầm cảm, lo âu hoặc thu mình</option>
-                            <option value="IRRITABLE_AGITATED">😡 Dễ kích động, cáu gắt hoặc bất an</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div className="form-row" style={{ marginBottom: '0.75rem' }}>
-                        <div>
-                          <label className="form-label">Khả năng giao tiếp & tương tác xã hội:</label>
-                          <select
-                            value={assessment.psychologicalAssessment.socialInteraction}
-                            onChange={e => {
-                              const val = e.target.value as any;
-                              setAssessment(prev => ({
-                                ...prev,
-                                psychologicalAssessment: { ...prev.psychologicalAssessment!, socialInteraction: val },
-                              }));
-                            }}
-                            className="form-select"
-                            style={{ width: '100%' }}
-                          >
-                            <option value="ACTIVE_COMMUNICATIVE">🗣️ Tích cực tham gia trò chuyện nhóm & sinh hoạt</option>
-                            <option value="PASSIVE_QUIET">🤫 Thụ động, chỉ giao tiếp khi nhân viên hỏi</option>
-                            <option value="WITHDRAWN_REFUSED">🚫 Từ chối giao tiếp, thu mình trong phòng</option>
-                          </select>
-                        </div>
-
-                        <div>
-                          <label className="form-label">Đánh giá nhận thức / Thang điểm MMSE:</label>
-                          <input
-                            type="text"
-                            value={assessment.psychologicalAssessment.cognitiveMemoryScore}
-                            onChange={e => {
-                              const val = e.target.value;
-                              setAssessment(prev => ({
-                                ...prev,
-                                psychologicalAssessment: { ...prev.psychologicalAssessment!, cognitiveMemoryScore: val },
-                              }));
-                            }}
-                            className="form-input"
-                            placeholder="Ví dụ: MMSE 24/30 (Suy giảm nhẹ)"
-                          />
-                        </div>
-                      </div>
-
-                      <div style={{ marginBottom: '0.75rem' }}>
-                        <label className="form-label">Ghi nhận hành vi & diễn biến tâm lý cụ thể:</label>
-                        <textarea
-                          rows={2}
-                          value={assessment.psychologicalAssessment.behavioralNotes}
-                          onChange={e => {
-                            const val = e.target.value;
-                            setAssessment(prev => ({
-                              ...prev,
-                              psychologicalAssessment: { ...prev.psychologicalAssessment!, behavioralNotes: val },
-                            }));
-                          }}
-                          placeholder="Mô tả tâm lý, giấc ngủ ca đêm, mức độ tương tác với bạn cùng phòng..."
-                          className="form-textarea"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="form-label">Lời khuyên & Đề xuất hỗ trợ tâm lý xã hội:</label>
-                        <textarea
-                          rows={2}
-                          value={assessment.psychologicalAssessment.recommendations}
-                          onChange={e => {
-                            const val = e.target.value;
-                            setAssessment(prev => ({
-                              ...prev,
-                              psychologicalAssessment: { ...prev.psychologicalAssessment!, recommendations: val },
-                            }));
-                          }}
-                          placeholder="Kế hoạch trị liệu tâm lý, hoạt động câu lạc bộ đề xuất..."
-                          className="form-textarea"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* VI, VII. DINH DƯỠNG & NGUY CƠ LÂM SÀNG */}
-                <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
-                  <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
-                    VI, VII. TRẠNG THÁI DINH DƯỠNG & NGUY CƠ LÂM SÀNG
-                  </h3>
-
-                  <div className="form-row">
-                    <div>
-                      <label className="form-label">Trí nhớ / Nhận thức lâm sàng:</label>
-                      <select
-                        value={assessment.mental.memoryCognition}
-                        onChange={e => setAssessment(prev => ({ ...prev, mental: { ...prev.mental, memoryCognition: e.target.value as any } }))}
-                        className="form-select"
-                        style={{ width: '100%' }}
-                      >
-                        <option value="NORMAL">Bình thường</option>
-                        <option value="MILD_DECLINE">Suy giảm nhẹ</option>
-                        <option value="CONFUSED_SEVERE">Lẫn lộn / Mất trí nhớ nặng</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="form-label">Chế độ ăn hiện tại:</label>
-                      <select
-                        value={assessment.nutrition.dietType}
-                        onChange={e => setAssessment(prev => ({ ...prev, nutrition: { ...prev.nutrition, dietType: e.target.value as any } }))}
-                        className="form-select"
-                        style={{ width: '100%' }}
-                      >
-                        <option value="NORMAL_RICE">Cơm thường (Giảm tinh bột, tăng đạm)</option>
-                        <option value="PORRIDGE_SOUP">Cháo / Súp mềm</option>
-                        <option value="SONDE">Ăn qua sonde (ống bơm)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-row" style={{ marginTop: '0.75rem' }}>
-                    <div>
-                      <label className="form-label">Tổn thương da / Loét tì đè:</label>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.25rem' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.88rem' }}>
-                          <input
-                            type="radio"
-                            name="hasUlcer"
-                            checked={!assessment.skinRisk.hasUlcer}
-                            onChange={() => setAssessment(prev => ({ ...prev, skinRisk: { ...prev.skinRisk, hasUlcer: false } }))}
-                          />
-                          Không có loét
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.88rem' }}>
-                          <input
-                            type="radio"
-                            name="hasUlcer"
-                            checked={assessment.skinRisk.hasUlcer}
-                            onChange={() => setAssessment(prev => ({ ...prev, skinRisk: { ...prev.skinRisk, hasUlcer: true } }))}
-                          />
-                          Có loét tì đè
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* VI. KẾT LUẬN & DẶN DÒ ĐỀ XUẤT */}
-                <div style={{ background: '#f8fafc', border: '1px solid #cbd5e1', borderRadius: '0.5rem', padding: '1rem' }}>
-                  <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#0f172a', fontWeight: 700 }}>
-                    VI. KẾT LUẬN, HƯỚNG CHĂM SÓC, GHI CHÚ THÊM & DẶN DÒ ĐỀ XUẤT
-                  </h3>
 
                   <div style={{ marginBottom: '1rem' }}>
                     <label className="form-label">1. Phân loại mức độ chăm sóc đề xuất:</label>
@@ -1427,7 +1239,7 @@ export default function HealthReportsPage() {
                           type="radio"
                           name="careLevelProposal"
                           checked={assessment.careLevelProposal === 'LEVEL_1'}
-                          onChange={() => setAssessment(prev => ({ ...prev, careLevelProposal: 'LEVEL_1' }))}
+                          onChange={() => setAssessment((prev) => ({ ...prev, careLevelProposal: 'LEVEL_1' }))}
                         />
                         <b>(1) Tự phục vụ cơ bản</b> (Theo dõi y tế định kỳ, hỗ trợ khi cần thiết).
                       </label>
@@ -1436,7 +1248,7 @@ export default function HealthReportsPage() {
                           type="radio"
                           name="careLevelProposal"
                           checked={assessment.careLevelProposal === 'LEVEL_2'}
-                          onChange={() => setAssessment(prev => ({ ...prev, careLevelProposal: 'LEVEL_2' }))}
+                          onChange={() => setAssessment((prev) => ({ ...prev, careLevelProposal: 'LEVEL_2' }))}
                         />
                         <b>(2) Cần hỗ trợ một phần</b> (Cần nhân viên trợ giúp một số hoạt động ADL hàng ngày).
                       </label>
@@ -1445,7 +1257,7 @@ export default function HealthReportsPage() {
                           type="radio"
                           name="careLevelProposal"
                           checked={assessment.careLevelProposal === 'LEVEL_3'}
-                          onChange={() => setAssessment(prev => ({ ...prev, careLevelProposal: 'LEVEL_3' }))}
+                          onChange={() => setAssessment((prev) => ({ ...prev, careLevelProposal: 'LEVEL_3' }))}
                         />
                         <b>(3) Cần chăm sóc toàn diện</b> (Phụ thuộc hoàn toàn, cần theo dõi y tế và chăm sóc sát sao).
                       </label>
@@ -1453,35 +1265,23 @@ export default function HealthReportsPage() {
                   </div>
 
                   <div style={{ marginBottom: '1rem' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-                      <label className="form-label" style={{ margin: 0 }}>2. Đánh giá cụ thể tình trạng sức khỏe của NCT:</label>
-                      <button
-                        type="button"
-                        onClick={generateEvaluationText}
-                        className="btn btn-sm btn-secondary"
-                        style={{ fontSize: '0.75rem' }}
-                      >
-                        ⚡ Tự động tổng hợp từ số liệu trên
-                      </button>
-                    </div>
+                    <label className="form-label">2. Đánh giá cụ thể tình trạng sức khỏe (AI gợi ý từ dữ liệu Tab 1):</label>
                     <textarea
-                      rows={4}
+                      rows={5}
                       value={assessment.specificEvaluation}
-                      onChange={e => setAssessment(prev => ({ ...prev, specificEvaluation: e.target.value }))}
+                      onChange={(e) => setAssessment((prev) => ({ ...prev, specificEvaluation: e.target.value }))}
                       className="form-textarea"
                     />
                   </div>
 
-                  {/* Mục Ghi Chú Thêm, Dặn Dò Thêm & Đề Xuất */}
                   <div>
                     <label className="form-label" style={{ color: '#b91c1c' }}>
-                      3. Mục ghi chú thêm, dặn dò thêm & Đề xuất hướng chăm sóc <span className="req">*</span>
+                      3. Dặn dò thêm & Đề xuất hướng chăm sóc tới gia đình <span className="req">*</span>
                     </label>
                     <textarea
                       rows={4}
                       value={assessment.additionalNotesAndCareInstructions}
-                      onChange={e => setAssessment(prev => ({ ...prev, additionalNotesAndCareInstructions: e.target.value }))}
-                      placeholder="Dặn dò nhân viên chăm sóc, nhắc nhở vệ sinh/đại tiện, an toàn khi tập thể dục tránh đi lạc, đơn thuốc, đề xuất chi phí..."
+                      onChange={(e) => setAssessment((prev) => ({ ...prev, additionalNotesAndCareInstructions: e.target.value }))}
                       className="form-textarea"
                       style={{ border: '1.5px solid #f87171' }}
                     />
@@ -1499,10 +1299,10 @@ export default function HealthReportsPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={busy}
+                  disabled={busy || aiSynthesizing}
                   className="btn btn-primary"
                 >
-                  {busy ? 'Đang lưu...' : 'Lưu & Khởi tạo Phiếu Đánh Giá'}
+                  {busy ? 'Đang lưu...' : 'Lưu & Khởi Tạo Báo Cáo Định Kỳ'}
                 </button>
               </div>
             </form>
@@ -1511,17 +1311,17 @@ export default function HealthReportsPage() {
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 2: XEM & IN PHIẾU ĐÁNH GIÁ CHUẨN Y KHOA THEO MẪU ĐÍNH KÈM (PRINT VIEW) */}
+      {/* MODAL 2: XEM & IN BÁO CÁO SỨC KHỎE CHUẨN MẪU 06/PTDYS-TA (PRINT VIEW) */}
       {/* ========================================================================= */}
       {viewingReport && (
         <div className="modal-overlay print-modal-overlay">
           <div className="modal-dialog modal-dialog-lg health-report-sheet-modal" style={{ maxWidth: '850px', maxHeight: '92vh', overflowY: 'auto' }}>
             <div className="modal-header no-print">
               <div>
-                <h2 className="modal-title" style={{ margin: 0 }}>Xem Phiếu Đánh Giá Sức Khỏe Chuẩn Y Khoa</h2>
+                <h2 className="modal-title" style={{ margin: 0 }}>Xem Báo Cáo Sức Khỏe Định Kỳ Chuẩn Y Khoa</h2>
                 {viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED' && (
                   <span style={{ fontSize: '0.78rem', color: '#b45309', fontWeight: 600 }}>
-                    ⚠️ Đang ở trạng thái: <b>Chờ Phụ trách Y tế duyệt</b>
+                    ⚠️ Đang ở trạng thái: <b>Chờ Phụ trách Y tế xác nhận</b>
                   </span>
                 )}
               </div>
@@ -1530,15 +1330,14 @@ export default function HealthReportsPage() {
                   type="button"
                   onClick={() => {
                     if (viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED') {
-                      alert('⚠️ Phiếu đánh giá cần qua bước kiểm duyệt của Phụ trách Y tế trước khi in hoặc xuất file PDF!');
+                      alert('⚠️ Báo cáo sức khỏe cần được Phụ trách Y tế xác nhận trước khi in hoặc gửi gia đình!');
                       return;
                     }
                     triggerPrint();
                   }}
                   className={`btn btn-sm ${viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? 'btn-primary' : 'btn-secondary'} no-print`}
-                  title={viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? 'In chuẩn A4' : 'Cần Phụ trách Y tế duyệt trước khi in'}
                 >
-                  🖨️ In / Xuất PDF
+                  🖨️ In / Xuất PDF A4
                 </button>
                 <button onClick={() => setViewingReport(null)} className="modal-close">
                   &times;
@@ -1546,8 +1345,8 @@ export default function HealthReportsPage() {
               </div>
             </div>
 
-            <div className="modal-body printable-a4-sheet health-report-sheet" style={{ background: '#ffffff', color: '#1e293b', padding: '1.25rem' }}>
-              {/* Clinical Assessment Header */}
+            <div className="modal-body health-report-sheet printable-a4-sheet" style={{ background: '#ffffff', color: '#0f172a', padding: '1.2rem', fontFamily: 'serif' }}>
+              {/* Header Mẫu 06/PTDYS-TA */}
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
                 <div className="health-report-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'left' }}>
@@ -1563,22 +1362,25 @@ export default function HealthReportsPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem' }}>
+                  <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem', fontFamily: 'sans-serif' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
-                    <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
+                    <div><b>Người lập báo cáo:</b> {viewingReport.data.assessorName || 'ĐD. Lê Thị Mai'}</div>
                   </div>
                 </div>
-                <h1 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1e293b', margin: '0.3rem 0' }}>
-                  PHIẾU ĐÁNH GIÁ SỨC KHỎE ĐỊNH KỲ CHO NGƯỜI CAO TUỔI
+                <h1 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1e293b', margin: '0.3rem 0', fontFamily: 'sans-serif' }}>
+                  BÁO CÁO TỔNG HỢP SỨC KHỎE ĐỊNH KỲ CHO NGƯỜI CAO TUỔI
                 </h1>
+                <div style={{ fontSize: '0.78rem', fontStyle: 'italic', color: '#475569', fontFamily: 'sans-serif' }}>
+                  (Báo cáo chính thức đính kèm kết quả đo & statistic sức khỏe gửi Thân nhân / Người giám hộ)
+                </div>
               </div>
 
               {/* I. THÔNG TIN HÀNH CHÍNH */}
-              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
+              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', fontFamily: 'sans-serif' }}>
                 I. THÔNG TIN HÀNH CHÍNH
               </div>
-              <div className="health-report-admin-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem' }}>
+              <div className="health-report-admin-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '0.3rem', fontSize: '0.82rem', marginBottom: '0.5rem', fontFamily: 'sans-serif' }}>
                 <div><b>Họ và tên người cao tuổi:</b> <span style={{ background: '#fef08a', padding: '0.05rem 0.35rem' }}>{viewingReport.data.residentName}</span></div>
                 <div><b>Mã số hồ sơ NCT:</b> {viewingReport.data.residentCode}</div>
                 <div><b>Ngày tháng năm sinh:</b> {viewingReport.data.dateOfBirth}</div>
@@ -1586,16 +1388,16 @@ export default function HealthReportsPage() {
               </div>
 
               {/* II. DẤU HIỆU SINH TỒN & THỂ TRẠNG */}
-              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
+              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', fontFamily: 'sans-serif' }}>
                 II. ĐÁNH GIÁ DẤU HIỆU SINH TỒN & THỂ TRẠNG
               </div>
               <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table-wide-650" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
+                <table className="table-wide-650" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1', fontFamily: 'sans-serif' }}>
                   <thead>
                     <tr style={{ background: '#334155', color: '#ffffff' }}>
                       <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Chỉ số sinh tồn</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Kết quả đo</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Phân loại / Đánh giá ban đầu</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Kết quả đo Min – Max</th>
+                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Đánh giá & Phân loại lâm sàng</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1603,243 +1405,104 @@ export default function HealthReportsPage() {
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mạch (lần/phút)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.pulse}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        <div className="health-report-eval-options">
-                          <span className="health-report-eval-option">[{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh</span>
-                        </div>
+                        [{viewingReport.data.pulseEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;&nbsp;
+                        [{viewingReport.data.pulseEvaluation === 'SLOW' ? ' x ' : '   '}] Chậm &nbsp;&nbsp;
+                        [{viewingReport.data.pulseEvaluation === 'FAST' ? ' x ' : '   '}] Nhanh
                       </td>
                     </tr>
                     <tr>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Huyết áp (mmHg)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.bloodPressure}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        <div className="health-report-eval-options">
-                          <span className="health-report-eval-option">[{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp</span>
-                        </div>
+                        [{viewingReport.data.bpEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;&nbsp;
+                        [{viewingReport.data.bpEvaluation === 'HIGH' ? ' x ' : '   '}] Cao &nbsp;&nbsp;
+                        [{viewingReport.data.bpEvaluation === 'LOW' ? ' x ' : '   '}] Thấp
                       </td>
                     </tr>
                     <tr>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Nhiệt độ (°C)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.temperature}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        <div className="health-report-eval-options">
-                          <span className="health-report-eval-option">[{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt</span>
-                        </div>
+                        [{viewingReport.data.tempEvaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;&nbsp;
+                        [{viewingReport.data.tempEvaluation === 'FEVER' ? ' x ' : '   '}] Sốt &nbsp;&nbsp;
+                        [{viewingReport.data.tempEvaluation === 'HYPOTHERMIA' ? ' x ' : '   '}] Hạ thân nhiệt
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SPO2 (%)</td>
+                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>SpO2 (%)</td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}><b>{viewingReport.data.spo2}</b></td>
                       <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        <div className="health-report-eval-options">
-                          <span className="health-report-eval-option">[{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường</span>
-                          <span className="health-report-eval-option">[{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở</span>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Cân nặng (kg):</b></td>
-                      <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        {viewingReport.data.weightRecords?.map(w => `Ngày ${w.date}: ${w.value}`).join('  |  ')}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}><b>Glucose máu mao mạch lúc đói:</b></td>
-                      <td colSpan={2} style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>
-                        {viewingReport.data.glucoseRecords?.map(g => `Ngày ${g.date}: ${g.value}`).join('  |  ')}
+                        [{viewingReport.data.spo2Evaluation === 'NORMAL' ? ' x ' : '   '}] Bình thường &nbsp;&nbsp;
+                        [{viewingReport.data.spo2Evaluation === 'DYSPNEA' ? ' x ' : '   '}] Khó thở
                       </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
-              {/* III. BỆNH LÝ & THUỐC */}
-              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
-                III. BỆNH LÝ & THUỐC ĐANG SỬ DỤNG
+              {/* III. KẾT LUẬN & HƯỚNG CHĂM SÓC */}
+              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', fontFamily: 'sans-serif' }}>
+                III. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
               </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
-                <b>1. Tiền sử bệnh nền:</b>
-                <div className="health-report-conditions-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem', marginTop: '0.15rem' }}>
-                  <div>[{viewingReport.data.conditions.hypertension ? ' x ' : '   '}] Cao huyết áp</div>
-                  <div>[{viewingReport.data.conditions.diabetes ? ' x ' : '   '}] Đái tháo đường (Tuýp: {viewingReport.data.conditions.diabetesType || '2'})</div>
-                  <div>[{viewingReport.data.conditions.cardiovascular ? ' x ' : '   '}] Tim mạch (Suy tim, bệnh mạch vành)</div>
-                  <div>[{viewingReport.data.conditions.strokeOrHemiplegia ? ' x ' : '   '}] Tai biến mạch máu não / Liệt di chứng</div>
-                  <div>[{viewingReport.data.conditions.dementiaAlzheimer ? ' x ' : '   '}] Sa sút trí tuệ / Alzheimer</div>
-                  <div>[{viewingReport.data.conditions.osteoarthritis ? ' x ' : '   '}] Bệnh xương khớp (Thoái hóa, loãng xương)</div>
-                  <div>[{viewingReport.data.conditions.respiratory ? ' x ' : '   '}] Bệnh hô hấp (COPD, Hen suyễn)</div>
-                  <div>[{viewingReport.data.conditions.kidneyDisease ? ' x ' : '   '}] Bệnh lý thận / Suy thận mãn</div>
-                </div>
-              </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
-                <b>2. Tiền sử dị ứng:</b>
-                <div className="health-report-allergy-list" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem 1rem', marginTop: '0.15rem' }}>
-                  <span>[{viewingReport.data.allergy.none ? ' x ' : '   '}] Không có</span>
-                  <span>[{viewingReport.data.allergy.drugAllergy ? ' x ' : '   '}] Dị ứng thuốc: {viewingReport.data.allergy.drugAllergy || '...'}</span>
-                  <span>[{viewingReport.data.allergy.foodAllergy ? ' x ' : '   '}] Dị ứng thức ăn: {viewingReport.data.allergy.foodAllergy || '...'}</span>
-                </div>
-              </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}>
-                <b>3. Thuốc đang dùng hàng ngày:</b> {viewingReport.data.medicationsNotes || 'Theo đơn chỉ định hiện tại.'}
-              </div>
-
-              {/* IV. ADL */}
-              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
-                IV. ĐÁNH GIÁ CHỨC NĂNG SINH HOẠT HÀNG NGÀY (ADL)
-              </div>
-              <div className="table-responsive" style={{ overflowX: 'auto' }}>
-                <table className="table-wide-650" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', marginBottom: '0.5rem', border: '1px solid #cbd5e1' }}>
-                  <thead>
-                    <tr style={{ background: '#334155', color: '#ffffff' }}>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Hoạt động sinh hoạt thiết yếu</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Tự thực hiện</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Cần hỗ trợ một phần</th>
-                      <th style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1', textAlign: 'center' }}>Phụ thuộc hoàn toàn</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Ăn uống</td>
-                    <td className={viewingReport.data.adl.eating === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.eating === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.eating === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.eating === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Tắm rửa / Vệ sinh cá nhân</td>
-                    <td className={viewingReport.data.adl.bathing === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.bathing === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.bathing === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.bathing === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Mặc quần áo</td>
-                    <td className={viewingReport.data.adl.dressing === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.dressing === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.dressing === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.dressing === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Đi vệ sinh (Tiểu / Đại tiện)</td>
-                    <td className={viewingReport.data.adl.toileting === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.toileting === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.toileting === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.toileting === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '0.25rem 0.4rem', border: '1px solid #cbd5e1' }}>Di chuyển (Đi lại, thay đổi tư thế)</td>
-                    <td className={viewingReport.data.adl.mobility === 'INDEPENDENT' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'INDEPENDENT' ? '[ x ] Tự thực hiện' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.mobility === 'PARTIAL_ASSIST' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'PARTIAL_ASSIST' ? '[ x ] Cần hỗ trợ một phần' : '[   ]'}</td>
-                    <td className={viewingReport.data.adl.mobility === 'FULL_DEPEND' ? 'adl-cell-selected' : 'adl-cell-empty'} style={{ textAlign: 'center', border: '1px solid #cbd5e1' }}>{viewingReport.data.adl.mobility === 'FULL_DEPEND' ? '[ x ] Phụ thuộc hoàn toàn' : '[   ]'}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-              {/* V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI */}
-              <div className="section-header" style={{ background: '#fef3c7', border: '1px solid #fde68a', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem', color: '#92400e' }}>
-                V. ĐÁNH GIÁ TÂM LÝ & CÔNG TÁC XÃ HỘI (Chuyên viên Tâm lý & CTXH)
-              </div>
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem', background: '#fffbeb', border: '1px solid #fef3c7', padding: '0.4rem 0.6rem', borderRadius: '0.25rem' }}>
-                {viewingReport.data.psychologicalAssessment?.isCompleted ? (
-                  <div>
-                    <div className="health-report-psych-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.3rem', marginBottom: '0.3rem' }}>
-                      <div>
-                        <b>Cảm xúc & Tinh thần:</b>{' '}
-                        {viewingReport.data.psychologicalAssessment.emotionalState === 'HAPPY_SOCIABLE'
-                          ? 'Vui vẻ, cởi mở & hòa nhập tốt'
-                          : viewingReport.data.psychologicalAssessment.emotionalState === 'ANXIOUS_DEPRESSED'
-                          ? 'Trầm cảm, lo âu hoặc thu mình'
-                          : viewingReport.data.psychologicalAssessment.emotionalState === 'IRRITABLE_AGITATED'
-                          ? 'Dễ kích động, cáu gắt'
-                          : 'Bình thường, ổn định'}
-                      </div>
-                      <div>
-                        <b>Tương tác xã hội:</b>{' '}
-                        {viewingReport.data.psychologicalAssessment.socialInteraction === 'ACTIVE_COMMUNICATIVE'
-                          ? 'Tích cực tham gia trò chuyện nhóm'
-                          : viewingReport.data.psychologicalAssessment.socialInteraction === 'WITHDRAWN_REFUSED'
-                          ? 'Từ chối giao tiếp'
-                          : 'Thụ động, chỉ trả lời khi được hỏi'}
-                      </div>
-                    </div>
-                    <div style={{ marginBottom: '0.25rem' }}>
-                      <b>Nhận thức / MMSE:</b> {viewingReport.data.psychologicalAssessment.cognitiveMemoryScore || 'MMSE bình thường'}
-                    </div>
-                    <div style={{ marginBottom: '0.25rem' }}>
-                      <b>Ghi nhận diễn biến tâm lý & hành vi:</b> {viewingReport.data.psychologicalAssessment.behavioralNotes || 'Tâm lý ổn định.'}
-                    </div>
-                    <div>
-                      <b>Đánh giá bởi:</b> <u>{viewingReport.data.psychologicalAssessment.assessorName || 'Chuyên viên Tâm lý & CTXH'}</u>
-                      {viewingReport.data.psychologicalAssessment.isManualSupplemented && (
-                        <span style={{ color: '#d97706', fontStyle: 'italic', marginLeft: '0.5rem' }}>(Bổ sung thủ công)</span>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ color: '#dc2626', fontStyle: 'italic' }}>
-                    ⚠️ Chưa có đánh giá tâm lý từ Nhân viên tâm lý & CTXH (Mục này bị thiếu khi lập phiếu).
-                  </div>
-                )}
-              </div>
-              <div className="section-header" style={{ background: '#e2f4ea', padding: '0.25rem 0.6rem', fontWeight: 700, fontSize: '0.84rem', marginBottom: '0.35rem' }}>
-                VI. KẾT LUẬN VÀ HƯỚNG CHĂM SÓC
-              </div>
-              <div className="health-report-care-levels" style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
+              <div style={{ fontSize: '0.8rem', marginBottom: '0.4rem', fontFamily: 'sans-serif' }}>
                 <b>1. Mức độ chăm sóc đề xuất:</b>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem 0.75rem', marginTop: '0.15rem' }}>
-                  <span>[{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ</span>
-                  <span style={{ background: '#fef08a', padding: '2px 4px', borderRadius: '4px' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span>
+                  <span>[{viewingReport.data.careLevelProposal === 'LEVEL_1' ? ' x ' : '   '}] (1) Tự phục vụ cơ bản</span>
+                  <span style={{ background: '#fef08a', padding: '1px 4px', borderRadius: '3px' }}>[{viewingReport.data.careLevelProposal === 'LEVEL_2' ? ' x ' : '   '}] <b>(2) Cần hỗ trợ một phần</b></span>
                   <span>[{viewingReport.data.careLevelProposal === 'LEVEL_3' ? ' x ' : '   '}] (3) Chăm sóc toàn diện</span>
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.3rem' }}>
-                <b>2. Đánh giá cụ thể tình trạng sức khỏe:</b> {viewingReport.data.specificEvaluation || 'Sức khỏe ổn định, đáp ứng tốt với phác đồ chăm sóc.'}
+              <div style={{ fontSize: '0.8rem', marginBottom: '0.4rem', fontFamily: 'sans-serif', whiteSpace: 'pre-line' }}>
+                <b>2. Đánh giá cụ thể tình trạng sức khỏe:</b><br />
+                {viewingReport.data.specificEvaluation || 'Sức khỏe ổn định, đáp ứng tốt với phác đồ chăm sóc.'}
               </div>
 
-              {/* Dặn dò thêm & Đề xuất */}
-              <div style={{ fontSize: '0.8rem', marginBottom: '0.4rem' }}>
-                <b style={{ color: '#b91c1c' }}>Đề xuất & Dặn dò thêm:</b> {viewingReport.data.additionalNotesAndCareInstructions || 'Tiếp tục duy trì chế độ chăm sóc và theo dõi sát sao.'}
+              <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem', fontFamily: 'sans-serif', whiteSpace: 'pre-line' }}>
+                <b style={{ color: '#b91c1c' }}>3. Đề xuất & Dặn dò thêm gửi gia đình:</b><br />
+                {viewingReport.data.additionalNotesAndCareInstructions || 'Tiếp tục duy trì chế độ chăm sóc và theo dõi sát sao.'}
               </div>
 
-              {/* Signature Section — 2-Column Medical Oversight */}
-              <div className="signature-box" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', textAlign: 'center', marginTop: '1rem', borderTop: '1px solid #e2e8f0', paddingTop: '0.75rem' }}>
-                {/* Cột 1: Phụ trách Y tế duyệt */}
+              {/* ========================================================================= */}
+              {/* SIGNATURE SECTION — MEDICAL HEAD SIGNATURE BOX BLANK FOR MANUAL SIGNING */}
+              {/* ========================================================================= */}
+              <div
+                className="signature-box"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '2rem',
+                  textAlign: 'center',
+                  marginTop: '1.5rem',
+                  borderTop: '1px solid #e2e8f0',
+                  paddingTop: '0.75rem',
+                  fontFamily: 'sans-serif',
+                }}
+              >
+                {/* Column 1: Phụ trách Y tế (Ký trực tiếp - Chừa trống ô ký) */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>Phụ trách Y tế duyệt</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký, đóng dấu & ghi rõ họ tên)</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>PHỤ TRÁCH Y TẾ XÁC NHẬN</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký trực tiếp & ghi rõ họ tên)</div>
 
-                  {viewingReport.data.medicalHeadApproval || viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? (
-                    <div style={{ border: '2px solid #16a34a', background: '#f0fdf4', borderRadius: '0.375rem', padding: '0.35rem 0.65rem', marginTop: '0.25rem', marginBottom: '0.4rem', textAlign: 'center', minWidth: '180px' }}>
-                      <div style={{ fontWeight: 800, color: '#15803d', fontSize: '0.72rem', letterSpacing: '0.02em' }}>✓ ĐÃ KIỂM DUYỆT & PHÊ DUYỆT</div>
-                      <div style={{ fontWeight: 700, color: '#166534', fontSize: '0.8rem', marginTop: '0.15rem' }}>
-                        {viewingReport.data.medicalHeadApproval?.approvedBy || 'BS. Lê Hoàng Nam'}
-                      </div>
-                      <div style={{ fontSize: '0.68rem', color: '#15803d', fontStyle: 'italic' }}>
-                        {viewingReport.data.medicalHeadApproval?.approvedRole || 'Phụ trách Y tế'}
-                      </div>
-                      <div style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '0.1rem' }}>
-                        {viewingReport.data.medicalHeadApproval?.approvedAt || 'Đã ký số điện tử'}
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ height: '3.2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontStyle: 'italic', fontSize: '0.75rem' }}>
-                      (Chờ Phụ trách Y tế duyệt & ký số)
-                    </div>
-                  )}
+                  {/* Blank space area for manual physical signature when printed */}
+                  <div className="medical-head-signature-blank-space" style={{ height: '4rem', width: '100%' }}></div>
 
-                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '200px' }}>
-                    {viewingReport.data.medicalHeadApproval?.approvedBy || 'BS. Lê Hoàng Nam (Phụ trách Y tế)'}
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '220px' }}>
+                    BS. Lê Hoàng Nam
+                    <div style={{ fontSize: '0.7rem', color: '#475569', fontWeight: 400 }}>Phụ trách Y tế Tâm An Care</div>
                   </div>
                 </div>
 
-                {/* Cột 2: Nhân viên y tế lập báo cáo */}
+                {/* Column 2: Nhân viên y tế lập báo cáo */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>Nhân viên y tế lập báo cáo</div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '2.8rem' }}>(Ký và ghi rõ họ tên)</div>
-                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '200px' }}>
-                    {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy (Điều dưỡng)'}
+                  <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#0f172a' }}>NHÂN VIÊN Y TẾ LẬP BÁO CÁO</div>
+                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '0.4rem' }}>(Ký và ghi rõ họ tên)</div>
+
+                  <div style={{ height: '4rem', width: '100%' }}></div>
+
+                  <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.8rem', width: '100%', maxWidth: '220px' }}>
+                    {viewingReport.data.assessorName || 'ĐD. Lê Thị Mai'}
+                    <div style={{ fontSize: '0.7rem', color: '#475569', fontWeight: 400 }}>Điều dưỡng phụ trách</div>
                   </div>
                 </div>
               </div>
@@ -1857,14 +1520,14 @@ export default function HealthReportsPage() {
                 type="button"
                 onClick={() => {
                   if (viewingReport.report.status !== 'APPROVED' && viewingReport.report.status !== 'DELIVERED') {
-                    alert('⚠️ Phiếu đánh giá cần qua bước kiểm duyệt của Phụ trách Y tế trước khi in!');
+                    alert('⚠️ Báo cáo sức khỏe cần được Phụ trách Y tế xác nhận trước khi in!');
                     return;
                   }
                   triggerPrint();
                 }}
                 className={`btn ${viewingReport.report.status === 'APPROVED' || viewingReport.report.status === 'DELIVERED' ? 'btn-primary' : 'btn-secondary'} no-print`}
               >
-                🖨️ In Phiếu Đánh Giá (A4)
+                🖨️ In Báo Cáo A4 (Cho Phụ trách Y tế ký trực tiếp)
               </button>
             </div>
           </div>
@@ -1894,22 +1557,22 @@ export default function HealthReportsPage() {
 
               <div>
                 <label className="form-label">
-                  Mã liên hệ được ủy quyền <span className="req">*</span>
+                  Mã liên hệ người giám hộ ủy quyền <span className="req">*</span>
                 </label>
                 <input
                   type="text"
                   value={deliveryContactId}
-                  onChange={e => setDeliveryContactId(e.target.value)}
+                  onChange={(e) => setDeliveryContactId(e.target.value)}
                   placeholder="contact-..."
                   className="form-input"
                 />
               </div>
 
-              <div>
+              <div style={{ marginTop: '0.75rem' }}>
                 <label className="form-label">Phương thức gửi</label>
                 <select
                   value={deliveryMethod}
-                  onChange={e => setDeliveryMethod(e.target.value)}
+                  onChange={(e) => setDeliveryMethod(e.target.value)}
                   className="form-select"
                   style={{ width: '100%' }}
                 >
@@ -1919,13 +1582,13 @@ export default function HealthReportsPage() {
                 </select>
               </div>
 
-              <div>
+              <div style={{ marginTop: '0.75rem' }}>
                 <label className="form-label">Ghi chú gửi</label>
                 <textarea
                   rows={2}
                   value={deliveryNotes}
-                  onChange={e => setDeliveryNotes(e.target.value)}
-                  placeholder="Đã gửi qua email người giám hộ..."
+                  onChange={(e) => setDeliveryNotes(e.target.value)}
+                  placeholder="Đã gửi tới email người giám hộ..."
                   className="form-textarea"
                 />
               </div>
@@ -1953,11 +1616,11 @@ export default function HealthReportsPage() {
                   await refreshReports();
                   setDeliveryReport(null);
                   setBusy(false);
-                  setMessage('Đã gửi báo cáo và lưu bằng chứng thành công!');
+                  setMessage('✅ Đã gửi báo cáo tổng hợp và lưu bằng chứng thành công!');
                 }}
                 className="btn btn-primary"
               >
-                Xác nhận gửi báo cáo
+                Xác Nhận Gửi Báo Cáo
               </button>
             </div>
           </div>

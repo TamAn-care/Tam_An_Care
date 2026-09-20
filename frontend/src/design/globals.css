@@ -3836,7 +3836,82 @@ input.form-input {
   gap: 1rem;
 }
 
-/* Ensure print mode retains standard paper sheet formatting */
+/* Health Reports Module 2-Tab Navigation & Print Formatting */
+.health-report-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+
+.health-report-tab-btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.health-report-tab-btn:hover {
+  color: #15803d;
+  background-color: #f0fdf4;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.health-report-tab-btn.active {
+  color: #166534;
+  border-bottom-color: #166534;
+  background-color: #dcfce7;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.daily-vitals-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.daily-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.daily-vitals-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.daily-vitals-history-table th,
+.daily-vitals-history-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.daily-vitals-history-table th {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* Ensure print mode retains standard paper sheet formatting and blank signature box for Medical Head */
 @media print {
   .health-report-sheet table thead {
     display: table-header-group !important;
@@ -3850,6 +3925,16 @@ input.form-input {
   .health-report-sheet table td {
     display: table-cell !important;
   }
+
+  /* Leave signature box blank above pre-filled name for manual signing */
+  .health-report-sheet .medical-head-digital-stamp {
+    display: none !important;
+  }
+  .health-report-sheet .medical-head-signature-blank-space {
+    height: 4rem !important;
+    display: block !important;
+  }
 }
+
 
 
