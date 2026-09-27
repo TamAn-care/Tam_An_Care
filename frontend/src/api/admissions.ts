@@ -6,14 +6,25 @@ import {
   apiRequest,
 } from './client';
 
+export interface AdmissionSupportServiceSelection {
+  key: string;
+  name: string;
+  fee: number;
+  unit: string;
+}
+
 export interface AdmissionFinancialAgreement {
   basicCarePackageKey: string;
   basicCarePackageName: string;
   basicCarePackageFee: number;
 
+  // Backward-compatible aggregate fields.
   supportServiceKey: string;
   supportServiceName: string;
   supportServiceFee: number;
+
+  // Multi-choice services persisted inside the assessment summary payload.
+  supportServices?: AdmissionSupportServiceSelection[];
 
   depositAmount: number;
   paymentCycleDay: string;
