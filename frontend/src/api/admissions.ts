@@ -334,7 +334,22 @@ export async function finalizeAdmission(actor: HumanActorSession, admissionCaseI
 
 export async function getAssessmentOverview(actor: HumanActorSession, admissionCaseId: string): Promise<any> {
   try {
-    return await apiRequest<any>(`/api/admissions/${encodeURIComponent(admissionCaseId)}/assessment-overview`, { actor });
+    const response = await apiRequest<any>(
+      `/api/admissions/${encodeURIComponent(admissionCaseId)}/assessment-overview`,
+      { actor }
+    );
+
+    // The backend returns the latest record as "assessment"; the Admission UI
+    // historically consumes "assessments[0]". Normalize here so saved pricing,
+    // including multi-choice support services, is reliably restored on edit/view.
+    if (response?.assessment && !Array.isArray(response?.assessments)) {
+      return {
+        ...response,
+        assessments: [response.assessment],
+      };
+    }
+
+    return response;
   } catch {}
 
   const items = getLocalAdmissions();
