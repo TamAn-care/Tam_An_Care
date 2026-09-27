@@ -197,14 +197,25 @@ export const DEFAULT_HANDOVER_BELONGINGS: HandoverBelongingItem[] = [
   },
 ];
 
+export interface SupportServiceSelection {
+  key: string;
+  name: string;
+  fee: number;
+  unit: string;
+}
+
 export interface FinancialAgreementItem {
   basicCarePackageKey: string;
   basicCarePackageName: string;
   basicCarePackageFee: number;
 
+  // Backward-compatible aggregate fields used by existing billing/report logic.
   supportServiceKey: string;
   supportServiceName: string;
   supportServiceFee: number;
+
+  // Multi-choice support services. Each selected service keeps its own unit price.
+  supportServices: SupportServiceSelection[];
 
   depositAmount: number;
   paymentCycleDay: string;
@@ -235,6 +246,44 @@ export const SUPPORT_SERVICE_OPTIONS: Record<string, { name: string; defaultFee:
   'SS-09': { name: 'Chăm sóc người đặt sonde bàng quang', defaultFee: 2000000, unit: 'tháng', desc: 'Gợi ý: 2.000.000 đ/tháng' },
   'CUSTOM': { name: 'Tùy chọn dịch vụ chăm sóc hỗ trợ khác', defaultFee: 0, unit: 'tháng', desc: 'Nhập đơn giá tùy chỉnh thủ công' },
 };
+
+function getSupportServiceSelections(fin?: FinancialAgreementItem): SupportServiceSelection[] {
+  if (Array.isArray(fin?.supportServices)) {
+    return fin!.supportServices;
+  }
+
+  if (
+    fin?.supportServiceKey &&
+    fin.supportServiceKey !== 'NONE' &&
+    fin.supportServiceFee > 0
+  ) {
+    const option = SUPPORT_SERVICE_OPTIONS[fin.supportServiceKey];
+    return [{
+      key: fin.supportServiceKey,
+      name: fin.supportServiceName || option?.name || 'Dịch vụ chăm sóc hỗ trợ',
+      fee: fin.supportServiceFee,
+      unit: option?.unit || 'tháng',
+    }];
+  }
+
+  return [];
+}
+
+function summarizeSupportServices(items: SupportServiceSelection[]) {
+  if (items.length === 0) {
+    return {
+      supportServiceKey: 'NONE',
+      supportServiceName: SUPPORT_SERVICE_OPTIONS.NONE.name,
+      supportServiceFee: 0,
+    };
+  }
+
+  return {
+    supportServiceKey: items.length === 1 ? items[0].key : 'MULTI',
+    supportServiceName: items.map(item => item.name).join(', '),
+    supportServiceFee: items.reduce((sum, item) => sum + (Number(item.fee) || 0), 0),
+  };
+}
 
 // Initial Clinical Assessment Data Model matching uploaded 2-page template
 export interface InitialClinicalAssessment {
@@ -427,6 +476,7 @@ const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
     supportServiceKey: 'NONE',
     supportServiceName: 'Không đăng ký dịch vụ hỗ trợ phát sinh',
     supportServiceFee: 0,
+    supportServices: [],
     depositAmount: 20000000,
     paymentCycleDay: 'Từ ngày 01 đến ngày 05 hàng tháng',
     calculatedMonthlyTotal: 14500000,
@@ -2233,76 +2283,136 @@ export function AdmissionPage() {
                   </div>
                 </div>
 
-                {/* Form Row: Phí dịch vụ chăm sóc hỗ trợ (Mục II) & Ô nhập giá thủ công */}
-                <div className="form-row" style={{ marginBottom: '0.75rem' }}>
-                  <div>
-                    <label className="form-label">2. Phí dịch vụ chăm sóc hỗ trợ (Mục II Bảng giá):</label>
-                    <select
-                      value={form.financialAgreement?.supportServiceKey ?? 'NONE'}
-                      onChange={e => {
-                        const key = e.target.value;
-                        const svc = SUPPORT_SERVICE_OPTIONS[key];
-                        const defaultPrice = svc?.defaultFee ?? 0;
-                        const svcName = svc?.name ?? 'Dịch vụ chăm sóc hỗ trợ';
-                        setForm(prev => {
-                          const currentBasicFee = prev.financialAgreement?.basicCarePackageFee ?? 14500000;
-                          const total = currentBasicFee + defaultPrice;
-                          return {
-                            ...prev,
-                            financialAgreement: {
-                              ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
-                              supportServiceKey: key,
-                              supportServiceName: svcName,
-                              supportServiceFee: defaultPrice,
-                              calculatedMonthlyTotal: total,
-                            },
-                          };
-                        });
-                      }}
-                      className="form-select"
-                      style={{ width: '100%' }}
-                    >
-                      <option value="NONE">Không đăng ký dịch vụ hỗ trợ phát sinh (0 VNĐ)</option>
-                      <option value="SS-01">Hỗ trợ tắm gội (Gợi ý: 500k - 1.5tr)</option>
-                      <option value="SS-02">Hỗ trợ nâng đỡ, di chuyển (Gợi ý: 500k)</option>
-                      <option value="SS-03">Hỗ trợ xúc ăn (Gợi ý: 500k)</option>
-                      <option value="SS-04">Hỗ trợ vệ sinh (Gợi ý: 1tr - 3tr)</option>
-                      <option value="SS-05">Hỗ trợ ăn qua sonde (Gợi ý: 1.5tr)</option>
-                      <option value="SS-06">Chăm sóc NCT bị lẫn tuổi già (Gợi ý: 500k - 2tr)</option>
-                      <option value="SS-07">Tập VLTL & PHCN chuyên sâu (Công nghệ AI) (350k - 500k/buổi)</option>
-                      <option value="SS-08">Chăm sóc các ổ loét (Gợi ý: 2tr)</option>
-                      <option value="SS-09">Chăm sóc người đặt sonde bàng quang (Gợi ý: 2tr)</option>
-                      <option value="CUSTOM">Tùy chọn dịch vụ chăm sóc hỗ trợ khác</option>
-                    </select>
+                {/* Form Row: Phí dịch vụ chăm sóc hỗ trợ (Mục II) — multi-choice */}
+                <div style={{ marginBottom: '0.9rem' }}>
+                  <label className="form-label">2. Phí dịch vụ chăm sóc hỗ trợ (Mục II Bảng giá) — có thể chọn nhiều dịch vụ:</label>
+                  <div style={{ border: '1px solid #fde68a', borderRadius: '0.5rem', background: '#fffdf5', overflow: 'hidden' }}>
+                    {Object.entries(SUPPORT_SERVICE_OPTIONS)
+                      .filter(([key]) => key !== 'NONE')
+                      .map(([key, svc]) => {
+                        const selectedServices = getSupportServiceSelections(form.financialAgreement);
+                        const selectedItem = selectedServices.find(item => item.key === key);
+                        const isSelected = Boolean(selectedItem);
+
+                        return (
+                          <div
+                            key={key}
+                            style={{
+                              display: 'grid',
+                              gridTemplateColumns: 'minmax(260px, 1fr) minmax(180px, 240px)',
+                              gap: '0.75rem',
+                              alignItems: 'center',
+                              padding: '0.65rem 0.75rem',
+                              borderBottom: '1px solid #fef3c7',
+                              background: isSelected ? '#fffbeb' : '#ffffff',
+                            }}
+                          >
+                            <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.55rem', cursor: 'pointer' }}>
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={e => {
+                                  const checked = e.target.checked;
+                                  setForm(prev => {
+                                    const fin = prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!;
+                                    const current = getSupportServiceSelections(fin);
+                                    const updated = checked
+                                      ? [
+                                          ...current,
+                                          {
+                                            key,
+                                            name: svc.name,
+                                            fee: svc.defaultFee,
+                                            unit: svc.unit,
+                                          },
+                                        ]
+                                      : current.filter(item => item.key !== key);
+                                    const summary = summarizeSupportServices(updated);
+                                    const currentBasicFee = fin.basicCarePackageFee ?? 14500000;
+
+                                    return {
+                                      ...prev,
+                                      financialAgreement: {
+                                        ...fin,
+                                        ...summary,
+                                        supportServices: updated,
+                                        calculatedMonthlyTotal: currentBasicFee + summary.supportServiceFee,
+                                      },
+                                    };
+                                  });
+                                }}
+                              />
+                              <span>
+                                <b>{svc.name}</b>
+                                <div style={{ fontSize: '0.74rem', color: '#854d0e', marginTop: '0.15rem' }}>
+                                  {svc.desc}
+                                </div>
+                              </span>
+                            </label>
+
+                            <div>
+                              <label style={{ fontSize: '0.74rem', fontWeight: 700, color: '#78350f' }}>
+                                Đơn giá áp dụng (VNĐ/{svc.unit})
+                              </label>
+                              <input
+                                type="number"
+                                min="0"
+                                disabled={!isSelected}
+                                value={selectedItem?.fee ?? svc.defaultFee}
+                                onChange={e => {
+                                  const fee = Math.max(0, Number(e.target.value) || 0);
+                                  setForm(prev => {
+                                    const fin = prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!;
+                                    const current = getSupportServiceSelections(fin);
+                                    const updated = current.map(item =>
+                                      item.key === key ? { ...item, fee } : item
+                                    );
+                                    const summary = summarizeSupportServices(updated);
+                                    const currentBasicFee = fin.basicCarePackageFee ?? 14500000;
+
+                                    return {
+                                      ...prev,
+                                      financialAgreement: {
+                                        ...fin,
+                                        ...summary,
+                                        supportServices: updated,
+                                        calculatedMonthlyTotal: currentBasicFee + summary.supportServiceFee,
+                                      },
+                                    };
+                                  });
+                                }}
+                                className="form-input"
+                                style={{ marginTop: '0.2rem', background: isSelected ? '#fff' : '#f8fafc' }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
                   </div>
 
-                  <div>
-                    <label className="form-label">Đơn giá Dịch vụ chăm sóc hỗ trợ (Nhập thủ công VNĐ):</label>
-                    <input
-                      type="number"
-                      value={form.financialAgreement?.supportServiceFee ?? 0}
-                      onChange={e => {
-                        const newSupportFee = Number(e.target.value) || 0;
-                        setForm(prev => {
-                          const currentBasicFee = prev.financialAgreement?.basicCarePackageFee ?? 14500000;
-                          const total = currentBasicFee + newSupportFee;
-                          return {
-                            ...prev,
-                            financialAgreement: {
-                              ...(prev.financialAgreement ?? DEFAULT_INITIAL_ASSESSMENT.financialAgreement!),
-                              supportServiceFee: newSupportFee,
-                              calculatedMonthlyTotal: total,
-                            },
-                          };
-                        });
-                      }}
-                      className="form-input"
-                      placeholder="0 (Nhập phí hỗ trợ tùy chỉnh...)"
-                    />
-                    <div style={{ fontSize: '0.74rem', color: '#854d0e', marginTop: '0.2rem' }}>
-                      (Cho phép cập nhật, điều chỉnh đơn giá dịch vụ hỗ trợ thủ công)
-                    </div>
-                  </div>
+                  {(() => {
+                    const selected = getSupportServiceSelections(form.financialAgreement);
+                    const totalSupportFee = selected.reduce((sum, item) => sum + (Number(item.fee) || 0), 0);
+
+                    return (
+                      <div style={{ marginTop: '0.5rem', padding: '0.55rem 0.7rem', borderRadius: '0.4rem', background: '#f0f9ff', border: '1px solid #bae6fd', color: '#075985', fontSize: '0.82rem' }}>
+                        <div style={{ fontWeight: 800 }}>
+                          Tổng phí chăm sóc hỗ trợ đã chọn: {totalSupportFee.toLocaleString('vi-VN')} VNĐ/tháng
+                        </div>
+                        {selected.length === 0 ? (
+                          <div style={{ marginTop: '0.2rem', color: '#64748b' }}>Chưa chọn dịch vụ hỗ trợ.</div>
+                        ) : (
+                          <div style={{ marginTop: '0.25rem' }}>
+                            {selected.map(item => (
+                              <div key={item.key}>
+                                • {item.name}: {(Number(item.fee) || 0).toLocaleString('vi-VN')} VNĐ/{item.unit}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Form Row: Deposit & Payment Cycle */}
@@ -2683,15 +2793,21 @@ export function AdmissionPage() {
                 const fin = viewingAssessment.data.financialAgreement || DEFAULT_INITIAL_ASSESSMENT.financialAgreement!;
                 const basicPkgName = fin.basicCarePackageName || BASIC_CARE_PACKAGE_OPTIONS[fin.basicCarePackageKey]?.name || 'Gói chăm sóc cơ bản';
                 const basicFee = fin.basicCarePackageFee ?? 14500000;
-                const supportSvcName = fin.supportServiceName || SUPPORT_SERVICE_OPTIONS[fin.supportServiceKey]?.name || 'Dịch vụ chăm sóc hỗ trợ';
-                const supportFee = fin.supportServiceFee ?? 0;
+                const supportSelections = getSupportServiceSelections(fin);
+                const supportFee = supportSelections.reduce((sum, item) => sum + (Number(item.fee) || 0), 0);
                 const total = basicFee + supportFee;
 
                 return (
                   <div style={{ fontSize: '0.78rem', marginBottom: '0.5rem', background: '#fffbeb', border: '1px solid #fef08a', padding: '0.4rem 0.6rem', borderRadius: '0.25rem' }}>
                     <div className="initial-grid-2col" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.3rem', marginBottom: '0.35rem' }}>
                       <div><b>1. Gói chăm sóc cơ bản:</b> {basicPkgName} ({basicFee.toLocaleString('vi-VN')} đ/tháng)</div>
-                      <div><b>2. Phí chăm sóc hỗ trợ (Mục II):</b> {supportSvcName} ({supportFee.toLocaleString('vi-VN')} đ/tháng)</div>
+                      <div>
+                        <b>2. Phí chăm sóc hỗ trợ (Mục II):</b>{' '}
+                        {supportSelections.length === 0
+                          ? 'Không đăng ký'
+                          : supportSelections.map(item => `${item.name} (${(Number(item.fee) || 0).toLocaleString('vi-VN')} đ/${item.unit})`).join('; ')}
+                        {' '}— <b>Tổng: {supportFee.toLocaleString('vi-VN')} đ/tháng</b>
+                      </div>
                     </div>
                     <div className="initial-flex-between" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #fde047', paddingTop: '0.3rem', marginTop: '0.2rem' }}>
                       <div>
