@@ -215,7 +215,7 @@ export interface FinancialAgreementItem {
   supportServiceFee: number;
 
   // Multi-choice support services. Each selected service keeps its own unit price.
-  supportServices: SupportServiceSelection[];
+  supportServices?: SupportServiceSelection[];
 
   depositAmount: number;
   paymentCycleDay: string;
