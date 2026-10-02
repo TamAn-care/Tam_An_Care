@@ -3938,3 +3938,95 @@ input.form-input {
 
 
 
+
+/* TAMANCARE_MOBILE_TABLE_SCROLL_GATE5_BEGIN
+   Production Test — mobile/tablet operational tables only.
+   Desktop >1024px is intentionally untouched.
+*/
+@media screen and (max-width: 1024px) {
+
+  /*
+   * Named operational table wrappers.
+   * The wrapper, not the page, owns horizontal scrolling.
+   */
+  .table-responsive,
+  .table-container,
+  .table-wrapper,
+  .fee-table-responsive,
+  .operations-table-wrap,
+  .data-table-container,
+  .operations-table-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  /*
+   * Some operational tables are direct children of a div and do not have
+   * a named wrapper. Limit fallback strictly to known DATA table classes.
+   * We deliberately do NOT target generic "div:has(> table)" here.
+   */
+  div:has(> table.data-table),
+  div:has(> table.ui-table),
+  div:has(> table.operations-table) {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  /*
+   * Preserve special medical/admission responsive forms.
+   * Their existing dedicated mobile rules remain authoritative.
+   */
+  .health-report-sheet,
+  .initial-assessment-sheet {
+    max-width: 100%;
+  }
+}
+/* TAMANCARE_MOBILE_TABLE_SCROLL_GATE5_END */
+
+/* TAMANCARE_MEDICATION_IOS_SCROLL_BEGIN */
+@media screen and (max-width: 1024px) {
+  [data-tamancare-medication-orders-section="true"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  [data-tamancare-medication-orders-section="true"]
+  > [data-tamancare-medication-orders-scroll="true"] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-x: contain !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  [data-tamancare-medication-orders-scroll="true"] > table {
+    display: table !important;
+    width: max-content !important;
+    min-width: 850px !important;
+    max-width: none !important;
+    table-layout: auto !important;
+  }
+
+  [data-tamancare-medication-orders-scroll="true"] th,
+  [data-tamancare-medication-orders-scroll="true"] td {
+    white-space: nowrap;
+  }
+}
+/* TAMANCARE_MEDICATION_IOS_SCROLL_END */

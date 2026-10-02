@@ -1,0 +1,5 @@
+services:
+  api:
+    image: tamancare-candidate-api:rbac-notif-20261001_164835
+  frontend:
+    image: tamancare-server-frontend:rbac-notif-20261001_164835

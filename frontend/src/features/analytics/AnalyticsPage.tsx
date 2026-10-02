@@ -53,8 +53,26 @@ export default function AnalyticsPage() {
   };
 
   const analyticsQuery = useQuery({
-    queryKey: ['executive-analytics', selectedPeriod, granularity],
-    queryFn: () => fetchExecutiveAnalytics(selectedPeriod, granularity),
+    queryKey: [
+      'executive-analytics',
+      selectedPeriod,
+      granularity,
+      actor?.actorId ?? 'anonymous',
+    ],
+    enabled: Boolean(actor),
+    queryFn: () => {
+      if (!actor) {
+        throw new Error(
+          'Phiên đăng nhập không hợp lệ.',
+        );
+      }
+
+      return fetchExecutiveAnalytics(
+        selectedPeriod,
+        granularity,
+        actor,
+      );
+    },
   });
 
   const handleGranularityChange = (newGran: GranularityType) => {
@@ -77,6 +95,26 @@ export default function AnalyticsPage() {
 
   return (
     <div className="printable-a4-sheet" style={{ maxWidth: '1280px', margin: '0 auto', paddingBottom: '3rem' }}>
+      <div
+        style={{
+          marginBottom: '1rem',
+          padding: '0.75rem 1rem',
+          borderRadius: '0.6rem',
+          background: '#fffbeb',
+          border: '1px solid #fcd34d',
+          color: '#92400e',
+          fontSize: '0.8rem',
+          lineHeight: 1.45,
+        }}
+      >
+        <b>Trạng thái dữ liệu Production Test:</b>{' '}
+        Công suất phòng/giường được lấy trực tiếp từ
+        Accommodation API/PostgreSQL. Các chỉ số xu hướng,
+        lâm sàng, tài chính, nhân sự và luân chuyển trong kỳ
+        hiện vẫn là dữ liệu mô phỏng/phân tích mẫu và chưa
+        được dùng làm số liệu vận hành chính thức.
+      </div>
+
       {/* Top Header Actions */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
 

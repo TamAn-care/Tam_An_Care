@@ -384,6 +384,15 @@ export function StaffAccessPage() {
   const resetPasswordMutation = useMutation({
     mutationFn: async () => {
       if (!actor || !showResetModal) throw new Error('Chưa chọn tài khoản');
+
+      // PROTECTED_ADMIN_ACCOUNT
+      if (showResetModal.actorId === 'TA-DIR-001') {
+        throw new Error(
+          'Tài khoản quản trị TA-DIR-001 được bảo vệ. '
+          + 'Chỉ có thể đổi mật khẩu bằng chức năng Đổi mật khẩu cá nhân.',
+        );
+      }
+
       return resetStaffPassword(actor, {
         actorId: showResetModal.actorId,
         newPassword: newResetPassword,
@@ -541,7 +550,7 @@ export function StaffAccessPage() {
 - Vai trò: ${ROLE_LABEL[staff.primaryOperationalRole] || staff.primaryOperationalRole}
 - Mã nhân viên: ${staff.staffCode}
 - Tên đăng nhập / ID: ${staff.actorId}
-- Mật khẩu khởi tạo: ${staff.initialPassword || 'TamAn@2026#Secure'}
+- Mật khẩu tạm thời: ${staff.initialPassword || '[KHÔNG CÒN KHẢ DỤNG — VUI LÒNG ĐẶT LẠI MẬT KHẨU]'}
 - Đường link đăng nhập: ${window.location.origin}
 - Lưu ý: Vui lòng đổi mật khẩu cá nhân ngay trong lần đầu tiên đăng nhập hệ thống để đảm bảo an toàn bảo mật.`;
 
@@ -961,10 +970,29 @@ export function StaffAccessPage() {
                                   {/* Reset Password button */}
                                   <button
                                     onClick={() => {
+                                      if (isAdminAccount) {
+                                        setFeedback(
+                                          '🔒 TA-DIR-001 là tài khoản quản trị được bảo vệ. '
+                                          + 'Hãy dùng chức năng Đổi mật khẩu cá nhân.',
+                                        );
+                                        return;
+                                      }
+                                      if (isAdminAccount) {
+                                        setFeedback(
+                                          '🔒 TA-DIR-001 là tài khoản quản trị được bảo vệ. '
+                                          + 'Hãy dùng chức năng Đổi mật khẩu cá nhân.',
+                                        );
+                                        return;
+                                      }
                                       setNewResetPassword(generateSecurePassword());
                                       setShowResetModal(item);
                                     }}
-                                    title="Đặt lại mật khẩu"
+                                    title={
+                                      isAdminAccount
+                                        ? 'TA-DIR-001 được bảo vệ — sử dụng Đổi mật khẩu cá nhân'
+                                        : 'Đặt lại mật khẩu'
+                                    }
+                                    disabled={isAdminAccount}
                                     style={{
                                       background: '#eff6ff',
                                       border: '1px solid #bfdbfe',
@@ -1155,10 +1183,29 @@ export function StaffAccessPage() {
                           <button
                             type="button"
                             onClick={() => {
+                              if (isAdminAccount) {
+                                setFeedback(
+                                  '🔒 TA-DIR-001 là tài khoản quản trị được bảo vệ. '
+                                  + 'Hãy dùng chức năng Đổi mật khẩu cá nhân.',
+                                );
+                                return;
+                              }
+                              if (isAdminAccount) {
+                                setFeedback(
+                                  '🔒 TA-DIR-001 là tài khoản quản trị được bảo vệ. '
+                                  + 'Hãy dùng chức năng Đổi mật khẩu cá nhân.',
+                                );
+                                return;
+                              }
                               setNewResetPassword(generateSecurePassword());
                               setShowResetModal(item);
                             }}
-                            title="Đặt lại mật khẩu"
+                            title={
+                                      isAdminAccount
+                                        ? 'TA-DIR-001 được bảo vệ — sử dụng Đổi mật khẩu cá nhân'
+                                        : 'Đặt lại mật khẩu'
+                                    }
+                                    disabled={isAdminAccount}
                             style={{
                               background: '#eff6ff',
                               border: '1px solid #bfdbfe',
@@ -1326,8 +1373,8 @@ export function StaffAccessPage() {
                     value={assignmentRole}
                     onChange={(e) => setAssignmentRole(e.target.value as AssignmentRole)}
                   >
-                    <option value="CAREGIVER">Nhân viên chăm sóc</option>
-                    <option value="NURSE">Nhân viên y tế</option>
+                    <option value="CAREGIVER">Nhân viên Chăm sóc</option>
+                    <option value="NURSE">Nhân viên Y tế</option>
                   </select>
                 </div>
 
@@ -2389,19 +2436,22 @@ export function StaffAccessPage() {
                   value={formRole}
                   onChange={(e) => handleRoleChangeInForm(e.target.value as HumanActorRole)}
                 >
-                  {Object.entries(ROLE_LABELS)
-                    .filter(([roleKey]) => {
-                      // Chỉ Admin mới được tạo tài khoản ADMIN
-                      if (!isAdmin && roleKey === 'ADMIN') return false;
-                      // Nếu không phải Ban Giám đốc hoặc Admin, KHÔNG hiển thị vai trò SUPERVISOR
-                      if (!isDirector && roleKey === 'SUPERVISOR') return false;
-                      return true;
-                    })
-                    .map(([roleKey, roleName]) => (
-                      <option key={roleKey} value={roleKey}>
-                        {roleName} ({roleKey})
-                      </option>
-                    ))}
+                  <option value="ADMIN">Quản trị hệ thống</option>
+                  <option value="SUPERVISOR">Ban Giám đốc</option>
+                  <option value="CARE_MANAGER">Quản lý chung</option>
+                  <option value="MEDICAL_HEAD">Phụ trách Y tế</option>
+                  <option value="NURSE">Nhân viên Y tế</option>
+                  <option value="CAREGIVER">Nhân viên Chăm sóc</option>
+                  <option value="NUTRITIONIST">Nhân viên Dinh dưỡng</option>
+                  <option value="ACCOUNTANT">Kế toán</option>
+                  <option value="RECEPTIONIST">Nhân viên Lễ tân</option>
+                  <option value="PSYCHOLOGIST">Nhân viên Tâm lý – CTXH</option>
+                  <option value="SOCIAL_WORKER">Nhân viên Tâm lý – CTXH</option>
+                  <option value="REHABILITATION_SPECIALIST">Nhân viên Phục hồi chức năng</option>
+                  <option value="COMMUNICATIONS">Nhân viên Truyền thông / CSKH</option>
+                  <option value="HOUSEKEEPING">Nhân viên Tạp vụ</option>
+                  <option value="SECURITY">Bảo vệ</option>
+                  <option value="GUARDIAN">Thân nhân / Giám hộ</option>
                 </select>
                 {!isAdmin && (
                   <div style={{ fontSize: '0.74rem', color: '#b45309', marginTop: '0.2rem' }}>
@@ -2629,9 +2679,9 @@ export function StaffAccessPage() {
                   {showHandoverModal.actorId}
                 </div>
 
-                <div style={{ fontSize: '0.78rem', color: '#065f46', fontWeight: 600, marginTop: '0.5rem' }}>MẬT KHẨU KHỞI TẠO:</div>
+                <div style={{ fontSize: '0.78rem', color: '#065f46', fontWeight: 600, marginTop: '0.5rem' }}>MẬT KHẨU TẠM THỜI ĐỂ BÀN GIAO:</div>
                 <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#166534', fontFamily: 'monospace', margin: '0.2rem 0' }}>
-                  {showHandoverModal.initialPassword || 'TamAn@2026#Secure'}
+                  {showHandoverModal.initialPassword || 'Không còn khả dụng — vui lòng đặt lại mật khẩu để bàn giao lại'}
                 </div>
               </div>
 

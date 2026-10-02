@@ -5,10 +5,14 @@ import { triggerPrint } from '../../utils/print';
 import { listResidents } from '../../api/residents';
 import { fetchLeaveRequests, createLeaveRequest, LeaveType } from '../../api/resident-leave';
 import { listHealthReports, downloadHealthReportPdf, HealthReportRow } from '../health-reports/healthReportsApi';
-import { getAssignedResidentIdsForGuardian, getAssignedResidentIdsForActor } from '../../auth/role-policy';
+import { getAssignedResidentIdsForActor } from '../../auth/role-policy';
 import { getTodayMenuSchedule, fetchFamilyMealBookings, bookFamilyMeal } from '../../api/kitchen-operations';
 import { fetchResidentFamilySupplies } from '../../api/resident-supplies';
-import { fetchPsychologicalAssessments, EMOTIONAL_STATE_META } from '../../api/psychological-assessment';
+import {
+  fetchGuardianResidentIds,
+  fetchPsychologicalAssessments,
+  EMOTIONAL_STATE_META,
+} from '../../api/psychological-assessment';
 import { fetchDetailedFeeNotices, updateFeeNoticePayment } from '../../api/billing';
 import { fetchResidentIntegrationOverview } from '../../api/integration';
 import { LoadingState, ErrorState, EmptyState } from '../../components/feedback/FeedbackStates';
@@ -110,8 +114,12 @@ export default function FamilyPortalPage() {
   const [paymentNotesInput, setPaymentNotesInput] = useState<string>('');
 
   const todayMenuQuery = useQuery({
-    queryKey: ['today-menu-schedule'],
-    queryFn: getTodayMenuSchedule,
+    queryKey: [
+      'today-menu-schedule',
+      actor?.actorId,
+    ],
+    queryFn: () => getTodayMenuSchedule(),
+    enabled: Boolean(actor),
   });
   const todayMenu = todayMenuQuery.data;
 
@@ -163,24 +171,61 @@ export default function FamilyPortalPage() {
     enabled: Boolean(actor),
   });
 
-  // Filter residents based on guardian / role
+  const guardianResidentsQuery = useQuery({
+    queryKey: [
+      'guardian-resident-access',
+      actor?.actorId,
+    ],
+    queryFn: () =>
+      fetchGuardianResidentIds(actor!),
+    enabled:
+      Boolean(actor) &&
+      actor?.actorRole === 'GUARDIAN',
+  });
+
+  // Filter residents based on server-authorized assignment.
+  // GUARDIAN must never fall back to an arbitrary resident.
   const accessibleResidents = useMemo(() => {
     const list = residentsQuery.data || [];
     if (!actor) return [];
 
     if (actor.actorRole === 'GUARDIAN') {
-      const assignedIds = new Set(getAssignedResidentIdsForGuardian(actor.actorId, actor.displayName));
-      const filtered = list.filter((r) => assignedIds.has(r.resident.residentId));
-      return filtered.length > 0 ? filtered : list.slice(0, 1);
+      const assignedIds =
+        new Set(
+          guardianResidentsQuery.data || [],
+        );
+
+      return list.filter(
+        (r) =>
+          assignedIds.has(
+            r.resident.residentId,
+          ),
+      );
     }
 
     if (actor.actorRole === 'CAREGIVER') {
-      const assignedIds = new Set(getAssignedResidentIdsForActor(actor.actorId, actor.displayName));
-      return list.filter((r) => assignedIds.has(r.resident.residentId));
+      const assignedIds =
+        new Set(
+          getAssignedResidentIdsForActor(
+            actor.actorId,
+            actor.displayName,
+          ),
+        );
+
+      return list.filter(
+        (r) =>
+          assignedIds.has(
+            r.resident.residentId,
+          ),
+      );
     }
 
     return list;
-  }, [residentsQuery.data, actor]);
+  }, [
+    residentsQuery.data,
+    guardianResidentsQuery.data,
+    actor,
+  ]);
 
   // Set default selected resident
   const currentResident = useMemo(() => {
@@ -197,7 +242,11 @@ export default function FamilyPortalPage() {
   // Fetch Health Reports
   const healthReportsQuery = useQuery({
     queryKey: ['family-health-reports', activeResId],
-    queryFn: () => listHealthReports(actor!),
+    queryFn: () =>
+      listHealthReports(
+        actor!,
+        activeResId,
+      ),
     enabled: Boolean(actor) && Boolean(activeResId),
   });
 
@@ -223,8 +272,14 @@ export default function FamilyPortalPage() {
   // Fetch Psychological Assessments
   const psychologyQuery = useQuery({
     queryKey: ['family-psychology-assessments', activeResId],
-    queryFn: () => fetchPsychologicalAssessments(activeResId),
-    enabled: Boolean(activeResId),
+    queryFn: () =>
+      fetchPsychologicalAssessments(
+        activeResId,
+        actor!,
+      ),
+    enabled:
+      Boolean(actor) &&
+      Boolean(activeResId),
   });
 
   // Fetch Monthly Fee Notices (Chỉ bảng kê đã được Kế toán duyệt phát hành sang Cổng Thân Nhân)
@@ -304,7 +359,7 @@ export default function FamilyPortalPage() {
       setSubmittedLeaveReceipt({
         leaveRequestId: data.leaveRequestId || `RLA-${Date.now().toString().slice(-6)}`,
         residentName: currentResident?.resident.displayName || 'Người cao tuổi',
-        residentCode: currentResident?.resident.residentCode || 'NCT-001',
+        residentCode: currentResident?.resident.residentCode || '—',
         leaveTypeLabel: LEAVE_TYPE_LABELS[leaveType] || leaveType,
         startDate: startDate || new Date().toISOString().slice(0, 10),
         expectedEndDate: expectedEndDate || new Date().toISOString().slice(0, 10),
@@ -341,11 +396,11 @@ export default function FamilyPortalPage() {
       report,
       data: {
         residentName: currentResident?.resident.displayName || 'Người cao tuổi',
-        residentCode: currentResident?.resident.residentCode || 'NCT-001',
+        residentCode: currentResident?.resident.residentCode || '—',
         dateOfBirth: currentResident?.resident.dateOfBirth ? new Date(currentResident.resident.dateOfBirth).toLocaleDateString('vi-VN') : '01/01/1944',
         gender: currentResident?.resident.gender === 'FEMALE' ? 'Nữ' : 'Nam',
         assessmentDate: formatPeriodDate(report.period_end),
-        assessorName: parsedData.assessorName || 'Nguyễn Thị Phương Thúy (Nhân viên y tế)',
+        assessorName: parsedData.assessorName || 'Nguyễn Thị Phương Thuý (Nhân viên y tế)',
         pulse: parsedData.pulse || '70 – 85',
         pulseEvaluation: parsedData.pulseEvaluation || 'NORMAL',
         bloodPressure: parsedData.bloodPressure || '118/75 – 134/88',
@@ -438,7 +493,7 @@ export default function FamilyPortalPage() {
   const currentAge = new Date().getFullYear() - birthYear;
   const roomDisplay = resData.room ? `Phòng ${resData.room}` : 'Phòng 101';
   const bedDisplay = resData.bed ? `Giường ${resData.bed}` : 'Giường 101-2';
-  const assignedCaregiverDisplay = integrationQuery.data?.assignedStaff?.staff_name || 'ĐD. Trần Thị Mai (Tầng 1)';
+  const assignedCaregiverDisplay = integrationQuery.data?.assignedStaff?.staff_name || 'Chưa phân công';
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', paddingBottom: '3rem' }}>
@@ -527,7 +582,7 @@ export default function FamilyPortalPage() {
             title: 'Thực Đơn & Chăm Sóc',
             icon: '🍲',
             badgeText: 'Hôm nay',
-            desc: 'Thực đơn 5 bữa & hoạt động chăm sóc trong ngày',
+            desc: 'Thực đơn 4 bữa & hoạt động chăm sóc trong ngày',
           },
           {
             id: 'visit' as const,
@@ -1044,7 +1099,7 @@ export default function FamilyPortalPage() {
                 🍲 Thực Đơn Dinh Dưỡng Hôm Nay — {todayMenu?.dayName || ''} ({todayMenu?.dateStr || new Date().toLocaleDateString('vi-VN')})
               </h3>
               <span className="badge badge-success" style={{ fontWeight: 700 }}>
-                Đầy đủ 5 bữa ăn/ngày chuẩn định mức y tế
+                Đầy đủ 4 bữa ăn/ngày chuẩn định mức y tế
               </span>
             </div>
 
@@ -1938,7 +1993,7 @@ export default function FamilyPortalPage() {
                   <div className="health-report-header-right" style={{ textAlign: 'right', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>06/PTDYS-TA</b></div>
                     <div><b>Ngày đánh giá:</b> {viewingReport.data.assessmentDate}</div>
-                    <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy (Nhân viên y tế)'}</div>
+                    <div><b>Người đánh giá:</b> {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thuý (Nhân viên y tế)'}</div>
                   </div>
                 </div>
                 <h1 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1e293b', margin: '0.3rem 0' }}>
@@ -2111,7 +2166,7 @@ export default function FamilyPortalPage() {
                   <div style={{ fontWeight: 700, fontSize: '0.84rem' }}>Nhân viên y tế lập báo cáo</div>
                   <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', fontSize: '0.82rem' }}>
-                    {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thúy'}
+                    {viewingReport.data.assessorName || 'Nguyễn Thị Phương Thuý'}
                   </div>
                 </div>
               </div>

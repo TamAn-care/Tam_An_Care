@@ -61,8 +61,10 @@ export class AdmissionClassificationController {
       ActorRole[] = [
         'CAREGIVER',
         'NURSE',
+        'MEDICAL_HEAD',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ];
 
     if (

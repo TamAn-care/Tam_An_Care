@@ -103,8 +103,8 @@ export function getDefaultPositionForRole(role: string): string {
 }
 
 const STAFF_CODE_NAME_MAP: Record<string, string> = {
-  'NURSE-01': 'Nguyễn Thị Phương Thúy',
-  'STAFF-NUR-001': 'Nguyễn Thị Phương Thúy',
+  'NURSE-01': 'Nguyễn Thị Phương Thuý',
+  'STAFF-NUR-001': 'Nguyễn Thị Phương Thuý',
   'STAFF-NUR-003': 'Trần Thị Bích',
   'CAREGIVER-01': 'Trần Thị Mai',
   'cg-mai-001': 'Trần Thị Mai',
@@ -454,6 +454,14 @@ export function OperationsPage() {
   const [selectedPositionFilter, setSelectedPositionFilter] = useState<string>(() => getDefaultPositionForRole(actor?.actorRole || ''));
   const [createResidentId, setCreateResidentId] = useState('');
   const [createTypeId, setCreateTypeId] = useState('');
+
+  // TAMANCARE_QUICK_CARE_V2_STATE
+  const [quickSelectedTypeIds, setQuickSelectedTypeIds] = useState<string[]>([]);
+  const [quickCareNote, setQuickCareNote] = useState('');
+  const [quickCareSaving, setQuickCareSaving] = useState(false);
+  const [quickCareMessage, setQuickCareMessage] = useState('');
+
+
   const [classification, setClassification] = useState<PlannedClassification>('PLANNED');
   const [quantity, setQuantity] = useState('1');
   const [note, setNote] = useState('');
@@ -1770,7 +1778,7 @@ export function OperationsPage() {
         <section className="card operations-panel" style={{ marginBottom: '1.5rem', border: '2px solid #2563eb' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 className="section-title" style={{ margin: 0 }}>
-              📝 Ghi Nhận Công Việc Chăm Sóc Mới
+              ✓ Ghi nhận chăm sóc
             </h2>
             <button
               type="button"
@@ -1787,7 +1795,755 @@ export function OperationsPage() {
             </div>
           )}
 
-          <div className="operations-form-grid">
+          
+            {/* TAMANCARE_SIMPLE_CARE_V23 */}
+            <div
+              className="tamancare-simple-care-v23"
+              style={{
+                marginTop: '0.35rem',
+              }}
+            >
+              <style>{`
+                .tamancare-simple-care-v23 {
+                  width: 100%;
+                }
+
+                .tamancare-simple-resident {
+                  display: block;
+                  margin-bottom: 14px;
+                }
+
+                .tamancare-simple-resident-label {
+                  display: block;
+                  margin-bottom: 6px;
+                  font-size: .92rem;
+                  font-weight: 750;
+                  color: #334155;
+                }
+
+                .tamancare-simple-resident select {
+                  width: 100%;
+                  box-sizing: border-box;
+                  min-height: 52px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 12px;
+                  padding: 8px 12px;
+                  background: white;
+                  font: inherit;
+                  font-size: 16px;
+                  color: #0f172a;
+                }
+
+                .tamancare-simple-actions {
+                  display: grid;
+                  grid-template-columns: repeat(2, minmax(0, 1fr));
+                  gap: 10px;
+                }
+
+                .tamancare-simple-action {
+                  min-height: 76px;
+                  padding: 8px;
+                  border-radius: 14px;
+                  border: 1px solid #dbe2ea;
+                  background: white;
+                  color: #1e293b;
+                  font: inherit;
+                  font-weight: 750;
+                  text-align: center;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  gap: 6px;
+                  cursor: pointer;
+                  touch-action: manipulation;
+                  -webkit-tap-highlight-color: transparent;
+                }
+
+                .tamancare-simple-action[data-selected="true"] {
+                  border: 2px solid #16a34a;
+                  background: #f0fdf4;
+                  color: #166534;
+                }
+
+                .tamancare-simple-action:disabled {
+                  opacity: .42;
+                  cursor: not-allowed;
+                }
+
+                .tamancare-simple-action-icon {
+                  font-size: 1.65rem;
+                  line-height: 1;
+                }
+
+                .tamancare-simple-note {
+                  box-sizing: border-box;
+                  width: 100%;
+                  min-height: 70px;
+                  margin-top: 14px;
+                  padding: 10px 12px;
+                  border: 1px solid #cbd5e1;
+                  border-radius: 12px;
+                  background: white;
+                  color: #0f172a;
+                  font: inherit;
+                  font-size: 16px;
+                  resize: vertical;
+                }
+
+                .tamancare-simple-submit {
+                  width: 100%;
+                  min-height: 56px;
+                  margin-top: 12px;
+                  border: 0;
+                  border-radius: 14px;
+                  background: #15803d;
+                  color: white;
+                  font: inherit;
+                  font-size: 1rem;
+                  font-weight: 850;
+                  cursor: pointer;
+                  touch-action: manipulation;
+                }
+
+                .tamancare-simple-submit:disabled {
+                  opacity: .42;
+                  cursor: not-allowed;
+                }
+
+                .tamancare-simple-success {
+                  margin-top: 10px;
+                  padding: 9px 11px;
+                  border-radius: 10px;
+                  background: #f0fdf4;
+                  border: 1px solid #bbf7d0;
+                  color: #166534;
+                  font-weight: 750;
+                }
+
+                /*
+                 * Force compact summary to FIT mobile.
+                 * No more 950px minimum table.
+                 */
+                .tamancare-compact-care-table {
+                  min-width: 0 !important;
+                  width: 100% !important;
+                  table-layout: auto !important;
+                }
+
+                .tamancare-compact-care-table th:nth-child(4),
+                .tamancare-compact-care-table th:nth-child(5),
+                .tamancare-compact-care-table th:nth-child(6),
+                .tamancare-compact-care-table th:nth-child(7),
+                .tamancare-compact-care-table td:nth-child(4),
+                .tamancare-compact-care-table td:nth-child(5),
+                .tamancare-compact-care-table td:nth-child(6),
+                .tamancare-compact-care-table td:nth-child(7) {
+                  display: none !important;
+                }
+
+                .tamancare-compact-care-table th,
+                .tamancare-compact-care-table td {
+                  padding: 7px 5px !important;
+                  vertical-align: top;
+                }
+
+                .tamancare-compact-care-table th:last-child,
+                .tamancare-compact-care-table td:last-child {
+                  white-space: nowrap;
+                  width: 1%;
+                }
+
+                @media (min-width: 800px) {
+                  .tamancare-simple-actions {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                  }
+                }
+
+                @media (max-width: 767px) {
+                  .tamancare-simple-action {
+                    min-height: 74px;
+                    font-size: .92rem;
+                  }
+
+                  .tamancare-compact-care-table {
+                    font-size: .78rem;
+                  }
+
+                  .tamancare-compact-care-table th,
+                  .tamancare-compact-care-table td {
+                    white-space: normal !important;
+                  }
+                }
+              `}</style>
+
+              {(() => {
+                const role = String(actor?.actorRole || '');
+
+                const byRole: Record<
+                  string,
+                  Array<{ id: string; icon: string; label: string }>
+                > = {
+                  CAREGIVER: [
+                    {
+                      id: 'ops-wet-hygiene-bathing',
+                      icon: '🚿',
+                      label: 'Tắm / vệ sinh',
+                    },
+                    {
+                      id: 'ops-wet-diaper-toileting',
+                      icon: '🚽',
+                      label: 'Thay tã / vệ sinh',
+                    },
+                    {
+                      id: 'ops-wet-meal-assistance',
+                      icon: '🍚',
+                      label: 'Hỗ trợ ăn',
+                    },
+                    {
+                      id: 'ops-wet-mobility-assistance',
+                      icon: '🛏️',
+                      label: 'Trở mình / di chuyển',
+                    },
+                    {
+                      id: 'ops-wet-psychological-support',
+                      icon: '💬',
+                      label: 'Trò chuyện',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Việc khác',
+                    },
+                  ],
+
+                  NURSE: [
+                    {
+                      id: 'ops-wet-vital-signs-check',
+                      icon: '❤️',
+                      label: 'Đo sinh hiệu',
+                    },
+                    {
+                      id: 'ops-wet-medication-admin',
+                      icon: '💊',
+                      label: 'Thực hiện thuốc',
+                    },
+                    {
+                      id: 'ops-wet-wound-care',
+                      icon: '🩹',
+                      label: 'Chăm sóc vết thương',
+                    },
+                    {
+                      id: 'ops-wet-mobility-assistance',
+                      icon: '🚶',
+                      label: 'Hỗ trợ vận động',
+                    },
+                    {
+                      id: 'ops-wet-emergency-care',
+                      icon: '⚠️',
+                      label: 'Xử lý bất thường',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Việc khác',
+                    },
+                  ],
+
+                  MEDICAL_HEAD: [
+                    {
+                      id: 'ops-wet-vital-signs-check',
+                      icon: '❤️',
+                      label: 'Đo sinh hiệu',
+                    },
+                    {
+                      id: 'ops-wet-medication-admin',
+                      icon: '💊',
+                      label: 'Thực hiện thuốc',
+                    },
+                    {
+                      id: 'ops-wet-wound-care',
+                      icon: '🩹',
+                      label: 'Chăm sóc vết thương',
+                    },
+                    {
+                      id: 'ops-wet-emergency-care',
+                      icon: '⚠️',
+                      label: 'Xử lý bất thường',
+                    },
+                    {
+                      id: 'ops-wet-mmse-cognitive-assess',
+                      icon: '🧠',
+                      label: 'Đánh giá nhận thức',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Việc khác',
+                    },
+                  ],
+
+                  REHABILITATION_SPECIALIST: [
+                    {
+                      id: 'ops-wet-rehab-exercise',
+                      icon: '🦵',
+                      label: 'Tập PHCN',
+                    },
+                    {
+                      id: 'ops-wet-mobility-assistance',
+                      icon: '🚶',
+                      label: 'Tập đi / vận động',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Hoạt động khác',
+                    },
+                  ],
+
+                  PSYCHOLOGIST: [
+                    {
+                      id: 'ops-wet-psychological-support',
+                      icon: '😊',
+                      label: 'Hỗ trợ tâm lý',
+                    },
+                    {
+                      id: 'ops-wet-mmse-cognitive-assess',
+                      icon: '🧠',
+                      label: 'Đánh giá nhận thức',
+                    },
+                    {
+                      id: 'ops-wet-reminiscence-therapy',
+                      icon: '💭',
+                      label: 'Hồi tưởng',
+                    },
+                    {
+                      id: 'ops-wet-relocation-adaptation',
+                      icon: '🏠',
+                      label: 'Hỗ trợ thích nghi',
+                    },
+                    {
+                      id: 'ops-wet-social-group-activity',
+                      icon: '👥',
+                      label: 'Hoạt động nhóm',
+                    },
+                    {
+                      id: 'ops-wet-family-connect',
+                      icon: '👨‍👩‍👧',
+                      label: 'Kết nối gia đình',
+                    },
+                  ],
+
+                  SOCIAL_WORKER: [
+                    {
+                      id: 'ops-wet-psychological-support',
+                      icon: '💬',
+                      label: 'Trò chuyện / hỗ trợ',
+                    },
+                    {
+                      id: 'ops-wet-social-group-activity',
+                      icon: '👥',
+                      label: 'Hoạt động nhóm',
+                    },
+                    {
+                      id: 'ops-wet-family-connect',
+                      icon: '👨‍👩‍👧',
+                      label: 'Kết nối gia đình',
+                    },
+                    {
+                      id: 'ops-wet-family-visit',
+                      icon: '🤝',
+                      label: 'Hỗ trợ thăm gặp',
+                    },
+                    {
+                      id: 'ops-wet-relocation-adaptation',
+                      icon: '🏠',
+                      label: 'Hỗ trợ thích nghi',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Hoạt động khác',
+                    },
+                  ],
+
+                  NUTRITIONIST: [
+                    {
+                      id: 'ops-wet-meal-assistance',
+                      icon: '🍚',
+                      label: 'Hỗ trợ ăn',
+                    },
+                    {
+                      id: 'ops-wet-tube-feeding-assist',
+                      icon: '🥣',
+                      label: 'Hỗ trợ ăn sonde',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Hoạt động khác',
+                    },
+                  ],
+
+                  HOUSEKEEPING: [
+                    {
+                      id: 'ops-wet-room-cleaning',
+                      icon: '🧹',
+                      label: 'Vệ sinh phòng',
+                    },
+                    {
+                      id: 'ops-wet-other-incidental',
+                      icon: '➕',
+                      label: 'Việc khác',
+                    },
+                  ],
+                };
+
+                const managerActions = [
+                  {
+                    id: 'ops-wet-hygiene-bathing',
+                    icon: '🚿',
+                    label: 'Tắm / vệ sinh',
+                  },
+                  {
+                    id: 'ops-wet-diaper-toileting',
+                    icon: '🚽',
+                    label: 'Thay tã / vệ sinh',
+                  },
+                  {
+                    id: 'ops-wet-meal-assistance',
+                    icon: '🍚',
+                    label: 'Hỗ trợ ăn',
+                  },
+                  {
+                    id: 'ops-wet-vital-signs-check',
+                    icon: '❤️',
+                    label: 'Đo sinh hiệu',
+                  },
+                  {
+                    id: 'ops-wet-medication-admin',
+                    icon: '💊',
+                    label: 'Thực hiện thuốc',
+                  },
+                  {
+                    id: 'ops-wet-wound-care',
+                    icon: '🩹',
+                    label: 'Vết thương',
+                  },
+                  {
+                    id: 'ops-wet-mobility-assistance',
+                    icon: '🚶',
+                    label: 'Vận động',
+                  },
+                  {
+                    id: 'ops-wet-rehab-exercise',
+                    icon: '🦵',
+                    label: 'PHCN',
+                  },
+                  {
+                    id: 'ops-wet-psychological-support',
+                    icon: '💬',
+                    label: 'Tâm lý',
+                  },
+                  {
+                    id: 'ops-wet-other-incidental',
+                    icon: '➕',
+                    label: 'Việc khác',
+                  },
+                ];
+
+                const configured =
+                  role === 'ADMIN' ||
+                  role === 'SUPERVISOR' ||
+                  role === 'CARE_MANAGER'
+                    ? managerActions
+                    : byRole[role] || [];
+
+                const actions = configured.filter((item) =>
+                  typeById.has(item.id)
+                );
+
+                const selectedCount =
+                  quickSelectedTypeIds.length;
+
+                return (
+                  <>
+                    <label className="tamancare-simple-resident">
+                      <span className="tamancare-simple-resident-label">
+                        Người cao tuổi
+                      </span>
+
+                      <select
+                        value={createResidentId}
+                        disabled={quickCareSaving}
+                        onChange={(event) => {
+                          setCreateResidentId(
+                            event.target.value
+                          );
+                          setQuickSelectedTypeIds([]);
+                          setQuickCareNote('');
+                          setQuickCareMessage('');
+                          setActionError('');
+                        }}
+                      >
+                        <option value="">
+                          -- Chọn người cao tuổi --
+                        </option>
+
+                        {(residentsQuery.data ?? []).map(
+                          ({ resident }) => (
+                            <option
+                              key={resident.residentId}
+                              value={resident.residentId}
+                            >
+                              {resident.displayName}
+                              {resident.room
+                                ? ` — Phòng ${resident.room}`
+                                : ''}
+                            </option>
+                          )
+                        )}
+                      </select>
+                    </label>
+
+                    {actions.length > 0 ? (
+                      <div className="tamancare-simple-actions">
+                        {actions.map((action) => {
+                          const selected =
+                            quickSelectedTypeIds.includes(
+                              action.id
+                            );
+
+                          return (
+                            <button
+                              key={action.id}
+                              type="button"
+                              className="tamancare-simple-action"
+                              data-selected={
+                                selected ? 'true' : 'false'
+                              }
+                              aria-pressed={selected}
+                              disabled={
+                                !createResidentId ||
+                                quickCareSaving
+                              }
+                              onClick={() => {
+                                setQuickCareMessage('');
+                                setActionError('');
+
+                                setQuickSelectedTypeIds(
+                                  (current) =>
+                                    current.includes(action.id)
+                                      ? current.filter(
+                                          (id) =>
+                                            id !== action.id
+                                        )
+                                      : [
+                                          ...current,
+                                          action.id,
+                                        ]
+                                );
+                              }}
+                            >
+                              <span
+                                className="tamancare-simple-action-icon"
+                                aria-hidden="true"
+                              >
+                                {action.icon}
+                              </span>
+
+                              <span>{action.label}</span>
+
+                              {selected && (
+                                <span
+                                  style={{
+                                    fontSize: '.72rem',
+                                    color: '#15803d',
+                                  }}
+                                >
+                                  ✓ Đã chọn
+                                </span>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          padding: '12px',
+                          borderRadius: '10px',
+                          background: '#fff7ed',
+                          color: '#9a3412',
+                        }}
+                      >
+                        Không có công việc chăm sóc phù hợp
+                        với vị trí hiện tại.
+                      </div>
+                    )}
+
+                    <textarea
+                      className="tamancare-simple-note"
+                      value={quickCareNote}
+                      disabled={quickCareSaving}
+                      placeholder="Ghi chú nếu có..."
+                      onChange={(event) =>
+                        setQuickCareNote(
+                          event.target.value
+                        )
+                      }
+                    />
+
+                    {quickCareMessage && (
+                      <div className="tamancare-simple-success">
+                        {quickCareMessage}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="tamancare-simple-submit"
+                      disabled={
+                        !createResidentId ||
+                        selectedCount === 0 ||
+                        quickCareSaving
+                      }
+                      onClick={async () => {
+                        if (!actor) {
+                          setActionError(
+                            'Chưa xác định người thực hiện.'
+                          );
+                          return;
+                        }
+
+                        if (!createResidentId) {
+                          setActionError(
+                            'Vui lòng chọn Người cao tuổi.'
+                          );
+                          return;
+                        }
+
+                        if (
+                          quickSelectedTypeIds.length === 0
+                        ) {
+                          setActionError(
+                            'Vui lòng chọn công việc đã thực hiện.'
+                          );
+                          return;
+                        }
+
+                        setActionError('');
+                        setQuickCareMessage('');
+                        setQuickCareSaving(true);
+
+                        try {
+                          const now =
+                            new Date().toISOString();
+
+                          for (
+                            const workEventTypeId
+                            of quickSelectedTypeIds
+                          ) {
+                            const workType =
+                              typeById.get(
+                                workEventTypeId
+                              );
+
+                            if (!workType) {
+                              throw new Error(
+                                'Không tìm thấy loại công việc.'
+                              );
+                            }
+
+                            if (
+                              PROJECTION_TYPE_CODES.has(
+                                workType.code
+                              )
+                            ) {
+                              throw new Error(
+                                'Công việc này được hệ thống ghi nhận tự động.'
+                              );
+                            }
+
+                            await createWorkEvent(
+                              actor,
+                              {
+                                residentId:
+                                  createResidentId,
+
+                                workEventTypeId,
+
+                                sourceDomain:
+                                  'OPERATIONS',
+
+                                plannedClassification:
+                                  'PLANNED',
+
+                                occurredAt: now,
+                                completedAt: now,
+
+                                quantity: 1,
+
+                                note:
+                                  quickCareNote.trim() ||
+                                  undefined,
+
+                                status:
+                                  'COMPLETED',
+                              }
+                            );
+                          }
+
+                          await queryClient.invalidateQueries(
+                            {
+                              queryKey: [
+                                'operational-work-events',
+                              ],
+                            }
+                          );
+
+                          await queryClient.invalidateQueries(
+                            {
+                              queryKey: [
+                                'resident-integration-overview',
+                                createResidentId,
+                              ],
+                            }
+                          );
+
+                          setQuickCareMessage(
+                            `✓ Đã ghi nhận ${selectedCount} công việc`
+                          );
+
+                          /*
+                           * Keep resident selected so staff can
+                           * rapidly record another activity.
+                           */
+                          setQuickSelectedTypeIds([]);
+                          setQuickCareNote('');
+                          setCreateTypeId('');
+
+                        } catch (error) {
+                          setActionError(
+                            errorText(error)
+                          );
+                        } finally {
+                          setQuickCareSaving(false);
+                        }
+                      }}
+                    >
+                      {quickCareSaving
+                        ? 'Đang lưu...'
+                        : selectedCount > 0
+                          ? `✓ HOÀN THÀNH (${selectedCount})`
+                          : '✓ HOÀN THÀNH'}
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+
+<div className="operations-form-grid" style={{ display: "none" }} data-simple-care-legacy="true">
             <label className="field-group">
               <span className="field-label">
                 Người cao tuổi <span style={{ color: '#dc2626' }}>*</span>
@@ -1867,7 +2623,406 @@ export function OperationsPage() {
               </div>
             </div>
 
-            <label className="field-group">
+            
+            
+            {/* TAMANCARE_QUICK_CARE_V2 */}
+            {(() => {
+              const role = String(actor?.actorRole || '');
+
+              const roleActions: Record<
+                string,
+                Array<{ id: string; icon: string; label: string }>
+              > = {
+                CAREGIVER: [
+                  { id: 'ops-wet-hygiene-bathing', icon: '🚿', label: 'Tắm / vệ sinh' },
+                  { id: 'ops-wet-diaper-toileting', icon: '🚽', label: 'Thay tã / vệ sinh' },
+                  { id: 'ops-wet-meal-assistance', icon: '🍚', label: 'Hỗ trợ ăn' },
+                  { id: 'ops-wet-mobility-assistance', icon: '🚶', label: 'Hỗ trợ đi lại' },
+                  { id: 'ops-wet-psychological-support', icon: '💬', label: 'Trò chuyện' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Việc khác' },
+                ],
+
+                NURSE: [
+                  { id: 'ops-wet-vital-signs-check', icon: '❤️', label: 'Đo sinh hiệu' },
+                  { id: 'ops-wet-medication-admin', icon: '💊', label: 'Thực hiện thuốc' },
+                  { id: 'ops-wet-wound-care', icon: '🩹', label: 'Chăm sóc vết thương' },
+                  { id: 'ops-wet-mobility-assistance', icon: '🚶', label: 'Hỗ trợ vận động' },
+                  { id: 'ops-wet-emergency-care', icon: '⚠️', label: 'Xử lý bất thường' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Việc khác' },
+                ],
+
+                MEDICAL_HEAD: [
+                  { id: 'ops-wet-vital-signs-check', icon: '❤️', label: 'Đo sinh hiệu' },
+                  { id: 'ops-wet-medication-admin', icon: '💊', label: 'Thực hiện thuốc' },
+                  { id: 'ops-wet-wound-care', icon: '🩹', label: 'Chăm sóc vết thương' },
+                  { id: 'ops-wet-emergency-care', icon: '⚠️', label: 'Xử lý bất thường' },
+                  { id: 'ops-wet-mmse-cognitive-assess', icon: '🧠', label: 'Đánh giá nhận thức' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Việc khác' },
+                ],
+
+                REHABILITATION_SPECIALIST: [
+                  { id: 'ops-wet-rehab-exercise', icon: '🦵', label: 'Tập PHCN' },
+                  { id: 'ops-wet-mobility-assistance', icon: '🚶', label: 'Tập đi / vận động' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Hoạt động khác' },
+                ],
+
+                PSYCHOLOGIST: [
+                  { id: 'ops-wet-psychological-support', icon: '😊', label: 'Hỗ trợ tâm lý' },
+                  { id: 'ops-wet-mmse-cognitive-assess', icon: '🧠', label: 'Đánh giá nhận thức' },
+                  { id: 'ops-wet-reminiscence-therapy', icon: '💭', label: 'Hồi tưởng' },
+                  { id: 'ops-wet-relocation-adaptation', icon: '🏠', label: 'Hỗ trợ thích nghi' },
+                  { id: 'ops-wet-social-group-activity', icon: '👥', label: 'Hoạt động nhóm' },
+                  { id: 'ops-wet-family-connect', icon: '👨‍👩‍👧', label: 'Kết nối gia đình' },
+                ],
+
+                SOCIAL_WORKER: [
+                  { id: 'ops-wet-psychological-support', icon: '💬', label: 'Trò chuyện / hỗ trợ' },
+                  { id: 'ops-wet-social-group-activity', icon: '👥', label: 'Hoạt động nhóm' },
+                  { id: 'ops-wet-family-connect', icon: '👨‍👩‍👧', label: 'Kết nối gia đình' },
+                  { id: 'ops-wet-family-visit', icon: '🤝', label: 'Hỗ trợ thăm gặp' },
+                  { id: 'ops-wet-relocation-adaptation', icon: '🏠', label: 'Hỗ trợ thích nghi' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Hoạt động khác' },
+                ],
+
+                NUTRITIONIST: [
+                  { id: 'ops-wet-meal-assistance', icon: '🍚', label: 'Hỗ trợ ăn' },
+                  { id: 'ops-wet-tube-feeding-assist', icon: '🥣', label: 'Hỗ trợ ăn sonde' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Hoạt động khác' },
+                ],
+
+                HOUSEKEEPING: [
+                  { id: 'ops-wet-room-cleaning', icon: '🧹', label: 'Vệ sinh phòng' },
+                  { id: 'ops-wet-other-incidental', icon: '➕', label: 'Việc khác' },
+                ],
+              };
+
+              const managerActions = [
+                { id: 'ops-wet-hygiene-bathing', icon: '🚿', label: 'Tắm / vệ sinh' },
+                { id: 'ops-wet-diaper-toileting', icon: '🚽', label: 'Thay tã / vệ sinh' },
+                { id: 'ops-wet-meal-assistance', icon: '🍚', label: 'Hỗ trợ ăn' },
+                { id: 'ops-wet-vital-signs-check', icon: '❤️', label: 'Đo sinh hiệu' },
+                { id: 'ops-wet-medication-admin', icon: '💊', label: 'Thực hiện thuốc' },
+                { id: 'ops-wet-wound-care', icon: '🩹', label: 'Vết thương' },
+                { id: 'ops-wet-mobility-assistance', icon: '🚶', label: 'Vận động' },
+                { id: 'ops-wet-rehab-exercise', icon: '🦵', label: 'PHCN' },
+                { id: 'ops-wet-psychological-support', icon: '💬', label: 'Tâm lý' },
+                { id: 'ops-wet-other-incidental', icon: '➕', label: 'Việc khác' },
+              ];
+
+              const configured =
+                role === 'ADMIN' ||
+                role === 'SUPERVISOR' ||
+                role === 'CARE_MANAGER'
+                  ? managerActions
+                  : roleActions[role] || [];
+
+              const actions = configured.filter((item) =>
+                typeById.has(item.id)
+              );
+
+              const count = quickSelectedTypeIds.length;
+
+              return (
+                <div
+                  className="tamancare-quick-care-v2"
+                  style={{ gridColumn: '1 / -1' }}
+                >
+                  <style>{`
+                    .operations-form-grid:has(.tamancare-quick-care-v2)
+                      > *:not(:first-child):not(.tamancare-quick-care-v2) {
+                      display: none !important;
+                    }
+
+                    .tamancare-qc-actions {
+                      display: grid;
+                      grid-template-columns: repeat(2, minmax(0, 1fr));
+                      gap: 9px;
+                    }
+
+                    .tamancare-qc-action {
+                      min-height: 72px;
+                      border-radius: 13px;
+                      border: 1px solid #dbe2ea;
+                      background: #fff;
+                      padding: 8px 6px;
+                      font: inherit;
+                      color: #1e293b;
+                      font-weight: 750;
+                      text-align: center;
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      align-items: center;
+                      gap: 5px;
+                      cursor: pointer;
+                      touch-action: manipulation;
+                    }
+
+                    .tamancare-qc-action[data-selected="true"] {
+                      border: 2px solid #16a34a;
+                      background: #f0fdf4;
+                      color: #166534;
+                    }
+
+                    .tamancare-qc-action:disabled {
+                      opacity: .45;
+                    }
+
+                    .tamancare-qc-icon {
+                      font-size: 1.65rem;
+                      line-height: 1;
+                    }
+
+                    .tamancare-qc-note {
+                      width: 100%;
+                      box-sizing: border-box;
+                      min-height: 68px;
+                      border: 1px solid #cbd5e1;
+                      border-radius: 12px;
+                      padding: 10px;
+                      font: inherit;
+                      font-size: 16px;
+                      resize: vertical;
+                    }
+
+                    .tamancare-qc-submit {
+                      width: 100%;
+                      min-height: 54px;
+                      border: 0;
+                      border-radius: 13px;
+                      background: #16a34a;
+                      color: white;
+                      font: inherit;
+                      font-weight: 850;
+                      font-size: 1rem;
+                      cursor: pointer;
+                    }
+
+                    .tamancare-qc-submit:disabled {
+                      opacity: .45;
+                    }
+
+                    @media (min-width: 768px) {
+                      .tamancare-qc-actions {
+                        grid-template-columns: repeat(3, minmax(0, 1fr));
+                      }
+                    }
+
+                    @media (max-width: 767px) {
+                      .operations-form-grid:has(.tamancare-quick-care-v2) {
+                        grid-template-columns: 1fr !important;
+                      }
+
+                      .operations-form-grid:has(.tamancare-quick-care-v2)
+                        > label:first-child select {
+                        min-height: 50px;
+                        font-size: 16px !important;
+                      }
+                    }
+                  `}</style>
+
+                  <div
+                    style={{
+                      padding: '0.8rem',
+                      borderRadius: '14px',
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontWeight: 850,
+                        marginBottom: '0.65rem',
+                        color: '#0f172a',
+                      }}
+                    >
+                      Công việc đã thực hiện
+                    </div>
+
+                    <div className="tamancare-qc-actions">
+                      {actions.map((action) => {
+                        const selected =
+                          quickSelectedTypeIds.includes(action.id);
+
+                        return (
+                          <button
+                            key={action.id}
+                            type="button"
+                            className="tamancare-qc-action"
+                            data-selected={selected ? 'true' : 'false'}
+                            disabled={!createResidentId || quickCareSaving}
+                            onClick={() => {
+                              setQuickCareMessage('');
+                              setQuickSelectedTypeIds((current) =>
+                                current.includes(action.id)
+                                  ? current.filter((x) => x !== action.id)
+                                  : [...current, action.id]
+                              );
+                            }}
+                          >
+                            <span
+                              className="tamancare-qc-icon"
+                              aria-hidden="true"
+                            >
+                              {action.icon}
+                            </span>
+
+                            <span>{action.label}</span>
+
+                            {selected && (
+                              <span
+                                style={{
+                                  fontSize: '0.7rem',
+                                  color: '#15803d',
+                                }}
+                              >
+                                ✓
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <textarea
+                      className="tamancare-qc-note"
+                      style={{ marginTop: '0.8rem' }}
+                      value={quickCareNote}
+                      disabled={quickCareSaving}
+                      placeholder="Ghi chú nếu có..."
+                      onChange={(e) =>
+                        setQuickCareNote(e.target.value)
+                      }
+                    />
+
+                    {quickCareMessage && (
+                      <div
+                        style={{
+                          marginTop: '0.65rem',
+                          padding: '0.6rem',
+                          borderRadius: '9px',
+                          background: '#f0fdf4',
+                          color: '#166534',
+                          fontWeight: 700,
+                        }}
+                      >
+                        {quickCareMessage}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      className="tamancare-qc-submit"
+                      style={{ marginTop: '0.75rem' }}
+                      disabled={
+                        !createResidentId ||
+                        count === 0 ||
+                        quickCareSaving
+                      }
+                      onClick={async () => {
+                        if (!actor) {
+                          setActionError(
+                            'Chưa xác định người thực hiện.'
+                          );
+                          return;
+                        }
+
+                        if (!createResidentId) {
+                          setActionError(
+                            'Vui lòng chọn Người cao tuổi.'
+                          );
+                          return;
+                        }
+
+                        if (count === 0) {
+                          setActionError(
+                            'Vui lòng chọn công việc đã thực hiện.'
+                          );
+                          return;
+                        }
+
+                        setActionError('');
+                        setQuickCareMessage('');
+                        setQuickCareSaving(true);
+
+                        try {
+                          const now = new Date().toISOString();
+
+                          for (const workEventTypeId of quickSelectedTypeIds) {
+                            const workType =
+                              typeById.get(workEventTypeId);
+
+                            if (!workType) {
+                              throw new Error(
+                                'Loại công việc không tồn tại.'
+                              );
+                            }
+
+                            if (
+                              PROJECTION_TYPE_CODES.has(
+                                workType.code
+                              )
+                            ) {
+                              throw new Error(
+                                'Công việc này được hệ thống ghi nhận tự động.'
+                              );
+                            }
+
+                            await createWorkEvent(actor, {
+                              residentId: createResidentId,
+                              workEventTypeId,
+                              sourceDomain: 'OPERATIONS',
+                              plannedClassification: 'PLANNED',
+                              occurredAt: now,
+                              completedAt: now,
+                              quantity: 1,
+                              note:
+                                quickCareNote.trim() ||
+                                undefined,
+                              status: 'COMPLETED',
+                            });
+                          }
+
+                          await queryClient.invalidateQueries({
+                            queryKey: [
+                              'operational-work-events',
+                            ],
+                          });
+
+                          await queryClient.invalidateQueries({
+                            queryKey: [
+                              'resident-integration-overview',
+                              createResidentId,
+                            ],
+                          });
+
+                          setQuickCareMessage(
+                            `✓ Đã ghi nhận ${count} công việc`
+                          );
+
+                          setQuickSelectedTypeIds([]);
+                          setQuickCareNote('');
+                          setCreateTypeId('');
+
+                        } catch (error) {
+                          setActionError(errorText(error));
+                        } finally {
+                          setQuickCareSaving(false);
+                        }
+                      }}
+                    >
+                      {quickCareSaving
+                        ? 'Đang lưu...'
+                        : count > 0
+                          ? `✓ HOÀN THÀNH (${count})`
+                          : '✓ HOÀN THÀNH'}
+                    </button>
+                  </div>
+                </div>
+              );
+            })()}
+
+<label className="field-group">
               <span className="field-label">
                 Loại hình công việc <span style={{ color: '#dc2626' }}>*</span>
               </span>
@@ -2104,14 +3259,63 @@ export function OperationsPage() {
       {/* ========================================================================= */}
       {/* BẢNG NHẬT KÝ CÔNG VIỆC CHÍNH */}
       {/* ========================================================================= */}
-      <section className="card operations-panel">
+      
+      {/* TAMANCARE_COMPACT_CARE_SUMMARY_V2 */}
+      <style>{`
+        /*
+         * Default summary only shows:
+         * Time / Resident / Care activity / Action.
+         * Full evidence remains in existing Detail view.
+         */
+        .tamancare-compact-care-table th:nth-child(4),
+        .tamancare-compact-care-table th:nth-child(5),
+        .tamancare-compact-care-table th:nth-child(6),
+        .tamancare-compact-care-table th:nth-child(7),
+        .tamancare-compact-care-table td:nth-child(4),
+        .tamancare-compact-care-table td:nth-child(5),
+        .tamancare-compact-care-table td:nth-child(6),
+        .tamancare-compact-care-table td:nth-child(7) {
+          display: none !important;
+        }
+
+        .tamancare-compact-care-table th,
+        .tamancare-compact-care-table td {
+          padding-top: .58rem !important;
+          padding-bottom: .58rem !important;
+        }
+
+        .tamancare-compact-care-table th:last-child,
+        .tamancare-compact-care-table td:last-child {
+          width: 1%;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 767px) {
+          .tamancare-compact-care-table {
+            font-size: .8rem;
+          }
+
+          .tamancare-compact-care-table th,
+          .tamancare-compact-care-table td {
+            padding-left: .4rem !important;
+            padding-right: .4rem !important;
+          }
+
+          .tamancare-compact-care-table th:nth-child(1),
+          .tamancare-compact-care-table td:nth-child(1) {
+            white-space: nowrap;
+          }
+        }
+      `}</style>
+
+<section className="card operations-panel">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
             <h2 className="section-title" style={{ margin: 0 }}>
-              📋 Bảng Tổng Hợp Hoạt Động Chăm Sóc
+              Hoạt động chăm sóc
             </h2>
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>
-              Danh sách các hoạt động thực hiện theo thời gian thực, có xác thực chủ thể và kiểm toán.
+              
             </p>
           </div>
 
@@ -2140,7 +3344,7 @@ export function OperationsPage() {
           <>
             <div className="desktop-only-table">
               <div className="operations-table-wrap table-responsive">
-                <table className="operations-table table-wide-950" style={{ minWidth: '950px' }}>
+                <table className="operations-table tamancare-compact-care-table">
                   <thead>
                     <tr>
                       <th>Thời điểm</th>

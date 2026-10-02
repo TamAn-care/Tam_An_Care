@@ -88,114 +88,9 @@ export const MEDICATION_PRESCRIPTION_OPTIONS: Record<string, string> = {
   SUPPLEMENT: 'Thực phẩm chức năng / Bổ dưỡng',
 };
 
-export const DEFAULT_HANDOVER_MEDICATIONS: HandoverMedicationItem[] = [
-  {
-    id: 'MED-01',
-    medicationName: 'Amlodipine 5mg',
-    dosageForm: 'Viên nén',
-    quantity: '30 viên (3 vỉ)',
-    expiryDate: '2027-12',
-    usageInstruction: 'Uống 1 viên vào lúc 07:00 sáng sau ăn',
-    storageRequirement: 'ROOM_TEMP',
-    prescriptionStatus: 'WITH_PRESCRIPTION',
-    notes: 'Thuốc huyết áp chính, còn nguyên vỉ',
-  },
-  {
-    id: 'MED-02',
-    medicationName: 'Metformin 500mg',
-    dosageForm: 'Viên bao phim',
-    quantity: '60 viên (6 vỉ)',
-    expiryDate: '2028-06',
-    usageInstruction: 'Uống 1 viên sau ăn sáng, 1 viên sau ăn tối',
-    storageRequirement: 'ROOM_TEMP',
-    prescriptionStatus: 'WITH_PRESCRIPTION',
-    notes: 'Kèm theo đơn của Bệnh viện Lão khoa',
-  },
-  {
-    id: 'MED-03',
-    medicationName: 'Glucosamine Sulfate 1500mg',
-    dosageForm: 'Gói bột pha nước',
-    quantity: '30 gói (1 hộp)',
-    expiryDate: '2027-08',
-    usageInstruction: 'Uống 1 gói pha 150ml nước sau ăn trưa',
-    storageRequirement: 'ROOM_TEMP',
-    prescriptionStatus: 'SUPPLEMENT',
-    notes: 'Hỗ trợ khớp gối theo nhu cầu gia đình',
-  },
-];
+export const DEFAULT_HANDOVER_MEDICATIONS: HandoverMedicationItem[] = [];
 
-export const DEFAULT_HANDOVER_BELONGINGS: HandoverBelongingItem[] = [
-  {
-    id: 'BEL-01',
-    category: 'CLOTHING',
-    itemName: 'Quần áo mặc ban ngày (bộ cotton dài tay)',
-    quantity: '5 bộ',
-    condition: 'GOOD',
-    storageLocation: 'RESIDENT_WARDROBE',
-    identificationTag: 'Đã đánh dấu thêu tên cụ',
-    notes: 'Chất liệu thoáng mát, giặt máy được',
-  },
-  {
-    id: 'BEL-02',
-    category: 'CLOTHING',
-    itemName: 'Áo khoác ấm mùa đông & áo len',
-    quantity: '2 chiếc',
-    condition: 'GOOD',
-    storageLocation: 'RESIDENT_WARDROBE',
-    identificationTag: 'Treo ngăn áo khoác tủ phòng',
-    notes: 'Dùng khi thời tiết lạnh',
-  },
-  {
-    id: 'BEL-03',
-    category: 'FOOTWEAR',
-    itemName: 'Giày đi bộ đế mềm chống trượt',
-    quantity: '1 đôi',
-    condition: 'GOOD',
-    storageLocation: 'RESIDENT_WARDROBE',
-    identificationTag: 'Đế có gai cao su chống trượt',
-    notes: 'Đi tập phục hồi chức năng & dạo sân',
-  },
-  {
-    id: 'BEL-04',
-    category: 'FOOTWEAR',
-    itemName: 'Dép lê đi trong phòng',
-    quantity: '1 đôi',
-    condition: 'GOOD',
-    storageLocation: 'RESIDENT_WARDROBE',
-    identificationTag: 'Đặt cạnh giường ngủ',
-    notes: 'Dép xốp êm, quai ngang',
-  },
-  {
-    id: 'BEL-05',
-    category: 'MEDICAL_DEVICE',
-    itemName: 'Kính lão đọc sách (+2.5D)',
-    quantity: '1 chiếc',
-    condition: 'GOOD',
-    storageLocation: 'RESIDENT_WARDROBE',
-    identificationTag: 'Kèm hộp đựng và khăn lau kính',
-    notes: 'Để ở ngăn kéo tủ đầu giường',
-  },
-  {
-    id: 'BEL-06',
-    category: 'PERSONAL_CARE',
-    itemName: 'Bộ bàn chải, khăn mặt & lược cá nhân',
-    quantity: '1 bộ (3 món)',
-    condition: 'NEW_100',
-    storageLocation: 'RESIDENT_WARDROBE',
-    identificationTag: 'Đựng trong túi vệ sinh cá nhân',
-    notes: 'Bố trí tại phòng tắm riêng của cụ',
-  },
-  {
-    id: 'BEL-07',
-    category: 'VALUABLES_DOCS',
-    itemName: 'Thẻ BHYT gốc & Bản photo CCCD',
-    quantity: '1 bộ hồ sơ',
-    condition: 'NEW_100',
-    storageLocation: 'NURSE_STATION',
-    identificationTag: 'Lưu kẹp bìa hồ sơ bệnh án',
-    notes: 'Bàn giao cho điều dưỡng trưởng lưu giữ phục vụ KCB',
-  },
-];
+export const DEFAULT_HANDOVER_BELONGINGS: HandoverBelongingItem[] = [];
 
 export interface SupportServiceSelection {
   key: string;
@@ -341,6 +236,7 @@ export interface InitialClinicalAssessment {
     bathing: 'INDEPENDENT' | 'PARTIAL_ASSIST' | 'FULL_DEPEND';
     dressing: 'INDEPENDENT' | 'PARTIAL_ASSIST' | 'FULL_DEPEND';
     toileting: 'INDEPENDENT' | 'PARTIAL_ASSIST' | 'FULL_DEPEND';
+    transfer: 'INDEPENDENT' | 'PARTIAL_ASSIST' | 'FULL_DEPEND';
     mobility: 'INDEPENDENT' | 'PARTIAL_ASSIST' | 'FULL_DEPEND';
     excretion: 'AUTONOMOUS' | 'INCONTINENT' | 'CATHETER_DIAPER';
     mobilitySupport: 'NONE' | 'CANE_WALKER' | 'WHEELCHAIR';
@@ -430,6 +326,7 @@ const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
     bathing: 'INDEPENDENT',
     dressing: 'INDEPENDENT',
     toileting: 'INDEPENDENT',
+    transfer: 'INDEPENDENT',
     mobility: 'INDEPENDENT',
     excretion: 'AUTONOMOUS',
     mobilitySupport: 'NONE',
@@ -461,12 +358,12 @@ const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
     handoverDate: new Date().toISOString().slice(0, 10),
     guardianDelivererName: '',
     guardianPhone: '',
-    nurseReceiverName: 'Trần Thị Mai',
-    caregiverReceiverName: 'Lê Văn Nam',
-    supervisorApprovalName: 'Hoàng Quốc Anh',
+    nurseReceiverName: '',
+    caregiverReceiverName: '',
+    supervisorApprovalName: '',
     medications: DEFAULT_HANDOVER_MEDICATIONS,
     belongings: DEFAULT_HANDOVER_BELONGINGS,
-    generalNotes: 'Thân nhân và người cao tuổi đã bàn giao đầy đủ thuốc và đồ dùng cá nhân. Trung Tâm Dưỡng Lão Tâm An đã kiểm đếm và lưu giữ theo đúng quy trình.',
+    generalNotes: '',
   },
 
   financialAgreement: {
@@ -480,8 +377,8 @@ const DEFAULT_INITIAL_ASSESSMENT: InitialClinicalAssessment = {
     depositAmount: 20000000,
     paymentCycleDay: 'Từ ngày 01 đến ngày 05 hàng tháng',
     calculatedMonthlyTotal: 14500000,
-    guardianAgreed: true,
-    notes: 'Đại diện gia đình thống nhất Bảng giá dịch vụ và ký cam kết viện phí hàng tháng.',
+    guardianAgreed: false,
+    notes: '',
   },
 };
 
@@ -577,7 +474,7 @@ function DobDatePicker({ value, onChange, required }: DobDatePickerProps) {
         onChange={e => onChange(e.target.value)}
         onFocus={() => setIsOpen(true)}
         onClick={() => setIsOpen(true)}
-        placeholder="dd/mm/yyyy"
+        placeholder="dd/mm/yyyy hoặc yyyy"
         required={required}
         className="form-input"
         style={{ width: '165px', fontWeight: 600, letterSpacing: '0.02em' }}
@@ -771,15 +668,52 @@ export function AdmissionPage() {
 
   const normalizeDob = (dobStr: string): string => {
     if (!dobStr) return '';
+
     const trimmed = dobStr.trim();
+
+    // Only year known: preserve exactly as yyyy.
     if (/^\d{4}$/.test(trimmed)) {
-      return `01/01/${trimmed}`;
+      const year = Number(trimmed);
+      const currentYear = new Date().getFullYear();
+
+      return year >= 1800 && year <= currentYear
+        ? trimmed
+        : '';
     }
+
+    // Already canonical.
     if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
-      const [y, m, d] = trimmed.split('-');
-      return `${d}/${m}/${y}`;
+      return trimmed;
     }
-    return trimmed;
+
+    // Vietnamese input: dd/mm/yyyy
+    const match = trimmed.match(
+      /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
+    );
+
+    if (!match) return '';
+
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
+
+    const date = new Date(
+      Date.UTC(year, month - 1, day),
+    );
+
+    if (
+      date.getUTCFullYear() !== year ||
+      date.getUTCMonth() !== month - 1 ||
+      date.getUTCDate() !== day
+    ) {
+      return '';
+    }
+
+    return [
+      String(year).padStart(4, '0'),
+      String(month).padStart(2, '0'),
+      String(day).padStart(2, '0'),
+    ].join('-');
   };
 
   const formatDateDisplay = (dobStr?: string) => {
@@ -859,10 +793,9 @@ export function AdmissionPage() {
 
   const handleEditDraft = async (c: AdmissionCase) => {
     if (!actor) return;
-    if (c.status === 'ADMITTED' || c.status === 'COMPLETED') {
-      setMessage('Hồ sơ đối với cụ đã vào Tâm An chính thức không thể chỉnh sửa.');
-      return;
-    }
+    const isPostAdmission =
+      c.status === 'ADMITTED' ||
+      c.status === 'COMPLETED';
     try {
       setBusy(true);
       setMessage('');
@@ -871,14 +804,14 @@ export function AdmissionPage() {
         ...DEFAULT_INITIAL_ASSESSMENT,
         prospectiveResidentName: c.prospectiveResidentName || '',
         gender: c.gender === 'FEMALE' ? 'FEMALE' : 'MALE',
-        dateOfBirth: c.dateOfBirth ? c.dateOfBirth.slice(0, 10) : '',
+        dateOfBirth: c.dateOfBirth ? formatDateDisplay(c.dateOfBirth) : '',
         identityNumber: c.identityNumber || '',
         intakeDate: c.requestedAdmissionDate ? c.requestedAdmissionDate.slice(0, 10) : new Date().toISOString().slice(0, 10),
         assessorName: actor?.displayName || '',
       };
-      if (overview?.assessments?.[0]?.summary) {
+      if ((overview?.assessment?.summary || overview?.assessments?.[0]?.summary)) {
         try {
-          const sum = overview.assessments[0].summary;
+          const sum = overview?.assessment?.summary || overview?.assessments?.[0]?.summary;
           if (sum.startsWith('{')) {
             parsedData = { ...parsedData, ...JSON.parse(sum) };
           }
@@ -912,13 +845,54 @@ export function AdmissionPage() {
 
       let caseId = editingCase?.admissionCaseId;
 
-      const dobValue = normalizeDob(form.dateOfBirth) || new Date().toISOString().slice(0, 10);
+      const isPostAdmissionAmendment =
+        editingCase?.status === 'ADMITTED' ||
+        editingCase?.status === 'COMPLETED';
+
+      let amendmentReasonForSave: string | undefined;
+
+      if (isPostAdmissionAmendment) {
+        const enteredReason =
+          window.prompt(
+            'Lý do bổ sung/chỉnh sửa Phiếu đánh giá sau tiếp nhận:',
+            '',
+          );
+
+        if (enteredReason === null) {
+          setMessage(
+            'Đã hủy thao tác bổ sung Phiếu đánh giá.',
+          );
+          return;
+        }
+
+        amendmentReasonForSave =
+          enteredReason.trim();
+
+        if (!amendmentReasonForSave) {
+          setMessage(
+            'Vui lòng nhập lý do bổ sung/chỉnh sửa Phiếu đánh giá sau tiếp nhận.',
+          );
+          return;
+        }
+      }
+
+      const dobValue =
+        normalizeDob(form.dateOfBirth);
+
+      if (
+        form.dateOfBirth.trim() &&
+        !dobValue
+      ) {
+        throw new Error(
+          'Ngày sinh không hợp lệ. Vui lòng nhập dd/mm/yyyy hoặc chỉ nhập năm yyyy.',
+        );
+      }
 
       if (!caseId) {
         // 1. Create Base Admission Case
         const caseItem = await createAdmission(actor, {
           prospectiveResidentName: form.prospectiveResidentName.trim(),
-          dateOfBirth: dobValue,
+          dateOfBirth: dobValue || undefined,
           gender: form.gender,
           identityNumber: form.identityNumber.trim() || undefined,
           requestedAdmissionDate: form.intakeDate,
@@ -928,7 +902,10 @@ export function AdmissionPage() {
       }
 
       // 2. Create Guardian / Emergency Contact
-      if (form.guardianName.trim()) {
+      if (
+        !isPostAdmissionAmendment &&
+        form.guardianName.trim()
+      ) {
         try {
           await createAdmissionContact(actor, caseId, {
             contactType: 'GUARDIAN',
@@ -978,12 +955,17 @@ export function AdmissionPage() {
         DRESSING: form.adl.dressing === 'INDEPENDENT' ? 'INDEPENDENT' : form.adl.dressing === 'PARTIAL_ASSIST' ? 'PARTIAL_ASSISTANCE' : 'FULL_ASSISTANCE',
         TOILETING: form.adl.toileting === 'INDEPENDENT' ? 'INDEPENDENT' : form.adl.toileting === 'PARTIAL_ASSIST' ? 'PARTIAL_ASSISTANCE' : 'FULL_ASSISTANCE',
         MOBILITY: form.adl.mobility === 'INDEPENDENT' ? 'INDEPENDENT' : form.adl.mobility === 'PARTIAL_ASSIST' ? 'PARTIAL_ASSISTANCE' : 'FULL_ASSISTANCE',
+        TRANSFER: form.adl.transfer === 'INDEPENDENT' ? 'INDEPENDENT' : form.adl.transfer === 'PARTIAL_ASSIST' ? 'PARTIAL_ASSISTANCE' : 'FULL_ASSISTANCE',
       };
 
       await createInitialAssessment(actor, caseId, {
         assessmentType: 'INITIAL',
         summary: JSON.stringify(form),
         clinicalNotes: form.specificNotes,
+        amendmentReason:
+          isPostAdmissionAmendment
+            ? amendmentReasonForSave
+            : undefined,
         adl: Object.entries(adlMap).map(([activityCode, assistanceLevel]) => ({
           activityCode,
           assistanceLevel,
@@ -1007,15 +989,28 @@ export function AdmissionPage() {
         ],
       });
 
-      if (isFinalize) {
-        // 5. Finalize status and trigger Classification Engine
+      if (isPostAdmissionAmendment) {
+        setMessage(
+          `✅ Đã bổ sung Phiếu đánh giá sau tiếp nhận cho cụ ${form.prospectiveResidentName}. Bản đánh giá tại thời điểm phê duyệt vẫn được giữ nguyên.`,
+        );
+      } else if (isFinalize) {
+        // Finalize assessment and generate care classification.
         await completeAssessment(actor, caseId);
+
         try {
-          await generateClassification(actor, caseId);
+          await generateClassification(
+            actor,
+            caseId,
+          );
         } catch (e) {}
-        setMessage(`✅ Đã hoàn thiện hồ sơ tiếp nhận và phân loại mức độ chăm sóc cho cụ ${form.prospectiveResidentName}!`);
+
+        setMessage(
+          `✅ Đã hoàn thiện hồ sơ tiếp nhận và phân loại mức độ chăm sóc cho cụ ${form.prospectiveResidentName}!`,
+        );
       } else {
-        setMessage(`💾 Đã lưu bản nháp hồ sơ tiếp nhận cho cụ ${form.prospectiveResidentName}. Bạn có thể chỉnh sửa và điền tiếp bất kỳ lúc nào.`);
+        setMessage(
+          `💾 Đã lưu hồ sơ tiếp nhận cho cụ ${form.prospectiveResidentName}. Bạn có thể bổ sung thông tin tiếp.`,
+        );
       }
 
       await refreshList();
@@ -1056,9 +1051,9 @@ export function AdmissionPage() {
       setBusy(true);
       const overview = await getAssessmentOverview(actor, c.admissionCaseId);
       let parsedData: InitialClinicalAssessment = DEFAULT_INITIAL_ASSESSMENT;
-      if (overview?.assessments?.[0]?.summary) {
+      if ((overview?.assessment?.summary || overview?.assessments?.[0]?.summary)) {
         try {
-          const sum = overview.assessments[0].summary;
+          const sum = overview?.assessment?.summary || overview?.assessments?.[0]?.summary;
           if (sum.startsWith('{')) {
             parsedData = JSON.parse(sum);
           }
@@ -1068,7 +1063,7 @@ export function AdmissionPage() {
           ...DEFAULT_INITIAL_ASSESSMENT,
           prospectiveResidentName: c.prospectiveResidentName,
           gender: c.gender === 'FEMALE' ? 'FEMALE' : 'MALE',
-          dateOfBirth: c.dateOfBirth ? c.dateOfBirth.slice(0, 10) : '',
+          dateOfBirth: c.dateOfBirth ? formatDateDisplay(c.dateOfBirth) : '',
           identityNumber: c.identityNumber || '',
         };
       }
@@ -1080,25 +1075,150 @@ export function AdmissionPage() {
     }
   };
 
-  // Finalize Admission Flow
-  const handleFinalize = async (caseId: string) => {
+  // Director one-click approval workflow.
+  const handleFinalize = async (
+    caseId: string,
+  ) => {
     if (!actor) return;
-    if (!confirm('Xác nhận hoàn tất tiếp nhận và chuyển đổi thành người cao tuổi chính thức vào Tâm An?')) return;
+
+    if (
+      !confirm(
+        'Phê duyệt người cao tuổi vào Tâm An chính thức? Hệ thống sẽ kiểm tra đánh giá, mức chăm sóc, ghi quyết định và tạo Hồ sơ cư dân.',
+      )
+    ) {
+      return;
+    }
 
     try {
       setBusy(true);
       setMessage('');
-      const res = await finalizeAdmission(actor, caseId);
+
+      let overview =
+        await getAssessmentOverview(
+          actor,
+          caseId,
+        );
+
+      if (!overview?.assessment) {
+        throw new Error(
+          'Chưa có Phiếu đánh giá ban đầu hợp lệ.',
+        );
+      }
+
+      let currentClassification =
+        overview?.classification ?? null;
+
+      if (!currentClassification) {
+        currentClassification =
+          await generateClassification(
+            actor,
+            caseId,
+          );
+      }
+
+      const classificationId =
+        currentClassification
+          ?.admission_care_classification_id
+        ||
+        currentClassification
+          ?.classificationId;
+
+      const suggestedCareLevel =
+        currentClassification
+          ?.suggested_care_level
+        ||
+        currentClassification
+          ?.suggestedCareLevel;
+
+      const alreadyApprovedLevel =
+        currentClassification
+          ?.approved_care_level
+        ||
+        currentClassification
+          ?.approvedCareLevel;
+
+      if (!classificationId) {
+        throw new Error(
+          'Không xác định được kết quả phân loại chăm sóc.',
+        );
+      }
+
+      if (
+        !alreadyApprovedLevel &&
+        !suggestedCareLevel
+      ) {
+        throw new Error(
+          'Phiếu đánh giá chưa đủ dữ liệu để xác định mức chăm sóc. Vui lòng bổ sung Phiếu đánh giá trước khi phê duyệt.',
+        );
+      }
+
+      if (!alreadyApprovedLevel) {
+        await approveClassification(
+          actor,
+          caseId,
+          classificationId,
+          {
+            approvedCareLevel:
+              suggestedCareLevel,
+          },
+        );
+      }
+
+      overview =
+        await getAssessmentOverview(
+          actor,
+          caseId,
+        );
+
+      const existingDecision =
+        overview?.decision?.decision;
+
+      if (existingDecision !== 'APPROVED') {
+        await createAdmissionDecision(
+          actor,
+          caseId,
+          {
+            decision: 'APPROVED',
+            reason:
+              'Giám đốc/Ban giám đốc phê duyệt tiếp nhận chính thức trên TamAnCare.',
+          },
+        );
+      }
+
+      const res =
+        await finalizeAdmission(
+          actor,
+          caseId,
+        );
+
       await refreshList();
-      setMessage(`Đã hoàn tất tiếp nhận thành công! Mã người cao tuổi chính thức: ${res.residentCode} (${res.displayName}). Đã khởi tạo Bảng kê thu phí chuẩn theo đúng Nguyên tắc tính toán nhất quán Viện Tâm An.`);
+
+      setMessage(
+        `✅ Đã phê duyệt và tiếp nhận chính thức ${res.displayName}. Mã cư dân: ${res.residentCode}. Hồ sơ đã được chuyển sang phân hệ Hồ sơ cư dân.`,
+      );
+
     } catch (err: any) {
-      setMessage(err.message || 'Lỗi khi hoàn tất tiếp nhận.');
+      setMessage(
+        err.message ||
+        'Không thể phê duyệt tiếp nhận chính thức.',
+      );
     } finally {
       setBusy(false);
     }
   };
 
-  const isSupervisor = actor?.actorRole === 'CARE_MANAGER' || actor?.actorRole === 'SUPERVISOR';
+  const isSupervisor =
+    actor?.actorRole === 'CARE_MANAGER' ||
+    actor?.actorRole === 'SUPERVISOR';
+
+  const isAdmissionApprover =
+    Boolean(
+      actor?.actorId?.startsWith(
+        'TA-DIR-',
+      ),
+    )
+    &&
+    actor?.actorRole === 'SUPERVISOR';
   const isPsychologyOrSocialWorker = actor?.actorRole === 'PSYCHOLOGIST' || actor?.actorRole === 'SOCIAL_WORKER';
 
   const kpis = useMemo(() => {
@@ -1292,14 +1412,22 @@ export function AdmissionPage() {
                     </td>
                     <td className="text-right">
                       <div className="btn-group" style={{ display: 'flex', gap: '0.35rem', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-                        {!isPsychologyOrSocialWorker && item.status !== 'ADMITTED' && item.status !== 'COMPLETED' && (
+                        {!isPsychologyOrSocialWorker && (
                           <button
                             onClick={() => void handleEditDraft(item)}
                             className="btn btn-sm btn-warning"
                             style={{ fontWeight: 600 }}
-                            title="Sửa đổi/chỉnh sửa lại thông tin trong phiếu đánh giá ban đầu"
+                            title={
+                              item.status === 'ADMITTED' ||
+                              item.status === 'COMPLETED'
+                                ? 'Bổ sung Phiếu đánh giá sau tiếp nhận; không ghi đè bản đã phê duyệt'
+                                : 'Sửa/bổ sung Phiếu đánh giá ban đầu'
+                            }
                           >
-                            ✏️ Sửa phiếu
+                            {item.status === 'ADMITTED' ||
+                            item.status === 'COMPLETED'
+                              ? '➕ Bổ sung phiếu'
+                              : '✏️ Sửa phiếu'}
                           </button>
                         )}
 
@@ -1321,13 +1449,20 @@ export function AdmissionPage() {
                           📄 Xem & In Phiếu
                         </button>
 
-                        {!isPsychologyOrSocialWorker && item.status !== 'ADMITTED' && isSupervisor && (
+                        {!isPsychologyOrSocialWorker &&
+                          item.status !== 'ADMITTED' &&
+                          item.status !== 'COMPLETED' &&
+                          isAdmissionApprover && (
                           <button
-                            onClick={() => void handleFinalize(item.admissionCaseId)}
+                            onClick={() =>
+                              void handleFinalize(
+                                item.admissionCaseId,
+                              )
+                            }
                             className="btn btn-sm btn-success"
-                            title="Xác nhận người cao tuổi đã tiếp nhận vào Tâm An chính thức"
+                            title="Giám đốc/Ban giám đốc phê duyệt tiếp nhận chính thức"
                           >
-                            Vào Tâm An
+                            ✅ Phê duyệt tiếp nhận chính thức
                           </button>
                         )}
                       </div>
@@ -1351,7 +1486,10 @@ export function AdmissionPage() {
                 <h2 className="modal-title">Phiếu Đánh Giá Sức Khỏe Ban Đầu Cho Người Cao Tuổi</h2>
                 {editingCase && (
                   <span className="badge badge-warning">
-                    Đang chỉnh sửa bản nháp: {editingCase.admissionCode}
+                    {editingCase.status === 'ADMITTED' ||
+                    editingCase.status === 'COMPLETED'
+                      ? `Bổ sung sau tiếp nhận: ${editingCase.admissionCode}`
+                      : `Đang bổ sung hồ sơ: ${editingCase.admissionCode}`}
                   </span>
                 )}
               </div>
@@ -1716,6 +1854,7 @@ export function AdmissionPage() {
                         { key: 'bathing', label: 'Tắm rửa / Vệ sinh cá nhân' },
                         { key: 'dressing', label: 'Mặc quần áo' },
                         { key: 'toileting', label: 'Đi vệ sinh (Tiểu / Đại tiện)' },
+                        { key: 'transfer', label: 'Chuyển tư thế / Di chuyển giường-ghế' },
                         { key: 'mobility', label: 'Di chuyển (Đi lại, thay đổi tư thế)' },
                       ].map(item => (
                         <tr key={item.key}>
@@ -2591,7 +2730,7 @@ export function AdmissionPage() {
                   <div className="initial-meta-info" style={{ textAlign: 'right', fontSize: '0.78rem' }}>
                     <div>Mẫu số: <b style={{ color: '#0f172a' }}>02/PĐG-TA</b></div>
                     <div><b>Ngày tiếp nhận:</b> {viewingAssessment.data.intakeDate}</div>
-                    <div><b>Người đánh giá:</b> {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thúy'}</div>
+                    <div><b>Người đánh giá:</b> {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thuý'}</div>
                   </div>
                 </div>
                 <h1 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#1e293b', margin: '0.3rem 0' }}>
@@ -2836,15 +2975,15 @@ export function AdmissionPage() {
                   <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Người lập phiếu đánh giá</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ký và ghi rõ họ tên)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
-                    {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thúy'}
+                    {viewingAssessment.data.assessorName || 'Nguyễn Thị Phương Thuý'}
                   </div>
                 </div>
 
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Viện Tâm An Care</div>
+                  <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Đại diện Tâm An</div>
                   <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: '3.8rem' }}>(Ban Giám đốc / Kế toán)</div>
                   <div style={{ fontWeight: 700, borderTop: '1px dashed #cbd5e1', paddingTop: '0.25rem', width: '80%', margin: '0 auto', fontSize: '0.8rem' }}>
-                    Hoàng Quốc Anh
+                    Nguyễn Thị Ngọc Hoa
                   </div>
                 </div>
               </div>
@@ -3096,14 +3235,14 @@ export function AdmissionPage() {
                       .map(item => {
                         const handover: AdmissionHandoverRecord = {
                           handoverDate: item.requestedAdmissionDate ? item.requestedAdmissionDate.slice(0, 10) : new Date().toISOString().slice(0, 10),
-                          guardianDelivererName: 'Gia đình người cao tuổi',
-                          guardianPhone: '0901234567',
-                          nurseReceiverName: 'Trần Thị Mai',
-                          caregiverReceiverName: 'Lê Văn Nam',
-                          supervisorApprovalName: 'Hoàng Quốc Anh',
+                          guardianDelivererName: '',
+                          guardianPhone: '',
+                          nurseReceiverName: '',
+                          caregiverReceiverName: '',
+                          supervisorApprovalName: '',
                           medications: DEFAULT_HANDOVER_MEDICATIONS,
                           belongings: DEFAULT_HANDOVER_BELONGINGS,
-                          generalNotes: 'Thân nhân và người cao tuổi đã bàn giao đầy đủ thuốc và đồ dùng cá nhân. Trung Tâm Dưỡng Lão Tâm An đã kiểm đếm và lưu giữ theo đúng quy trình.',
+                          generalNotes: '',
                         };
 
                         return (

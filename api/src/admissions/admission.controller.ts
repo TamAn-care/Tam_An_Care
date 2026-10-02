@@ -69,6 +69,7 @@ export class AdmissionController {
       'NURSE',
       'CARE_MANAGER',
       'SUPERVISOR',
+        'ADMIN',
     ];
 
     if (

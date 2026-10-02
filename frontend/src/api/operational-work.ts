@@ -394,7 +394,7 @@ export const MOCK_INITIAL_WORK_EVENTS: WorkEvent[] = [
     occurred_at: new Date(Date.now() - 3600000 * 4).toISOString(),
     started_at: new Date(Date.now() - 3600000 * 4).toISOString(),
     completed_at: new Date(Date.now() - 3600000 * 3.9).toISOString(),
-    performed_by: 'Nguyễn Thị Phương Thúy',
+    performed_by: 'Nguyễn Thị Phương Thuý',
     performed_by_role: 'NURSE',
     quantity: 1,
     unit: 'lần',

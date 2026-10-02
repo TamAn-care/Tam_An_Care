@@ -1,6 +1,7 @@
 import { HumanActorSession } from '../types/actor';
 import { recordSystemAuditLog } from './audit-log';
 import { ROLE_LABELS } from '../auth/role-policy';
+import { apiRequest } from './client';
 
 export interface PsychologicalAssessment {
   id: string;
@@ -53,106 +54,206 @@ export const SOCIAL_COMMUNICATION_META: Record<string, { label: string }> = {
   ISOLATED: { label: 'Cô lập hoàn toàn, không muốn tiếp xúc' },
 };
 
-let mockPsychologicalAssessments: PsychologicalAssessment[] = [
-  {
-    id: 'PSY-202609-001',
-    residentId: 'res-demo-001',
-    residentName: 'Nguyễn Văn An',
-    roomNumber: 'Phòng 101',
-    assessmentDate: '2026-09-05',
-    period: 'MONTHLY',
-    periodLabel: 'Đánh giá định kỳ Tháng 09/2026',
-    evaluatorId: 'STAFF-PSY-001',
-    evaluatorName: 'ThS. Nguyễn Thu Trang',
-    evaluatorRole: 'PSYCHOLOGIST',
-    evaluatorRoleLabel: 'Nhân viên Tâm lý',
-    emotionalState: 'CHEERFUL',
-    emotionalStateLabel: 'Vui vẻ, tinh thần phấn chấn',
-    emotionalNotes: 'Cụ An tâm lý rất vui tươi sau khi con cháu đến thăm tuần trước. Thường xuyên cười nói với điều dưỡng.',
-    socialCommunication: 'ACTIVE',
-    socialCommunicationLabel: 'Tích cực giao tiếp, hăng hái tham gia hoạt động chung',
-    socialNotes: 'Tích cực tham gia câu lạc bộ cờ tướng và trị liệu âm nhạc chiều thứ 4.',
-    cognitiveMemory: 'ALERT',
-    cognitiveMemoryLabel: 'Tỉnh táo, trí nhớ ổn định theo tuổi',
-    sleepQuality: 'GOOD',
-    sleepQualityLabel: 'Giấc ngủ ngon, ngủ đủ 7-8 tiếng/đêm',
-    overallConclusion: 'Tinh thần và tâm lý cụ An đạt mức rất tốt. Cụ có sự kết nối xã hội cao và động lực sống tích cực.',
-    careRecommendations: 'Gia đình tiếp tục duy trì lịch thăm định kỳ cuối tuần. Khuyến khích cụ duy trì đánh cờ và vẽ tranh.',
-    sharedWithFamilyAt: '2026-09-05T16:00:00+07:00',
-  },
-  {
-    id: 'PSY-202609-002',
-    residentId: 'res-demo-002',
-    residentName: 'Trần Thị Bình',
-    roomNumber: 'Phòng 102',
-    assessmentDate: '2026-09-08',
-    period: 'MONTHLY',
-    periodLabel: 'Đánh giá định kỳ Tháng 09/2026',
-    evaluatorId: 'STAFF-SW-002',
-    evaluatorName: 'Phạm Thị Hải Yến',
-    evaluatorRole: 'SOCIAL_WORKER',
-    evaluatorRoleLabel: 'Nhân viên Công tác xã hội',
-    emotionalState: 'ANXIOUS',
-    emotionalStateLabel: 'Có dấu hiệu lo âu, bồn chồn',
-    emotionalNotes: 'Cụ Bình nhớ nhà vào buổi chiều tối (hội chứng hoàng hôn nhẹ). Hay hỏi nhân viên về con gái.',
-    socialCommunication: 'WITHDRAWN',
-    socialCommunicationLabel: 'Thu mình, ít trò chuyện, thích ở phòng riêng',
-    socialNotes: 'Ngồi xem tivi một mình, chưa chủ động bắt chuyện với bạn cùng phòng.',
-    cognitiveMemory: 'MILD_FORGETFUL',
-    cognitiveMemoryLabel: 'Giảm nhớ ngắn hạn nhẹ',
-    sleepQuality: 'INTERRUPTED',
-    sleepQualityLabel: 'Giấc ngủ chập chờn, hay thức giấc lúc 2-3h sáng',
-    overallConclusion: 'Cụ Bình đang trong giai đoạn thích ứng tâm lý. Cần hỗ trợ công tác xã hội và liệu pháp trò chuyện ấm áp.',
-    careRecommendations: 'Nhân viên CTXH sẽ thực hiện liệu pháp trò chuyện cá nhân 15 phút/ngày. Đề xuất người thân tăng cường gọi video call buổi tối.',
-    sharedWithFamilyAt: '2026-09-08T17:30:00+07:00',
-  },
-];
+type PsychologicalAssessmentRow = {
+  psychological_assessment_id: string;
+  resident_id: string;
+  resident_name?: string;
+  room_number?: string;
+  assessment_date: string;
+  period: PsychologicalAssessment['period'];
+  period_label: string;
+  emotional_state: PsychologicalAssessment['emotionalState'];
+  emotional_notes?: string | null;
+  social_communication: PsychologicalAssessment['socialCommunication'];
+  social_notes?: string | null;
+  cognitive_memory: PsychologicalAssessment['cognitiveMemory'];
+  sleep_quality: PsychologicalAssessment['sleepQuality'];
+  overall_conclusion: string;
+  care_recommendations: string;
+  evaluator_id: string;
+  evaluator_name: string;
+  evaluator_role: PsychologicalAssessment['evaluatorRole'];
+  evaluator_role_label: string;
+  shared_with_family_at?: string | null;
+};
 
-export async function fetchPsychologicalAssessments(residentId?: string): Promise<PsychologicalAssessment[]> {
-  await new Promise((r) => setTimeout(r, 100));
-  if (residentId) {
-    return mockPsychologicalAssessments.filter((p) => p.residentId === residentId);
+const COGNITIVE_MEMORY_META: Record<string, string> = {
+  ALERT: 'Tỉnh táo, trí nhớ ổn định theo tuổi',
+  MILD_FORGETFUL: 'Giảm nhớ ngắn hạn nhẹ',
+  MODERATE_IMPAIRMENT: 'Suy giảm nhận thức mức độ vừa',
+  DISORIENTED: 'Mất định hướng',
+};
+
+const SLEEP_QUALITY_META: Record<string, string> = {
+  GOOD: 'Giấc ngủ tốt',
+  INTERRUPTED: 'Giấc ngủ chập chờn, hay thức giấc',
+  INSOMNIA: 'Mất ngủ',
+  NIGHT_WANDERING: 'Đi lại ban đêm',
+};
+
+function mapPsychologicalAssessment(
+  row: PsychologicalAssessmentRow,
+): PsychologicalAssessment {
+  return {
+    id: row.psychological_assessment_id,
+    residentId: row.resident_id,
+    residentName: row.resident_name || row.resident_id,
+    roomNumber: row.room_number || '',
+    assessmentDate: String(row.assessment_date).slice(0, 10),
+    period: row.period,
+    periodLabel: row.period_label,
+    evaluatorId: row.evaluator_id,
+    evaluatorName: row.evaluator_name,
+    evaluatorRole: row.evaluator_role,
+    evaluatorRoleLabel: row.evaluator_role_label,
+    emotionalState: row.emotional_state,
+    emotionalStateLabel:
+      EMOTIONAL_STATE_META[row.emotional_state]?.label ||
+      row.emotional_state,
+    emotionalNotes: row.emotional_notes || undefined,
+    socialCommunication: row.social_communication,
+    socialCommunicationLabel:
+      SOCIAL_COMMUNICATION_META[row.social_communication]?.label ||
+      row.social_communication,
+    socialNotes: row.social_notes || undefined,
+    cognitiveMemory: row.cognitive_memory,
+    cognitiveMemoryLabel:
+      COGNITIVE_MEMORY_META[row.cognitive_memory] ||
+      row.cognitive_memory,
+    sleepQuality: row.sleep_quality,
+    sleepQualityLabel:
+      SLEEP_QUALITY_META[row.sleep_quality] ||
+      row.sleep_quality,
+    overallConclusion: row.overall_conclusion,
+    careRecommendations: row.care_recommendations,
+    sharedWithFamilyAt:
+      row.shared_with_family_at || undefined,
+  };
+}
+
+export async function fetchPsychologicalAssessments(
+  residentId?: string,
+  actor?: HumanActorSession,
+): Promise<PsychologicalAssessment[]> {
+  const path = residentId
+    ? `/behavioral-cognitive/${encodeURIComponent(
+        residentId,
+      )}/psychological-assessments`
+    : '/behavioral-cognitive/psychological-assessments';
+
+  const rows =
+    await apiRequest<PsychologicalAssessmentRow[]>(
+      path,
+      actor
+        ? {
+            actor,
+          }
+        : undefined,
+    );
+
+  return rows.map(mapPsychologicalAssessment);
+}
+
+export async function fetchGuardianResidentIds(
+  actor: HumanActorSession,
+): Promise<string[]> {
+  if (
+    !actor?.actorId ||
+    actor.actorRole !== 'GUARDIAN'
+  ) {
+    return [];
   }
-  return [...mockPsychologicalAssessments];
+
+  const result =
+    await apiRequest<{
+      residentIds: string[];
+    }>(
+      '/behavioral-cognitive/guardian-resident-ids',
+      {
+        actor,
+      },
+    );
+
+  return Array.isArray(result?.residentIds)
+    ? result.residentIds
+    : [];
 }
 
 export async function createPsychologicalAssessment(
   actor: HumanActorSession,
-  input: Omit<PsychologicalAssessment, 'id' | 'evaluatorId' | 'evaluatorName' | 'evaluatorRole' | 'evaluatorRoleLabel' | 'sharedWithFamilyAt'>
+  input: Omit<
+    PsychologicalAssessment,
+    | 'id'
+    | 'evaluatorId'
+    | 'evaluatorName'
+    | 'evaluatorRole'
+    | 'evaluatorRoleLabel'
+    | 'sharedWithFamilyAt'
+  >,
 ): Promise<PsychologicalAssessment> {
-  await new Promise((r) => setTimeout(r, 150));
+  if (!actor?.actorId || !actor?.actorRole) {
+    throw new Error(
+      'Không xác định được người thực hiện đánh giá tâm lý.',
+    );
+  }
 
-  const roleLabel = actor.actorRole === 'PSYCHOLOGIST'
-    ? 'Nhân viên Tâm lý'
-    : actor.actorRole === 'SOCIAL_WORKER'
-    ? 'Nhân viên Công tác xã hội'
-    : (actor.actorRole || 'Chuyên viên');
+  const roleLabel =
+    actor.actorRole === 'PSYCHOLOGIST'
+      ? 'Nhân viên Tâm lý'
+      : actor.actorRole === 'SOCIAL_WORKER'
+      ? 'Nhân viên Công tác xã hội'
+      : ROLE_LABELS[actor.actorRole] ||
+        actor.actorRole ||
+        'Chuyên viên';
 
-  const newForm: PsychologicalAssessment = {
-    ...input,
-    id: `PSY-${Date.now().toString().slice(-6)}`,
-    evaluatorId: actor.actorId || 'STAFF-PSY-001',
-    evaluatorName: actor.displayName || 'Chuyên viên Tâm lý',
-    evaluatorRole: (actor.actorRole as any) || 'PSYCHOLOGIST',
-    evaluatorRoleLabel: roleLabel,
-    sharedWithFamilyAt: new Date().toISOString(),
-  };
+  const row =
+    await apiRequest<PsychologicalAssessmentRow>(
+      `/behavioral-cognitive/${encodeURIComponent(
+        input.residentId,
+      )}/psychological-assessments`,
+      {
+        method: 'POST',
+        actor,
+        body: JSON.stringify({
+          ...input,
+          actorId: actor.actorId,
+          actorRole: actor.actorRole,
+          actorName: actor.displayName,
+          evaluatorName: actor.displayName,
+          evaluatorRoleLabel: roleLabel,
+        }),
+      },
+    );
 
-  mockPsychologicalAssessments = [newForm, ...mockPsychologicalAssessments];
+  const newForm = mapPsychologicalAssessment({
+    ...row,
+    resident_name:
+      row.resident_name || input.residentName,
+    room_number:
+      row.room_number || input.roomNumber,
+  });
 
   await recordSystemAuditLog({
-    actorId: actor.actorId || 'STAFF-PSY-001',
-    actorName: actor.displayName || 'Chuyên viên Tâm lý',
-    actorRole: actor.actorRole || 'PSYCHOLOGIST',
-    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole || 'Chuyên viên',
+    actorId: actor.actorId,
+    actorName:
+      actor.displayName || 'Chuyên viên Tâm lý',
+    actorRole: actor.actorRole,
+    actorRoleLabel:
+      ROLE_LABELS[actor.actorRole] ||
+      actor.actorRole ||
+      'Chuyên viên',
     actionType: 'CREATE',
-    actionLabel: 'Lập Phiếu Đánh Giá Tâm Lý Định Kỳ',
+    actionLabel:
+      'Lập Phiếu Đánh Giá Tâm Lý Định Kỳ',
     module: 'CARE_OPERATIONS',
     moduleLabel: 'Đánh Giá Tâm Lý & CTXH',
     targetEntityId: newForm.id,
-    targetEntityName: `Phiếu tâm lý cụ ${newForm.residentName} (${newForm.periodLabel})`,
-    summary: `${roleLabel} ${actor.displayName || ''} đã đánh giá tâm lý cho cụ ${newForm.residentName}. Kết luận: ${newForm.overallConclusion}`,
-    details: `Trạng thái: ${newForm.emotionalStateLabel} | Giao tiếp: ${newForm.socialCommunicationLabel} | Đã phát hành lên Cổng thân nhân.`,
+    targetEntityName:
+      `Phiếu tâm lý cụ ${newForm.residentName} (${newForm.periodLabel})`,
+    summary:
+      `${roleLabel} ${actor.displayName || ''} đã đánh giá tâm lý cho cụ ${newForm.residentName}. Kết luận: ${newForm.overallConclusion}`,
+    details:
+      `Trạng thái: ${newForm.emotionalStateLabel} | Giao tiếp: ${newForm.socialCommunicationLabel} | Đã lưu vào hồ sơ chuyên môn.`,
     severity: 'IMPORTANT',
   });
 

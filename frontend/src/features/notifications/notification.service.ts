@@ -1,3 +1,7 @@
+import {
+  readStoredAccessToken,
+} from '../../auth/session';
+
 export interface StaffNotification {
   notification_id: string;
   staff_actor_id: string;
@@ -10,6 +14,30 @@ export interface StaffNotification {
   is_acknowledged: boolean;
   acknowledged_at?: string;
   created_at: string;
+}
+
+
+async function authenticatedNotificationFetch(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+): Promise<Response> {
+  const headers = new Headers(init.headers);
+  const token = readStoredAccessToken();
+
+  if (
+    token &&
+    !headers.has('Authorization')
+  ) {
+    headers.set(
+      'Authorization',
+      `Bearer ${token}`,
+    );
+  }
+
+  return window.fetch(input, {
+    ...init,
+    headers,
+  });
 }
 
 class NotificationService {
@@ -103,7 +131,7 @@ class NotificationService {
         });
       }
 
-      await fetch('/api/notifications/subscribe', {
+      await authenticatedNotificationFetch('/api/notifications/subscribe', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -124,7 +152,7 @@ class NotificationService {
    */
   public async getMyNotifications(actorId: string): Promise<{ notifications: StaffNotification[]; unreadCount: number }> {
     try {
-      const res = await fetch('/api/notifications/my-notifications', {
+      const res = await authenticatedNotificationFetch('/api/notifications/my-notifications', {
         headers: {
           'x-actor-id': actorId,
         },
@@ -140,7 +168,7 @@ class NotificationService {
    * Đánh dấu đã đọc
    */
   public async markAsRead(notificationId: string, actorId: string) {
-    await fetch(`/api/notifications/${notificationId}/read`, {
+    await authenticatedNotificationFetch(`/api/notifications/${notificationId}/read`, {
       method: 'PATCH',
       headers: {
         'x-actor-id': actorId,
@@ -152,7 +180,7 @@ class NotificationService {
    * Nhân viên xác nhận ca trực
    */
   public async acknowledgeShift(notificationId: string, actorId: string) {
-    const res = await fetch(`/api/notifications/${notificationId}/acknowledge`, {
+    const res = await authenticatedNotificationFetch(`/api/notifications/${notificationId}/acknowledge`, {
       method: 'PATCH',
       headers: {
         'x-actor-id': actorId,
@@ -166,7 +194,7 @@ class NotificationService {
    */
   public async sendTestNotification(actorId: string) {
     this.playNotificationChime('ALERT_CHIME');
-    const res = await fetch('/api/notifications/test-sound', {
+    const res = await authenticatedNotificationFetch('/api/notifications/test-sound', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

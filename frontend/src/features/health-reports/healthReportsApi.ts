@@ -43,6 +43,9 @@ export interface CreateHealthReportInput {
   periodStart: string;
   periodEnd: string;
   summary?: string;
+
+  // Retained temporarily for source compatibility.
+  // Backend state transitions are authoritative.
   initialStatus?: HealthReportStatus;
 }
 
@@ -52,135 +55,61 @@ export interface DeliveryInput {
   notes?: string;
 }
 
-let mockHealthReports: HealthReportRow[] = [
-  {
-    health_report_id: 'hr-demo-001',
-    resident_id: 'res-demo-001',
-    report_type: 'MONTHLY',
-    period_start: '2026-08-01T00:00:00.000Z',
-    period_end: '2026-08-31T23:59:59.999Z',
-    status: 'APPROVED',
-    report_version: 1,
-    summary: JSON.stringify({
-      residentName: 'Nguyễn Văn An',
-      residentCode: 'RES-2026-001',
-      dateOfBirth: '1944-05-15',
-      gender: 'Nam',
-      room: '101',
-      assessorName: 'ĐD. Lê Thị Mai',
-      assessmentDate: '2026-08-31',
-      pulse: '70 – 85',
-      pulseEvaluation: 'NORMAL',
-      bloodPressure: '118/75 – 134/88',
-      bpEvaluation: 'NORMAL',
-      temperature: '36.2 – 36.8',
-      tempEvaluation: 'NORMAL',
-      spo2: '95 – 99',
-      spo2Evaluation: 'NORMAL',
-      glucoseRecords: [
-        { id: '1', date: '25/08/2026', value: '6.8 mmol/L' }
-      ],
-      weightRecords: [
-        { id: '1', date: '25/08/2026', value: '52.0 kg' }
-      ],
-      conditions: {
-        hypertension: true,
-        diabetes: true,
-        cardiovascular: false,
-        strokeOrHemiplegia: false,
-        dementiaAlzheimer: false,
-        osteoarthritis: true,
-        respiratory: false,
-        kidneyDisease: false,
-      },
-      allergy: { none: true },
-      adl: {
-        eating: 'INDEPENDENT',
-        bathing: 'PARTIAL_ASSIST',
-        dressing: 'INDEPENDENT',
-        toileting: 'INDEPENDENT',
-        mobility: 'INDEPENDENT',
-        excretion: 'AUTONOMOUS',
-        mobilitySupport: 'NONE',
-      },
-      mental: {
-        alertAndResponsive: true,
-        memoryCognition: 'NORMAL',
-        emotionalState: 'HAPPY_SOCIABLE',
-        sleepQuality: 'GOOD',
-      },
-      nutrition: {
-        dietType: 'NORMAL_RICE',
-        swallowingAbility: 'NORMAL',
-        dentalStatus: 'NATURAL_GOOD',
-      },
-      skinRisk: {
-        hasUlcer: false,
-      },
-      careLevelProposal: 'LEVEL_2',
-      specificEvaluation: 'Tình trạng sức khỏe Cụ Nguyễn Văn An tháng 08/2026 ổn định tốt. Huyết áp (Khoảng Min - Max): 118/75 – 134/88 mmHg, Nhịp tim/Mạch (Khoảng Min - Max): 70 – 85 lần/phút, Thân nhiệt (Min - Max): 36.2 – 36.8°C, SpO2 (Min - Max): 95 – 99%, Đường huyết mao mạch (Min - Max): 6.2 – 8.5 mmol/L.',
-      additionalNotesAndCareInstructions: 'Tiếp tục duy trì chế độ ăn cơm thường giảm tinh bột, theo dõi huyết áp cữ sáng.',
-      medicalHeadApproval: {
-        approvedBy: 'BS. Lê Hoàng Nam',
-        approvedRole: 'Phụ trách y tế',
-        approvedAt: '31/08/2026 10:30',
-      },
-    }),
-    created_at: '2026-08-31T09:00:00Z',
-    updated_at: '2026-08-31T09:00:00Z',
-  },
-];
+async function getHealthReport(
+  actor: HumanActorSession,
+  id: string,
+): Promise<HealthReportRow> {
+  return apiRequest<HealthReportRow>(
+    `/health-reports/${encodeURIComponent(id)}`,
+    { actor },
+  );
+}
 
 export async function listHealthReports(
   actor: HumanActorSession,
+  residentId?: string,
 ): Promise<HealthReportRow[]> {
-  try {
-    const result = await apiRequest<HealthReportRow[] | { reports: HealthReportRow[] }>('/health-reports', { actor });
-    const list = Array.isArray(result) ? result : result.reports ?? [];
-    if (list.length > 0) return list;
-    return [...mockHealthReports];
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline/Fallback mode active for listHealthReports:', error);
-    return [...mockHealthReports];
-  }
+  const query =
+    residentId
+      ? `?residentId=${encodeURIComponent(
+          residentId,
+        )}`
+      : '';
+
+  const result =
+    await apiRequest<
+      HealthReportRow[] | {
+        reports: HealthReportRow[];
+      }
+    >(
+      `/health-reports${query}`,
+      { actor },
+    );
+
+  return Array.isArray(result)
+    ? result
+    : result.reports ?? [];
 }
 
 export async function createHealthReport(
   actor: HumanActorSession,
   input: CreateHealthReportInput,
 ): Promise<HealthReportRow> {
-  const initialStatus: HealthReportStatus =
-    input.initialStatus || (actor.actorRole === 'MEDICAL_HEAD' ? 'APPROVED' : 'DRAFT');
+  const {
+    initialStatus: _ignoredInitialStatus,
+    ...serverInput
+  } = input;
 
-  const newReport: HealthReportRow = {
-    health_report_id: `hr-${Date.now()}`,
-    resident_id: input.residentId,
-    report_type: input.reportType,
-    period_start: input.periodStart,
-    period_end: input.periodEnd,
-    status: initialStatus,
-    report_version: 1,
-    summary: input.summary || null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
+  void _ignoredInitialStatus;
 
-  try {
-    const res = await apiRequest<HealthReportRow>('/health-reports', {
+  return apiRequest<HealthReportRow>(
+    '/health-reports',
+    {
       actor,
       method: 'POST',
-      body: JSON.stringify({ ...input, initialStatus }),
-    });
-    if (res && res.health_report_id) {
-      mockHealthReports = [res, ...mockHealthReports];
-      return res;
-    }
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline/Fallback mode active for createHealthReport:', error);
-  }
-
-  mockHealthReports = [newReport, ...mockHealthReports];
-  return newReport;
+      body: JSON.stringify(serverInput),
+    },
+  );
 }
 
 export async function updateHealthReport(
@@ -189,27 +118,75 @@ export async function updateHealthReport(
   summaryData: string,
   status?: HealthReportStatus,
 ): Promise<HealthReportRow> {
-  const idx = mockHealthReports.findIndex((item) => item.health_report_id === id);
-  if (idx !== -1) {
-    mockHealthReports[idx] = {
-      ...mockHealthReports[idx],
-      summary: summaryData,
-      status: status || mockHealthReports[idx].status,
-      updated_at: new Date().toISOString(),
-    };
-  }
+  // State transitions are intentionally NOT controlled by PUT.
+  // Kept only for call-site compatibility during B1 migration.
+  void status;
 
-  try {
-    await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}`, {
+  return apiRequest<HealthReportRow>(
+    `/health-reports/${encodeURIComponent(id)}`,
+    {
       actor,
       method: 'PUT',
-      body: JSON.stringify({ summary: summaryData, status }),
-    });
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline mode active for updateHealthReport:', error);
+      body: JSON.stringify({
+        summary: summaryData,
+      }),
+    },
+  );
+}
+
+export async function generateHealthReport(
+  actor: HumanActorSession,
+  id: string,
+): Promise<Record<string, unknown>> {
+  return apiRequest<Record<string, unknown>>(
+    `/health-reports/${encodeURIComponent(id)}/generate`,
+    {
+      actor,
+      method: 'POST',
+    },
+  );
+}
+
+export async function startHealthReportReview(
+  actor: HumanActorSession,
+  id: string,
+): Promise<HealthReportRow> {
+  let report =
+    await getHealthReport(actor, id);
+
+  if (
+    report.status === 'DRAFT' ||
+    report.status === 'REVISION_REQUIRED'
+  ) {
+    await generateHealthReport(
+      actor,
+      id,
+    );
+
+    report =
+      await getHealthReport(
+        actor,
+        id,
+      );
   }
 
-  return mockHealthReports[idx] || { health_report_id: id, status: status || 'DRAFT', summary: summaryData } as any;
+  if (report.status === 'GENERATED') {
+    return apiRequest<HealthReportRow>(
+      `/health-reports/${encodeURIComponent(id)}/start-review`,
+      {
+        actor,
+        method: 'POST',
+      },
+    );
+  }
+
+  if (report.status === 'UNDER_REVIEW') {
+    return report;
+  }
+
+  throw new Error(
+    `Không thể trình duyệt báo cáo ở trạng thái ${report.status}.`,
+  );
 }
 
 export async function submitHealthReportForReview(
@@ -217,27 +194,18 @@ export async function submitHealthReportForReview(
   id: string,
   summaryData?: string,
 ): Promise<HealthReportRow> {
-  const idx = mockHealthReports.findIndex((item) => item.health_report_id === id);
-  if (idx !== -1) {
-    mockHealthReports[idx] = {
-      ...mockHealthReports[idx],
-      summary: summaryData || mockHealthReports[idx].summary,
-      status: 'UNDER_REVIEW',
-      updated_at: new Date().toISOString(),
-    };
-  }
-
-  try {
-    await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/start-review`, {
+  if (summaryData !== undefined) {
+    await updateHealthReport(
       actor,
-      method: 'POST',
-      body: summaryData ? JSON.stringify({ summary: summaryData }) : undefined,
-    });
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline mode active for submitHealthReportForReview:', error);
+      id,
+      summaryData,
+    );
   }
 
-  return mockHealthReports[idx] || { health_report_id: id, status: 'UNDER_REVIEW' } as any;
+  return startHealthReportReview(
+    actor,
+    id,
+  );
 }
 
 export async function approveHealthReport(
@@ -245,87 +213,79 @@ export async function approveHealthReport(
   id: string,
   updatedSummaryData?: string,
 ): Promise<HealthReportRow> {
-  const idx = mockHealthReports.findIndex((item) => item.health_report_id === id);
-  const nowStr = new Date().toLocaleString('vi-VN');
-
-  if (idx !== -1) {
-    let summaryObj: any = {};
-    try {
-      const targetSummary = updatedSummaryData || mockHealthReports[idx].summary;
-      if (targetSummary && targetSummary.startsWith('{')) {
-        summaryObj = JSON.parse(targetSummary);
-      }
-    } catch {}
-
-    summaryObj.medicalHeadApproval = {
-      approvedBy: actor.displayName || 'BS. Lê Hoàng Nam',
-      approvedRole: 'Phụ trách Y tế',
-      approvedAt: nowStr,
-    };
-
-    mockHealthReports[idx] = {
-      ...mockHealthReports[idx],
-      summary: JSON.stringify(summaryObj),
-      status: 'APPROVED',
-      updated_at: new Date().toISOString(),
-    };
+  if (updatedSummaryData !== undefined) {
+    await updateHealthReport(
+      actor,
+      id,
+      updatedSummaryData,
+    );
   }
 
-  try {
-    await apiRequest<Record<string, unknown>>(
+  let report =
+    await getHealthReport(
+      actor,
+      id,
+    );
+
+  if (
+    report.status === 'DRAFT' ||
+    report.status === 'REVISION_REQUIRED'
+  ) {
+    await generateHealthReport(
+      actor,
+      id,
+    );
+
+    report =
+      await getHealthReport(
+        actor,
+        id,
+      );
+  }
+
+  if (report.status === 'GENERATED') {
+    report =
+      await apiRequest<HealthReportRow>(
+        `/health-reports/${encodeURIComponent(id)}/start-review`,
+        {
+          actor,
+          method: 'POST',
+        },
+      );
+  }
+
+  if (report.status === 'UNDER_REVIEW') {
+    return apiRequest<HealthReportRow>(
       `/health-reports/${encodeURIComponent(id)}/approve`,
       {
         actor,
         method: 'POST',
-        body: updatedSummaryData ? JSON.stringify({ summary: updatedSummaryData }) : undefined,
-      }
+      },
     );
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline mode active for approveHealthReport:', error);
   }
 
-  return mockHealthReports[idx] || { health_report_id: id, status: 'APPROVED' } as any;
-}
-
-export async function generateHealthReport(
-  actor: HumanActorSession,
-  id: string,
-) {
-  try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/generate`, { actor, method: 'POST' });
-  } catch (error) {
-    return { status: 'OK' };
+  if (report.status === 'APPROVED') {
+    return report;
   }
-}
 
-export async function startHealthReportReview(
-  actor: HumanActorSession,
-  id: string,
-) {
-  try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/start-review`, { actor, method: 'POST' });
-  } catch (error) {
-    return { status: 'OK' };
-  }
+  throw new Error(
+    `Không thể phê duyệt báo cáo ở trạng thái ${report.status}.`,
+  );
 }
 
 export async function deliverHealthReport(
   actor: HumanActorSession,
   id: string,
   input: DeliveryInput,
-) {
-  const r = mockHealthReports.find(item => item.health_report_id === id);
-  if (r) r.status = 'DELIVERED';
-
-  try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/deliver`, {
+): Promise<Record<string, unknown>> {
+  return apiRequest<Record<string, unknown>>(
+    `/health-reports/${encodeURIComponent(id)}/deliver`,
+    {
       actor,
       method: 'POST',
       body: JSON.stringify(input),
-    });
-  } catch (error) {
-    return { status: 'OK' };
-  }
+    },
+  );
 }
 
 export async function downloadHealthReportPdf(
@@ -334,9 +294,18 @@ export async function downloadHealthReportPdf(
 ): Promise<Blob> {
   const headers = new Headers();
 
-  headers.set('Accept', 'application/pdf');
-  headers.set('x-actor-id', actor.actorId);
-  headers.set('x-actor-role', actor.actorRole);
+  headers.set(
+    'Accept',
+    'application/pdf',
+  );
+  headers.set(
+    'x-actor-id',
+    actor.actorId,
+  );
+  headers.set(
+    'x-actor-role',
+    actor.actorRole,
+  );
 
   const response = await fetch(
     `${API_BASE_URL}/health-reports/${encodeURIComponent(id)}/pdf`,

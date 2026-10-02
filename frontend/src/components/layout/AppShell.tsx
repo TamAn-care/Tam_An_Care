@@ -6,6 +6,7 @@ import { ROLE_LABELS } from '../../auth/role-policy';
 import { ConnectivityStatus } from '../feedback/ConnectivityStatus';
 import { PAGE_META } from '../../app/page-meta';
 import { changeSelfPassword } from '../../api/staff-actors';
+import { logoutCurrentSession } from '../../api/auth';
 import { NotificationBell } from '../notifications/NotificationBell';
 import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
 import { PWAInstallModal } from '../pwa/PWAInstallModal';
@@ -329,7 +330,11 @@ export function AppShell() {
 
                   <button
                     type="button"
-                    onClick={() => clearActor()}
+                    onClick={() => {
+                      void logoutCurrentSession().finally(() => {
+                        clearActor();
+                      });
+                    }}
                     style={{
                       background: '#fef2f2',
                       border: '1px solid #fca5a5',
@@ -395,7 +400,7 @@ export function AppShell() {
         }}
       >
         <div>
-          <b>Tâm An Care V7.5 Development</b>
+          <b>Tâm An Care — Production Test</b>
         </div>
         <ConnectivityStatus />
       </footer>

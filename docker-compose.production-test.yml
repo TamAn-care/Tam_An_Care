@@ -1,0 +1,63 @@
+services:
+
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: taman
+      POSTGRES_PASSWORD: 54eb3e4a93ed550e02dd3b258939de6c938f92ddf9006807
+      POSTGRES_DB: taman_care
+
+    volumes:
+      - tamancare_production_test_db:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U taman -d taman_care
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+
+  api:
+    build:
+      context: ./api
+
+    restart: unless-stopped
+
+    env_file:
+      - ./api/.env
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://taman:54eb3e4a93ed550e02dd3b258939de6c938f92ddf9006807@postgres:5432/taman_care
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    expose:
+      - "3000"
+
+
+  frontend:
+    build:
+      context: .
+      dockerfile: production-test/Dockerfile.frontend
+      args:
+        VITE_API_BASE_URL: ""
+    restart: unless-stopped
+
+    depends_on:
+      - api
+
+    ports:
+      - "8080:80"
+
+
+volumes:
+  tamancare_production_test_db:

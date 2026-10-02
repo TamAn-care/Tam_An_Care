@@ -20,6 +20,7 @@ import {
 } from '../database/database.service';
 
 export type HealthReportActorRole =
+  | 'ADMIN'
   | 'CAREGIVER'
   | 'NURSE'
   | 'CARE_MANAGER'
@@ -92,6 +93,10 @@ interface CreateInput {
   periodStart: string;
   periodEnd: string;
   summary?: string;
+}
+
+interface UpdateInput {
+  summary: string;
 }
 
 interface DeliveryInput {
@@ -257,8 +262,17 @@ export class HealthReportService {
       );
     }
 
-    // Family guardians are authorized for their resident views
-    if (actor.actorRole === 'GUARDIAN' || actor.actorRole === 'FAMILY') {
+    // Legacy FAMILY role has no canonical FAMILY_PORTAL assignment contract.
+    // Fail closed until it is explicitly migrated to the GUARDIAN model.
+    if (actor.actorRole === 'FAMILY') {
+      throw new ForbiddenException(
+        'Legacy FAMILY role is not authorized for health-report access.',
+      );
+    }
+
+    // GUARDIAN authorization is resident-specific and is enforced
+    // separately for each health-report read/PDF operation.
+    if (actor.actorRole === 'GUARDIAN') {
       return;
     }
 
@@ -303,70 +317,89 @@ export class HealthReportService {
     }
   }
 
+  private async assertGuardianResidentAccess(
+    actor: HealthReportActor,
+    residentIdInput: string,
+  ): Promise<void> {
+    if (actor.actorRole !== 'GUARDIAN') {
+      return;
+    }
+
+    const actorId =
+      String(actor.actorId ?? '').trim();
+
+    const residentId =
+      String(residentIdInput ?? '').trim();
+
+    if (!actorId || !residentId) {
+      throw new ForbiddenException(
+        'Guardian resident access is not authorized.',
+      );
+    }
+
+    const result =
+      await this.db.query<{
+        resident_id: string;
+      }>(
+        `
+          SELECT
+            raa.resident_id
+          FROM resident_access_assignments raa
+          JOIN staff_actors sa
+            ON sa.actor_id = raa.actor_id
+          WHERE
+            raa.resident_id=$1
+            AND raa.actor_id=$2
+            AND raa.actor_role='GUARDIAN'
+            AND raa.access_scope='FAMILY_PORTAL'
+            AND raa.status='ACTIVE'
+            AND raa.effective_from <= NOW()
+            AND (
+              raa.effective_to IS NULL
+              OR raa.effective_to > NOW()
+            )
+            AND sa.status='ACTIVE'
+            AND sa.primary_operational_role='GUARDIAN'
+          LIMIT 1
+        `,
+        [
+          residentId,
+          actorId,
+        ],
+      );
+
+    if (!result.rows[0]) {
+      throw new ForbiddenException(
+        'Guardian is not assigned to this resident.',
+      );
+    }
+  }
+
   private async getReport(
     healthReportId: string,
   ): Promise<HealthReportRow> {
-    try {
-      const result =
-        await this.db.query<HealthReportRow>(
-          `
-            SELECT *
-            FROM health_reports
-            WHERE health_report_id=$1
-            LIMIT 1
-          `,
-          [healthReportId],
-        );
+    const result =
+      await this.db.query<HealthReportRow>(
+        `
+          SELECT *
+          FROM health_reports
+          WHERE health_report_id=$1
+          LIMIT 1
+        `,
+        [healthReportId],
+      );
 
-      if (result.rows[0]) {
-        return result.rows[0];
-      }
-    } catch {
-      // Fallback
+    const report = result.rows[0];
+
+    if (!report) {
+      throw new NotFoundException(
+        `Health report not found: ${healthReportId}`,
+      );
     }
 
-    return {
-      health_report_id: healthReportId,
-      resident_id: 'resident-001',
-      report_type: 'MONTHLY',
-      period_start: new Date('2026-08-02'),
-      period_end: new Date('2026-09-02'),
-      status: 'APPROVED',
-      report_version: 1,
-      summary: JSON.stringify({
-        residentName: 'Ông Nguyễn Văn An',
-        residentCode: 'NCT-001',
-        dateOfBirth: '01/01/1944',
-        gender: 'Nam',
-        specificEvaluation: 'Huyết áp (Khoảng Min - Max): 118/70 – 146/94 mmHg (Cao - cần theo dõi & kiểm soát).\nNhịp tim/Mạch (Khoảng Min - Max): 74 – 94 lần/phút (Ổn định bình thường).\nSpO2 (Khoảng Min - Max): 95 – 98%.\nThân nhiệt (Khoảng Min - Max): 36.2 – 36.8°C.\nĐường huyết mao mạch (Khoảng Min - Max): 6.2 – 8.5 mmol/L.\nSa sút trí tuệ: Cụ nhận diện được người thân, cần nhân viên bao quát khi tập thể dục.',
-        additionalNotesAndCareInstructions: '- Duy trì chế độ chăm sóc, dinh dưỡng giảm tinh bột tăng đạm và cấp phát thuốc hàng ngày theo đơn.\n- Nhân viên chăm sóc thay quần áo hàng ngày và hỗ trợ tắm rửa theo lịch.',
-        assessorName: 'Nguyễn Thị Phương Thúy (Nhân viên y tế)',
-        pulse: '74 – 94',
-        pulseEvaluation: 'NORMAL',
-        bloodPressure: '118/70 – 146/94',
-        bpEvaluation: 'NORMAL',
-        temperature: '36.2 – 36.8',
-        tempEvaluation: 'NORMAL',
-        spo2: '95 – 98',
-        spo2Evaluation: 'NORMAL',
-        careLevelProposal: 'LEVEL_2',
-      }),
-      created_by: 'staff-nurse-001',
-      created_by_role: 'NURSE',
-      generated_at: new Date(),
-      generated_by: 'staff-nurse-001',
-      generated_by_role: 'NURSE',
-      reviewed_at: new Date(),
-      reviewed_by: 'staff-mgr-002',
-      reviewed_by_role: 'CARE_MANAGER',
-      approved_at: new Date(),
-      approved_by: 'staff-dir-001',
-      approved_by_role: 'SUPERVISOR',
-      supersedes_report_id: null,
-      created_at: new Date('2026-09-01'),
-      updated_at: new Date('2026-09-02'),
-    };
+    return report;
   }
+
 
   async list(
     actor: HealthReportActor,
@@ -388,9 +421,44 @@ export class HealthReportService {
       ],
     );
 
+    const requestedResidentId =
+      String(residentId ?? '').trim();
+
+    if (actor.actorRole === 'GUARDIAN') {
+      if (!requestedResidentId) {
+        // Never expose an unscoped report collection to a guardian.
+        return [];
+      }
+
+      await this.assertGuardianResidentAccess(
+        actor,
+        requestedResidentId,
+      );
+
+      const result =
+        await this.db.query<HealthReportRow>(
+          `
+            SELECT *
+            FROM health_reports
+            WHERE
+              resident_id=$1
+              AND status IN (
+                'APPROVED',
+                'DELIVERED'
+              )
+            ORDER BY
+              period_end DESC,
+              created_at DESC
+          `,
+          [requestedResidentId],
+        );
+
+      return result.rows;
+    }
+
     try {
       const result =
-        residentId
+        requestedResidentId
           ? await this.db.query<HealthReportRow>(
               `
                 SELECT *
@@ -400,7 +468,7 @@ export class HealthReportService {
                   period_end DESC,
                   created_at DESC
               `,
-              [residentId],
+              [requestedResidentId],
             )
           : await this.db.query<HealthReportRow>(
               `
@@ -416,12 +484,10 @@ export class HealthReportService {
         return result.rows;
       }
     } catch {
-      // Fallback
+      // Preserve existing internal-role fallback semantics.
     }
 
-    return [
-      await this.getReport('health-report-3416fcc0-08ef-43d6-8378-c4edd18c3f51'),
-    ];
+    return [];
   }
 
   async detail(
@@ -489,7 +555,10 @@ export class HealthReportService {
     await this.authorize(
       actor,
       [
+        'ADMIN',
         'NURSE',
+        'CARE_MANAGER',
+        'MEDICAL_HEAD',
       ],
     );
 
@@ -594,6 +663,106 @@ export class HealthReportService {
         );
 
         return inserted.rows[0];
+      },
+    );
+  }
+
+
+  async update(
+    actor: HealthReportActor,
+    healthReportId: string,
+    input: UpdateInput,
+  ): Promise<HealthReportRow> {
+    await this.authorize(
+      actor,
+      [
+        'ADMIN',
+        'NURSE',
+        'CARE_MANAGER',
+        'MEDICAL_HEAD',
+        'SUPERVISOR',
+      ],
+    );
+
+    if (typeof input.summary !== 'string') {
+      throw new BadRequestException(
+        'Health report summary is required',
+      );
+    }
+
+    const report =
+      await this.getReport(healthReportId);
+
+    if (
+      report.status !== 'DRAFT' &&
+      report.status !== 'REVISION_REQUIRED' &&
+      report.status !== 'UNDER_REVIEW'
+    ) {
+      throw new BadRequestException(
+        'Report cannot be edited in current status',
+      );
+    }
+
+    return this.db.withTransaction(
+      async (client) => {
+        const updated =
+          await client.query<HealthReportRow>(
+            `
+              UPDATE health_reports
+              SET
+                summary=$2,
+                report_version=report_version + 1,
+                updated_at=now()
+              WHERE health_report_id=$1
+              RETURNING *
+            `,
+            [
+              healthReportId,
+              input.summary,
+            ],
+          );
+
+        if (!updated.rows[0]) {
+          throw new NotFoundException(
+            'Health report not found',
+          );
+        }
+
+        await client.query(
+          `
+            INSERT INTO health_report_audit (
+              health_report_id,
+              resident_id,
+              event_type,
+              actor_id,
+              actor_role,
+              previous_state,
+              new_state
+            )
+            VALUES (
+              $1,$2,'REPORT_UPDATED',
+              $3,$4,$5::jsonb,$6::jsonb
+            )
+          `,
+          [
+            healthReportId,
+            report.resident_id,
+            actor.actorId,
+            actor.actorRole,
+            JSON.stringify({
+              status: report.status,
+              reportVersion:
+                report.report_version,
+            }),
+            JSON.stringify({
+              status: report.status,
+              reportVersion:
+                updated.rows[0].report_version,
+            }),
+          ],
+        );
+
+        return updated.rows[0];
       },
     );
   }
@@ -767,8 +936,10 @@ export class HealthReportService {
     await this.authorize(
       actor,
       [
+        'ADMIN',
         'NURSE',
         'CARE_MANAGER',
+        'MEDICAL_HEAD',
         'SUPERVISOR',
       ],
     );
@@ -867,7 +1038,10 @@ export class HealthReportService {
           );
         }
 
-        if (lockedReport.status !== 'DRAFT') {
+        if (
+          lockedReport.status !== 'DRAFT' &&
+          lockedReport.status !== 'REVISION_REQUIRED'
+        ) {
           throw new BadRequestException(
             'Concurrent health report generation rejected',
           );
@@ -996,8 +1170,10 @@ export class HealthReportService {
     await this.authorize(
       actor,
       [
+        'ADMIN',
         'NURSE',
         'CARE_MANAGER',
+        'MEDICAL_HEAD',
         'SUPERVISOR',
       ],
     );
@@ -1404,6 +1580,22 @@ export class HealthReportService {
       await this.getReport(
         healthReportId,
       );
+
+    if (actor.actorRole === 'GUARDIAN') {
+      await this.assertGuardianResidentAccess(
+        actor,
+        report.resident_id,
+      );
+
+      if (
+        report.status !== 'APPROVED' &&
+        report.status !== 'DELIVERED'
+      ) {
+        throw new ForbiddenException(
+          'Guardian may access only approved family-facing reports.',
+        );
+      }
+    }
 
     let snapshot:
       | {

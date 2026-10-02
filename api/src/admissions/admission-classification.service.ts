@@ -75,6 +75,7 @@ interface AssessmentInput {
   assessmentType?: unknown;
   summary?: unknown;
   clinicalNotes?: unknown;
+  amendmentReason?: unknown;
 
   adl?: Array<{
     activityCode?: unknown;
@@ -240,6 +241,35 @@ export class AdmissionClassificationService {
     }
   }
 
+  private async assertAdmissionApprovalAuthority(
+    actor: ActorContext,
+  ): Promise<void> {
+    const result =
+      await this.database.query<{
+        active: boolean;
+      }>(
+        `
+        SELECT
+          authority.active
+        FROM admission_approval_authorities authority
+        JOIN staff_actors staff
+          ON staff.actor_id = authority.actor_id
+        WHERE
+          authority.actor_id = $1
+          AND authority.active = true
+          AND staff.status = 'ACTIVE'
+        LIMIT 1
+        `,
+        [actor.actorId],
+      );
+
+    if (!result.rows[0]?.active) {
+      throw new ForbiddenException(
+        'Chỉ Giám đốc/Ban giám đốc hoặc người được ủy quyền mới có quyền phê duyệt tiếp nhận chính thức.',
+      );
+    }
+  }
+
   private async assertCase(
     admissionCaseId: string,
   ) {
@@ -275,8 +305,10 @@ export class AdmissionClassificationService {
       actor,
       [
         'NURSE',
+        'MEDICAL_HEAD',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -370,6 +402,125 @@ export class AdmissionClassificationService {
 
     return this.database.withTransaction(
       async (client) => {
+        const lockedCase =
+          await client.query<{
+            status: string;
+            resident_id: string | null;
+          }>(
+            `
+            SELECT
+              status,
+              resident_id
+            FROM admission_cases
+            WHERE admission_case_id=$1
+            FOR UPDATE
+            `,
+            [admissionCaseId],
+          );
+
+        const caseRow =
+          lockedCase.rows[0];
+
+        if (!caseRow) {
+          throw new NotFoundException(
+            'Không tìm thấy hồ sơ tiếp nhận.',
+          );
+        }
+
+        const versionResult =
+          await client.query<{
+            next_version: string | number;
+          }>(
+            `
+            SELECT
+              COALESCE(
+                MAX(assessment_version),
+                0
+              ) + 1 AS next_version
+            FROM admission_assessments
+            WHERE
+              admission_case_id=$1
+              AND assessment_type=$2
+            `,
+            [
+              admissionCaseId,
+              assessmentType,
+            ],
+          );
+
+        const nextVersion =
+          Number(
+            versionResult.rows[0]
+              ?.next_version || 1,
+          );
+
+        const isPostAdmission =
+          caseRow.status === 'ADMITTED'
+          && Boolean(caseRow.resident_id);
+
+        const amendmentReason =
+          this.optionalString(
+            input.amendmentReason,
+          );
+
+        if (
+          isPostAdmission &&
+          !amendmentReason
+        ) {
+          throw new BadRequestException(
+            'Vui lòng nhập lý do bổ sung/chỉnh sửa Phiếu đánh giá sau tiếp nhận.',
+          );
+        }
+
+        let previousAssessmentId:
+          string | null = null;
+
+        let previousAssessmentVersion:
+          number | null = null;
+
+        if (isPostAdmission) {
+          const previousResult =
+            await client.query<{
+              admission_assessment_id: string;
+              assessment_version: number;
+            }>(
+              `
+              SELECT
+                admission_assessment_id,
+                assessment_version
+              FROM admission_assessments
+              WHERE
+                admission_case_id=$1
+                AND assessment_type=$2
+              ORDER BY
+                assessment_version DESC,
+                created_at DESC
+              LIMIT 1
+              `,
+              [
+                admissionCaseId,
+                assessmentType,
+              ],
+            );
+
+          if (previousResult.rows[0]) {
+            previousAssessmentId =
+              previousResult.rows[0]
+                .admission_assessment_id;
+
+            previousAssessmentVersion =
+              Number(
+                previousResult.rows[0]
+                  .assessment_version,
+              );
+          }
+        }
+
+        const assessmentStatus =
+          isPostAdmission
+            ? 'AMENDED'
+            : 'COMPLETED';
+
         const assessment =
           await client.query(
             `
@@ -377,6 +528,7 @@ export class AdmissionClassificationService {
               admission_assessment_id,
               admission_case_id,
               assessment_type,
+              assessment_version,
               status,
               started_at,
               completed_at,
@@ -390,19 +542,22 @@ export class AdmissionClassificationService {
                 gen_random_uuid()::text,
               $1,
               $2,
-              'COMPLETED',
-              now(),
-              now(),
               $3,
               $4,
+              now(),
+              now(),
               $5,
-              $6
+              $6,
+              $7,
+              $8
             )
             RETURNING *
             `,
             [
               admissionCaseId,
               assessmentType,
+              nextVersion,
+              assessmentStatus,
               actor.actorId,
               actor.actorRole,
               this.optionalString(
@@ -602,6 +757,11 @@ export class AdmissionClassificationService {
           );
         }
 
+        const assessmentAuditEvent =
+          isPostAdmission
+            ? 'ASSESSMENT_AMENDED'
+            : 'ASSESSMENT_COMPLETED';
+
         await client.query(
           `
           INSERT INTO admission_audit (
@@ -611,35 +771,73 @@ export class AdmissionClassificationService {
             actor_role,
             entity_type,
             entity_id,
+            reason,
+            previous_state,
             new_state
           )
           VALUES (
             $1,
-            'ASSESSMENT_COMPLETED',
             $2,
             $3,
-            'ADMISSION_ASSESSMENT',
             $4,
+            'ADMISSION_ASSESSMENT',
+            $5,
+            $6,
+            CASE
+              WHEN $7::text IS NULL
+              THEN NULL
+              ELSE jsonb_build_object(
+                'assessmentId',
+                $7::text,
+                'assessmentVersion',
+                $8::integer
+              )
+            END,
             jsonb_build_object(
               'assessmentType',
-              $5::text
+              $9::text,
+              'assessmentVersion',
+              $10::integer,
+              'postAdmissionAmendment',
+              $11::boolean,
+              'assessmentStatus',
+              $12::text,
+              'amendmentReason',
+              $6::text
             )
           )
           `,
           [
             admissionCaseId,
+            assessmentAuditEvent,
             actor.actorId,
             actor.actorRole,
             assessmentId,
+            isPostAdmission
+              ? amendmentReason
+              : null,
+            previousAssessmentId,
+            previousAssessmentVersion,
             assessmentType,
+            nextVersion,
+            isPostAdmission,
+            assessmentStatus,
           ],
         );
 
         return {
           admissionAssessmentId:
             assessmentId,
+          assessmentVersion:
+            nextVersion,
+          postAdmissionAmendment:
+            isPostAdmission,
+          amendmentReason:
+            isPostAdmission
+              ? amendmentReason
+              : null,
           status:
-            'COMPLETED',
+            assessmentStatus,
           adlItemCount:
             adl.length,
           riskItemCount:
@@ -661,7 +859,8 @@ export class AdmissionClassificationService {
           admission_case_id=$1
           AND status IN (
             'COMPLETED',
-            'VERIFIED'
+            'VERIFIED',
+            'AMENDED'
           )
         ORDER BY
           completed_at DESC NULLS LAST,
@@ -688,8 +887,10 @@ export class AdmissionClassificationService {
       actor,
       [
         'NURSE',
+        'MEDICAL_HEAD',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -1000,7 +1201,12 @@ export class AdmissionClassificationService {
       [
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
+    );
+
+    await this.assertAdmissionApprovalAuthority(
+      actor,
     );
 
     await this.assertCase(
@@ -1199,7 +1405,12 @@ export class AdmissionClassificationService {
       [
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
+    );
+
+    await this.assertAdmissionApprovalAuthority(
+      actor,
     );
 
     const admissionCase =
@@ -1212,6 +1423,14 @@ export class AdmissionClassificationService {
         input.decision,
         'Quyết định tiếp nhận',
       );
+
+    if (
+      admissionCase.status === 'ADMITTED'
+    ) {
+      throw new ConflictException(
+        'Không thể thay đổi quyết định của hồ sơ đã ADMITTED.',
+      );
+    }
 
     const allowed = [
       'APPROVED',
@@ -1229,6 +1448,21 @@ export class AdmissionClassificationService {
         'Quyết định tiếp nhận không hợp lệ.',
       );
     }
+
+    const nextAdmissionStatus:
+      Record<string, string> = {
+        APPROVED:
+          'APPROVED_FOR_ADMISSION',
+        CONDITIONAL:
+          'CONDITIONAL_ADMISSION',
+        FURTHER_ASSESSMENT:
+          'FURTHER_ASSESSMENT_REQUIRED',
+        NOT_SUITABLE:
+          'NOT_SUITABLE',
+      };
+
+    const mappedStatus =
+      nextAdmissionStatus[decision];
 
     return this.database.withTransaction(
       async (client) => {
@@ -1268,6 +1502,43 @@ export class AdmissionClassificationService {
         const decisionId =
           result.rows[0]
             .admission_decision_id;
+
+        const decisionCaseUpdate =
+          await client.query<{
+            status: string;
+            record_version: string | number;
+          }>(
+            `
+            UPDATE admission_cases
+            SET
+              status=$2,
+              updated_by=$3,
+              updated_by_role=$4,
+              updated_at=now(),
+              record_version=record_version + 1
+            WHERE
+              admission_case_id=$1
+              AND status <> 'ADMITTED'
+            RETURNING
+              status,
+              record_version
+            `,
+            [
+              admissionCaseId,
+              mappedStatus,
+              actor.actorId,
+              actor.actorRole,
+            ],
+          );
+
+        const updatedCase =
+          decisionCaseUpdate.rows[0];
+
+        if (!updatedCase) {
+          throw new ConflictException(
+            'Không thể cập nhật trạng thái hồ sơ tiếp nhận.',
+          );
+        }
 
         await client.query(
           `
@@ -1314,7 +1585,7 @@ export class AdmissionClassificationService {
           decision,
 
           admissionCaseStatus:
-            admissionCase.status,
+            updatedCase.status,
 
           residentId:
             admissionCase
@@ -1330,7 +1601,15 @@ export class AdmissionClassificationService {
   ) {
     await this.assertActor(
       actor,
-      ['CARE_MANAGER', 'SUPERVISOR'],
+      [
+        'CARE_MANAGER',
+        'SUPERVISOR',
+        'ADMIN',
+      ],
+    );
+
+    await this.assertAdmissionApprovalAuthority(
+      actor,
     );
 
     return this.database.withTransaction(
@@ -1341,10 +1620,17 @@ export class AdmissionClassificationService {
             admission_code: string;
             resident_id: string | null;
             prospective_resident_name: string;
-            date_of_birth: string | Date;
+            date_of_birth: string | Date | null;
+            birth_year: number | null;
+            birth_date_precision: string | null;
             gender: string;
             requested_admission_date:
               string | Date | null;
+            actual_admission_date:
+              string | Date | null;
+            admitted_at: Date | null;
+            admitted_by: string | null;
+            admitted_by_role: string | null;
             status: string;
             record_version: string | number;
           }>(
@@ -1355,8 +1641,14 @@ export class AdmissionClassificationService {
               resident_id,
               prospective_resident_name,
               date_of_birth,
+              birth_year,
+              birth_date_precision,
               gender,
               requested_admission_date,
+              actual_admission_date,
+              admitted_at,
+              admitted_by,
+              admitted_by_role,
               status,
               record_version
             FROM admission_cases
@@ -1375,11 +1667,68 @@ export class AdmissionClassificationService {
         }
 
         if (
-          admission.status === 'ADMITTED' ||
+          admission.status === 'ADMITTED' &&
           admission.resident_id
         ) {
+          const existingResidentResult =
+            await client.query<{
+              resident_id: string;
+              resident_code: string;
+              display_name: string;
+              care_level: CareLevel;
+            }>(
+              `
+              SELECT
+                resident_id,
+                resident_code,
+                display_name,
+                care_level
+              FROM residents
+              WHERE resident_id=$1
+              LIMIT 1
+              `,
+              [
+                admission.resident_id,
+              ],
+            );
+
+          const existingResident =
+            existingResidentResult.rows[0];
+
+          if (!existingResident) {
+            throw new ConflictException(
+              'Hồ sơ đã ADMITTED nhưng Resident liên kết không tồn tại.',
+            );
+          }
+
+          return {
+            admissionCaseId,
+            status: 'ADMITTED',
+            residentId:
+              existingResident.resident_id,
+            residentCode:
+              existingResident.resident_code,
+            displayName:
+              existingResident.display_name,
+            careLevel:
+              existingResident.care_level,
+            actualAdmissionDate:
+              admission.actual_admission_date,
+            admittedAt:
+              admission.admitted_at,
+            admittedBy:
+              admission.admitted_by,
+            admittedByRole:
+              admission.admitted_by_role,
+            recordVersion:
+              Number(admission.record_version),
+            idempotent: true,
+          };
+        }
+
+        if (admission.resident_id) {
           throw new ConflictException(
-            'Hồ sơ đã hoàn tất tiếp nhận.',
+            'Hồ sơ có resident_id nhưng trạng thái không nhất quán.',
           );
         }
 
@@ -1490,7 +1839,7 @@ export class AdmissionClassificationService {
             resident_id: string;
             resident_code: string;
             display_name: string;
-            date_of_birth: string | Date;
+            date_of_birth: string | Date | null;
             gender: string;
             care_level: CareLevel;
             active_status: boolean;
@@ -1547,6 +1896,21 @@ export class AdmissionClassificationService {
 
         await client.query(
           `
+            UPDATE residents
+            SET
+              birth_year = $2,
+              birth_date_precision = $3
+            WHERE resident_id = $1
+          `,
+          [
+            resident.resident_id,
+            admission.birth_year,
+            admission.birth_date_precision,
+          ],
+        );
+
+        await client.query(
+          `
           INSERT INTO resident_audit (
             event_type,
             target_resident_id,
@@ -1565,7 +1929,7 @@ export class AdmissionClassificationService {
               'residentId', $1::text,
               'residentCode', $4::text,
               'displayName', $5::text,
-              'dateOfBirth', $6::date,
+              'dateOfBirth', $6::text,
               'gender', $7::text,
               'careLevel', $8::text,
               'activeStatus', true,
@@ -1689,6 +2053,164 @@ export class AdmissionClassificationService {
           ],
         );
 
+        await client.query(
+          `
+          INSERT INTO admission_approval_snapshots (
+            admission_case_id,
+            resident_id,
+            admission_assessment_id,
+            assessment_version,
+            snapshot_type,
+            snapshot_data,
+            approved_by,
+            approved_by_role,
+            approved_at
+          )
+          SELECT
+            ac.admission_case_id,
+            $2,
+            aa.admission_assessment_id,
+            aa.assessment_version,
+            'FINAL_ADMISSION',
+            jsonb_build_object(
+              'admissionCase',
+              to_jsonb(ac),
+
+              'assessment',
+              CASE
+                WHEN aa.admission_assessment_id
+                  IS NULL
+                THEN NULL
+                ELSE to_jsonb(aa)
+              END,
+
+              'adl',
+              COALESCE(
+                (
+                  SELECT jsonb_agg(
+                    to_jsonb(adl)
+                    ORDER BY adl.activity_code
+                  )
+                  FROM admission_adl_items adl
+                  WHERE
+                    adl.admission_assessment_id =
+                    aa.admission_assessment_id
+                ),
+                '[]'::jsonb
+              ),
+
+              'cognitive',
+              (
+                SELECT to_jsonb(cognitive)
+                FROM admission_cognitive_assessments cognitive
+                WHERE
+                  cognitive.admission_assessment_id =
+                  aa.admission_assessment_id
+                ORDER BY cognitive.created_at DESC
+                LIMIT 1
+              ),
+
+              'nutrition',
+              (
+                SELECT to_jsonb(nutrition)
+                FROM admission_nutrition_assessments nutrition
+                WHERE
+                  nutrition.admission_assessment_id =
+                  aa.admission_assessment_id
+                ORDER BY nutrition.created_at DESC
+                LIMIT 1
+              ),
+
+              'risks',
+              COALESCE(
+                (
+                  SELECT jsonb_agg(
+                    to_jsonb(risk)
+                    ORDER BY risk.created_at
+                  )
+                  FROM admission_risk_items risk
+                  WHERE
+                    risk.admission_assessment_id =
+                    aa.admission_assessment_id
+                ),
+                '[]'::jsonb
+              ),
+
+              'classification',
+              (
+                SELECT to_jsonb(classification_row)
+                FROM admission_care_classifications classification_row
+                WHERE
+                  classification_row
+                    .admission_care_classification_id =
+                    $3
+              ),
+
+              'decision',
+              (
+                SELECT to_jsonb(decision_row)
+                FROM admission_decisions decision_row
+                WHERE
+                  decision_row
+                    .admission_decision_id =
+                    $4
+              ),
+
+              'resident',
+              (
+                SELECT to_jsonb(resident_row)
+                FROM residents resident_row
+                WHERE
+                  resident_row.resident_id =
+                    $2
+              )
+            ),
+            $5,
+            $6,
+            now()
+
+          FROM admission_cases ac
+
+          LEFT JOIN LATERAL (
+            SELECT assessment_row.*
+            FROM admission_assessments assessment_row
+            WHERE
+              assessment_row.admission_case_id =
+                ac.admission_case_id
+              AND assessment_row.status IN (
+                'COMPLETED',
+                'VERIFIED',
+                'AMENDED'
+              )
+            ORDER BY
+              assessment_row.assessment_version DESC,
+              assessment_row.completed_at DESC NULLS LAST,
+              assessment_row.created_at DESC
+            LIMIT 1
+          ) aa
+            ON true
+
+          WHERE
+            ac.admission_case_id=$1
+
+          ON CONFLICT (
+            admission_case_id,
+            snapshot_type
+          )
+          DO NOTHING
+          `,
+          [
+            admissionCaseId,
+            resident.resident_id,
+            classification
+              .admission_care_classification_id,
+            latestDecision
+              .admission_decision_id,
+            actor.actorId,
+            actor.actorRole,
+          ],
+        );
+
         return {
           admissionCaseId,
           status: finalCase.status,
@@ -1717,8 +2239,10 @@ export class AdmissionClassificationService {
       [
         'CAREGIVER',
         'NURSE',
+        'MEDICAL_HEAD',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 

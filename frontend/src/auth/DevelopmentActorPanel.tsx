@@ -3,31 +3,14 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './ActorContext';
 import {
   fetchActiveStaff,
-  resolveStaffActor,
   ActiveStaffMember,
   getStoredAdminPassword,
   setStoredAdminPassword,
-  verifyAdminPassword,
+  loginWithPassword,
+  logoutCurrentSession,
 } from '../api/auth';
 import { ROLE_LABELS } from './role-policy';
 import { recordSystemAuditLog } from '../api/audit-log';
-
-const GUARDIAN_DEMO_ACCOUNTS: ActiveStaffMember[] = [
-  {
-    actorId: 'TA-GUA-01',
-    staffCode: 'TA-GUA-01',
-    displayName: 'Lê Gia Bảo (Thân nhân cụ Nguyễn Văn An)',
-    actorRole: 'GUARDIAN',
-    status: 'ACTIVE',
-  },
-  {
-    actorId: 'TA-GUA-02',
-    staffCode: 'TA-GUA-02',
-    displayName: 'Trần Anh Đức (Thân nhân cụ Trần Thị Bình)',
-    actorRole: 'GUARDIAN',
-    status: 'ACTIVE',
-  },
-];
 
 export function DevelopmentActorPanel() {
   const { actor, setActor, clearActor } = useActor();
@@ -50,12 +33,10 @@ export function DevelopmentActorPanel() {
   const { data: staffList, isLoading } = useQuery({
     queryKey: ['auth-active-staff'],
     queryFn: fetchActiveStaff,
+    enabled: Boolean(actor),
   });
 
-  const allAccounts = [
-    ...(staffList ?? []),
-    ...GUARDIAN_DEMO_ACCOUNTS,
-  ];
+  const allAccounts = staffList ?? [];
 
   const isAdmin = actor?.actorRole === 'ADMIN';
 
@@ -65,47 +46,31 @@ export function DevelopmentActorPanel() {
     setLoginFeedback(null);
 
     const userStr = loginIdentifier.trim();
-    const passStr = loginPassword.trim();
+    const passStr = loginPassword;
 
     if (!userStr) {
-      setLoginFeedback({ text: '❌ Vui lòng nhập Tên đăng nhập hoặc Mã nhân viên.', isError: true });
+      setLoginFeedback({
+        text: '❌ Vui lòng nhập Tên đăng nhập hoặc Mã nhân viên.',
+        isError: true,
+      });
+      return;
+    }
+
+    if (!passStr) {
+      setLoginFeedback({
+        text: '❌ Vui lòng nhập mật khẩu.',
+        isError: true,
+      });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const q = userStr.toLowerCase();
-
-      // Check if user is attempting Admin login
-      if (q === 'admin' || q === 'admin-001' || q === 'adm-001' || q === 'staff-admin-001') {
-        const isValidAdminPass = await verifyAdminPassword(passStr);
-        if (!isValidAdminPass) {
-          setLoginFeedback({
-            text: '❌ Mật khẩu Quản trị viên (Admin) không chính xác.',
-            isError: true,
-          });
-          setIsSubmitting(false);
-          return;
-        }
-
-        setActor({
-          actorId: 'Admin',
-          actorRole: 'ADMIN',
-          displayName: 'Quản Trị Viên Tối Cao (Admin)',
-        });
-        setLoginFeedback({
-          text: '✅ Đăng nhập Quản trị viên (Admin) thành công!',
-          isError: false,
-        });
-        setLoginPassword('');
-        setIsSubmitting(false);
-        setTimeout(() => setLoginFeedback(null), 4000);
-        return;
-      }
-
-      // Resolving regular Staff Member or Guardian by Staff Code / ID
-      const resolved = await resolveStaffActor(userStr);
+      const resolved = await loginWithPassword(
+        userStr,
+        passStr,
+      );
 
       setActor({
         actorId: resolved.actorId,
@@ -117,14 +82,23 @@ export function DevelopmentActorPanel() {
         text: `✅ Đăng nhập thành công: ${resolved.displayName} (${ROLE_LABELS[resolved.actorRole] || resolved.actorRole})`,
         isError: false,
       });
+
       setLoginPassword('');
-      setIsSubmitting(false);
-      setTimeout(() => setLoginFeedback(null), 4000);
+      await queryClient.invalidateQueries({
+        queryKey: ['auth-active-staff'],
+      });
+
+      setTimeout(
+        () => setLoginFeedback(null),
+        4000,
+      );
     } catch (err: any) {
       setLoginFeedback({
-        text: err.message || '❌ Tên đăng nhập hoặc Mã nhân viên không tồn tại trong hệ thống.',
+        text:
+          `❌ ${err?.message || 'Không thể đăng nhập vào hệ thống.'}`,
         isError: true,
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -179,12 +153,10 @@ export function DevelopmentActorPanel() {
   };
 
   const handleSelectStaff = (staff: ActiveStaffMember) => {
-    setActor({
-      actorId: staff.actorId,
-      actorRole: staff.actorRole,
-      displayName: staff.displayName,
-    });
-    setLoginIdentifier(staff.staffCode || staff.actorId);
+    setLoginIdentifier(
+      staff.staffCode || staff.actorId,
+    );
+    setLoginPassword('');
     setLoginFeedback(null);
   };
 
@@ -320,10 +292,12 @@ export function DevelopmentActorPanel() {
                 <button
                   type="button"
                   onClick={() => {
-                    clearActor();
-                    setLoginIdentifier('');
-                    setLoginPassword('');
-                    setLoginFeedback(null);
+                    void logoutCurrentSession().finally(() => {
+                      clearActor();
+                      setLoginIdentifier('');
+                      setLoginPassword('');
+                      setLoginFeedback(null);
+                    });
                   }}
                   style={{
                     background: '#fef2f2',

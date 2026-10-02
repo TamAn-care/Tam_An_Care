@@ -13,8 +13,10 @@ import {
 export type ActorRole =
   | 'CAREGIVER'
   | 'NURSE'
+  | 'MEDICAL_HEAD'
   | 'CARE_MANAGER'
-  | 'SUPERVISOR';
+  | 'SUPERVISOR'
+  | 'ADMIN';
 
 export interface ActorContext {
   actorId: string;
@@ -31,7 +33,7 @@ interface AdmissionRow {
   admission_code: string;
   resident_id: string | null;
   prospective_resident_name: string;
-  date_of_birth: string | Date;
+  date_of_birth: string | Date | null;
   gender: string;
   identity_number: string | null;
   requested_admission_date: string | Date | null;
@@ -186,6 +188,130 @@ export class AdmissionService {
     return value;
   }
 
+  private normalizeBirthValue(
+    value: unknown,
+  ): {
+    dateOfBirth: string | null;
+    birthYear: number | null;
+    birthDatePrecision: 'FULL_DATE' | 'YEAR_ONLY' | null;
+  } {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      return {
+        dateOfBirth: null,
+        birthYear: null,
+        birthDatePrecision: null,
+      };
+    }
+
+    if (typeof value !== 'string') {
+      throw new BadRequestException(
+        'Ngày sinh không hợp lệ.',
+      );
+    }
+
+    const raw = value.trim();
+
+    if (!raw) {
+      return {
+        dateOfBirth: null,
+        birthYear: null,
+        birthDatePrecision: null,
+      };
+    }
+
+    // Only year is known.
+    if (/^\d{4}$/.test(raw)) {
+      const year = Number(raw);
+      const currentYear =
+        new Date().getFullYear();
+
+      if (
+        year < 1800 ||
+        year > currentYear
+      ) {
+        throw new BadRequestException(
+          'Năm sinh không hợp lệ.',
+        );
+      }
+
+      return {
+        dateOfBirth: null,
+        birthYear: year,
+        birthDatePrecision: 'YEAR_ONLY',
+      };
+    }
+
+    let iso = raw;
+
+    // dd/mm/yyyy -> yyyy-mm-dd
+    const vi = raw.match(
+      /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/,
+    );
+
+    if (vi) {
+      const day = vi[1].padStart(2, '0');
+      const month = vi[2].padStart(2, '0');
+      const year = vi[3];
+
+      iso = `${year}-${month}-${day}`;
+    }
+
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(iso)
+    ) {
+      throw new BadRequestException(
+        'Ngày sinh phải theo định dạng dd/mm/yyyy hoặc chỉ nhập năm yyyy.',
+      );
+    }
+
+    const [
+      yearText,
+      monthText,
+      dayText,
+    ] = iso.split('-');
+
+    const year = Number(yearText);
+    const month = Number(monthText);
+    const day = Number(dayText);
+
+    const date = new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        day,
+      ),
+    );
+
+    if (
+      date.getUTCFullYear() !== year ||
+      date.getUTCMonth() !== month - 1 ||
+      date.getUTCDate() !== day
+    ) {
+      throw new BadRequestException(
+        'Ngày sinh không tồn tại.',
+      );
+    }
+
+    if (
+      year < 1800 ||
+      year > new Date().getFullYear()
+    ) {
+      throw new BadRequestException(
+        'Năm sinh không hợp lệ.',
+      );
+    }
+
+    return {
+      dateOfBirth: iso,
+      birthYear: year,
+      birthDatePrecision: 'FULL_DATE',
+    };
+  }
+
   private normalizeTimestamp(
     value: unknown,
   ): string | null {
@@ -241,7 +367,14 @@ export class AdmissionService {
       prospectiveResidentName:
         row.prospective_resident_name,
       dateOfBirth:
-        toDate(row.date_of_birth),
+        row.date_of_birth == null
+          ? ''
+          : (
+              typeof row.date_of_birth === 'string' &&
+              /^\d{4}$/.test(row.date_of_birth)
+            )
+            ? row.date_of_birth
+            : toDate(row.date_of_birth),
       gender:
         row.gender,
       identityNumber:
@@ -335,6 +468,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -394,7 +528,7 @@ export class AdmissionService {
           admission_code,
           resident_id,
           prospective_resident_name,
-          date_of_birth,
+          COALESCE(date_of_birth::text, birth_year::text) AS date_of_birth,
           gender,
           identity_number,
           requested_admission_date,
@@ -456,6 +590,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -467,7 +602,7 @@ export class AdmissionService {
           admission_code,
           resident_id,
           prospective_resident_name,
-          date_of_birth,
+          COALESCE(date_of_birth::text, birth_year::text) AS date_of_birth,
           gender,
           identity_number,
           requested_admission_date,
@@ -507,6 +642,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -516,12 +652,13 @@ export class AdmissionService {
         'Họ và tên người cao tuổi',
       );
 
-    const dateOfBirth =
-      this.normalizeDate(
+    const birth =
+      this.normalizeBirthValue(
         input.dateOfBirth,
-        'Ngày sinh',
-        true,
       );
+
+    const dateOfBirth =
+      birth.dateOfBirth;
 
     const gender =
       this.requiredString(
@@ -651,6 +788,26 @@ export class AdmissionService {
 
         await client.query(
           `
+            UPDATE admission_cases
+            SET
+              birth_year = $2,
+              birth_date_precision = $3
+            WHERE admission_case_id = $1
+          `,
+          [
+            row.admission_case_id,
+            birth.birthYear,
+            birth.birthDatePrecision,
+          ],
+        );
+
+        row.date_of_birth =
+          birth.birthDatePrecision === 'YEAR_ONLY'
+            ? String(birth.birthYear)
+            : birth.dateOfBirth;
+
+        await client.query(
+          `
           INSERT INTO admission_audit (
             admission_case_id,
             event_type,
@@ -701,6 +858,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -853,6 +1011,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -1028,6 +1187,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 
@@ -1040,9 +1200,15 @@ export class AdmissionService {
       ? this.requiredString(input.prospectiveResidentName, 'Họ và tên')
       : existing.prospectiveResidentName;
 
-    const dateOfBirth = input.dateOfBirth
-      ? this.normalizeDate(input.dateOfBirth, 'Ngày sinh', true)
-      : existing.dateOfBirth;
+    const birth =
+      this.normalizeBirthValue(
+        input.dateOfBirth !== undefined
+          ? input.dateOfBirth
+          : existing.dateOfBirth,
+      );
+
+    const dateOfBirth =
+      birth.dateOfBirth;
 
     const gender = input.gender || existing.gender;
     const identityNumber = input.identityNumber !== undefined ? input.identityNumber : existing.identityNumber;
@@ -1074,6 +1240,26 @@ export class AdmissionService {
         ],
       );
 
+      await client.query(
+        `
+          UPDATE admission_cases
+          SET
+            birth_year = $2,
+            birth_date_precision = $3
+          WHERE admission_case_id = $1
+        `,
+        [
+          admissionCaseId,
+          birth.birthYear,
+          birth.birthDatePrecision,
+        ],
+      );
+
+      updated.rows[0].date_of_birth =
+        birth.birthDatePrecision === 'YEAR_ONLY'
+          ? String(birth.birthYear)
+          : birth.dateOfBirth;
+
       return this.mapAdmission(updated.rows[0]);
     });
   }
@@ -1088,6 +1274,7 @@ export class AdmissionService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'ADMIN',
       ],
     );
 

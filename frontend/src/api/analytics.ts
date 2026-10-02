@@ -1,4 +1,11 @@
-import { mockAccommodationItems } from './accommodation';
+import {
+  getAccommodationOverview,
+  type AccommodationItem,
+} from './accommodation';
+
+import type {
+  HumanActorSession,
+} from '../types/actor';
 
 export interface RoomTierStats {
   totalRooms: number;
@@ -109,71 +116,223 @@ export interface ExecutiveDashboardData {
 }
 
 /**
- * Calculates live room and bed occupancy breakdown from mockAccommodationItems
+ * Production-Test authority:
+ * occupancy and room/bed structure are calculated
+ * exclusively from the authenticated Accommodation API.
  */
-function getLiveOccupancyBreakdown(): OccupancyStats {
-  const items = mockAccommodationItems || [];
-  const totalCapacity = items.length || 110;
-  const occupiedBeds = items.filter(i => i.bedStatus === 'OCCUPIED' || Boolean(i.residentId)).length;
-  const availableBeds = items.filter(i => i.bedStatus === 'AVAILABLE').length;
-  const occupancyRate = totalCapacity > 0 ? Math.round((occupiedBeds / totalCapacity) * 1000) / 10 : 85.5;
+async function getLiveOccupancyBreakdown(
+  actor: HumanActorSession,
+): Promise<OccupancyStats> {
+  const overview =
+    await getAccommodationOverview(
+      actor,
+      {
+        limit: 500,
+        offset: 0,
+      },
+    );
 
-  const countTier = (type: string) => {
-    const tierItems = items.filter(i => i.roomType === type);
-    const totalBeds = tierItems.length;
-    const occupied = tierItems.filter(i => i.bedStatus === 'OCCUPIED' || Boolean(i.residentId)).length;
-    const rate = totalBeds > 0 ? Math.round((occupied / totalBeds) * 1000) / 10 : 0;
-    return { totalBeds, occupied, rate };
+  const items: AccommodationItem[] =
+    overview.items || [];
+
+  const totalCapacity =
+    overview.summary?.total ??
+    items.length;
+
+  const occupiedBeds =
+    overview.summary?.occupied ??
+    items.filter(
+      (item) =>
+        item.bedStatus === 'OCCUPIED'
+        || Boolean(item.residentId),
+    ).length;
+
+  const availableBeds =
+    overview.summary?.available ??
+    items.filter(
+      (item) =>
+        item.bedStatus === 'AVAILABLE',
+    ).length;
+
+  const occupancyRate =
+    totalCapacity > 0
+      ? Math.round(
+          (
+            occupiedBeds
+            / totalCapacity
+          )
+          * 1000,
+        ) / 10
+      : 0;
+
+  const normalizeTier = (
+    roomType:
+      string | null,
+  ): keyof OccupancyStats['byTier'] | null => {
+    const value =
+      String(
+        roomType || '',
+      )
+        .trim()
+        .toUpperCase();
+
+    if (
+      value === 'SINGLE'
+      || value === 'SINGLE_BED'
+    ) {
+      return 'SINGLE_BED';
+    }
+
+    if (
+      value === 'DOUBLE'
+      || value === 'DOUBLE_BED'
+    ) {
+      return 'DOUBLE_BED';
+    }
+
+    if (
+      value === 'TRIPLE'
+      || value === 'TRIPLE_BED'
+    ) {
+      return 'TRIPLE_BED';
+    }
+
+    if (
+      value === 'QUAD'
+      || value === 'QUAD_BED'
+    ) {
+      return 'QUAD_BED';
+    }
+
+    if (
+      value === 'SIX'
+      || value === 'SIX_BED'
+    ) {
+      return 'SIX_BED';
+    }
+
+    return null;
   };
 
-  const single = countTier('SINGLE');
-  const double = countTier('DOUBLE');
-  const triple = countTier('TRIPLE');
-  const quad = countTier('QUAD');
-  const six = countTier('SIX_BED');
+  const tierStats = (
+    tier:
+      keyof OccupancyStats['byTier'],
+  ): RoomTierStats => {
+    const tierItems =
+      items.filter(
+        (item) =>
+          normalizeTier(
+            item.roomType,
+          ) === tier,
+      );
+
+    const roomMap =
+      new Map<
+        string,
+        string
+      >();
+
+    for (
+      const item
+      of tierItems
+    ) {
+      if (
+        item.roomId
+        && !roomMap.has(
+          item.roomId,
+        )
+      ) {
+        roomMap.set(
+          item.roomId,
+          item.roomCode
+          || item.roomName
+          || item.roomId,
+        );
+      }
+    }
+
+    const totalBeds =
+      tierItems.length;
+
+    const occupied =
+      tierItems.filter(
+        (item) =>
+          item.bedStatus === 'OCCUPIED'
+          || Boolean(
+            item.residentId,
+          ),
+      ).length;
+
+    const rate =
+      totalBeds > 0
+        ? Math.round(
+            (
+              occupied
+              / totalBeds
+            )
+            * 1000,
+          ) / 10
+        : 0;
+
+    return {
+      totalRooms:
+        roomMap.size,
+
+      totalBeds,
+
+      occupiedBeds:
+        occupied,
+
+      occupancyRate:
+        rate,
+
+      roomNumbers:
+        Array.from(
+          roomMap.values(),
+        ).join(', '),
+    };
+  };
 
   return {
     totalCapacity,
-    totalOccupied: occupiedBeds,
+    totalOccupied:
+      occupiedBeds,
     occupancyRate,
     availableBeds,
+
     byTier: {
-      SINGLE_BED: {
-        totalRooms: 6,
-        totalBeds: single.totalBeds || 6,
-        occupiedBeds: single.occupied || 5,
-        occupancyRate: single.rate || 83.3,
-        roomNumbers: '203, 207, 303, 305, 309, 403',
-      },
-      DOUBLE_BED: {
-        totalRooms: 4,
-        totalBeds: double.totalBeds || 8,
-        occupiedBeds: double.occupied || 7,
-        occupancyRate: double.rate || 87.5,
-        roomNumbers: '101, 103, 201, 301',
-      },
-      TRIPLE_BED: {
-        totalRooms: 4,
-        totalBeds: triple.totalBeds || 12,
-        occupiedBeds: triple.occupied || 10,
-        occupancyRate: triple.rate || 83.3,
-        roomNumbers: '205, 307, 401, 405',
-      },
-      QUAD_BED: {
-        totalRooms: 3,
-        totalBeds: quad.totalBeds || 12,
-        occupiedBeds: quad.occupied || 10,
-        occupancyRate: quad.rate || 83.3,
-        roomNumbers: '206, 402, 406',
-      },
-      SIX_BED: {
-        totalRooms: 12,
-        totalBeds: six.totalBeds || 72,
-        occupiedBeds: six.occupied || 62,
-        occupancyRate: six.rate || 86.1,
-        roomNumbers: '102, 104, 202, 204, 208, 209, 302, 304, 306, 308, 310, 404',
-      },
+      SINGLE_BED:
+        tierStats(
+          'SINGLE_BED',
+        ),
+
+      DOUBLE_BED:
+        tierStats(
+          'DOUBLE_BED',
+        ),
+
+      TRIPLE_BED:
+        tierStats(
+          'TRIPLE_BED',
+        ),
+
+      QUAD_BED:
+        tierStats(
+          'QUAD_BED',
+        ),
+
+      SIX_BED:
+        tierStats(
+          'SIX_BED',
+        ),
     },
+
+    /*
+     * These three period-flow metrics do not yet
+     * have a production analytics backend.
+     * They remain legacy analytical/demo values
+     * and are explicitly labelled in the UI.
+     */
     monthlyTurnover: {
       admissions: 4,
       discharges: 1,
@@ -276,11 +435,12 @@ function generateTrendHistory(granularity: GranularityType, activePeriodKey: str
 
 export async function fetchExecutiveAnalytics(
   periodKey: string = '2026-09',
-  granularity: GranularityType = 'MONTH'
+  granularity: GranularityType = 'MONTH',
+  actor: HumanActorSession,
 ): Promise<ExecutiveDashboardData> {
   await new Promise((r) => setTimeout(r, 120));
 
-  const liveOccupancy = getLiveOccupancyBreakdown();
+  const liveOccupancy = await getLiveOccupancyBreakdown(actor);
   const trendHistory = generateTrendHistory(granularity, periodKey);
 
   // Period label formatting

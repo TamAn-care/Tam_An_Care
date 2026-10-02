@@ -412,33 +412,33 @@ export function KitchenQuickAction1Touch() {
         <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #2563eb', boxShadow: '0 2px 6px rgba(0,0,0,0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
             <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1d4ed8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              🍲 ĐỊNH MỨC BỮA TRƯA (110 SUẤT)
+              🍲 ĐỊNH MỨC BỮA TRƯA (0 SUẤT)
             </div>
             <span style={{ fontSize: '0.7rem', fontWeight: 700, background: '#eff6ff', color: '#1d4ed8', padding: '0.15rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #bfdbfe' }}>
-              Chốt thực đơn
+              Chưa có dữ liệu
             </span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.4rem', textAlign: 'center' }}>
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', padding: '0.4rem', borderRadius: '0.375rem' }}>
               <span style={{ fontSize: '0.68rem', color: '#64748b', display: 'block' }}>Cơm mềm</span>
-              <strong style={{ fontSize: '1rem', color: '#0f172a' }}>65</strong>
+              <strong style={{ fontSize: '1rem', color: '#0f172a' }}>0</strong>
             </div>
             <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', padding: '0.4rem', borderRadius: '0.375rem' }}>
               <span style={{ fontSize: '0.68rem', color: '#1d4ed8', display: 'block' }}>Cháo băm</span>
-              <strong style={{ fontSize: '1rem', color: '#1e40af' }}>25</strong>
+              <strong style={{ fontSize: '1rem', color: '#1e40af' }}>0</strong>
             </div>
             <div style={{ background: '#faf5ff', border: '1px solid #e9d5ff', padding: '0.4rem', borderRadius: '0.375rem' }}>
               <span style={{ fontSize: '0.68rem', color: '#7e22ce', display: 'block' }}>Xay nhuyễn</span>
-              <strong style={{ fontSize: '1rem', color: '#6b21a8' }}>15</strong>
+              <strong style={{ fontSize: '1rem', color: '#6b21a8' }}>0</strong>
             </div>
             <div style={{ background: '#fff7ed', border: '1px solid #fed7aa', padding: '0.4rem', borderRadius: '0.375rem' }}>
               <span style={{ fontSize: '0.68rem', color: '#c2410c', display: 'block' }}>Sonde</span>
-              <strong style={{ fontSize: '1rem', color: '#9a3412' }}>5</strong>
+              <strong style={{ fontSize: '1rem', color: '#9a3412' }}>0</strong>
             </div>
             <div style={{ background: '#fff1f2', border: '1px solid #fecdd3', padding: '0.4rem', borderRadius: '0.375rem', gridColumn: 'span 2' }}>
               <span style={{ fontSize: '0.68rem', color: '#be123c', display: 'block' }}>Kiêng đường & Ăn nhạt</span>
-              <strong style={{ fontSize: '1rem', color: '#9f1239' }}>12 cụ</strong>
+              <strong style={{ fontSize: '1rem', color: '#9f1239' }}>0 cụ</strong>
             </div>
           </div>
         </div>

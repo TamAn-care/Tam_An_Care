@@ -1,10 +1,15 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Pool, PoolClient } from 'pg';
+import {
+  ResidentAccessScopeService,
+} from '../resident-access-scope/resident-access-scope.service';
 
 type Cmd = {
   action: string;
@@ -17,7 +22,10 @@ type Cmd = {
 export class BehavioralCognitiveService {
   private readonly pool: Pool;
 
-  constructor() {
+  constructor(
+    private readonly residentAccessScope:
+      ResidentAccessScopeService,
+  ) {
     this.pool = new Pool({
       connectionString: process.env.DATABASE_URL,
       host: process.env.DB_HOST,
@@ -125,6 +133,297 @@ export class BehavioralCognitiveService {
         payload ? JSON.stringify(payload) : null,
       ],
     );
+  }
+
+  async listGuardianResidentIds(
+    actorIdInput?: string,
+    actorRoleInput?: string,
+  ) {
+    const actorId =
+      String(actorIdInput ?? '').trim();
+
+    const actorRole =
+      String(actorRoleInput ?? '')
+        .trim()
+        .toUpperCase();
+
+    if (!actorId || !actorRole) {
+      throw new UnauthorizedException(
+        'Authenticated actor identity required.',
+      );
+    }
+
+    if (actorRole !== 'GUARDIAN') {
+      throw new ForbiddenException(
+        'Guardian role required.',
+      );
+    }
+
+    const residentIds =
+      await this.residentAccessScope
+        .listAccessibleResidentIds(
+          actorId,
+          'GUARDIAN',
+        );
+
+    return {
+      residentIds,
+    };
+  }
+
+  async listPsychologicalAssessments(
+    actorIdInput?: string,
+    actorRoleInput?: string,
+    residentId?: string,
+  ) {
+    const actorId =
+      String(actorIdInput ?? '').trim();
+
+    const actorRole =
+      String(actorRoleInput ?? '')
+        .trim()
+        .toUpperCase();
+
+    const values: any[] = [];
+    let where = '';
+
+    if (actorRole === 'GUARDIAN') {
+      if (!actorId) {
+        throw new UnauthorizedException(
+          'Authenticated guardian identity required.',
+        );
+      }
+
+      const accessibleResidentIds =
+        await this.residentAccessScope
+          .listAccessibleResidentIds(
+            actorId,
+            'GUARDIAN',
+          );
+
+      if (residentId) {
+        if (
+          !accessibleResidentIds.includes(
+            residentId,
+          )
+        ) {
+          return [];
+        }
+
+        values.push(residentId);
+
+        where = `
+          WHERE
+            pa.resident_id=$1
+            AND pa.shared_with_family_at
+              IS NOT NULL
+        `;
+      } else {
+        if (!accessibleResidentIds.length) {
+          return [];
+        }
+
+        values.push(
+          accessibleResidentIds,
+        );
+
+        where = `
+          WHERE
+            pa.resident_id =
+              ANY($1::text[])
+            AND pa.shared_with_family_at
+              IS NOT NULL
+        `;
+      }
+    } else if (residentId) {
+      values.push(residentId);
+      where = 'WHERE pa.resident_id=$1';
+    }
+
+    const r = await this.pool.query(
+      `
+      SELECT
+        pa.*,
+        COALESCE(
+          to_jsonb(r)->>'full_name',
+          to_jsonb(r)->>'resident_name',
+          to_jsonb(r)->>'name',
+          pa.resident_id
+        ) AS resident_name,
+        COALESCE(
+          to_jsonb(ar)->>'room_number',
+          to_jsonb(ar)->>'room_name',
+          ''
+        ) AS room_number
+      FROM psychological_assessments pa
+      LEFT JOIN residents r
+        ON r.resident_id=pa.resident_id
+      LEFT JOIN LATERAL (
+        SELECT room.*
+        FROM bed_assignments ba
+        LEFT JOIN accommodation_beds bed
+          ON bed.bed_id=ba.bed_id
+        LEFT JOIN accommodation_rooms room
+          ON room.room_id=bed.room_id
+        WHERE ba.resident_id=pa.resident_id
+        ORDER BY
+          COALESCE(
+            (to_jsonb(ba)->>'ended_at')::timestamptz,
+            'infinity'::timestamptz
+          ) DESC
+        LIMIT 1
+      ) ar ON true
+      ${where}
+      ORDER BY
+        pa.assessment_date DESC,
+        pa.created_at DESC
+      `,
+      values,
+    );
+
+    return r.rows;
+  }
+
+  async createPsychologicalAssessment(
+    residentId: string,
+    c: Cmd,
+  ) {
+    this.requireHuman(c);
+
+    const role =
+      String(c.actorRole || '').toUpperCase();
+
+    if (
+      ![
+        'PSYCHOLOGIST',
+        'SOCIAL_WORKER',
+        'SUPERVISOR',
+        'ADMIN',
+      ].includes(role)
+    ) {
+      throw new BadRequestException(
+        'Psychological assessment requires an authorized human evaluator.',
+      );
+    }
+
+    const required = [
+      'assessmentDate',
+      'period',
+      'periodLabel',
+      'emotionalState',
+      'socialCommunication',
+      'cognitiveMemory',
+      'sleepQuality',
+      'overallConclusion',
+      'careRecommendations',
+    ];
+
+    for (const field of required) {
+      if (
+        c[field] === undefined ||
+        c[field] === null ||
+        String(c[field]).trim() === ''
+      ) {
+        throw new BadRequestException(
+          `${field} is required.`,
+        );
+      }
+    }
+
+    const evaluatorName =
+      String(
+        c.evaluatorName ||
+        c.actorName ||
+        c.displayName ||
+        c.actorId,
+      );
+
+    const evaluatorRoleLabel =
+      String(
+        c.evaluatorRoleLabel ||
+        role,
+      );
+
+    const id = randomUUID();
+    const client = await this.pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      const resident = await client.query(
+        `
+        SELECT resident_id
+        FROM residents
+        WHERE resident_id=$1
+        FOR SHARE
+        `,
+        [residentId],
+      );
+
+      if (!resident.rowCount) {
+        throw new NotFoundException(
+          'Resident not found.',
+        );
+      }
+
+      const r = await client.query(
+        `
+        INSERT INTO psychological_assessments (
+          psychological_assessment_id,
+          resident_id,
+          assessment_date,
+          period,
+          period_label,
+          emotional_state,
+          emotional_notes,
+          social_communication,
+          social_notes,
+          cognitive_memory,
+          sleep_quality,
+          overall_conclusion,
+          care_recommendations,
+          evaluator_id,
+          evaluator_name,
+          evaluator_role,
+          evaluator_role_label,
+          shared_with_family_at
+        )
+        VALUES (
+          $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
+          $11,$12,$13,$14,$15,$16,$17,NULL
+        )
+        RETURNING *
+        `,
+        [
+          id,
+          residentId,
+          c.assessmentDate,
+          c.period,
+          c.periodLabel,
+          c.emotionalState,
+          c.emotionalNotes ?? null,
+          c.socialCommunication,
+          c.socialNotes ?? null,
+          c.cognitiveMemory,
+          c.sleepQuality,
+          c.overallConclusion,
+          c.careRecommendations,
+          c.actorId,
+          evaluatorName,
+          role,
+          evaluatorRoleLabel,
+        ],
+      );
+
+      await client.query('COMMIT');
+
+      return r.rows[0];
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async execute(residentId: string, c: Cmd) {

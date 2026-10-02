@@ -766,7 +766,19 @@ export default function MedicationInventoryPage() {
       {/* TAB 2: PRESCRIPTIONS & MEDICATION ORDERS */}
       {activeTab === 'orders' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem' }}>
+          <div
+            className="card"
+            data-tamancare-medication-orders-section="true"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              padding: '1.25rem',
+              width: '100%',
+              maxWidth: '100%',
+              minWidth: 0,
+              boxSizing: 'border-box',
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div>
                 <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.15rem' }}>
@@ -810,7 +822,22 @@ export default function MedicationInventoryPage() {
               )}
             </div>
 
-            <div className="card" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <div
+              className="card"
+              data-tamancare-medication-orders-scroll="true"
+              style={{
+                padding: 0,
+                width: '100%',
+                maxWidth: '100%',
+                minWidth: 0,
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+                overscrollBehaviorX: 'contain',
+                border: '1px solid #e2e8f0',
+                borderRadius: '0.65rem',
+              }}
+            >
               <table style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>

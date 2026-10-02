@@ -25,6 +25,14 @@ interface CredentialRow {
   status: string;
 }
 
+export interface ResolvedActor {
+  actorId: string;
+  staffCode: string;
+  displayName: string;
+  actorRole: string;
+  status: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -34,33 +42,53 @@ export class AuthService {
 
   async listActiveStaff() {
     const result = await this.db.query(
-      `SELECT actor_id AS "actorId", staff_code AS "staffCode", display_name AS "displayName",
-              primary_operational_role AS "actorRole", status
+      `SELECT actor_id AS "actorId",
+              staff_code AS "staffCode",
+              display_name AS "displayName",
+              primary_operational_role AS "actorRole",
+              status
        FROM staff_actors
        WHERE status = 'ACTIVE'
-       ORDER BY 
+       ORDER BY
          CASE primary_operational_role
            WHEN 'SUPERVISOR' THEN 1
            WHEN 'CARE_MANAGER' THEN 2
            WHEN 'NURSE' THEN 3
            WHEN 'CAREGIVER' THEN 4
            ELSE 5
-         END, display_name ASC`,
+         END,
+         display_name ASC`,
     );
+
     return result.rows;
   }
 
-  async resolveActor(actorId: string) {
-    const trimmed = String(actorId || '').trim();
+  async resolveActor(
+    actorId: string,
+  ): Promise<ResolvedActor> {
+    const trimmed =
+      String(actorId || '').trim();
+
     if (!trimmed) {
-      throw new UnauthorizedException('Mã nhân viên không được để trống');
+      throw new UnauthorizedException(
+        'Mã nhân viên không được để trống',
+      );
     }
-    const normalized = trimmed.replace(/^(ta-|nv-|staff-)/i, '');
+
+    const normalized =
+      trimmed.replace(
+        /^(ta-|nv-|staff-)/i,
+        '',
+      );
+
     const result = await this.db.query(
-      `SELECT actor_id AS "actorId", staff_code AS "staffCode", display_name AS "displayName",
-              primary_operational_role AS "actorRole", status
+      `SELECT actor_id AS "actorId",
+              staff_code AS "staffCode",
+              display_name AS "displayName",
+              primary_operational_role AS "actorRole",
+              status
        FROM staff_actors
-       WHERE UPPER(actor_id) = UPPER($1) 
+       WHERE UPPER(actor_id) = UPPER($1)
           OR UPPER(staff_code) = UPPER($1)
           OR UPPER(actor_id) = UPPER('TA-' || $2)
           OR UPPER(staff_code) = UPPER('TA-' || $2)
@@ -68,27 +96,60 @@ export class AuthService {
           OR UPPER(staff_code) = UPPER('NV-' || $2)
           OR UPPER(staff_code) = UPPER($2)
        LIMIT 1`,
-      [trimmed, normalized],
+      [
+        trimmed,
+        normalized,
+      ],
     );
+
     if (!result.rows.length) {
-      throw new UnauthorizedException('Không tìm thấy nhân sự với mã: ' + trimmed);
+      throw new UnauthorizedException(
+        'Không tìm thấy nhân sự với mã: ' +
+          trimmed,
+      );
     }
-    const row = result.rows[0];
+
+    const row =
+      result.rows[0] as ResolvedActor;
+
     if (row.status !== 'ACTIVE') {
-      throw new UnauthorizedException('Tài khoản nhân sự hiện đang tạm khóa hoặc không hoạt động');
+      throw new UnauthorizedException(
+        'Tài khoản nhân sự hiện đang tạm khóa hoặc không hoạt động',
+      );
     }
+
     return row;
   }
 
   async login(
-    actorId: string,
+    actorIdOrCode: string,
     password: string,
   ) {
-    if (!actorId || !password) {
+    if (
+      !actorIdOrCode ||
+      !password
+    ) {
       throw new UnauthorizedException(
         'Invalid credentials',
       );
     }
+
+    let actor:
+      ResolvedActor;
+
+    try {
+      actor =
+        await this.resolveActor(
+          actorIdOrCode,
+        );
+    } catch {
+      throw new UnauthorizedException(
+        'Invalid credentials',
+      );
+    }
+
+    const canonicalActorId =
+      actor.actorId;
 
     const result =
       await this.db.query<CredentialRow>(
@@ -108,10 +169,13 @@ export class AuthService {
         WHERE c.actor_id = $1
         LIMIT 1
         `,
-        [actorId],
+        [
+          canonicalActorId,
+        ],
       );
 
-    const row = result.rows[0];
+    const row =
+      result.rows[0];
 
     if (
       !row ||
@@ -167,7 +231,9 @@ export class AuthService {
           updated_at = now()
         WHERE actor_id = $1
         `,
-        [actorId],
+        [
+          canonicalActorId,
+        ],
       );
 
       throw new UnauthorizedException(
@@ -185,14 +251,18 @@ export class AuthService {
         updated_at = now()
       WHERE actor_id = $1
       `,
-      [actorId],
+      [
+        canonicalActorId,
+      ],
     );
 
     const now =
-      Math.floor(Date.now() / 1000);
+      Math.floor(
+        Date.now() / 1000,
+      );
 
     const expiresAt =
-      now + 3600;
+      now + 28800;
 
     const sessionId =
       randomUUID();
@@ -216,7 +286,7 @@ export class AuthService {
       `,
       [
         sessionId,
-        row.actor_id,
+        canonicalActorId,
         row.primary_operational_role,
         now,
         expiresAt,
@@ -226,14 +296,26 @@ export class AuthService {
     return {
       accessToken:
         this.issueToken(
-          row.actor_id,
+          canonicalActorId,
           row.primary_operational_role,
           sessionId,
           now,
           expiresAt,
         ),
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn: 28800,
+      actor: {
+        actorId:
+          actor.actorId,
+        staffCode:
+          actor.staffCode,
+        displayName:
+          actor.displayName,
+        actorRole:
+          actor.actorRole,
+        status:
+          actor.status,
+      },
     };
   }
 
@@ -241,7 +323,10 @@ export class AuthService {
     actorId: string,
     sessionId: string,
   ): Promise<void> {
-    if (!actorId || !sessionId) {
+    if (
+      !actorId ||
+      !sessionId
+    ) {
       throw new UnauthorizedException(
         'Invalid authentication session',
       );
@@ -281,7 +366,10 @@ export class AuthService {
     const secret =
       process.env.JWT_SECRET;
 
-    if (!secret || secret.length < 32) {
+    if (
+      !secret ||
+      secret.length < 32
+    ) {
       throw new Error(
         'JWT_SECRET must contain at least 32 characters',
       );
@@ -291,9 +379,13 @@ export class AuthService {
       (value: unknown) =>
         Buffer
           .from(
-            JSON.stringify(value),
+            JSON.stringify(
+              value,
+            ),
           )
-          .toString('base64url');
+          .toString(
+            'base64url',
+          );
 
     const unsigned =
       `${encode({
@@ -312,8 +404,12 @@ export class AuthService {
         'sha256',
         secret,
       )
-        .update(unsigned)
-        .digest('base64url');
+        .update(
+          unsigned,
+        )
+        .digest(
+          'base64url',
+        );
 
     return `${unsigned}.${signature}`;
   }

@@ -13,6 +13,7 @@ import {
 export type ResidentAccessHumanRole =
   | 'CAREGIVER'
   | 'NURSE'
+  | 'GUARDIAN'
   | 'SUPERVISOR';
 
 export type ResidentScopeSql = {
@@ -36,6 +37,7 @@ export class ResidentAccessScopeService {
   ):
     | 'DIRECT_CARE'
     | 'CLINICAL_CARE'
+    | 'FAMILY_PORTAL'
     | null
   {
     if (actorRole === 'CAREGIVER') {
@@ -44,6 +46,10 @@ export class ResidentAccessScopeService {
 
     if (actorRole === 'NURSE') {
       return 'CLINICAL_CARE';
+    }
+
+    if (actorRole === 'GUARDIAN') {
+      return 'FAMILY_PORTAL';
     }
 
     return null;
@@ -71,6 +77,10 @@ export class ResidentAccessScopeService {
           actorRole,
         );
 
+    if (!canonicalActor) {
+      return false;
+    }
+
     const isSupervisoryRole =
       actorRole === 'SUPERVISOR' ||
       (actorRole as string) === 'ADMIN' ||
@@ -94,7 +104,7 @@ export class ResidentAccessScopeService {
           ],
         );
 
-      return result.rowCount === 1 || true;
+      return result.rowCount === 1;
     }
 
     const accessScope =
@@ -138,6 +148,70 @@ export class ResidentAccessScopeService {
       );
 
     return result.rowCount === 1;
+  }
+
+  async listAccessibleResidentIds(
+    actorIdInput: string,
+    actorRole: ResidentAccessHumanRole,
+  ): Promise<string[]> {
+    const actorId =
+      String(actorIdInput ?? '').trim();
+
+    if (!actorId) {
+      return [];
+    }
+
+    const canonicalActor =
+      await this.staffActors
+        .resolveActiveActorWithRole(
+          actorId,
+          actorRole,
+        );
+
+    if (!canonicalActor) {
+      return [];
+    }
+
+    const accessScope =
+      this.scopeForRole(actorRole);
+
+    if (!accessScope) {
+      return [];
+    }
+
+    const result =
+      await this.db.query<{
+        resident_id: string;
+      }>(
+        `
+          SELECT DISTINCT
+            raa.resident_id
+          FROM resident_access_assignments raa
+          JOIN residents r
+            ON r.resident_id = raa.resident_id
+          WHERE
+            raa.actor_id = $1
+            AND raa.actor_role = $2
+            AND raa.access_scope = $3
+            AND raa.status = 'ACTIVE'
+            AND raa.effective_from <= NOW()
+            AND (
+              raa.effective_to IS NULL
+              OR raa.effective_to > NOW()
+            )
+            AND r.active_status = true
+          ORDER BY raa.resident_id
+        `,
+        [
+          actorId,
+          actorRole,
+          accessScope,
+        ],
+      );
+
+    return result.rows.map(
+      (row) => row.resident_id,
+    );
   }
 
   sqlPredicate(

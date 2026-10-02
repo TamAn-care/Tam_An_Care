@@ -74,7 +74,7 @@ export class ResidentAccessAdministrationService {
     actor: HumanActor,
   ): Promise<{
     actorId: string;
-    actorRole: 'SUPERVISOR';
+    actorRole: 'SUPERVISOR' | 'ADMIN';
   }> {
     const actorId =
       String(actor.actorId ?? '').trim();
@@ -99,7 +99,10 @@ export class ResidentAccessAdministrationService {
       );
     }
 
-    if (actorRole !== 'SUPERVISOR') {
+    if (
+      actorRole !== 'SUPERVISOR' &&
+      actorRole !== 'ADMIN'
+    ) {
       throw new ForbiddenException(
         'Supervisor authority required.',
       );
@@ -109,7 +112,7 @@ export class ResidentAccessAdministrationService {
       await this.staffActors
         .resolveActiveActorWithRole(
           actorId,
-          'SUPERVISOR',
+          actorRole as 'SUPERVISOR' | 'ADMIN',
         );
 
     if (!canonicalSupervisor) {
@@ -121,7 +124,7 @@ export class ResidentAccessAdministrationService {
     return {
       actorId:
         canonicalSupervisor.actor_id,
-      actorRole: 'SUPERVISOR',
+      actorRole: actorRole as 'SUPERVISOR' | 'ADMIN',
     };
   }
 
@@ -201,6 +204,10 @@ export class ResidentAccessAdministrationService {
       (
         actorRole === 'NURSE' &&
         accessScope === 'CLINICAL_CARE'
+      ) ||
+      (
+        actorRole === 'GUARDIAN' &&
+        accessScope === 'FAMILY_PORTAL'
       );
 
     if (!validPair) {
@@ -442,10 +449,11 @@ export class ResidentAccessAdministrationService {
       ![
         'CAREGIVER',
         'NURSE',
+        'GUARDIAN',
       ].includes(actorRole)
     ) {
       throw new BadRequestException(
-        'actorRole must be CAREGIVER or NURSE.',
+        'actorRole must be CAREGIVER, NURSE or GUARDIAN.',
       );
     }
 

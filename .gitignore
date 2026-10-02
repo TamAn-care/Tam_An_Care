@@ -37,3 +37,8 @@ Thumbs.db
 # Python
 __pycache__/
 *.pyc
+# Production secrets / database artifacts
+.env.*
+*.dump
+*.sql.gz
+*.tsbuildinfo

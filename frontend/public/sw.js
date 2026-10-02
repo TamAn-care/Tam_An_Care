@@ -1,4 +1,4 @@
-const CACHE_NAME = 'taman-care-cache-v7.5';
+const CACHE_NAME = 'taman-care-cache-mimefix-v4-20260929_205847';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',

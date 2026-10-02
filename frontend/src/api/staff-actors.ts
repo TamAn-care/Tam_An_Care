@@ -3,8 +3,9 @@ import type {
   HumanActorRole,
 } from '../types/actor';
 
-import { recordSystemAuditLog } from './audit-log';
-import { getStoredAdminPassword, setStoredAdminPassword } from './auth';
+import {
+  apiRequest,
+} from './client';
 
 export type StaffActorStatus =
   | 'ACTIVE'
@@ -16,12 +17,14 @@ export interface StaffActor {
   actorId: string;
   staffCode: string;
   displayName: string;
-  primaryOperationalRole: HumanActorRole;
+  primaryOperationalRole:
+    HumanActorRole;
   department: string;
   email: string;
   phone: string;
   status: StaffActorStatus;
-  employmentReference: string | null;
+  employmentReference:
+    string | null;
   initialPassword?: string;
   lastPasswordResetAt?: string;
   createdByActorId?: string;
@@ -41,7 +44,8 @@ export interface CreateStaffAccountInput {
   actorId?: string;
   staffCode?: string;
   displayName: string;
-  primaryOperationalRole: HumanActorRole;
+  primaryOperationalRole:
+    HumanActorRole;
   department: string;
   email: string;
   phone: string;
@@ -60,745 +64,454 @@ export interface UpdateStaffStatusInput {
   reason?: string;
 }
 
-// In-Memory Mock Staff Dataset
-export let mockStaffActors: StaffActor[] = [
-  {
-    actorId: 'Admin',
-    staffCode: 'ADMIN-001',
-    displayName: 'Quản trị viên hệ thống',
-    primaryOperationalRole: 'ADMIN',
-    department: 'Ban Quản Trị Hệ Thống',
-    email: 'admin@tamancare.vn',
-    phone: '0900 000 001',
-    status: 'ACTIVE',
-    employmentReference: 'SUPER-ADMIN-ROOT',
-    initialPassword: 'Admin',
-    lastPasswordResetAt: '2026-09-02T08:00:00+07:00',
-    createdByActorId: 'SYSTEM-ROOT',
-    createdByActorName: 'Quản Trị Hệ Thống',
-    createdAt: '2026-08-01T00:00:00+07:00',
-    updatedAt: '2026-09-02T08:00:00+07:00',
-  },
-  {
-    actorId: 'TA-DIR-01',
-    staffCode: 'TA-DIR-01',
-    displayName: 'Hoàng Quốc Anh',
-    primaryOperationalRole: 'SUPERVISOR',
-    department: 'Ban Giám đốc',
-    email: 'quocanh.hoang@tamancare.vn',
-    phone: '0912 345 678',
-    status: 'ACTIVE',
-    employmentReference: 'QĐ-01/2026/BGD-TA',
-    initialPassword: 'TamAn@Director#2026',
-    lastPasswordResetAt: '2026-08-01T08:00:00+07:00',
-    createdByActorId: 'Admin',
-    createdByActorName: 'Quản trị viên hệ thống',
-    createdAt: '2026-08-01T08:00:00+07:00',
-    updatedAt: '2026-09-01T14:15:30+07:00',
-  },
-  {
-    actorId: 'TA-MGR-01',
-    staffCode: 'TA-MGR-01',
-    displayName: 'Nguyễn Thị Thu Hà',
-    primaryOperationalRole: 'CARE_MANAGER',
-    department: 'Khối Quản Lý Vận Hành',
-    email: 'thuha.nguyen@tamancare.vn',
-    phone: '0988 765 432',
-    status: 'ACTIVE',
-    employmentReference: 'QĐ-02/2026/BGD-TA',
-    initialPassword: 'TamAn@Manager#2026',
-    lastPasswordResetAt: '2026-08-05T09:30:00+07:00',
-    createdByActorId: 'TA-DIR-01',
-    createdByActorName: 'Hoàng Quốc Anh',
-    createdAt: '2026-08-05T09:30:00+07:00',
-    updatedAt: '2026-09-01T16:00:00+07:00',
-  },
-  {
-    actorId: 'TA-MED-01',
-    staffCode: 'TA-MED-01',
-    displayName: 'BS. Lê Hoàng Nam',
-    primaryOperationalRole: 'MEDICAL_HEAD',
-    department: 'Khối Y Tế',
-    email: 'hoangnam.le@tamancare.vn',
-    phone: '0903 888 999',
-    status: 'ACTIVE',
-    employmentReference: 'QĐ-05/2026/BGD-TA',
-    initialPassword: 'TamAn@Medical#2026',
-    lastPasswordResetAt: '2026-08-06T09:00:00+07:00',
-    createdByActorId: 'TA-DIR-01',
-    createdByActorName: 'Hoàng Quốc Anh',
-    createdAt: '2026-08-06T09:00:00+07:00',
-    updatedAt: '2026-09-01T16:30:00+07:00',
-  },
-  {
-    actorId: 'TA-NUR-01',
-    staffCode: 'TA-NUR-01',
-    displayName: 'Trần Thị Mai',
-    primaryOperationalRole: 'NURSE',
-    department: 'Khối Y Tế',
-    email: 'mai.tran@tamancare.vn',
-    phone: '0977 123 456',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-12/2026/TA',
-    initialPassword: 'TamAn@Nurse#2026',
-    lastPasswordResetAt: '2026-08-10T10:00:00+07:00',
-    createdByActorId: 'TA-MGR-01',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-10T10:00:00+07:00',
-    updatedAt: '2026-08-10T10:00:00+07:00',
-  },
-  {
-    actorId: 'TA-CG-01',
-    staffCode: 'TA-CG-01',
-    displayName: 'Lê Văn Nam',
-    primaryOperationalRole: 'CAREGIVER',
-    department: 'Khối Chăm Sóc Trực Tiếp',
-    email: 'nam.le@tamancare.vn',
-    phone: '0934 567 890',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-18/2026/TA',
-    initialPassword: 'TamAn@Care#2026',
-    lastPasswordResetAt: '2026-08-12T14:20:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-12T14:20:00+07:00',
-    updatedAt: '2026-08-12T14:20:00+07:00',
-  },
-  {
-    actorId: 'STAFF-CG-005',
-    staffCode: 'NV-CG-005',
-    displayName: 'Phạm Thị Lan',
-    primaryOperationalRole: 'CAREGIVER',
-    department: 'Khối Chăm Sóc Trực Tiếp',
-    email: 'lan.pham@tamancare.vn',
-    phone: '0903 221 144',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-22/2026/TA',
-    initialPassword: 'TamAn@Care#2026',
-    lastPasswordResetAt: '2026-08-15T11:00:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-15T11:00:00+07:00',
-    updatedAt: '2026-08-15T11:00:00+07:00',
-  },
-  {
-    actorId: 'STAFF-NUT-007',
-    staffCode: 'NV-NUT-007',
-    displayName: 'Hoàng Minh Châu',
-    primaryOperationalRole: 'NUTRITIONIST',
-    department: 'Bộ Phận Dinh Dưỡng & Bếp Ăn',
-    email: 'chau.hoang@tamancare.vn',
-    phone: '0918 998 877',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-08/2026/TA',
-    initialPassword: 'TamAn@Nutri#2026',
-    lastPasswordResetAt: '2026-08-08T08:30:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-08T08:30:00+07:00',
-    updatedAt: '2026-08-08T08:30:00+07:00',
-  },
-  {
-    actorId: 'STAFF-ACC-008',
-    staffCode: 'NV-ACC-008',
-    displayName: 'Vũ Bích Ngọc',
-    primaryOperationalRole: 'ACCOUNTANT',
-    department: 'Phòng Kế Toán & Viện Phí',
-    email: 'ngoc.vu@tamancare.vn',
-    phone: '0966 332 211',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-05/2026/TA',
-    initialPassword: 'TamAn@Finance#2026',
-    lastPasswordResetAt: '2026-08-02T09:00:00+07:00',
-    createdByActorId: 'STAFF-DIR-001',
-    createdByActorName: 'Hoàng Quốc Anh',
-    createdAt: '2026-08-02T09:00:00+07:00',
-    updatedAt: '2026-08-02T09:00:00+07:00',
-  },
-  {
-    actorId: 'STAFF-REC-009',
-    staffCode: 'NV-REC-009',
-    displayName: 'Đặng Thanh Tâm',
-    primaryOperationalRole: 'RECEPTIONIST',
-    department: 'Bộ Phận Lễ Tân & Tiếp Đón',
-    email: 'tam.dang@tamancare.vn',
-    phone: '0945 667 788',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-15/2026/TA',
-    initialPassword: 'TamAn@Welcome#2026',
-    lastPasswordResetAt: '2026-08-20T13:45:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-20T13:45:00+07:00',
-    updatedAt: '2026-08-20T13:45:00+07:00',
-  },
-  {
-    actorId: 'STAFF-COM-015',
-    staffCode: 'NV-COM-015',
-    displayName: 'Nguyễn Văn Minh',
-    primaryOperationalRole: 'COMMUNICATIONS',
-    department: 'Bộ Phận Truyền Thông & Marketing',
-    email: 'minh.nguyen@tamancare.vn',
-    phone: '0955 889 900',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-30/2026/TA',
-    initialPassword: 'TamAn@Media#2026',
-    lastPasswordResetAt: '2026-08-29T09:00:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-29T09:00:00+07:00',
-    updatedAt: '2026-08-29T09:00:00+07:00',
-  },
-  {
-    actorId: 'STAFF-PSY-010',
-    staffCode: 'NV-PSY-010',
-    displayName: 'Lý Quốc Cường',
-    primaryOperationalRole: 'PSYCHOLOGIST',
-    department: 'Tư Vấn & Trị Liệu Tâm Lý',
-    email: 'cuong.ly@tamancare.vn',
-    phone: '0922 445 566',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-09/2026/TA',
-    initialPassword: 'TamAn@Psy#2026',
-    lastPasswordResetAt: '2026-08-18T10:15:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-18T10:15:00+07:00',
-    updatedAt: '2026-08-18T10:15:00+07:00',
-  },
-  {
-    actorId: 'STAFF-SW-011',
-    staffCode: 'NV-SW-011',
-    displayName: 'Bùi Thị Loan',
-    primaryOperationalRole: 'SOCIAL_WORKER',
-    department: 'Công Tác Xã Hội & Đời Sống',
-    email: 'loan.bui@tamancare.vn',
-    phone: '0978 112 299',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-16/2026/TA',
-    initialPassword: 'TamAn@Social#2026',
-    lastPasswordResetAt: '2026-08-22T09:00:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-22T09:00:00+07:00',
-    updatedAt: '2026-08-22T09:00:00+07:00',
-  },
-  {
-    actorId: 'STAFF-REH-012',
-    staffCode: 'NV-REH-012',
-    displayName: 'Đỗ Hữu Phước',
-    primaryOperationalRole: 'REHABILITATION_SPECIALIST',
-    department: 'Vật Lý Trị Liệu & PHCN',
-    email: 'phuoc.do@tamancare.vn',
-    phone: '0933 887 766',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-19/2026/TA',
-    initialPassword: 'TamAn@Rehab#2026',
-    lastPasswordResetAt: '2026-08-25T15:30:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-25T15:30:00+07:00',
-    updatedAt: '2026-08-25T15:30:00+07:00',
-  },
-  {
-    actorId: 'STAFF-HK-013',
-    staffCode: 'NV-HK-013',
-    displayName: 'Nguyễn Văn Tiến',
-    primaryOperationalRole: 'HOUSEKEEPING',
-    department: 'Bộ Phận Buồng Phòng & Tạp Vụ',
-    email: 'tien.nguyen@tamancare.vn',
-    phone: '0908 554 433',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-25/2026/TA',
-    initialPassword: 'TamAn@House#2026',
-    lastPasswordResetAt: '2026-08-26T08:00:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-26T08:00:00+07:00',
-    updatedAt: '2026-08-26T08:00:00+07:00',
-  },
-  {
-    actorId: 'STAFF-SEC-014',
-    staffCode: 'NV-SEC-014',
-    displayName: 'Trần Văn Mạnh',
-    primaryOperationalRole: 'SECURITY',
-    department: 'Đội An Ninh & Trật Tự',
-    email: 'manh.tran@tamancare.vn',
-    phone: '0919 778 899',
-    status: 'ACTIVE',
-    employmentReference: 'HĐLĐ-28/2026/TA',
-    initialPassword: 'TamAn@Security#2026',
-    lastPasswordResetAt: '2026-08-28T07:30:00+07:00',
-    createdByActorId: 'STAFF-MGR-002',
-    createdByActorName: 'Nguyễn Thị Thu Hà',
-    createdAt: '2026-08-28T07:30:00+07:00',
-    updatedAt: '2026-08-28T07:30:00+07:00',
-  },
-];
-
-export function generateSecurePassword(): string {
-  const upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-  const lower = 'abcdefghijkmnpqrstuvwxyz';
-  const digits = '23456789';
-  const special = '@#$%=+';
-  const all = upper + lower + digits + special;
-
-  let pwd = '';
-  pwd += upper[Math.floor(Math.random() * upper.length)];
-  pwd += lower[Math.floor(Math.random() * lower.length)];
-  pwd += digits[Math.floor(Math.random() * digits.length)];
-  pwd += special[Math.floor(Math.random() * special.length)];
-
-  for (let i = 0; i < 8; i++) {
-    pwd += all[Math.floor(Math.random() * all.length)];
-  }
-
-  return `TamAn@${pwd}`;
+interface StaffListResponse {
+  items: StaffActor[];
+  count: number;
+  limit: number;
 }
 
-export async function listStaffActors(
+const SUPPORTED_CREATE_ROLES:
+  readonly HumanActorRole[] = [
+    'ADMIN',
+    'SUPERVISOR',
+    'CARE_MANAGER',
+    'MEDICAL_HEAD',
+    'NURSE',
+    'CAREGIVER',
+    'NUTRITIONIST',
+    'ACCOUNTANT',
+    'RECEPTIONIST',
+    'PSYCHOLOGIST',
+    'SOCIAL_WORKER',
+    'REHABILITATION_SPECIALIST',
+    'COMMUNICATIONS',
+    'HOUSEKEEPING',
+    'SECURITY',
+    'GUARDIAN',
+  ];
+
+function requireActor(
   actor: HumanActorSession | null,
-  options: StaffActorListOptions = {},
-): Promise<StaffActor[]> {
-  await new Promise((r) => setTimeout(r, 80));
-
-  // Sync Admin password from storage
-  const adminAccount = mockStaffActors.find((s) => s.actorId === 'Admin');
-  if (adminAccount) {
-    adminAccount.initialPassword = getStoredAdminPassword();
-  }
-
-  let results = [...mockStaffActors];
-
-  if (options.role && options.role !== ('ALL' as any)) {
-    results = results.filter((s) => s.primaryOperationalRole === options.role);
-  }
-
-  if (options.status && options.status !== ('ALL' as any)) {
-    results = results.filter((s) => s.status === options.status);
-  }
-
-  if (options.searchTerm && options.searchTerm.trim()) {
-    const q = options.searchTerm.toLowerCase();
-    results = results.filter(
-      (s) =>
-        s.displayName.toLowerCase().includes(q) ||
-        s.actorId.toLowerCase().includes(q) ||
-        s.staffCode.toLowerCase().includes(q) ||
-        s.department.toLowerCase().includes(q) ||
-        s.email.toLowerCase().includes(q) ||
-        s.phone.includes(q)
+): HumanActorSession {
+  if (!actor) {
+    throw new Error(
+      'Chưa xác định phiên làm việc. Vui lòng đăng nhập.',
     );
   }
 
-  return results;
+  return actor;
 }
 
-export async function getStaffActor(
-  actorId: string,
-  actor: HumanActorSession | null,
-): Promise<StaffActor> {
-  await new Promise((r) => setTimeout(r, 50));
-  const found = mockStaffActors.find((s) => s.actorId === actorId || s.staffCode === actorId);
-  if (!found) {
-    throw new Error(`Không tìm thấy nhân sự với mã ${actorId}`);
+export function generateSecurePassword():
+  string {
+  const chars =
+    'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#$%=+';
+
+  const bytes =
+    new Uint32Array(14);
+
+  window.crypto.getRandomValues(
+    bytes,
+  );
+
+  let result = 'Ta@';
+
+  for (
+    let i = 0;
+    i < bytes.length;
+    i += 1
+  ) {
+    result +=
+      chars[
+        bytes[i] %
+          chars.length
+      ];
   }
-  return found;
+
+  return result;
 }
 
 export function getNextSequentialStaffCode(
   role: HumanActorRole,
-  existingList?: Array<{ staffCode?: string; actorId?: string }>,
-): { staffCode: string; actorId: string; prefix: string; seqNumber: number } {
-  const rolePrefixMap: Record<HumanActorRole, string> = {
-    ADMIN: 'ADM',
-    SUPERVISOR: 'DIR',
-    CARE_MANAGER: 'MGR',
-    MEDICAL_HEAD: 'MED',
-    NURSE: 'NUR',
-    CAREGIVER: 'CG',
-    NUTRITIONIST: 'NUT',
-    ACCOUNTANT: 'ACC',
-    RECEPTIONIST: 'REC',
-    PSYCHOLOGIST: 'PSY',
-    SOCIAL_WORKER: 'SW',
-    REHABILITATION_SPECIALIST: 'REH',
-    COMMUNICATIONS: 'COM',
-    HOUSEKEEPING: 'HK',
-    SECURITY: 'SEC',
-    GUARDIAN: 'GUA',
-  };
+  existingList:
+    Array<{
+      staffCode?: string;
+      actorId?: string;
+    }> = [],
+): {
+  staffCode: string;
+  actorId: string;
+  prefix: string;
+  seqNumber: number;
+} {
+  const prefixMap:
+    Partial<
+      Record<
+        HumanActorRole,
+        string
+      >
+    > = {
+      SUPERVISOR: 'DIR',
+      CARE_MANAGER: 'MGR',
+      NURSE: 'NUR',
+      CAREGIVER: 'CG',
+    };
 
-  const prefix = rolePrefixMap[role] || 'STF';
+  const prefix =
+    prefixMap[role] ||
+    'STF';
 
-  // Gather all accounts to calculate highest sequence number
-  const allAccounts = existingList ?? mockStaffActors;
-
-  // Also check localStorage created staff if available
-  let localCreated: Array<{ staffCode?: string; actorId?: string }> = [];
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('tamancare_created_staff');
-      if (stored) localCreated = JSON.parse(stored);
-    } catch {
-      // ignore
-    }
-  }
-
-  const mergedList = [...allAccounts, ...localCreated];
   let maxSeq = 0;
-  const pattern = new RegExp(`(?:TA-|NV-|STAFF-)?${prefix}[-_]?(\\d+)`, 'i');
 
-  for (const item of mergedList) {
-    if (!item) continue;
-    const codes = [item.staffCode, item.actorId].filter(Boolean);
-    for (const codeStr of codes) {
-      const match = (codeStr as string).match(pattern);
-      if (match && match[1]) {
-        const num = parseInt(match[1], 10);
-        if (!isNaN(num) && num > maxSeq) {
-          maxSeq = num;
+  const pattern =
+    new RegExp(
+      `(?:TA-|NV-|STAFF-)?${prefix}[-_]?(\\d+)`,
+      'i',
+    );
+
+  for (const item of existingList) {
+    for (
+      const code
+      of [
+        item.staffCode,
+        item.actorId,
+      ]
+    ) {
+      if (!code) {
+        continue;
+      }
+
+      const match =
+        code.match(pattern);
+
+      if (match?.[1]) {
+        const n =
+          Number(match[1]);
+
+        if (
+          Number.isFinite(n) &&
+          n > maxSeq
+        ) {
+          maxSeq = n;
         }
       }
     }
   }
 
-  const nextSeq = maxSeq + 1;
-  const seqPadded = String(nextSeq).padStart(2, '0');
+  const seqNumber =
+    maxSeq + 1;
+
+  const seq =
+    String(seqNumber)
+      .padStart(2, '0');
 
   return {
-    staffCode: `TA-${prefix}-${seqPadded}`,
-    actorId: `TA-${prefix}-${seqPadded}`,
+    staffCode:
+      `TA-${prefix}-${seq}`,
+    actorId:
+      `TA-${prefix}-${seq}`,
     prefix,
-    seqNumber: nextSeq,
+    seqNumber,
   };
+}
+
+export async function listStaffActors(
+  actor:
+    HumanActorSession | null,
+  options:
+    StaffActorListOptions = {},
+): Promise<StaffActor[]> {
+  requireActor(actor);
+
+  const params =
+    new URLSearchParams();
+
+  params.set(
+    'limit',
+    String(
+      Math.min(
+        options.limit || 100,
+        100,
+      ),
+    ),
+  );
+
+  if (
+    options.status &&
+    options.status !==
+      ('ALL' as StaffActorStatus)
+  ) {
+    params.set(
+      'status',
+      options.status,
+    );
+  }
+
+  const response =
+    await apiRequest<
+      StaffListResponse
+    >(
+      `/api/operations/staff-actors?${params.toString()}`,
+      {
+        actor,
+      },
+    );
+
+  let items =
+    response.items || [];
+
+  if (
+    options.role &&
+    options.role !==
+      ('ALL' as HumanActorRole)
+  ) {
+    items =
+      items.filter(
+        (item) =>
+          item.primaryOperationalRole ===
+            options.role,
+      );
+  }
+
+  if (
+    options.searchTerm?.trim()
+  ) {
+    const q =
+      options.searchTerm
+        .trim()
+        .toLowerCase();
+
+    items =
+      items.filter(
+        (item) =>
+          item.displayName
+            .toLowerCase()
+            .includes(q)
+          ||
+          item.staffCode
+            .toLowerCase()
+            .includes(q)
+          ||
+          item.actorId
+            .toLowerCase()
+            .includes(q)
+          ||
+          item.department
+            .toLowerCase()
+            .includes(q)
+          ||
+          item.email
+            .toLowerCase()
+            .includes(q)
+          ||
+          item.phone
+            .includes(q),
+      );
+  }
+
+  return items;
+}
+
+export async function getStaffActor(
+  actorId: string,
+  actor:
+    HumanActorSession | null,
+): Promise<StaffActor> {
+  requireActor(actor);
+
+  return apiRequest<StaffActor>(
+    `/api/operations/staff-actors/${encodeURIComponent(actorId)}`,
+    {
+      actor,
+    },
+  );
 }
 
 export async function createStaffAccount(
-  actor: HumanActorSession | null,
-  input: CreateStaffAccountInput,
+  actor:
+    HumanActorSession | null,
+  input:
+    CreateStaffAccountInput,
 ): Promise<StaffActor> {
-  await new Promise((r) => setTimeout(r, 120));
+  requireActor(actor);
 
-  if (!actor) {
-    throw new Error('Chưa xác định phiên làm việc. Vui lòng đăng nhập.');
+  if (
+    !SUPPORTED_CREATE_ROLES
+      .includes(
+        input.primaryOperationalRole,
+      )
+  ) {
+    throw new Error(
+      'Vai trò nhân sự không hợp lệ hoặc chưa được TamAnCare hỗ trợ.',
+    );
   }
 
-  // PHÂN QUYỀN CẤP BẬC (RBAC HIERARCHY):
-  if (input.primaryOperationalRole === 'ADMIN' && actor.actorRole !== 'ADMIN') {
-    throw new Error('Quyền hạn bị từ chối: Chỉ Quản trị viên Tối cao (Admin) mới có quyền tạo tài khoản Admin.');
+  const initialPassword =
+    input.initialPassword?.trim()
+    || generateSecurePassword();
+
+  if (initialPassword.length < 12) {
+    throw new Error(
+      'Mật khẩu phải có ít nhất 12 ký tự.',
+    );
   }
 
-  if (actor.actorRole === 'CARE_MANAGER' && (input.primaryOperationalRole === 'SUPERVISOR' || input.primaryOperationalRole === 'ADMIN')) {
-    throw new Error('Quyền hạn bị từ chối: Quản lý không có thẩm quyền tạo tài khoản thuộc Ban Giám đốc hoặc Admin.');
-  }
+  const result =
+    await apiRequest<StaffActor>(
+      '/api/operations/staff-actors',
+      {
+        method: 'POST',
+        actor,
+        body:
+          JSON.stringify({
+            staffCode:
+              input.staffCode,
+            displayName:
+              input.displayName,
+            primaryOperationalRole:
+              input.primaryOperationalRole,
+            department:
+              input.department,
+            email:
+              input.email,
+            phone:
+              input.phone,
+            employmentReference:
+              null,
+            initialPassword,
+          }),
+      },
+    );
 
-  if (actor.actorRole !== 'ADMIN' && actor.actorRole !== 'SUPERVISOR' && actor.actorRole !== 'CARE_MANAGER') {
-    throw new Error('Quyền hạn bị từ chối: Bạn không có quyền cấp tài khoản.');
-  }
-
-  const seqInfo = getNextSequentialStaffCode(input.primaryOperationalRole, mockStaffActors);
-  const actorId = input.actorId?.trim() || seqInfo.actorId;
-  const staffCode = input.staffCode?.trim() || seqInfo.staffCode;
-  const initialPassword = input.initialPassword?.trim() || generateSecurePassword();
-
-  const newStaff: StaffActor = {
-    actorId,
-    staffCode,
-    displayName: input.displayName.trim(),
-    primaryOperationalRole: input.primaryOperationalRole,
-    department: input.department.trim() || 'Vận Hành & Chăm Sóc',
-    email: input.email.trim(),
-    phone: input.phone.trim(),
-    status: 'ACTIVE',
-    employmentReference: `HĐLĐ-${seqInfo.seqNumber}/2026/TA`,
+  return {
+    ...result,
     initialPassword,
-    lastPasswordResetAt: new Date().toISOString(),
-    createdByActorId: actor.actorId || 'STAFF-UNKNOWN',
-    createdByActorName: `${actor.displayName || 'Nhân sự'} (${actor.actorRole === 'ADMIN' ? 'Admin' : actor.actorRole === 'SUPERVISOR' ? 'Ban Giám đốc' : 'Quản lý'})`,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
   };
-
-  mockStaffActors = [newStaff, ...mockStaffActors];
-
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('tamancare_created_staff');
-      const existingList = stored ? JSON.parse(stored) : [];
-      const newActiveMember = {
-        actorId: newStaff.actorId,
-        staffCode: newStaff.staffCode,
-        displayName: newStaff.displayName,
-        actorRole: newStaff.primaryOperationalRole,
-        status: newStaff.status,
-      };
-      if (!existingList.some((s: any) => s.actorId === newActiveMember.actorId || s.staffCode === newActiveMember.staffCode)) {
-        existingList.push(newActiveMember);
-        localStorage.setItem('tamancare_created_staff', JSON.stringify(existingList));
-      }
-    } catch {
-      // Ignore storage errors
-    }
-  }
-
-  // Ghi nhật ký kiểm toán quy trách nhiệm
-  await recordSystemAuditLog({
-    actorId: actor.actorId || 'STAFF-UNKNOWN',
-    actorName: actor.displayName || 'Nhân sự cấp tài khoản',
-    actorRole: actor.actorRole || 'ADMIN',
-    actorRoleLabel: actor.actorRole === 'ADMIN' ? 'Quản trị viên Tối cao' : actor.actorRole === 'SUPERVISOR' ? 'Ban Giám đốc' : 'Quản lý',
-    actionType: 'CREATE',
-    actionLabel: 'Cấp tài khoản & mật khẩu nhân sự mới',
-    module: 'SYSTEM_ADMIN',
-    moduleLabel: 'Nhân Sự & Phân Quyền',
-    targetEntityId: newStaff.actorId,
-    targetEntityName: `${newStaff.displayName} (${newStaff.staffCode})`,
-    summary: `Khởi tạo tài khoản ID ${newStaff.actorId} cho ${newStaff.displayName} với vai trò ${newStaff.primaryOperationalRole}.`,
-    details: `Mã NV: ${newStaff.staffCode} | Bộ phận: ${newStaff.department} | Email: ${newStaff.email} | SĐT: ${newStaff.phone} | Cấp bởi: ${newStaff.createdByActorName}.`,
-    previousValue: 'Chưa có tài khoản',
-    newValue: `Đã cấp tài khoản: ACTIVE (${newStaff.primaryOperationalRole})`,
-    severity: (newStaff.primaryOperationalRole === 'ADMIN' || newStaff.primaryOperationalRole === 'SUPERVISOR') ? 'CRITICAL' : 'IMPORTANT',
-  });
-
-  return newStaff;
 }
 
 export async function resetStaffPassword(
-  actor: HumanActorSession | null,
-  input: ResetStaffPasswordInput,
-): Promise<{ success: boolean; newPassword: string }> {
-  await new Promise((r) => setTimeout(r, 100));
+  actor:
+    HumanActorSession | null,
+  input:
+    ResetStaffPasswordInput,
+): Promise<{
+  success: boolean;
+  newPassword: string;
+}> {
+  requireActor(actor);
 
-  if (!actor) {
-    throw new Error('Chưa xác định phiên làm việc.');
+  // PROTECTED_ADMIN_ACCOUNT
+  if (input.actorId === 'TA-DIR-001') {
+    throw new Error(
+      'Tài khoản quản trị TA-DIR-001 được bảo vệ. '
+      + 'Chỉ có thể đổi mật khẩu bằng chức năng Đổi mật khẩu cá nhân.',
+    );
   }
 
-  const staff = mockStaffActors.find((s) => s.actorId === input.actorId);
-  if (!staff) {
-    throw new Error(`Không tìm thấy tài khoản với mã ${input.actorId}`);
+
+  const password =
+    input.newPassword?.trim()
+    || generateSecurePassword();
+
+  if (password.length < 12) {
+    throw new Error(
+      'Mật khẩu phải có ít nhất 12 ký tự.',
+    );
   }
 
-  // BẢO MẬT CẤP BẬC:
-  if (staff.primaryOperationalRole === 'ADMIN' && actor.actorRole !== 'ADMIN') {
-    throw new Error('Quyền hạn bị từ chối: Chỉ Quản trị viên Tối cao (Admin) mới có quyền đổi mật khẩu tài khoản Admin.');
-  }
+  await apiRequest(
+    `/api/operations/staff-actors/${encodeURIComponent(input.actorId)}/reset-password`,
+    {
+      method: 'POST',
+      actor,
+      body:
+        JSON.stringify({
+          newPassword:
+            password,
+        }),
+    },
+  );
 
-  if (actor.actorRole === 'CARE_MANAGER' && (staff.primaryOperationalRole === 'SUPERVISOR' || staff.primaryOperationalRole === 'ADMIN')) {
-    throw new Error('Quyền hạn bị từ chối: Quản lý không có quyền đặt lại mật khẩu của Ban Giám đốc hoặc Admin.');
-  }
-
-  const newPassword = input.newPassword?.trim() || generateSecurePassword();
-  staff.initialPassword = newPassword;
-  staff.lastPasswordResetAt = new Date().toISOString();
-  staff.updatedAt = new Date().toISOString();
-
-  // If this is the Admin account, persist to local storage
-  if (staff.actorId === 'Admin' || staff.primaryOperationalRole === 'ADMIN') {
-    setStoredAdminPassword(newPassword);
-  }
-
-  // Ghi nhật ký kiểm toán
-  await recordSystemAuditLog({
-    actorId: actor.actorId || 'STAFF-UNKNOWN',
-    actorName: actor.displayName || 'Nhân sự',
-    actorRole: actor.actorRole || 'ADMIN',
-    actorRoleLabel: actor.actorRole === 'ADMIN' ? 'Quản trị viên Tối cao' : actor.actorRole === 'SUPERVISOR' ? 'Ban Giám đốc' : 'Quản lý',
-    actionType: 'UPDATE',
-    actionLabel: 'Đặt lại mật khẩu tài khoản nhân sự',
-    module: 'SYSTEM_ADMIN',
-    moduleLabel: 'Nhân Sự & Phân Quyền',
-    targetEntityId: staff.actorId,
-    targetEntityName: `${staff.displayName} (${staff.staffCode})`,
-    summary: `Đặt lại mật khẩu truy cập cho tài khoản ${staff.displayName} (${staff.actorId}).`,
-    details: `Thực hiện bởi: ${actor.displayName} (${actor.actorRole}). Mật khẩu mới đã được cập nhật thành công và sẵn sàng gửi cho nhân sự.`,
-    severity: 'IMPORTANT',
-  });
-
-  return { success: true, newPassword };
+  return {
+    success: true,
+    newPassword: password,
+  };
 }
 
 export async function updateStaffStatus(
-  actor: HumanActorSession | null,
-  input: UpdateStaffStatusInput,
+  actor:
+    HumanActorSession | null,
+  input:
+    UpdateStaffStatusInput,
 ): Promise<StaffActor> {
-  await new Promise((r) => setTimeout(r, 100));
+  requireActor(actor);
 
-  if (!actor) {
-    throw new Error('Chưa xác định phiên làm việc.');
-  }
-
-  const staff = mockStaffActors.find((s) => s.actorId === input.actorId);
-  if (!staff) {
-    throw new Error(`Không tìm thấy tài khoản với mã ${input.actorId}`);
-  }
-
-  // BẢO MẬT CẤP BẬC:
-  if (staff.primaryOperationalRole === 'ADMIN' && actor.actorRole !== 'ADMIN') {
-    throw new Error('Quyền hạn bị từ chối: Không thể thay đổi trạng thái của tài khoản Quản trị viên Tối cao (Admin).');
-  }
-
-  if (actor.actorRole === 'CARE_MANAGER' && (staff.primaryOperationalRole === 'SUPERVISOR' || staff.primaryOperationalRole === 'ADMIN')) {
-    throw new Error('Quyền hạn bị từ chối: Quản lý không có quyền thay đổi trạng thái tài khoản Ban Giám đốc hoặc Admin.');
-  }
-
-  const prevStatus = staff.status;
-  staff.status = input.status;
-  staff.updatedAt = new Date().toISOString();
-
-  // Ghi nhật ký kiểm toán
-  await recordSystemAuditLog({
-    actorId: actor.actorId || 'STAFF-UNKNOWN',
-    actorName: actor.displayName || 'Nhân sự',
-    actorRole: actor.actorRole || 'ADMIN',
-    actorRoleLabel: actor.actorRole === 'ADMIN' ? 'Quản trị viên Tối cao' : actor.actorRole === 'SUPERVISOR' ? 'Ban Giám đốc' : 'Quản lý',
-    actionType: 'UPDATE',
-    actionLabel: 'Cập nhật trạng thái tài khoản nhân sự',
-    module: 'SYSTEM_ADMIN',
-    moduleLabel: 'Nhân Sự & Phân Quyền',
-    targetEntityId: staff.actorId,
-    targetEntityName: `${staff.displayName} (${staff.staffCode})`,
-    summary: `Thay đổi trạng thái tài khoản ${staff.displayName} từ ${prevStatus} sang ${input.status}.`,
-    details: `Lý do: ${input.reason || 'Điều chỉnh nhân sự theo quyết định vận hành'}. Thực hiện bởi: ${actor.displayName}.`,
-    previousValue: `Trạng thái cũ: ${prevStatus}`,
-    newValue: `Trạng thái mới: ${input.status}`,
-    severity: input.status === 'SUSPENDED' ? 'CRITICAL' : 'IMPORTANT',
-  });
-
-  return staff;
+  return apiRequest<StaffActor>(
+    `/api/operations/staff-actors/${encodeURIComponent(input.actorId)}/status`,
+    {
+      method: 'POST',
+      actor,
+      body:
+        JSON.stringify({
+          status:
+            input.status,
+          reason:
+            input.reason,
+        }),
+    },
+  );
 }
 
 export async function changeSelfPassword(
-  actor: HumanActorSession | null,
+  actor:
+    HumanActorSession | null,
   currentPasswordInput: string,
   newPasswordInput: string,
-): Promise<{ success: boolean; message: string }> {
-  await new Promise((r) => setTimeout(r, 100));
+): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  requireActor(actor);
 
-  if (!actor) {
-    throw new Error('Chưa xác định phiên làm việc. Vui lòng đăng nhập.');
+  const newPassword =
+    newPasswordInput.trim();
+
+  if (newPassword.length < 12) {
+    throw new Error(
+      'Mật khẩu mới phải có ít nhất 12 ký tự.',
+    );
   }
 
-  // Find the staff account or admin
-  let staff = mockStaffActors.find((s) => s.actorId === actor.actorId);
-  if (!staff && actor.actorRole === 'ADMIN') {
-    staff = mockStaffActors.find((s) => s.actorId === 'Admin');
-  }
-
-  if (staff) {
-    // Check current password
-    const expectedCurrent = (staff.actorId === 'Admin' || staff.primaryOperationalRole === 'ADMIN')
-      ? getStoredAdminPassword()
-      : (staff.initialPassword || 'TamAn@2026');
-
-    if (currentPasswordInput.trim() !== expectedCurrent) {
-      throw new Error('Mật khẩu hiện tại không chính xác.');
-    }
-
-    if (!newPasswordInput.trim() || newPasswordInput.trim().length < 3) {
-      throw new Error('Mật khẩu mới phải có tối thiểu 3 ký tự.');
-    }
-
-    staff.initialPassword = newPasswordInput.trim();
-    staff.lastPasswordResetAt = new Date().toISOString();
-    staff.updatedAt = new Date().toISOString();
-
-    if (staff.actorId === 'Admin' || staff.primaryOperationalRole === 'ADMIN') {
-      setStoredAdminPassword(newPasswordInput.trim());
-    }
-
-    // Ghi nhật ký kiểm toán
-    await recordSystemAuditLog({
-      actorId: actor.actorId,
-      actorName: actor.displayName || staff.displayName,
-      actorRole: actor.actorRole,
-      actorRoleLabel: actor.actorRole,
-      actionType: 'UPDATE',
-      actionLabel: 'Thành viên tự đổi mật khẩu cá nhân',
-      module: 'SYSTEM_ADMIN',
-      moduleLabel: 'Bảo Mật Cá Nhân',
-      targetEntityId: staff.actorId,
-      targetEntityName: `${staff.displayName} (${staff.staffCode})`,
-      summary: `Thành viên ${staff.displayName} (${staff.actorId}) đã tự thay đổi mật khẩu tài khoản thành công.`,
-      severity: 'IMPORTANT',
-    });
-
-    return { success: true, message: 'Đổi mật khẩu cá nhân thành công!' };
-  }
-
-  return { success: true, message: 'Đổi mật khẩu thành công!' };
+  return apiRequest(
+    '/api/operations/staff-actors/self/change-password',
+    {
+      method: 'POST',
+      actor,
+      body:
+        JSON.stringify({
+          currentPassword:
+            currentPasswordInput,
+          newPassword,
+        }),
+    },
+  );
 }
 
 export async function deleteStaffAccount(
-  actor: HumanActorSession | null,
+  actor:
+    HumanActorSession | null,
   actorIdToDelete: string,
-): Promise<{ success: boolean; deletedActor: StaffActor }> {
-  await new Promise((r) => setTimeout(r, 100));
+): Promise<{
+  success: boolean;
+  deletedActor: StaffActor;
+}> {
+  requireActor(actor);
 
-  if (!actor) {
-    throw new Error('Chưa xác định phiên làm việc. Vui lòng đăng nhập.');
-  }
-
-  // Authority Check: Only ADMIN and SUPERVISOR can delete staff accounts
-  if (actor.actorRole !== 'ADMIN' && actor.actorRole !== 'SUPERVISOR') {
-    throw new Error('Quyền hạn bị từ chối: Chỉ Quản trị viên Tối cao (Admin) và Ban Giám đốc mới có quyền xoá/bớt tài khoản nhân viên.');
-  }
-
-  const staffIndex = mockStaffActors.findIndex((s) => s.actorId === actorIdToDelete);
-  if (staffIndex === -1) {
-    throw new Error(`Không tìm thấy tài khoản nhân sự với mã ID: ${actorIdToDelete}`);
-  }
-
-  const targetStaff = mockStaffActors[staffIndex];
-
-  // Hierarchy Safety:
-  if (targetStaff.primaryOperationalRole === 'ADMIN' && actor.actorRole !== 'ADMIN') {
-    throw new Error('Quyền hạn bị từ chối: Không thể xoá tài khoản Quản trị viên Tối cao (Admin).');
-  }
-
-  if (targetStaff.actorId === 'Admin' || targetStaff.actorId === 'SYSTEM-ROOT') {
-    throw new Error('Không thể xoá tài khoản Admin mặc định của hệ thống.');
-  }
-
-  if (actor.actorRole === 'SUPERVISOR' && targetStaff.primaryOperationalRole === 'SUPERVISOR' && targetStaff.actorId !== actor.actorId) {
-    throw new Error('Quyền hạn bị từ chối: Thành viên Ban Giám đốc không thể xoá tài khoản của thành viên Ban Giám đốc khác.');
-  }
-
-  // Remove from mock array
-  mockStaffActors.splice(staffIndex, 1);
-
-  // Sync localStorage if available
-  if (typeof window !== 'undefined') {
-    try {
-      const stored = localStorage.getItem('tamancare_created_staff');
-      if (stored) {
-        let list = JSON.parse(stored);
-        list = list.filter((s: any) => s.actorId !== actorIdToDelete && s.staffCode !== targetStaff.staffCode);
-        localStorage.setItem('tamancare_created_staff', JSON.stringify(list));
-      }
-    } catch {
-      // Ignore storage errors
-    }
-  }
-
-  // Audit Log
-  await recordSystemAuditLog({
-    actorId: actor.actorId || 'STAFF-UNKNOWN',
-    actorName: actor.displayName || 'Nhân sự thực hiện',
-    actorRole: actor.actorRole || 'ADMIN',
-    actorRoleLabel: actor.actorRole === 'ADMIN' ? 'Quản trị viên Tối cao' : 'Ban Giám đốc',
-    actionType: 'DELETE',
-    actionLabel: 'Xoá / Bớt tài khoản nhân sự khỏi hệ thống',
-    module: 'SYSTEM_ADMIN',
-    moduleLabel: 'Nhân Sự & Phân Quyền',
-    targetEntityId: targetStaff.actorId,
-    targetEntityName: `${targetStaff.displayName} (${targetStaff.staffCode})`,
-    summary: `Xoá/bớt tài khoản ID ${targetStaff.actorId} của nhân sự ${targetStaff.displayName} khỏi hệ thống.`,
-    details: `Thực hiện bởi: ${actor.displayName} (${actor.actorRole}). Tài khoản đã bị loại bỏ khỏi danh sách quản lý nhân sự.`,
-    previousValue: `Tài khoản: ACTIVE (${targetStaff.primaryOperationalRole})`,
-    newValue: 'Đã xoá khỏi hệ thống (DELETED)',
-    severity: 'CRITICAL',
-  });
-
-  return { success: true, deletedActor: targetStaff };
+  return apiRequest(
+    `/api/operations/staff-actors/${encodeURIComponent(actorIdToDelete)}/archive`,
+    {
+      method: 'POST',
+      actor,
+    },
+  );
 }

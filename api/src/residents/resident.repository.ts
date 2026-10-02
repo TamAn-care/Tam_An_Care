@@ -11,7 +11,7 @@ interface ResidentRow {
   resident_id: string;
   resident_code: string;
   display_name: string;
-  date_of_birth: string | Date;
+  date_of_birth: string | Date | null;
   gender: ResidentGender;
   room: string | null;
   bed: string | null;
@@ -175,7 +175,7 @@ export class ResidentRepository {
               resident_id,
               resident_code,
               display_name,
-              date_of_birth,
+              COALESCE(date_of_birth::text, birth_year::text) AS date_of_birth,
               gender,
               room,
               bed,
@@ -224,7 +224,7 @@ export class ResidentRepository {
               resident_id,
               resident_code,
               display_name,
-              date_of_birth,
+              COALESCE(date_of_birth::text, birth_year::text) AS date_of_birth,
               gender,
               room,
               bed,
@@ -276,7 +276,7 @@ export class ResidentRepository {
               resident_id,
               resident_code,
               display_name,
-              date_of_birth,
+              COALESCE(date_of_birth::text, birth_year::text) AS date_of_birth,
               gender,
               room,
               bed,
@@ -304,12 +304,14 @@ export class ResidentRepository {
     row: ResidentRow,
   ): ResidentContext {
     const dateOfBirth =
-      row.date_of_birth instanceof Date
-        ? row.date_of_birth
-            .toISOString()
-            .slice(0, 10)
-        : String(row.date_of_birth)
-            .slice(0, 10);
+      row.date_of_birth == null
+        ? ''
+        : row.date_of_birth instanceof Date
+          ? row.date_of_birth
+              .toISOString()
+              .slice(0, 10)
+          : String(row.date_of_birth)
+              .slice(0, 10);
 
     return {
       residentId:
