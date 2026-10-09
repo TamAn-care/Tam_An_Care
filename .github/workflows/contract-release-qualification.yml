@@ -10,6 +10,9 @@ on:
       - 'docs/contracts-*'
       - '.github/workflows/contract-release-qualification.yml'
       - 'ops/ci/contract-runtime-metadata-readonly.sh'
+      - 'ops/ci/contract-least-privilege-probe.sh'
+      - 'ops/ci/contract-least-privilege-probe-test.cjs'
+      - '.github/workflows/contract-runtime-readonly-self-hosted.yml'
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,7 +31,10 @@ jobs:
         with:
           node-version: '24'
       - name: Syntax-check safe runtime audit without connecting to server
-        run: bash -n ops/ci/contract-runtime-metadata-readonly.sh
+        run: |
+          bash -n ops/ci/contract-runtime-metadata-readonly.sh
+          bash -n ops/ci/contract-least-privilege-probe.sh
+          node ops/ci/contract-least-privilege-probe-test.cjs
       - name: Verify source isolation and release blockers
         run: |
           set -euo pipefail
