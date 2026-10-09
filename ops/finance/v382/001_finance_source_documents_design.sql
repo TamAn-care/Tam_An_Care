@@ -71,6 +71,8 @@ BEGIN
     length(trim(coalesce(p_reason,'')))<5 THEN
     RAISE EXCEPTION 'FINANCE_INVALID_ACTOR_OR_REASON';
  END IF;
+ -- This function is CI-only and cannot authenticate a caller by itself.
+ -- No EXECUTE is granted to application roles.
  SELECT * INTO d FROM finance_source_documents
  WHERE document_id=p_document_id FOR UPDATE;
  IF NOT FOUND THEN RAISE EXCEPTION 'FINANCE_DOCUMENT_NOT_FOUND'; END IF;
@@ -102,4 +104,7 @@ BEGIN
  RETURN p_revision+1;
 END $$;
 REVOKE ALL ON FUNCTION finance_v382_transition(text,bigint,text,text,text,text) FROM PUBLIC;
+-- Authentication boundary: no untrusted caller may set p_actor_id and execute.
+-- Production enablement requires session-derived identity, role authorization,
+-- and an independently reviewed SECURITY INVOKER/DEFINER privilege model.
 COMMIT;
