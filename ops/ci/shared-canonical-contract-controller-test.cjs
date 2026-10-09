@@ -17,7 +17,7 @@ const {publishVerifiedFinanceIdentity}=require(identityFile);
 process.env.TAMANCARE_CONTRACT_READ_ROLES='ACCOUNTANT';
 const auth={actorId:'CI_ACTOR',actorRole:'ACCOUNTANT',sessionId:'CI_SESSION'};
 const calls=[];const db={query:async(sql,args)=>{calls.push(sql);if(sql.includes('auth_sessions'))return {rows:[{actor_id:auth.actorId}]};
- if(sql.includes('WHERE contract_id'))return {rows:[{contract_id:'CI_CONTRACT',contract_code:'CI_CODE',resident_id:'CI_RESIDENT',status:'ACTIVE',effective_date:'2026-10-01',version:1,payload:{appendix:{baseMonthlyFee:100}},created_at:'2026-10-01',updated_at:'2026-10-01'}]};
+ if(sql.includes('WHERE c.contract_id'))return {rows:[{contract_id:'CI_CONTRACT',contract_code:'CI_CODE',resident_id:'CI_RESIDENT',status:'ACTIVE',effective_date:'2026-10-01',version:1,payload:{appendix:{baseMonthlyFee:100}},created_at:'2026-10-01',updated_at:'2026-10-01'}]};
  return {rows:[]};}};
 const ctl=new Controller(db);
 function req(role='ACCOUNTANT'){const r={};publishVerifiedFinanceIdentity(r,{...auth,actorRole:role});return r;}
