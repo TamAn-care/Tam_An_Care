@@ -156,6 +156,7 @@ jobs:
           bash ops/ci/finance-v386-atomic-rollback-test.sh
           bash ops/ci/finance-v388-draft-pg-test.sh
           bash ops/ci/finance-v3810-attachment-metadata-test.sh
+          bash ops/ci/finance-v3810-object-restore-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
