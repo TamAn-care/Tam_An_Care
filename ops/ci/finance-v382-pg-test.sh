@@ -40,4 +40,28 @@ if psql -X -v ON_ERROR_STOP=1 -c "UPDATE finance_source_document_events SET reas
  echo FINANCE_V382_AUDIT_UPDATE_FAIL; exit 1
 fi
 test "$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT count(*) FROM finance_source_document_events WHERE document_id='CI_DOC'")" = 1
+# Dedicated row-locked transition test; source is an isolated CI record only.
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+INSERT INTO finance_source_documents(
+ document_id,source_domain,source_entity_type,source_entity_id,
+ entry_type,recognition_date,amount_vnd,external_evidence_sha256,
+ reference_number,prepared_by
+) VALUES ('CI_FLOW','SERVICE','INVOICE','CI_FLOW_REF','REVENUE',
+ '2026-09-15',1000000,repeat('a',64),'CI-FLOW','MAKER');
+SELECT finance_v382_transition('CI_FLOW',0,'SUBMIT','MAKER','Submitted by maker');
+SELECT finance_v382_transition('CI_FLOW',1,'REVIEW','CHECKER','Reviewed separately');
+SELECT finance_v382_transition('CI_FLOW',2,'APPROVE','DIRECTOR','Approved independently',repeat('b',64));
+DO $
+BEGIN
+ IF (SELECT state FROM finance_source_documents WHERE document_id='CI_FLOW')<>'APPROVED'
+   OR (SELECT count(*) FROM finance_source_document_events WHERE document_id='CI_FLOW')<>3
+ THEN RAISE EXCEPTION 'FINANCE_V382_ATOMIC_TRANSITION_INTEGRITY_FAIL'; END IF;
+END $;
+SQL
+if psql -X -v ON_ERROR_STOP=1 -c "SELECT finance_v382_transition('CI_FLOW',1,'REVIEW','ANOTHER','Stale revision')" >/dev/null 2>&1; then
+ echo FINANCE_V382_STALE_TRANSITION_FAIL; exit 1
+fi
+if psql -X -v ON_ERROR_STOP=1 -c "SELECT finance_v382_transition('CI_DOC',1,'REVIEW','MAKER','Self review')" >/dev/null 2>&1; then
+ echo FINANCE_V382_SELF_REVIEW_FAIL; exit 1
+fi
 echo FINANCE_V382_EPHEMERAL_POSTGRES_GATE_PASS
