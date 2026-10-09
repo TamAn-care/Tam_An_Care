@@ -1,0 +1,59 @@
+name: Finance V2.9.74.9 isolated PostgreSQL safety lab
+
+on:
+  push:
+    branches:
+      - feature/finance-v22-github-build
+    paths:
+      - 'ops/ci/finance-pg-lab-*'
+      - '.github/workflows/finance-v29749-postgres-lab.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: finance-pg-lab-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  postgres-isolation-lab:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+          POSTGRES_DB: finance_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Verify isolation policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ github.ref_name }}" = "feature/finance-v22-github-build"
+          ! grep -Eq '192\.168\.1\.32|tamancare\.dpdns\.org|production-postgres' ops/ci/finance-pg-lab-{schema.sql,tests.sql,run.sh}
+          echo "ISOLATION_GUARD_PASS"
+      - name: Run disposable SQL invariant and concurrency tests
+        shell: bash
+        env:
+          PGCONNECT_TIMEOUT: "5"
+        run: bash ops/ci/finance-pg-lab-run.sh
+      - name: Explicitly mark non-production status
+        if: always()
+        run: |
+          echo "GitHub ephemeral PostgreSQL fixture only"
+          echo "Canonical SQL files not uploaded or executed"
+          echo "Production Test deployment: NO"
+          echo "Production Test migration: NO"
