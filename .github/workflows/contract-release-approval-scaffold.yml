@@ -1,0 +1,33 @@
+name: Contract Production Test — release authorization scaffold
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: Exact audited Git commit SHA
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  release-request:
+    runs-on: ubuntu-24.04
+    environment: contract-production-deploy-approval
+    timeout-minutes: 5
+    steps:
+      - name: Verify pinned source reference, fail closed
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          echo "RELEASE_REQUEST_ONLY=YES" >> "$GITHUB_STEP_SUMMARY"
+          echo "APPROVAL_ENVIRONMENT=contract-production-deploy-approval" >> "$GITHUB_STEP_SUMMARY"
+          echo "RUNTIME_EVIDENCE_REQUIRED=YES" >> "$GITHUB_STEP_SUMMARY"
+          echo "BACKUP_RESTORE_PROOF_REQUIRED=YES" >> "$GITHUB_STEP_SUMMARY"
+          echo "DEPLOYMENT_EXECUTED=NO" >> "$GITHUB_STEP_SUMMARY"
+      - name: Explicit hard stop - no deployment command in scaffold
+        run: |
+          echo 'DEPLOY=NO'
+          echo 'MIGRATION=NO'
+          echo 'SEED=NO'
