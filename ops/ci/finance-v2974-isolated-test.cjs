@@ -87,7 +87,7 @@ const methods=[
 async function main(){
   assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController),'api/finance-read');
   const defined=Object.getOwnPropertyNames(FinanceReadController.prototype);
-  const declared=defined.filter(x=>Reflect.hasMetadata(PATH_METADATA,FinanceReadController.prototype[x]));
+  const declared=defined.filter(x=>x!=='constructor' && Reflect.getOwnMetadata(PATH_METADATA,FinanceReadController.prototype[x])!==undefined);
   assert.equal(declared.length,5,'Exactly five HTTP endpoints required');
   for(const [method,route] of methods) {
     assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController.prototype[method]),route);
