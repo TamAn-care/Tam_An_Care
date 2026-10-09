@@ -1,0 +1,37 @@
+name: Controlled Pull — GitHub-hosted source audit ONLY
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'ops/ci/controlled-pull-source-audit.cjs'
+      - '.github/workflows/controlled-pull-source-audit.yml'
+      - 'deploy/**'
+      - 'ops/x3-production/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Read-only source audit
+        run: node ops/ci/controlled-pull-source-audit.cjs
+      - name: Publish source audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: controlled-pull-repository-source-audit
+          path: ops/ci/out/controlled-pull-source-audit.json
+          retention-days: 14
+      - name: Explicit runtime hold
+        run: |
+          echo 'GITHUB_HOSTED_CI=YES' >> "$GITHUB_STEP_SUMMARY"
+          echo 'SERVER_RUNTIME_EVIDENCE=PENDING' >> "$GITHUB_STEP_SUMMARY"
+          echo 'PULL_DEPLOYMENT_NOT_CONFIGURED=YES' >> "$GITHUB_STEP_SUMMARY"
+          echo 'PRODUCTION_DEPLOY=NO' >> "$GITHUB_STEP_SUMMARY"
