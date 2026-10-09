@@ -71,8 +71,6 @@ export class PaperRecordService {
     'NURSE',
     'CAREGIVER',
     'GUARDIAN',
-    'NUTRITIONIST',
-    'PHYSICAL_THERAPIST',
   ]);
 
   private readonly managerRoles = new Set([
@@ -91,8 +89,6 @@ export class PaperRecordService {
     'DIRECTOR',
     'NURSE',
     'CAREGIVER',
-    'NUTRITIONIST',
-    'PHYSICAL_THERAPIST',
   ]);
 
   private async authorizeResident(
@@ -162,7 +158,7 @@ export class PaperRecordService {
       documentCatalog: row.document_catalog ?? [],
       lastInventoryAt: row.last_inventory_at,
       qrToken: row.qr_token,
-      qrPath: '/care-view/' + encodeURIComponent(row.resident_id) + '?section=paper-record',
+      qrPath: '/residents/' + encodeURIComponent(row.resident_id) + '?section=paper-record',
       createdAt: row.created_at,
       updatedAt: row.updated_at,
     };
