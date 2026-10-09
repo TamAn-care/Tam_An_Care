@@ -82,8 +82,6 @@ const BORROW_ROLES = new Set([
   'DIRECTOR',
   'NURSE',
   'CAREGIVER',
-  'NUTRITIONIST',
-  'PHYSICAL_THERAPIST',
 ]);
 
 function toForm(record: PaperRecord | null): FormState {
