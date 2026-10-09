@@ -1,0 +1,10 @@
+'use strict';
+const assert = require('node:assert/strict');
+const mod = require('../../api/dist/finance-billing/finance-reconciliation.js');
+const invoice = {invoiceId:'CI_INVOICE',totalVnd:'100.00',itemLineAmountsVnd:['60','40.00'],allocatedVnd:'20',status:'ISSUED',ledgerRevenueMatches:1,ledgerRevenueVnd:'100',canonicalSourceVerified:true};
+const result = mod.reconcileFinanceSnapshots([invoice], []);
+assert.equal(result.valid,true);
+assert.equal(mod.reconcileFinanceSnapshots([{...invoice,ledgerRevenueMatches:2}],[]).issues[0].code,'DUPLICATE_LEDGER_REVENUE');
+assert.equal(mod.reconcileFinanceSnapshots([{...invoice,canonicalSourceVerified:false}],[]).issues[0].code,'REVENUE_SOURCE_UNVERIFIED');
+assert.equal(mod.reconcileFinanceSnapshots([{...invoice,itemLineAmountsVnd:['99']}],[]).issues[0].code,'INVOICE_TOTAL_MISMATCH');
+console.log('FINANCE_RECONCILIATION_READ_ONLY_TEST_PASS');
