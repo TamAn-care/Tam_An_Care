@@ -11,8 +11,11 @@ const REQUIRED_LEDGER_COLUMNS = [
   'entry_type',
   'recognition_date',
   'amount_vnd',
-  'posting_status',
-  'reconciliation_status',
+  'status',
+  'source_mode',
+  'source_domain',
+  'source_entity_type',
+  'source_entity_id',
 ] as const;
 
 // A real month-close attestation and reconciliation proof must be independently
@@ -87,20 +90,26 @@ export class MonthlyOperatingResultService {
       entry_type: string;
       recognition_date: string;
       amount_vnd: string;
-      posting_status: string;
-      reconciliation_status: string;
+      status: string;
+      source_mode: string;
+      source_domain: string | null;
+      source_entity_type: string | null;
+      source_entity_id: string | null;
     }>(
       `SELECT finance_entry_id,
               entry_type,
               recognition_date::text AS recognition_date,
               amount_vnd::text AS amount_vnd,
-              posting_status,
-              reconciliation_status
+              status,
+              source_mode,
+              source_domain,
+              source_entity_type,
+              source_entity_id
          FROM public.finance_entries
         WHERE recognition_date >= $1::date
           AND recognition_date < ($1::date + INTERVAL '1 month')
         ORDER BY recognition_date, finance_entry_id
-        LIMIT 10000`,
+        LIMIT 10001`,
       [start],
     );
 
@@ -111,18 +120,22 @@ export class MonthlyOperatingResultService {
           ? 'REVENUE'
           : row.entry_type === 'EXPENSE'
             ? 'EXPENSE'
-            : (row.entry_type as MonthlyLedgerEntry['kind']),
+            : (['DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX'].includes(row.entry_type)
+              ? 'EXPENSE'
+              : (row.entry_type as MonthlyLedgerEntry['kind'])),
       recognitionDate: row.recognition_date,
       amountVnd: row.amount_vnd,
-      posted: row.posting_status === 'POSTED',
-      sourceVerified: row.reconciliation_status === 'VERIFIED',
+      posted: row.status === 'POSTED',
+      // Row posting alone cannot prove an independently reconciled source.
+      sourceVerified: false,
     }));
 
-    const rowsBounded = rows.rows.length < 10000;
+    const rowsBounded = rows.rows.length <= 10000;
     const reconciliationComplete = rows.rows.every(
       (row) =>
-        row.reconciliation_status === 'VERIFIED' &&
-        row.posting_status === 'POSTED',
+        row.status === 'POSTED' &&
+        row.source_mode === 'SYSTEM' &&
+        Boolean(row.source_domain && row.source_entity_type && row.source_entity_id),
     );
 
     // Not yet connected to a verified immutable snapshot + signed approval
