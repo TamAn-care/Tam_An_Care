@@ -71,6 +71,8 @@ import { ResidentLeaveModule } from './resident-leave/resident-leave.module';
 import { WorkforceModule } from './workforce/workforce.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { FinanceReadController } from './finance-billing/finance-read.controller';
+import { FinanceWriteController } from './finance-billing/finance-write.controller';
+import { FinanceBillingService } from './finance-billing/finance-billing.service';
 
 @Module({imports:[
     NotificationsModule,
@@ -107,5 +109,5 @@ import { FinanceReadController } from './finance-billing/finance-read.controller
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService]})
 export class AppModule {}
