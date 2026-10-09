@@ -46,6 +46,8 @@ import {
 
 const AccommodationPage = lazy(() => import('../features/accommodation/AccommodationPage'));
 
+const FinanceReadRoute = lazy(() => import('../features/finance/FinanceReadRoute'));
+
 export const router =
   createBrowserRouter([
     {
@@ -257,7 +259,18 @@ export const router =
             };
           },
         },
-        {
+        
+          {
+            path: '/finance-read',
+            element: (
+              <RequireActor>
+                <RequireRole route="finance-read">
+                  <FinanceReadRoute />
+                </RequireRole>
+              </RequireActor>
+            ),
+          },
+          {
           path: '/billing-invoicing',
           lazy: async () => {
             const module = await import('../features/billing/BillingPage');

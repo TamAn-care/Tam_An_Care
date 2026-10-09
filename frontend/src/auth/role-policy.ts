@@ -38,7 +38,8 @@ export type AppRouteKey =
   | 'analytics-intelligence'
   | 'audit-trail'
   | 'service-contracts'
-  | 'system-status';
+  | 'system-status'
+  | 'finance-read';
 
 export interface RoleCapability {
   allowedRoutes: AppRouteKey[];
@@ -90,8 +91,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'analytics-intelligence',
       'audit-trail',
       'service-contracts',
-      'system-status',
-    ],
+      'system-status', 'finance-read'],
     canManageStaff: true, // ADMIN: Toàn quyền tạo và quản lý tài khoản 100% nhân sự & BGĐ
     canManageDirectorStaff: true, // ADMIN: Toàn quyền quản lý tài khoản Ban Giám đốc
     canDeleteStaff: true, // ADMIN: Quyền bớt/xoá tài khoản nhân viên khỏi hệ thống
@@ -138,8 +138,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'analytics-intelligence',
       'audit-trail',
       'service-contracts',
-      'system-status',
-    ],
+      'system-status', 'finance-read'],
     canManageStaff: true, // BAN GIÁM ĐỐC: Toàn quyền tạo ID, cấp mật khẩu cho Ban Giám đốc, Quản lý và toàn thể Nhân viên
     canManageDirectorStaff: true, // BAN GIÁM ĐỐC: Độc quyền tạo & quản lý tài khoản Ban Giám đốc
     canDeleteStaff: true, // BAN GIÁM ĐỐC: Quyền bớt/xoá tài khoản nhân viên khỏi hệ thống
@@ -585,8 +584,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
     allowedRoutes: [
       'dashboard',
       'resident-leave',
-      'billing-invoicing',
-    ],
+      'billing-invoicing', 'finance-read'],
     canManageStaff: false,
     canManageDirectorStaff: false,
     canDeleteStaff: false,

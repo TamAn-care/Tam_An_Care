@@ -1,3 +1,4 @@
+import { publishVerifiedFinanceIdentity } from './verified-finance-identity';
 import {
   Injectable,
   NestMiddleware,
@@ -19,7 +20,7 @@ type ActorRole =
   | 'MEDICAL_HEAD'
   | 'CARE_MANAGER'
   | 'SUPERVISOR'
-  | 'ADMIN';
+  | 'ADMIN' | 'ACCOUNTANT';
 
 interface JwtPayload {
   sub?: unknown;
@@ -54,7 +55,8 @@ const VALID_ROLES =
     'MEDICAL_HEAD',
     'ADMIN',
     'SUPERVISOR',
-  ]);
+  
+    'ACCOUNTANT',]);
 
 function decode(
   value: string,
@@ -349,6 +351,12 @@ export class ProductionAuthMiddleware
       'x-auth-session-id'
     ] = sessionId;
 
+    // Publish only after validated active session.
+    publishVerifiedFinanceIdentity(req, {
+      actorId,
+      actorRole,
+      sessionId,
+    });
     next();
   }
 }

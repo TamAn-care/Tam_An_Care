@@ -1232,13 +1232,13 @@ let mockReceipts: PaymentReceipt[] = [
 
 // Async API functions
 export async function fetchMonthlyInvoices(month: string = '2026-09'): Promise<ResidentMonthlyInvoice[]> {
-  await new Promise((r) => setTimeout(r, 120));
-  return mockInvoices.filter((inv) => inv.billingMonth === month);
+  // Verified Billing API unavailable: do not display mock data.
+  throw new Error('FINANCE_INVOICE_LIST_API_NOT_READY');
 }
 
 export async function fetchInvoiceDetails(invoiceId: string): Promise<ResidentMonthlyInvoice | null> {
-  await new Promise((r) => setTimeout(r, 80));
-  return mockInvoices.find((i) => i.invoiceId === invoiceId) || null;
+  // Verified Billing API unavailable: do not display mock data.
+  throw new Error('FINANCE_INVOICE_DETAIL_API_NOT_READY');
 }
 
 export interface CreatePaymentInput {
@@ -1313,11 +1313,8 @@ export async function recordPayment(
 }
 
 export async function fetchPaymentReceipts(invoiceId?: string): Promise<PaymentReceipt[]> {
-  await new Promise((r) => setTimeout(r, 100));
-  if (invoiceId) {
-    return mockReceipts.filter((r) => r.invoiceId === invoiceId);
-  }
-  return mockReceipts;
+  // Verified Billing API unavailable: do not display mock data.
+  throw new Error('FINANCE_RECEIPT_LIST_API_NOT_READY');
 }
 
 export async function fetchPricingMatrix(): Promise<PricingMatrix> {

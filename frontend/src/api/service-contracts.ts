@@ -149,101 +149,7 @@ export const DEFAULT_APPENDIX_SERVICES: AppendixServiceItem[] = [
   { stt: 12, name: 'Chi phí nhân viên đi cùng đưa đón đi Bệnh viện, hoặc đưa đón theo yêu cầu GD NCT(Chi phí xe: theo nhà cung cấp (TT gọi hộ)', fee: 300000, note: 'Đưa đón khám chữa bệnh ngoài Trung tâm', selected: false },
 ];
 
-export const MOCK_SERVICE_CONTRACTS: ServiceContract[] = [
-  {
-    contractId: 'ctr-demo-001',
-    contractCode: '001/2026/HĐDV-TA',
-    residentId: 'res-demo-001',
-    status: 'ACTIVE',
-    signedDate: '2026-01-15',
-    effectiveDate: '2026-01-15',
-    partyA: {
-      residentName: 'Nguyễn Văn An',
-      residentBirthYear: '1944',
-      residentCccd: '001044001234',
-      residentAddress: 'Số 15 Phố Huế, Quận Hoàn Kiếm, Hà Nội',
-      relative1Name: 'Nguyễn Văn Bình',
-      relative1BirthYear: '1972',
-      relative1Cccd: '001072005678',
-      relative1Address: 'Số 15 Phố Huế, Quận Hoàn Kiếm, Hà Nội',
-      relative1Relationship: 'Con trai trưởng',
-      relative2Name: 'Trần Thị Cúc',
-      relative2BirthYear: '1975',
-      relative2Cccd: '001075009876',
-      relative2Address: 'Số 15 Phố Huế, Quận Hoàn Kiếm, Hà Nội',
-      relative2Relationship: 'Con dâu',
-      phone1: '0912.345.678',
-      phone2: '0988.765.432',
-    },
-    partyB: DEFAULT_PARTY_B,
-    appendix: {
-      healthStatusAtAdmission: 'Tỉnh táo, minh mẫn, cao huyết áp nhẹ đã kiểm soát bằng thuốc, tự di chuyển nhẹ nhàng.',
-      roomType: 'Phòng 101 (Phòng Đôi)',
-      bedCode: '101-2',
-      baseMonthlyFee: 12000000,
-      baseMonthlyFeeText: 'Mười hai triệu đồng',
-      additionalServices: [
-        { ...DEFAULT_APPENDIX_SERVICES[0], selected: true },
-        { ...DEFAULT_APPENDIX_SERVICES[6], selected: true },
-      ],
-      discount: 600000,
-      discountReason: 'Ưu đãi đóng phí 6 tháng',
-      totalMonthlyFee: 13900000,
-      totalMonthlyFeeText: 'Mười ba triệu chín trăm ngàn đồng',
-    },
-    depositAmount: 20000000,
-    notes: 'Hợp đồng lưu trú dài hạn 12 tháng.',
-    createdAt: '2026-01-15T08:00:00Z',
-    updatedAt: '2026-01-15T08:00:00Z',
-  },
-  {
-    contractId: 'ctr-demo-002',
-    contractCode: '002/2026/HĐDV-TA',
-    residentId: 'res-demo-002',
-    status: 'ACTIVE',
-    signedDate: '2026-02-01',
-    effectiveDate: '2026-02-01',
-    partyA: {
-      residentName: 'Trần Thị Bình',
-      residentBirthYear: '1948',
-      residentCccd: '001048002345',
-      residentAddress: 'Số 88 Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
-      relative1Name: 'Trần Văn Dũng',
-      relative1BirthYear: '1976',
-      relative1Cccd: '001076008765',
-      relative1Address: 'Số 88 Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
-      relative1Relationship: 'Con trai',
-      relative2Name: 'Phạm Thị Hoa',
-      relative2BirthYear: '1978',
-      relative2Cccd: '001078004321',
-      relative2Address: 'Số 88 Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
-      relative2Relationship: 'Con gái',
-      phone1: '0903.112.233',
-      phone2: '0915.445.566',
-    },
-    partyB: DEFAULT_PARTY_B,
-    appendix: {
-      healthStatusAtAdmission: 'Sa sút trí tuệ nhẹ tuổi già, cần hỗ trợ xoay trở & tắm rửa hàng ngày.',
-      roomType: 'Phòng 102 (Phòng 6 Giường)',
-      bedCode: '102-1',
-      baseMonthlyFee: 10000000,
-      baseMonthlyFeeText: 'Mười triệu đồng',
-      additionalServices: [
-        { ...DEFAULT_APPENDIX_SERVICES[0], selected: true },
-        { ...DEFAULT_APPENDIX_SERVICES[1], selected: true },
-        { ...DEFAULT_APPENDIX_SERVICES[5], selected: true },
-      ],
-      discount: 0,
-      discountReason: '',
-      totalMonthlyFee: 12800000,
-      totalMonthlyFeeText: 'Mười hai triệu tám trăm ngàn đồng',
-    },
-    depositAmount: 20000000,
-    notes: 'Gia đình yêu cầu chế độ chăm sóc đặc biệt sa sút trí tuệ.',
-    createdAt: '2026-02-01T09:30:00Z',
-    updatedAt: '2026-02-01T09:30:00Z',
-  },
-];
+
 
 const LS_CONTRACTS_KEY = 'taman_service_contracts_v1';
 
@@ -254,8 +160,10 @@ export function getStoredServiceContracts(): ServiceContract[] {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
     }
-  } catch {}
-  return MOCK_SERVICE_CONTRACTS;
+  } catch (error) {
+    throw new Error('CONTRACT_LOCAL_STORAGE_READ_FAILED');
+  }
+  return [];
 }
 
 export function saveStoredServiceContracts(items: ServiceContract[]) {
