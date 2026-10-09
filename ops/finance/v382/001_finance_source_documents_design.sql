@@ -57,20 +57,18 @@ CREATE TRIGGER finance_v382_events_no_mutation
 REVOKE ALL ON finance_source_documents FROM PUBLIC;
 REVOKE ALL ON finance_source_document_events FROM PUBLIC;
 REVOKE ALL ON SEQUENCE finance_source_document_events_event_id_seq FROM PUBLIC;
--- Design-stage single transaction transition helper.
--- Not granted to any application role; identity/RBAC remains external NO-GO.
+-- CI-only guarded row lock transition; application privileges are NOT granted.
 CREATE FUNCTION finance_v382_transition(
  p_document_id text, p_revision bigint, p_action text,
  p_actor_id text, p_reason text, p_approval_sha256 text DEFAULT NULL
-) RETURNS bigint LANGUAGE plpgsql AS $
+) RETURNS bigint LANGUAGE plpgsql AS $$
 DECLARE d finance_source_documents%ROWTYPE;
 DECLARE v_next text;
 DECLARE v_reviewed text;
 DECLARE v_approved text;
 BEGIN
- IF p_actor_id !~ '^[A-Za-z0-9_-]{1,160}
-
-    OR length(trim(coalesce(p_reason,'')))<5 THEN
+ IF p_actor_id IS NULL OR length(trim(p_actor_id))<2 OR
+    length(trim(coalesce(p_reason,'')))<5 THEN
     RAISE EXCEPTION 'FINANCE_INVALID_ACTOR_OR_REASON';
  END IF;
  SELECT * INTO d FROM finance_source_documents
@@ -85,8 +83,7 @@ BEGIN
    v_next='REVIEWED';v_reviewed=p_actor_id;
  ELSIF p_action='APPROVE' AND d.state='REVIEWED'
    AND p_actor_id<>d.prepared_by AND p_actor_id<>d.reviewed_by
-   AND p_approval_sha256 ~ '^[a-f0-9]{64}
- THEN
+   AND length(coalesce(p_approval_sha256,''))=64 THEN
    v_next='APPROVED';v_approved=p_actor_id;
  ELSIF p_action='REJECT' AND d.state='SUBMITTED'
    AND p_actor_id<>d.prepared_by THEN
@@ -103,6 +100,6 @@ BEGIN
   document_id,revision,from_state,to_state,action,actor_id,reason)
  VALUES(p_document_id,p_revision+1,d.state,v_next,p_action,p_actor_id,p_reason);
  RETURN p_revision+1;
-END $;
+END $$;
 REVOKE ALL ON FUNCTION finance_v382_transition(text,bigint,text,text,text,text) FROM PUBLIC;
 COMMIT;
