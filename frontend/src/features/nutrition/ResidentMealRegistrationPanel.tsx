@@ -35,7 +35,13 @@ export function ResidentMealRegistrationPanel() {
     if(op.kind==='register') return registerResidentMeal(actor,{residentId,mealDate:date,mealType,portions,note});
     if(!op.id||!op.revision) throw new Error('Bản ghi không hợp lệ');
     if(op.kind==='cancel') return cancelResidentMeal(actor,op.id,op.revision);
-    return updateResidentMeal(actor,op.id,{portions,note,revision:op.revision});
+    const current=q.data?.items.find(item=>item.registration_id===op.id);
+    if(!current) throw new Error('Không tìm thấy bản ghi cần cập nhật');
+    const nextPortions=window.prompt('Số suất mới (1–10)',String(current.portions));
+    if(nextPortions===null) throw new Error('Đã hủy thao tác');
+    const parsed=Number(nextPortions);
+    if(!Number.isSafeInteger(parsed)||parsed<1||parsed>10) throw new Error('Số suất không hợp lệ');
+    return updateResidentMeal(actor,op.id,{portions:parsed,note:current.note,revision:op.revision});
   },onSuccess:()=>{setError('');reload();},onError:(e:Error)=>setError(e.message)});
   if(!actor||!canUse)return null;
   return <section style={{border:'1px solid #d1d5db',borderRadius:12,padding:16,background:'#fff'}}>
@@ -63,7 +69,7 @@ export function ResidentMealRegistrationPanel() {
           <td>{r.resident_id}</td><td>{MEALS.find(m=>m.id===r.meal_type)?.label||r.meal_type}</td>
           <td>{r.portions}</td><td>{r.status==='REGISTERED'?'Đã đăng ký':'Đã hủy'}</td><td>{r.note}</td>
           <td>{canEdit&&r.status==='REGISTERED'?<div style={{display:'flex',gap:6}}>
-            <button disabled={mutation.isPending} onClick={()=>{if(window.confirm('Cập nhật số suất theo các ô nhập phía trên?'))mutation.mutate({kind:'update',id:r.registration_id,revision:r.revision});}}>Cập nhật</button>
+            <button disabled={mutation.isPending} onClick={()=>{mutation.mutate({kind:'update',id:r.registration_id,revision:r.revision});}}>Cập nhật</button>
             <button disabled={mutation.isPending} onClick={()=>{if(window.confirm('Xác nhận hủy đăng ký?'))mutation.mutate({kind:'cancel',id:r.registration_id,revision:r.revision});}}>Hủy</button>
           </div>: 'Chỉ xem'}</td>
         </tr>)}</tbody></table>}
