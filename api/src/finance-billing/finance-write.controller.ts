@@ -9,6 +9,10 @@ export class FinanceWriteController {
   constructor(private readonly db: DatabaseService, private readonly billing: FinanceBillingService) {}
 
   private async authorize(request: object): Promise<string> {
+    // Block write paths until cross-module contract/ledger/runtime acceptance.
+    if (process.env.TAMANCARE_FINANCE_WRITE_ENABLED !== 'true') {
+      throw new ForbiddenException('FINANCE_WRITE_RELEASE_GATE_CLOSED');
+    }
     const identity=readVerifiedFinanceIdentity(request);
     if (!identity) throw new ForbiddenException('FINANCE_VERIFIED_IDENTITY_REQUIRED');
     const roles=(process.env.TAMANCARE_FINANCE_WRITE_ROLES||'').split(',').map(x=>x.trim()).filter(Boolean);
