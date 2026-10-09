@@ -1,0 +1,49 @@
+name: Contract release qualification — GitHub only
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'api/src/finance-billing/**'
+      - 'frontend/src/api/service-contracts.ts'
+      - 'ops/finance/**'
+      - 'ops/ci/contract-*'
+      - 'docs/contracts-*'
+      - '.github/workflows/contract-release-qualification.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: contract-release-qualification-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Verify source isolation and release blockers
+        run: |
+          set -euo pipefail
+          node ops/ci/contract-production-acceptance-gate.cjs | tee qualification.txt
+          node ops/ci/contract-frontend-source-isolation-test.cjs | tee -a qualification.txt
+      - name: Fail closed until all runtime and business acceptance evidence exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -q '^RELEASE_BLOCKED_.*=YES$' qualification.txt; then
+            echo 'CONTRACT_RELEASE=NO_GO' | tee -a qualification.txt
+          else
+            echo 'MANUAL_DEPLOY_APPROVAL_REQUIRED=YES' | tee -a qualification.txt
+          fi
+          {
+            echo '## Contract release qualification'
+            echo '~~~text'
+            cat qualification.txt
+            echo '~~~'
+            echo 'This workflow never deploys or migrates Production Test.'
+          } >> "$GITHUB_STEP_SUMMARY"
