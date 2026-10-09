@@ -25,7 +25,24 @@ function findCompiled(root, filename) {
 const dist=path.join(__dirname,'..','..','api','dist');
 const controllerPath=findCompiled(dist,'finance-read.controller.js');
 const identityPath=findCompiled(dist,'verified-finance-identity.js');
-const { FinanceReadController }=require(controllerPath);
+// Build can omit dependency output when using incremental compiler cache.
+// Inject a *test-only* dependency for the controller's decorator metadata.
+// This is not a replacement for production runtime compatibility checks.
+const Module=require('node:module');
+const load=Module._load;
+Module._load=function(request,parent,isMain){
+  if(request==='../database/database.service' &&
+     parent && parent.filename===controllerPath){
+    return { DatabaseService: class IsolatedDatabaseServiceMarker {} };
+  }
+  return load.apply(this,arguments);
+};
+let FinanceReadController;
+try {
+  ({ FinanceReadController }=require(controllerPath));
+} finally {
+  Module._load=load;
+}
 const { publishVerifiedFinanceIdentity }=require(identityPath);
 
 const roles=['ADMIN','SUPERVISOR','ACCOUNTANT'];
