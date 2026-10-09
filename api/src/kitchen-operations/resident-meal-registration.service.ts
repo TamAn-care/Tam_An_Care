@@ -53,7 +53,12 @@ export class ResidentMealRegistrationService {
         new Date(mealDate + 'T00:00:00Z').toISOString().slice(0,10) !== mealDate)
       throw new BadRequestException('Invalid date');
     if (mealType && !MEALS.has(mealType)) throw new BadRequestException('Invalid meal');
-    const actor = await this.permit(identity,'VIEW');
+    const id = String(identity.id ?? '').trim();
+    const role = String(identity.role ?? '').trim().toUpperCase();
+    if (!id || !['CAREGIVER','CARE_MANAGER','NUTRITIONIST','SUPERVISOR'].includes(role) ||
+        !(await this.staff.resolveActiveActorWithRole(id,role as any)))
+      throw new ForbiddenException('Meal registration list access denied');
+    const actor = { id, role };
     const q = await this.db.query(
       `SELECT m.* FROM resident_meal_registrations m
        JOIN residents r ON r.resident_id=m.resident_id AND r.active_status=true
@@ -118,13 +123,13 @@ export class ResidentMealRegistrationService {
     const revision=body.revision;
     if (!Number.isSafeInteger(revision) || Number(revision)<1) throw new BadRequestException('revision required');
     return this.db.withTransaction(async client => {
-      const existing=await client.query('SELECT * FROM resident_meal_registrations WHERE registration_id=$1 FOR UPDATE',[id]);
+      const existing=await client.query('SELECT *, meal_date::text AS meal_date_iso FROM resident_meal_registrations WHERE registration_id=$1 FOR UPDATE',[id]);
       if (!existing.rowCount) throw new NotFoundException('Registration not found');
       const prior=existing.rows[0];
       const actor=await this.permit(identity,cancel?'CANCEL':'UPDATE',prior.resident_id);
       if (prior.revision !== revision) throw new ConflictException('Stale registration revision');
       if (prior.status==='CANCELLED') throw new ConflictException('Cancelled registration is immutable');
-      const v = cancel ? null : this.parse({...body,residentId:prior.resident_id,mealDate: String(prior.meal_date).slice(0,10),mealType:prior.meal_type});
+      const v = cancel ? null : this.parse({...body,residentId:prior.resident_id,mealDate: prior.meal_date_iso,mealType:prior.meal_type});
       if(actor.role==='CAREGIVER') {
         const a=await client.query(
           `SELECT 1 FROM resident_access_assignments WHERE resident_id=$1 AND actor_id=$2
