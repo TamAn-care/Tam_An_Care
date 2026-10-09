@@ -1,0 +1,26 @@
+\set ON_ERROR_STOP on
+INSERT INTO public.service_contract_records(contract_id,contract_code,resident_id,status,payload) VALUES ('CI_CONTRACT','CI_C','CI_RESIDENT','ACTIVE','{}');
+INSERT INTO public.service_contract_versions(contract_id,version,payload,status,effective_date,signed_at,approved_at,approved_by)
+VALUES('CI_CONTRACT',1,'{"fee":100}','ACTIVE','2026-10-01',now(),now(),'CI_APPROVER');
+DO $$
+BEGIN
+ BEGIN
+  UPDATE public.service_contract_versions SET payload='{"fee":200}' WHERE contract_id='CI_CONTRACT';
+  RAISE EXCEPTION 'CI_UNEXPECTED_MUTABILITY';
+ EXCEPTION WHEN OTHERS THEN
+  IF SQLERRM NOT LIKE '%SIGNED_CONTRACT_TERMS_IMMUTABLE%' THEN RAISE;END IF;
+ END;
+ BEGIN
+  UPDATE public.service_contract_versions SET status='DRAFT' WHERE contract_id='CI_CONTRACT';
+  RAISE EXCEPTION 'CI_UNEXPECTED_REOPEN';
+ EXCEPTION WHEN OTHERS THEN
+  IF SQLERRM NOT LIKE '%CONTRACT_SIGNED_STATUS_TRANSITION_FORBIDDEN%' THEN RAISE;END IF;
+ END;
+ BEGIN
+  DELETE FROM public.service_contract_versions WHERE contract_id='CI_CONTRACT';
+  RAISE EXCEPTION 'CI_UNEXPECTED_DELETE';
+ EXCEPTION WHEN OTHERS THEN
+  IF SQLERRM NOT LIKE '%SIGNED_CONTRACT_VERSION_DELETE_FORBIDDEN%' THEN RAISE;END IF;
+ END;
+END;$$;
+\echo CONTRACT_VERSION_HISTORY_IMMUTABLE_PASS
