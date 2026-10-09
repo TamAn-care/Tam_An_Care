@@ -23,7 +23,7 @@ const ctl=new Controller(db);
 function req(role='ACCOUNTANT'){const r={};publishVerifiedFinanceIdentity(r,{...auth,actorRole:role});return r;}
 async function main(){
  assert.equal(Reflect.getMetadata(PATH_METADATA,Controller),'api/service-contracts');
- assert.equal(Reflect.getMetadata(PATH_METADATA,Controller.prototype.list),'');
+ assert.equal(Reflect.getMetadata(PATH_METADATA,Controller.prototype.list),'/');
  assert.equal(Reflect.getMetadata(PATH_METADATA,Controller.prototype.get),':contractId');
  assert.equal(Reflect.getMetadata(METHOD_METADATA,Controller.prototype.list),0);
  assert.equal(Reflect.getMetadata(METHOD_METADATA,Controller.prototype.get),0);
