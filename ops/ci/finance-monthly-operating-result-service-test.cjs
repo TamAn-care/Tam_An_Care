@@ -31,7 +31,7 @@ finally{ Module._load=load; }
 
 const required=[
   'finance_entry_id','entry_type','recognition_date',
-  'amount_vnd','posting_status','reconciliation_status'
+  'amount_vnd','status','source_mode','source_domain','source_entity_type','source_entity_id'
 ];
 
 function dbFor({columns=required,rows=[]}={}){
@@ -54,8 +54,8 @@ function dbFor({columns=required,rows=[]}={}){
 async function main(){
   {
     const db=dbFor({rows:[
-      {finance_entry_id:'R1',entry_type:'REVENUE',recognition_date:'2026-10-01',amount_vnd:'15000000',posting_status:'POSTED',reconciliation_status:'VERIFIED'},
-      {finance_entry_id:'E1',entry_type:'EXPENSE',recognition_date:'2026-10-09',amount_vnd:'12000000',posting_status:'POSTED',reconciliation_status:'VERIFIED'},
+      {finance_entry_id:'R1',entry_type:'REVENUE',recognition_date:'2026-10-01',amount_vnd:'15000000',status:'POSTED',source_mode:'SYSTEM',source_domain:'BILLING',source_entity_type:'INVOICE',source_entity_id:'I1'},
+      {finance_entry_id:'E1',entry_type:'EXPENSE',recognition_date:'2026-10-09',amount_vnd:'12000000',status:'POSTED',source_mode:'SYSTEM',source_domain:'BILLING',source_entity_type:'INVOICE',source_entity_id:'I1'},
     ]});
     const out=await new Service(db).read('2026-10');
     assert.equal(out.state,'CHUA_DU_DU_LIEU');
@@ -66,6 +66,7 @@ async function main(){
     assert.ok(out.reasons.includes('SOURCE_RECONCILIATION_PENDING'));
     assert.equal(out.ledgerSchemaReady,true);
     assert.equal(db.queries.length,2);
+    assert.match(db.queries[1].sql,/LIMIT 10001/);
   }
   {
     const db=dbFor({columns:['finance_entry_id','entry_type']});
@@ -77,12 +78,12 @@ async function main(){
   }
   {
     const db=dbFor({rows:[
-      {finance_entry_id:'R2',entry_type:'REVENUE',recognition_date:'2026-10-02',amount_vnd:'100',posting_status:'POSTED',reconciliation_status:'PENDING'},
+      {finance_entry_id:'R2',entry_type:'REVENUE',recognition_date:'2026-10-02',amount_vnd:'100',status:'DRAFT',source_mode:'MANUAL',source_domain:null,source_entity_type:null,source_entity_id:null},
     ]});
     const out=await new Service(db).read('2026-10');
     assert.equal(out.state,'CHUA_DU_DU_LIEU');
     assert.equal(out.profitVnd,null);
-    assert.ok(out.reasons.includes('SOURCE_RECONCILIATION_PENDING'));
+    assert.ok(out.reasons.includes('UNVERIFIED_LEDGER_ENTRY'));
   }
   {
     const db=dbFor({rows:[]});
@@ -91,7 +92,7 @@ async function main(){
     assert.equal(out.profitVnd,null,'empty ledger must not imply zero profit');
   }
   {
-    const record={finance_entry_id:'R1',entry_type:'REVENUE',recognition_date:'2026-10-01',amount_vnd:'1',posting_status:'POSTED',reconciliation_status:'VERIFIED'};
+    const record={finance_entry_id:'R1',entry_type:'REVENUE',recognition_date:'2026-10-01',amount_vnd:'1',status:'POSTED',source_mode:'SYSTEM',source_domain:'BILLING',source_entity_type:'INVOICE',source_entity_id:'I1'};
     const db=dbFor({rows:Array.from({length:10000},(_,i)=>({...record,finance_entry_id:'R'+i}))});
     const out=await new Service(db).read('2026-10');
     assert.equal(out.state,'CHUA_DU_DU_LIEU','capped query must never be READY');
