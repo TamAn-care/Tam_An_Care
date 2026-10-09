@@ -6,6 +6,7 @@ on:
       - 'api/**'
       - 'frontend/**'
       - 'ops/ci/finance-*'
+      - 'ops/ci/shared-canonical-contract-controller-test.cjs'
       - '.github/workflows/finance-grand-fast-resume.yml'
   workflow_dispatch:
 permissions:
