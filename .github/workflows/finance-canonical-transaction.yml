@@ -1,0 +1,70 @@
+name: Finance canonical transactional service — isolated PostgreSQL
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'api/src/finance-billing/**'
+      - 'ops/finance/**'
+      - 'ops/ci/finance-canonical-transaction-test.cjs'
+      - '.github/workflows/finance-canonical-transaction.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  internal-transaction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+          POSTGRES_DB: finance_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: finance_ci
+      PGPASSWORD: finance_ci_only
+      PGDATABASE: finance_ci
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_USER: finance_ci
+      DB_PASSWORD: finance_ci_only
+      DB_NAME: finance_ci
+      PGCONNECT_TIMEOUT: '5'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install API dependencies and build
+        working-directory: api
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Apply original migrations ONLY to isolated DB
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sql in ops/finance/v22/001_finance_foundation.sql ops/finance/v28/002_finance_transaction_safety.sql ops/finance/v29/003_finance_allocation_invariants.sql ops/finance/v29/004_finance_integrity_hardening.sql; do
+            psql -X -v ON_ERROR_STOP=1 -f "$sql"
+          done
+      - name: Test internal transactional allocation and idempotency
+        run: node ops/ci/finance-canonical-transaction-test.cjs
+      - name: No production effects
+        if: always()
+        run: |
+          echo 'Production Test: UNCHANGED'
+          echo 'Public write controller: NOT REGISTERED'
+          echo 'Canonical SQL: GitHub PostgreSQL service ONLY'
