@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import type { PoolClient } from 'pg';
+import { createHash } from 'crypto';
+import { validateFinanceCommand } from './finance-command-policy';
 
 /**
  * Finance billing persistence foundation.
@@ -73,22 +75,107 @@ export class FinanceBillingService {
     };
   }
 
+
   /**
-   * Internal only: future controller must validate actor RBAC
-   * and persistent idempotency before invoking this method.
-   *
-   * This foundation deliberately refuses to make mutations
-   * until its authenticated-operation integration is complete.
+   * INTERNAL ONLY — not registered with any write HTTP route.
+   * Caller MUST verify server-issued identity, active session and write RBAC.
+   * The operation is atomic, idempotent, auditable, and fails closed.
+   * Payment settlement DOES NOT create revenue or finance_entries.
    */
-  async allocatePayment(_input: {
+  async allocatePayment(input: {
     receiptId: string;
     invoiceId: string;
     allocationId: string;
     amountVnd: string;
     actorId: string;
     operationKey: string;
-  }): Promise<never> {
-    throw new Error('FINANCE_MUTATION_NOT_YET_AUTHORIZED');
+  }): Promise<{ allocationId: string; replayed: boolean }> {
+    const receiptId=this.validId(input.receiptId);
+    const invoiceId=this.validId(input.invoiceId);
+    const allocationId=this.validId(input.allocationId);
+    const actorId=this.validId(input.actorId);
+    const operationKey=this.validId(input.operationKey);
+    const amountVnd=this.parseVnd(input.amountVnd);
+    if (amountVnd === 0n) throw new Error('FINANCE_ZERO_ALLOCATION');
+    const canonical = JSON.stringify({
+      kind:'ALLOCATE_RECEIPT',receiptId,invoiceId,allocationId,
+      amountVnd:amountVnd.toString(),actorId,
+    });
+    const hash=createHash('sha256').update(canonical).digest('hex');
+    return this.db.withTransaction(async (client) => {
+      const inserted=await client.query(
+        `INSERT INTO public.finance_operation_idempotency
+          (operation_key,operation_type,request_hash,actor_id,status)
+         VALUES ($1,'ALLOCATE_RECEIPT',$2,$3,'IN_PROGRESS')
+         ON CONFLICT (operation_key) DO NOTHING RETURNING operation_key`,
+        [operationKey,hash,actorId],
+      );
+      if (inserted.rowCount === 0) {
+        const old=await client.query(
+          `SELECT operation_type,request_hash,actor_id,status,result_payload
+           FROM public.finance_operation_idempotency
+           WHERE operation_key=$1 FOR UPDATE`, [operationKey],
+        );
+        const row=old.rows[0];
+        if (!row || row.operation_type!=='ALLOCATE_RECEIPT' ||
+          row.request_hash!==hash || row.actor_id!==actorId) {
+          throw new Error('FINANCE_IDEMPOTENCY_CONFLICT');
+        }
+        if (row.status !== 'COMPLETED' ||
+          row.result_payload?.allocationId !== allocationId) {
+          throw new Error('FINANCE_OPERATION_INCOMPLETE');
+        }
+        return {allocationId,replayed:true};
+      }
+      const {receipt,invoice}=await this.inspectLockedDocuments(
+        client,receiptId,invoiceId,
+      );
+      const usedReceipt=await client.query(
+        `SELECT COALESCE(SUM(amount_vnd),0)::text AS used
+         FROM public.billing_payment_allocations WHERE receipt_id=$1`,
+        [receiptId],
+      );
+      const usedInvoice=await client.query(
+        `SELECT COALESCE(SUM(amount_vnd),0)::text AS used
+         FROM public.billing_payment_allocations WHERE invoice_id=$1`,
+        [invoiceId],
+      );
+      const receiptRemaining=this.parseVnd(receipt.amount_vnd) -
+        this.parseVnd(usedReceipt.rows[0].used);
+      const invoiceRemaining=this.parseVnd(invoice.total_amount_vnd) -
+        this.parseVnd(usedInvoice.rows[0].used);
+      if (receiptRemaining < 0n || invoiceRemaining < 0n) {
+        throw new Error('FINANCE_ALLOCATION_CORRUPTION');
+      }
+      validateFinanceCommand({
+        kind:'ALLOCATE_RECEIPT',receiptStatus:receipt.status,
+        invoiceStatus:invoice.status,sameResident:true,
+        amountVnd:amountVnd.toString(),
+        receiptRemainingVnd:receiptRemaining.toString(),
+        invoiceRemainingVnd:invoiceRemaining.toString(),
+      });
+      await client.query(
+        `INSERT INTO public.billing_payment_allocations
+          (allocation_id,receipt_id,invoice_id,amount_vnd)
+         VALUES ($1,$2,$3,$4)`,
+        [allocationId,receiptId,invoiceId,amountVnd.toString()],
+      );
+      await client.query(
+        `UPDATE public.finance_operation_idempotency
+         SET status='COMPLETED',completed_at=now(),
+             result_payload=jsonb_build_object('allocationId',$2)
+         WHERE operation_key=$1`,[operationKey,allocationId],
+      );
+      await client.query(
+        `INSERT INTO public.finance_operation_audit
+          (operation_key,actor_id,action,details)
+         VALUES ($1,$2,'ALLOCATE_RECEIPT',$3::jsonb)`,
+        [operationKey,actorId,JSON.stringify({
+          receiptId,invoiceId,allocationId,amountVnd:amountVnd.toString(),
+        })],
+      );
+      return {allocationId,replayed:false};
+    });
   }
 
   /**
