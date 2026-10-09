@@ -88,8 +88,11 @@ jobs:
       PGDATABASE: ci_meal
     steps:
       - uses: actions/checkout@v4
-      - name: Create empty canonical schema (no business data)
-        run: psql -v ON_ERROR_STOP=1 -f database/schema.sql
+      - name: Create isolated FK prerequisite only (no business data)
+        run: |
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          CREATE TABLE residents (resident_id TEXT PRIMARY KEY);
+          SQL
       - name: Apply candidate migration then ROLLBACK (no persistent changes)
         run: |
           {
