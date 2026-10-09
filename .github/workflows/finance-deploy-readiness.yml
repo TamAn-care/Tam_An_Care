@@ -5,6 +5,7 @@ on:
     paths:
       - 'api/**'
       - 'ops/ci/finance-deploy-readiness.cjs'
+      - 'ops/ci/finance-cross-module-compatibility.cjs'
       - 'docs/finance-*'
       - '.github/workflows/finance-deploy-readiness.yml'
   workflow_dispatch:
@@ -19,7 +20,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Finite evidence-based go/no-go assessment
-        run: node ops/ci/finance-deploy-readiness.cjs | tee finance-readiness.txt
+        run: |
+          node ops/ci/finance-cross-module-compatibility.cjs
+          node ops/ci/finance-deploy-readiness.cjs | tee finance-readiness.txt
       - name: Publish readable gate summary
         shell: bash
         run: |
