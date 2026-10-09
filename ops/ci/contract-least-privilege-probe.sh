@@ -46,7 +46,7 @@ SQL
 fi
 [[ "$output" == *"DB_TRANSACTION_READ_ONLY=on"* ]] || { echo 'SESSION_NOT_READ_ONLY';exit 6; }
 [[ "$output" == *"DB_CONNECTION_TLS=YES"* ]] || { echo 'DB_TLS_NOT_PROVEN';exit 7; }
-[[ "$output" == *"ROLE_CAN_CREATE_DB=NO"* && "$output" == *"ROLE_CAN_CREATE_SCHEMA=NO"* && "$output" == *"ROLE_CAN_WRITE_RESIDENTS=NO"* ]] ||
+[[ "$output" == *"ROLE_CAN_CREATE_DB=NO"* && "$output" == *"ROLE_CAN_CREATE_SCHEMA=NO"* && "$output" == *"ROLE_CAN_WRITE_RESIDENTS=NO"* && "$output" == *"ROLE_SUPERUSER=NO"* && "$output" == *"ROLE_WRITABLE_PUBLIC_TABLES=0"* ]] ||
  { echo 'AUDIT_ROLE_OVERPRIVILEGED';exit 8; }
 # Only allow known preapproved aggregate output; never expose values from business rows.
 while IFS= read -r line;do
