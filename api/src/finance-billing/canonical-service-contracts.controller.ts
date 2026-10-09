@@ -34,9 +34,15 @@ export class CanonicalServiceContractsController {
          c.resident_id AS "residentId",v.status,v.effective_date AS "effectiveDate",
          v.version,v.payload,c.created_at AS "createdAt",c.updated_at AS "updatedAt"
        FROM public.service_contract_records c
-       JOIN public.service_contract_versions v ON v.contract_id=c.contract_id
-        AND v.status='ACTIVE' AND v.approved_at IS NOT NULL
-        AND v.signed_at IS NOT NULL
+       JOIN LATERAL (
+        SELECT v.version,v.status,v.effective_date,v.payload
+        FROM public.service_contract_versions v
+        WHERE v.contract_id=c.contract_id AND
+          (v.status='DRAFT' OR
+           (v.status='ACTIVE' AND v.approved_at IS NOT NULL AND v.signed_at IS NOT NULL))
+        ORDER BY CASE WHEN v.status='ACTIVE' THEN 0 ELSE 1 END,
+                 v.version DESC LIMIT 1
+       ) v ON TRUE
        ORDER BY c.updated_at DESC LIMIT 100`,
     );
     return result.rows.map(row=>({
@@ -46,6 +52,7 @@ export class CanonicalServiceContractsController {
       effectiveDate:row.effectiveDate,version:row.version,
       createdAt:row.createdAt,updatedAt:row.updatedAt,
       source:'VERIFIED_SERVER',
+      billingApproved:row.status==='ACTIVE',
     }));
   }
   @Get(':contractId')
@@ -58,9 +65,15 @@ export class CanonicalServiceContractsController {
          v.status,v.effective_date,v.version,v.payload,
          c.created_at,c.updated_at
        FROM public.service_contract_records c
-       JOIN public.service_contract_versions v ON v.contract_id=c.contract_id
-         AND v.status='ACTIVE' AND v.approved_at IS NOT NULL
-         AND v.signed_at IS NOT NULL
+       JOIN LATERAL (
+        SELECT v.version,v.status,v.effective_date,v.payload
+        FROM public.service_contract_versions v
+        WHERE v.contract_id=c.contract_id AND
+          (v.status='DRAFT' OR
+           (v.status='ACTIVE' AND v.approved_at IS NOT NULL AND v.signed_at IS NOT NULL))
+        ORDER BY CASE WHEN v.status='ACTIVE' THEN 0 ELSE 1 END,
+                 v.version DESC LIMIT 1
+       ) v ON TRUE
        WHERE c.contract_id=$1 LIMIT 1`,
       [contractId],
     );
@@ -74,6 +87,7 @@ export class CanonicalServiceContractsController {
       effectiveDate:row.effective_date,version:row.version,
       createdAt:row.created_at,updatedAt:row.updated_at,
       source:'VERIFIED_SERVER',
+      billingApproved:row.status==='ACTIVE',
     };
   }
 }
