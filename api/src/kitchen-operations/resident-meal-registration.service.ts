@@ -88,12 +88,31 @@ export class ResidentMealRegistrationService {
     return {items:q.rows};
   }
 
+  private async requireApprovedDiet(client: {query: (sql:string,args:any[])=>Promise<{rowCount:number|null}>}, residentId: string) {
+    const q = await client.query(
+      `SELECT 1 FROM diet_orders d JOIN nutrition_plans n
+       ON n.nutrition_plan_id=d.nutrition_plan_id AND n.resident_id=d.resident_id
+       WHERE d.resident_id=$1 AND d.status='ACTIVE'
+       AND d.safety_confirmed=true AND d.approved_at IS NOT NULL
+       AND n.status='ACTIVE'
+       AND (d.effective_from IS NULL OR d.effective_from<=now())
+       AND (d.effective_to IS NULL OR d.effective_to>now())
+       AND (n.effective_from IS NULL OR n.effective_from<=now())
+       AND (n.effective_to IS NULL OR n.effective_to>now())
+       LIMIT 1`,[residentId],
+    );
+    if (!q.rowCount) throw new ConflictException(
+      'An active approved diet order is required before registering a resident meal',
+    );
+  }
+
   async register(identity: Identity, body: MealInput) {
     const v = this.parse(body);
     const actor = await this.permit(identity,'REGISTER',v.residentId);
     return this.db.withTransaction(async client => {
       const resident = await client.query('SELECT resident_id FROM residents WHERE resident_id=$1 AND active_status=true FOR SHARE',[v.residentId]);
       if (!resident.rowCount) throw new NotFoundException('Active resident not found');
+      await this.requireApprovedDiet(client,v.residentId);
       // Revalidate caregiver scope within the transaction just before the write.
       if (actor.role === 'CAREGIVER') {
         const assignment=await client.query(
@@ -136,6 +155,7 @@ export class ResidentMealRegistrationService {
       const actor=await this.permit(identity,cancel?'CANCEL':'UPDATE',prior.resident_id);
       if (prior.revision !== revision) throw new ConflictException('Stale registration revision');
       if (prior.status==='CANCELLED') throw new ConflictException('Cancelled registration is immutable');
+      if (!cancel) await this.requireApprovedDiet(client,prior.resident_id);
       const v = cancel ? null : this.parse({...body,residentId:prior.resident_id,mealDate: prior.meal_date_iso,mealType:prior.meal_type});
       if(actor.role==='CAREGIVER') {
         const a=await client.query(
