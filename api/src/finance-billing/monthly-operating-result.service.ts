@@ -17,7 +17,7 @@ const REQUIRED_LEDGER_COLUMNS = [
 
 // A real month-close attestation and reconciliation proof must be independently
 // implemented/verified before any monetary result may be called READY.
-const MONTH_CLOSE_ATTESTATION_VERIFIED = false;
+import { verifyIndependentMonthlyClose } from './monthly-close-evidence';
 
 export type MonthlyOperatingResultRead = MonthlyResult & {
   source: 'POSTGRESQL';
@@ -125,12 +125,20 @@ export class MonthlyOperatingResultService {
         row.posting_status === 'POSTED',
     );
 
+    // Not yet connected to a verified immutable snapshot + signed approval
+    // repository. Never synthesize attestation from query results.
+    const attestation = verifyIndependentMonthlyClose(month, null, {
+      entryCount: rows.rows.length, snapshotDigest: '',
+    });
     const result = calculateMonthlyOperatingResult({
       month,
       entries,
-      ledgerCoverageComplete: rowsBounded && rows.rows.length > 0 && MONTH_CLOSE_ATTESTATION_VERIFIED,
-      reconciliationComplete: reconciliationComplete && MONTH_CLOSE_ATTESTATION_VERIFIED,
+      ledgerCoverageComplete: rowsBounded && rows.rows.length > 0 && attestation.verified,
+      reconciliationComplete: reconciliationComplete && attestation.verified,
     });
+    for (const reason of attestation.reasons) {
+      if (!result.reasons.includes(reason)) result.reasons.push(reason);
+    }
 
     return {
       source: 'POSTGRESQL',
