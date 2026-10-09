@@ -2,7 +2,23 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const http = require('node:http');
-const { ProductionAuthMiddleware } = require('../dist/security/production-auth.middleware.js');
+// Isolate the middleware's DI-only database import; the request path still
+// exercises real HS256 verification and session validation via a controlled DB stub.
+const Module = require('node:module');
+const originalLoad = Module._load;
+Module._load = function(request, parent, isMain) {
+  if (request === '../database/database.service' &&
+      parent?.filename?.endsWith('production-auth.middleware.js')) {
+    return { DatabaseService: class TestDatabaseToken {} };
+  }
+  return originalLoad.apply(this, arguments);
+};
+let ProductionAuthMiddleware;
+try {
+  ({ ProductionAuthMiddleware } = require('../dist/security/production-auth.middleware.js'));
+} finally {
+  Module._load = originalLoad;
+}
 
 const secret='ci-isolated-jwt-test-secret-key-long-enough';
 const sessionId='ci-active-session';
