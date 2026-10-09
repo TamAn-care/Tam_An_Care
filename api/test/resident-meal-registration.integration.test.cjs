@@ -1,7 +1,26 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { Pool } = require('pg');
-const { ResidentMealRegistrationService } = require('../dist/kitchen-operations/resident-meal-registration.service.js');
+// The isolated test exercises the compiled service with controlled actor/scope
+// collaborators; the full production DI graph is intentionally not loaded.
+const Module = require('node:module');
+const originalLoad = Module._load;
+Module._load = function(request, parent, isMain) {
+  if (['../database/database.service','../staff-actors/staff-actor.service',
+        '../resident-access-scope/resident-access-scope.service'].includes(request)
+      && parent?.filename?.endsWith('resident-meal-registration.service.js')) {
+    const symbol = request.includes('/database/') ? 'DatabaseService'
+      : request.includes('/staff-actors/') ? 'StaffActorService' : 'ResidentAccessScopeService';
+    return { [symbol]: class TestDependencyToken {} };
+  }
+  return originalLoad.apply(this,arguments);
+};
+let ResidentMealRegistrationService;
+try {
+  ({ResidentMealRegistrationService} = require('../dist/kitchen-operations/resident-meal-registration.service.js'));
+} finally {
+  Module._load = originalLoad;
+}
 
 const pool = new Pool({connectionString: process.env.TEST_MEAL_DATABASE_URL});
 const db = {
