@@ -4,7 +4,7 @@
  * Never use a production storage root before auth, backup and release gates.
  */
 import { constants } from 'node:fs';
-import { open, mkdir, readFile, lstat } from 'node:fs/promises';
+import { open, mkdir, lstat, unlink, link } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import {
@@ -34,16 +34,11 @@ export class FinanceAttachmentIsolatedStore {
     const temporary=join(directory,'.staged-'+randomUUID());
     const temp=await open(temporary,constants.O_CREAT|constants.O_EXCL|constants.O_WRONLY|constants.O_NOFOLLOW,0o600);
     try{await temp.writeFile(bytes);await temp.sync();}finally{await temp.close();}
-    // No overwrite. This operation is an isolated design exercise, not an
-    // atomic DB/object-store two-phase commit. Caller must handle failures.
-    let destination;
-    try{
-      destination=await open(target,constants.O_CREAT|constants.O_EXCL|constants.O_WRONLY|constants.O_NOFOLLOW,0o600);
-      await destination.writeFile(bytes);
-      await destination.sync();
+    // Atomic no-clobber publication on a single filesystem.
+    // Link fails when target exists; never overwrite existing evidence.
+    try {
+      await link(temporary,target);
     } finally {
-      if(destination) await destination.close();
-      const {unlink}=await import('node:fs/promises');
       await unlink(temporary).catch(()=>undefined);
     }
     return {objectKey:descriptor.objectKey,sha256:descriptor.sha256,persistenceEnabled:false};
