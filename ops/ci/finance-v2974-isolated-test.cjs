@@ -68,7 +68,7 @@ const db={
     if (normalized.includes('FROM billing_receipts')) {
       return {rows:[]};
     }
-    if (normalized.includes('FROM billing_invoices')) {
+    if (normalized.includes('FROM billing_invoices') || normalized.includes('FROM public.billing_invoices')) {
       return {rows:[{invoice_id:'ci-invoice', invoice_code:'CI',
         resident_id:'ci-resident',contract_id:'ci-contract',
         billing_month:'2026-10-01',status:'ISSUED',
