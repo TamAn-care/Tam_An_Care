@@ -22,7 +22,14 @@ const db={query:async()=>({rows:[{actor_id:'DIRECTOR'}]}),withTransaction:async(
 const ctl=new Controller(db);
 (async()=>{
  delete process.env.TAMANCARE_CONTRACT_SIGNOFF_ENABLED;
- const signature={documentSha256:'a'.repeat(64),documentReference:'docs/CI_file',signingMethod:'SIGNED_PAPER_ARCHIVED',signedAt:'2026-10-08T12:00:00Z'};
+ const os=require('node:os'),crypto=require('node:crypto');
+const archive=fs.mkdtempSync(path.join(os.tmpdir(),'contract-ci-archive-'));
+fs.mkdirSync(path.join(archive,'docs'));
+const pdf=Buffer.from('%PDF-1.4\\n1 0 obj<<>>endobj\\n%%EOF\\n');
+fs.writeFileSync(path.join(archive,'docs','ci-contract.pdf'),pdf);
+process.env.TAMANCARE_CONTRACT_ARCHIVE_ROOT=archive;
+const pdfHash=crypto.createHash('sha256').update(pdf).digest('hex');
+const signature={documentSha256:pdfHash,documentReference:'docs/ci-contract.pdf',signingMethod:'SIGNED_PAPER_ARCHIVED',signedAt:'2026-10-08T12:00:00Z'};
  await assert.rejects(ctl.verifySignature(makeReq(),'CI_C','1',signature),e=>e.status===403);
  assert.equal(inserts.length,0);
  process.env.TAMANCARE_CONTRACT_SIGNOFF_ENABLED='true';
