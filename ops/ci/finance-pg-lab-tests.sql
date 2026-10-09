@@ -38,4 +38,16 @@ BEGIN
   RAISE EXCEPTION 'AMOUNT_ASSERTION_FAILED'; END IF;
 END;
 $body$;
+CALL expect_rejected($q$UPDATE billing_receipts SET status='VOID' WHERE receipt_id='P1'$q$,'ALLOCATED_RECEIPT_STATUS_FORBIDDEN');
+CALL expect_rejected($q$UPDATE billing_invoices SET status='VOID' WHERE invoice_id='I1'$q$,'ALLOCATED_INVOICE_STATUS_FORBIDDEN');
+UPDATE billing_invoices SET status='PARTIAL' WHERE invoice_id='I1';
+UPDATE billing_invoices SET status='ISSUED' WHERE invoice_id='I1';
+DO $body$
+BEGIN
+ IF (SELECT status FROM billing_receipts WHERE receipt_id='P1') <> 'CONFIRMED' THEN
+  RAISE EXCEPTION 'RECEIPT_STATUS_GUARD_ASSERTION_FAILED'; END IF;
+ IF (SELECT status FROM billing_invoices WHERE invoice_id='I1') <> 'ISSUED' THEN
+  RAISE EXCEPTION 'INVOICE_STATUS_GUARD_ASSERTION_FAILED'; END IF;
+END;
+$body$;
 \echo FINANCE_PG_LAB_SERIAL_PASS
