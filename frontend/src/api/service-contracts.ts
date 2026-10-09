@@ -192,71 +192,59 @@ export function generateAutoContractCode(existingContracts: ServiceContract[]): 
 }
 
 
+/**
+ * Contract data is server-authoritative. Existing localStorage is deliberately
+ * preserved as a non-authoritative recovery source: NEVER auto-upload it,
+ * delete it, or silently merge it into signed contracts.
+ */
 export async function listServiceContracts(
-  actor?: HumanActorSession | null,
+ actor?: HumanActorSession | null,
 ): Promise<ServiceContract[]> {
-  try {
-    const res = await apiRequest<ServiceContract[]>('/api/service-contracts', { actor });
-    if (res && res.length > 0) return res;
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline mode active for listServiceContracts:', error);
-  }
-  return getStoredServiceContracts();
+ const items=await apiRequest<ServiceContract[]>('/api/service-contracts',{actor});
+ if(!Array.isArray(items))throw new Error('CONTRACT_SERVER_RESPONSE_INVALID');
+ return items;
 }
 
 export async function getServiceContract(
-  contractId: string,
-  _actor?: HumanActorSession | null,
-): Promise<ServiceContract | null> {
-  const items = getStoredServiceContracts();
-  const found = items.find(c => c.contractId === contractId);
-  return found || null;
+ contractId:string,
+ actor?:HumanActorSession | null,
+):Promise<ServiceContract | null> {
+ if(!/^[A-Za-z0-9_-]{1,160}$/.test(contractId))throw new Error('CONTRACT_ID_INVALID');
+ try {
+  return await apiRequest<ServiceContract>(
+   `/api/service-contracts/${encodeURIComponent(contractId)}`,{actor});
+ } catch(error) {
+  // No browser fallback: distinguish offline/error from a genuine null.
+  throw error;
+ }
 }
 
 export async function saveServiceContract(
-  actor: HumanActorSession,
-  contract: ServiceContract,
-): Promise<ServiceContract> {
-  const items = getStoredServiceContracts();
-  const idx = items.findIndex(c => c.contractId === contract.contractId);
-  const now = new Date().toISOString();
-
-  let updatedContract: ServiceContract;
-  if (idx >= 0) {
-    updatedContract = { ...contract, updatedAt: now };
-    items[idx] = updatedContract;
-  } else {
-    updatedContract = { ...contract, createdAt: now, updatedAt: now };
-    items.unshift(updatedContract);
-  }
-
-  saveStoredServiceContracts(items);
-
-  try {
-    await apiRequest('/api/service-contracts', {
-      method: 'POST',
-      actor,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(updatedContract),
-    });
-  } catch {}
-
-  return updatedContract;
+ actor:HumanActorSession,
+ contract:ServiceContract,
+):Promise<ServiceContract> {
+ if(contract.status!=='DRAFT')throw new Error('CONTRACT_SIGNED_EDIT_REQUIRES_AMENDMENT');
+ if(!contract.contractId||!contract.residentId||!contract.contractCode)
+  throw new Error('CONTRACT_DRAFT_REQUIRED_FIELDS');
+ const result=await apiRequest<{contractId:string;status:string;version:number}>(
+  '/api/service-contract-drafts',{
+    method:'POST',actor,headers:{'content-type':'application/json'},
+    body:JSON.stringify({
+      contractId:contract.contractId,contractCode:contract.contractCode,
+      residentId:contract.residentId,payload:contract,
+    }),
+  });
+ if(result?.status!=='DRAFT'||result.contractId!==contract.contractId)
+  throw new Error('CONTRACT_SERVER_SAVE_NOT_CONFIRMED');
+ return {...contract,status:'DRAFT'};
 }
 
 export async function deleteServiceContract(
-  actor: HumanActorSession,
-  contractId: string,
-): Promise<void> {
-  const items = getStoredServiceContracts().filter(c => c.contractId !== contractId);
-  saveStoredServiceContracts(items);
-
-  try {
-    await apiRequest(`/api/service-contracts/${encodeURIComponent(contractId)}`, {
-      method: 'DELETE',
-      actor,
-    });
-  } catch {}
+ _actor:HumanActorSession,
+ _contractId:string,
+):Promise<void>{
+ // No server DELETE endpoint: fail closed instead of deleting browser state.
+ throw new Error('CONTRACT_DELETION_REQUIRES_CONTROLLED_ARCHIVE');
 }
 
 export function numberToVietnameseText(num: number): string {
