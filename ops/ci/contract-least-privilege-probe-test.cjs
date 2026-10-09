@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'../..');
+const probe=fs.readFileSync(path.join(root,'ops/ci/contract-least-privilege-probe.sh'),'utf8');
+const wf=fs.readFileSync(path.join(root,'.github/workflows/contract-runtime-readonly-self-hosted.yml'),'utf8');
+assert.match(probe,/BEGIN TRANSACTION READ ONLY/);
+assert.match(probe,/sslmode=verify-full/);
+assert.match(probe,/ROLE_CAN_CREATE_SCHEMA=NO/);
+assert.match(probe,/ROLE_CAN_WRITE_RESIDENTS=NO/);
+assert.doesNotMatch(probe,/docker (exec|run|ps|inspect)|\bsudo\b|ssh /);
+assert.doesNotMatch(probe,/SELECT\s+\*\s+FROM\s+(public\.)?(residents|billing|service_contract)/i);
+assert.match(wf,/environment: contract-runtime-readonly/);
+assert.match(wf,/tamancare-contract-audit/);
+assert.match(wf,/secrets\.CONTRACT_AUDIT_DATABASE_URL/);
+assert.match(wf,/vars\.CONTRACT_AUDIT_APPROVED/);
+assert.doesNotMatch(wf,/docker exec|ssh |sudo|upload-artifact|deploy\.sh/);
+console.log('CONTRACT_LEAST_PRIVILEGE_PROBE_STATIC_SECURITY_PASS');
+console.log('REAL_RUNTIME_CONNECTION=NOT_PERFORMED');
