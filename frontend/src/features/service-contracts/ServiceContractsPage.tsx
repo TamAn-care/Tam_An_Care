@@ -53,7 +53,7 @@ export function ServiceContractsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['service-contracts'] });
       setEditingContract(null);
-      alert('✅ Đã lưu Hợp đồng dịch vụ thành công!');
+      alert('Đã lưu bản NHÁP lên server. Hợp đồng chưa được ký, chưa được phê duyệt hoặc kích hoạt.');
     },
     onError: (err: any) => {
       alert(err.message || 'Không thể lưu hợp đồng');
