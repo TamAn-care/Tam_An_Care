@@ -32,14 +32,21 @@ export class CanonicalServiceContractsController {
     const result=await this.db.query(
       `SELECT c.contract_id AS "contractId",c.contract_code AS "contractCode",
          c.resident_id AS "residentId",v.status,v.effective_date AS "effectiveDate",
-         v.version,c.created_at AS "createdAt",c.updated_at AS "updatedAt"
+         v.version,v.payload,c.created_at AS "createdAt",c.updated_at AS "updatedAt"
        FROM public.service_contract_records c
        JOIN public.service_contract_versions v ON v.contract_id=c.contract_id
         AND v.status='ACTIVE' AND v.approved_at IS NOT NULL
         AND v.signed_at IS NOT NULL
        ORDER BY c.updated_at DESC LIMIT 100`,
     );
-    return result.rows;
+    return result.rows.map(row=>({
+      ...row.payload,
+      contractId:row.contractId,contractCode:row.contractCode,
+      residentId:row.residentId,status:row.status,
+      effectiveDate:row.effectiveDate,version:row.version,
+      createdAt:row.createdAt,updatedAt:row.updatedAt,
+      source:'VERIFIED_SERVER',
+    }));
   }
   @Get(':contractId')
   async get(@Req() request:object,@Param('contractId') contractId:string) {
