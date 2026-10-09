@@ -88,6 +88,7 @@ jobs:
           node ../ops/ci/finance-v2974-isolated-test.cjs
           node ../ops/ci/finance-reconciliation-test.cjs
           node ../ops/ci/finance-command-policy-test.cjs
+          node ../ops/ci/finance-canonical-contract-gate-test.cjs
   postgres:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
