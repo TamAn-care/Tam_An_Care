@@ -100,6 +100,7 @@ jobs:
           node ../ops/ci/finance-monthly-operating-result-test.cjs
           node ../ops/ci/finance-monthly-operating-result-service-test.cjs
           node ../ops/ci/finance-month-close-evidence-test.cjs
+          node ../ops/ci/finance-v38-source-intake-test.cjs
           node ../ops/ci/finance-command-policy-test.cjs
           node ../ops/ci/finance-canonical-contract-gate-test.cjs
           node ../ops/ci/shared-canonical-contract-controller-test.cjs
