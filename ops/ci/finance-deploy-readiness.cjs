@@ -14,6 +14,8 @@ const gates=[
  ['WRITE_HTTP_CONTROLLER',has('api/src/finance-billing/finance-write.controller.ts')],
  ['LEDGER_LINK_READ_ONLY',has('api/src/finance-billing/finance-read.controller.ts')],
  ['LEDGER_AMOUNT_AND_SOURCE_RECONCILIATION',false],
+ ['PRODUCTION_BILLING_MIGRATIONS_PRESENT',false],
+ ['CANONICAL_RESIDENT_ID_COMPATIBILITY',true],
  ['CONTRACT_MAPPING_APPROVED',false],
  ['RUNTIME_SCHEMA_APPROVED',false],
  ['ISOLATED_NEST_HTTP_SMOKE_SOURCE',has('ops/ci/finance-nest-http-jwt-test.cjs')],
