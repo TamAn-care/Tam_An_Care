@@ -104,3 +104,48 @@ jobs:
       - name: Verify migration was completely rolled back
         run: |
           test "$(psql -Atc "SELECT to_regclass('public.resident_meal_registrations') IS NULL AND to_regclass('public.resident_meal_registration_audit') IS NULL")" = "t"
+
+  resident-meal-integration:
+    name: Resident meal CRUD and security (disposable PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci_meal
+          POSTGRES_PASSWORD: ci_only_not_production
+          POSTGRES_DB: ci_meal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci_meal -d ci_meal"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: ci_meal
+      PGPASSWORD: ci_only_not_production
+      PGDATABASE: ci_meal
+      TEST_MEAL_DATABASE_URL: postgresql://ci_meal:ci_only_not_production@localhost:5432/ci_meal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Prepare disposable schema and domain registration tables
+        run: |
+          psql -v ON_ERROR_STOP=1 -f ops/ci/resident-meal-isolated-prerequisites.sql
+          psql -v ON_ERROR_STOP=1 -f database/migrations/20261009_017_resident_meal_registrations.sql
+      - name: Install backend dependencies
+        working-directory: api
+        run: npm ci
+      - name: Build backend
+        working-directory: api
+        run: npm run build
+      - name: Exercise real PostgreSQL CRUD, audit, totals and denied roles
+        working-directory: api
+        run: node --test test/resident-meal-registration.integration.test.cjs
