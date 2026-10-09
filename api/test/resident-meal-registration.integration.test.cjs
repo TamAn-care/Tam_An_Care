@@ -72,4 +72,33 @@ test('isolated PostgreSQL durable CRUD, scope and totals',async()=>{
   assert.equal(audit.rowCount,3);
   assert.deepEqual(new Set(audit.rows.map(x=>x.action)),new Set(['REGISTER','UPDATE','CANCEL']));
 });
+test('parallel creation is unique and concurrent revision updates are serialized',async()=>{
+  const input=payload('resident-b','DINNER');
+  const results=await Promise.allSettled([service.register(M,input),service.register(M,input)]);
+  assert.equal(results.filter(x=>x.status==='fulfilled').length,1);
+  assert.equal(results.filter(x=>x.status==='rejected'&&x.reason.getStatus?.()===409).length,1);
+  const record=results.find(x=>x.status==='fulfilled').value;
+  const attempts=await Promise.allSettled([
+    service.change(M,record.registration_id,{revision:1,portions:2,note:'first'}),
+    service.change(M,record.registration_id,{revision:1,portions:3,note:'second'}),
+  ]);
+  assert.equal(attempts.filter(x=>x.status==='fulfilled').length,1);
+  assert.equal(attempts.filter(x=>x.status==='rejected'&&x.reason.getStatus?.()===409).length,1);
+  const saved=await pool.query('SELECT revision,portions FROM resident_meal_registrations WHERE registration_id=$1',[record.registration_id]);
+  assert.equal(saved.rows[0].revision,2);
+  assert.ok([2,3].includes(saved.rows[0].portions));
+  const events=await pool.query('SELECT action FROM resident_meal_registration_audit WHERE registration_id=$1',[record.registration_id]);
+  assert.equal(events.rowCount,2);
+  assert.deepEqual(new Set(events.rows.map(x=>x.action)),new Set(['REGISTER','UPDATE']));
+});
+test('identity tampering and unsigned actor identity are denied',async()=>{
+  const x=await service.register(M,payload('resident-a','MORNING_SNACK'));
+  await failure(()=>service.change(M,x.registration_id,{revision:1,portions:2,residentId:'resident-b'}),400);
+  await failure(()=>service.change(M,x.registration_id,{revision:1,portions:2,mealType:'DINNER'}),400);
+  await failure(()=>service.change({id:'',role:'CARE_MANAGER'},x.registration_id,{revision:1},true),401);
+  await failure(()=>service.change({id:'nutrition',role:'NUTRITIONIST'},x.registration_id,{revision:1},true),403);
+  const row=await pool.query('SELECT revision,status FROM resident_meal_registrations WHERE registration_id=$1',[x.registration_id]);
+  assert.equal(row.rows[0].revision,1);
+  assert.equal(row.rows[0].status,'REGISTERED');
+});
 test.after(async()=>pool.end());
