@@ -43,10 +43,10 @@ function required(value: unknown, field: string): string {
 
 function vnd(value: unknown, field: string): string {
   const text = required(value, field);
-  if (!/^(0|[1-9]\d*)$/.test(text)) {
+  if (!/^(0|[1-9]\d*)(?:\.0{1,2})?$/.test(text)) {
     throw new Error('FINANCE_INVALID_VND_AMOUNT:' + field);
   }
-  return text;
+  return text.split('.')[0];
 }
 
 export interface FinanceInvoiceItem {
