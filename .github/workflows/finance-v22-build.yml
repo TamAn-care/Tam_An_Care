@@ -30,7 +30,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up Node.js 20
+      - name: Set up Node.js 24
         uses: actions/setup-node@v5
         with:
           node-version: '24'
@@ -59,7 +59,7 @@ jobs:
           test -s dist/index.html
           find dist -type f -name '*.js' | grep -q .
           printf 'source_commit=%s\nnode=%s\nmode=isolated-build-only\n' "$GITHUB_SHA" "$(node --version)" > dist/FINANCE_BUILD_MANIFEST.txt
-          (cd dist && find . -type f -print0 | sort -z | xargs -0 sha256sum) > dist/FINANCE_SHA256SUMS.txt
+          (cd dist && find . -type f ! -name 'FINANCE_SHA256SUMS.txt' -print0 | sort -z | xargs -0 sha256sum > FINANCE_SHA256SUMS.txt && sha256sum -c FINANCE_SHA256SUMS.txt)
 
       - name: Upload isolated build artifact
         uses: actions/upload-artifact@v6
