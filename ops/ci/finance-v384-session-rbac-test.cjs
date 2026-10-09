@@ -3,7 +3,17 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'../../api/dist');
 function find(name){const matches=[];const walk=d=>{for(const x of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,x.name);if(x.isDirectory())walk(p);else if(x.name===name)matches.push(p)}};walk(root);assert.equal(matches.length,1);return matches[0]}
-const {FinanceDocumentAuthorizationService:Service}=require(find('finance-document-authorization.service.js'));
+const Module=require('node:module');
+const serviceFile=find('finance-document-authorization.service.js');
+const originalLoad=Module._load;
+Module._load=function(id,parent,isMain){
+ if(id==='../database/database.service' && parent?.filename===serviceFile)
+   return {DatabaseService:class{}};
+ return originalLoad.apply(this,arguments);
+};
+let Service;
+try{Service=require(serviceFile).FinanceDocumentAuthorizationService;}
+finally{Module._load=originalLoad;}
 const {publishVerifiedFinanceIdentity:publish}=require(find('verified-finance-identity.js'));
 async function main(){
  const original={...process.env};
