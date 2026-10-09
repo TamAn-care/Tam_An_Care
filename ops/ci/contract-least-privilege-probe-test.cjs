@@ -9,10 +9,12 @@ assert.match(probe,/ROLE_CAN_CREATE_SCHEMA=NO/);
 assert.match(probe,/ROLE_CAN_WRITE_RESIDENTS=NO/);
 assert.doesNotMatch(probe.split('\n').filter(line=>!line.trimStart().startsWith('#')).join('\n'),/docker (exec|run|ps|inspect)|\bsudo\b|ssh /);
 assert.doesNotMatch(probe,/SELECT\s+\*\s+FROM\s+(public\.)?(residents|billing|service_contract)/i);
-assert.match(wf,/environment: contract-runtime-readonly/);
-assert.match(wf,/tamancare-contract-audit/);
-assert.match(wf,/secrets\.CONTRACT_AUDIT_DATABASE_URL/);
-assert.match(wf,/vars\.CONTRACT_AUDIT_APPROVED/);
-assert.doesNotMatch(wf,/docker exec|ssh |sudo|upload-artifact|deploy\.sh/);
+// The prior self-hosted runner workflow is intentionally retired.
+assert.match(wf,/SELF_HOSTED_RUNNER_PLAN_RETIRED/);
+assert.doesNotMatch(wf,/runs-on:\s*\[self-hosted/);
+assert.doesNotMatch(wf,/secrets\.CONTRACT_AUDIT_DATABASE_URL/);
+const hosted=fs.readFileSync(path.join(root,'.github/workflows/controlled-pull-source-audit.yml'),'utf8');
+assert.match(hosted,/runs-on: ubuntu-24\.04/);
+assert.doesNotMatch(hosted,/self-hosted|ssh |sudo |docker exec/);
 console.log('CONTRACT_LEAST_PRIVILEGE_PROBE_STATIC_SECURITY_PASS');
 console.log('REAL_RUNTIME_CONNECTION=NOT_PERFORMED');
