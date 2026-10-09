@@ -15,6 +15,10 @@ const REQUIRED_LEDGER_COLUMNS = [
   'reconciliation_status',
 ] as const;
 
+// A real month-close attestation and reconciliation proof must be independently
+// implemented/verified before any monetary result may be called READY.
+const MONTH_CLOSE_ATTESTATION_VERIFIED = false;
+
 export type MonthlyOperatingResultRead = MonthlyResult & {
   source: 'POSTGRESQL';
   ledgerSchemaReady: boolean;
@@ -114,6 +118,7 @@ export class MonthlyOperatingResultService {
       sourceVerified: row.reconciliation_status === 'VERIFIED',
     }));
 
+    const rowsBounded = rows.rows.length < 10000;
     const reconciliationComplete = rows.rows.every(
       (row) =>
         row.reconciliation_status === 'VERIFIED' &&
@@ -123,8 +128,8 @@ export class MonthlyOperatingResultService {
     const result = calculateMonthlyOperatingResult({
       month,
       entries,
-      ledgerCoverageComplete: true,
-      reconciliationComplete,
+      ledgerCoverageComplete: rowsBounded && rows.rows.length > 0 && MONTH_CLOSE_ATTESTATION_VERIFIED,
+      reconciliationComplete: reconciliationComplete && MONTH_CLOSE_ATTESTATION_VERIFIED,
     });
 
     return {
