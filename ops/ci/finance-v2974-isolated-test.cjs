@@ -4,7 +4,9 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { PATH_METADATA, METHOD_METADATA } = require('@nestjs/common/constants');
+const { createRequire } = require('node:module');
+const apiRequire=createRequire(path.join(__dirname,'..','..','api','package.json'));
+const { PATH_METADATA, METHOD_METADATA } = apiRequire('@nestjs/common/constants');
 
 function findCompiled(root, filename) {
   if (!fs.existsSync(root)) throw Error('API_DIST_NOT_FOUND');
