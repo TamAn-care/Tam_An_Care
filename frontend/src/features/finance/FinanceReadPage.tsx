@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from 'react';
+import { MonthlyOperatingResultPanel } from './MonthlyOperatingResultPanel';
 import type { RequestOptions } from '../../api/client';
 import {
   readFinanceInvoicesByMonth,
@@ -138,6 +139,8 @@ export default function FinanceReadPage({ options }: Props) {
           Làm mới
         </button>
       </div>
+
+      <MonthlyOperatingResultPanel month={month} options={options} revision={revision} />
 
       <section aria-label="Danh sách hóa đơn" className="space-y-3">
         <h2 className="text-lg font-semibold">
