@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Must run ONLY with the ephemeral GitHub Actions finance_ci database.
+export PGHOST=127.0.0.1 PGPORT=5432 PGUSER=finance_ci PGDATABASE=finance_ci
+export PGPASSWORD=finance_ci_only
 if [[ "${PGDATABASE:-}" != finance_ci || "${PGUSER:-}" != finance_ci ||
       "${PGHOST:-}" != 127.0.0.1 ]]; then
   echo FINANCE_V382_ISOLATION_GATE_FAIL; exit 31
