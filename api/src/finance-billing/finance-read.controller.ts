@@ -259,6 +259,48 @@ export class FinanceReadController {
     };
   }
 
+
+  /**
+   * Link-integrity audit only: no assumption about monetary ledger columns.
+   * Does not post revenue. Missing/multiple links require manual reconciliation.
+   */
+  @Get('invoices/:invoiceId/ledger-links')
+  async getInvoiceLedgerLinks(
+    @Req() request: object,
+    @Param('invoiceId') invoiceId: string,
+  ) {
+    await this.authorize(request);
+    if (!/^[A-Za-z0-9_-]{1,120}$/.test(invoiceId)) {
+      throw new BadRequestException('FINANCE_INVALID_INVOICE_ID');
+    }
+    const invoice=await this.db.query(
+      `SELECT invoice_id FROM public.billing_invoices WHERE invoice_id=$1`,
+      [invoiceId],
+    );
+    if (invoice.rows.length!==1) throw new NotFoundException('FINANCE_INVOICE_NOT_FOUND');
+    const result=await this.db.query(
+      `SELECT l.source_domain,l.source_type,l.source_id,l.posting_kind,
+              l.finance_entry_id,
+              (e.finance_entry_id IS NOT NULL) AS entry_exists
+         FROM public.finance_source_links l
+         LEFT JOIN public.finance_entries e ON e.finance_entry_id=l.finance_entry_id
+        WHERE l.source_domain='BILLING'
+          AND l.source_type='INVOICE' AND l.source_id=$1
+        ORDER BY l.posting_kind,l.finance_entry_id
+        LIMIT 100`,
+      [invoiceId],
+    );
+    const rows=result.rows as Array<{posting_kind:string;entry_exists:boolean}>;
+    const revenue=rows.filter(row=>row.posting_kind==='REVENUE');
+    const status=revenue.length===1 && revenue[0].entry_exists
+      ? 'SINGLE_LINK_VERIFIED'
+      : revenue.length===0 ? 'REVENUE_LINK_MISSING'
+      : revenue.length>1 ? 'REVENUE_LINK_DUPLICATE'
+      : 'REVENUE_LEDGER_ENTRY_MISSING';
+    return {source:'POSTGRESQL',invoiceId,status,links:result.rows,
+      revenuePostedAutomatically:false};
+  }
+
   @Get('receipts')
   async listLatestReceipts(@Req() request: object) {
     await this.authorize(request);
