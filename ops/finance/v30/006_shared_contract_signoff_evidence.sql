@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.service_contract_signing_evidence (
  document_reference text NOT NULL CHECK (length(document_reference) BETWEEN 8 AND 200),
  signing_method text NOT NULL CHECK (signing_method IN ('SIGNED_PAPER_ARCHIVED','EXTERNAL_VERIFIED')),
  verified_by text NOT NULL,
+ signed_at timestamptz NOT NULL,
  verified_at timestamptz NOT NULL DEFAULT now(),
  PRIMARY KEY(contract_id,version),
  FOREIGN KEY(contract_id,version) REFERENCES public.service_contract_versions(contract_id,version) ON DELETE RESTRICT
