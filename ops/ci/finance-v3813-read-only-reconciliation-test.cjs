@@ -1,4 +1,9 @@
 'use strict';
+const {assessFinanceEvidencePacket:assessV3815}=require('../../api/dist/finance-billing/finance-evidence-packet.js');
+const ciProofs=['POSTGRES_SNAPSHOT','AUTHZ','RESTORE','PARENT_PATH','OBJECT_CONSISTENCY','SOURCE_PROVENANCE'].map(kind=>({kind,environment:'ISOLATED_CI',observedAt:'2026-10-10T00:00:00Z',reference:'isolated-ci-proof',verified:true}));
+const v3815=assessV3815(ciProofs);
+if(v3815.decision!=='NO_GO'||v3815.missing.length!==7||v3815.productionDeployAuthorized!==false)throw Error('V3815_CI_NOT_FAIL_CLOSED');
+console.log('FINANCE_V3815_PRODUCTION_PROOF_REQUIREMENTS_PASS');
 require('./finance-v3814-readiness-report-test.cjs');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
