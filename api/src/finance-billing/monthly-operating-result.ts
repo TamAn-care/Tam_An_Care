@@ -26,7 +26,7 @@ export type MonthlyResult = {
 };
 const MAX_VND = 9999999999999999n;
 function vnd(raw: string): bigint {
-  if (typeof raw !== 'string' || !/^(0|[1-9]\\d*)(?:\\.0{1,2})?$/.test(raw)) {
+  if (typeof raw !== 'string' || !/^(0|[1-9]\d*)(?:\.0{1,2})?$/.test(raw)) {
     throw new Error('MONTHLY_FINANCE_INVALID_VND');
   }
   const value = BigInt(raw.split('.')[0]);
@@ -34,7 +34,7 @@ function vnd(raw: string): bigint {
   return value;
 }
 function validDate(raw: string): boolean {
-  if (typeof raw !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(raw)) return false;
+  if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) return false;
   const [year, month, day] = raw.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
   return year >= 1900 && year <= 9999 &&
@@ -54,7 +54,7 @@ export function calculateMonthlyOperatingResult(input: {
   reconciliationComplete: boolean;
 }): MonthlyResult {
   const { month, entries, ledgerCoverageComplete, reconciliationComplete } = input;
-  if (typeof month !== 'string' || !/^\\d{4}-(0[1-9]|1[0-2])$/.test(month) ||
+  if (typeof month !== 'string' || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month) ||
       Number(month.slice(0, 4)) < 1900) {
     throw new Error('MONTHLY_FINANCE_INVALID_MONTH');
   }
