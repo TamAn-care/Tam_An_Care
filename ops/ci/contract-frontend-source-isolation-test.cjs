@@ -10,7 +10,8 @@ function fn(name,next){
 const list=fn('listServiceContracts','getServiceContract');
 const get=fn('getServiceContract','saveServiceContract');
 const save=fn('saveServiceContract','deleteServiceContract');
-const remove=c.slice(c.indexOf('export async function deleteServiceContract('),c.indexOf('export async function ',c.indexOf('export async function deleteServiceContract(')+5));
+const deleteStart=c.indexOf('export async function deleteServiceContract(');
+const remove=c.slice(deleteStart,c.indexOf('\n}\n',deleteStart)+3);
 assert.doesNotMatch(c,/MOCK_SERVICE_CONTRACTS|res-demo-001|ctr-demo-001/,'Demo contract must not be bundled');
 for(const [name,body] of [['list',list],['get',get],['save',save],['delete',remove]]){
  assert.doesNotMatch(body,/getStoredServiceContracts\(|saveStoredServiceContracts\(|localStorage/,'Backend operation '+name+' must never use local cache');
