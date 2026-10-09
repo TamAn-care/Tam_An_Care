@@ -20,7 +20,7 @@ if [[ "$r1" -ne 0 && "$r2" -ne 0 ]]; then
   echo "FAIL: neither allocation committed"; exit 1
 fi
 count=$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT count(*) FROM billing_payment_allocations WHERE invoice_id='I2'")
-balance=$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT coalesce(sum(amount_vnd),0) FROM billing_payment_allocations WHERE invoice_id='I2'")
+balance=$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT coalesce(sum(amount_vnd),0)::bigint FROM billing_payment_allocations WHERE invoice_id='I2'")
 if [[ "$count" != "1" || "$balance" != "40" ]]; then
  echo "FAIL: unexpected concurrent allocation result"; exit 1
 fi
