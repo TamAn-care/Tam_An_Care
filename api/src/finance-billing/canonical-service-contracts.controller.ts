@@ -30,10 +30,14 @@ export class CanonicalServiceContractsController {
   async list(@Req() request:object) {
     await this.authorize(request);
     const result=await this.db.query(
-      `SELECT contract_id AS "contractId",contract_code AS "contractCode",
-         resident_id AS "residentId",status,effective_date AS "effectiveDate",
-         version,created_at AS "createdAt",updated_at AS "updatedAt"
-       FROM public.service_contract_records ORDER BY updated_at DESC LIMIT 100`,
+      `SELECT c.contract_id AS "contractId",c.contract_code AS "contractCode",
+         c.resident_id AS "residentId",v.status,v.effective_date AS "effectiveDate",
+         v.version,c.created_at AS "createdAt",c.updated_at AS "updatedAt"
+       FROM public.service_contract_records c
+       JOIN public.service_contract_versions v ON v.contract_id=c.contract_id
+        AND v.status='ACTIVE' AND v.approved_at IS NOT NULL
+        AND v.signed_at IS NOT NULL
+       ORDER BY c.updated_at DESC LIMIT 100`,
     );
     return result.rows;
   }
@@ -43,9 +47,14 @@ export class CanonicalServiceContractsController {
     if(!/^[A-Za-z0-9_-]{1,160}$/.test(contractId))
       throw new BadRequestException('CONTRACT_ID_INVALID');
     const result=await this.db.query(
-      `SELECT contract_id,contract_code,resident_id,status,effective_date,
-         version,payload,created_at,updated_at
-       FROM public.service_contract_records WHERE contract_id=$1 LIMIT 1`,
+      `SELECT c.contract_id,c.contract_code,c.resident_id,
+         v.status,v.effective_date,v.version,v.payload,
+         c.created_at,c.updated_at
+       FROM public.service_contract_records c
+       JOIN public.service_contract_versions v ON v.contract_id=c.contract_id
+         AND v.status='ACTIVE' AND v.approved_at IS NOT NULL
+         AND v.signed_at IS NOT NULL
+       WHERE c.contract_id=$1 LIMIT 1`,
       [contractId],
     );
     if(result.rows.length!==1)throw new NotFoundException('CONTRACT_NOT_FOUND');
