@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3817-forensic-safety-test.cjs');
 require('./finance-v3816-readiness-test.cjs');
 const {assessFinanceEvidencePacket:assessV3815}=require('../../api/dist/finance-billing/finance-evidence-packet.js');
 const ciProofs=['POSTGRES_SNAPSHOT','AUTHZ','RESTORE','PARENT_PATH','OBJECT_CONSISTENCY','SOURCE_PROVENANCE'].map(kind=>({kind,environment:'ISOLATED_CI',observedAt:'2026-10-10T00:00:00Z',reference:'isolated-ci-proof',verified:true}));
