@@ -57,3 +57,5 @@ test "$(classify "$root/restored")" = '1|0|1'
 # No deletion or automatic repair of orphaned evidence.
 [[ -f "$root/restored/finance/documents/CI_ORPHAN/ORPHAN.pdf" ]]
 echo FINANCE_V3812_RESTORE_RECONCILIATION_MISSING_CORRUPT_ORPHAN_PASS
+
+bash ops/ci/finance-v3815-consistent-snapshot-test.sh
