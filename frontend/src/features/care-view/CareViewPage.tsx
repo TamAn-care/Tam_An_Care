@@ -8,6 +8,7 @@ import { ROLE_LABELS, getAssignedResidentIdsForActor, getAssignedResidentIdsForG
 import { ApiError } from '../../api/errors';
 import { EmptyState, ErrorState, LoadingState } from '../../components/feedback/FeedbackStates';
 import ElderlyAvatar from '../../components/common/ElderlyAvatar';
+import { PaperRecordCard } from '../paper-records/PaperRecordCard';
 import {
   CARE_LEVEL_LABEL,
   GENDER_LABEL,
@@ -596,6 +597,7 @@ export function CareViewPage() {
       {/* TAB CONTENT PANELS */}
       {activeTab === 'profile' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          <PaperRecordCard residentId={normalizedResidentId} actor={actor} />
           {/* Card 1: Thẻ thông tin cá nhân */}
           <div className="card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.75rem', padding: '1.25rem' }}>
             <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.05rem', fontWeight: 700, color: '#166534', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.5rem' }}>
