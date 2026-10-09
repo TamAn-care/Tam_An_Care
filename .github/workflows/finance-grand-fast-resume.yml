@@ -111,6 +111,7 @@ jobs:
           node ../ops/ci/finance-v388-draft-runtime-guard-test.cjs
           node ../ops/ci/finance-v389-evidence-integrity-test.cjs
           node ../ops/ci/finance-v3811-object-store-test.cjs
+          node ../ops/ci/finance-v3813-read-only-reconciliation-test.cjs
           node ../ops/ci/finance-command-policy-test.cjs
           node ../ops/ci/finance-canonical-contract-gate-test.cjs
           node ../ops/ci/shared-canonical-contract-controller-test.cjs
