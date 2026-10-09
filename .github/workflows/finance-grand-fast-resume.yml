@@ -106,6 +106,7 @@ jobs:
           node ../ops/ci/finance-v381-document-workflow-test.cjs
           node ../ops/ci/finance-v384-session-rbac-test.cjs
           node ../ops/ci/finance-v385-disabled-transaction-test.cjs
+          node ../ops/ci/finance-v387-draft-contract-test.cjs
           node ../ops/ci/finance-command-policy-test.cjs
           node ../ops/ci/finance-canonical-contract-gate-test.cjs
           node ../ops/ci/shared-canonical-contract-controller-test.cjs
