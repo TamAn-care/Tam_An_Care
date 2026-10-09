@@ -63,6 +63,9 @@ jobs:
       - name: Test resident meal RBAC (fail-closed)
         run: node --test test/resident-meal-registration.policy.test.cjs
 
+      - name: Test production JWT middleware over HTTP (isolated)
+        run: node --test test/resident-meal-auth-http.test.cjs
+
   resident-meal-schema-check:
     name: Resident meal schema / rollback (isolated PostgreSQL)
     runs-on: ubuntu-latest
