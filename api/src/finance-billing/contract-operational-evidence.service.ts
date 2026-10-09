@@ -33,7 +33,7 @@ export class ContractOperationalEvidenceService {
   const classification=admission.rows[0];
   const assignment=beds.rows[0];
   if(admission.rows.length!==1||beds.rows.length!==1||
-     classification.review_status!=='APPROVED'||
+     !['APPROVED','OVERRIDDEN'].includes(classification.review_status)||
      !classification.approved_care_level||
      classification.approved_care_level!==r.rows[0].care_level)
     throw Error('CONTRACT_ADMISSION_CARE_OR_BED_NOT_APPROVED');
