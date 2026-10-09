@@ -202,23 +202,10 @@ export function ServiceContractsPage() {
     triggerPrint();
   };
 
-  const handleSignContract = (contract: ServiceContract) => {
-    const today = new Date().toISOString().split('T')[0];
-    const updatedContract: ServiceContract = {
-      ...contract,
-      status: 'ACTIVE',
-      signedDate: contract.signedDate || today,
-      effectiveDate: contract.effectiveDate || today,
-      updatedAt: new Date().toISOString(),
-    };
-    saveMutation.mutate(updatedContract, {
-      onSuccess: () => {
-        alert(`🎉 Hợp đồng ${contract.contractCode} đã ký kết thành công và chuyển sang trạng thái "Đang hiệu lực"!`);
-        if (viewingContract?.contractId === contract.contractId) {
-          setViewingContract(updatedContract);
-        }
-      },
-    });
+  const handleSignContract = (_contract: ServiceContract) => {
+    // Signing/approval is exclusively a backend-controlled, evidence-backed flow.
+    // NEVER mark ACTIVE in the browser or silently turn an unsigned draft into a contract.
+    alert('Không thể tự kích hoạt hợp đồng từ trình duyệt. Cần xác minh văn bản đã ký, hồ sơ lưu trữ và phê duyệt độc lập trên backend trước khi có hiệu lực.');
   };
 
   return (
