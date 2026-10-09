@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3817-9-runtime-guard-test.cjs');
 require('./finance-v3817-forensic-safety-test.cjs');
 require('./finance-v3816-readiness-test.cjs');
 const {assessFinanceEvidencePacket:assessV3815}=require('../../api/dist/finance-billing/finance-evidence-packet.js');
