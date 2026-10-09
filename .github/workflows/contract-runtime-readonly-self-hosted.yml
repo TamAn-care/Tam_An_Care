@@ -1,0 +1,43 @@
+name: Contract Production Test — authorized read-only runner audit
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: contract-runtime-audit
+  cancel-in-progress: false
+jobs:
+  production-metadata-only:
+    # Runner must be separately installed and authorized by an administrator.
+    runs-on: [self-hosted, linux, tamancare-contract-audit]
+    timeout-minutes: 10
+    environment: contract-runtime-readonly
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate operator audit program
+        run: bash -n ops/ci/contract-runtime-metadata-readonly.sh
+      - name: Read-only metadata audit on server runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Runner must be installed on an approved host with minimal read-only capabilities.
+          # No business data rows or contract documents are read.
+          bash ops/ci/contract-runtime-metadata-readonly.sh "$RUNNER_TEMP/contract-runtime-report.txt"
+      - name: Prepare sanitized gate summary without private identifiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUNNER_TEMP/contract-runtime-report.txt"
+          grep -E '^(RESULT=|DATABASE_WRITE=|SEED=|MIGRATION=|DEPLOY=|PERSONAL_DATA_ROWS_READ=|SIGNED_CONTRACT_BYTES=|BACKUP_RESTORE_DRILL=)' "$report" > "$RUNNER_TEMP/contract-safety-summary.txt"
+          cat "$RUNNER_TEMP/contract-safety-summary.txt" >> "$GITHUB_STEP_SUMMARY"
+          grep -qx 'RESULT=RUNTIME_METADATA_AUDIT_COMPLETE' "$RUNNER_TEMP/contract-safety-summary.txt"
+          grep -qx 'DATABASE_WRITE=NO' "$RUNNER_TEMP/contract-safety-summary.txt"
+          echo 'PRODUCTION_READONLY_AUDIT_EXECUTION_PASS' >> "$GITHUB_STEP_SUMMARY"
+      - name: Never upload production schema or private runtime report
+        if: always()
+        shell: bash
+        run: |
+          rm -f "$RUNNER_TEMP/contract-runtime-report.txt" "$RUNNER_TEMP/contract-safety-summary.txt"
+          echo 'NO_DEPLOY NO_PRODUCTION_MIGRATION NO_SEED'
