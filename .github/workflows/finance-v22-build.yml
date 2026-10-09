@@ -1,0 +1,70 @@
+name: Finance V2.2 isolated frontend build
+
+on:
+  push:
+    branches:
+      - feature/finance-v22-github-build
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/finance-v22-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: finance-v22-build-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  finance-frontend:
+    name: Finance frontend TypeScript and Vite
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install exact dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: TypeScript node config
+        run: ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit
+
+      - name: TypeScript application
+        run: ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
+
+      - name: Validate frontend API base
+        run: node scripts/check-api-base.mjs
+
+      - name: Vite production bundle (build-only; NOT deployable)
+        run: ./node_modules/.bin/vite build
+
+      - name: Create build manifest and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/index.html
+          find dist -type f -name '*.js' | grep -q .
+          printf 'source_commit=%s\nnode=%s\nmode=isolated-build-only\n' "$GITHUB_SHA" "$(node --version)" > dist/FINANCE_BUILD_MANIFEST.txt
+          (cd dist && find . -type f -print0 | sort -z | xargs -0 sha256sum) > dist/FINANCE_SHA256SUMS.txt
+
+      - name: Upload isolated build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: finance-v22-frontend-${{ github.sha }}
+          path: frontend/dist/
+          retention-days: 7
+          if-no-files-found: error
