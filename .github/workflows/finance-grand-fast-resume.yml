@@ -9,6 +9,7 @@ on:
       - 'ops/ci/shared-canonical-contract-controller-test.cjs'
       - 'ops/ci/shared-contract-draft-guard-test.cjs'
       - 'ops/ci/contract-frontend-source-isolation-test.cjs'
+      - 'ops/ci/contract-production-acceptance-gate.cjs'
       - 'ops/ci/contract-approval-policy-test.cjs'
       - 'ops/ci/contract-operational-evidence-test.cjs'
       - 'ops/ci/contract-signoff-controller-test.cjs'
@@ -101,6 +102,7 @@ jobs:
           node ../ops/ci/contract-operational-evidence-test.cjs
           node ../ops/ci/contract-signoff-controller-test.cjs
           node ../ops/ci/contract-frontend-source-isolation-test.cjs
+          node ../ops/ci/contract-production-acceptance-gate.cjs
   postgres:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
