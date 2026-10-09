@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3814-readiness-report-test.cjs');
 const assert=require('node:assert/strict');
 const fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const {reconcileFinanceAttachmentsReadOnly:scan}=require('../../api/dist/finance-billing/finance-attachment-reconciliation.js');
