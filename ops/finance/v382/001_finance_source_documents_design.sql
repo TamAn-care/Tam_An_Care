@@ -57,4 +57,52 @@ CREATE TRIGGER finance_v382_events_no_mutation
 REVOKE ALL ON finance_source_documents FROM PUBLIC;
 REVOKE ALL ON finance_source_document_events FROM PUBLIC;
 REVOKE ALL ON SEQUENCE finance_source_document_events_event_id_seq FROM PUBLIC;
+-- Design-stage single transaction transition helper.
+-- Not granted to any application role; identity/RBAC remains external NO-GO.
+CREATE FUNCTION finance_v382_transition(
+ p_document_id text, p_revision bigint, p_action text,
+ p_actor_id text, p_reason text, p_approval_sha256 text DEFAULT NULL
+) RETURNS bigint LANGUAGE plpgsql AS $
+DECLARE d finance_source_documents%ROWTYPE;
+DECLARE v_next text;
+DECLARE v_reviewed text;
+DECLARE v_approved text;
+BEGIN
+ IF p_actor_id !~ '^[A-Za-z0-9_-]{1,160}
+
+    OR length(trim(coalesce(p_reason,'')))<5 THEN
+    RAISE EXCEPTION 'FINANCE_INVALID_ACTOR_OR_REASON';
+ END IF;
+ SELECT * INTO d FROM finance_source_documents
+ WHERE document_id=p_document_id FOR UPDATE;
+ IF NOT FOUND THEN RAISE EXCEPTION 'FINANCE_DOCUMENT_NOT_FOUND'; END IF;
+ IF d.revision <> p_revision THEN RAISE EXCEPTION 'FINANCE_STALE_REVISION'; END IF;
+ v_reviewed=d.reviewed_by; v_approved=d.approved_by;
+ IF p_action='SUBMIT' AND d.state='DRAFT' AND p_actor_id=d.prepared_by THEN
+   v_next='SUBMITTED';
+ ELSIF p_action='REVIEW' AND d.state='SUBMITTED'
+   AND p_actor_id<>d.prepared_by THEN
+   v_next='REVIEWED';v_reviewed=p_actor_id;
+ ELSIF p_action='APPROVE' AND d.state='REVIEWED'
+   AND p_actor_id<>d.prepared_by AND p_actor_id<>d.reviewed_by
+   AND p_approval_sha256 ~ '^[a-f0-9]{64}
+ THEN
+   v_next='APPROVED';v_approved=p_actor_id;
+ ELSIF p_action='REJECT' AND d.state='SUBMITTED'
+   AND p_actor_id<>d.prepared_by THEN
+   v_next='REJECTED';
+ ELSE RAISE EXCEPTION 'FINANCE_TRANSITION_FORBIDDEN'; END IF;
+ UPDATE finance_source_documents SET
+  state=v_next, revision=revision+1,reviewed_by=v_reviewed,
+  approved_by=v_approved,
+  approval_evidence_sha256=CASE WHEN v_next='APPROVED'
+    THEN p_approval_sha256 ELSE approval_evidence_sha256 END,
+  updated_at=now()
+ WHERE document_id=p_document_id AND revision=p_revision;
+ INSERT INTO finance_source_document_events(
+  document_id,revision,from_state,to_state,action,actor_id,reason)
+ VALUES(p_document_id,p_revision+1,d.state,v_next,p_action,p_actor_id,p_reason);
+ RETURN p_revision+1;
+END $;
+REVOKE ALL ON FUNCTION finance_v382_transition(text,bigint,text,text,text,text) FROM PUBLIC;
 COMMIT;
