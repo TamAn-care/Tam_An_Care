@@ -78,3 +78,28 @@ $body$;
 CREATE TRIGGER finance_allocation_immutability BEFORE UPDATE OR DELETE
 ON billing_payment_allocations FOR EACH ROW
 EXECUTE FUNCTION finance_reject_allocation_mutation();
+
+-- CI reconstruction of source V2.9.14 linked status protection.
+CREATE OR REPLACE FUNCTION finance_protect_linked_status() RETURNS trigger
+LANGUAGE plpgsql AS $body$
+DECLARE linked boolean;
+BEGIN
+ IF OLD.status IS NOT DISTINCT FROM NEW.status THEN RETURN NEW; END IF;
+ IF TG_TABLE_NAME='billing_receipts' THEN
+  SELECT EXISTS(SELECT 1 FROM billing_payment_allocations WHERE receipt_id=OLD.receipt_id) INTO linked;
+  IF linked AND NEW.status <> 'CONFIRMED' THEN
+   RAISE EXCEPTION 'ALLOCATED_RECEIPT_STATUS_FORBIDDEN'; END IF;
+ ELSIF TG_TABLE_NAME='billing_invoices' THEN
+  SELECT EXISTS(SELECT 1 FROM billing_payment_allocations WHERE invoice_id=OLD.invoice_id) INTO linked;
+  IF linked AND NEW.status NOT IN ('ISSUED','PARTIAL','PAID') THEN
+   RAISE EXCEPTION 'ALLOCATED_INVOICE_STATUS_FORBIDDEN'; END IF;
+ ELSE
+  RAISE EXCEPTION 'UNSUPPORTED_FINANCE_DOCUMENT';
+ END IF;
+ RETURN NEW;
+END;
+$body$;
+CREATE TRIGGER finance_linked_receipt_status_guard BEFORE UPDATE OF status
+ON billing_receipts FOR EACH ROW EXECUTE FUNCTION finance_protect_linked_status();
+CREATE TRIGGER finance_linked_invoice_status_guard BEFORE UPDATE OF status
+ON billing_invoices FOR EACH ROW EXECUTE FUNCTION finance_protect_linked_status();
