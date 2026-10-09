@@ -12,9 +12,12 @@ const gates=[
  ['READ_IDENTITY_WIRED',app.includes('FinanceReadController')&&mid.includes('publishVerifiedFinanceIdentity')],
  ['WRITE_SERVICE_ENABLED',!svc.includes('FINANCE_MUTATION_NOT_YET_AUTHORIZED')],
  ['WRITE_HTTP_CONTROLLER',has('api/src/finance-billing/finance-write.controller.ts')],
+ ['LEDGER_LINK_READ_ONLY',has('api/src/finance-billing/finance-read.controller.ts')],
+ ['LEDGER_AMOUNT_AND_SOURCE_RECONCILIATION',false],
  ['CONTRACT_MAPPING_APPROVED',false],
  ['RUNTIME_SCHEMA_APPROVED',false],
- ['HTTP_JWT_E2E_EVIDENCE',false]
+ ['ISOLATED_NEST_HTTP_SMOKE_SOURCE',has('ops/ci/finance-nest-http-jwt-test.cjs')],
+ ['PRODUCTION_EQUIVALENT_HTTP_JWT_E2E',false]
 ];
 for(const [name,pass] of gates) console.log('GATE_'+name+'='+(pass?'PASS':'BLOCKED'));
 console.log('FINANCE_DEPLOY_READINESS=NO_GO');
