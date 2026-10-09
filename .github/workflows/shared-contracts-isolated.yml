@@ -5,6 +5,9 @@ on:
     paths:
       - 'ops/finance/v30/**'
       - 'ops/ci/shared-contract-versions-ci.sql'
+      - 'ops/ci/shared-contract-cross-module-ci-schema.sql'
+      - 'ops/ci/shared-contract-postgres-signoff-test.cjs'
+      - 'api/src/finance-billing/contract-signoff.controller.ts'
       - '.github/workflows/shared-contracts-isolated.yml'
   workflow_dispatch:
 permissions:
@@ -30,6 +33,16 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with: {persist-credentials: false}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Build contract API for isolated transaction test
+        working-directory: api
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
       - name: Original SQL and new additive contract history (ephemeral only)
         shell: bash
         run: |
@@ -38,6 +51,8 @@ jobs:
             psql -X -v ON_ERROR_STOP=1 -f "$p"
           done
           psql -X -v ON_ERROR_STOP=1 -f ops/ci/shared-contract-versions-ci.sql
+          psql -X -v ON_ERROR_STOP=1 -f ops/ci/shared-contract-cross-module-ci-schema.sql
+          node ops/ci/shared-contract-postgres-signoff-test.cjs
       - name: Production unchanged
         if: always()
         run: echo 'NO_DEPLOY NO_PRODUCTION_MIGRATION NO_PRODUCTION_SEED'
