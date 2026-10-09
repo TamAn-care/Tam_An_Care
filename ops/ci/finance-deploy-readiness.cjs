@@ -12,12 +12,13 @@ const gates=[
  ['READ_IDENTITY_WIRED',app.includes('FinanceReadController')&&mid.includes('publishVerifiedFinanceIdentity')],
  ['WRITE_SERVICE_ENABLED',!svc.includes('FINANCE_MUTATION_NOT_YET_AUTHORIZED')],
  ['WRITE_HTTP_CONTROLLER',has('api/src/finance-billing/finance-write.controller.ts')],
- ['CONTRACT_MAPPING_APPROVED',has('docs/finance-contract-mapping-approved.md')],
- ['RUNTIME_SCHEMA_APPROVED',has('docs/finance-runtime-schema-approval.md')],
- ['HTTP_JWT_E2E_EVIDENCE',has('ops/ci/finance-http-jwt-e2e-tested.marker')]
+ ['CONTRACT_MAPPING_APPROVED',false],
+ ['RUNTIME_SCHEMA_APPROVED',false],
+ ['HTTP_JWT_E2E_EVIDENCE',false]
 ];
 for(const [name,pass] of gates) console.log('GATE_'+name+'='+(pass?'PASS':'BLOCKED'));
-console.log('FINANCE_DEPLOY_READINESS='+ (gates.every(x=>x[1])?'CANDIDATE_REQUIRES_HUMAN_APPROVAL':'NO_GO'));
+console.log('FINANCE_DEPLOY_READINESS=NO_GO');
+console.log('EVIDENCE_GATE=MANUAL_APPROVAL_AND_RUNTIME_ACCEPTANCE_REQUIRED');
 console.log('PRODUCTION_DEPLOY=NO');
 console.log('PRODUCTION_MIGRATION=NO');
 console.log('PRODUCTION_SEED=NO');
