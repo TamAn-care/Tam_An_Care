@@ -22,8 +22,8 @@ INSERT INTO public.auth_sessions VALUES
  ('CI_VERIFY_SESSION','CI_VERIFY','CARE_MANAGER',NULL,now()+interval '1 hour'),
  ('CI_APPROVE_SESSION','CI_APPROVE','SUPERVISOR',NULL,now()+interval '1 hour');
 INSERT INTO public.service_contract_records(contract_id,contract_code,resident_id,status,payload)
- VALUES ('CI_CONTRACT','CI_NUMBER','CI_RESIDENT','DRAFT','{}');
+ VALUES ('CI_SIGNOFF','CI_NUMBER','CI_RESIDENT','DRAFT','{}');
 INSERT INTO public.service_contract_versions(contract_id,version,payload,status,effective_date,change_reason)
-VALUES('CI_CONTRACT',1,
+VALUES('CI_SIGNOFF',1,
  '{"appendix":{"baseMonthlyFee":100,"additionalServices":[{"name":"CI_SUPPORT","fee":30,"selected":true}],"discount":10,"totalMonthlyFee":120},"operationalRefs":{"roomId":"CI_ROOM","bedId":"CI_BED","careLevel":"ASSISTED"}}'::jsonb,
  'DRAFT','2026-10-01','CI contract integration only');
