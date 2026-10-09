@@ -113,7 +113,7 @@ async function main(){
   await app.listLatestReceipts(req());
   await app.listReceiptsForInvoice(req(),'ci-invoice');
   const linked=await app.getInvoiceLedgerLinks(req(),'ci-invoice');
-  assert.equal(linked.status,'SINGLE_LINK_VERIFIED');
+  assert.equal(linked.status,'LINK_PRESENT_REVENUE_UNVERIFIED');
   assert.equal(linked.revenuePostedAutomatically,false);
   const denied=[
     ()=>app.listLatestReceipts({}),
