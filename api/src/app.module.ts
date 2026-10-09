@@ -73,6 +73,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { FinanceReadController } from './finance-billing/finance-read.controller';
 import { FinanceWriteController } from './finance-billing/finance-write.controller';
 import { FinanceBillingService } from './finance-billing/finance-billing.service';
+import { CanonicalServiceContractsController } from './finance-billing/canonical-service-contracts.controller';
 
 @Module({imports:[
     NotificationsModule,
@@ -109,5 +110,5 @@ import { FinanceBillingService } from './finance-billing/finance-billing.service
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService]})
 export class AppModule {}
