@@ -2,6 +2,7 @@ import { BadRequestException, Controller, ForbiddenException, Param, Post, Req, 
 import { DatabaseService } from '../database/database.service';
 import { readVerifiedFinanceIdentity } from '../security/verified-finance-identity';
 import type { PoolClient } from 'pg';
+import { verifyArchivedContractPdf } from './contract-archive-verifier';
 
 type Actor = { actorId:string; actorRole:string; sessionId:string };
 const validId=(x:unknown):x is string=>typeof x==='string'&&/^[A-Za-z0-9_-]{1,160}$/.test(x);
@@ -72,8 +73,9 @@ export class ContractSignoffController {
      typeof b.signedAt!=='string'||!Number.isFinite(Date.parse(b.signedAt))||
      Date.parse(b.signedAt)>Date.now())
    throw new BadRequestException('CONTRACT_SIGNATURE_EVIDENCE_INVALID');
-  // This attests staff reviewed a signed document. Never claim cryptographic e-signature
-  // or authenticate file bytes unless backed by a verified document store.
+  // Fail closed: hash the actual archived server PDF before storing any signing evidence.
+  // Human review remains necessary and this is not proof of legal e-signature.
+  await verifyArchivedContractPdf(b.documentReference as string,b.documentSha256 as string);
   return this.db.withTransaction(async client=>{
    await this.parent(client,contractId,version);
    await client.query(
