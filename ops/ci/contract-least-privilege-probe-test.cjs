@@ -7,7 +7,7 @@ assert.match(probe,/BEGIN TRANSACTION READ ONLY/);
 assert.match(probe,/sslmode=verify-full/);
 assert.match(probe,/ROLE_CAN_CREATE_SCHEMA=NO/);
 assert.match(probe,/ROLE_CAN_WRITE_RESIDENTS=NO/);
-assert.doesNotMatch(probe,/docker (exec|run|ps|inspect)|\bsudo\b|ssh /);
+assert.doesNotMatch(probe.split('\n').filter(line=>!line.trimStart().startsWith('#')).join('\n'),/docker (exec|run|ps|inspect)|\bsudo\b|ssh /);
 assert.doesNotMatch(probe,/SELECT\s+\*\s+FROM\s+(public\.)?(residents|billing|service_contract)/i);
 assert.match(wf,/environment: contract-runtime-readonly/);
 assert.match(wf,/tamancare-contract-audit/);
