@@ -1,0 +1,36 @@
+name: Finance HTTP JWT isolated smoke — no deploy
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'api/src/finance-billing/**'
+      - 'api/src/security/**'
+      - 'ops/ci/finance-http-jwt-isolated-test.cjs'
+      - '.github/workflows/finance-http-jwt-isolated.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install and build API isolated
+        working-directory: api
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Isolated loopback HTTP tests using real authentication and controller
+        run: node ops/ci/finance-http-jwt-isolated-test.cjs
+      - name: Clarify scope
+        if: always()
+        run: |
+          echo 'Security smoke test, not full Nest app + live ledger end-to-end'
+          echo 'No Production Test connection or deployment'
