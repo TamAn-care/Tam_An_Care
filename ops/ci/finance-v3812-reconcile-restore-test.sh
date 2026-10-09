@@ -30,10 +30,30 @@ while IFS='|' read -r path hash bytes; do
   [[ "$(sha256sum "$root/restored/$path" | cut -d' ' -f1)" = "$hash" ]] || { echo V3812_RESTORE_CORRUPT; exit 1; }
   [[ "$(wc -c < "$root/restored/$path" | tr -d ' ')" = "$bytes" ]] || exit 1
 done < "$root/db-manifest"
-# Corruption and missing file must both be detected, not auto repaired.
+# Read-only classifier: reports missing, mismatched, extra; never changes objects.
+classify() {
+  local dir="$1" missing=0 corrupt=0 orphan=0 path hash bytes
+  while IFS='|' read -r path hash bytes; do
+    if [[ ! -f "$dir/$path" ]]; then
+      missing=$((missing+1))
+    elif [[ "$(sha256sum "$dir/$path" | cut -d' ' -f1)" != "$hash" ]] ||
+         [[ "$(wc -c < "$dir/$path" | tr -d ' ')" != "$bytes" ]]; then
+      corrupt=$((corrupt+1))
+    fi
+  done < "$root/db-manifest"
+  while IFS= read -r path; do
+    if ! grep -Fqx "$path|" "$root/db-keys-prefix"; then
+      orphan=$((orphan+1))
+    fi
+  done < <(cd "$dir" && find finance/documents -type f | LC_ALL=C sort)
+  printf '%s|%s|%s' "$missing" "$corrupt" "$orphan"
+}
+awk -F'|' '{print $1"|"}' "$root/db-manifest" > "$root/db-keys-prefix"
+test "$(classify "$root/restored")" = '0|0|1'
 printf 'corruption' >> "$root/restored/$key"
-[[ "$(sha256sum "$root/restored/$key" | cut -d' ' -f1)" != "$digest" ]] || exit 1
+test "$(classify "$root/restored")" = '0|1|1'
 rm "$root/restored/$key"
-[[ ! -f "$root/restored/$key" ]] || exit 1
-[[ -f "$root/restored/finance/documents/CI_ORPHAN/ORPHAN.pdf" ]] || exit 1
+test "$(classify "$root/restored")" = '1|0|1'
+# No deletion or automatic repair of orphaned evidence.
+[[ -f "$root/restored/finance/documents/CI_ORPHAN/ORPHAN.pdf" ]]
 echo FINANCE_V3812_RESTORE_RECONCILIATION_MISSING_CORRUPT_ORPHAN_PASS
