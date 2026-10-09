@@ -51,13 +51,9 @@ INSERT INTO finance_source_documents(
 SELECT finance_v382_transition('CI_FLOW',0,'SUBMIT','MAKER','Submitted by maker');
 SELECT finance_v382_transition('CI_FLOW',1,'REVIEW','CHECKER','Reviewed separately');
 SELECT finance_v382_transition('CI_FLOW',2,'APPROVE','DIRECTOR','Approved independently',repeat('b',64));
-DO $
-BEGIN
- IF (SELECT state FROM finance_source_documents WHERE document_id='CI_FLOW')<>'APPROVED'
-   OR (SELECT count(*) FROM finance_source_document_events WHERE document_id='CI_FLOW')<>3
- THEN RAISE EXCEPTION 'FINANCE_V382_ATOMIC_TRANSITION_INTEGRITY_FAIL'; END IF;
-END $;
 SQL
+test "$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT state FROM finance_source_documents WHERE document_id='CI_FLOW'")" = APPROVED
+test "$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT count(*) FROM finance_source_document_events WHERE document_id='CI_FLOW'")" = 3
 if psql -X -v ON_ERROR_STOP=1 -c "SELECT finance_v382_transition('CI_FLOW',1,'REVIEW','ANOTHER','Stale revision')" >/dev/null 2>&1; then
  echo FINANCE_V382_STALE_TRANSITION_FAIL; exit 1
 fi
