@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
+import { ResidentMealRegistrationPanel } from './ResidentMealRegistrationPanel';
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { listResidents } from '../../api/residents';
@@ -480,6 +481,7 @@ export function NutritionBoard() {
 
   return (
     <div style={{ display: 'grid', gap: '1.25rem' }}>
+      <ResidentMealRegistrationPanel />
       {/* Header Banner */}
       <div
         style={{
