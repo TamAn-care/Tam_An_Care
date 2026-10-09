@@ -1,38 +1,11 @@
-name: Contract Production Test — restricted PostgreSQL catalog probe
+name: Contract self-hosted runner — RETIRED (no jobs)
+# Retired by operator decision: GitHub-hosted + Controlled Pull Deployment.
+# Intentionally no workflow_dispatch, push, schedule, jobs or runner labels.
 on:
   workflow_dispatch:
-permissions:
-  contents: read
-concurrency:
-  group: contract-runtime-audit
-  cancel-in-progress: false
 jobs:
-  production-metadata-only:
-    runs-on: [self-hosted, linux, tamancare-contract-audit]
-    timeout-minutes: 8
-    environment: contract-runtime-readonly
+  retired:
+    if: ${{ false }}
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Validate read-only probe
-        run: bash -n ops/ci/contract-least-privilege-probe.sh
-      - name: Restricted catalog-only PostgreSQL audit
-        shell: bash
-        env:
-          CONTRACT_AUDIT_DATABASE_URL: ${{ secrets.CONTRACT_AUDIT_DATABASE_URL }}
-          CONTRACT_AUDIT_APPROVED: ${{ vars.CONTRACT_AUDIT_APPROVED }}
-        run: |
-          set -euo pipefail
-          [[ "${CONTRACT_AUDIT_APPROVED:-}" == "READ_ONLY" ]] || {
-            echo 'AUDIT=BLOCKED_PENDING_ADMIN_REVIEW' >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          }
-          bash ops/ci/contract-least-privilege-probe.sh > "$RUNNER_TEMP/contract-safe-aggregates.txt"
-          cat "$RUNNER_TEMP/contract-safe-aggregates.txt" >> "$GITHUB_STEP_SUMMARY"
-      - name: Erase temporary report (no artifact upload)
-        if: always()
-        shell: bash
-        run: |
-          rm -f "$RUNNER_TEMP/contract-safe-aggregates.txt"
-          echo 'DATABASE_WRITE=NO MIGRATION=NO SEED=NO DEPLOY=NO'
+      - run: echo 'SELF_HOSTED_RUNNER_PLAN_RETIRED'
