@@ -36,23 +36,23 @@ async function main(){
  const signature={documentSha256:'a'.repeat(64),documentReference:'ci_store/contract_1',
  signingMethod:'SIGNED_PAPER_ARCHIVED',signedAt:'2026-10-01T09:00:00Z'};
  try{
-  await assert.rejects(controller.approve(approver,'CI_CONTRACT','1',{approvalReason:'CI authorized director approval'}));
+  await assert.rejects(controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI authorized director approval'}));
   const noApproval=await pool.query("SELECT count(*)::int AS n FROM public.service_contract_approval_decisions");
   assert.equal(noApproval.rows[0].n,0);
-  await controller.verifySignature(verifier,'CI_CONTRACT','1',signature);
-  const result=await controller.approve(approver,'CI_CONTRACT','1',{approvalReason:'CI authorized director approval'});
+  await controller.verifySignature(verifier,'CI_SIGNOFF','1',signature);
+  const result=await controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI authorized director approval'});
   assert.equal(result.status,'ACTIVE');
   assert.equal(result.approvedMonthlyVnd,'120');
   const state=await pool.query(`SELECT v.status,v.approved_by,a.monthly_fee_vnd::text AS monthly
    FROM public.service_contract_versions v
    JOIN public.service_contract_approval_decisions a
     ON a.contract_id=v.contract_id AND a.version=v.version
-   WHERE v.contract_id='CI_CONTRACT'`);
+   WHERE v.contract_id='CI_SIGNOFF'`);
   assert.equal(state.rows.length,1);
   assert.equal(state.rows[0].status,'ACTIVE');
   assert.equal(state.rows[0].approved_by,'CI_APPROVE');
   assert.equal(state.rows[0].monthly,'120.00');
-  await assert.rejects(controller.approve(approver,'CI_CONTRACT','1',{approvalReason:'CI duplicate approval attempt'}));
+  await assert.rejects(controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI duplicate approval attempt'}));
   const count=await pool.query('SELECT count(*)::int AS n FROM public.service_contract_approval_decisions');
   assert.equal(count.rows[0].n,1);
   console.log('CONTRACT_REAL_POSTGRES_SIGNOFF_ADMISSION_BED_APPROVAL_PASS');
