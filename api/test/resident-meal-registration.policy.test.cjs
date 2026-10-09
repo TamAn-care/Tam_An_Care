@@ -25,3 +25,21 @@ test('totals exclude cancellations',()=>assert.equal(countRegisteredPortions([
   {status:'REGISTERED',portions:2},{status:'CANCELLED',portions:5},{status:'REGISTERED',portions:1}
 ]),3));
 test('totals reject invalid quantities',()=>assert.throws(()=>countRegisteredPortions([{status:'REGISTERED',portions:-1}])));
+
+test('caregiver permission must never be inferred from a role alone',()=>{
+  assert.deepEqual(check('CAREGIVER','REGISTER',false),{allowed:false,reason:'OUT_OF_SCOPE'});
+  assert.deepEqual(check('CAREGIVER','CANCEL',true),{allowed:true,scope:'ASSIGNED'});
+});
+test('viewer privilege never permits any mutation',()=>{
+ for (const role of ['SUPERVISOR','NUTRITIONIST']) {
+   for(const action of ['REGISTER','UPDATE','CANCEL'])
+     assert.equal(check(role,action,true).allowed,false);
+ }
+});
+test('cancelled entries never enter cooking totals',()=>{
+ assert.equal(countRegisteredPortions([
+  {status:'REGISTERED',portions:1},
+  {status:'CANCELLED',portions:8},
+  {status:'REGISTERED',portions:2}
+ ]),3);
+});
