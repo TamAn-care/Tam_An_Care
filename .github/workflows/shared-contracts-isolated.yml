@@ -34,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for p in ops/finance/v22/001_finance_foundation.sql ops/finance/v28/002_finance_transaction_safety.sql ops/finance/v29/003_finance_allocation_invariants.sql ops/finance/v29/004_finance_integrity_hardening.sql ops/finance/v30/005_shared_contract_version_history.sql; do
+          for p in ops/finance/v22/001_finance_foundation.sql ops/finance/v28/002_finance_transaction_safety.sql ops/finance/v29/003_finance_allocation_invariants.sql ops/finance/v29/004_finance_integrity_hardening.sql ops/finance/v30/005_shared_contract_version_history.sql ops/finance/v30/006_shared_contract_signoff_evidence.sql; do
             psql -X -v ON_ERROR_STOP=1 -f "$p"
           done
           psql -X -v ON_ERROR_STOP=1 -f ops/ci/shared-contract-versions-ci.sql
