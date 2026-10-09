@@ -37,7 +37,7 @@ async function main(){
  signingMethod:'SIGNED_PAPER_ARCHIVED',signedAt:'2026-10-01T09:00:00Z'};
  try{
   await assert.rejects(controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI authorized director approval'}));
-  const noApproval=await pool.query("SELECT count(*)::int AS n FROM public.service_contract_approval_decisions");
+  const noApproval=await pool.query("SELECT count(*)::int AS n FROM public.service_contract_approval_decisions WHERE contract_id='CI_SIGNOFF'");
   assert.equal(noApproval.rows[0].n,0);
   await controller.verifySignature(verifier,'CI_SIGNOFF','1',signature);
   const result=await controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI authorized director approval'});
@@ -53,7 +53,7 @@ async function main(){
   assert.equal(state.rows[0].approved_by,'CI_APPROVE');
   assert.equal(state.rows[0].monthly,'120.00');
   await assert.rejects(controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI duplicate approval attempt'}));
-  const count=await pool.query('SELECT count(*)::int AS n FROM public.service_contract_approval_decisions');
+  const count=await pool.query("SELECT count(*)::int AS n FROM public.service_contract_approval_decisions WHERE contract_id='CI_SIGNOFF'");
   assert.equal(count.rows[0].n,1);
   console.log('CONTRACT_REAL_POSTGRES_SIGNOFF_ADMISSION_BED_APPROVAL_PASS');
  }finally{await pool.end();}
