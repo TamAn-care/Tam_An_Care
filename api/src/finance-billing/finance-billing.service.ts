@@ -163,7 +163,7 @@ export class FinanceBillingService {
       await client.query(
         `UPDATE public.finance_operation_idempotency
          SET status='COMPLETED',completed_at=now(),
-             result_payload=jsonb_build_object('allocationId',$2)
+             result_payload=jsonb_build_object('allocationId',$2::text)
          WHERE operation_key=$1`,[operationKey,allocationId],
       );
       await client.query(
