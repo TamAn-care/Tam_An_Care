@@ -84,7 +84,7 @@ export class CanonicalContractDraftController {
    if(Object.keys(v).sort().join('|')!==['expectedVersion','effectiveDate','changeReason','payload'].sort().join('|')||
       !Number.isSafeInteger(v.expectedVersion)||(v.expectedVersion as number)<1||
       typeof v.effectiveDate!=='string'||
-      !/^\\d{4}-\\d{2}-\\d{2}$/.test(v.effectiveDate)||
+      !/^\d{4}-\d{2}-\d{2}$/.test(v.effectiveDate)||
       typeof v.changeReason!=='string'||v.changeReason.trim().length<10||
       typeof v.payload!=='object'||!v.payload||Array.isArray(v.payload))
       throw new BadRequestException('CONTRACT_AMENDMENT_FIELDS_INVALID');
