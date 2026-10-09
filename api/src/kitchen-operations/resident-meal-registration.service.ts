@@ -126,6 +126,13 @@ export class ResidentMealRegistrationService {
       const existing=await client.query('SELECT *, meal_date::text AS meal_date_iso FROM resident_meal_registrations WHERE registration_id=$1 FOR UPDATE',[id]);
       if (!existing.rowCount) throw new NotFoundException('Registration not found');
       const prior=existing.rows[0];
+      // A caller cannot rewrite the identity of an existing registration.
+      if (body.residentId !== undefined && body.residentId !== prior.resident_id)
+        throw new BadRequestException('Resident identity cannot be changed');
+      if (body.mealDate !== undefined && body.mealDate !== prior.meal_date_iso)
+        throw new BadRequestException('Meal date cannot be changed');
+      if (body.mealType !== undefined && body.mealType !== prior.meal_type)
+        throw new BadRequestException('Meal type cannot be changed');
       const actor=await this.permit(identity,cancel?'CANCEL':'UPDATE',prior.resident_id);
       if (prior.revision !== revision) throw new ConflictException('Stale registration revision');
       if (prior.status==='CANCELLED') throw new ConflictException('Cancelled registration is immutable');
