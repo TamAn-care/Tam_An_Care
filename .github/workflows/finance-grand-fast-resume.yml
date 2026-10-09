@@ -6,6 +6,7 @@ on:
       - 'api/**'
       - 'frontend/**'
       - 'ops/ci/finance-*'
+      - 'ops/finance/v382/**'
       - 'ops/ci/shared-canonical-contract-controller-test.cjs'
       - 'ops/ci/shared-contract-draft-guard-test.cjs'
       - 'ops/ci/contract-frontend-source-isolation-test.cjs'
@@ -142,7 +143,9 @@ jobs:
       - name: SQL invariants and concurrency
         env:
           PGCONNECT_TIMEOUT: '5'
-        run: bash ops/ci/finance-pg-lab-run.sh
+        run: |
+          bash ops/ci/finance-pg-lab-run.sh
+          bash ops/ci/finance-v382-pg-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
