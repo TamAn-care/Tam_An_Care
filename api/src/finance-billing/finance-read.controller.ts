@@ -292,8 +292,10 @@ export class FinanceReadController {
     );
     const rows=result.rows as Array<{posting_kind:string;entry_exists:boolean}>;
     const revenue=rows.filter(row=>row.posting_kind==='REVENUE');
+    // A link alone does NOT prove ledger type, recognition date or amount.
+    // Never mark revenue reconciled before verifying the canonical event.
     const status=revenue.length===1 && revenue[0].entry_exists
-      ? 'SINGLE_LINK_VERIFIED'
+      ? 'LINK_PRESENT_REVENUE_UNVERIFIED'
       : revenue.length===0 ? 'REVENUE_LINK_MISSING'
       : revenue.length>1 ? 'REVENUE_LINK_DUPLICATE'
       : 'REVENUE_LEDGER_ENTRY_MISSING';
