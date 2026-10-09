@@ -31,6 +31,13 @@ jobs:
           set -euo pipefail
           node ops/ci/contract-production-acceptance-gate.cjs | tee qualification.txt
           node ops/ci/contract-frontend-source-isolation-test.cjs | tee -a qualification.txt
+          node ops/ci/contract-release-evidence.cjs | tee -a qualification.txt
+      - name: Upload evidence manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-release-evidence
+          path: ops/ci/out/contract-release-evidence.json
+          retention-days: 14
       - name: Fail closed until all runtime and business acceptance evidence exists
         shell: bash
         run: |
