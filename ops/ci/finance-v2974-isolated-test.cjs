@@ -82,13 +82,14 @@ const methods=[
   ['listInvoicesByMonth','invoices/month/:month'],
   ['getInvoiceWithItems','invoices/:invoiceId'],
   ['listLatestReceipts','receipts'],
-  ['listReceiptsForInvoice','receipts/invoice/:invoiceId']
+  ['listReceiptsForInvoice','receipts/invoice/:invoiceId'],
+  ['getInvoiceLedgerLinks','invoices/:invoiceId/ledger-links']
 ];
 async function main(){
   assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController),'api/finance-read');
   const defined=Object.getOwnPropertyNames(FinanceReadController.prototype);
   const declared=defined.filter(x=>x!=='constructor' && Reflect.getOwnMetadata(PATH_METADATA,FinanceReadController.prototype[x])!==undefined);
-  assert.equal(declared.length,5,'Exactly five HTTP endpoints required');
+  assert.equal(declared.length,6,'Exactly six HTTP endpoints required');
   for(const [method,route] of methods) {
     assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController.prototype[method]),route);
     assert.equal(Reflect.getMetadata(METHOD_METADATA,FinanceReadController.prototype[method]),0,'Must be GET');
