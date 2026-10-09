@@ -59,6 +59,9 @@ const db={
     if (normalized.includes('FROM auth_sessions')) {
       return {rows:[{actor_id:identity.actorId,actor_role:identity.actorRole}]};
     }
+    if (normalized.includes('FROM public.finance_source_links')) {
+      return {rows:[{source_domain:'BILLING',source_type:'INVOICE',source_id:'ci-invoice',posting_kind:'REVENUE',finance_entry_id:'ci-entry',entry_exists:true}]};
+    }
     if (normalized.includes('FROM billing_invoice_items')) {
       return {rows:[]};
     }
@@ -109,6 +112,9 @@ async function main(){
   await app.getInvoiceWithItems(req(),'ci-invoice');
   await app.listLatestReceipts(req());
   await app.listReceiptsForInvoice(req(),'ci-invoice');
+  const linked=await app.getInvoiceLedgerLinks(req(),'ci-invoice');
+  assert.equal(linked.status,'SINGLE_LINK_VERIFIED');
+  assert.equal(linked.revenuePostedAutomatically,false);
   const denied=[
     ()=>app.listLatestReceipts({}),
     async()=>{const r={};publishVerifiedFinanceIdentity(r,{...identity,actorRole:'CAREGIVER'});return app.listLatestReceipts(r)},
@@ -121,7 +127,7 @@ async function main(){
   await assert.rejects(app.getInvoiceBalance(req(),'bad/id'),e=>e.status===400);
   assert.ok(queries.length>=8);
   console.log('FINANCE_V2974_ISOLATED_CONTROLLER_TEST_PASS');
-  console.log('ROUTES_GET=5 AUTH_ALLOWED=3 AUTH_DENIED=3 INPUT_REJECTED=2');
-  console.log('DATA_SOURCE=EPHEMERAL_MEMORY_SQL_STUB; REAL_DB=NO; HTTP_JWT_E2E=NOT_TESTED');
+  console.log('ROUTES_GET=6 AUTH_ALLOWED=3 AUTH_DENIED=3 INPUT_REJECTED=2');
+  console.log('DATA_SOURCE=EPHEMERAL_MEMORY_SQL_STUB; REAL_DB=NO; HTTP_JWT_ISOLATED_SMOKE=SEPARATE_CI');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});
