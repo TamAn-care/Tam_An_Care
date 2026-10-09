@@ -2,7 +2,6 @@ import { BadRequestException, Controller, ForbiddenException, Param, Post, Req, 
 import { DatabaseService } from '../database/database.service';
 import { readVerifiedFinanceIdentity } from '../security/verified-finance-identity';
 import type { PoolClient } from 'pg';
-import { createHash } from 'crypto';
 
 type Actor = { actorId:string; actorRole:string; sessionId:string };
 const validId=(x:unknown):x is string=>typeof x==='string'&&/^[A-Za-z0-9_-]{1,160}$/.test(x);
@@ -155,7 +154,7 @@ export class ContractSignoffController {
         admission_care_level,room_id,bed_id,monthly_fee_vnd)
       VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
      [contractId,version,actor.actorId,approvalReason,
-      evidence.rows[0].document_sha256,row.care_level,row.room_id,row.bed_id,total.toString()-discount.toString()]);
+      evidence.rows[0].document_sha256,row.care_level,row.room_id,row.bed_id,(total-discount).toString()]);
    await client.query(
      `UPDATE public.service_contract_records
        SET status='ACTIVE',version=$2,payload=$3::jsonb,
