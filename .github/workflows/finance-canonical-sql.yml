@@ -1,0 +1,73 @@
+name: Finance canonical SQL migrations — isolated PostgreSQL
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'ops/finance/**'
+      - 'ops/ci/finance-canonical-sql-tests.sql'
+      - '.github/workflows/finance-canonical-sql.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-canonical:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+          POSTGRES_DB: finance_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: finance_ci
+      PGPASSWORD: finance_ci_only
+      PGDATABASE: finance_ci
+      PGCONNECT_TIMEOUT: '5'
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Verify source file SHA-256
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo '25c82188511752fea1d7659c4550d34e2ec30b593a4f36dfe74a561564955c61  ops/finance/v22/001_finance_foundation.sql' | sha256sum -c
+          echo 'b848f9440cccf5001741ec6f53d0da2dcc852a21fe53f446b3356ce9e7f8d8cf  ops/finance/v28/002_finance_transaction_safety.sql' | sha256sum -c
+          echo '80d1cea6b45e97446194e86f36bb69d8a4e0a0298c747dd17674dc7eb826e3b3  ops/finance/v29/003_finance_allocation_invariants.sql' | sha256sum -c
+          echo '2c878dd909da82da56d27d5b83477d193152aaabdbfcb31b1ff35929e0209584  ops/finance/v29/004_finance_integrity_hardening.sql' | sha256sum -c
+      - name: Verify isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -R -E '192\.168\.1\.32|production-postgres|tamancare\.dpdns' ops/finance ops/ci/finance-canonical-sql-tests.sql
+          echo 'NO_PRODUCTION_CONNECTION=PASS'
+      - name: Apply exact canonical migrations in ephemeral database
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sql in             ops/finance/v22/001_finance_foundation.sql             ops/finance/v28/002_finance_transaction_safety.sql             ops/finance/v29/003_finance_allocation_invariants.sql             ops/finance/v29/004_finance_integrity_hardening.sql
+          do
+            psql -X -v ON_ERROR_STOP=1 -f "$sql"
+          done
+      - name: Test original constraints and triggers using CI-only rows
+        shell: bash
+        run: |
+          set -euo pipefail
+          psql -X -v ON_ERROR_STOP=1 -f ops/ci/finance-canonical-sql-tests.sql
+      - name: Immutable release safety declaration
+        if: always()
+        run: |
+          echo 'Canonical source executed ONLY in an ephemeral GitHub runner.'
+          echo 'Production migration: NO'
+          echo 'Production seed: NO'
+          echo 'Production deploy: NO'
