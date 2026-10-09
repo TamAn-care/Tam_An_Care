@@ -15,6 +15,7 @@ on:
       - 'ops/ci/contract-operational-evidence-test.cjs'
       - 'ops/ci/contract-signoff-controller-test.cjs'
       - 'ops/ci/contract-archive-verifier-test.cjs'
+      - 'ops/ci/contract-invoice-basis-test.cjs'
       - '.github/workflows/finance-grand-fast-resume.yml'
   workflow_dispatch:
 permissions:
@@ -104,6 +105,7 @@ jobs:
           node ../ops/ci/contract-operational-evidence-test.cjs
           node ../ops/ci/contract-signoff-controller-test.cjs
           node ../ops/ci/contract-archive-verifier-test.cjs
+          node ../ops/ci/contract-invoice-basis-test.cjs
           node ../ops/ci/contract-frontend-source-isolation-test.cjs
           node ../ops/ci/contract-production-acceptance-gate.cjs
           node ../ops/ci/contract-legacy-triage-test.cjs
