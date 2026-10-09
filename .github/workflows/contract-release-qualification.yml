@@ -12,6 +12,7 @@ on:
       - 'ops/ci/contract-runtime-metadata-readonly.sh'
       - 'ops/ci/contract-least-privilege-probe.sh'
       - 'ops/ci/contract-least-privilege-probe-test.cjs'
+      - 'ops/ci/contract-runner-onhost-preflight.sh'
       - '.github/workflows/contract-runtime-readonly-self-hosted.yml'
   workflow_dispatch:
 permissions:
@@ -34,6 +35,7 @@ jobs:
         run: |
           bash -n ops/ci/contract-runtime-metadata-readonly.sh
           bash -n ops/ci/contract-least-privilege-probe.sh
+          bash -n ops/ci/contract-runner-onhost-preflight.sh
           node ops/ci/contract-least-privilege-probe-test.cjs
       - name: Verify source isolation and release blockers
         run: |
