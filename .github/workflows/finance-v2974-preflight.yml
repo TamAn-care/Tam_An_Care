@@ -1,0 +1,34 @@
+name: Finance V2.9.74 isolated integration preflight
+on:
+  push:
+    branches:
+      - feature/finance-v22-github-build
+    paths:
+      - 'ops/ci/finance-v2974-isolated-test.cjs'
+      - '.github/workflows/finance-v2974-preflight.yml'
+      - 'api/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-controller:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install dependencies with no lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build API in isolated runner
+        run: npm run build
+      - name: Finance five-route and authorization tests (no DB)
+        run: node ../ops/ci/finance-v2974-isolated-test.cjs
