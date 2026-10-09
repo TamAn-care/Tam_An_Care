@@ -33,7 +33,14 @@ async function main(){
  const controller=new Controller(db);
  const verifier=actor('CI_VERIFY','CARE_MANAGER','CI_VERIFY_SESSION');
  const approver=actor('CI_APPROVE','SUPERVISOR','CI_APPROVE_SESSION');
- const signature={documentSha256:'a'.repeat(64),documentReference:'ci_store/contract_1',
+ const os=require('node:os'),crypto=require('node:crypto');
+const archive=fs.mkdtempSync(path.join(os.tmpdir(),'contract-ci-archive-'));
+fs.mkdirSync(path.join(archive,'docs'));
+const pdf=Buffer.from('%PDF-1.4\\n1 0 obj<<>>endobj\\n%%EOF\\n');
+fs.writeFileSync(path.join(archive,'docs','ci-contract.pdf'),pdf);
+process.env.TAMANCARE_CONTRACT_ARCHIVE_ROOT=archive;
+const pdfHash=crypto.createHash('sha256').update(pdf).digest('hex');
+const signature={documentSha256:pdfHash,documentReference:'docs/ci-contract.pdf',
  signingMethod:'SIGNED_PAPER_ARCHIVED',signedAt:'2026-10-01T09:00:00Z'};
  try{
   await assert.rejects(controller.approve(approver,'CI_SIGNOFF','1',{approvalReason:'CI authorized director approval'}));
