@@ -75,6 +75,7 @@ import { FinanceWriteController } from './finance-billing/finance-write.controll
 import { FinanceBillingService } from './finance-billing/finance-billing.service';
 import { CanonicalServiceContractsController } from './finance-billing/canonical-service-contracts.controller';
 import { CanonicalContractDraftController } from './finance-billing/canonical-contract-draft.controller';
+import { ContractSignoffController } from './finance-billing/contract-signoff.controller';
 
 @Module({imports:[
     NotificationsModule,
@@ -111,5 +112,5 @@ import { CanonicalContractDraftController } from './finance-billing/canonical-co
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService]})
 export class AppModule {}
