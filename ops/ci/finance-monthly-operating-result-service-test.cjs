@@ -58,10 +58,12 @@ async function main(){
       {finance_entry_id:'E1',entry_type:'EXPENSE',recognition_date:'2026-10-09',amount_vnd:'12000000',posting_status:'POSTED',reconciliation_status:'VERIFIED'},
     ]});
     const out=await new Service(db).read('2026-10');
-    assert.equal(out.state,'READY');
-    assert.equal(out.revenueVnd,'15000000');
-    assert.equal(out.expenseVnd,'12000000');
-    assert.equal(out.profitVnd,'3000000');
+    assert.equal(out.state,'CHUA_DU_DU_LIEU');
+    assert.equal(out.revenueVnd,null);
+    assert.equal(out.expenseVnd,null);
+    assert.equal(out.profitVnd,null);
+    assert.ok(out.reasons.includes('LEDGER_COVERAGE_UNVERIFIED'));
+    assert.ok(out.reasons.includes('SOURCE_RECONCILIATION_PENDING'));
     assert.equal(out.ledgerSchemaReady,true);
     assert.equal(db.queries.length,2);
   }
@@ -81,6 +83,19 @@ async function main(){
     assert.equal(out.state,'CHUA_DU_DU_LIEU');
     assert.equal(out.profitVnd,null);
     assert.ok(out.reasons.includes('SOURCE_RECONCILIATION_PENDING'));
+  }
+  {
+    const db=dbFor({rows:[]});
+    const out=await new Service(db).read('2026-10');
+    assert.equal(out.state,'CHUA_DU_DU_LIEU');
+    assert.equal(out.profitVnd,null,'empty ledger must not imply zero profit');
+  }
+  {
+    const record={finance_entry_id:'R1',entry_type:'REVENUE',recognition_date:'2026-10-01',amount_vnd:'1',posting_status:'POSTED',reconciliation_status:'VERIFIED'};
+    const db=dbFor({rows:Array.from({length:10000},(_,i)=>({...record,finance_entry_id:'R'+i}))});
+    const out=await new Service(db).read('2026-10');
+    assert.equal(out.state,'CHUA_DU_DU_LIEU','capped query must never be READY');
+    assert.equal(out.profitVnd,null);
   }
   await assert.rejects(new Service(dbFor()).read('2026-13'),/INVALID_MONTH/);
   console.log('TAMANCARE_MONTHLY_RESULT_LEDGER_READ_ONLY_SERVICE_PASS');
