@@ -133,6 +133,7 @@ async function main(){
   assert.equal(linked.revenuePostedAutomatically,false);
   const denied=[
     ()=>app.listLatestReceipts({}),
+    ()=>app.getMonthlyOperatingResult({},'2026-10'),
     async()=>{const r={};publishVerifiedFinanceIdentity(r,{...identity,actorRole:'CAREGIVER'});return app.listLatestReceipts(r)},
     async()=>{const r=req(); const old=db.query;db.query=async()=>({rows:[]});try{return await app.listLatestReceipts(r)}finally{db.query=old}}
   ];
@@ -140,11 +141,23 @@ async function main(){
     await assert.rejects(attempt(),e=>e.status===403);
   }
   await assert.rejects(app.listInvoicesByMonth(req(),'2026-13'),e=>e.status===400);
+  {
+    const unauthorized={};
+    publishVerifiedFinanceIdentity(unauthorized,{...identity,actorRole:'CAREGIVER'});
+    await assert.rejects(app.getMonthlyOperatingResult(unauthorized,'2026-10'),e=>e.status===403);
+  }
+  {
+    const revoked=req();
+    const previous=db.query;
+    db.query=async()=>({rows:[]});
+    try {await assert.rejects(app.getMonthlyOperatingResult(revoked,'2026-10'),e=>e.status===403);}
+    finally {db.query=previous;}
+  }
   await assert.rejects(app.getMonthlyOperatingResult(req(),'2026-13'),e=>e.status===400);
   await assert.rejects(app.getInvoiceBalance(req(),'bad/id'),e=>e.status===400);
   assert.ok(queries.length>=8);
   console.log('FINANCE_V2974_ISOLATED_CONTROLLER_TEST_PASS');
-  console.log('ROUTES_GET=7 AUTH_ALLOWED=3 AUTH_DENIED=3 INPUT_REJECTED=3');
+  console.log('ROUTES_GET=7 AUTH_ALLOWED=3 AUTH_DENIED=6 INPUT_REJECTED=3');
   console.log('DATA_SOURCE=EPHEMERAL_MEMORY_SQL_STUB; REAL_DB=NO; HTTP_JWT_ISOLATED_SMOKE=SEPARATE_CI');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});
