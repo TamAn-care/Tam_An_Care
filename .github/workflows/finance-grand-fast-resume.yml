@@ -8,6 +8,7 @@ on:
       - 'ops/ci/finance-*'
       - 'ops/finance/v382/**'
       - 'ops/finance/v386/**'
+      - 'ops/finance/v3810/**'
       - 'ops/ci/shared-canonical-contract-controller-test.cjs'
       - 'ops/ci/shared-contract-draft-guard-test.cjs'
       - 'ops/ci/contract-frontend-source-isolation-test.cjs'
@@ -154,6 +155,7 @@ jobs:
           bash ops/ci/finance-v382-pg-test.sh
           bash ops/ci/finance-v386-atomic-rollback-test.sh
           bash ops/ci/finance-v388-draft-pg-test.sh
+          bash ops/ci/finance-v3810-attachment-metadata-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
