@@ -60,10 +60,12 @@ function optionalString(
 
 function amount(row: RecordValue, key: string): string {
   const value = requiredString(row, key);
-  if (!/^(0|[1-9]\d*)$/.test(value)) {
+  // PostgreSQL numeric(18,2)::text returns values such as "100.00".
+  // Preserve integer VND precision; never silently round fractions.
+  if (!/^(0|[1-9]\d*)(?:\.0{1,2})?$/.test(value)) {
     throw new Error('FINANCE_INVALID_VND_AMOUNT:' + key);
   }
-  return value;
+  return value.split('.')[0];
 }
 
 function dateParts(value: string): [number, number, number] {
