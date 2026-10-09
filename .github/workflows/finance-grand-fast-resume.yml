@@ -1,0 +1,145 @@
+name: Finance Grand FAST-RESUME — CI only
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'ops/ci/finance-*'
+      - '.github/workflows/finance-grand-fast-resume.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: finance-grand-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  frontend:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies (retry transient only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in 1 2 3; do
+            if npm ci --ignore-scripts --no-audit --no-fund; then exit 0; fi
+            if [ "$n" -eq 3 ]; then exit 1; fi
+            sleep "$((n*5))"
+          done
+      - name: TS and Vite
+        run: |
+          set -euo pipefail
+          ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit
+          ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
+          node scripts/check-api-base.mjs
+          ./node_modules/.bin/vite build
+      - name: Manifest, checksums and verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s dist/index.html
+          find dist -type f -name '*.js' | grep -q .
+          printf 'source_commit=%s\nnode=%s\nmode=isolated-build-only\n' "$GITHUB_SHA" "$(node -v)" > dist/FINANCE_BUILD_MANIFEST.txt
+          (cd dist && find . -type f ! -name FINANCE_SHA256SUMS.txt -print0 | sort -z | xargs -0 sha256sum > FINANCE_SHA256SUMS.txt && sha256sum -c FINANCE_SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v6
+        with:
+          name: finance-grand-frontend-${{ github.sha }}
+          path: frontend/dist/
+          retention-days: 7
+          if-no-files-found: error
+  api:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install locked dependencies (retry transient only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in 1 2 3; do
+            if npm ci --ignore-scripts --no-audit --no-fund; then exit 0; fi
+            if [ "$n" -eq 3 ]; then exit 1; fi
+            sleep "$((n*5))"
+          done
+      - name: API build and finance role/controller tests
+        run: |
+          set -euo pipefail
+          npm run build
+          node ../ops/ci/finance-v2974-isolated-test.cjs
+  postgres:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: finance_ci
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+        with: {persist-credentials: false}
+      - name: Verify PostgreSQL CI isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -Eq '192\.168\.1\.32|tamancare\.dpdns\.org|production-postgres' ops/ci/finance-pg-lab-{schema.sql,tests.sql,run.sh}
+          echo 'FINANCE_EPHEMERAL_DB_ONLY=PASS'
+      - name: SQL invariants and concurrency
+        env:
+          PGCONNECT_TIMEOUT: '5'
+        run: bash ops/ci/finance-pg-lab-run.sh
+  release-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    needs: [frontend, api, postgres]
+    if: always()
+    steps:
+      - name: Final validation, no deploy
+        env:
+          FRONTEND: ${{ needs.frontend.result }}
+          API: ${{ needs.api.result }}
+          POSTGRES: ${{ needs.postgres.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '# Finance Grand FAST-RESUME'
+            echo ''
+            echo "Source commit: \`$GITHUB_SHA\`"
+            echo "Frontend: $FRONTEND"
+            echo "API: $API"
+            echo "PostgreSQL isolated lab: $POSTGRES"
+            echo 'Production Test deployment: NOT AUTHORIZED'
+            echo 'Migration / seed / real financial data: NOT RUN'
+          } >> "$GITHUB_STEP_SUMMARY"
+          test "$FRONTEND" = success
+          test "$API" = success
+          test "$POSTGRES" = success
+          echo 'FINANCE_GRAND_CI_ONLY_PASS'
