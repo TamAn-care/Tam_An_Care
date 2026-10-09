@@ -35,6 +35,10 @@ Module._load=function(request,parent,isMain){
      parent && parent.filename===controllerPath){
     return { DatabaseService: class IsolatedDatabaseServiceMarker {} };
   }
+  if(request==='./monthly-operating-result.service' &&
+     parent && parent.filename===controllerPath){
+    return { MonthlyOperatingResultService: class IsolatedMonthlyResultMarker {} };
+  }
   return load.apply(this,arguments);
 };
 let FinanceReadController;
@@ -78,10 +82,19 @@ const db={
     throw Error('UNEXPECTED_SQL_TABLE');
   }
 };
-const app=new FinanceReadController(db);
+const monthly={
+  async read(month){
+    return {source:'POSTGRESQL',ledgerSchemaReady:false,missingColumns:['amount_vnd'],
+      month,state:'CHUA_DU_DU_LIEU',revenueVnd:null,expenseVnd:null,profitVnd:null,
+      revenueEntries:0,expenseEntries:0,
+      reasons:['LEDGER_COVERAGE_UNVERIFIED','SOURCE_RECONCILIATION_PENDING']};
+  }
+};
+const app=new FinanceReadController(db,monthly);
 const req=()=>{const request={};publishVerifiedFinanceIdentity(request,identity);return request;};
 const methods=[
   ['getInvoiceBalance','invoices/:invoiceId/balance'],
+  ['getMonthlyOperatingResult','operating-result/month/:month'],
   ['listInvoicesByMonth','invoices/month/:month'],
   ['getInvoiceWithItems','invoices/:invoiceId'],
   ['listLatestReceipts','receipts'],
@@ -92,7 +105,7 @@ async function main(){
   assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController),'api/finance-read');
   const defined=Object.getOwnPropertyNames(FinanceReadController.prototype);
   const declared=defined.filter(x=>x!=='constructor' && Reflect.getOwnMetadata(PATH_METADATA,FinanceReadController.prototype[x])!==undefined);
-  assert.equal(declared.length,6,'Exactly six HTTP endpoints required');
+  assert.equal(declared.length,7,'Exactly seven HTTP endpoints required');
   for(const [method,route] of methods) {
     assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController.prototype[method]),route);
     assert.equal(Reflect.getMetadata(METHOD_METADATA,FinanceReadController.prototype[method]),0,'Must be GET');
@@ -108,6 +121,9 @@ async function main(){
     db.query=old;
   }
   await app.getInvoiceBalance(req(),'ci-invoice');
+  const monthlyOut=await app.getMonthlyOperatingResult(req(),'2026-10');
+  assert.equal(monthlyOut.state,'CHUA_DU_DU_LIEU');
+  assert.equal(monthlyOut.profitVnd,null);
   await app.listInvoicesByMonth(req(),'2026-10');
   await app.getInvoiceWithItems(req(),'ci-invoice');
   await app.listLatestReceipts(req());
@@ -124,10 +140,11 @@ async function main(){
     await assert.rejects(attempt(),e=>e.status===403);
   }
   await assert.rejects(app.listInvoicesByMonth(req(),'2026-13'),e=>e.status===400);
+  await assert.rejects(app.getMonthlyOperatingResult(req(),'2026-13'),e=>e.status===400);
   await assert.rejects(app.getInvoiceBalance(req(),'bad/id'),e=>e.status===400);
   assert.ok(queries.length>=8);
   console.log('FINANCE_V2974_ISOLATED_CONTROLLER_TEST_PASS');
-  console.log('ROUTES_GET=6 AUTH_ALLOWED=3 AUTH_DENIED=3 INPUT_REJECTED=2');
+  console.log('ROUTES_GET=7 AUTH_ALLOWED=3 AUTH_DENIED=3 INPUT_REJECTED=3');
   console.log('DATA_SOURCE=EPHEMERAL_MEMORY_SQL_STUB; REAL_DB=NO; HTTP_JWT_ISOLATED_SMOKE=SEPARATE_CI');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});

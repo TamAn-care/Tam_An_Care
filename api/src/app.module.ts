@@ -73,6 +73,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { FinanceReadController } from './finance-billing/finance-read.controller';
 import { FinanceWriteController } from './finance-billing/finance-write.controller';
 import { FinanceBillingService } from './finance-billing/finance-billing.service';
+import { MonthlyOperatingResultService } from './finance-billing/monthly-operating-result.service';
 import { CanonicalServiceContractsController } from './finance-billing/canonical-service-contracts.controller';
 import { CanonicalContractDraftController } from './finance-billing/canonical-contract-draft.controller';
 import { ContractSignoffController } from './finance-billing/contract-signoff.controller';
@@ -112,5 +113,5 @@ import { ContractSignoffController } from './finance-billing/contract-signoff.co
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService,MonthlyOperatingResultService]})
 export class AppModule {}

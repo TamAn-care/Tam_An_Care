@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 
 import { DatabaseService } from '../database/database.service';
+import { MonthlyOperatingResultService } from './monthly-operating-result.service';
 import {
   readVerifiedFinanceIdentity,
 } from '../security/verified-finance-identity';
@@ -17,8 +18,8 @@ import {
 /**
  * Development-only Finance read controller.
  *
- * NOT registered in AppModule.
- * No Finance write operation is exposed.
+ * Registered only as a guarded read surface on this development branch.
+ * No monthly-result write operation is exposed.
  *
  * Default deny unless an approved read-role allowlist
  * has been set server-side.
@@ -27,6 +28,7 @@ import {
 export class FinanceReadController {
   constructor(
     private readonly db: DatabaseService,
+    private readonly monthlyResult: MonthlyOperatingResultService,
   ) {}
 
   private async authorize(request: object): Promise<void> {
@@ -170,6 +172,18 @@ export class FinanceReadController {
 
   // Finance reads are scoped to explicitly approved
   // centerwide roles via the existing authorize() method.
+
+  @Get('operating-result/month/:month')
+  async getMonthlyOperatingResult(
+    @Req() request: object,
+    @Param('month') month: string,
+  ) {
+    await this.authorize(request);
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      throw new BadRequestException('FINANCE_INVALID_OPERATING_MONTH');
+    }
+    return this.monthlyResult.read(month);
+  }
 
   @Get('invoices/month/:month')
   async listInvoicesByMonth(
