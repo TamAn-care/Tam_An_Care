@@ -33,6 +33,7 @@ try{
 process.env.NODE_ENV='production';
 process.env.JWT_SECRET='finance-ci-secret-1234567890-long-enough-32chars';
 process.env.TAMANCARE_FINANCE_WRITE_ROLES='ACCOUNTANT';
+process.env.TAMANCARE_FINANCE_WRITE_ENABLED='true';
 const identity={actorId:'CI_ACTOR',actorRole:'ACCOUNTANT',sessionId:'CI_SESSION'};
 const db={query:async(sql,args)=>{
  assert.match(sql,/auth_sessions/);
