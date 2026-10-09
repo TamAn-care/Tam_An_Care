@@ -21,6 +21,13 @@ const outside=path.join(root,'outside-target');await fs.writeFile(outside,'untou
 await fs.symlink(outside,file);
 result=await scan(root,[descriptor]);assert(result.incidents.some(x=>x.code==='CORRUPT'||x.code==='UNSAFE_PATH'));
 assert.equal(await fs.readFile(outside,'utf8'),'untouched');
+const {evaluateFinanceReleaseReadiness:evaluate}=require('../../api/dist/finance-billing/finance-release-readiness-report.js');
+const evidence={snapshotConsistent:true,authenticatedRoleGatePassed:true,realSourceVerified:true,backupIsolatedRestorePassed:true,parentSymlinkSafetyPassed:true,durableMetadataObjectConsistencyPassed:true,productionMigrationAuthorized:true};
+const gate=evaluate({incidents:[],scanned:1,evidence});
+assert.equal(gate.decision,'NO_GO');
+assert.equal(gate.productionDeployAuthorized,false);
+assert.equal(gate.monthlyCloseCertified,false);
+console.log('FINANCE_V3814_RELEASE_READINESS_FAIL_CLOSED_PASS');
 console.log('FINANCE_V3813_READ_ONLY_RECONCILIATION_PASS');
 }finally{await fs.rm(root,{recursive:true,force:true})}
 }
