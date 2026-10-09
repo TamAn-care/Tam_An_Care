@@ -19,7 +19,8 @@ type ActorRole =
   | 'MEDICAL_HEAD'
   | 'CARE_MANAGER'
   | 'SUPERVISOR'
-  | 'ADMIN';
+  | 'ADMIN'
+  | 'NUTRITIONIST';
 
 interface JwtPayload {
   sub?: unknown;
@@ -54,6 +55,7 @@ const VALID_ROLES =
     'MEDICAL_HEAD',
     'ADMIN',
     'SUPERVISOR',
+    'NUTRITIONIST',
   ]);
 
 function decode(
