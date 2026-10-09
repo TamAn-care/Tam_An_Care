@@ -18,7 +18,14 @@ jobs:
           persist-credentials: false
       - name: Validate operator audit program
         run: bash -n ops/ci/contract-runtime-metadata-readonly.sh
+      - name: Safety hold pending narrowly scoped runtime probe
+        shell: bash
+        run: |
+          echo 'AUDIT=BLOCKED_PENDING_LEAST_PRIVILEGE_PROBE' >> "$GITHUB_STEP_SUMMARY"
+          echo 'DOCKER_DAEMON_ACCESS_NOT_AUTHORIZED=YES' >> "$GITHUB_STEP_SUMMARY"
+          exit 1
       - name: Read-only metadata audit on server runner
+        if: false
         shell: bash
         run: |
           set -euo pipefail
