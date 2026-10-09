@@ -247,6 +247,44 @@ export async function deleteServiceContract(
  throw new Error('CONTRACT_DELETION_REQUIRES_CONTROLLED_ARCHIVE');
 }
 
+/** Server-only versioned amendment; never updates the signed version or localStorage. */
+export async function proposeServiceContractAmendment(
+ actor:HumanActorSession,contractId:string,expectedVersion:number,
+ effectiveDate:string,changeReason:string,proposedContract:ServiceContract,
+):Promise<{contractId:string;version:number;status:'DRAFT';affectsCurrentBilling:false}>{
+ if(!contractId||!Number.isSafeInteger(expectedVersion)||expectedVersion<1)
+  throw new Error('CONTRACT_AMENDMENT_IDENTIFIER_INVALID');
+ return apiRequest(
+  `/api/service-contract-drafts/${encodeURIComponent(contractId)}/amendments`,{
+   method:'POST',actor,headers:{'content-type':'application/json'},
+   body:JSON.stringify({expectedVersion,effectiveDate,changeReason,payload:proposedContract}),
+  });
+}
+
+/** Records staff review of paper/external signature evidence, not legal e-signing. */
+export async function verifyServiceContractSignature(
+ actor:HumanActorSession,contractId:string,version:number,
+ evidence:{documentSha256:string;documentReference:string;
+ signingMethod:'SIGNED_PAPER_ARCHIVED'|'EXTERNAL_VERIFIED';signedAt:string},
+):Promise<{signatureEvidenceRecorded:boolean;signedContractActivated:false}>{
+ return apiRequest(
+  `/api/service-contract-signoff/${encodeURIComponent(contractId)}/versions/${version}/verify-signature`,{
+   method:'POST',actor,headers:{'content-type':'application/json'},
+   body:JSON.stringify(evidence),
+  });
+}
+
+/** Separate approver reviews canonical admission, care level and room/bed. */
+export async function approveServiceContractVersion(
+ actor:HumanActorSession,contractId:string,version:number,approvalReason:string,
+):Promise<{status:'ACTIVE';approvedMonthlyVnd:string}>{
+ return apiRequest(
+  `/api/service-contract-signoff/${encodeURIComponent(contractId)}/versions/${version}/approve`,{
+   method:'POST',actor,headers:{'content-type':'application/json'},
+   body:JSON.stringify({approvalReason}),
+  });
+}
+
 export function numberToVietnameseText(num: number): string {
   if (!num || num === 0) return 'Không đồng';
   const units = ['', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
