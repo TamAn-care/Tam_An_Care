@@ -152,6 +152,7 @@ jobs:
           bash ops/ci/finance-pg-lab-run.sh
           bash ops/ci/finance-v382-pg-test.sh
           bash ops/ci/finance-v386-atomic-rollback-test.sh
+          bash ops/ci/finance-v388-draft-pg-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
