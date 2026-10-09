@@ -1,0 +1,33 @@
+name: Finance deployment readiness — NO DEPLOY
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'api/**'
+      - 'ops/ci/finance-deploy-readiness.cjs'
+      - 'docs/finance-*'
+      - '.github/workflows/finance-deploy-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  assess:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Finite evidence-based go/no-go assessment
+        run: node ops/ci/finance-deploy-readiness.cjs | tee finance-readiness.txt
+      - name: Publish readable gate summary
+        shell: bash
+        run: |
+          {
+            echo '## Finance deploy readiness (no deploy)'
+            echo '~~~text'
+            cat finance-readiness.txt
+            echo '~~~'
+            echo 'The test schema is NOT the original migration source.'
+            echo 'No real data, no migration, no deployment.'
+          } >> "$GITHUB_STEP_SUMMARY"
