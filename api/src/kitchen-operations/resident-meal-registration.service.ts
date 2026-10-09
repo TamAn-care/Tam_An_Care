@@ -83,7 +83,7 @@ export class ResidentMealRegistrationService {
       throw new BadRequestException('Invalid date');
     const q = await this.db.query(
       `SELECT meal_type,COUNT(*)::int AS residents,SUM(portions)::int AS portions
-       FROM resident_meal_registrations WHERE meal_date=$1::date AND status='REGISTERED'
+       FROM resident_meal_registrations m JOIN residents r ON r.resident_id=m.resident_id AND r.active_status=true WHERE m.meal_date=$1::date AND m.status='REGISTERED'
        GROUP BY meal_type ORDER BY meal_type`,[mealDate]);
     return {items:q.rows};
   }
@@ -138,8 +138,8 @@ export class ResidentMealRegistrationService {
   }
 
   async change(identity: Identity, id: string, body: MealInput, cancel=false) {
-    if (!/^[0-9a-f-]{36}$/i.test(id)) throw new BadRequestException('Invalid registration id');
-    const revision=body.revision;
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) throw new BadRequestException('Invalid registration id');
+    const revision=body?.revision;
     if (!Number.isSafeInteger(revision) || Number(revision)<1) throw new BadRequestException('revision required');
     return this.db.withTransaction(async client => {
       const existing=await client.query('SELECT *, meal_date::text AS meal_date_iso FROM resident_meal_registrations WHERE registration_id=$1 FOR UPDATE',[id]);
