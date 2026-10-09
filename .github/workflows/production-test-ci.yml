@@ -62,3 +62,42 @@ jobs:
 
       - name: Test resident meal RBAC (fail-closed)
         run: node --test test/resident-meal-registration.policy.test.cjs
+
+  resident-meal-schema-check:
+    name: Resident meal schema / rollback (isolated PostgreSQL)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci_meal
+          POSTGRES_PASSWORD: ci_only_not_production
+          POSTGRES_DB: ci_meal
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci_meal -d ci_meal"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: ci_meal
+      PGPASSWORD: ci_only_not_production
+      PGDATABASE: ci_meal
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create empty canonical schema (no business data)
+        run: psql -v ON_ERROR_STOP=1 -f database/schema.sql
+      - name: Apply candidate migration then ROLLBACK (no persistent changes)
+        run: |
+          {
+            echo 'BEGIN;'
+            cat database/migrations/20261009_017_resident_meal_registrations.sql
+            echo "DO \$\$ BEGIN IF to_regclass('public.resident_meal_registrations') IS NULL OR to_regclass('public.resident_meal_registration_audit') IS NULL THEN RAISE EXCEPTION 'Meal registration tables missing'; END IF; END \$\$;"
+            echo 'ROLLBACK;'
+          } | psql -v ON_ERROR_STOP=1
+      - name: Verify migration was completely rolled back
+        run: |
+          test "$(psql -Atc "SELECT to_regclass('public.resident_meal_registrations') IS NULL AND to_regclass('public.resident_meal_registration_audit') IS NULL")" = "t"
