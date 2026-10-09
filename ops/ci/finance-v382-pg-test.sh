@@ -61,3 +61,40 @@ if psql -X -v ON_ERROR_STOP=1 -c "SELECT finance_v382_transition('CI_DOC',1,'REV
  echo FINANCE_V382_SELF_REVIEW_FAIL; exit 1
 fi
 echo FINANCE_V382_EPHEMERAL_POSTGRES_GATE_PASS
+
+
+# Simulate an unprivileged SQL role: no direct DML, no transition execution.
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+CREATE ROLE finance_v383_untrusted NOLOGIN;
+GRANT USAGE ON SCHEMA public TO finance_v383_untrusted;
+SQL
+if psql -X -v ON_ERROR_STOP=1 -c "SET ROLE finance_v383_untrusted; SELECT finance_v382_transition('CI_FLOW',3,'APPROVE','OTHER','Unauthorized action')" >/dev/null 2>&1; then
+ echo FINANCE_V383_UNTRUSTED_FUNCTION_ACCESS_FAIL; exit 1
+fi
+if psql -X -v ON_ERROR_STOP=1 -c "SET ROLE finance_v383_untrusted; UPDATE finance_source_documents SET state='DRAFT' WHERE document_id='CI_FLOW'" >/dev/null 2>&1; then
+ echo FINANCE_V383_UNTRUSTED_DIRECT_WRITE_FAIL; exit 1
+fi
+
+# Two concurrent sessions try the same version; FOR UPDATE + version predicate
+# must produce exactly one committed transition and exactly one audit row.
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+INSERT INTO finance_source_documents(
+ document_id,source_domain,source_entity_type,source_entity_id,
+ entry_type,recognition_date,amount_vnd,external_evidence_sha256,
+ reference_number,prepared_by
+) VALUES ('CI_RACE','SERVICE','INVOICE','CI_RACE_REF','REVENUE',
+ '2026-09-15',1000000,repeat('c',64),'CI-RACE','MAKER');
+SELECT finance_v382_transition('CI_RACE',0,'SUBMIT','MAKER','Ready for parallel review');
+SQL
+psql -X -v ON_ERROR_STOP=1 -c "SET lock_timeout='5s'; SELECT finance_v382_transition('CI_RACE',1,'REVIEW','CHECKER_A','Concurrent review A')" >/tmp/finance_v383_a.log 2>&1 &
+race_a=$!
+psql -X -v ON_ERROR_STOP=1 -c "SET lock_timeout='5s'; SELECT finance_v382_transition('CI_RACE',1,'REVIEW','CHECKER_B','Concurrent review B')" >/tmp/finance_v383_b.log 2>&1 &
+race_b=$!
+race_rc_a=0; wait "$race_a" || race_rc_a=$?
+race_rc_b=0; wait "$race_b" || race_rc_b=$?
+if [[ "$race_rc_a" -eq "$race_rc_b" ]]; then
+ echo FINANCE_V383_CONCURRENT_REVIEW_FAIL; exit 1
+fi
+test "$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT revision FROM finance_source_documents WHERE document_id='CI_RACE'")" = 2
+test "$(psql -X -At -v ON_ERROR_STOP=1 -c "SELECT count(*) FROM finance_source_document_events WHERE document_id='CI_RACE' AND action='REVIEW'")" = 1
+echo FINANCE_V383_UNTRUSTED_ROLE_DENY_AND_CONCURRENCY_PASS
