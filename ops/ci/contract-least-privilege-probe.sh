@@ -32,6 +32,11 @@ SELECT 'REQUIRED_CONTRACT_COLUMNS='||count(*) FROM information_schema.columns
    ('contract_id','resident_id','status')) );
 SELECT 'ROLE_CAN_CREATE_DB='||CASE WHEN has_database_privilege(current_user,current_database(),'CREATE') THEN 'YES' ELSE 'NO' END;
 SELECT 'ROLE_CAN_CREATE_SCHEMA='||CASE WHEN has_schema_privilege(current_user,'public','CREATE') THEN 'YES' ELSE 'NO' END;
+SELECT 'ROLE_SUPERUSER='||CASE WHEN (SELECT rolsuper FROM pg_roles WHERE rolname=current_user) THEN 'YES' ELSE 'NO' END;
+SELECT 'ROLE_WRITABLE_PUBLIC_TABLES='||count(*) FROM pg_class t
+ JOIN pg_namespace n ON n.oid=t.relnamespace
+ WHERE n.nspname='public' AND t.relkind IN ('r','p')
+ AND has_table_privilege(current_user,t.oid,'INSERT,UPDATE,DELETE,TRUNCATE');
 SELECT 'ROLE_CAN_WRITE_RESIDENTS='||CASE WHEN has_table_privilege(current_user,'public.residents','INSERT,UPDATE,DELETE') THEN 'YES' ELSE 'NO' END;
 ROLLBACK;
 SQL
@@ -46,7 +51,7 @@ fi
 # Only allow known preapproved aggregate output; never expose values from business rows.
 while IFS= read -r line;do
  case "$line" in
- DB_TRANSACTION_READ_ONLY=on|DB_CONNECTION_TLS=YES|ROLE_CAN_CREATE_DB=NO|ROLE_CAN_CREATE_SCHEMA=NO|ROLE_CAN_WRITE_RESIDENTS=NO) ;;
+ DB_TRANSACTION_READ_ONLY=on|DB_CONNECTION_TLS=YES|ROLE_CAN_CREATE_DB=NO|ROLE_CAN_CREATE_SCHEMA=NO|ROLE_CAN_WRITE_RESIDENTS=NO|ROLE_SUPERUSER=NO|ROLE_WRITABLE_PUBLIC_TABLES=0) ;;
  CONTRACT_TABLES=[0-4]|AUTH_TABLES=[0-2]|FINANCE_TABLES=[0-3]|REQUIRED_CONTRACT_COLUMNS=[0-9]|REQUIRED_CONTRACT_COLUMNS=1[0-9]) ;;
  *) echo 'UNEXPECTED_AUDIT_OUTPUT';exit 9 ;;
  esac
