@@ -7,6 +7,7 @@ on:
       - 'frontend/**'
       - 'ops/ci/finance-*'
       - 'ops/ci/shared-canonical-contract-controller-test.cjs'
+      - 'ops/ci/shared-contract-draft-guard-test.cjs'
       - '.github/workflows/finance-grand-fast-resume.yml'
   workflow_dispatch:
 permissions:
@@ -91,6 +92,7 @@ jobs:
           node ../ops/ci/finance-command-policy-test.cjs
           node ../ops/ci/finance-canonical-contract-gate-test.cjs
           node ../ops/ci/shared-canonical-contract-controller-test.cjs
+          node ../ops/ci/shared-contract-draft-guard-test.cjs
   postgres:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
