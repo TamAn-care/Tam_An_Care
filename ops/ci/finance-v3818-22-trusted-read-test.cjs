@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {validateFinanceReadRequest:request,verifyTrustedReadSnapshot:snapshot}=require('../../api/dist/finance-billing/finance-v381822-trusted-read-contract.js');
+assert.equal(request({documentId:'doc_1'}).valid,true);
+assert.equal(request({documentId:'doc_1',actorRole:'DIRECTOR'}).valid,false);
+assert.equal(request({documentId:'doc_1',staffActorId:'owner'}).valid,false);
+assert.equal(request({documentId:'../doc'}).valid,false);
+assert.equal(request(null).valid,false);
+const good={documentId:'doc_1',documentKind:'PAYROLL',ownerActorId:'staff1',revision:2,persisted:true};
+assert.equal(snapshot(good,'doc_1').valid,true);
+assert.equal(snapshot({...good,persisted:false},'doc_1').valid,false);
+assert.equal(snapshot(good,'doc_2').valid,false);
+assert.equal(snapshot({...good,revision:-1},'doc_1').valid,false);
+assert.equal(snapshot(null,'doc_1').writeEnabled,false);
+console.log('FINANCE_V381822_TRUSTED_READ_CONTRACT_CI_PASS');
