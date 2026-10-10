@@ -70,6 +70,7 @@ import { ResidentLifecycleModule } from './resident-lifecycle/resident-lifecycle
 import { ResidentLeaveModule } from './resident-leave/resident-leave.module';
 import { WorkforceModule } from './workforce/workforce.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { PaperRecordModule } from './paper-records/paper-record.module';
 import { FinanceReadController } from './finance-billing/finance-read.controller';
 import { FinanceWriteController } from './finance-billing/finance-write.controller';
 import { FinanceBillingService } from './finance-billing/finance-billing.service';
@@ -79,6 +80,7 @@ import { CanonicalContractDraftController } from './finance-billing/canonical-co
 import { ContractSignoffController } from './finance-billing/contract-signoff.controller';
 
 @Module({imports:[
+    PaperRecordModule,
     NotificationsModule,
     WorkforceModule,
     ResidentLeaveModule,
