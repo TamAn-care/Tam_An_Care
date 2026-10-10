@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-57-collision-test.cjs');
 require('./finance-v3818-56-reconciliation-test.cjs');
 require('./finance-v3818-55-source-runtime-test.cjs');
 require('./finance-v3818-54-cross-schema-source-test.cjs');
