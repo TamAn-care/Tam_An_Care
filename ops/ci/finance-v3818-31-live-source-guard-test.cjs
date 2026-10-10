@@ -4,7 +4,7 @@ const {FinanceDocumentReadAdapterV381831}=require('../../api/dist/finance-billin
 const {publishVerifiedFinanceIdentity}=require('../../api/dist/security/verified-finance-identity.js');
 (async()=>{
  let reads=0;
- const api=new FinanceDocumentReadAdapterV381831({query:async()=>{reads++;return{rows:[{exists:false}]}}});
+ const api=new FinanceDocumentReadAdapterV381831({query:async(sql)=>{reads++;return {rows:sql.includes('auth_sessions')?[{actor_id:'maker',actor_role:'FINANCE_MAKER'}]:[{exists:false}]}}});
  await assert.rejects(()=>api.get({},'doc1'),/VERIFIED_SESSION_REQUIRED/);
  assert.equal(reads,0);
  const req={};
@@ -13,8 +13,8 @@ const {publishVerifiedFinanceIdentity}=require('../../api/dist/security/verified
  assert.equal(reads,0);
  process.env.TAMANCARE_FINANCE_READ_ROLES='FINANCE_MAKER';
  await assert.rejects(()=>api.get(req,'doc1'),/CANONICAL_DOCUMENT_SOURCE_NOT_AVAILABLE/);
- assert.equal(reads,1);
- const future=new FinanceDocumentReadAdapterV381831({query:async()=>({rows:[{exists:true}]})});
+ assert.equal(reads,2);
+ const future=new FinanceDocumentReadAdapterV381831({query:async(sql)=>({rows:sql.includes('auth_sessions')?[{actor_id:'maker',actor_role:'FINANCE_MAKER'}]:[{exists:true}]})});
  await assert.rejects(()=>future.get(req,'doc1'),/DOCUMENT_READ_ADAPTER_NOT_RELEASED/);
  await assert.rejects(()=>future.get(req,'../../etc'),/INVALID_DOCUMENT_ID/);
  console.log('FINANCE_V381831_LIVE_SOURCE_FAIL_CLOSED_PASS');
