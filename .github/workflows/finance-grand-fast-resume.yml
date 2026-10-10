@@ -171,6 +171,7 @@ jobs:
           bash ops/ci/finance-v3818-32-migration-rollback-test.sh
           bash ops/ci/finance-v3818-34-end-to-end-test.sh
           bash ops/ci/finance-v3818-35-posting-claim-test.sh
+          bash ops/ci/finance-v3818-36-atomic-ledger-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
