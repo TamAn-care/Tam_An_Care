@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {authorizePayrollRead:check}=require('../../api/dist/finance-billing/finance-v381818-payroll-confidentiality.js');
+const principal={actorId:'staff1',actorRole:'FINANCE_MAKER',sessionId:'active1',sessionActive:true,serverVerified:true};
+const other={staffActorId:'staff2',isPayroll:true};
+assert.equal(check(principal,other,['DIRECTOR']).allowed,false);
+assert.equal(check({...principal,actorRole:'DIRECTOR'},other,['DIRECTOR']).allowed,true);
+assert.equal(check({...principal,sessionActive:false},other,['DIRECTOR']).allowed,false);
+assert.equal(check({...principal,serverVerified:false},other,['DIRECTOR']).allowed,false);
+assert.equal(check(principal,{...other,staffActorId:'staff1'},['DIRECTOR']).allowed,false);
+assert.equal(check(principal,{...other,staffActorId:'staff1'},['DIRECTOR'],true).allowed,true);
+assert.equal(check(principal,other,[]).allowed,false);
+console.log('FINANCE_V381819_PAYROLL_READ_CI_PASS');
