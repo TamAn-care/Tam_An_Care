@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-55-source-runtime-test.cjs');
 require('./finance-v3818-54-cross-schema-source-test.cjs');
 require('./finance-v3818-53-catalog-test.cjs');
 require('./finance-v3818-52-source-presence-test.cjs');
