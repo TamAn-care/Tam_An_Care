@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {VERIFIED_OPERATIONAL_SOURCES,assessOperationalSourceCatalog}=require('../../api/dist/finance-billing/finance-v381812-verified-operational-map.js');
+let x=assessOperationalSourceCatalog(VERIFIED_OPERATIONAL_SOURCES.map(s=>({table:s.table,columns:[s.id,...s.columns]})));
+assert.equal(x.state,'READ_ONLY_CONTEXT_AVAILABLE');assert.equal(x.financialPostingEnabled,false);
+x=assessOperationalSourceCatalog(VERIFIED_OPERATIONAL_SOURCES.filter(s=>s.table!=='staff_actors').map(s=>({table:s.table,columns:[s.id,...s.columns]})));
+assert.equal(x.state,'BLOCKED');assert(x.missing.includes('TABLE_MISSING:staff_actors'));
+x=assessOperationalSourceCatalog([]);
+assert.equal(x.financialPostingEnabled,false);
+console.log('TAMANCARE_FINANCE_V3818_12_OPERATIONAL_MAP_CI_PASS');
