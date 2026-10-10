@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-38-month-close-gate-test.cjs');
 require('./finance-v3818-37-ledger-reconciliation-test.cjs');
 require('./finance-v3818-33-ci-draft-backend-test.cjs');
 require('node:child_process').execFileSync(process.execPath,[require('node:path').join(__dirname,'finance-v3818-31-live-source-guard-test.cjs')],{stdio:'inherit'});
