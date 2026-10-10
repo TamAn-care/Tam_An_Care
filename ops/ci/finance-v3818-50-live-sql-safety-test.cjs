@@ -1,0 +1,11 @@
+'use strict';
+const fs=require('node:fs');const assert=require('node:assert/strict');
+const sql=fs.readFileSync('ops/finance/v3818/050_live_month_ledger_readonly.sql','utf8');
+const body=sql.split('\n').filter(x=>!x.trim().startsWith('--')).join('\n');
+assert.match(body,/transaction_read_only/);
+assert.match(body,/current_database\(\)<>'taman_care'/);
+assert.match(body,/LIMIT 10001/);
+assert.match(body,/CHUA_DU_DU_LIEU/);
+assert.doesNotMatch(body,/\b(?:INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|TRUNCATE|GRANT|REVOKE|COPY)\b/i);
+assert.doesNotMatch(body,/SELECT\s+\*/i);
+console.log('TAMANCARE_FINANCE_V381850_LIVE_SQL_STATIC_SAFE_PASS');
