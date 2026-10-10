@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs');const path=require('node:path');const assert=require('node:assert/strict');
+const sql=fs.readFileSync(path.resolve(__dirname,'../finance/v3818/052_source_presence_readonly.sql'),'utf8');
+assert.match(sql,/transaction_read_only/);
+assert.match(sql,/current_database\(\)<>'taman_care'/);
+assert.match(sql,/has_table_privilege/);
+assert.match(sql,/LIMIT %s/);
+assert.match(sql,/SELECT 1 FROM public\.%I/);
+assert.doesNotMatch(sql,/\b(?:INSERT|UPDATE|DELETE|TRUNCATE|CREATE|DROP|ALTER|GRANT|REVOKE|COPY)\s/i);
+console.log('TAMANCARE_V381852_SOURCE_PRESENCE_READ_ONLY_STATIC_PASS');
