@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-28-command-preflight-test.cjs');
 require('./finance-v3818-24-readonly-catalog-test.cjs');
 require('./finance-v3818-23-source-discovery-test.cjs');
 require('./finance-v3818-22-trusted-read-test.cjs');
