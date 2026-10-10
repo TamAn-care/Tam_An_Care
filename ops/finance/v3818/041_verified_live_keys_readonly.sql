@@ -20,6 +20,6 @@ SELECT a.name AS source_name,COALESCE(a.relname,'NOT_FOUND') AS table_status,
  a.relkind,
  (SELECT count(*) FROM pg_catalog.pg_attribute x WHERE x.attrelid=a.oid AND x.attnum>0 AND NOT x.attisdropped) AS column_count,
  (SELECT string_agg(x.attname,',' ORDER BY x.attnum) FROM pg_catalog.pg_attribute x WHERE x.attrelid=a.oid AND x.attnum>0 AND NOT x.attisdropped) AS column_names,
- (SELECT string_agg(con.conname||':'||con.contype,',' ORDER BY con.conname) FROM pg_catalog.pg_constraint con WHERE con.conrelid=a.oid) AS constraints
+ (SELECT string_agg(con.conname::text||':'||con.contype::text,',' ORDER BY con.conname) FROM pg_catalog.pg_constraint con WHERE con.conrelid=a.oid) AS constraints
 FROM actual a ORDER BY a.name;
 -- No row-level query, no PII, no salaries, no writes.
