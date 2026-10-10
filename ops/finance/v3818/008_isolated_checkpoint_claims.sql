@@ -25,8 +25,9 @@ CREATE TABLE finance_sync_ci.audit_events (
  action text NOT NULL,
  observed_at timestamptz NOT NULL DEFAULT now()
 );
--- CI-only function requires an explicit claim and advances the cursor in the
--- SAME transaction; real production authorization and DB integration NOT ready.
+-- CI-only function creates a claim ONLY. A claim is not ledger posting;
+-- the cursor MUST NOT advance until a future authorized atomic ledger commit.
+-- Real production authorization and DB integration are NOT ready.
 CREATE FUNCTION finance_sync_ci.claim_source(
  p_adapter text,p_cursor numeric,p_origin text,p_source_key text,
  p_source_version text,p_digest text
@@ -56,10 +57,7 @@ BEGIN
  END IF;
  INSERT INTO finance_sync_ci.source_observations(source_key,source_version,source_digest)
  VALUES(p_source_key,p_source_version,p_digest) ON CONFLICT(source_key) DO NOTHING;
- INSERT INTO finance_sync_ci.checkpoints(adapter_id,cursor_value)
- VALUES(p_adapter,p_cursor)
- ON CONFLICT(adapter_id) DO UPDATE SET cursor_value=GREATEST(finance_sync_ci.checkpoints.cursor_value,EXCLUDED.cursor_value);
  INSERT INTO finance_sync_ci.audit_events(financial_origin,action) VALUES(p_origin,'CLAIM_ONLY');
- RETURN 'CLAIM_ONLY_NOT_POSTED';
+ RETURN 'CLAIM_ONLY_CURSOR_UNCHANGED';
 END $$;
 COMMIT;
