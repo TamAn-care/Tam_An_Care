@@ -1,0 +1,16 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {assessCatalogSource,assessRequiredModules}=require('../../api/dist/finance-billing/finance-v381810-catalog-gate.js');
+const req={group:'BILLING',schema:'public',table:'approved_billing_documents',primaryKey:['id'],requiredColumns:['id','amount_vnd'],approvalColumn:'approval_status',periodColumn:'recognition_date',sourceVersionColumn:'revision'};
+const names=['id','amount_vnd','approval_status','recognition_date','revision'];
+const rel={schema:'public',table:'approved_billing_documents',primaryKey:['id'],columns:names.map(column=>({schema:'public',table:'approved_billing_documents',column,dataType:'text',nullable:false}))};
+const good=assessCatalogSource(req,rel);
+assert.equal(good.status,'SCHEMA_CANDIDATE');assert.equal(good.postingEnabled,false);
+assert.equal(assessCatalogSource(req,null).status,'BLOCKED');
+assert.equal(assessCatalogSource(req,{...rel,primaryKey:[]}).status,'BLOCKED');
+assert(assessCatalogSource(req,{...rel,columns:rel.columns.filter(c=>c.column!=='approval_status')}).reasons.includes('COLUMN_MISSING:approval_status'));
+const all=assessRequiredModules([{group:'BILLING',gate:good}]);
+assert.equal(all.readyForReadAdapter,false);
+assert(all.missing.includes('PAYROLL'));
+assert(all.missing.includes('CONTRACT'));
+console.log('TAMANCARE_FINANCE_V3818_10_CATALOG_SCHEMA_GATE_PASS');
