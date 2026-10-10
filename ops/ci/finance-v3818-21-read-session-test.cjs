@@ -1,0 +1,36 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {FinanceDocumentReadBoundaryV381820}=require('../../api/dist/finance-billing/finance-v381820-document-read-boundary.service.js');
+const {publishVerifiedFinanceIdentity}=require('../../api/dist/security/verified-finance-identity.js');
+const doc={documentId:'document1',kind:'PAYROLL',preparedBy:'maker',staffActorId:'staff1',state:'APPROVED'};
+const oldFinance=process.env.TAMANCARE_FINANCE_READ_ROLES;
+const oldPayroll=process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES;
+(async()=>{
+ let calls=0,sql='';
+ const db={query:async(q,params)=>{calls++;sql=q;
+ assert.equal(params.length,3);
+ return{rows:[{actor_id:params[1],actor_role:params[2]}]};}};
+ const service=new FinanceDocumentReadBoundaryV381820(db);
+ const anonymous={};
+ await assert.rejects(()=>service.authorizeMetadata(anonymous,doc),/FINANCE_SESSION_REQUIRED/);
+ assert.equal(calls,0);
+ const request={};publishVerifiedFinanceIdentity(request,{actorId:'director',actorRole:'DIRECTOR',sessionId:'session1'});
+ delete process.env.TAMANCARE_FINANCE_READ_ROLES;
+ delete process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES;
+ await assert.rejects(()=>service.authorizeMetadata(request,doc),/FINANCE_READ_SCOPE_DENIED/);
+ process.env.TAMANCARE_FINANCE_READ_ROLES='DIRECTOR';
+ await assert.rejects(()=>service.authorizeMetadata(request,doc),/PAYROLL_READ_SCOPE_DENIED/);
+ process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES='DIRECTOR';
+ assert.deepEqual(await service.authorizeMetadata(request,doc),{authorized:true});
+ assert.match(sql,/revoked_at IS NULL/);
+ assert.match(sql,/expires_at>now\(\)/);
+ const inactive=new FinanceDocumentReadBoundaryV381820({query:async()=>({rows:[]})});
+ await assert.rejects(()=>inactive.authorizeMetadata(request,doc),/SESSION_INVALID/);
+ const notPayroll={...doc,kind:'OPERATING_EXPENSE'};
+ delete process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES;
+ assert.deepEqual(await service.authorizeMetadata(request,notPayroll),{authorized:true});
+ console.log('FINANCE_V381821_CONFIDENTIAL_READ_SESSION_CI_PASS');
+})().finally(()=>{
+ if(oldFinance===undefined)delete process.env.TAMANCARE_FINANCE_READ_ROLES;else process.env.TAMANCARE_FINANCE_READ_ROLES=oldFinance;
+ if(oldPayroll===undefined)delete process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES;else process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES=oldPayroll;
+}).catch(e=>{console.error(e);process.exitCode=1});
