@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {reconcileRevenueV48:run}=require('../../api/dist/finance-billing/finance-v381848-provenance-reconciliation.js');
+const ledger={id:'ledger48',type:'LEDGER',businessOrigin:'CARE:svc48',amountVnd:'1200000',recognitionDate:'2026-09-10',ledgerKind:'REVENUE',approved:true};
+const invoice={...ledger,id:'invoice48',type:'INVOICE',ledgerKind:null};
+const receipt={...ledger,id:'receipt48',type:'RECEIPT',ledgerKind:null,recognitionDate:null};
+assert.equal(run([ledger,invoice,receipt]).revenueVnd,'1200000');
+assert.equal(run([ledger,invoice,receipt]).livePostingEnabled,false);
+assert.equal(run([invoice,receipt]).state,'CHUA_DU_DU_LIEU');
+assert.equal(run([ledger,{...ledger,id:'ledger48b'}]).state,'CHUA_DU_DU_LIEU');
+assert.equal(run([ledger,{...receipt,businessOrigin:'OTHER:48'}]).state,'CHUA_DU_DU_LIEU');
+assert.equal(run([{...ledger,approved:false},receipt]).state,'CHUA_DU_DU_LIEU');
+assert.equal(run([ledger,{...receipt,id:'ledger48'}]).state,'CHUA_DU_DU_LIEU');
+console.log('TAMANCARE_FINANCE_V381848_CROSS_SOURCE_NO_DOUBLE_REVENUE_PASS');
