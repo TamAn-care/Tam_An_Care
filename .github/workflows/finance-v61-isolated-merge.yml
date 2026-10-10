@@ -146,6 +146,18 @@ jobs:
           echo 'V68_STATIC_SOURCE_CATALOG=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V68_PRODUCTION_PROVENANCE=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V68_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V69 readonly server script static safety gate
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n ops/finance/v3818/069_live_metadata_readonly.sh
+          grep -Fq 'BEGIN TRANSACTION READ ONLY;' ops/finance/v3818/069_live_metadata_readonly.sh
+          grep -Fq "current_database() <> 'taman_care'" ops/finance/v3818/069_live_metadata_readonly.sh
+          grep -Fq "current_setting('transaction_read_only') <> 'on'" ops/finance/v3818/069_live_metadata_readonly.sh
+          echo 'V69_STATIC_SAFETY_SYNTAX=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V69_LIVE_SERVER_EXECUTION=NOT_EXECUTED' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V69_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
