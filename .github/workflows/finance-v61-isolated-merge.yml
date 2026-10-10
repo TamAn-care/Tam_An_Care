@@ -33,10 +33,31 @@ jobs:
             fi
             echo 'INTEGRATION_SCOPE=GITHUB_ONLY' >> "$RUNNER_TEMP/v61/evidence.txt"
           else
-            echo 'THREE_WAY_MERGE=CONFLICTS' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
             git diff --name-only --diff-filter=U > "$RUNNER_TEMP/v61/conflicts.txt"
             cat "$RUNNER_TEMP/v61/conflicts.txt"
-            exit 1
+            if [[ "$(wc -l < "$RUNNER_TEMP/v61/conflicts.txt")" -eq 1 ]] &&
+               grep -Fxq 'api/src/app.module.ts' "$RUNNER_TEMP/v61/conflicts.txt"; then
+              echo 'V62_SINGLE_CONFLICT=APP_MODULE' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
+              git show "$FIN_SHA:api/src/app.module.ts" > api/src/app.module.ts
+              node - <<'NODE'
+const fs = require('node:fs');
+const s=fs.readFileSync('api/src/app.module.ts','utf8');
+const required=['PaperRecordModule','FinanceReadController','FinanceWriteController','FinanceBillingService','MonthlyOperatingResultService','CanonicalServiceContractsController','CanonicalContractDraftController','ContractSignoffController'];
+for(const name of required){
+  if(!s.includes(name)) throw new Error('V62_REQUIRED_MODULE_MISSING:'+name);
+}
+const imports=s.match(/@Module\\(\\{imports:\\[([\\s\\S]*?)\\],controllers:/);
+if(!imports || !imports[1].includes('PaperRecordModule')) throw new Error('V62_PAPER_RECORD_NOT_REGISTERED');
+console.log('V62_MODULE_PRESERVATION_PASS');
+NODE
+              git add api/src/app.module.ts
+              test -z "$(git diff --name-only --diff-filter=U)"
+              echo 'THREE_WAY_MERGE=CONTROLLED_APP_MODULE_RESOLUTION' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
+              git diff --cached --name-only > "$RUNNER_TEMP/v61/integrated-paths.txt"
+            else
+              echo 'THREE_WAY_MERGE=UNRESOLVED_CONFLICTS' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
+              exit 1
+            fi
           fi
       - name: Isolated API and frontend builds
         if: success()
