@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-21-read-session-test.cjs');
 require('./finance-v3818-20-document-read-test.cjs');
 require('./finance-v3818-19-payroll-access-test.cjs');
 require('./finance-v3818-17-http-boundary-test.cjs');
