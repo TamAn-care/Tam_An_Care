@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const sql=fs.readFileSync('ops/finance/v3818/024_live_catalog_readonly.sql','utf8');
+const fs=require('node:fs'),path=require('node:path');
+const sql=fs.readFileSync(path.resolve(__dirname,'../finance/v3818/024_live_catalog_readonly.sql'),'utf8');
 const effective=sql.split('\n').filter(x=>!x.trim().startsWith('--')).join('\n');
 assert.match(effective,/SET TRANSACTION READ ONLY;/);
 assert.match(effective,/pg_catalog\.pg_class/);
