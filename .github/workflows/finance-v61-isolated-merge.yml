@@ -136,6 +136,16 @@ jobs:
           test -s "$RUNNER_TEMP/v61/v67-finance-source-gap.json"
           echo 'V67_RELEASE_GAP_REPORT=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V67_FINANCE_OPERATIONAL_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V68 static source candidate inventory (no live database)
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V68_REPORT_PATH="$RUNNER_TEMP/v61/v68-finance-source-inventory.json" node ops/ci/finance-v3818-68-static-source-inventory.cjs
+          test -s "$RUNNER_TEMP/v61/v68-finance-source-inventory.json"
+          echo 'V68_STATIC_SOURCE_CATALOG=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V68_PRODUCTION_PROVENANCE=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V68_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
