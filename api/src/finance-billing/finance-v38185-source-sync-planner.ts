@@ -39,7 +39,8 @@ export function planCanonicalFinanceSync(snapshots:readonly SourceSnapshot[]):Sy
  for(let i=0;i<snapshots.length;i++){
   const s=snapshots[i];
   if(!s||typeof s!=='object'||!(s.family in FAMILIES)){blockers.push('UNSUPPORTED_SOURCE:'+i);continue;}
-  const expected=FAMILIES[s.family];
+  const family=s.family as SourceFamily;
+  const expected=FAMILIES[family];
   // Cash movements, contracts, stock receipt/issue and resident consumption
   // must never become implicit revenue or expense: need approved accounting document.
   if(expected===null){blockers.push('NON_POSTING_SOURCE:'+s.family);continue;}
