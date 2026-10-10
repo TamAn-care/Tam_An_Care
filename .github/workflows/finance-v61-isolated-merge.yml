@@ -9,6 +9,20 @@ jobs:
   isolated-merge:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+          POSTGRES_DB: finance_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
         with:
@@ -69,6 +83,22 @@ jobs:
           node -e 'const fs=require("node:fs");const s=fs.readFileSync("api/src/app.module.ts","utf8");for(const n of ["PaperRecordModule","FinanceReadController","FinanceWriteController","MonthlyOperatingResultService","FinanceBillingService"]){if(!s.includes(n))throw Error("V63_REQUIRED_REGISTRATION_MISSING:"+n)}console.log("V63_MODULE_REGRESSION_PASS")'
           node ops/ci/finance-v3813-read-only-reconciliation-test.cjs
           echo 'V63_FINANCE_REGRESSION=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V64 isolated JWT RBAC and controller smoke
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-http-jwt-isolated-test.cjs
+          node ops/ci/finance-nest-http-jwt-test.cjs
+          echo 'V64_JWT_RBAC=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V64 isolated PostgreSQL allocation and concurrency invariants
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -Eq '192\\.168\\.1\\.32|tamancare\\.dpdns\\.org|production-postgres' ops/ci/finance-pg-lab-{schema.sql,tests.sql,run.sh}
+          bash ops/ci/finance-pg-lab-run.sh
+          echo 'V64_POSTGRES_ISOLATED=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
