@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const sql=fs.readFileSync(path.resolve(__dirname,'../finance/v3818/040_live_source_inventory_readonly.sql'),'utf8');
+const body=sql.split('\n').filter(x=>!x.trim().startsWith('--')).join('\n');
+assert.match(body,/SET TRANSACTION READ ONLY/);
+assert.match(body,/pg_catalog\.pg_class/);
+assert.match(body,/pg_catalog\.pg_attribute/);
+assert.match(body,/current_database\(\)/);
+assert.doesNotMatch(body,/\b(?:INSERT|UPDATE|DELETE|TRUNCATE|DROP|ALTER|CREATE|CALL|GRANT|REVOKE)\s/i);
+for(const s of ['finance_entries','finance_entry_audit','admission_cases','resident_leave_requests','inventory_transactions','resident_consumption_events','finance_manual_documents','payroll','invoice','contract'])assert.ok(body.includes(s),s);
+console.log('FINANCE_V381840_LIVE_CATALOG_SQL_SAFETY_PASS');
