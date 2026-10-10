@@ -18,6 +18,8 @@ export class FinanceDocumentReadAdapterV381831 {
   const roles=(process.env.TAMANCARE_FINANCE_READ_ROLES||'').split(',').map(x=>x.trim()).filter(Boolean);
   const payrollRoles=(process.env.TAMANCARE_FINANCE_PAYROLL_READ_ROLES||'').split(',').map(x=>x.trim()).filter(Boolean);
   if(!roles.includes(id.actorRole))throw new ForbiddenException('FINANCE_READ_DENIED');
+  const session=await this.db.query<{actor_id:string;actor_role:string}>(`SELECT actor_id,actor_role FROM public.auth_sessions WHERE session_id=$1 AND actor_id=$2 AND actor_role=$3 AND revoked_at IS NULL AND expires_at>now() LIMIT 1`,[id.sessionId,id.actorId,id.actorRole]);
+  if(session.rows.length!==1||session.rows[0].actor_id!==id.actorId||session.rows[0].actor_role!==id.actorRole)throw new ForbiddenException('SESSION_INACTIVE');
   const source=await this.db.query<{exists:boolean}>(`
 SELECT EXISTS(
  SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
