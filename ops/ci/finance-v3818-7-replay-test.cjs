@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {evaluateReplay}=require('../../api/dist/finance-billing/finance-v38187-replay-preflight.js');
+const row={family:'APPROVED_INVOICE',sourceId:'inv1',sourceVersion:'v1',date:'2026-10-01',amountVnd:'14500000',entryType:'REVENUE',approval:'VERIFIED',evidence:'VERIFIED',reconciled:'VERIFIED',originKey:'period_202610_inv1'};
+const batch={adapterId:'BILLING',authoritativeSource:'POSTGRESQL',snapshotId:'snapshot1',cursorBefore:'1',cursorAfter:'2',sourceAvailability:'VERIFIED',schemaVerified:'VERIFIED',sessionRbacVerified:'VERIFIED',evidenceChainVerified:'VERIFIED',rows:[row]};
+const first=evaluateReplay(batch,[]);
+assert.equal(first.state,'CANDIDATES_ONLY');assert.equal(first.commitEnabled,false);
+const d=first.sourceDigests[0];
+const prev={...d,posted:false};
+assert.equal(evaluateReplay(batch,[prev]).state,'NO_CHANGE');
+let x=evaluateReplay({...batch,rows:[{...row,amountVnd:'15000000'}]},[prev]);
+assert.equal(x.state,'BLOCKED');assert(x.reasons.some(r=>r.startsWith('SAME_VERSION_CHANGED_CONTENT')));
+x=evaluateReplay({...batch,rows:[{...row,sourceVersion:'v2'}]},[{...prev,posted:true}]);
+assert.equal(x.state,'BLOCKED');assert(x.reasons.some(r=>r.startsWith('POSTED_SOURCE_AMENDED_REQUIRES_REVERSAL')));
+assert.equal(evaluateReplay(batch,[prev,prev]).state,'BLOCKED');
+assert.equal(evaluateReplay({...batch,cursorAfter:'0'},[]).state,'BLOCKED');
+console.log('TAMANCARE_FINANCE_V3818_7_REPLAY_PREFLIGHT_CI_PASS');
