@@ -1,0 +1,71 @@
+name: Finance V59 isolated candidate — NO DEPLOY
+on:
+  push:
+    branches: [feature/finance-v22-github-build]
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'ops/finance/v3818/059_*'
+      - '.github/workflows/finance-v59-isolated-candidate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            api/package-lock.json
+            frontend/package-lock.json
+      - name: Verify isolated checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -f api/src/finance-billing/finance-read.controller.ts
+          test -f api/src/finance-billing/monthly-operating-result.service.ts
+          test -f frontend/src/features/finance/MonthlyOperatingResultPanel.tsx
+          mkdir -p "$RUNNER_TEMP/finance-v59"
+          git rev-parse HEAD > "$RUNNER_TEMP/finance-v59/source-commit.txt"
+      - name: Build API (isolated runner)
+        working-directory: api
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+          test -d dist
+      - name: Build frontend (isolated runner)
+        working-directory: frontend
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit
+          ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
+          ./node_modules/.bin/vite build
+          test -s dist/index.html
+      - name: Reproducible artifact evidence (not runtime equivalence)
+        shell: bash
+        run: |
+          set -euo pipefail
+          E="$RUNNER_TEMP/finance-v59"
+          find api/dist frontend/dist -type f -print0 | LC_ALL=C sort -z | xargs -0 -r sha256sum > "$E/build-files.sha256"
+          test -s "$E/build-files.sha256"
+          printf 'CANDIDATE_SCOPE=ISOLATED_GITHUB_BUILD\nRUNTIME_PARITY=NOT_PROVEN\nRELEASE_READY=NO\nDEPLOY=NO\nMIGRATION=NO\nSEED=NO\n' > "$E/release-state.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: finance-v59-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/finance-v59/
+          retention-days: 14
+      - name: Final gate (deliberate no deploy)
+        run: |
+          echo "RESULT=TAMANCARE_FINANCE_V381859_ISOLATED_BUILD_PASS"
+          echo "INTEGRATION_WITH_PRODUCTION_RUNTIME=NOT_PROVEN"
+          echo "PRODUCTION_GO_NO_GO=NO_GO"
