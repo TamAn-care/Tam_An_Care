@@ -23,6 +23,10 @@ export function reconcileRevenueV48(rows:readonly V48Evidence[]):V48Result{
   revenue+=BigInt(v.amountVnd);
  }
  if([...origins.values()].some(n=>n>1))reasons.push('DUPLICATE_REVENUE_ORIGIN');
+ for(const v of rows){if(v?.type==='RECEIPT'||v?.type==='INVOICE'||v?.type==='ADJUSTMENT'){
+  if(!v.businessOrigin||!origins.has(v.businessOrigin))reasons.push('EVIDENCE_WITHOUT_CANONICAL_REVENUE_POSTING');
+ }}
+ if(origins.size===0)reasons.push('CANONICAL_REVENUE_POSTING_MISSING');
  if(revenue>9999999999999999n)reasons.push('REVENUE_OVERFLOW');
  if(reasons.length)return{state:'CHUA_DU_DU_LIEU',revenueVnd:null,reasons:[...new Set(reasons)],livePostingEnabled:false};
  return{state:'VERIFIED',revenueVnd:revenue.toString(),reasons:[],livePostingEnabled:false};
