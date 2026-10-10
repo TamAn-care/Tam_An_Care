@@ -169,6 +169,7 @@ jobs:
           bash ops/ci/finance-v3818-29-atomic-draft-test.sh
           bash ops/ci/finance-v3818-30-confidential-read-test.sh
           bash ops/ci/finance-v3818-32-migration-rollback-test.sh
+          bash ops/ci/finance-v3818-34-end-to-end-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
