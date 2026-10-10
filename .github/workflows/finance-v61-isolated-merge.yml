@@ -57,6 +57,18 @@ jobs:
           ( cd api && npm ci --ignore-scripts --no-audit --no-fund && npm run build )
           ( cd frontend && npm ci --ignore-scripts --no-audit --no-fund && ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit && ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit && ./node_modules/.bin/vite build )
           echo 'MERGED_BUILD=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V63 Finance and preserved-module regression suite
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f api/src/paper-records/paper-record.module.ts
+          test -f api/src/finance-billing/finance-read.controller.ts
+          test -f api/src/finance-billing/monthly-operating-result.service.ts
+          test -f frontend/src/features/finance/MonthlyOperatingResultPanel.tsx
+          node -e 'const fs=require("node:fs");const s=fs.readFileSync("api/src/app.module.ts","utf8");for(const n of ["PaperRecordModule","FinanceReadController","FinanceWriteController","MonthlyOperatingResultService","FinanceBillingService"]){if(!s.includes(n))throw Error("V63_REQUIRED_REGISTRATION_MISSING:"+n)}console.log("V63_MODULE_REGRESSION_PASS")'
+          node ops/ci/finance-v3813-read-only-reconciliation-test.cjs
+          echo 'V63_FINANCE_REGRESSION=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
