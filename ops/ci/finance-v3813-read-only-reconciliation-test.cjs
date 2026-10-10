@@ -1,5 +1,5 @@
 'use strict';
-require('./finance-v3818-31-live-source-guard-test.cjs');
+require('node:child_process').execFileSync(process.execPath,[require('node:path').join(__dirname,'finance-v3818-31-live-source-guard-test.cjs')],{stdio:'inherit'});
 require('./finance-v3818-28-command-preflight-test.cjs');
 require('./finance-v3818-24-readonly-catalog-test.cjs');
 require('./finance-v3818-23-source-discovery-test.cjs');
