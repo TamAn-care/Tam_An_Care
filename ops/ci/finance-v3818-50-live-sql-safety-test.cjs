@@ -1,6 +1,6 @@
 'use strict';
-const fs=require('node:fs');const assert=require('node:assert/strict');
-const sql=fs.readFileSync('ops/finance/v3818/050_live_month_ledger_readonly.sql','utf8');
+const fs=require('node:fs');const path=require('node:path');const assert=require('node:assert/strict');
+const sql=fs.readFileSync(path.resolve(__dirname,'../finance/v3818/050_live_month_ledger_readonly.sql'),'utf8');
 const body=sql.split('\n').filter(x=>!x.trim().startsWith('--')).join('\n');
 assert.match(body,/transaction_read_only/);
 assert.match(body,/current_database\(\)<>'taman_care'/);
