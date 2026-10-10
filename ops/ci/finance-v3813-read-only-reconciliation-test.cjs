@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-6-adapter-test.cjs');
 require('./finance-v3818-5-source-sync-test.cjs');
 require('./finance-v3818-4-monthly-recognition-test.cjs');
 require('./finance-v3818-3-gap-gate.cjs');
