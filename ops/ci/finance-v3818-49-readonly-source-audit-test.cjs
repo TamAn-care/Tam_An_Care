@@ -1,0 +1,22 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {FinanceReadOnlySourceAuditV381849}=require('../../api/dist/finance-billing/finance-v381849-readonly-source-audit.service.js');
+const cols=['finance_entry_id','recognition_date','status','source_mode','source_domain','source_entity_type','source_entity_id','entry_type'];
+(async()=>{
+ const queries=[];
+ const db={query:async(sql,params)=>{queries.push({sql,params});return queries.length===1?{rows:cols.map(column_name=>({column_name}))}:{rows:[{total:'3',posted_system:'2',unlinked:'1',manual_posted:'1',dup_system:'0',bounded:'false'}]}}};
+ const res=await new FinanceReadOnlySourceAuditV381849(db).audit('2026-09');
+ assert.equal(res.state,'CHUA_DU_DU_LIEU');assert.equal(res.readyForLivePosting,false);
+ assert.equal(res.ledgerRows,3);assert.equal(res.unlinkedPostedRows,1);
+ assert.ok(res.reasons.includes('MANUAL_APPROVAL_SOURCE_NOT_VERIFIED'));
+ assert.equal(queries.length,2);
+ assert.deepEqual(queries[1].params,['2026-09-01']);
+ assert.match(queries[1].sql,/FROM public\.finance_entries/);
+ assert.doesNotMatch(queries[1].sql,/\b(?:INSERT|UPDATE|DELETE|TRUNCATE|DROP|ALTER|CREATE)\b/i);
+ assert.match(queries[1].sql,/LIMIT 10001/);
+ const missingDb={query:async()=>({rows:[]})};
+ const blocked=await new FinanceReadOnlySourceAuditV381849(missingDb).audit('2026-09');
+ assert.ok(blocked.reasons.includes('LIVE_LEDGER_SCHEMA_INCOMPLETE'));
+ await assert.rejects(()=>new FinanceReadOnlySourceAuditV381849(db).audit('2026-13'),/INVALID_MONTH/);
+ console.log('TAMANCARE_FINANCE_V381849_READONLY_SOURCE_AUDIT_PASS');
+})().catch(e=>{console.error(e);process.exit(1)});
