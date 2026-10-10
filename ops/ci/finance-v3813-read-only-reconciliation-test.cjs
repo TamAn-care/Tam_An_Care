@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-12-manual-flexible-test.cjs');
 require('./finance-v3818-10-catalog-test.cjs');
 require('./finance-v3818-7-replay-test.cjs');
 require('./finance-v3818-6-adapter-test.cjs');
