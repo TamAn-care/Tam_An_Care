@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-43-entry-types-test.cjs');
 require('./finance-v3818-41-readonly-keys-test.cjs');
 require('./finance-v3818-40-source-catalog-test.cjs');
 require('./finance-v3818-39-source-evidence-test.cjs');
