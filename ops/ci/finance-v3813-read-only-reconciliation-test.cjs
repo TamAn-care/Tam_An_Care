@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-2-integration-readiness-test.cjs');
 require('./finance-v3818-baseline-safety-test.cjs');
 require('./finance-v3817-9-runtime-guard-test.cjs');
 require('./finance-v3817-forensic-safety-test.cjs');
