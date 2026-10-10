@@ -3,7 +3,7 @@
  * Counts are diagnostics only, never an attestation to READY/month-close.
  */
 import {Injectable} from '@nestjs/common';
-import {DatabaseService} from '../database/database.service';
+import type {DatabaseService} from '../database/database.service';
 
 export type V49Audit={
  month:string;ledgerRows:number;postedSystemRows:number;
