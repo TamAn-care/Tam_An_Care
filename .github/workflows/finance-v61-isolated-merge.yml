@@ -117,6 +117,16 @@ jobs:
           echo 'V65_BUSINESS_CONTRACT_TESTS=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V65_REAL_MONTHLY_BUSINESS_DATA=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V65_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V66 7-source real-business gap fail-closed acceptance
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-v3818-66-real-source-gap-test.cjs
+          echo 'V66_MISSING_SOURCE_FAIL_CLOSED=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V66_REAL_SOURCE_POSTING_AND_PAYROLL=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V66_RUNTIME_SOURCE_PARITY=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V66_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
