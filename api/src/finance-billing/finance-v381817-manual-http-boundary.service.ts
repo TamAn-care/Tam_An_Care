@@ -5,7 +5,7 @@
  * Not registered as an endpoint. No database writes / migrations.
  */
 import {BadRequestException,ForbiddenException,Injectable} from '@nestjs/common';
-import {DatabaseService} from '../database/database.service';
+import type {DatabaseService} from '../database/database.service';
 import {readVerifiedFinanceIdentity} from '../security/verified-finance-identity';
 import {assessAuthenticatedManualCommand,type ClientManualCommand,type ServerIdentity} from './finance-v381816-authenticated-manual-boundary';
 import type {ManualDocument} from './finance-v381813-manual-workflow';
