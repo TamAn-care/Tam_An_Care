@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-50-live-sql-safety-test.cjs');
 require('./finance-v3818-49-readonly-source-audit-test.cjs');
 require('./finance-v3818-48-provenance-test.cjs');
 require('./finance-v3818-43-entry-types-test.cjs');
