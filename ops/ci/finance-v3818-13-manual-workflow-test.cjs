@@ -22,6 +22,6 @@ assert.deepEqual(d.audit.map(a=>a.action),['SUBMIT','REVIEW','APPROVE']);
 assert.equal(x.postingEnabled,false);
 x=go(command('APPROVE','director','DIRECTOR'));assert.equal(x.accepted,false);
 let rejected={revision:0,state:'DRAFT',entry:{...entry,kind:'OPERATING_EXPENSE',payBasis:'NOT_APPLICABLE',evidenceType:'INTERNAL_VOUCHER'},audit:[]};
-const submit=go({...command('SUBMIT','maker','FINANCE_MAKER'),document:rejected});assert.equal(submit.accepted,true);
+const submit=go({...command('SUBMIT','maker','FINANCE_MAKER'),document:rejected,expectedRevision:0});assert.equal(submit.accepted,true);
 x=go({...command('REJECT','reviewer','FINANCE_REVIEWER'),document:submit.document});assert.equal(x.accepted,true);assert.equal(x.document.state,'REJECTED');
 console.log('TAMANCARE_FINANCE_V3818_13_MANUAL_APPROVAL_CI_PASS');
