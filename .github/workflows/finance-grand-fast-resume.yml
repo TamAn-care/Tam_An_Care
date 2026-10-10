@@ -175,6 +175,7 @@ jobs:
           bash ops/ci/finance-v3818-44-manual-idempotency-test.sh
           bash ops/ci/finance-v3818-45-two-session-concurrency-test.sh
           bash ops/ci/finance-v3818-46-ledger-projection-test.sh
+          bash ops/ci/finance-v3818-47-cross-channel-origin-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
