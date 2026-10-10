@@ -6,7 +6,7 @@ export PGHOST=127.0.0.1 PGPORT=5432 PGUSER=finance_ci PGDATABASE=finance_ci PGPA
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v3818/009_atomic_ci_commit.sql
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $$
-DECLARE result text; n int; cursor_value numeric;
+DECLARE result text; n int; saved_cursor numeric;
 BEGIN
  -- Failure after ledger + audit inserts must revert ALL effects.
  BEGIN
@@ -32,8 +32,8 @@ BEGIN
  IF result<>'ALREADY_POSTED' THEN RAISE EXCEPTION 'REPLAY_NOT_IDEMPOTENT'; END IF;
  SELECT count(*) INTO n FROM finance_sync_ci.ledger_ci WHERE financial_origin='atomicA';
  IF n<>1 THEN RAISE EXCEPTION 'DUPLICATE_LEDGER'; END IF;
- SELECT cursor_value INTO cursor_value FROM finance_sync_ci.checkpoints WHERE adapter_id='BILLING';
- IF cursor_value<>10 THEN RAISE EXCEPTION 'CURSOR_NOT_ATOMIC'; END IF;
+ SELECT cursor_value INTO saved_cursor FROM finance_sync_ci.checkpoints WHERE adapter_id='BILLING';
+ IF saved_cursor<>10 THEN RAISE EXCEPTION 'CURSOR_NOT_ATOMIC'; END IF;
  BEGIN
  PERFORM finance_sync_ci.commit_verified_ci('BILLING',11,'atomicA','sourceAtomicA','v2',repeat('d',64),
  'REVENUE',DATE '2026-10-01',14500000,true,true,true,false);
@@ -50,8 +50,8 @@ BEGIN
  END;
  SELECT count(*) INTO n FROM finance_sync_ci.ledger_ci WHERE financial_origin IN ('atomicA','atomicB');
  IF n<>1 THEN RAISE EXCEPTION 'BAD_LEDGER_AFTER_NEGATIVE_TESTS'; END IF;
- SELECT cursor_value INTO cursor_value FROM finance_sync_ci.checkpoints WHERE adapter_id='BILLING';
- IF cursor_value<>10 THEN RAISE EXCEPTION 'CURSOR_ADVANCED_AFTER_NEGATIVE_TESTS'; END IF;
+ SELECT cursor_value INTO saved_cursor FROM finance_sync_ci.checkpoints WHERE adapter_id='BILLING';
+ IF saved_cursor<>10 THEN RAISE EXCEPTION 'CURSOR_ADVANCED_AFTER_NEGATIVE_TESTS'; END IF;
 END $$;
 SELECT 'FINANCE_V3818_9_ATOMIC_CI_PASS' AS result;
 SQL
