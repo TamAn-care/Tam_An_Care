@@ -165,6 +165,7 @@ jobs:
           bash ops/ci/finance-v3818-15-persistence-test.sh
           bash ops/ci/finance-v3818-17-authenticated-pg-test.sh
           bash ops/ci/finance-v3818-26-schema-test.sh
+          bash ops/ci/finance-v3818-27-atomic-approval-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
