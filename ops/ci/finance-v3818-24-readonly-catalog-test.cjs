@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const sql=fs.readFileSync('ops/finance/v3818/024_live_catalog_readonly.sql','utf8');
+const effective=sql.split('\n').filter(x=>!x.trim().startsWith('--')).join('\n');
+assert.match(effective,/SET TRANSACTION READ ONLY;/);
+assert.match(effective,/pg_catalog\.pg_class/);
+assert.match(effective,/pg_catalog\.pg_attribute/);
+assert.match(effective,/current_database\(\)/);
+assert.doesNotMatch(effective,/\b(INSERT|UPDATE|DELETE|TRUNCATE|ALTER|DROP|CREATE|GRANT|REVOKE|COPY|VACUUM|ANALYZE|CALL)\s/i);
+assert.doesNotMatch(effective,/\bSELECT\s+\*/i);
+console.log('FINANCE_V381824_READONLY_CATALOG_SQL_STATIC_CI_PASS');
