@@ -161,6 +161,7 @@ jobs:
           bash ops/ci/finance-v3810-object-restore-test.sh
           bash ops/ci/finance-v3812-reconcile-restore-test.sh
           bash ops/ci/finance-v3818-8-postgres-test.sh
+          bash ops/ci/finance-v3818-9-atomic-test.sh
   release-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
