@@ -1,4 +1,5 @@
 'use strict';
+require('./finance-v3818-39-source-evidence-test.cjs');
 require('./finance-v3818-38-month-close-gate-test.cjs');
 require('./finance-v3818-37-ledger-reconciliation-test.cjs');
 require('./finance-v3818-33-ci-draft-backend-test.cjs');
