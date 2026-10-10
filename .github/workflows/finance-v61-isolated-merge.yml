@@ -127,6 +127,15 @@ jobs:
           echo 'V66_REAL_SOURCE_POSTING_AND_PAYROLL=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V66_RUNTIME_SOURCE_PARITY=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
           echo 'V66_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V67 documented real-source release gaps
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          V67_REPORT_PATH="$RUNNER_TEMP/v61/v67-finance-source-gap.json" node ops/ci/finance-v3818-67-real-source-readiness-test.cjs
+          test -s "$RUNNER_TEMP/v61/v67-finance-source-gap.json"
+          echo 'V67_RELEASE_GAP_REPORT=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V67_FINANCE_OPERATIONAL_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
