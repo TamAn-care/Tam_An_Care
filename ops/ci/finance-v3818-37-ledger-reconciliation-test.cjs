@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {reconcileV37}=require('../../api/dist/finance-billing/finance-v381837-ledger-reconciliation.js');
+const base={documentId:'ci37_doc',originKey:'ci37_origin',kind:'REVENUE',amountVnd:'125000',recognitionDate:'2026-09-30',status:'APPROVED',approvedRevision:3,postingClaimCount:1,postingAuditCount:1};
+assert.deepEqual([reconcileV37(base).eligible,reconcileV37(base).entryType,reconcileV37(base).readyForLivePosting],[true,'REVENUE',false]);
+assert.equal(reconcileV37({...base,kind:'PAYROLL'}).entryType,'EXPENSE');
+assert.equal(reconcileV37({...base,status:'DRAFT'}).eligible,false);
+assert.equal(reconcileV37({...base,postingAuditCount:0}).eligible,false);
+assert.equal(reconcileV37({...base,postingClaimCount:2}).eligible,false);
+assert.equal(reconcileV37({...base,recognitionDate:'2026-02-30'}).eligible,false);
+assert.equal(reconcileV37({...base,amountVnd:'1.50'}).eligible,false);
+assert.equal(reconcileV37({...base,amountVnd:'-5'}).eligible,false);
+assert.equal(reconcileV37({...base,originKey:'bad origin'}).eligible,false);
+console.log('TAMANCARE_FINANCE_V381837_RECOGNITION_MAPPING_PASS');
