@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const p='ops/finance/v3818/baseline-runtime-readonly.sh';
+const text=fs.readFileSync(p,'utf8');
+for(const x of ['MODE=READ_ONLY','SOURCE_IMAGE_MATCH=UNVERIFIED','PRODUCTION_GO_NO_GO=NO_GO','DATABASE_WRITE=NO','MIGRATION=NO','SEED=NO','DEPLOY=NO','BACKUP_CHANGE=NO'])assert(text.includes(x),x);
+for(const x of [/\bdocker\s+(?:run|stop|rm|restart|build|pull|push)\b/,/\b(?:psql|pg_restore|pg_dump|sed\s+-i|rm\s+-|docker\s+volume\s+rm)\b/,/\b(?:curl|wget)\b/])assert(!x.test(text),'unsafe baseline code');
+const src=fs.readFileSync('api/src/finance-billing/monthly-operating-result.service.ts','utf8');
+assert(src.includes('verifyIndependentMonthlyClose'));
+assert(src.includes('sourceVerified: false'));
+const fw=fs.readFileSync('api/src/finance-billing/finance-write.controller.ts','utf8');
+assert(fw.includes("TAMANCARE_FINANCE_WRITE_ENABLED !== 'true'"));
+console.log('FINANCE_V3818_BASELINE_STATIC_GUARD_PASS');
