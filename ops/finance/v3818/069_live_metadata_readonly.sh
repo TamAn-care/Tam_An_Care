@@ -24,7 +24,6 @@ for repo in /home/ag/tamancare-antigravity /home/ag/tamancare-finance-safe/works
 done
 # No row contents, counts or secret environment values. Transaction is READ ONLY.
 sql=$(cat <<'SQL'
-\\set ON_ERROR_STOP on
 BEGIN TRANSACTION READ ONLY;
 SET LOCAL statement_timeout = '10s';
 SET LOCAL lock_timeout = '2s';
