@@ -1,0 +1,63 @@
+name: Finance V61 isolated merge candidate — NO DEPLOY
+on:
+  push:
+    branches: [feature/finance-v381861-isolated-integration]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-merge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Three-way integration in disposable runner only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin antigravity-production-test
+          BASE_SHA="$(git rev-parse origin/antigravity-production-test)"
+          FIN_SHA="$(git rev-parse HEAD)"
+          mkdir -p "$RUNNER_TEMP/v61"
+          printf 'BASE_SHA=%s\nFIN_SHA=%s\n' "$BASE_SHA" "$FIN_SHA" > "$RUNNER_TEMP/v61/evidence.txt"
+          git -c user.name='CI Finance' -c user.email='finance-ci@localhost' switch --detach "$BASE_SHA"
+          if git -c user.name='CI Finance' -c user.email='finance-ci@localhost' merge --no-commit --no-ff "$FIN_SHA"; then
+            echo 'THREE_WAY_MERGE=CLEAN' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
+            git diff --cached --name-only > "$RUNNER_TEMP/v61/integrated-paths.txt"
+            if [[ ! -f api/src/finance-billing/finance-read.controller.ts || ! -f frontend/src/features/finance/MonthlyOperatingResultPanel.tsx ]]; then
+              echo 'MISSING_CANONICAL_FINANCE=YES' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
+              exit 1
+            fi
+            echo 'INTEGRATION_SCOPE=GITHUB_ONLY' >> "$RUNNER_TEMP/v61/evidence.txt"
+          else
+            echo 'THREE_WAY_MERGE=CONFLICTS' | tee -a "$RUNNER_TEMP/v61/evidence.txt"
+            git diff --name-only --diff-filter=U > "$RUNNER_TEMP/v61/conflicts.txt"
+            cat "$RUNNER_TEMP/v61/conflicts.txt"
+            exit 1
+          fi
+      - name: Isolated API and frontend builds
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          ( cd api && npm ci --ignore-scripts --no-audit --no-fund && npm run build )
+          ( cd frontend && npm ci --ignore-scripts --no-audit --no-fund && ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit && ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit && ./node_modules/.bin/vite build )
+          echo 'MERGED_BUILD=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: Publish diagnostic evidence regardless of outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: finance-v61-isolated-merge-evidence
+          path: ${{ runner.temp }}/v61/
+          retention-days: 14
+      - name: Explicit release restriction
+        if: success()
+        run: |
+          echo 'RESULT=TAMANCARE_FINANCE_V381861_ISOLATED_GITHUB_MERGE_BUILD_PASS'
+          echo 'PRODUCTION_RUNTIME_PARITY=NOT_PROVEN'
+          echo 'ANTIGRAVITY_DIRTY_WORKTREE_PRESERVED=NOT_TOUCHED'
+          echo 'MIGRATION=NO SEED=NO DEPLOY=NO'
+          echo 'PRODUCTION_GO_NO_GO=NO_GO'
