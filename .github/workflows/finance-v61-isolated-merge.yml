@@ -99,6 +99,24 @@ jobs:
           ! grep -Eq '192\\.168\\.1\\.32|tamancare\\.dpdns\\.org|production-postgres' ops/ci/finance-pg-lab-{schema.sql,tests.sql,run.sh}
           bash ops/ci/finance-pg-lab-run.sh
           echo 'V64_POSTGRES_ISOLATED=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+      - name: V65 monthly PnL business contract acceptance (isolated)
+        if: success()
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-monthly-operating-result-test.cjs
+          node ops/ci/finance-monthly-operating-result-service-test.cjs
+          node ops/ci/finance-month-close-evidence-test.cjs
+          node ops/ci/finance-reconciliation-test.cjs
+          node ops/ci/finance-v3818-4-monthly-recognition-test.cjs
+          node ops/ci/finance-v3818-14-payroll-test.cjs
+          node ops/ci/finance-v3818-13-manual-workflow-test.cjs
+          node ops/ci/finance-v3818-38-month-close-gate-test.cjs
+          node ops/ci/finance-v3818-39-source-evidence-test.cjs
+          node ops/ci/finance-canonical-contract-gate-test.cjs
+          echo 'V65_BUSINESS_CONTRACT_TESTS=PASS' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V65_REAL_MONTHLY_BUSINESS_DATA=NOT_PROVEN' >> "$RUNNER_TEMP/v61/evidence.txt"
+          echo 'V65_RELEASE_READY=NO' >> "$RUNNER_TEMP/v61/evidence.txt"
       - name: Publish diagnostic evidence regardless of outcome
         if: always()
         uses: actions/upload-artifact@v4
