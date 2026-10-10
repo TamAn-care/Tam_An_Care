@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs');const path=require('node:path');const assert=require('node:assert/strict');
+const sql=fs.readFileSync(path.resolve(__dirname,'../finance/v3818/041_verified_live_keys_readonly.sql'),'utf8');
+const body=sql.split('\n').filter(s=>!s.trim().startsWith('--')).join('\n');
+assert.match(body,/transaction_read_only/);
+assert.match(body,/current_database\(\) <> 'taman_care'/);
+assert.match(body,/pg_catalog\.pg_constraint/);
+assert.match(body,/pg_catalog\.pg_attribute/);
+assert.doesNotMatch(body,/\b(?:INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|GRANT|REVOKE)\s/i);
+console.log('FINANCE_V381841_READ_ONLY_KEYS_CI_PASS');
