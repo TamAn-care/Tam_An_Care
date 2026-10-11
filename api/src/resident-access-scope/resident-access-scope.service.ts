@@ -71,6 +71,10 @@ export class ResidentAccessScopeService {
           actorRole,
         );
 
+    if (!canonicalActor) {
+      return false;
+    }
+
     const isSupervisoryRole =
       actorRole === 'SUPERVISOR' ||
       (actorRole as string) === 'ADMIN' ||
