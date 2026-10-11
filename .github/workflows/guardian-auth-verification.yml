@@ -1,0 +1,81 @@
+name: Guardian Auth Verification
+
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'docs/guardian-auth/**'
+      - 'scripts/guardian-ci/**'
+      - '.github/workflows/guardian-auth-verification.yml'
+  push:
+    branches:
+      - feature/guardian-resident-scope-auth-20261012
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'docs/guardian-auth/**'
+      - 'scripts/guardian-ci/**'
+      - '.github/workflows/guardian-auth-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-auth-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-api:
+    name: API locked build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build NestJS API
+        run: npm run build
+
+  build-frontend:
+    name: Frontend locked build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build Vite frontend
+        run: npm run build
+
+  auth-release-gate:
+    name: Guardian 22-case release gate (fail closed)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate acceptance matrix and executable test evidence
+        run: python3 scripts/guardian-ci/verify_release_gate.py
