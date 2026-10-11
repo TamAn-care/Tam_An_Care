@@ -1,0 +1,82 @@
+name: Finance GitHub-first qualification — NO DEPLOY
+
+on:
+  push:
+    branches:
+      - feature/finance-github-first-transition-*
+  pull_request:
+    branches:
+      - feature/finance-v381861-isolated-integration
+    paths:
+      - 'api/src/finance-billing/**'
+      - 'api/src/security/**'
+      - 'ops/ci/finance-*.cjs'
+      - 'docs/finance-github-first-transition-20261012.md'
+      - '.github/workflows/finance-github-first-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finance-isolated-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      FINANCE_PRODUCTION_GO_NO_GO: NO_GO
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Enforce no-production and source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$FINANCE_PRODUCTION_GO_NO_GO" = NO_GO
+          test -f api/src/finance-billing/monthly-operating-result.service.ts
+          test -f api/src/finance-billing/monthly-close-evidence.ts
+          test -f api/src/security/production-auth.middleware.ts
+          test -f ops/ci/finance-deploy-readiness.cjs
+          test -f docs/finance-github-first-transition-20261012.md
+          ! grep -Eq 'production-postgres|production-db-backup|192\.168\.1\.32' .github/workflows/finance-github-first-qualification.yml
+          echo 'SOURCE_CONTRACT=PASS'
+          echo 'DEPLOY=NO'
+          echo 'PRODUCTION_DATABASE_CONNECTION=NO'
+      - name: Build API in disposable GitHub runner
+        working-directory: api
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Finance isolation, evidence and security regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-v3818-66-real-source-gap-test.cjs
+          node ops/ci/finance-v3818-67-real-source-readiness-test.cjs
+          node ops/ci/finance-month-close-evidence-test.cjs
+          node ops/ci/finance-reconciliation-test.cjs
+          node ops/ci/finance-http-jwt-isolated-test.cjs
+          node ops/ci/finance-nest-http-jwt-test.cjs
+      - name: Fail closed on readiness decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-deploy-readiness.cjs > "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'FINANCE_DEPLOY_READINESS=NO_GO' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'PRODUCTION_DEPLOY=NO' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'PRODUCTION_MIGRATION=NO' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'PRODUCTION_SEED=NO' "$RUNNER_TEMP/finance-readiness.txt"
+          {
+            echo '## Finance GitHub-first qualification'
+            echo 'Build and isolated checks must pass; no production release is authorized.'
+            echo 'FINANCE_PRODUCTION_GO_NO_GO=NO_GO'
+          } >> "$GITHUB_STEP_SUMMARY"
