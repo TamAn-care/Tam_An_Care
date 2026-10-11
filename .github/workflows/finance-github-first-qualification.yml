@@ -48,6 +48,18 @@ jobs:
           echo 'SOURCE_CONTRACT=PASS'
           echo 'DEPLOY=NO'
           echo 'PRODUCTION_DATABASE_CONNECTION=NO'
+      - name: Check cross-module source parity before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq "from './paper-records/paper-record.module'" api/src/app.module.ts &&
+             test ! -f api/src/paper-records/paper-record.module.ts; then
+            echo "::error title=Canonical source parity missing::app.module.ts imports PaperRecordModule, but the Finance branch does not contain the module. Source is present in antigravity-production-test. Integrate all dependent sources with independent security review; do not delete the import or add a fake stub."
+            echo 'CROSS_MODULE_SOURCE_PARITY=BLOCKED'
+            echo 'FINANCE_PRODUCTION_GO_NO_GO=NO_GO'
+            exit 1
+          fi
+          echo 'CROSS_MODULE_SOURCE_PARITY=PASS'
       - name: Build API in disposable GitHub runner
         working-directory: api
         shell: bash
