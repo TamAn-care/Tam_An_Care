@@ -12,6 +12,8 @@ on:
       - 'api/src/security/**'
       - 'ops/ci/finance-*.cjs'
       - 'docs/finance-github-first-transition-20261012.md'
+      - 'docs/finance-checkpoint-porting-manifest-20261012.json'
+      - 'ops/ci/finance-github-first-checkpoint-gate.cjs'
       - '.github/workflows/finance-github-first-qualification.yml'
   workflow_dispatch:
 
@@ -48,6 +50,11 @@ jobs:
           echo 'SOURCE_CONTRACT=PASS'
           echo 'DEPLOY=NO'
           echo 'PRODUCTION_DATABASE_CONNECTION=NO'
+      - name: Verify imported checkpoint manifest and canonical safety semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-github-first-checkpoint-gate.cjs
       - name: Check cross-module source parity before build
         shell: bash
         run: |
