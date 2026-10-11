@@ -47,3 +47,9 @@ The finance branch already contains:
 Server-side V169–V183 checkpoints use a different `api/src/finance` structure in some stages; the GitHub baseline uses `api/src/finance-billing`. These are not assumed equivalent. The GitHub monthly result pure engine groups expenses into `EXPENSE` whereas the earlier server-side Ledger used explicit `DIRECT_COST`, `PAYROLL`, `OPERATING_EXPENSE`, `DEPRECIATION`, `INTEREST`, and `TAX`. A canonical type/source mapping and money precision audit is required before porting formulas.
 
 **CI status:** first workflow run FAIL (TS2307). Subsequent workflow updated to fail early with `CROSS_MODULE_SOURCE_PARITY=BLOCKED` and an actionable diagnostic. CI PASS and Finance release remain unproven; deployment is forbidden.
+
+## Finance trusted month-close boundary — 2026-10-12
+
+The isolated GitHub CI now explicitly demonstrates that the pure `verifyIndependentMonthlyClose` function validates a claimed evidence **shape**, not the authenticity of a cryptographic signature, repository or approving principal. A forged object with plausible flags may pass this pure shape check. The operational `MonthlyOperatingResultService` still calls the validator with `null` and forces `CHUA_DU_DU_LIEU`/`profitVnd: null`, even when ledger rows carry fabricated approval-like fields.
+
+**Required before enabling a ready result:** implement a trusted backend evidence repository, attestation signature verification with authoritative keys, replay prevention and immutable month-snapshot binding, ledger source completeness, independent expense/revenue reconciliation, and actual accounting-period lock. Never wire a client-supplied boolean or document claim into a `READY` financial report. This test does not prove real-document provenance and does not authorize deploy.
