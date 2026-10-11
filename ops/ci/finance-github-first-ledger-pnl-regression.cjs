@@ -70,10 +70,10 @@ async function main(){
  await expectUnreleased([], 'empty month not zero');
  await expectUnreleased([row('REVENUE',1,'15000000')],
   'receipt absent from canonical ledger not new revenue');
- const duplicate=await expectUnreleased(
-  [row('REVENUE',1,'15000000'),row('REVENUE',1,'15000000')],
-  'duplicate ledger entry never certified');
- assert.ok(duplicate.profitVnd===null);
+ await assert.rejects(
+  new Service(mock([row('REVENUE',1,'15000000'),row('REVENUE',1,'15000000')])).read('2026-10'),
+  /MONTHLY_FINANCE_DUPLICATE_OR_INVALID_ENTRY/,
+  'duplicate ledger entry must fail closed by throwing');
  await expectUnreleased([row('REVENUE',1,'15000000.00')],
   'whole VND decimal representation');
  await assert.rejects(
