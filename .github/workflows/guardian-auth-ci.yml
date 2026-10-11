@@ -50,6 +50,8 @@ jobs:
         run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
       - name: Compile API from source
         run: npm run build
+      - name: Verify compiled staff authentication middleware (isolated mocks)
+        run: node --test test/guardian-auth-middleware.test.cjs
       - name: Assert critical compiled artifacts exist
         shell: bash
         run: |
