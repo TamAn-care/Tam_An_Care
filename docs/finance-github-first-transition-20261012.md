@@ -31,3 +31,19 @@
 - Evidence of isolated backup/restore and explicit authorized release decision.
 
 **Current status: FINANCE_PRODUCTION_GO_NO_GO=NO_GO.**
+
+## GitHub Actions investigation — 2026-10-12
+
+PR #5's first CI run failed at API build with TypeScript TS2307 in `api/src/app.module.ts`: the Finance baseline imports `./paper-records/paper-record.module`, but the module is absent from the Finance branch. Read-only comparison confirms `antigravity-production-test` contains `api/src/paper-records/paper-record.module.ts`, `paper-record.controller.ts`, and `paper-record.service.ts`. The module also depends on `DatabaseModule` and `ResidentAccessScopeModule`.
+
+**Resolution requirement:** reconcile these three actual source files and dependency/security semantics in a reviewed integration, not a stub, and do not remove the existing `PaperRecordModule` registration. The historical paper-record controller accepts `x-actor-id`/`x-actor-role` headers; before bringing it onto a deployment path, verify that the actual upstream auth middleware replaces untrusted role headers and covers the entire route. Never claim RBAC parity from a successful TypeScript build alone.
+
+The finance branch already contains:
+- `api/src/finance-billing/monthly-operating-result.ts` and `monthly-operating-result.service.ts`;
+- `monthly-close-evidence.ts`;
+- `finance-read.controller.ts` with a guarded monthly operating result route;
+- isolated JWT, accounting, reconciliation and source-provenance CI checks.
+
+Server-side V169–V183 checkpoints use a different `api/src/finance` structure in some stages; the GitHub baseline uses `api/src/finance-billing`. These are not assumed equivalent. The GitHub monthly result pure engine groups expenses into `EXPENSE` whereas the earlier server-side Ledger used explicit `DIRECT_COST`, `PAYROLL`, `OPERATING_EXPENSE`, `DEPRECIATION`, `INTEREST`, and `TAX`. A canonical type/source mapping and money precision audit is required before porting formulas.
+
+**CI status:** first workflow run FAIL (TS2307). Subsequent workflow updated to fail early with `CROSS_MODULE_SOURCE_PARITY=BLOCKED` and an actionable diagnostic. CI PASS and Finance release remain unproven; deployment is forbidden.
