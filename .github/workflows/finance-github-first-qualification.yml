@@ -15,6 +15,7 @@ on:
       - 'docs/finance-checkpoint-porting-manifest-20261012.json'
       - 'ops/ci/finance-github-first-checkpoint-gate.cjs'
       - 'ops/ci/finance-paper-record-integration-safety.cjs'
+      - 'ops/ci/finance-github-first-ledger-pnl-regression.cjs'
       - 'api/src/paper-records/**'
       - '.github/workflows/finance-github-first-qualification.yml'
   workflow_dispatch:
@@ -82,6 +83,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node ops/ci/finance-github-first-ledger-pnl-regression.cjs
           node ops/ci/finance-monthly-operating-result-test.cjs
           node ops/ci/finance-monthly-operating-result-service-test.cjs
           node ops/ci/finance-v3818-43-entry-types-test.cjs
