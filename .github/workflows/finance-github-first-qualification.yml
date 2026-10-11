@@ -28,6 +28,20 @@ jobs:
   finance-isolated-gate:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+          POSTGRES_DB: finance_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     env:
       FINANCE_PRODUCTION_GO_NO_GO: NO_GO
     steps:
@@ -80,6 +94,21 @@ jobs:
           set -euo pipefail
           npm ci --ignore-scripts --no-audit --no-fund
           npm run build
+      - name: Build frontend in disposable GitHub runner
+        working-directory: frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit
+          ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
+          ./node_modules/.bin/vite build
+      - name: Canonical Finance isolated PostgreSQL regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || { echo '::error::PostgreSQL client unavailable'; exit 1; }
+          bash ops/ci/finance-pg-lab-run.sh
       - name: Finance isolation, evidence and security regression
         shell: bash
         run: |
