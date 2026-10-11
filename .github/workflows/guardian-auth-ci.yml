@@ -1,0 +1,102 @@
+name: Guardian Auth — Build Verification
+
+on:
+  push:
+    branches:
+      - feature/guardian-resident-scope-auth-20261012
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - '.github/workflows/guardian-auth-ci.yml'
+      - 'docs/guardian-auth/**'
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - '.github/workflows/guardian-auth-ci.yml'
+      - 'docs/guardian-auth/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-auth-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-build:
+    name: API clean build (no DB, no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: api
+    env:
+      CI: 'true'
+      NODE_ENV: production
+    steps:
+      - name: Check out exact GitHub revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compile API from source
+        run: npm run build
+      - name: Assert critical compiled artifacts exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            security/production-auth.middleware.js \
+            staff-actors/staff-actor.service.js \
+            residents/resident.controller.js \
+            resident-access-scope/resident-access-scope.service.js; do
+            test -s "dist/$file"
+            shasum -a 256 "dist/$file"
+          done
+      - name: Record source revision
+        shell: bash
+        run: |
+          printf 'SOURCE_COMMIT=%s\n' "$GITHUB_SHA"
+          printf 'STATUS=BUILD_ONLY_NOT_AUTH_REGRESSION\n'
+          printf 'PRODUCTION_GO_NO_GO=NO_GO\n'
+
+  frontend-build:
+    name: Frontend clean build (no DB, no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      CI: 'true'
+      NODE_ENV: production
+    steps:
+      - name: Check out exact GitHub revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Compile frontend
+        run: npm run build
+      - name: Record source revision
+        shell: bash
+        run: |
+          printf 'SOURCE_COMMIT=%s\n' "$GITHUB_SHA"
+          printf 'STATUS=BUILD_ONLY_NOT_AUTH_REGRESSION\n'
+          printf 'PRODUCTION_GO_NO_GO=NO_GO\n'
