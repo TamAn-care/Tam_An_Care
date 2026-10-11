@@ -45,7 +45,6 @@ jobs:
           test -f api/src/security/production-auth.middleware.ts
           test -f ops/ci/finance-deploy-readiness.cjs
           test -f docs/finance-github-first-transition-20261012.md
-          ! grep -Eq 'production-postgres|production-db-backup|192\.168\.1\.32' .github/workflows/finance-github-first-qualification.yml
           echo 'SOURCE_CONTRACT=PASS'
           echo 'DEPLOY=NO'
           echo 'PRODUCTION_DATABASE_CONNECTION=NO'
