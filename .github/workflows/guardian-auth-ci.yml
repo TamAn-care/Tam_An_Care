@@ -50,6 +50,8 @@ jobs:
         run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
       - name: Compile API from source
         run: npm run build
+      - name: Force complete TypeScript emission for security regression tests
+        run: npx tsc --project tsconfig.json --incremental false
       - name: Verify compiled staff authentication middleware (isolated mocks)
         run: node --test test/guardian-auth-middleware.test.cjs
       - name: Verify resident scope rejects unauthorized supervisor and cross-role access
