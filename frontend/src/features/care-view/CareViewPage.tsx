@@ -86,6 +86,21 @@ export function CareViewPage() {
     return new Set([...caregiverAssigned, ...guardianAssigned]);
   }, [actor?.actorId, actor?.displayName]);
 
+  // Hooks must run in the same order on loading, error, forbidden and success renders.
+  // Keep all memoized local-state reads before any conditional return (React #310).
+  const monthlyVitalsSummary = useMemo(
+    () => calculateMonthlyVitalMinMax(normalizedResidentId),
+    [normalizedResidentId, vitalsSaveSuccess],
+  );
+  const vitalHistory = useMemo(
+    () => normalizedResidentId ? getResidentVitalHistory(normalizedResidentId) : [],
+    [normalizedResidentId, vitalsSaveSuccess],
+  );
+  const currentAdl = useMemo(
+    () => normalizedResidentId ? getResidentADL(normalizedResidentId) : getResidentADL(''),
+    [normalizedResidentId, adlSaveSuccess],
+  );
+
   if (!normalizedResidentId) {
     return <ErrorState title="Không thể mở hồ sơ" description="Mã resident không hợp lệ." />;
   }
@@ -269,14 +284,6 @@ export function CareViewPage() {
   const displayTemp: string | number = typeof tempObs?.numericValue === 'number' || typeof tempObs?.numericValue === 'string' ? tempObs.numericValue : 36.6;
   const displaySpo2: string | number = typeof spo2Obs?.numericValue === 'number' || typeof spo2Obs?.numericValue === 'string' ? spo2Obs.numericValue : 98;
 
-  const monthlyVitalsSummary = useMemo(() => {
-    return calculateMonthlyVitalMinMax(normalizedResidentId);
-  }, [normalizedResidentId, vitalsSaveSuccess]);
-
-  const vitalHistory = useMemo(() => {
-    return getResidentVitalHistory(normalizedResidentId);
-  }, [normalizedResidentId, vitalsSaveSuccess]);
-
   const handleSaveVitals = (e: React.FormEvent) => {
     e.preventDefault();
     if (!normalizedResidentId) return;
@@ -299,10 +306,6 @@ export function CareViewPage() {
     setShowVitalsModal(false);
     setVitalsNote('');
   };
-
-  const currentAdl = useMemo(() => {
-    return getResidentADL(normalizedResidentId);
-  }, [normalizedResidentId, adlSaveSuccess]);
 
   const handleSaveAdl = (e: React.FormEvent) => {
     e.preventDefault();
