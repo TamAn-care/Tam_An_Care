@@ -1,0 +1,38 @@
+name: Notification Bell No Demo (NO DEPLOY)
+on:
+  push:
+    branches:
+      - fix/notification-bell-remove-demo-20261012
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - name: Verify demo cleanup and no replacement seed
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          t=Path('frontend/src/api/notifications.ts').read_text()
+          assert "const DEFAULT_NOTIFICATIONS:" not in t
+          assert "return [];" in t
+          assert "removeLegacyDemoNotifications(items)" in t
+          assert "item.id === id && item.message === message" in t
+          for id in ('NOTIF-001','NOTIF-002','NOTIF-003','NOTIF-004'):
+              assert t.count(id)==1
+          assert "saveLocalNotifications(DEFAULT_NOTIFICATIONS)" not in t
+          assert "export function pushInAppNotification" in t
+          print("BELL_NO_DEMO_STATIC_GATE=PASS")
+          PY
