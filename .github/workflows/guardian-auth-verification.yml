@@ -47,6 +47,8 @@ jobs:
         run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
       - name: Build NestJS API
         run: npm run build
+      - name: Force complete TypeScript emission for isolated security tests
+        run: npx tsc --project tsconfig.json --incremental false
       - name: Verify compiled auth test targets exist (fail closed)
         run: |
           set -euo pipefail
