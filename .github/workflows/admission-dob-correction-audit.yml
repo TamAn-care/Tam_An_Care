@@ -1,0 +1,31 @@
+name: Admission DOB correction audit (NO DEPLOY)
+on:
+  push:
+    branches:
+      - fix/admission-dob-correction-20261012
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify known broken path and safe release gate
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          page=Path('frontend/src/features/admissions/AdmissionPage.tsx').read_text()
+          api=Path('api/src/admissions/admission.controller.ts').read_text()
+          spec=Path('docs/admission-dob-correction-release-gate.md').read_text()
+          assert 'const handleEditDraft' in page and 'const handleSave' in page
+          assert "if (c.status === 'ADMITTED' || c.status === 'COMPLETED')" in page
+          assert "await createInitialAssessment(actor, caseId" in page
+          assert "@Post(':admissionCaseId/complete-assessment')" in api
+          assert 'PRODUCTION_TEST_DEPLOY=BLOCKED' in spec
+          assert 'REAL_DOB_WRITE=NO' in spec
+          print('DOB_ROOT_CAUSE_AUDIT=PASS')
+          print('FIX_IMPLEMENTED=NO')
+          print('DEPLOY=BLOCKED')
+          PY
