@@ -15,10 +15,13 @@ function jwt(role='CAREGIVER'){
 async function request(status,canonicalRole,claimedRole='CAREGIVER'){
   let continued=false, writes=0, reads=0;
   const db={query:async(sql)=>{
-    assert.match(sql,/auth_sessions/);
     reads++;
-    // Simulate a still-unrevoked session; canonical actor must independently deny it.
-    return {rows:[{actor_id:'staff-fixture-1',actor_role:claimedRole}],rowCount:1};
+    if (/auth_sessions/.test(sql)) return {rows:[{actor_id:'staff-fixture-1',actor_role:claimedRole}],rowCount:1};
+    if (/staff_actors/.test(sql)) {
+      const authorized=status==='ACTIVE' && canonicalRole===claimedRole;
+      return {rows:authorized?[{actor_id:'staff-fixture-1',primary_operational_role:canonicalRole,status}]:[],rowCount:authorized?1:0};
+    }
+    throw new Error('Unexpected query in security test');
   }};
   const req={originalUrl:'/api/residents',headers:{'x-actor-id':'forged','x-actor-role':'SUPERVISOR'},
     header:(name)=>name==='authorization'?'Bearer '+jwt(claimedRole):undefined};
