@@ -47,7 +47,7 @@ jobs:
             echo "FALLBACK=NORMAL_GITHUB_ACTIONS_ONLY"
           fi
   ai-smoke:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ai == true && needs.readiness.outputs.personal_token_present == 'true' }}
+    if: ${{ needs.readiness.outputs.personal_token_present == 'true' && ((github.event_name == 'workflow_dispatch' && inputs.run_ai == true) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[personal-copilot-smoke]'))) }}
     needs: readiness
     runs-on: ubuntu-latest
     timeout-minutes: 10
