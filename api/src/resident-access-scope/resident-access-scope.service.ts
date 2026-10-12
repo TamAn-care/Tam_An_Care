@@ -94,7 +94,7 @@ export class ResidentAccessScopeService {
           ],
         );
 
-      return result.rowCount === 1 || true;
+      return result.rowCount === 1;
     }
 
     const accessScope =
