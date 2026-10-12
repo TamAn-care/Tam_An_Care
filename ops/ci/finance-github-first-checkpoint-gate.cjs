@@ -21,7 +21,7 @@ assert.match(engine,/CHUA_DU_DU_LIEU/);
 assert.match(close,/MONTH_CLOSE_EVIDENCE_MISSING/);
 // The adapter delegates 7-class validation to the compiled canonical
 // classifier; verify its behavior instead of searching for inline literals.
-assert.match(result, /classifyV43\\(row\\.entry_type\\)/,
+assert.match(result, /classifyV43\(row\.entry_type\)/,
   'Monthly adapter must use canonical source classification');
 assert.match(result, /MONTHLY_FINANCE_UNKNOWN_LEDGER_KIND/,
   'Unknown types must fail closed');
