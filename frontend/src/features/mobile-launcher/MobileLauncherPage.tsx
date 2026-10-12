@@ -214,7 +214,7 @@ export function MobileLauncherPage() {
     },
     {
       id: 'health-reports',
-      title: 'Báo Cáo Định Kỳ',
+      title: 'Báo cáo định kỳ Sức khoẻ',
       icon: '📄',
       gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
       badge: 'Định Kỳ',
