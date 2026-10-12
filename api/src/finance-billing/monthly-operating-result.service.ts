@@ -21,6 +21,7 @@ const REQUIRED_LEDGER_COLUMNS = [
 // A real month-close attestation and reconciliation proof must be independently
 // implemented/verified before any monetary result may be called READY.
 import { verifyIndependentMonthlyClose } from './monthly-close-evidence';
+import { classifyV43 } from './finance-v381843-canonical-entry-types';
 
 export type MonthlyOperatingResultRead = MonthlyResult & {
   source: 'POSTGRESQL';
@@ -113,22 +114,24 @@ export class MonthlyOperatingResultService {
       [start],
     );
 
-    const entries: MonthlyLedgerEntry[] = rows.rows.map((row) => ({
-      entryId: row.finance_entry_id,
-      kind:
-        row.entry_type === 'REVENUE'
-          ? 'REVENUE'
-          : row.entry_type === 'EXPENSE'
-            ? 'EXPENSE'
-            : (['DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX'].includes(row.entry_type)
-              ? 'EXPENSE'
-              : (row.entry_type as MonthlyLedgerEntry['kind'])),
-      recognitionDate: row.recognition_date,
-      amountVnd: row.amount_vnd,
-      posted: row.status === 'POSTED',
-      // Row posting alone cannot prove an independently reconciled source.
-      sourceVerified: false,
-    }));
+    const entries: MonthlyLedgerEntry[] = rows.rows.map((row) => {
+      // Database entry_type is strictly the seven canonical ledger classes.
+      // EXPENSE is a reporting group, NOT a valid persisted ledger type.
+      // Reject legacy/unknown types instead of silently counting them.
+      const classification = classifyV43(row.entry_type);
+      if (!classification.valid || !classification.monthlyGroup) {
+        throw new Error('MONTHLY_FINANCE_UNKNOWN_LEDGER_KIND');
+      }
+      return {
+        entryId: row.finance_entry_id,
+        kind: classification.monthlyGroup,
+        recognitionDate: row.recognition_date,
+        amountVnd: row.amount_vnd,
+        posted: row.status === 'POSTED',
+        // Row posting alone cannot prove an independently reconciled source.
+        sourceVerified: false,
+      };
+    });
 
     const rowsBounded = rows.rows.length <= 10000;
     const reconciliationComplete = rows.rows.every(
