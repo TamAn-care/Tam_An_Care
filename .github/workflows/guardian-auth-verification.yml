@@ -51,6 +51,8 @@ jobs:
         run: node --test test/guardian-auth-middleware.test.cjs
       - name: Resident scope regression (isolated)
         run: node --test test/resident-access-scope.test.cjs
+      - name: Resident controller server-side authorization (isolated)
+        run: node --test test/resident-controller-authorization.test.cjs
 
   build-frontend:
     name: Frontend locked build
