@@ -19,8 +19,15 @@ assert.match(result,/sourceVerified:\s*false/,'Never trust posted entries as pro
 assert.match(result,/verifyIndependentMonthlyClose\(month,\s*null/,'No automatic attestation until independent source exists');
 assert.match(engine,/CHUA_DU_DU_LIEU/);
 assert.match(close,/MONTH_CLOSE_EVIDENCE_MISSING/);
+// The adapter delegates 7-class validation to the compiled canonical
+// classifier; verify its behavior instead of searching for inline literals.
+assert.match(result, /classifyV43\\(row\\.entry_type\\)/,
+  'Monthly adapter must use canonical source classification');
+assert.match(result, /MONTHLY_FINANCE_UNKNOWN_LEDGER_KIND/,
+  'Unknown types must fail closed');
+const canonical=read('api/src/finance-billing/finance-v381843-canonical-entry-types.ts');
 for (const t of ['REVENUE','DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX']) {
- assert.ok(result.includes("'"+t+"'") || (t==='REVENUE' && result.includes("'REVENUE'")), 'Canonical mapping unresolved '+t);
+ assert.ok(canonical.includes("'"+t+"'"), 'Canonical classifier missing '+t);
 }
 console.log('FINANCE_GITHUB_FIRST_CHECKPOINT_INVENTORY=PASS');
 console.log('SERVER_CANDIDATE_SOURCE_PARITY=NOT_PROVEN');
