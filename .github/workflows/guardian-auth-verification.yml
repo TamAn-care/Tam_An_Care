@@ -96,7 +96,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Validate acceptance matrix and executable test evidence
-        run: python3 scripts/guardian-ci/verify_release_gate.py
+        run: python3 scripts/guardian-ci/evidence_release_gate.py
 
   automation-summary:
     name: Automated Guardian CI readiness report
