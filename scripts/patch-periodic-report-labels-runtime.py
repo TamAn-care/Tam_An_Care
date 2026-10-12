@@ -34,12 +34,12 @@ def apply(root: Path):
     content = {}
     n = nav.read_text()
     n = block_replace(n, "key: 'health-reports'", "label", "Báo Cáo Định Kỳ", HEALTH)
-    n = block_replace(n, "psychosocial-periodic", "label", "Báo Cáo Định Kỳ", PSYCH)
+    n = block_replace(n, "key: 'psychosocial-reports'", "label", "Báo Cáo Định Kỳ", PSYCH)
     content[nav] = n
 
     m = mobile.read_text()
     m = block_replace(m, "id: 'health-reports'", "title", "Báo Cáo Định Kỳ", HEALTH)
-    m = block_replace(m, "psychosocial-periodic", "title", "Báo Cáo Định Kỳ", PSYCH)
+    m = block_replace(m, "id: 'psychosocial-reports'", "title", "Báo Cáo Định Kỳ", PSYCH)
     content[mobile] = m
 
     p = meta.read_text()
