@@ -1,0 +1,57 @@
+name: Tam An Free Agent - readiness and gated pilot
+on:
+  push:
+    paths:
+      - .github/workflows/taman-free-agent-pilot.yml
+  workflow_dispatch:
+    inputs:
+      run_ai:
+        description: "Explicitly enable Copilot request (may use billed credits)"
+        type: boolean
+        required: true
+        default: false
+permissions:
+  contents: read
+  copilot-requests: write
+concurrency:
+  group: taman-free-agent-pilot
+  cancel-in-progress: true
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm zero-production-access and event-driven setup
+        run: |
+          test ! -f .env.production
+          echo "MODE=READ_ONLY"
+          echo "PRODUCTION_TEST_DEPLOY=NO"
+          echo "DATABASE_WRITE=NO"
+          echo "AUTO_MERGE=NO"
+          echo "AGENT_REQUEST_NOT_AUTHORIZED_UNTIL_EXPLICIT_INPUT"
+      - name: AI eligibility note
+        run: |
+          echo "GitHub Copilot CLI requires an eligible Copilot entitlement and organization policy."
+          echo "For org repositories, GITHUB_TOKEN Copilot requests can be metered to the organization."
+          echo "Do not turn on AI run until billing and budget are verified."
+  ai-smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ai == true }}
+    needs: readiness
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install GitHub Copilot CLI
+        run: npm install -g @github/copilot
+      - name: Copilot smoke test (no code writes / no deploy)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          copilot -p "Read-only audit: examine repo top-level directories and produce a brief list of CI test coverage gaps. Do not modify files, call network tools, use secrets, access production, or deploy." -s --allow-tool='shell(ls:*)' --deny-tool='write' --deny-tool='shell(git push:*)'
