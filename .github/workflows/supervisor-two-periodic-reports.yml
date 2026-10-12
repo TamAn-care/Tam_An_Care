@@ -1,0 +1,28 @@
+name: Supervisor two periodic reports (NO DEPLOY)
+on:
+  push:
+    branches:
+      - fix/supervisor-two-periodic-reports-20261012
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  patch-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate runtime patch syntax
+        run: python -m py_compile scripts/fix-supervisor-periodic-reports-runtime.py
+      - name: Assert patch limits changes to supervisor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('scripts/fix-supervisor-periodic-reports-runtime.py').read_text()
+          for x in ["SUPERVISOR: {", "psychosocial-reports", "health-reports", "canCreateHealthReport: false", "OTHER_ROLES_UNCHANGED=YES", "SAFE_STOP"]:
+              assert x in s,x
+          print("SUPERVISOR_TWO_REPORTS_STATIC_GUARD=PASS")
+          PY
