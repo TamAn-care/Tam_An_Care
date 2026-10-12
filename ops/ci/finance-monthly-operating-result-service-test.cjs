@@ -55,7 +55,7 @@ async function main(){
   {
     const db=dbFor({rows:[
       {finance_entry_id:'R1',entry_type:'REVENUE',recognition_date:'2026-10-01',amount_vnd:'15000000',status:'POSTED',source_mode:'SYSTEM',source_domain:'BILLING',source_entity_type:'INVOICE',source_entity_id:'I1'},
-      {finance_entry_id:'E1',entry_type:'EXPENSE',recognition_date:'2026-10-09',amount_vnd:'12000000',status:'POSTED',source_mode:'SYSTEM',source_domain:'BILLING',source_entity_type:'INVOICE',source_entity_id:'I1'},
+      {finance_entry_id:'E1',entry_type:'DIRECT_COST',recognition_date:'2026-10-09',amount_vnd:'12000000',status:'POSTED',source_mode:'SYSTEM',source_domain:'BILLING',source_entity_type:'INVOICE',source_entity_id:'I1'},
     ]});
     const out=await new Service(db).read('2026-10');
     assert.equal(out.state,'CHUA_DU_DU_LIEU');
