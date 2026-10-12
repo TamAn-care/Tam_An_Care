@@ -47,6 +47,16 @@ jobs:
         run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
       - name: Build NestJS API
         run: npm run build
+      - name: Verify compiled auth test targets exist (fail closed)
+        run: |
+          set -euo pipefail
+          for file in dist/security/production-auth.middleware.js dist/resident-access-scope/resident-access-scope.service.js dist/residents/resident.controller.js; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error::Compiled test target missing: $file"
+              find dist -maxdepth 5 -type f -name '*.js' | head -80 || true
+              exit 1
+            fi
+          done
       - name: Staff authentication middleware regression (isolated)
         run: node --test test/guardian-auth-middleware.test.cjs
       - name: Resident scope regression (isolated)
