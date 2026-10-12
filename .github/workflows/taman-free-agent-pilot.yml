@@ -1,4 +1,4 @@
-name: Tam An Free Agent - readiness and gated pilot
+name: Tam An Personal Copilot Free - safe fallback (NO DEPLOY)
 on:
   push:
     paths:
@@ -6,37 +6,48 @@ on:
   workflow_dispatch:
     inputs:
       run_ai:
-        description: "Explicitly enable Copilot request (may use billed credits)"
+        description: "One personal-quota Copilot CLI read-only test; never use organization billing"
         type: boolean
         required: true
         default: false
 permissions:
   contents: read
-  copilot-requests: write
 concurrency:
-  group: taman-free-agent-pilot
+  group: taman-personal-copilot-safe-fallback
   cancel-in-progress: true
 jobs:
   readiness:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    outputs:
+      personal_token_present: ${{ steps.token.outputs.present }}
     steps:
       - uses: actions/checkout@v4
-      - name: Confirm zero-production-access and event-driven setup
+        with:
+          persist-credentials: false
+      - name: Validate safe configuration
         run: |
-          test ! -f .env.production
-          echo "MODE=READ_ONLY"
+          echo "PERSONAL_COPILOT_ONLY=YES"
+          echo "ORGANIZATION_COPILOT_BILLING=DISABLED_BY_WORKFLOW"
           echo "PRODUCTION_TEST_DEPLOY=NO"
           echo "DATABASE_WRITE=NO"
           echo "AUTO_MERGE=NO"
-          echo "AGENT_REQUEST_NOT_AUTHORIZED_UNTIL_EXPLICIT_INPUT"
-      - name: AI eligibility note
+      - id: token
+        name: Check personal token presence (never print token)
+        env:
+          PERSONAL_TOKEN: ${{ secrets.TAMAN_COPILOT_FREE_PAT }}
+        shell: bash
         run: |
-          echo "GitHub Copilot CLI requires an eligible Copilot entitlement and organization policy."
-          echo "For org repositories, GITHUB_TOKEN Copilot requests can be metered to the organization."
-          echo "Do not turn on AI run until billing and budget are verified."
+          if [ -n "$PERSONAL_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "PERSONAL_COPILOT_AUTH=CONFIGURED"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "PERSONAL_COPILOT_AUTH=NOT_CONFIGURED"
+            echo "FALLBACK=NORMAL_GITHUB_ACTIONS_ONLY"
+          fi
   ai-smoke:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ai == true }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_ai == true && needs.readiness.outputs.personal_token_present == 'true' }}
     needs: readiness
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -44,14 +55,37 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install GitHub Copilot CLI
+      - name: Install Copilot CLI
         run: npm install -g @github/copilot
-      - name: Copilot smoke test (no code writes / no deploy)
+      - name: Personal Copilot read-only pilot; safely return to normal Actions on quota/auth failures
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          COPILOT_GITHUB_TOKEN: ${{ secrets.TAMAN_COPILOT_FREE_PAT }}
+          GH_TOKEN: ""
+          GITHUB_TOKEN: ""
+        shell: bash
         run: |
-          copilot -p "Read-only audit: examine repo top-level directories and produce a brief list of CI test coverage gaps. Do not modify files, call network tools, use secrets, access production, or deploy." -s --allow-tool='shell(ls:*)' --deny-tool='write' --deny-tool='shell(git push:*)'
+          set +e
+          timeout 420 copilot -p "Read-only audit: inspect repository structure and list missing automated tests. Never edit files, access production, use privileged tools, commit, push, deploy or disclose secrets." -s \
+            --deny-tool='write' --deny-tool='shell(git push:*)' \
+            > "$RUNNER_TEMP/copilot-summary.txt" 2>&1
+          rc=$?
+          if [ "$rc" -eq 0 ]; then
+            echo "PERSONAL_COPILOT_PILOT=SUCCESS" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "PERSONAL_COPILOT_PILOT=UNAVAILABLE_OR_QUOTA_EXHAUSTED" >> "$GITHUB_STEP_SUMMARY"
+            echo "FALLBACK=GITHUB_ACTIONS_CI_ONLY" >> "$GITHUB_STEP_SUMMARY"
+            echo "Personal Copilot unavailable; CI remains operational."
+          fi
+          exit 0
+  fallback:
+    if: always()
+    needs: [readiness, ai-smoke]
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "NORMAL_ACTIONS_FALLBACK=ACTIVE"
+          echo "NO_AI_BILLING_FALLBACK=YES"
+          echo "NO_DEPLOY=YES"
