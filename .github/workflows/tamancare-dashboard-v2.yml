@@ -1,0 +1,110 @@
+name: Tam An Care Dashboard V2
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */3 * * *'
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  issues: write
+
+concurrency:
+  group: tamancare-dashboard-v2
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Refresh progress issue (no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Collect evidence and update dashboard issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const dashboardNumber = 13;
+            const now = new Date().toISOString();
+            const workstreams = [
+              {name:'Guardian / resident scope', pr:6, issue:null},
+              {name:'Finance / monthly profit', pr:5, issue:null},
+              {name:'Nutrition / meal registration', pr:3, issue:null},
+              {name:'Auth + Medication + isolated CI', pr:null, issue:11},
+              {name:'Full business acceptance', pr:null, issue:9},
+              {name:'Source parity / R1–R15', pr:null, issue:10},
+              {name:'Release safety / old Vercel closed', pr:null, issue:12}
+            ];
+            async function getPr(n) {
+              try { return (await github.rest.pulls.get({owner, repo, pull_number:n})).data; }
+              catch(e) { if(e.status===404) return null; throw e; }
+            }
+            async function getIssue(n) {
+              try { return (await github.rest.issues.get({owner, repo, issue_number:n})).data; }
+              catch(e) { if(e.status===404) return null; throw e; }
+            }
+            async function latestRuns(branch) {
+              const r = await github.rest.actions.listWorkflowRunsForRepo({owner, repo, branch, per_page:20});
+              return r.data.workflow_runs.filter(x=>x.head_branch===branch).slice(0,3);
+            }
+            function safe(v) { return String(v ?? '').replace(/[|\r\n]/g,' ').slice(0,110); }
+            function link(url,label) { return url ? '[' + safe(label) + '](' + url + ')' : '—'; }
+            let lines = [
+              '### GitHub evidence snapshot (automatic; UTC: '+ now +')',
+              '**RELEASE_DECISION = NO_GO** — CI success does not authorize Production Test release.',
+              '',
+              '| Module | PR/Issue | Code evidence | Latest Actions | Follow-up |',
+              '|---|---|---|---|---|'
+            ];
+            let blockers=0;
+            for (const w of workstreams) {
+              const pr = w.pr ? await getPr(w.pr) : null;
+              const issue = w.issue ? await getIssue(w.issue) : null;
+              const src = pr || issue;
+              const ref = pr ? 'PR #' + w.pr : (issue ? 'Issue #' + w.issue : 'NOT FOUND');
+              let evidence='NOT VERIFIED', runsDisplay='NOT VERIFIED';
+              if(pr) {
+                const sha=pr.head.sha;
+                evidence=link(pr.html_url,'commit '+sha.slice(0,8))+' / '+safe(pr.draft?'DRAFT':pr.state);
+                const runs=await latestRuns(pr.head.ref);
+                const matched=runs.filter(x=>x.head_sha===sha);
+                const selected=matched[0];
+                if(selected) {
+                  const ci=selected.status==='completed' ? (selected.conclusion||'unknown') : selected.status;
+                  runsDisplay=link(selected.html_url,ci+' @'+sha.slice(0,8));
+                } else {
+                  runsDisplay='NO RUN FOR PR HEAD';
+                  blockers++;
+                }
+              } else if (issue) {
+                evidence='ISSUE ONLY; NO CODE PROOF';
+                blockers++;
+              } else { blockers++; }
+              const url=src?.html_url || null;
+              const followUp=issue?.state==='closed'?'Closed issue (review evidence)':'Review acceptance checklist';
+              lines.push('| '+safe(w.name)+' | '+link(url,ref)+' | '+evidence+' | '+runsDisplay+' | '+followUp+' |');
+            }
+            lines.push('', '- Open workflows: https://github.com/'+owner+'/'+repo+'/actions',
+              '- Open PRs: https://github.com/'+owner+'/'+repo+'/pulls',
+              '- No deploy, DB access, migrations, seed, preview, or production secrets.',
+              '- Missing evidence must remain NOT VERIFIED; no inferred PASS.',
+              '- Blockers/missing evidence: '+blockers,
+              '- Dashboard source commit: '+context.sha,
+              '');
+            const START='<!-- TAMANCARE_DASHBOARD_V2_START -->';
+            const END='<!-- TAMANCARE_DASHBOARD_V2_END -->';
+            const dashboard=(await github.rest.issues.get({owner,repo,issue_number:dashboardNumber})).data;
+            const old=dashboard.body||'';
+            const block=START+'\n'+lines.join('\n')+'\n'+END;
+            const body=old.includes(START)&&old.includes(END)
+              ? old.slice(0,old.indexOf(START))+block+old.slice(old.indexOf(END)+END.length)
+              : old.trimEnd()+'\n\n---\n'+block+'\n';
+            if(body!==old) {
+              await github.rest.issues.update({owner,repo,issue_number:dashboardNumber,body});
+            }
+            core.summary.addHeading('Tâm An Care Dashboard V2');
+            core.summary.addRaw(lines.join('\n'),true);
+            await core.summary.write();
