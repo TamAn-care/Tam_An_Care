@@ -27,11 +27,11 @@ jobs:
           import fs from 'node:fs';
           import assert from 'node:assert/strict';
           const source=fs.readFileSync('frontend/src/utils/resident-record-code.ts','utf8');
-          for (const phrase of ['padStart(4', "isTrialWithoutContract ? '/TN' : ''", 'verifyContractMatchesResidentRecord', 'Number.isInteger(issueYear)']) {
+          for (const phrase of ["isTrialWithoutContract ? '/TN' : ''", 'BigInt(c.serial)===BigInt(identity.serial)', 'verifyContractMatchesResidentRecord', 'Number.isInteger(issueYear)']) {
             assert.ok(source.includes(phrase), phrase);
           }
           const spec=fs.readFileSync('docs/resident-paper-contract-code-v1-release-gate.md','utf8');
-          for (const phrase of ['PRODUCTION_TEST_GO_NO_GO=NO_GO','sequence','idempotency','isolated restore','9999->10000','Asia/Ho_Chi_Minh']) {
+          for (const phrase of ['PRODUCTION_TEST_GO_NO_GO=NO_GO','sequence','idempotency','isolated restore','9999->10000','Asia/Ho_Chi_Minh','001/2026/TA']) {
             assert.ok(spec.includes(phrase),phrase);
           }
           console.log('RECORD_FORMAT_FOUNDATION=PASS');
