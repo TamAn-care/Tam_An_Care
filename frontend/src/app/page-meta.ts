@@ -41,7 +41,7 @@ export const PAGE_META:
         'Quy trình tiếp nhận và đánh giá sức khỏe ban đầu người cao tuổi.',
     },
     '/health-reports': {
-      title: 'Báo cáo sức khỏe',
+      title: 'Báo cáo định kỳ Sức khoẻ',
       description:
         'Lập, khóa dữ liệu, rà soát, phê duyệt và gửi báo cáo sức khỏe định kỳ.',
     },
