@@ -226,6 +226,27 @@ export const MOCK_RESIDENT_CONTEXTS: ResidentContextResponse[] = [
   },
 ];
 
+// Use the same Vietnamese given-name ordering for resident dropdowns, lists,
+// and offline read-only display. Sorting never changes stored resident records.
+const viResidentCollator = new Intl.Collator('vi', {
+  sensitivity: 'base',
+  numeric: true,
+});
+
+export function sortResidentsAlphabetically(
+  items: readonly ResidentContextResponse[],
+): ResidentContextResponse[] {
+  const key = (name: string) => {
+    const parts = String(name || '').trim().split(/\\s+/u);
+    return parts[parts.length - 1] || '';
+  };
+  return [...items].sort((a, b) =>
+    viResidentCollator.compare(key(a.resident.displayName), key(b.resident.displayName))
+    || viResidentCollator.compare(a.resident.displayName, b.resident.displayName)
+    || a.resident.residentId.localeCompare(b.resident.residentId)
+  );
+}
+
 const LS_RESIDENTS_KEY = 'taman_resident_contexts_v1';
 
 export function getStoredResidents(): ResidentContextResponse[] {
@@ -233,10 +254,10 @@ export function getStoredResidents(): ResidentContextResponse[] {
     const raw = localStorage.getItem(LS_RESIDENTS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) return sortResidentsAlphabetically(parsed);
     }
   } catch {}
-  return MOCK_RESIDENT_CONTEXTS;
+  return sortResidentsAlphabetically(MOCK_RESIDENT_CONTEXTS);
 }
 
 export function saveStoredResidents(items: ResidentContextResponse[]) {
@@ -285,7 +306,7 @@ export async function listResidents(
         actor,
       },
     );
-    if (res && res.length > 0) return res;
+    if (res && res.length > 0) return sortResidentsAlphabetically(res);
   } catch (error) {
     console.warn('[TamAnCare API] Offline/Fallback mode active for listResidents:', error);
   }
