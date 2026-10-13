@@ -198,7 +198,14 @@ export async function createInitialAssessment(actor: HumanActorSession, admissio
       method: 'POST',
       body: JSON.stringify(body),
     });
-  } catch {}
+  } catch (error) {
+    // Clinical writes must never fall back to browser-only storage:
+    // doing so falsely reports success while the resident API remains stale.
+    throw new Error(
+      'Không lưu được Phiếu đánh giá lên máy chủ. Dữ liệu chưa đồng bộ; vui lòng kiểm tra kết nối và thử lại.',
+      { cause: error },
+    );
+  }
 
   const items = getLocalAdmissions();
   const target = items.find(x => x.admissionCaseId === admissionCaseId);
