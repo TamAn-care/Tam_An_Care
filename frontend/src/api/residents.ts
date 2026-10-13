@@ -237,7 +237,7 @@ export function sortResidentsAlphabetically(
   items: readonly ResidentContextResponse[],
 ): ResidentContextResponse[] {
   const key = (name: string) => {
-    const parts = String(name || '').trim().split(/\\s+/u);
+    const parts = String(name || '').trim().split(/\s+/u);
     return parts[parts.length - 1] || '';
   };
   return [...items].sort((a, b) =>
