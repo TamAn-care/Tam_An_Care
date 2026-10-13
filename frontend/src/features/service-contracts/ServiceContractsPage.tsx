@@ -1107,15 +1107,15 @@ export function ServiceContractsPage() {
                 <div style={{ fontWeight: 'bold', marginTop: '6px' }}>5.3. Trường hợp thực trạng phù hợp với thông tin ban đầu</div>
                 <div>Trường hợp sau thời gian đánh giá 30 ngày, tình trạng thực tế của người cao tuổi phù hợp với thông tin đã cung cấp và không phát sinh nhu cầu chăm sóc, hỗ trợ hoặc nguồn lực bổ sung làm thay đổi cơ cấu dịch vụ, mức phí đã thỏa thuận tại Hợp đồng tiếp tục được áp dụng và Hợp đồng tiếp tục có hiệu lực mà không cần ký lại hợp đồng mới.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 5. Quyền và nghĩa vụ của Bên A</div>
-                <div style={{ fontWeight: 'bold' }}>5.1. Quyền của Bên A</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 6. Quyền và nghĩa vụ của Bên A</div>
+                <div style={{ fontWeight: 'bold' }}>6.1. Quyền của Bên A</div>
                 <div>a) Bên A có quyền yêu cầu Bên B thực hiện đầy đủ, đúng chất lượng các cam kết chăm sóc theo các điều khoản đã thỏa thuận trong hợp đồng.</div>
                 <div>b) Bên A có quyền yêu cầu Bên B cung cấp thông tin về tình trạng sức khỏe, sinh hoạt và các diễn biến bất thường của (NCT) theo chế độ thông tin của Trung tâm hoặc khi có sự kiện cần thông báo khẩn cấp.</div>
                 <div>c) Bên A có quyền yêu cầu Bên B thực hiện đầy đủ, đúng phạm vi, chất lượng và tiêu chuẩn các dịch vụ chăm sóc theo Hợp đồng, Phụ lục hợp đồng và các quy định của Trung tâm.</div>
                 <div>d) Trong thời hạn 05 (năm) ngày kể từ ngày Hợp đồng có hiệu lực, Bên A có quyền đơn phương chấm dứt Hợp đồng mà không phải chịu phạt vi phạm. Sau thời gian này, Bên A có quyền chấm dứt hợp đồng khi thông báo trước ít nhất ba mươi (30) ngày với điều kiện thanh toán đầy đủ các khoản phí dịch vụ và chi phí thực tế đã phát sinh đến thời điểm chấm dứt Hợp đồng.</div>
                 <div>e) Được quyền thăm gặp, liên hệ và chăm sóc NCT theo thời gian, quy định và nội quy của Trung tâm, bảo đảm không ảnh hưởng đến việc chăm sóc, điều trị, nghỉ ngơi của NCT và hoạt động chung của Trung tâm.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>5.2. Nghĩa vụ của Bên A</div>
+                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>6.2. Nghĩa vụ của Bên A</div>
                 <div>a) Cung cấp đầy đủ, trung thực và chính xác thông tin nhân thân, tình trạng sức khỏe, hồ sơ bệnh án, thuốc đang sử dụng, các giấy tờ chứng minh quyền đại diện và nghĩa vụ nuôi dưỡng Người cao tuổi.</div>
                 <div>b) Khai báo trung thực, đầy đủ tiền sử bệnh lý, bệnh nền, bệnh truyền nhiễm, tình trạng tinh thần, sa sút trí tuệ, dị ứng thuốc, tiền sử té ngã, hành vi nguy cơ hoặc các thông tin khác có ảnh hưởng đến việc chăm sóc NCT.</div>
                 <div>Trường hợp Bên A cố ý che giấu, khai báo không trung thực hoặc không đầy đủ làm ảnh hưởng đến việc chăm sóc, gây thiệt hại cho NCT, người khác hoặc Trung tâm, Bên A phải chịu mọi trách nhiệm và bồi thường toàn bộ thiệt hại phát sinh theo quy định của pháp luật.</div>
