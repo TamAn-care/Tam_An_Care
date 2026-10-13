@@ -1,0 +1,36 @@
+name: Health Multi-Select CI
+on:
+  push:
+    branches: [feature/health-assessment-multi-select-20261013]
+  pull_request:
+    paths:
+      - 'frontend/src/features/admissions/AdmissionPage.tsx'
+      - 'frontend/src/features/health-reports/**'
+      - '.github/workflows/health-multi-select-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies
+        working-directory: frontend
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Type-check and build
+        working-directory: frontend
+        run: npm run build
+      - name: Evidence
+        if: always()
+        run: |
+          echo "SOURCE_SHA=$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "INITIAL_PERIODIC_IDENTITY_PARITY=NOT_YET_PROVEN" >> "$GITHUB_STEP_SUMMARY"
+          echo "RELEASE_DECISION=NO_GO" >> "$GITHUB_STEP_SUMMARY"

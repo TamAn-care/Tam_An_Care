@@ -1,3 +1,4 @@
+import { EMOTION_OPTIONS, SLEEP_OPTIONS, emotionChoices, sleepChoices, toggleChoice, type Emotion, type Sleep } from '../health-reports/assessment-multi-select';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useActor } from '../../auth/ActorContext';
@@ -351,7 +352,9 @@ export interface InitialClinicalAssessment {
     alertAndResponsive: boolean;
     memoryCognition: 'NORMAL' | 'MILD_DECLINE' | 'CONFUSED_SEVERE';
     emotionalState: 'HAPPY_SOCIABLE' | 'WITHDRAWN' | 'IRRITABLE' | 'ANXIOUS_DEPRESSED';
+    emotionalStates?: Emotion[];
     sleepQuality: 'GOOD' | 'INSOMNIA' | 'NIGHT_WAKING';
+    sleepQualities?: Sleep[];
   };
 
   // VI. Dinh dưỡng & Nhai nuốt
@@ -993,7 +996,7 @@ export function AdmissionPage() {
           alertness: form.mental.alertAndResponsive ? 'ALERT' : 'DROWSY',
           memory: form.mental.memoryCognition === 'NORMAL' ? 'INTACT' : 'IMPAIRED',
           mood: form.mental.emotionalState,
-          notes: `Giấc ngủ: ${form.mental.sleepQuality}`,
+          notes: `Cảm xúc: ${emotionChoices(form.mental).join(', ')}; Giấc ngủ: ${sleepChoices(form.mental).join(', ')}`,
         },
         nutrition: {
           dietType: form.nutrition.dietType,
@@ -1400,6 +1403,37 @@ export function AdmissionPage() {
                         <option value="FEMALE">Nữ</option>
                       </select>
                     </div>
+                  </div>
+
+                  <div className="form-row" style={{ marginTop: '0.75rem' }}>
+                    <fieldset style={{ border: 0, padding: 0 }}>
+                      <legend className="form-label">Trạng thái cảm xúc (chọn nhiều):</legend>
+                      {EMOTION_OPTIONS.map(option => (
+                        <label key={option.value} style={{ display: 'block', margin: '0.35rem 0' }}>
+                          <input type="checkbox"
+                            checked={emotionChoices(form.mental).includes(option.value)}
+                            onChange={() => setForm(prev => {
+                              const values = toggleChoice(emotionChoices(prev.mental), option.value);
+                              return { ...prev, mental: { ...prev.mental, emotionalStates: values, emotionalState: values[0] || prev.mental.emotionalState } };
+                            })} />
+                          {' '}{option.label}
+                        </label>
+                      ))}
+                    </fieldset>
+                    <fieldset style={{ border: 0, padding: 0 }}>
+                      <legend className="form-label">Chất lượng giấc ngủ (chọn nhiều):</legend>
+                      {SLEEP_OPTIONS.map(option => (
+                        <label key={option.value} style={{ display: 'block', margin: '0.35rem 0' }}>
+                          <input type="checkbox"
+                            checked={sleepChoices(form.mental).includes(option.value)}
+                            onChange={() => setForm(prev => {
+                              const values = toggleChoice(sleepChoices(prev.mental), option.value);
+                              return { ...prev, mental: { ...prev.mental, sleepQualities: values, sleepQuality: values[0] || prev.mental.sleepQuality } };
+                            })} />
+                          {' '}{option.label}
+                        </label>
+                      ))}
+                    </fieldset>
                   </div>
 
                   <div className="form-row" style={{ marginTop: '0.75rem' }}>
@@ -2751,6 +2785,8 @@ export function AdmissionPage() {
             </div>
 
               {/* V, VI, VII. TINH THẦN & NGUY CƠ */}
+              <p>• Cảm xúc: {emotionChoices(viewingAssessment.data.mental).map(value => EMOTION_OPTIONS.find(x => x.value === value)?.label).join('; ') || 'Chưa đánh giá'}</p>
+              <p>• Giấc ngủ: {sleepChoices(viewingAssessment.data.mental).map(value => SLEEP_OPTIONS.find(x => x.value === value)?.label).join('; ') || 'Chưa đánh giá'}</p>
               <div className="initial-grid-2col" style={{ fontSize: '0.8rem', marginBottom: '0.4rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                 <div>
                   <b>V. Tinh thần & Nhận thức:</b><br />
