@@ -1,7 +1,28 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { OperationalCareViewService } = require('../dist/operational-care-view/operational-care-view.service');
+// CI sometimes compiles this service without adjacent optional runtime modules.
+// Stub only constructor dependency modules; the actual service implementation
+// under test remains the compiled production code.
+const Module = require('node:module');
+const originalLoad = Module._load;
+const isolatedDependencies = new Map([
+  ['../cross-domain-integration/cross-domain-integration.service', 'CrossDomainIntegrationService'],
+  ['../resident-access-scope/resident-access-scope.service', 'ResidentAccessScopeService'],
+  ['../database/database.service', 'DatabaseService'],
+]);
+Module._load = function(request, parent, isMain) {
+  if (parent && parent.filename.endsWith('/operational-care-view/operational-care-view.service.js') && isolatedDependencies.has(request)) {
+    return { [isolatedDependencies.get(request)]: class IsolatedDependency {} };
+  }
+  return originalLoad.call(this, request, parent, isMain);
+};
+let OperationalCareViewService;
+try {
+  ({ OperationalCareViewService } = require('../dist/operational-care-view/operational-care-view.service'));
+} finally {
+  Module._load = originalLoad;
+}
 
 function fixture(allowed, rows) {
   const events = [];
