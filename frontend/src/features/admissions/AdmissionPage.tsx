@@ -995,8 +995,8 @@ export function AdmissionPage() {
         cognitive: {
           alertness: form.mental.alertAndResponsive ? 'ALERT' : 'DROWSY',
           memory: form.mental.memoryCognition === 'NORMAL' ? 'INTACT' : 'IMPAIRED',
-          mood: emotionChoices(form.mental).join(', '),
-          notes: `Giấc ngủ: ${sleepChoices(form.mental).join(', ')}`,
+          mood: form.mental.emotionalState,
+          notes: `Cảm xúc: ${emotionChoices(form.mental).join(', ')}; Giấc ngủ: ${sleepChoices(form.mental).join(', ')}`,
         },
         nutrition: {
           dietType: form.nutrition.dietType,
