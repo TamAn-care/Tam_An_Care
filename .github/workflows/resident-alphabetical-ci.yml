@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'api/src/residents/resident.repository.ts'
+      - 'frontend/src/api/residents.ts'
       - 'api/test/resident-alphabetical-order.test.cjs'
       - '.github/workflows/resident-alphabetical-ci.yml'
   workflow_dispatch:
@@ -46,6 +47,11 @@ jobs:
         run: node --test api/test/resident-alphabetical-order.test.cjs
       - name: Compile API from locked packages
         working-directory: api
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Compile frontend with shared resident alphabetic sorting
+        working-directory: frontend
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
           npm run build
