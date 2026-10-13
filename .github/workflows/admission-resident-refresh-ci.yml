@@ -1,0 +1,53 @@
+name: Admission Resident Refresh CI
+on:
+  push:
+    branches: [fix/admission-resident-sync-20261013]
+  pull_request:
+    paths:
+      - 'frontend/src/api/admissions.ts'
+      - 'api/src/admissions/**'
+      - 'api/src/operational-care-view/**'
+      - 'api/src/resident-access-scope/**'
+      - 'frontend/src/features/care-view/**'
+      - 'frontend/src/api/residents.ts'
+      - 'frontend/src/features/admissions/AdmissionPage.tsx'
+      - '.github/workflows/admission-resident-refresh-ci.yml'
+permissions:
+  contents: read
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: api
+      - run: npm run build
+        working-directory: api
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - name: Release boundary
+        run: |
+          echo 'BACKEND_BUILD=REQUIRED' >> "$GITHUB_STEP_SUMMARY"
+          echo 'FRONTEND_BUILD=REQUIRED' >> "$GITHUB_STEP_SUMMARY"
+          echo 'REAL_RBAC_INTEGRATION_TEST=NOT_YET_VERIFIED' >> "$GITHUB_STEP_SUMMARY"
+          echo 'RELEASE_DECISION=NO_GO' >> "$GITHUB_STEP_SUMMARY"

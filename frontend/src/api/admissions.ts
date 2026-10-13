@@ -198,23 +198,10 @@ export async function createInitialAssessment(actor: HumanActorSession, admissio
       method: 'POST',
       body: JSON.stringify(body),
     });
-  } catch {}
-
-  const items = getLocalAdmissions();
-  const target = items.find(x => x.admissionCaseId === admissionCaseId);
-  if (target) {
-    target.assessmentSummary = typeof body.summary === 'string' ? body.summary : JSON.stringify(body.summary || body);
-    target.clinicalNotes = body.clinicalNotes || '';
-    try {
-      const sumObj = typeof body.summary === 'string' ? JSON.parse(body.summary) : body.summary;
-      if (sumObj?.dateOfBirth) target.dateOfBirth = sumObj.dateOfBirth;
-      if (sumObj?.prospectiveResidentName) target.prospectiveResidentName = sumObj.prospectiveResidentName;
-      if (sumObj?.gender) target.gender = sumObj.gender;
-      if (sumObj?.identityNumber !== undefined) target.identityNumber = sumObj.identityNumber;
-    } catch {}
-    saveLocalAdmissions(items);
+  } catch {
+    // Fail closed: browser-only local persistence is not server synchronization.
+    throw new Error('Không lưu được Phiếu đánh giá lên máy chủ. Dữ liệu chưa đồng bộ; vui lòng kiểm tra kết nối và thử lại.');
   }
-  return { assessmentId: `ASM-${Date.now().toString().slice(-6)}`, admissionCaseId };
 }
 
 export async function completeAssessment(actor: HumanActorSession, admissionCaseId: string): Promise<AdmissionCase> {

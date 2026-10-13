@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { useActor } from '../../auth/ActorContext';
@@ -700,6 +701,7 @@ function DobDatePicker({ value, onChange, required }: DobDatePickerProps) {
 export function AdmissionPage() {
   const { actor } = useActor();
 
+  const residentQueryClient = useQueryClient();
   const [admissions, setAdmissions] = useState<AdmissionCase[]>([]);
   const [selectedCase, setSelectedCase] = useState<AdmissionCase | null>(null);
   const [busy, setBusy] = useState(false);
@@ -1019,6 +1021,7 @@ export function AdmissionPage() {
       }
 
       await refreshList();
+      await residentQueryClient.invalidateQueries({ queryKey: ['residents'] });
       setIsCreateOpen(false);
       setEditingCase(null);
     } catch (err: any) {
@@ -1090,6 +1093,7 @@ export function AdmissionPage() {
       setMessage('');
       const res = await finalizeAdmission(actor, caseId);
       await refreshList();
+      await residentQueryClient.invalidateQueries({ queryKey: ['residents'] });
       setMessage(`Đã hoàn tất tiếp nhận thành công! Mã người cao tuổi chính thức: ${res.residentCode} (${res.displayName}). Đã khởi tạo Bảng kê thu phí chuẩn theo đúng Nguyên tắc tính toán nhất quán Viện Tâm An.`);
     } catch (err: any) {
       setMessage(err.message || 'Lỗi khi hoàn tất tiếp nhận.');

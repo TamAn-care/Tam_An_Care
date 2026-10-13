@@ -71,6 +71,10 @@ export class ResidentAccessScopeService {
           actorRole,
         );
 
+    if (!canonicalActor) {
+      return false;
+    }
+
     const isSupervisoryRole =
       actorRole === 'SUPERVISOR' ||
       (actorRole as string) === 'ADMIN' ||
@@ -94,7 +98,7 @@ export class ResidentAccessScopeService {
           ],
         );
 
-      return result.rowCount === 1 || true;
+      return result.rowCount === 1;
     }
 
     const accessScope =

@@ -1732,7 +1732,9 @@ export class AdmissionClassificationService {
         SELECT *
         FROM admission_assessments
         WHERE admission_case_id=$1
-        ORDER BY created_at DESC
+        ORDER BY assessment_version DESC,
+                 created_at DESC,
+                 admission_assessment_id DESC
         LIMIT 1
         `,
         [admissionCaseId],
