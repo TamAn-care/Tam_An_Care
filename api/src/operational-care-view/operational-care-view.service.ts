@@ -13,6 +13,8 @@ import {
   ResidentAccessScopeService,
 } from '../resident-access-scope/resident-access-scope.service';
 
+import { DatabaseService } from '../database/database.service';
+
 type ActorInput = {
   actorId?: string;
   actorRole?: string;
@@ -41,6 +43,8 @@ export class OperationalCareViewService {
 
     private readonly residentAccessScope:
       ResidentAccessScopeService,
+
+    private readonly database: DatabaseService,
   ) {}
 
   private authorize(
@@ -509,6 +513,40 @@ export class OperationalCareViewService {
       );
     }
 
+    // Resident access was validated above by the canonical scope service.
+    // Initial assessment is read-only and never overrides current care plans.
+    let initialAssessment: null | {
+      assessmentVersion: number;
+      assessmentStatus: string;
+      updatedAt: string | null;
+      summary: unknown;
+    } = null;
+    if (['NURSE', 'SUPERVISOR', 'CARE_MANAGER', 'ADMIN', 'DIRECTOR'].includes(actor.actorRole)) {
+      const result = await this.database.query(
+        `SELECT a.assessment_version, a.status, a.updated_at, a.summary
+         FROM admission_assessments a
+         JOIN admission_cases c ON c.admission_case_id = a.admission_case_id
+         WHERE c.resident_id = $1 AND a.assessment_type = 'INITIAL'
+           AND a.status IN ('COMPLETED', 'AMENDED')
+         ORDER BY a.assessment_version DESC, a.created_at DESC, a.admission_assessment_id DESC
+         LIMIT 1`,
+        [residentId],
+      );
+      const row = result.rows[0];
+      if (row) {
+        let summary: unknown = row.summary;
+        if (typeof summary === 'string') {
+          try { summary = JSON.parse(summary); } catch { /* legacy text */ }
+        }
+        initialAssessment = {
+          assessmentVersion: Number(row.assessment_version),
+          assessmentStatus: String(row.status),
+          updatedAt: row.updated_at ?? null,
+          summary,
+        };
+      }
+    }
+
     const source: any =
       await this.integration
         .residentOverview(residentId);
@@ -651,6 +689,7 @@ export class OperationalCareViewService {
         'OPERATIONAL_READ_ONLY',
 
       resident,
+      initialAssessment,
       carePlan,
       workQueue,
       clinical,
