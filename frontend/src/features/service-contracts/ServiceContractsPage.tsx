@@ -1093,8 +1093,19 @@ export function ServiceContractsPage() {
                 <div>a) Gửi thông báo yêu cầu thanh toán cho Bên A;</div>
                 <div>b) Tạm dừng cung cấp các dịch vụ phát sinh ngoài gói chăm sóc cơ bản hoặc các dịch vụ hỗ trợ tăng cường chưa thanh toán (nếu có), nhưng vẫn bảo đảm các nhu cầu chăm sóc thiết yếu và an toàn của NCT;</div>
                 <div>c) Khấu trừ khoản nợ từ tiền đặt cọc theo quy định tại Điều 4.2;</div>
-                <div>d) Trường hợp Bên A chậm thanh toán quá 60 (sáu mươi) ngày kể từ ngày đến hạn và không khắc phục sau khi đã được Bên B thông báo, Bên B có quyền đơn phương chấm dứt Hợp đồng theo quy định tại Điều 10 của Hợp đồng sau khi đã thông báo trước cho Bên A ít nhất 07 (bảy) ngày.</div>
+                <div>d) Trường hợp Bên A chậm thanh toán quá 60 (sáu mươi) ngày kể từ ngày đến hạn và không khắc phục sau khi đã được Bên B thông báo, Bên B có quyền đơn phương chấm dứt Hợp đồng theo quy định tại Điều 11 của Hợp đồng sau khi đã thông báo trước cho Bên A ít nhất 07 (bảy) ngày.</div>
                 <div>Bên A vẫn có trách nhiệm thanh toán đầy đủ các khoản phí dịch vụ và chi phí phát sinh đến thời điểm Hợp đồng chấm dứt.</div>
+
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 5. Đánh giá thực trạng người cao tuổi và điều chỉnh mức phí dịch vụ</div>
+                <div style={{ fontWeight: 'bold' }}>5.1. Nguyên tắc cung cấp thông tin khi ký hợp đồng</div>
+                <div>Bên A có trách nhiệm cung cấp đầy đủ, trung thực và chính xác cho Bên B các thông tin liên quan đến người cao tuổi, bao gồm nhưng không giới hạn ở: tình trạng sức khỏe, bệnh lý, tiền sử bệnh, khả năng vận động, khả năng nhận thức, tâm lý – hành vi, nhu cầu hỗ trợ trong sinh hoạt hằng ngày, tình trạng đại – tiểu tiện, chế độ ăn uống, thuốc đang sử dụng, nguy cơ té ngã, nguy cơ bỏ đi, hành vi kích động hoặc các biểu hiện bất thường khác và các thông tin có thể ảnh hưởng đến việc chăm sóc, quản lý, theo dõi người cao tuổi.</div>
+                <div>Bên A chịu trách nhiệm về tính đầy đủ, trung thực của các thông tin đã cung cấp. Trường hợp Bên A không cung cấp hoặc cung cấp không đầy đủ, không chính xác các thông tin nêu trên dẫn đến việc Bên B phải thực hiện mức độ chăm sóc, theo dõi, hỗ trợ hoặc bố trí nhân sự, vật tư, thiết bị và nguồn lực cao hơn so với thông tin ban đầu, Bên B có quyền đề nghị đánh giá và điều chỉnh lại mức phí dịch vụ cho phù hợp với thực tế.</div>
+                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>5.2. Thời gian đánh giá thực trạng trong 01 tháng đầu</div>
+                <div>Trong 30 ngày đầu kể từ ngày người cao tuổi chính thức được tiếp nhận vào Trung tâm, hai bên thống nhất đây là thời gian để Bên B theo dõi, đánh giá thực tế tình trạng sức khỏe, khả năng sinh hoạt, tâm lý – hành vi, nhu cầu chăm sóc và mức độ hỗ trợ thực tế của người cao tuổi.</div>
+                <div>Mức phí được ghi nhận tại thời điểm ký hợp đồng là mức phí tạm tính ban đầu, được xác lập trên cơ sở thông tin và tình trạng người cao tuổi mà Bên A cung cấp tại thời điểm tiếp nhận.</div>
+                <div>Kết thúc thời gian 30 ngày, Bên B căn cứ tình trạng thực tế và mức độ chăm sóc phát sinh để thông báo cho Bên A về mức phí dịch vụ chính thức hoặc mức phí điều chỉnh (nếu có). Việc điều chỉnh được lập thành phụ lục hợp đồng hoặc văn bản thỏa thuận có xác nhận của hai bên và là bộ phận không tách rời của Hợp đồng.</div>
+                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>5.3. Trường hợp thực trạng phù hợp với thông tin ban đầu</div>
+                <div>Trường hợp sau thời gian đánh giá 30 ngày, tình trạng thực tế của người cao tuổi phù hợp với thông tin đã cung cấp và không phát sinh nhu cầu chăm sóc, hỗ trợ hoặc nguồn lực bổ sung làm thay đổi cơ cấu dịch vụ, mức phí đã thỏa thuận tại Hợp đồng tiếp tục được áp dụng và Hợp đồng tiếp tục có hiệu lực mà không cần ký lại hợp đồng mới.</div>
 
                 <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 5. Quyền và nghĩa vụ của Bên A</div>
                 <div style={{ fontWeight: 'bold' }}>5.1. Quyền của Bên A</div>
@@ -1114,8 +1125,8 @@ export function ServiceContractsPage() {
                 <div>đ) Thanh toán đầy đủ, đúng thời hạn toàn bộ phí dịch vụ và các chi phí phát sinh theo Hợp đồng.</div>
                 <div>e) Duy trì ít nhất một người đại diện hợp pháp hoặc người liên hệ khẩn cấp có thể liên lạc 24/24. Khi nhận được thông báo về tình trạng khẩn cấp hoặc các vấn đề quan trọng liên quan đến NCT, Bên A có trách nhiệm phối hợp với Bên B trong thời gian sớm nhất. Trường hợp NCT tử vong, Bên A hoặc người được ủy quyền có trách nhiệm đến Trung tâm hoặc cơ sở y tế theo hướng dẫn của Bên B trong thời gian sớm nhất để thực hiện các thủ tục theo quy định của pháp luật.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 6. Quyền và nghĩa vụ của Bên B</div>
-                <div style={{ fontWeight: 'bold' }}>6.1. Quyền của Bên B</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 7. Quyền và nghĩa vụ của Bên B</div>
+                <div style={{ fontWeight: 'bold' }}>7.1. Quyền của Bên B</div>
                 <div>a) Yêu cầu Bên A và NCT tuân thủ Hợp đồng, Nội quy, Quy chế và các quy trình chăm sóc của Trung tâm.</div>
                 <div>b) Đề xuất thay đổi gói dịch vụ, chế độ chăm sóc hoặc chuyển đến cơ sở y tế phù hợp khi tình trạng sức khỏe của NCT có sự thay đổi đáng kể so với thời điểm ký Hợp đồng. Trường hợp Bên A không chấp thuận đề xuất phù hợp của Bên B, Bên B được miễn trách nhiệm đối với các hậu quả phát sinh từ việc không điều chỉnh này.</div>
                 <div>c) Yêu cầu Bên A cung cấp đầy đủ, trung thực các thông tin về tình trạng sức khỏe, bệnh lý, tiền sử bệnh, thuốc đang sử dụng và các thông tin cần thiết khác của NCT để phục vụ công tác chăm sóc.</div>
@@ -1123,7 +1134,7 @@ export function ServiceContractsPage() {
                 <div>đ) Đơn phương chấm dứt Hợp đồng khi Bên A vi phạm nghĩa vụ thanh toán, cố ý cung cấp thông tin sai sự thật, vi phạm nghiêm trọng Nội quy của Trung tâm hoặc có hành vi cản trở, xúc phạm, đe dọa nhân viên Trung tâm sau khi đã được nhắc nhở bằng văn bản nhưng không khắc phục.</div>
                 <div>e) Yêu cầu Bên A thanh toán đầy đủ các khoản phí dịch vụ, chi phí phát sinh theo Hợp đồng và bồi thường thiệt hại (nếu có) do lỗi của Bên A hoặc NCT gây ra theo quy định của pháp luật.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>6.2. Nghĩa vụ của Bên B</div>
+                <div style={{ fontWeight: 'bold', marginTop: '6px' }}>7.2. Nghĩa vụ của Bên B</div>
                 <div>a) Thực hiện đầy đủ, đúng chất lượng các dịch vụ chăm sóc đã cam kết tại Hợp đồng và các Phụ lục kèm theo.</div>
                 <div>b) Bố trí nhân sự đủ chuyên môn; theo dõi, chăm sóc NCT theo đúng quy trình của Trung tâm; bảo đảm môi trường sống an toàn, vệ sinh và tôn trọng nhân phẩm, quyền riêng tư của NCT.</div>
                 <div>c) Thông báo kịp thời cho Bên A khi NCT có diễn biến bất thường về sức khỏe. Trường hợp khẩn cấp không liên lạc được với người đại diện của Bên A, Bên B được quyền chủ động đưa NCT đến cơ sở y tế gần nhất để cấp cứu; mọi chi phí phát sinh do Bên A thanh toán.</div>
@@ -1131,30 +1142,30 @@ export function ServiceContractsPage() {
                 <div>đ) Quản lý, lưu giữ hồ sơ sức khỏe; phối hợp với Bên A và cơ sở y tế trong quá trình chăm sóc, điều trị và các vấn đề phát sinh liên quan đến NCT.</div>
                 <div>e) Thực hiện việc chăm sóc trong phạm vi dịch vụ đã cam kết, không chịu trách nhiệm đối với các rủi ro sức khỏe, diễn biến bệnh lý tự nhiên hoặc các sự kiện bất khả kháng nằm ngoài khả năng kiểm soát hợp lý của Bên B, trừ trường hợp do lỗi của Bên B.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 7. Quy trình xử lý và giới hạn trách nhiệm khi NCT đi cấp cứu</div>
-                <div><b>7.1. Xác định tình trạng:</b> Ngay khi phát hiện NCT có dấu hiệu diễn biến bất thường có khả năng nguy hiểm đến tính mạng, nhân viên y tế của Trung tâm sẽ tiến hành các biện pháp cấp cứu khẩn cấp theo nghiệp vụ trong phạm vi cho phép, đồng thời liên hệ ngay với cơ sở y tế gần nhất hoặc cấp cứu 115 để đưa NCT đến cơ sở y tế gần nhất.</div>
-                <div><b>7.2. Thông báo khẩn cấp:</b> Trong vòng tối đa mười lăm (15) phút kể từ khi phát hiện sự việc, Bên B có nghĩa vụ gọi điện thoại trực tiếp để thông báo cho người đại diện của Bên A theo số điện thoại ghi trên hợp đồng.</div>
-                <div><b>7.3. Miễn trừ trách nhiệm do lỗi Bên A chậm trễ (Trường hợp bất khả kháng đối với Trung tâm)</b></div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 8. Quy trình xử lý và giới hạn trách nhiệm khi NCT đi cấp cứu</div>
+                <div><b>8.1. Xác định tình trạng:</b> Ngay khi phát hiện NCT có dấu hiệu diễn biến bất thường có khả năng nguy hiểm đến tính mạng, nhân viên y tế của Trung tâm sẽ tiến hành các biện pháp cấp cứu khẩn cấp theo nghiệp vụ trong phạm vi cho phép, đồng thời liên hệ ngay với cơ sở y tế gần nhất hoặc cấp cứu 115 để đưa NCT đến cơ sở y tế gần nhất.</div>
+                <div><b>8.2. Thông báo khẩn cấp:</b> Trong vòng tối đa mười lăm (15) phút kể từ khi phát hiện sự việc, Bên B có nghĩa vụ gọi điện thoại trực tiếp để thông báo cho người đại diện của Bên A theo số điện thoại ghi trên hợp đồng.</div>
+                <div><b>8.3. Miễn trừ trách nhiệm do lỗi Bên A chậm trễ (Trường hợp bất khả kháng đối với Trung tâm)</b></div>
                 <div>a) Trong trường hợp Bên B không thể liên lạc được với Bên A (do điện thoại tắt máy, không nghe máy, ngoài vùng phủ sóng) hoặc Bên A không có mặt tại trung tâm trong vòng một (01) giờ kể từ khi nhận được thông báo, Trung tâm dưỡng lão Tâm An được quyền xem đây là tình huống khẩn cấp bất khả kháng và Bên B được chủ động toàn quyền quyết định phối hợp với cơ sở y tế.</div>
                 <div>b) Toàn bộ chi phí phát sinh liên quan đến quá trình xử lý cấp cứu và phối hợp với các cơ sở y tế, các đơn vị chuyên môn sẽ do Bên A chịu trách nhiệm thanh toán.</div>
-                <div><b>7.4. Bàn giao tài sản trong trường hợp NCT không quay trở lại Trung tâm sau cấp cứu:</b> Bên B có trách nhiệm lập biên bản kiểm kê, niêm phong và bàn giao lại toàn bộ trang phục, tư trang, đồ dùng cá nhân của cụ cho Bên A khi gia đình có yêu cầu.</div>
-                <div><b>7.5. Thanh toán các chi phí phát sinh:</b> Các chi phí phát sinh từ các dịch vụ trên, Bên A có trách nhiệm thanh toán cho Bên B trong vòng bảy (07) ngày.</div>
+                <div><b>8.4. Bàn giao tài sản trong trường hợp NCT không quay trở lại Trung tâm sau cấp cứu:</b> Bên B có trách nhiệm lập biên bản kiểm kê, niêm phong và bàn giao lại toàn bộ trang phục, tư trang, đồ dùng cá nhân của cụ cho Bên A khi gia đình có yêu cầu.</div>
+                <div><b>8.5. Thanh toán các chi phí phát sinh:</b> Các chi phí phát sinh từ các dịch vụ trên, Bên A có trách nhiệm thanh toán cho Bên B trong vòng bảy (07) ngày.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 8. Sử dụng hình ảnh NCT</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 9. Sử dụng hình ảnh NCT</div>
                 <div>Bên B được phép sử dụng hình ảnh hoạt động hàng ngày của NCT tại Trung tâm, phục vụ mục đích hoạt động truyền thông Kênh Online và trên các ấn phẩm của trung tâm. Tuyệt đối không được sử dụng vào mục đích khác làm ảnh hưởng đến uy tín, danh dự của NCT.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 9: Điều khoản về sự kiện bất khả kháng</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 10: Điều khoản về sự kiện bất khả kháng</div>
                 <div>a) "Sự kiện bất khả kháng" trong Hợp đồng này được hiểu là sự kiện xảy ra một cách khách quan, không thể lường trước và không thể khắc phục được mặc dù Bên bị ảnh hưởng đã áp dụng các biện pháp cần thiết và khả năng cho phép, theo quy định của pháp luật.</div>
                 <div>b) Sự kiện bất khả kháng có thể bao gồm nhưng không giới hạn ở: thiên tai, bão, lũ lụt, động đất, hỏa hoạn hoặc sự cố nghiêm trọng ngoài khả năng kiểm soát hợp lý của Bên B; chiến tranh, bạo loạn, khủng bố, dịch bệnh hoặc tình trạng khẩn cấp theo quyết định của cơ quan nhà nước có thẩm quyền; quyết định, yêu cầu hoặc biện pháp hành chính của cơ quan nhà nước có thẩm quyền làm cho việc thực hiện một phần hoặc toàn bộ nghĩa vụ theo Hợp đồng không thể thực hiện được; và các sự kiện khác đáp ứng đầy đủ điều kiện của sự kiện bất khả kháng theo quy định pháp luật.</div>
                 <div>c) Sự kiện bất khả kháng chỉ làm miễn hoặc giảm trách nhiệm của Bên B đối với phần nghĩa vụ bị ảnh hưởng trực tiếp bởi sự kiện bất khả kháng và trong thời gian chịu ảnh hưởng, với điều kiện Bên B đã áp dụng các biện pháp hợp lý để hạn chế, khắc phục hậu quả và tiếp tục thực hiện các nghĩa vụ còn có thể thực hiện.</div>
                 <div>d) Bên B có trách nhiệm thông báo cho Bên A trong thời gian hợp lý kể từ khi xảy ra hoặc kể từ khi có thể xác định được sự kiện bất khả kháng và mức độ ảnh hưởng của sự kiện đó đến việc cung cấp dịch vụ.</div>
                 <div>đ) Việc Người cao tuổi phát sinh bệnh, biến cố sức khỏe, suy giảm sức khỏe hoặc tử vong do tuổi cao, bệnh nền, bệnh mạn tính hoặc nguyên nhân nhân sự: sức khỏe tự nhiên không đương nhiên coi là sự kiện bất khả kháng. Việc xác định trách nhiệm của Bên B trong các trường hợp này được thực hiện theo Khoản 1.3 của Hợp đồng.</div>
 
-                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 10: Chấm dứt, sửa đổi và giải quyết tranh chấp</div>
-                <div><b>10.1. Hợp đồng chấm dứt khi:</b> Hai bên đồng thuận; hết thời hạn hợp đồng; một bên đơn phương chấm dứt hợp đồng hợp pháp.</div>
-                <div><b>10.2. Thanh lý, chấm dứt hợp đồng do NCT tử vong:</b> Hợp đồng dịch vụ sẽ tự động chấm dứt tại thời điểm NCT qua đời. Trong vòng mười lăm (15) ngày làm việc kể từ ngày NCT qua đời, hai bên sẽ tiến hành chốt chi phí dịch vụ tính đến ngày NCT qua đời, hoàn trả phần tiền đặt cọc còn lại (sau khi trừ các chi phí phát sinh nếu có).</div>
-                <div><b>10.3. Sửa đổi hợp đồng:</b> Mọi thay đổi về điều khoản hoặc chế độ chăm sóc phải được lập bằng văn bản dưới dạng Phụ lục hợp đồng có chữ ký của hai bên.</div>
-                <div><b>10.4. Giải quyết tranh chấp:</b> Ưu tiên giải quyết thông qua thương lượng, hòa giải trên tinh thần thiện chí. Trường hợp không tự thỏa thuận được, tranh chấp sẽ được đưa ra Tòa án có thẩm quyền tại Việt Nam giải quyết.</div>
+                <div style={{ fontWeight: 'bold', marginTop: '10px' }}>Điều 11: Chấm dứt, sửa đổi và giải quyết tranh chấp</div>
+                <div><b>11.1. Hợp đồng chấm dứt khi:</b> Hai bên đồng thuận; hết thời hạn hợp đồng; một bên đơn phương chấm dứt hợp đồng hợp pháp.</div>
+                <div><b>11.2. Thanh lý, chấm dứt hợp đồng do NCT tử vong:</b> Hợp đồng dịch vụ sẽ tự động chấm dứt tại thời điểm NCT qua đời. Trong vòng mười lăm (15) ngày làm việc kể từ ngày NCT qua đời, hai bên sẽ tiến hành chốt chi phí dịch vụ tính đến ngày NCT qua đời, hoàn trả phần tiền đặt cọc còn lại (sau khi trừ các chi phí phát sinh nếu có).</div>
+                <div><b>11.3. Sửa đổi hợp đồng:</b> Mọi thay đổi về điều khoản hoặc chế độ chăm sóc phải được lập bằng văn bản dưới dạng Phụ lục hợp đồng có chữ ký của hai bên.</div>
+                <div><b>11.4. Giải quyết tranh chấp:</b> Ưu tiên giải quyết thông qua thương lượng, hòa giải trên tinh thần thiện chí. Trường hợp không tự thỏa thuận được, tranh chấp sẽ được đưa ra Tòa án có thẩm quyền tại Việt Nam giải quyết.</div>
                 <div style={{ margin: '8px 0', fontStyle: 'italic' }}>
                   Hợp đồng này được lập thành hai (02) bản có giá trị pháp lý tương đương, mỗi Bên giữ một (01) bản để thực hiện. Hợp đồng có hiệu lực kể từ ngày ký.
                 </div>
