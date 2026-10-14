@@ -101,6 +101,11 @@ export interface ContractAppendix {
   additionalServices: AppendixServiceItem[];
   discount: number;
   discountReason: string;
+  /** Metadata describing the discount; optional for previously saved contracts. */
+  discountType?: string;
+  discountStartDate?: string;
+  discountEndDate?: string;
+  discountDetails?: string;
   totalMonthlyFee: number;
   totalMonthlyFeeText: string;
 }
