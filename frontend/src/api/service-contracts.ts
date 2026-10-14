@@ -151,26 +151,14 @@ export const DEFAULT_APPENDIX_SERVICES: AppendixServiceItem[] = [
 
 
 
-const LS_CONTRACTS_KEY = 'taman_service_contracts_v1';
-
-export function getStoredServiceContracts(): ServiceContract[] {
-  try {
-    const raw = localStorage.getItem(LS_CONTRACTS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (error) {
-    throw new Error('CONTRACT_LOCAL_STORAGE_READ_FAILED');
-  }
-  return [];
-}
-
-export function saveStoredServiceContracts(items: ServiceContract[]) {
-  try {
-    localStorage.setItem(LS_CONTRACTS_KEY, JSON.stringify(items));
-  } catch {}
-}
+/**
+ * Contracts are exclusively server-authoritative.
+ * No browser persistence, offline fallback or automatic
+ * migration of legacy records is permitted.
+ *
+ * Legacy contract JSON remains in the separately verified
+ * backup and requires an approved controlled import.
+ */
 
 export function generateAutoContractCode(existingContracts: ServiceContract[]): string {
   const currentYear = new Date().getFullYear();
