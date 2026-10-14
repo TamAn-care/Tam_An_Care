@@ -27,6 +27,11 @@ jobs:
           spec=Path('docs/specialist-care-view-access-release-gate.md').read_text()
           assert 'return result.rowCount === 1 || true' not in scope
           assert 'return result.rowCount === 1;' in scope
+          care_api=Path('frontend/src/api/residents.ts').read_text()
+          care_fn=care_api.split('export async function getResidentCareView(', 1)[1]
+          assert 'Offline/Fallback mode' not in care_fn
+          assert 'serverAuthorized: true' not in care_fn
+          assert 'return apiRequest<OperationalCareViewResponse>(' in care_fn
           assert 'PRODUCTION_TEST_DEPLOY=BLOCKED' in spec
           assert 'SPECIALIST_ACCESS_READY=NO' in spec
           print('UNCONDITIONAL_ACCESS_BYPASS=REMOVED')
