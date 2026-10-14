@@ -1,0 +1,15 @@
+import { readFileSync } from 'node:fs';
+import assert from 'node:assert/strict';
+const src=readFileSync('frontend/src/features/psychosocial/InitialPsychologyBaselineDraft.tsx','utf8');
+const dashboard=readFileSync('frontend/src/features/dashboard/DashboardPage.tsx','utf8');
+assert.ok(src.includes("actor?.actorRole === 'PSYCHOLOGIST' || actor?.actorRole === 'SOCIAL_WORKER'"));
+assert.ok(src.includes('if (!allowed) return null'));
+assert.ok(src.includes('DASS_ITEMS.reduce'));
+assert.ok(src.includes('answered===42'));
+assert.ok(!src.includes('localStorage') && !src.includes('apiRequest') && !src.includes('fetch('));
+assert.ok(dashboard.includes('<InitialPsychologyBaselineDraft />'));
+const matches=src.match(/^  \['[DAS]','/gm) || [];
+assert.equal(matches.length,42,'DASS-42 must have 42 questions');
+for(const v of ['I. Đánh giá sơ bộ lâm sàng','II. Lịch sử cá nhân và y tế','III. Đánh giá nguy cơ và quản lý khủng hoảng','IV. Thang đánh giá','Nhận định của bộ phận Tâm lý'])assert.ok(src.includes(v));
+console.log('PSYCHOSOCIAL_BASELINE_DUAL_ROLE_UI_STATIC_PASS');
+console.log('NO_SERVER_WRITE=YES; NO_PRODUCTION_DEPLOY=YES; SOURCE_PARITY_PENDING=YES');
