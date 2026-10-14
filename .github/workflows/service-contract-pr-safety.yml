@@ -1,0 +1,63 @@
+name: Service Contract PR Safety CI
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/src/features/service-contracts/**'
+      - 'frontend/src/api/service-contracts.ts'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'scripts/check-service-contracts.mjs'
+      - '.github/workflows/service-contract-pr-safety.yml'
+  push:
+    branches:
+      - 'fix/service-contract-article5-20261013'
+    paths:
+      - 'frontend/src/features/service-contracts/**'
+      - 'frontend/src/api/service-contracts.ts'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'scripts/check-service-contracts.mjs'
+      - '.github/workflows/service-contract-pr-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: service-contract-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-frontend:
+    name: Read-only checks and frontend build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Contract regression checks
+        run: node scripts/check-service-contracts.mjs
+      - name: Install locked frontend dependencies
+        working-directory: frontend
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Typecheck and production frontend build
+        working-directory: frontend
+        run: npm run build
+      - name: Confirm no deployment or database operation
+        run: |
+          echo 'SAFE_CHECKS_ONLY=YES'
+          echo 'DB_RESET=NO'
+          echo 'MIGRATION=NO'
+          echo 'SEED=NO'
+          echo 'DEMO_DATA_CREATED=NO'
+          echo 'PRODUCTION_DEPLOY=NO'
