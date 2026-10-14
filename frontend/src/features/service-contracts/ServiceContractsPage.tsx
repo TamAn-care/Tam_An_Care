@@ -724,6 +724,34 @@ export function ServiceContractsPage() {
                   />
                 </div>
 
+                <div style={{ marginTop: '0.5rem', marginBottom: '0.75rem' }}>
+                  <label className="form-label" htmlFor="contract-relative1-address">Địa chỉ thường trú Thân nhân 1</label>
+                  <input id="contract-relative1-address" type="text" className="form-input" style={{ width: '100%' }}
+                    value={editingContract.partyA.relative1Address || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, relative1Address: e.target.value } })} />
+                </div>
+                <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem' }}>Đại diện Thân nhân 2 (***)</div>
+                <div className="contract-form-grid-4">
+                  <input type="text" aria-label="Họ tên Thân nhân 2" placeholder="Họ tên Thân nhân 2" className="form-input"
+                    value={editingContract.partyA.relative2Name || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, relative2Name: e.target.value } })} />
+                  <input type="text" aria-label="Năm sinh Thân nhân 2" placeholder="Năm sinh" className="form-input"
+                    value={editingContract.partyA.relative2BirthYear || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, relative2BirthYear: e.target.value } })} />
+                  <input type="text" aria-label="Số CCCD Thân nhân 2" placeholder="Số CCCD" className="form-input"
+                    value={editingContract.partyA.relative2Cccd || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, relative2Cccd: e.target.value } })} />
+                  <input type="text" aria-label="Quan hệ Thân nhân 2 với người cao tuổi" placeholder="Quan hệ với NCT" className="form-input"
+                    value={editingContract.partyA.relative2Relationship || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, relative2Relationship: e.target.value } })} />
+                </div>
+                <div style={{ marginTop: '0.5rem', marginBottom: '0.75rem' }}>
+                  <label className="form-label" htmlFor="contract-relative2-address">Địa chỉ thường trú Thân nhân 2</label>
+                  <input id="contract-relative2-address" type="text" className="form-input" style={{ width: '100%' }}
+                    value={editingContract.partyA.relative2Address || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, partyA: { ...editingContract.partyA, relative2Address: e.target.value } })} />
+                </div>
+
                 <div className="contract-form-grid-2">
                   <input
                     type="text"
