@@ -30,4 +30,16 @@ jobs:
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
+      - name: API dependency lock and compilation gate
+        working-directory: api
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Confirm server persistence is NOT implemented
+        run: |
+          echo "BASELINE_API_PERSISTENCE=NOT_IMPLEMENTED"
+          echo "SERVER_RESIDENT_SCOPE_RBAC=NOT_VERIFIED"
+          echo "SOURCE_PARITY=NOT_VERIFIED"
+          echo "ISOLATED_BACKUP_RESTORE=NOT_VERIFIED"
+          echo "RELEASE_READINESS=NO_GO"
       - run: echo "NO_DEPLOY=YES NO_DATABASE_ACCESS=YES"
