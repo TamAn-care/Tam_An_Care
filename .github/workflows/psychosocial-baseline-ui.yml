@@ -1,0 +1,33 @@
+name: Psychosocial Baseline UI Safety CI
+on:
+  push:
+    branches: ['feature/psychosocial-baseline-dual-role-20261014']
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/src/features/psychosocial/**'
+      - 'frontend/src/features/dashboard/DashboardPage.tsx'
+      - 'scripts/check-psychosocial-baseline.mjs'
+      - '.github/workflows/psychosocial-baseline-ui.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safety-ui-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: node scripts/check-psychosocial-baseline.mjs
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: echo "NO_DEPLOY=YES NO_DATABASE_ACCESS=YES"
