@@ -59,8 +59,8 @@ process.env.TAMANCARE_CONTRACT_DRAFT_WRITE_ROLES='ACCOUNTANT';
 const pool=new Pool({
   host:'127.0.0.1',
   port:Number(process.env.CONTRACT_LAB_PGPORT),
-  user:'postgres',
-  database:'postgres',
+  user:process.env.PGUSER,
+  database:process.env.PGDATABASE,
   max:4,
   connectionTimeoutMillis:5000,
 });
