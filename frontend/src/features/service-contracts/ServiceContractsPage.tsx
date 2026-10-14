@@ -863,6 +863,44 @@ export function ServiceContractsPage() {
                   ))}
                 </div>
 
+                <div style={{ border: '1px solid #d1fae5', borderRadius: '0.5rem', padding: '0.85rem', marginTop: '0.75rem', marginBottom: '1rem', background: '#f8fffb' }}>
+                  <div style={{ fontWeight: 700, color: '#166534', marginBottom: '0.65rem' }}>Chi tiết giảm trừ / ưu đãi</div>
+                  <div className="contract-form-grid-3">
+                    <div>
+                      <label className="form-label" htmlFor="contract-discount-type">Loại hình giảm trừ / ưu đãi</label>
+                      <select id="contract-discount-type" className="form-select" value={editingContract.appendix.discountType || ''}
+                        onChange={(e) => setEditingContract({ ...editingContract, appendix: { ...editingContract.appendix, discountType: e.target.value } })}>
+                        <option value="">-- Chọn loại hình --</option>
+                        <option value="Ưu đãi thanh toán trước">Ưu đãi thanh toán trước</option>
+                        <option value="Ưu đãi theo chương trình">Ưu đãi theo chương trình</option>
+                        <option value="Giảm trừ vắng mặt">Giảm trừ vắng mặt</option>
+                        <option value="Hỗ trợ đặc biệt">Hỗ trợ đặc biệt</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="form-label" htmlFor="contract-discount-start">Áp dụng từ ngày</label>
+                      <input id="contract-discount-start" type="date" className="form-input"
+                        value={editingContract.appendix.discountStartDate || ''}
+                        max={editingContract.appendix.discountEndDate || undefined}
+                        onChange={(e) => setEditingContract({ ...editingContract, appendix: { ...editingContract.appendix, discountStartDate: e.target.value } })} />
+                    </div>
+                    <div>
+                      <label className="form-label" htmlFor="contract-discount-end">Đến ngày (để trống nếu không xác định)</label>
+                      <input id="contract-discount-end" type="date" className="form-input"
+                        value={editingContract.appendix.discountEndDate || ''}
+                        min={editingContract.appendix.discountStartDate || undefined}
+                        onChange={(e) => setEditingContract({ ...editingContract, appendix: { ...editingContract.appendix, discountEndDate: e.target.value } })} />
+                    </div>
+                  </div>
+                  <label className="form-label" htmlFor="contract-discount-details" style={{ display: 'block', marginTop: '0.7rem' }}>Ghi chú / giải thích chi tiết (điều kiện, căn cứ, cách áp dụng, thời hạn)</label>
+                  <textarea id="contract-discount-details" className="form-input" rows={3}
+                    style={{ width: '100%', resize: 'vertical' }}
+                    placeholder="Ví dụ: Giảm 3% phí chăm sóc cơ bản khi gia đình thanh toán trước 6 tháng; áp dụng từ ... đến ...; không áp dụng với các khoản phát sinh."
+                    value={editingContract.appendix.discountDetails || ''}
+                    onChange={(e) => setEditingContract({ ...editingContract, appendix: { ...editingContract.appendix, discountDetails: e.target.value } })} />
+                </div>
+
                 <div className="contract-form-grid-discount">
                   <div>
                     <label className="form-label">Mức giảm trừ / Ưu đãi (VNĐ)</label>
@@ -1258,6 +1296,16 @@ export function ServiceContractsPage() {
               <div style={{ marginTop: '8px' }}>
                 <b>3. Ưu đãi:</b> {viewingContract.appendix.discountReason || 'Theo chính sách ưu đãi của Trung tâm'} (Giảm {viewingContract.appendix.discount.toLocaleString()} VNĐ)
               </div>
+              {(viewingContract.appendix.discountType || viewingContract.appendix.discountStartDate || viewingContract.appendix.discountEndDate || viewingContract.appendix.discountDetails) && (
+                <div style={{ marginTop: '4px', fontSize: '11pt', whiteSpace: 'pre-wrap' }}>
+                  {viewingContract.appendix.discountType && <div><b>Loại hình:</b> {viewingContract.appendix.discountType}</div>}
+                  {(viewingContract.appendix.discountStartDate || viewingContract.appendix.discountEndDate) && (
+                    <div><b>Thời hạn áp dụng:</b> {viewingContract.appendix.discountStartDate ? formatDateDDMMYYYY(viewingContract.appendix.discountStartDate) : 'Không xác định'}
+                      {' – '}{viewingContract.appendix.discountEndDate ? formatDateDDMMYYYY(viewingContract.appendix.discountEndDate) : 'Không xác định'}</div>
+                  )}
+                  {viewingContract.appendix.discountDetails && <div><b>Chi tiết:</b> {viewingContract.appendix.discountDetails}</div>}
+                </div>
+              )}
               <div style={{ marginTop: '4px', fontSize: '13pt' }}>
                 <b>Tổng phí dịch vụ: (1+2):</b> <b style={{ color: '#166534' }}>{viewingContract.appendix.totalMonthlyFee.toLocaleString()} VNĐ/tháng</b>
               </div>
