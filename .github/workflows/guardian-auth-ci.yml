@@ -58,6 +58,10 @@ jobs:
         run: node --test test/resident-access-scope.test.cjs
       - name: Resident controller server-side authorization (isolated)
         run: node --test test/resident-controller-authorization.test.cjs
+      - name: Guardian 22-case executable evidence suite (STAFF01-STAFF10 + GUARD01-GUARD12)
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node --test test/guardian-22-case-evidence.test.cjs
       - name: Assert critical compiled artifacts exist
         shell: bash
         run: |
@@ -74,7 +78,7 @@ jobs:
         shell: bash
         run: |
           printf 'SOURCE_COMMIT=%s\n' "$GITHUB_SHA"
-          printf 'STATUS=BUILD_ONLY_NOT_AUTH_REGRESSION\n'
+          printf 'STATUS=AUTH_REGRESSION_AND_BUILD_PASS\n'
           printf 'PRODUCTION_GO_NO_GO=NO_GO\n'
 
   frontend-build:
@@ -106,5 +110,5 @@ jobs:
         shell: bash
         run: |
           printf 'SOURCE_COMMIT=%s\n' "$GITHUB_SHA"
-          printf 'STATUS=BUILD_ONLY_NOT_AUTH_REGRESSION\n'
+          printf 'STATUS=FRONTEND_BUILD_PASS\n'
           printf 'PRODUCTION_GO_NO_GO=NO_GO\n'

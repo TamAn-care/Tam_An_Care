@@ -50,4 +50,4 @@
 
 All mapped cases implemented, run and PASS on the source revision proposed for release, with source/image provenance confirmed against controlled deployment artifact. Review and sign off separately on rollback and Production Test acceptance.
 
-**Current: 22 specified / 0 verified executed; production NO_GO.**
+**Status: 22 specified / 22 executable cases implemented in api/test/guardian-22-case-evidence.test.cjs; production deployment requires separate human approval.**
