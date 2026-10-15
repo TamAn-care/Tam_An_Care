@@ -7,26 +7,51 @@ import {
   vietnameseApiMessage,
 } from './errors';
 
-const DEFAULT_API_BASE =
-  'http://127.0.0.1:3000';
+import {
+  clearStoredAuthSession,
+  readStoredAccessToken,
+} from '../auth/session';
 
-export const API_BASE_URL =
+const DEFAULT_API_BASE =
+  '';
+
+const configuredApiBase =
   (
-    (import.meta as any)?.env
-      ?.VITE_API_BASE_URL as string |
-      undefined
+    import.meta.env
+      .VITE_API_BASE_URL as
+        string | undefined
   )?.replace(/\/$/, '') ||
   DEFAULT_API_BASE;
 
+/**
+ * Production Test is served from the same origin as the API proxy.
+ *
+ * API paths throughout the application already include "/api/...".
+ * Therefore "/api" must not also be used as API_BASE_URL, otherwise
+ * requests become "/api/api/...".
+ */
+// PRODUCTION_SAME_ORIGIN_API_GUARD
+// Production is served from the same origin behind Nginx.
+// Application API paths already begin with /api.
+// Therefore production API_BASE_URL MUST be empty.
+export const API_BASE_URL =
+  import.meta.env.PROD
+    ? ''
+    : configuredApiBase === '/api'
+      ? ''
+      : configuredApiBase;
+
 export interface RequestOptions
   extends RequestInit {
-  actor?: HumanActorSession | null;
+  actor?:
+    HumanActorSession | null;
   timeoutMs?: number;
 }
 
 export async function apiRequest<T>(
   path: string,
-  options: RequestOptions = {},
+  options:
+    RequestOptions = {},
 ): Promise<T> {
   const {
     actor,
@@ -40,13 +65,16 @@ export async function apiRequest<T>(
 
   const timeout =
     window.setTimeout(
-      () => controller.abort(),
+      () =>
+        controller.abort(),
       timeoutMs,
     );
 
   try {
     const requestHeaders =
-      new Headers(headers);
+      new Headers(
+        headers,
+      );
 
     requestHeaders.set(
       'Accept',
@@ -55,11 +83,28 @@ export async function apiRequest<T>(
 
     if (
       init.body &&
-      !requestHeaders.has('Content-Type')
+      !requestHeaders.has(
+        'Content-Type',
+      )
     ) {
       requestHeaders.set(
         'Content-Type',
         'application/json',
+      );
+    }
+
+    const token =
+      readStoredAccessToken();
+
+    if (
+      token &&
+      !requestHeaders.has(
+        'Authorization',
+      )
+    ) {
+      requestHeaders.set(
+        'Authorization',
+        `Bearer ${token}`,
       );
     }
 
@@ -80,12 +125,21 @@ export async function apiRequest<T>(
         `${API_BASE_URL}${path}`,
         {
           ...init,
-          headers: requestHeaders,
-          signal: controller.signal,
+          headers:
+            requestHeaders,
+          signal:
+            controller.signal,
         },
       );
 
     if (!response.ok) {
+      if (
+        response.status ===
+          401
+      ) {
+        clearStoredAuthSession();
+      }
+
       throw new ApiError(
         response.status,
         vietnameseApiMessage(
@@ -110,14 +164,17 @@ export async function apiRequest<T>(
     return undefined as T;
   } catch (error) {
     if (
-      error instanceof ApiError
+      error instanceof
+        ApiError
     ) {
       throw error;
     }
 
     if (
-      error instanceof DOMException &&
-      error.name === 'AbortError'
+      error instanceof
+        DOMException &&
+      error.name ===
+        'AbortError'
     ) {
       throw new Error(
         'Yêu cầu tới hệ thống đã quá thời gian chờ.',
@@ -128,6 +185,8 @@ export async function apiRequest<T>(
       'Không thể kết nối tới hệ thống. Vui lòng kiểm tra kết nối.',
     );
   } finally {
-    window.clearTimeout(timeout);
+    window.clearTimeout(
+      timeout,
+    );
   }
 }
