@@ -5,6 +5,7 @@ on:
     branches:
       - antigravity-production-test
       - 'ag/**'
+      - feature/resident-meal-registration-rbac-20261009
   pull_request:
     branches:
       - main
