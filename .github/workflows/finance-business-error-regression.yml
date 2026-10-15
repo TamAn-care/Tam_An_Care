@@ -34,7 +34,16 @@ jobs:
           cache-dependency-path: api/package-lock.json
       - name: Install dependencies
         run: npm ci
-      - name: Build API
+      - name: Remove tracked incremental build metadata in disposable runner
+        run: |
+          rm -f tsconfig.tsbuildinfo
+          rm -rf dist
+      - name: Build API from clean source
         run: npm run build
-      - name: Finance error regression
+      - name: Verify complete runtime build
+        run: |
+          test -f dist/database/database.service.js
+          test -f dist/finance-billing/finance-write.controller.js
+          test -f dist/security/verified-finance-identity.js
+      - name: Finance business error regression
         run: node tests/finance-business-error-mapping.test.cjs
