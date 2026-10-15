@@ -28,7 +28,7 @@ concurrency:
 
 jobs:
   build-api:
-    name: API locked build
+    name: API locked build + 22-case evidence
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -65,6 +65,28 @@ jobs:
         run: node --test test/resident-access-scope.test.cjs
       - name: Resident controller server-side authorization (isolated)
         run: node --test test/resident-controller-authorization.test.cjs
+      - name: Guardian 22-case executable evidence suite (STAFF01-STAFF10 + GUARD01-GUARD12)
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node --test test/guardian-22-case-evidence.test.cjs
+      - name: Verify evidence file contains all 22 passed cases
+        run: |
+          set -euo pipefail
+          test -s test-results/guardian-isolated-results.json
+          python3 - <<'PYEOF'
+          import json, sys
+          data = json.load(open('test-results/guardian-isolated-results.json'))
+          passed = [t for t in data.get('tests', []) if t.get('status') == 'passed']
+          print(f"Passed: {len(passed)}/22")
+          if len(passed) < 22:
+              sys.exit(1)
+          PYEOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: guardian-22-case-evidence-${{ github.sha }}
+          path: api/test-results/guardian-isolated-results.json
+          retention-days: 30
+          if-no-files-found: error
 
   build-frontend:
     name: Frontend locked build
@@ -90,12 +112,20 @@ jobs:
   auth-release-gate:
     name: Guardian 22-case release gate (fail closed)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    needs: build-api
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+      - name: Download executable evidence artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: guardian-22-case-evidence-${{ github.sha }}
+          path: api/test-results/
       - name: Validate acceptance matrix and executable test evidence
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: python3 scripts/guardian-ci/evidence_release_gate.py
 
   automation-summary:
@@ -110,7 +140,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Publish consolidated CI result and release blockers
+      - name: Publish consolidated CI result
         shell: bash
         env:
           API_RESULT: ${{ needs.build-api.result }}
@@ -118,21 +148,24 @@ jobs:
           RELEASE_GATE_RESULT: ${{ needs.auth-release-gate.result }}
         run: |
           set -euo pipefail
+          if [[ "$API_RESULT" == "success" && "$FRONTEND_RESULT" == "success" && "$RELEASE_GATE_RESULT" == "success" ]]; then
+            DECISION="TECHNICAL_ACCEPTANCE_GATES_PASSED — awaiting human deployment approval"
+          else
+            DECISION="NO_GO"
+          fi
           {
             echo '## Tâm An Care — Guardian CI automation'
             echo
             echo "| Check | Outcome |"
             echo "|---|---|"
-            echo "| API build and isolated Staff/Scope tests | $API_RESULT |"
+            echo "| API build + 22-case evidence (STAFF01-STAFF10, GUARD01-GUARD12) | $API_RESULT |"
             echo "| Frontend build | $FRONTEND_RESULT |"
-            echo "| 22-case executable release gate | $RELEASE_GATE_RESULT |"
+            echo "| Evidence release gate | $RELEASE_GATE_RESULT |"
             echo
-            echo '### Release decision'
-            echo 'PRODUCTION_GO_NO_GO=NO_GO'
+            echo "### Release decision: $DECISION"
             echo
-            echo 'Release is blocked until the 22 mapped authorization cases have executed,'
-            echo 'canonical source/build provenance has been confirmed, and a separate'
-            echo 'deployment approval is recorded. A build PASS alone is insufficient.'
+            echo 'A build PASS alone is insufficient. All 22 cases must have executed'
+            echo 'and production deployment requires separate human approval.'
           } >> "$GITHUB_STEP_SUMMARY"
           printf 'AUTOMATION_SUMMARY=RECORDED\n'
-          printf 'PRODUCTION_GO_NO_GO=NO_GO\n'
+          printf 'RELEASE_DECISION=%s\n' "$DECISION"
