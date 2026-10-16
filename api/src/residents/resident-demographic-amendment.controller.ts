@@ -57,7 +57,8 @@ export class ResidentDemographicAmendmentController {
 
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOfBirth) ||
       Number.isNaN(Date.parse(dateOfBirth)) ||
-      new Date(dateOfBirth).toISOString().slice(0, 10) !== dateOfBirth) {
+      new Date(dateOfBirth).toISOString().slice(0, 10) !== dateOfBirth ||
+      dateOfBirth > new Date().toISOString().slice(0, 10)) {
       throw new BadRequestException('Date of birth must be a valid YYYY-MM-DD.');
     }
     if (!expectedRevision ||
