@@ -65,6 +65,18 @@ async function main() {
           {expectedRevision:ctx.revision,dateOfBirth:'1953-11-20',reason:'Synthetic test correction'}),
         e=>e.status===403);
       console.log('E2E_403=PASS');
+      for (const invalidDate of ['2035-01-01', '1953-02-30', 'wrong']) {
+        await assert.rejects(controller.amend(
+          'synthetic-resident', 'synthetic-supervisor', 'SUPERVISOR',
+          { expectedRevision:ctx.revision, dateOfBirth:invalidDate,
+            reason:'Synthetic invalid date rejection test' }),
+          e=>e.status===400);
+      }
+      await assert.rejects(controller.amend(
+        'synthetic-resident', 'synthetic-supervisor', 'SUPERVISOR',
+        { expectedRevision:ctx.revision, dateOfBirth:'1953-11-20',
+          reason:'short' }), e=>e.status===400);
+      console.log('E2E_INVALID_FUTURE_DATE_AND_REASON=PASS');
       const ok = await controller.amend('synthetic-resident',
         'synthetic-supervisor','SUPERVISOR',
         {expectedRevision:ctx.revision,dateOfBirth:'1953-11-20',
