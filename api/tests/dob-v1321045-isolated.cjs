@@ -91,7 +91,7 @@ async function main() {
       const latest=await controller.editContext(
         'synthetic-resident','synthetic-supervisor','SUPERVISOR');
       await conn.query(`CREATE FUNCTION ci_reject_admission_audit() RETURNS trigger
-        LANGUAGE plpgsql AS $ BEGIN RAISE EXCEPTION 'synthetic audit failure'; END $`);
+        LANGUAGE plpgsql AS $q$ BEGIN RAISE EXCEPTION 'synthetic audit failure'; END $q$`);
       await conn.query(`CREATE TRIGGER ci_block_insert BEFORE INSERT ON admission_audit
         FOR EACH ROW EXECUTE FUNCTION ci_reject_admission_audit()`);
       await assert.rejects(controller.amend(
