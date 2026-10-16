@@ -1,0 +1,58 @@
+name: DOB V132.10.46 pinned legacy repository compatibility (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  legacy-read-compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: dob_ci_synthetic
+          POSTGRES_USER: dob_ci
+          POSTGRES_PASSWORD: synthetic-ci-only-not-production
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dob_ci -d dob_ci_synthetic"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      DB_HOST: 127.0.0.1
+      DB_NAME: dob_ci_synthetic
+      DB_USER: dob_ci
+      DB_PASSWORD: synthetic-ci-only-not-production
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out pinned old GitHub main into isolated directory
+        uses: actions/checkout@v4
+        with:
+          ref: 925db43739b04ea93705b0ba90c47165a5252e4c
+          path: legacy
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: legacy/api/package-lock.json
+      - name: Build pinned legacy API
+        working-directory: legacy/api
+        run: |
+          npm ci --no-audit --no-fund
+          rm -f tsconfig.tsbuildinfo
+          npm run build
+      - name: Execute old resident repository against new additive schema
+        run: node tests/dob-v1321046-legacy-repository.cjs
+      - name: Release remains blocked
+        run: |
+          echo "OLD_API_RESIDENT_REPOSITORY_COMPATIBILITY=TESTED"
+          echo "OLD_RUNTIME_IMAGE_PROVENANCE=HOLD"
+          echo "FULL_OLD_API_HTTP_ROLLBACK=HOLD"
+          echo "RELEASE_READY=NO"
+          echo "DEPLOY=NO"
