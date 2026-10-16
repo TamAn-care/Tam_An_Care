@@ -1,0 +1,47 @@
+name: DOB RC V132.10.43 isolated smoke (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-postgres-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: dob_ci_synthetic
+          POSTGRES_USER: dob_ci
+          POSTGRES_PASSWORD: synthetic-ci-only-not-production
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dob_ci -d dob_ci_synthetic"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: "5432"
+      PGDATABASE: dob_ci_synthetic
+      PGUSER: dob_ci
+      PGPASSWORD: synthetic-ci-only-not-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install isolated test driver
+        run: python -m pip install "psycopg[binary]==3.2.10"
+      - name: Verify isolated synthetic PostgreSQL transaction
+        run: python tests/dob_rc_v1321043_isolation_smoke.py
+      - name: Explicit RC release hold
+        run: |
+          echo "SYNTHETIC_ISOLATION_SMOKE=PASS"
+          echo "RC_API_IMAGE_SHA256=0832024251fa28b8bb18d79f5a888139d1bc96b96d92c8f9eded1f27401ab704"
+          echo "RC_IMAGE_TESTED=NO"
+          echo "DOB_200_403_409_AUDIT_SYNC=NOT_EXECUTED"
+          echo "OLD_API_NEW_SCHEMA_COMPATIBILITY=NOT_EXECUTED"
+          echo "RELEASE_READY=NO"
+          echo "DEPLOY=NO"

@@ -1,0 +1,32 @@
+name: DOB V132.10.46 pinned candidate image (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build isolated Docker release candidate
+        run: |
+          set -euo pipefail
+          docker build --pull -f api/Dockerfile -t taman-dob-ci:"${GITHUB_SHA}" api
+          docker image inspect "taman-dob-ci:${GITHUB_SHA}" --format '{{.Id}}' > rc-image-id.txt
+          docker image inspect "taman-dob-ci:${GITHUB_SHA}" --format '{{.Created}}' > rc-created.txt
+          test "$(wc -l < rc-image-id.txt)" -eq 1
+          echo "CANDIDATE_BUILD=PASS"
+          echo "SOURCE_COMMIT=${GITHUB_SHA}"
+          echo "EXISTING_SERVER_RC_EQUIVALENCE=UNVERIFIED"
+          echo "RELEASE_READY=NO"
+          echo "DEPLOY=NO"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dob-candidate-build-receipt
+          path: |
+            rc-image-id.txt
+            rc-created.txt
+          retention-days: 7

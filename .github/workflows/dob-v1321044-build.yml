@@ -1,0 +1,33 @@
+name: DOB V132.10.44 API compile gate (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  api-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Compile imported DOB controller
+        working-directory: api
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Route artifact and release safety
+        run: |
+          test -f api/dist/residents/resident-demographic-amendment.controller.js
+          grep -q 'demographics' api/dist/residents/resident-demographic-amendment.controller.js
+          echo "GITHUB_DOB_COMPILE=PASS"
+          echo "EXACT_RC_IMAGE_EQUIVALENCE=HOLD"
+          echo "DOB_E2E_200_403_409=HOLD"
+          echo "OLD_API_NEW_SCHEMA_ROLLBACK=HOLD"
+          echo "RELEASE_READY=NO"
+          echo "DEPLOY=NO"
