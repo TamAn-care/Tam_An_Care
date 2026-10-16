@@ -6,7 +6,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+RUN rm -f tsconfig.tsbuildinfo && npm run build
 
 FROM node:22-bookworm-slim AS runtime
 
