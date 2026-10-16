@@ -1,0 +1,41 @@
+name: DOB V132.10.44 isolated audit migration acceptance (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dob-audit-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: dob_ci_synthetic
+          POSTGRES_USER: dob_ci
+          POSTGRES_PASSWORD: synthetic-ci-only-not-production
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dob_ci -d dob_ci_synthetic"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGDATABASE: dob_ci_synthetic
+      PGUSER: dob_ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PostgreSQL test driver
+        run: python -m pip install "psycopg[binary]==3.2.10"
+      - name: Execute exact migration on disposable PostgreSQL
+        run: python tests/dob_v1321044_migration_acceptance.py
+      - name: Explicit release hold
+        run: |
+          echo "RC_DOB_E2E=HOLD"
+          echo "OLD_API_NEW_SCHEMA=HOLD"
+          echo "PRODUCTION_DEPLOY=NO"
