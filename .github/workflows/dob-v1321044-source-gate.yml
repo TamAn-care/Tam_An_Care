@@ -1,0 +1,23 @@
+name: DOB V132.10.44 source provenance gate (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-rc-safety-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Classify GitHub source versus RC candidate
+        run: python tests/dob_rc_v1321044_source_gate.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dob-v1321044-source-gate
+          path: dob_rc_v1321044_gate.json
+          retention-days: 7
