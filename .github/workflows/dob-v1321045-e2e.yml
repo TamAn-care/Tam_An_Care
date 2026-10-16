@@ -43,7 +43,10 @@ jobs:
         working-directory: api
         run: |
           npm ci --no-audit --no-fund
+          rm -f tsconfig.tsbuildinfo
           npm run build
+          test -f dist/database/database.service.js
+          test -f dist/residents/resident-demographic-amendment.controller.js
       - name: Execute compiled controller against disposable PostgreSQL
         working-directory: api
         run: node tests/dob-v1321045-isolated.cjs
