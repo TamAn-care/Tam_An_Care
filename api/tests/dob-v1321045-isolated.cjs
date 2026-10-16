@@ -90,7 +90,10 @@ async function main() {
       console.log('E2E_409=PASS');
       const latest=await controller.editContext(
         'synthetic-resident','synthetic-supervisor','SUPERVISOR');
-      await conn.query('ALTER TABLE admission_audit ADD CONSTRAINT ci_block_insert CHECK (false)');
+      await conn.query(`CREATE FUNCTION ci_reject_admission_audit() RETURNS trigger
+        LANGUAGE plpgsql AS $ BEGIN RAISE EXCEPTION 'synthetic audit failure'; END $`);
+      await conn.query(`CREATE TRIGGER ci_block_insert BEFORE INSERT ON admission_audit
+        FOR EACH ROW EXECUTE FUNCTION ci_reject_admission_audit()`);
       await assert.rejects(controller.amend(
         'synthetic-resident','synthetic-supervisor','SUPERVISOR',
         {expectedRevision:latest.revision,dateOfBirth:'1951-11-20',
