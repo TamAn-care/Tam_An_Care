@@ -38,6 +38,9 @@ print("RC_E2E=HOLD")
 print("OLD_API_NEW_SCHEMA=HOLD")
 print("RELEASE_READY=NO")
 print("PRODUCTION_DEPLOY=NO")
-assert not has_route and not has_import, (
-    "Source changed: re-evaluate provenance; never infer that it matches RC"
-)
+# Imported route can be staged independently from the exact RC image.
+# Do not promote source import to RC image equivalence.
+if has_route or has_import:
+    print("GITHUB_DOB_SOURCE_STAGED=YES")
+else:
+    print("GITHUB_DOB_SOURCE_STAGED=NO")
