@@ -13,7 +13,8 @@ export PGPASSWORD=finance_ci_only
 export PGDATABASE=postgres
 
 database="finance_migration_schema_ci_${GITHUB_RUN_ID:-local}_${BASHPID}"
-if [[ ! "$database" =~ ^[a-zA-Z0-9_]+$ ]]; then
+restore_database="${database}_restore"
+if [[ ! "$database" =~ ^[a-zA-Z0-9_]+$ || ! "$restore_database" =~ ^[a-zA-Z0-9_]+$ ]]; then
   echo "INVALID_DISPOSABLE_DATABASE_NAME"
   exit 2
 fi
@@ -23,6 +24,9 @@ created=1
 cleanup() {
   if [[ "${created:-0}" == 1 ]]; then
     PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "DROP DATABASE \"$database\" WITH (FORCE)" >/dev/null
+  fi
+  if [[ "${restore_created:-0}" == 1 ]]; then
+    PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "DROP DATABASE \"$restore_database\" WITH (FORCE)" >/dev/null
   fi
 }
 trap cleanup EXIT
@@ -72,13 +76,34 @@ migrations=(
   ops/finance/v29/004_finance_integrity_hardening.sql
   ops/finance/v30/005_shared_contract_version_history.sql
   ops/finance/v30/006_shared_contract_signoff_evidence.sql
-  ops/finance/v31/007_finance_invoice_ledger_origin.sql
 )
 
 for migration in "${migrations[@]}"; do
   echo "APPLY_SCHEMA_ONLY=$migration"
   psql -X -v ON_ERROR_STOP=1 -f "$migration"
 done
+
+# Exercise a real restore-based rollback candidate before applying v31. The
+# archive contains only the synthetic compatibility fixture in this disposable
+# CI database. Compare schema and row dumps after restore byte-for-byte.
+backup_file="${RUNNER_TEMP:-/tmp}/${database}.dump"
+schema_before="${RUNNER_TEMP:-/tmp}/${database}.schema.before.sql"
+schema_restored="${RUNNER_TEMP:-/tmp}/${database}.schema.restored.sql"
+data_before="${RUNNER_TEMP:-/tmp}/${database}.data.before.sql"
+data_restored="${RUNNER_TEMP:-/tmp}/${database}.data.restored.sql"
+pg_dump -Fc --no-owner --no-privileges --dbname="$database" --file="$backup_file"
+pg_dump --schema-only --no-owner --no-privileges --dbname="$database" > "$schema_before"
+pg_dump --data-only --column-inserts --no-owner --no-privileges --dbname="$database" > "$data_before"
+PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$restore_database\""
+restore_created=1
+pg_restore --no-owner --no-privileges --dbname="$restore_database" "$backup_file"
+pg_dump --schema-only --no-owner --no-privileges --dbname="$restore_database" > "$schema_restored"
+pg_dump --data-only --column-inserts --no-owner --no-privileges --dbname="$restore_database" > "$data_restored"
+cmp "$schema_before" "$schema_restored"
+cmp "$data_before" "$data_restored"
+echo "FINANCE_V317_RESTORE_BASELINE_EXACT=PASS"
+
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v31/007_finance_invoice_ledger_origin.sql
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $verify$
@@ -295,4 +320,6 @@ echo "FINANCE_BILLING_MIGRATION_SCHEMA_ONLY_PASS"
 echo "FINANCE_BILLING_MIGRATION_CREATED_BUSINESS_ROWS=0"
 echo "FINANCE_V317_INVOICE_LEDGER_CONSTRAINTS=PASS"
 echo "FINANCE_V317_SYNTHETIC_ROWS=DISPOSABLE_CI_ONLY"
+echo "FINANCE_V317_RESTORE_BASELINE_EXACT=PASS"
+echo "FINANCE_V317_ROLLBACK_CANDIDATE=RESTORE_PREMIGRATION_BACKUP"
 echo "FINANCE_BILLING_MIGRATION_DISPOSABLE_DATABASE=$database"
