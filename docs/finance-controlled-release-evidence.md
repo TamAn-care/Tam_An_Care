@@ -1,12 +1,12 @@
 # Finance controlled release evidence (NO DEPLOY)
 
-Last reviewed: 2026-10-17 (after commit `9d87f6141534273c1f5eff47a1855c964539472e`). This evidence separates isolated CI success from authorization to use real Finance data.
+Last reviewed: 2026-10-17 (Finance HEAD `777a49500bd36f1be223339f286e4b9f6a906b2c`). This evidence separates isolated CI success from authorization to use real Finance data.
 
 ## Current source and CI
 
 - Finance branch: `feature/finance-github-first-transition-20261012`.
-- Finance implementation commit under review: `9d87f6141534273c1f5eff47a1855c964539472e` (`fix(finance): remove unverified billing mock data`).
-- GitHub Actions run `39030595865` on that exact SHA: PASS, including API/frontend builds, isolated PostgreSQL regression, isolated billing migration chain, Finance security/evidence regression, and fail-closed readiness.
+- Finance implementation HEAD under review: `777a49500bd36f1be223339f286e4b9f6a906b2c` on `feature/finance-github-first-transition-20261012`; PR #5 remains open and Draft.
+- Latest GitHub Actions runs on this exact HEAD: qualification `39038139003` PASS (duplicate push run `39038135366` PASS), Finance Business Error `39038139076` PASS, and Contracts Server-Only `39038139027` PASS. Qualification covers API/frontend builds, isolated PostgreSQL regression and migrations, and fail-closed readiness. Queued/in-progress results are not counted as PASS.
 - PR #5 remains open and Draft; no merge or Production Test deployment was performed for Finance.
 - Frontend production build: PASS.
 - The latest change removes legacy in-memory invoice, receipt, fee notice and pricing fixtures. Legacy billing API operations fail closed until backed by a verified Finance API; Billing and Family Portal display an unavailable-source error instead of mock values or a false zero. The new regression is included in both qualification CI and the read-only reconciliation aggregator.
@@ -18,7 +18,9 @@ Last reviewed: 2026-10-17 (after commit `9d87f6141534273c1f5eff47a1855c964539472
 
 - V69 confirmed the expected database identity and completed a metadata-only schema inventory under a read-only transaction.
 - V70 confirmed the presence and selected column names of operational context tables for leave, inventory, kitchen receiving, consumption, staffing, and Finance ledger. It did not inspect business rows or amounts.
-- The metadata-only inventory found `finance_entries` and `finance_entry_audit` as Finance-named tables. It did not find dedicated invoice, contract, receipt/payment, payroll, or expense ledgers. This does not establish that the existing ledger rows contain complete, approved source evidence.
+- The metadata-only inventory found `finance_entries` and `finance_entry_audit` as Finance-named tables. It did not find dedicated invoice, contract, receipt/payment, payroll, or expense ledgers. This does not establish that existing ledger rows contain complete, approved source evidence.
+- A follow-up metadata-only inventory found candidate kitchen receiving line fields (`unit_price`, `total_price`, `inventory_lot_id`, receiving status) and inventory consumption/lot links. This is not proof of approved supplier cost, final valuation/allocation policy, or complete transaction provenance; source rows were not inspected. The runtime code also has a resident cost snapshot path that does not match the candidate receiving-lot path, and the corresponding resident-cost table was not found in the live schema inventory. The authoritative direct-cost method therefore remains unresolved.
+- No payroll register/source or authorized payroll approver has been proven in repository/runtime/schema evidence. Monthly net profit must remain fail-closed until payroll and direct-cost sources and approval rules are verified.
 - A fresh read-only check on 2026-10-17 confirmed the running API image still lacks compiled `/app/dist/finance-billing/monthly-operating-result.service.js`, `/app/dist/finance-billing/monthly-operating-result.js`, and `/app/dist/finance-billing/finance-read.controller.js`. Production Test runtime parity is therefore FAIL for the current Finance P&L implementation.
 - The server source worktree was observed to have tracked changes. No server source or container was modified by this audit.
 - Neither audit read business rows, changed schema, wrote data, restarted services, or touched Docker volumes.
@@ -30,7 +32,7 @@ Last reviewed: 2026-10-17 (after commit `9d87f6141534273c1f5eff47a1855c964539472
 3. Implement and validate the selected canonical contract backend and contract-version/approval mapping. Do not create a second contract master or infer fees from mutable UI values.
 4. Verify schema compatibility and the required migration chain against the live schema on an isolated PostgreSQL copy. No migration has been applied to Production Test.
 5. Build and validate a controlled runtime candidate, including production-equivalent signed JWT/session checks and read/write authorization boundaries. The current running API image is missing Finance P&L modules.
-6. Verify a current backup restore and rollback candidate for the exact application/schema release.
+6. Verify a current Production Test backup restore and rollback candidate for the exact application/schema release. The disposable PostgreSQL 16 CI test restores the pre-migration schema/data snapshot, compares normalized dumps byte-for-byte, and prepares a rollback candidate from that baseline. This does not prove a current Production Test backup is restorable.
 7. Obtain the system owner's approval for any Production Test migration or deployment.
 
 ## Isolated migration chain
@@ -47,6 +49,6 @@ The canonical Finance schema migrations are present on the Finance branch and ar
 
 `PRODUCTION_SEED=NO`
 
-Latest static release gate: `FINANCE_DEPLOY_READINESS=NO_GO`. Ledger amount/source reconciliation, Production billing migration presence, approved contract mapping, runtime schema approval, and Production-equivalent HTTP/JWT E2E remain blocked. The isolated CI pass does not discharge these live-system gates.
+Latest static release gate: `FINANCE_DEPLOY_READINESS=NO_GO`. Ledger amount/source reconciliation, Production billing migration presence, approved contract mapping, runtime schema approval, and Production-equivalent HTTP/JWT E2E remain blocked. The current readiness script reports amount/source reconciliation, Production billing migration presence, approved contract mapping, runtime schema approval, and production-equivalent HTTP/JWT E2E as BLOCKED; current HEAD reports `FINANCE_DEPLOY_READINESS=NO_GO`. The isolated CI pass and disposable restore test do not discharge these live-system gates.
 
 CI PASS is necessary but not sufficient for release. No Release Candidate may be declared ready until each blocker above has evidence and the system owner approves the controlled deployment step.
