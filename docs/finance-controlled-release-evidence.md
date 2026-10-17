@@ -12,6 +12,7 @@ Last reviewed: 2026-10-17 (after commit `9d87f6141534273c1f5eff47a1855c964539472
 - The latest change removes legacy in-memory invoice, receipt, fee notice and pricing fixtures. Legacy billing API operations fail closed until backed by a verified Finance API; Billing and Family Portal display an unavailable-source error instead of mock values or a false zero. The new regression is included in both qualification CI and the read-only reconciliation aggregator.
 - CI ran PostgreSQL only in disposable isolated databases; the billing migration test checked schema and inserted no business rows.
 - Local frontend change removed unverified contract fee, deposit, service, date, room, and identity defaults. Missing values stay unverified and are not treated as zero.
+- The target source-of-truth architecture and ledger link contract are selected in [finance-canonical-source-of-truth-adr-20261017.md](finance-canonical-source-of-truth-adr-20261017.md). This resolves the target design question, not proof of live approved records.
 
 ## Production Test read-only evidence
 
@@ -24,9 +25,9 @@ Last reviewed: 2026-10-17 (after commit `9d87f6141534273c1f5eff47a1855c964539472
 
 ## Release blockers
 
-1. Map authoritative contracts, invoices, approved fees, leave adjustments, inventory costing, payroll, vouchers, and operating expenses to real source records. The V70 table/column map is a candidate inventory only; approved monthly rows and origin reconciliation remain `NOT_PROVEN`.
+1. Prove that live approved contracts, invoices/fees, leave adjustments, inventory costing, payroll, vouchers, and operating expenses map to the selected architecture. The V70 table/column map is a candidate inventory only; approved monthly rows and origin reconciliation remain `NOT_PROVEN`.
 2. Reconcile recognized ledger amounts and source origins for a complete month. Do not publish net profit while any required source is unverified.
-3. Resolve the canonical contract backend and contract-version/approval mapping. Do not create a second contract master or infer fees from mutable UI values.
+3. Implement and validate the selected canonical contract backend and contract-version/approval mapping. Do not create a second contract master or infer fees from mutable UI values.
 4. Verify schema compatibility and the required migration chain against the live schema on an isolated PostgreSQL copy. No migration has been applied to Production Test.
 5. Build and validate a controlled runtime candidate, including production-equivalent signed JWT/session checks and read/write authorization boundaries. The current running API image is missing Finance P&L modules.
 6. Verify a current backup restore and rollback candidate for the exact application/schema release.
