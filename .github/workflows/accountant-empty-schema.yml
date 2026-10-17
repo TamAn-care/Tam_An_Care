@@ -1,0 +1,33 @@
+name: Accountant empty schema — no seed, no deploy
+
+on:
+  push:
+    branches: ['ci/accountant-empty-schema-20261017']
+    paths:
+      - '.github/workflows/accountant-empty-schema.yml'
+      - 'ops/accountant-read/ci-empty-schema.py'
+      - 'ops/accountant-read/schema-reference/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  empty-schema:
+    name: PostgreSQL DDL and zero-row reads only
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check exact SQL hashes and run empty isolated lab
+        run: python3 ops/accountant-read/ci-empty-schema.py
+      - name: Preserve schema-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accountant-empty-schema-${{ github.sha }}
+          path: ops/accountant-read/ci-empty-schema-result.json
+          if-no-files-found: error
+          retention-days: 7
