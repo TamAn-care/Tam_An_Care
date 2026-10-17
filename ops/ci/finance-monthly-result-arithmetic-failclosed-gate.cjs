@@ -8,12 +8,12 @@ function entry(id,kind,amountVnd,date='2026-10-12'){
 }
 const revenue=entry('revenue','REVENUE','16000000');
 const costs=[
- entry('direct','EXPENSE','4500000'),
- entry('payroll','EXPENSE','7000000'),
- entry('opex','EXPENSE','2000000'),
- entry('depreciation','EXPENSE','500000'),
- entry('interest','EXPENSE','250000'),
- entry('tax','EXPENSE','750000')
+ entry('direct','DIRECT_COST','4500000'),
+ entry('payroll','PAYROLL','7000000'),
+ entry('opex','OPERATING_EXPENSE','2000000'),
+ entry('depreciation','DEPRECIATION','500000'),
+ entry('interest','INTEREST','250000'),
+ entry('tax','TAX','750000')
 ];
 const calculated=calculate({...base,entries:[revenue,...costs]});
 assert.equal(calculated.state,'READY');
@@ -21,7 +21,11 @@ assert.equal(calculated.revenueVnd,'16000000');
 assert.equal(calculated.expenseVnd,'15000000');
 assert.equal(calculated.profitVnd,'1000000');
 assert.equal(calculated.expenseEntries,6);
-assert.equal(calculate({...base,entries:[entry('r','REVENUE','1'),entry('e','EXPENSE','3')]}).profitVnd,'-2');
+assert.equal(calculated.grossProfitVnd,'11500000');
+assert.equal(calculated.ebitdaVnd,'2500000');
+assert.equal(calculated.profitBeforeTaxVnd,'1750000');
+assert.equal(calculated.netProfitVnd,'1000000');
+assert.equal(calculate({...base,entries:[entry('r','REVENUE','1'),entry('e','DIRECT_COST','3')]}).profitVnd,'-2');
 const notProven=[
  {...base,ledgerCoverageComplete:false,entries:[revenue]},
  {...base,reconciliationComplete:false,entries:[revenue]},
@@ -35,11 +39,11 @@ for(const spec of notProven){
  assert.equal(result.expenseVnd,null);
  assert.equal(result.profitVnd,null);
 }
-assert.throws(()=>calculate({...base,entries:[entry('x','REVENUE','100'),entry('x','EXPENSE','20')]}),/DUPLICATE/);
+assert.throws(()=>calculate({...base,entries:[entry('x','REVENUE','100'),entry('x','DIRECT_COST','20')]}),/DUPLICATE/);
 assert.throws(()=>calculate({...base,entries:[entry('outside','REVENUE','100','2026-09-30')]}),/OUTSIDE_MONTH/);
 assert.throws(()=>calculate({...base,entries:[entry('badDate','REVENUE','100','2026-10-32')]}),/INVALID_RECOGNITION_DATE/);
 for(const amount of ['-1','1.01','1e3','1,000','10000000000000000']){
- assert.throws(()=>calculate({...base,entries:[entry('bad','EXPENSE',amount)]}),/INVALID_VND|OVERFLOW/);
+ assert.throws(()=>calculate({...base,entries:[entry('bad','DIRECT_COST',amount)]}),/INVALID_VND|OVERFLOW/);
 }
 assert.throws(()=>calculate({...base,entries:[entry('receipt','CASH_RECEIPT','100')]}),/UNKNOWN_LEDGER_KIND/);
 console.log('FINANCE_MONTHLY_RESULT_ARITHMETIC_AND_FAIL_CLOSED_GATE=PASS');

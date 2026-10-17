@@ -67,6 +67,7 @@ async function main(){
     assert.equal(out.ledgerSchemaReady,true);
     assert.equal(db.queries.length,2);
     assert.match(db.queries[1].sql,/LIMIT 10001/);
+    assert.ok(db.queries[1].sql.includes("status NOT IN ('DRAFT','VOID')"));
   }
   {
     const db=dbFor({columns:['finance_entry_id','entry_type']});
