@@ -11,6 +11,8 @@ on:
       - 'api/src/finance-billing/**'
       - 'api/src/security/**'
       - 'ops/ci/finance-*.cjs'
+      - 'ops/ci/finance-billing-schema-migration-test.sh'
+      - 'ops/finance/**'
       - 'docs/finance-github-first-transition-20261012.md'
       - 'docs/finance-checkpoint-porting-manifest-20261012.json'
       - 'ops/ci/finance-github-first-checkpoint-gate.cjs'
@@ -109,6 +111,9 @@ jobs:
           set -euo pipefail
           command -v psql >/dev/null || { echo '::error::PostgreSQL client unavailable'; exit 1; }
           bash ops/ci/finance-pg-lab-run.sh
+      - name: Finance billing migration chain — isolated schema only
+        shell: bash
+        run: bash ops/ci/finance-billing-schema-migration-test.sh
       - name: Finance isolation, evidence and security regression
         shell: bash
         run: |
