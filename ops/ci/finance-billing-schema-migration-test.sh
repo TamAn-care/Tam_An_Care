@@ -202,6 +202,13 @@ INSERT INTO public.billing_invoice_items(
 UPDATE public.billing_invoices SET status='APPROVED' WHERE invoice_id='ci_invoice';
 COMMIT;
 
+BEGIN;
+INSERT INTO public.finance_entries(
+  finance_entry_id,entry_type,amount_vnd,recognition_date,status,source_mode,
+  source_domain,source_entity_type,source_entity_id,financial_origin_key
+) VALUES ('ci_origin_ledger_1','REVENUE',1000,DATE '2026-10-01','POSTED','SYSTEM',
+  'BILLING','INVOICE_LINE','ci_line','ledger-origin-ci-0001');
+
 DO $constraint_tests$
 BEGIN
   BEGIN
@@ -217,7 +224,7 @@ BEGIN
       finance_entry_id,entry_type,amount_vnd,recognition_date,status,source_mode,
       source_domain,source_entity_type,source_entity_id,financial_origin_key
     ) VALUES ('ci_duplicate_origin','REVENUE',1000,DATE '2026-10-01','POSTED','MANUAL',
-      'BILLING','INVOICE_LINE','ci_line','contract-fee:ci-contract:202610');
+      'BILLING','INVOICE_LINE','ci_line','ledger-origin-ci-0001');
     RAISE EXCEPTION 'EXPECTED_DUPLICATE_ORIGIN_REJECTION';
   EXCEPTION WHEN unique_violation THEN NULL;
   END;
