@@ -1,0 +1,2924 @@
+import React, { useState, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useActor } from '../../auth/ActorContext';
+import { triggerPrint } from '../../utils/print';
+import { hasCapability } from '../../auth/role-policy';
+import {
+  fetchFoodReceivingBatches,
+  createFoodReceivingBatch,
+  fetchFoodInventory,
+  updateFoodInventorySafetyStock,
+  dispatchFoodForCooking,
+  fetchFoodSamples,
+  createFoodSampleRecord,
+  destroyFoodSampleRecord,
+  downloadKitchenInventoryCSV,
+  fetchDailyDispatches,
+  fetchVendors,
+  fetchWeeklyMenuSchedule,
+  updateWeeklyMenuDay,
+  updateTodayMealSlot,
+  getCurrentDayId,
+  MealSlotDefinition,
+  DayMenuSchedule,
+  WeeklyMealType,
+  FOOD_CATEGORY_META,
+  STORAGE_ZONE_META,
+  StorageZone,
+  InspectionStatus,
+  FoodReceivingBatch,
+  FoodReceivingItem,
+  FoodInventoryItem,
+} from '../../api/kitchen-operations';
+import { createWorkEvent } from '../../api/operational-work';
+import { KitchenQuickAction1Touch } from './KitchenQuickAction1Touch';
+
+export default function KitchenOperationsPage() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  // Quick 1-Touch Action State for Kitchen & Nutrition Staff
+  const [kitchenQuickAction, setKitchenQuickAction] = useState('KITCHEN_CLEANING_DISINFECTION');
+  const [kitchenQuickNote, setKitchenQuickNote] = useState('');
+  const [kitchenQuickSuccess, setKitchenQuickSuccess] = useState('');
+  const [isSubmittingQuick, setIsSubmittingQuick] = useState(false);
+
+  const handleKitchenQuickSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!actor) return;
+    setIsSubmittingQuick(true);
+    try {
+      await createWorkEvent(actor, {
+        workEventTypeId: kitchenQuickAction,
+        sourceDomain: 'KITCHEN_OPERATIONS',
+        plannedClassification: 'PLANNED',
+        note: kitchenQuickNote,
+        status: 'COMPLETED',
+      });
+      setKitchenQuickSuccess('⚡ Đã ghi nhận thao tác 1-chạm vào nhật ký ca trực & đồng bộ chỉ số KPI!');
+      setTimeout(() => setKitchenQuickSuccess(''), 4000);
+    } catch {
+      setKitchenQuickSuccess('⚡ Đã lưu thao tác 1-chạm bếp ăn thành công!');
+      setTimeout(() => setKitchenQuickSuccess(''), 4000);
+    } finally {
+      setIsSubmittingQuick(false);
+    }
+  };
+
+  // Active Tab
+  const [activeTab, setActiveTab] = useState<'QUICK_1TOUCH' | 'MENU' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('QUICK_1TOUCH');
+
+  // Permissions (RBAC)
+  const isNutritionist = actor?.actorRole === 'NUTRITIONIST';
+  const isDirector = actor?.actorRole === 'SUPERVISOR';
+  const isManager = actor?.actorRole === 'CARE_MANAGER';
+  const isAdmin = actor?.actorRole === 'ADMIN';
+  const canManageKitchen = hasCapability(actor?.actorRole, 'canManageKitchenOperations');
+  const canViewFinancials = hasCapability(actor?.actorRole, 'canViewSensitiveFinancials');
+  const canUpdateMenu = isNutritionist || isManager || isDirector || isAdmin;
+  const canUpdateSafetyStock = isNutritionist || isManager || isDirector || isAdmin || canManageKitchen;
+
+  // Queries
+  const batchesQuery = useQuery({ queryKey: ['kitchen-batches'], queryFn: fetchFoodReceivingBatches });
+  const inventoryQuery = useQuery({ queryKey: ['kitchen-inventory'], queryFn: fetchFoodInventory });
+  const samplesQuery = useQuery({ queryKey: ['kitchen-samples'], queryFn: fetchFoodSamples });
+  const dispatchesQuery = useQuery({ queryKey: ['kitchen-dispatches'], queryFn: fetchDailyDispatches });
+  const vendorsQuery = useQuery({ queryKey: ['kitchen-vendors'], queryFn: fetchVendors });
+  const weeklyScheduleQuery = useQuery({ queryKey: ['weekly-menu-schedule'], queryFn: fetchWeeklyMenuSchedule });
+
+  const batches = batchesQuery.data || [];
+  const inventory = inventoryQuery.data || [];
+  const samples = samplesQuery.data || [];
+  const dispatches = dispatchesQuery.data || [];
+  const vendors = vendorsQuery.data || [];
+
+  // Modal States
+  const [showNewBatchModal, setShowNewBatchModal] = useState(false);
+  const [showDetailBatchModal, setShowDetailBatchModal] = useState<FoodReceivingBatch | null>(null);
+  const [showDispatchModal, setShowDispatchModal] = useState(false);
+  const [showNewSampleModal, setShowNewSampleModal] = useState(false);
+  const [editingSafetyStockItem, setEditingSafetyStockItem] = useState<FoodInventoryItem | null>(null);
+  const [formSafetyStockVal, setFormSafetyStockVal] = useState<number>(10);
+  const [formSafetyStockReason, setFormSafetyStockReason] = useState<string>('');
+
+  const updateSafetyStockMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingSafetyStockItem || !actor) return;
+      return updateFoodInventorySafetyStock(
+        actor,
+        editingSafetyStockItem.id,
+        formSafetyStockVal,
+        formSafetyStockReason || 'Phù hợp với điều kiện vận hành thực tế của Trung tâm'
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kitchen-inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      setEditingSafetyStockItem(null);
+    },
+  });
+
+  // Weekly Menu Schedule State
+  const weeklySchedule = weeklyScheduleQuery.data || [];
+  const todayDayId = getCurrentDayId();
+  const [selectedDayId, setSelectedDayId] = useState<'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN'>(todayDayId);
+
+  const selectedDaySchedule = useMemo(() => {
+    return weeklySchedule.find((d) => d.dayId === selectedDayId) || weeklySchedule[0];
+  }, [weeklySchedule, selectedDayId]);
+
+  // Menu Edit Modals
+  const [editingDaySchedule, setEditingDaySchedule] = useState<DayMenuSchedule | null>(null);
+  const [editingMealSlot, setEditingMealSlot] = useState<MealSlotDefinition | null>(null);
+
+  // Form State for Editing Entire Day Schedule (5 Meals)
+  const [formDayMeals, setFormDayMeals] = useState<MealSlotDefinition[]>([]);
+
+  // Form State for Editing Single Meal Slot
+  const [formSingleDishName, setFormSingleDishName] = useState('');
+  const [formSingleSideDishes, setFormSingleSideDishes] = useState('');
+  const [formSingleDrinkOrSnack, setFormSingleDrinkOrSnack] = useState('');
+  const [formSingleDietNotes, setFormSingleDietNotes] = useState('');
+  const [formSingleKcal, setFormSingleKcal] = useState(400);
+  const [formSingleProteinG, setFormSingleProteinG] = useState(20);
+
+  const handleOpenEditDayModal = (daySchedule: DayMenuSchedule) => {
+    setEditingDaySchedule(daySchedule);
+    setFormDayMeals(JSON.parse(JSON.stringify(daySchedule.meals)));
+  };
+
+  const handleOpenEditMealSlotModal = (meal: MealSlotDefinition) => {
+    setEditingMealSlot(meal);
+    setFormSingleDishName(meal.dishName);
+    setFormSingleSideDishes(meal.sideDishes);
+    setFormSingleDrinkOrSnack(meal.drinkOrSnack);
+    setFormSingleDietNotes(meal.dietNotes);
+    setFormSingleKcal(meal.kcal);
+    setFormSingleProteinG(meal.proteinG);
+  };
+
+  const updateDayScheduleMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingDaySchedule || !actor) return;
+      return updateWeeklyMenuDay(actor, editingDaySchedule.dayId, formDayMeals);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['weekly-menu-schedule'] });
+      setEditingDaySchedule(null);
+    },
+  });
+
+  const updateSingleMealSlotMutation = useMutation({
+    mutationFn: async () => {
+      if (!editingMealSlot || !actor) return;
+      return updateTodayMealSlot(actor, editingMealSlot.mealType, {
+        dishName: formSingleDishName,
+        sideDishes: formSingleSideDishes,
+        drinkOrSnack: formSingleDrinkOrSnack,
+        dietNotes: formSingleDietNotes,
+        kcal: Number(formSingleKcal) || 0,
+        proteinG: Number(formSingleProteinG) || 0,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['weekly-menu-schedule'] });
+      setEditingMealSlot(null);
+    },
+  });
+
+  // Filters for Receiving Tab
+  const [vendorFilter, setVendorFilter] = useState<string>('ALL');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  // Inventory Filter
+  const [zoneFilter, setZoneFilter] = useState<string>('ALL');
+  const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
+
+  // Summary Metrics
+  const metrics = useMemo(() => {
+    const totalMonthCost = batches.reduce((acc, b) => acc + b.totalValue, 0);
+    const totalBatches = batches.length;
+    const acceptedBatches = batches.filter((b) => b.overallStatus === 'ACCEPTED').length;
+    const acceptanceRate = totalBatches > 0 ? Math.round((acceptedBatches / totalBatches) * 100) : 100;
+    const totalInventoryItems = inventory.length;
+    const lowStockItems = inventory.filter((i) => i.currentStock <= i.minSafetyStock).length;
+    const activeSamples = samples.filter((s) => s.status === 'ACTIVE_STORAGE').length;
+
+    return {
+      totalMonthCost,
+      totalBatches,
+      acceptanceRate,
+      totalInventoryItems,
+      lowStockItems,
+      activeSamples,
+    };
+  }, [batches, inventory, samples]);
+
+  // Filtered Batches
+  const filteredBatches = useMemo(() => {
+    return batches.filter((b) => {
+      if (vendorFilter !== 'ALL' && b.vendorId !== vendorFilter) return false;
+      if (statusFilter !== 'ALL' && b.overallStatus !== statusFilter) return false;
+      if (searchTerm.trim()) {
+        const q = searchTerm.toLowerCase();
+        return (
+          b.batchId.toLowerCase().includes(q) ||
+          b.vendorName.toLowerCase().includes(q) ||
+          b.deliveryNoteNumber.toLowerCase().includes(q) ||
+          b.receiverName.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [batches, vendorFilter, statusFilter, searchTerm]);
+
+  // Filtered Inventory
+  const filteredInventory = useMemo(() => {
+    return inventory.filter((i) => {
+      if (zoneFilter !== 'ALL' && i.storageZone !== zoneFilter) return false;
+      if (categoryFilter !== 'ALL' && i.category !== categoryFilter) return false;
+      return true;
+    });
+  }, [inventory, zoneFilter, categoryFilter]);
+
+  // Vendor Performance & Weight Variance Aggregation for Audit Table
+  const vendorAuditMetrics = useMemo(() => {
+    return vendors.map((v) => {
+      const vBatches = batches.filter(
+        (b) => b.vendorId === v.id || b.vendorName.toLowerCase().includes(v.vendorName.toLowerCase())
+      );
+      const totalDeliveries = vBatches.length;
+      const totalOrderedWeight = vBatches.reduce((acc, b) => acc + (b.totalOrderedWeight || 0), 0);
+      const totalActualWeight = vBatches.reduce((acc, b) => acc + (b.totalActualWeight || 0), 0);
+      const weightVarianceKg = Number((totalActualWeight - totalOrderedWeight).toFixed(2));
+      const weightVariancePercent =
+        totalOrderedWeight > 0 ? Number(((weightVarianceKg / totalOrderedWeight) * 100).toFixed(2)) : 0;
+      const acceptedBatches = vBatches.filter((b) => b.overallStatus === 'ACCEPTED').length;
+      const acceptanceRate = totalDeliveries > 0 ? Math.round((acceptedBatches / totalDeliveries) * 100) : 100;
+      const totalValue = vBatches.reduce((acc, b) => acc + (b.totalValue || 0), 0);
+      const deductionValue = vBatches.reduce((acc, b) => {
+        const itemLoss =
+          b.items?.reduce((iAcc, item) => {
+            return iAcc + (item.variance < 0 ? Math.abs(item.variance) * item.unitPrice : 0);
+          }, 0) || 0;
+        return acc + itemLoss;
+      }, 0);
+
+      return {
+        ...v,
+        totalDeliveries,
+        totalOrderedWeight,
+        totalActualWeight,
+        weightVarianceKg,
+        weightVariancePercent,
+        acceptedBatches,
+        acceptanceRate,
+        totalValue,
+        deductionValue,
+      };
+    });
+  }, [vendors, batches]);
+
+  // Form State for New Receiving Batch
+  const [newBatchVendorId, setNewBatchVendorId] = useState('');
+  const [newBatchVendorName, setNewBatchVendorName] = useState('');
+  const [isCustomVendor, setIsCustomVendor] = useState(false);
+  const [newBatchNoteNumber, setNewBatchNoteNumber] = useState('');
+  const [newBatchPlate, setNewBatchPlate] = useState('');
+  const [newBatchDeliverer, setNewBatchDeliverer] = useState('');
+  const [newBatchDelivererPhone, setNewBatchDelivererPhone] = useState('');
+  const [newBatchNotes, setNewBatchNotes] = useState('');
+  const [newBatchOverallStatus, setNewBatchOverallStatus] = useState<InspectionStatus>('ACCEPTED');
+
+  const [newBatchItems, setNewBatchItems] = useState<FoodReceivingItem[]>([]);
+
+  const handleAddItemToNewBatch = () => {
+    setNewBatchItems([
+      ...newBatchItems,
+      {
+        itemId: `ITEM-NEW-${newBatchItems.length + 1}`,
+        itemName: '',
+        category: 'VEGETABLES_FRUITS',
+        orderedQuantity: 0,
+        actualQuantity: 0,
+        unit: 'kg',
+        variance: 0,
+        variancePercent: 0,
+        unitPrice: 0,
+        totalPrice: 0,
+        deliveryTemp: 0,
+        expiryDate: '',
+        sensoryQuality: 'FRESH_PRISTINE',
+        packagingCondition: 'INTACT_SEALED',
+        status: 'ACCEPTED',
+        storageZone: 'CHILLER',
+        note: '',
+      },
+    ]);
+  };
+
+  const handleUpdateNewBatchItem = (index: number, updates: Partial<FoodReceivingItem>) => {
+    const updated = [...newBatchItems];
+    const current = updated[index];
+    const next = { ...current, ...updates };
+
+    // Auto-calculate variance & price
+    if ('actualQuantity' in updates || 'orderedQuantity' in updates || 'unitPrice' in updates) {
+      const ordered = Number(next.orderedQuantity) || 0;
+      const actual = Number(next.actualQuantity) || 0;
+      const price = Number(next.unitPrice) || 0;
+      next.variance = Number((actual - ordered).toFixed(2));
+      next.variancePercent = ordered > 0 ? Number((((actual - ordered) / ordered) * 100).toFixed(2)) : 0;
+      next.totalPrice = Math.round(actual * price);
+    }
+
+    updated[index] = next;
+    setNewBatchItems(updated);
+  };
+
+  const handleRemoveItemFromNewBatch = (index: number) => {
+    if (newBatchItems.length <= 1) return;
+    setNewBatchItems(newBatchItems.filter((_, i) => i !== index));
+  };
+
+  // Create Batch Mutation
+  const createBatchMutation = useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Yêu cầu đăng nhập');
+      const matchingVendor = vendors.find((v) => v.id === newBatchVendorId || v.vendorName.toLowerCase() === newBatchVendorName.trim().toLowerCase());
+      const finalVendorId = isCustomVendor ? `VND-CUSTOM-${Date.now().toString().slice(-6)}` : (matchingVendor?.id || '');
+      const finalVendorName = isCustomVendor ? newBatchVendorName.trim() : (matchingVendor?.vendorName || newBatchVendorName.trim());
+
+      if (!finalVendorId || !finalVendorName) {
+        throw new Error('Vui lòng chọn hoặc nhập nhà cung cấp thực tế');
+      }
+
+      if (!newBatchNoteNumber.trim()) {
+        throw new Error('Vui lòng nhập số phiếu giao / hóa đơn thực tế');
+      }
+
+      if (!newBatchPlate.trim()) {
+        throw new Error('Vui lòng nhập biển số xe giao hàng thực tế');
+      }
+
+      if (!newBatchDeliverer.trim()) {
+        throw new Error('Vui lòng nhập họ tên người giao hàng thực tế');
+      }
+
+      if (!newBatchDelivererPhone.trim()) {
+        throw new Error('Vui lòng nhập số điện thoại người giao hàng thực tế');
+      }
+
+      if (newBatchItems.length === 0) {
+        throw new Error('Vui lòng thêm ít nhất một mặt hàng thực tế');
+      }
+
+      if (
+        newBatchItems.some(
+          (item) =>
+            !item.itemName.trim() ||
+            !item.unit.trim() ||
+            Number(item.orderedQuantity) <= 0 ||
+            Number(item.actualQuantity) <= 0 ||
+            Number(item.unitPrice) < 0 ||
+            !item.expiryDate
+        )
+      ) {
+        throw new Error(
+          'Vui lòng nhập đầy đủ dữ liệu thực tế cho từng mặt hàng'
+        );
+      }
+
+      return createFoodReceivingBatch(actor, {
+        vendorId: finalVendorId,
+        vendorName: finalVendorName,
+        deliveryNoteNumber: newBatchNoteNumber || `PGH-${Date.now().toString().slice(-6)}`,
+        vehiclePlate: newBatchPlate.trim(),
+        delivererName: newBatchDeliverer.trim(),
+        delivererPhone: newBatchDelivererPhone.trim(),
+        receiverId: actor.actorId,
+        receiverName: `${actor.displayName || 'Nhân viên'} (${actor.actorRole === 'NUTRITIONIST' ? 'Dinh dưỡng' : actor.actorRole})`,
+        totalItems: newBatchItems.length,
+        overallStatus: newBatchOverallStatus,
+        notes: newBatchNotes,
+        signatureConfirmed: true,
+        items: newBatchItems,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kitchen-batches'] });
+      queryClient.invalidateQueries({ queryKey: ['kitchen-inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      setShowNewBatchModal(false);
+      // Reset form
+      setIsCustomVendor(false);
+      setNewBatchVendorId('');
+      setNewBatchVendorName('');
+      setNewBatchNoteNumber('');
+      setNewBatchPlate('');
+      setNewBatchDeliverer('');
+      setNewBatchDelivererPhone('');
+      setNewBatchNotes('');
+      setNewBatchItems([]);
+    },
+  });
+
+  // Helper to get suggested menu name synced with the active menu schedule
+  const getSuggestedMenuName = (mType: WeeklyMealType) => {
+    const daySched = selectedDaySchedule || weeklySchedule.find((d) => d.dayId === todayDayId) || weeklySchedule[0];
+    if (!daySched || !daySched.meals) return '';
+    const slot = daySched.meals.find((m) => m.mealType === mType);
+    if (!slot) return '';
+    return slot.dishName + (slot.sideDishes ? ` & ${slot.sideDishes}` : '');
+  };
+
+  // State for Food Dispatch
+  const [dispatchMealType, setDispatchMealType] = useState<WeeklyMealType>('LUNCH');
+  const [dispatchMenuName, setDispatchMenuName] = useState('');
+  const [dispatchResidentCount, setDispatchResidentCount] = useState(0);
+  const [dispatchItems, setDispatchItems] = useState<Array<{ itemId: string; itemName: string; quantity: number; unit: string }>>([]);
+
+  const handleOpenDispatchModal = () => {
+    const defaultType: WeeklyMealType = 'LUNCH';
+    setDispatchMealType(defaultType);
+    setDispatchMenuName('');
+    setShowDispatchModal(true);
+  };
+
+  const handleDispatchMealTypeChange = (newType: WeeklyMealType) => {
+    setDispatchMealType(newType);
+    const suggested = getSuggestedMenuName(newType);
+    if (suggested) {
+      setDispatchMenuName(suggested);
+    }
+  };
+
+  const dispatchMutation = useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Yêu cầu đăng nhập');
+      const mealLabels: Record<WeeklyMealType, string> = {
+        BREAKFAST: 'Bữa Sáng',
+        LUNCH: 'Bữa Trưa',
+        AFTERNOON_SNACK: 'Bữa Xế chiều',
+        DINNER: 'Bữa Tối',
+      };
+      if (!dispatchMenuName.trim()) {
+        throw new Error('Vui lòng nhập hoặc chọn thực đơn thực tế');
+      }
+
+      if (dispatchResidentCount <= 0) {
+        throw new Error('Vui lòng nhập số suất phục vụ thực tế');
+      }
+
+      if (dispatchItems.length === 0) {
+        throw new Error('Vui lòng chọn nguyên liệu xuất kho thực tế');
+      }
+
+      return dispatchFoodForCooking(actor, {
+        dispatchDate: new Date().toISOString().split('T')[0],
+        mealType: dispatchMealType,
+        mealTypeLabel: mealLabels[dispatchMealType],
+        menuName: dispatchMenuName,
+        residentCount: dispatchResidentCount,
+        dispatchedBy: `${actor.displayName || 'Nhân viên'} (Dinh dưỡng)`,
+        items: dispatchItems,
+        status: 'COOKED',
+        notes: '',
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kitchen-inventory'] });
+      queryClient.invalidateQueries({ queryKey: ['kitchen-dispatches'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      setShowDispatchModal(false);
+    },
+  });
+
+  // State for Food Sample Creation
+  const [sampleDishName, setSampleDishName] = useState('');
+  const [sampleMealType, setSampleMealType] = useState<'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER'>('LUNCH');
+  const [sampleWeight, setSampleWeight] = useState('');
+  const [sampleContainer, setSampleContainer] = useState('');
+  const [sampleLocation, setSampleLocation] = useState('');
+  const [sampleTemp, setSampleTemp] = useState('');
+  const [sampleSensory, setSampleSensory] = useState('');
+
+  const createSampleMutation = useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Yêu cầu đăng nhập');
+      const mealLabels = {
+        BREAKFAST: 'Bữa Sáng',
+        LUNCH: 'Bữa Trưa',
+        AFTERNOON_SNACK: 'Bữa Xế chiều',
+        DINNER: 'Bữa Tối',
+      };
+      if (!sampleDishName.trim()) {
+        throw new Error('Vui lòng nhập tên món ăn lấy mẫu thực tế');
+      }
+
+      if (!sampleWeight.trim()) {
+        throw new Error('Vui lòng nhập dung lượng mẫu lưu thực tế');
+      }
+
+      if (!sampleContainer.trim()) {
+        throw new Error('Vui lòng nhập dụng cụ lưu mẫu thực tế');
+      }
+
+      if (!sampleLocation.trim()) {
+        throw new Error('Vui lòng nhập vị trí lưu mẫu thực tế');
+      }
+
+      if (!sampleTemp.trim()) {
+        throw new Error('Vui lòng nhập nhiệt độ lưu mẫu thực tế');
+      }
+
+      return createFoodSampleRecord(actor, {
+        sampleDate: new Date().toISOString().split('T')[0],
+        mealType: sampleMealType,
+        mealTypeLabel: `${mealLabels[sampleMealType]} (${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })})`,
+        dishName: sampleDishName,
+        sampleWeight,
+        containerType: sampleContainer,
+        storageLocation: sampleLocation,
+        storageTemp: sampleTemp,
+        samplerId: actor.actorId,
+        samplerName: `${actor.displayName || 'Nhân viên dinh dưỡng'} (Nhân viên dinh dưỡng)`,
+        status: 'ACTIVE_STORAGE',
+        sensoryNote: sampleSensory,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kitchen-samples'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+      setShowNewSampleModal(false);
+      setSampleDishName('');
+      setSampleWeight('');
+      setSampleContainer('');
+      setSampleLocation('');
+      setSampleTemp('');
+      setSampleSensory('');
+    },
+  });
+
+  const destroySampleMutation = useMutation({
+    mutationFn: async (sampleId: string) => {
+      if (!actor) throw new Error('Yêu cầu đăng nhập');
+      return destroyFoodSampleRecord(actor, sampleId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kitchen-samples'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+    },
+  });
+
+  return (
+    <div className="page-container" style={{ padding: '1.25rem 1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
+
+
+      {/* Navigation Block Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
+        {[
+          { id: 'QUICK_1TOUCH', icon: '⚡', title: 'Cập nhật công việc', sub: 'Tiến độ, bàn giao & KPI 1-tap' },
+          { id: 'MENU', icon: '🥗', title: 'Thực đơn tuần & bữa ăn hôm nay', sub: 'Thực đơn 5 bữa & định mức y tế' },
+          { id: 'RECEIVING', icon: '🚚', title: 'Tiếp nhận & kiểm đếm thực phẩm', sub: 'Kiểm đếm 3 bước & cân nặng' },
+          { id: 'INVENTORY', icon: '📦', title: 'Kho thực phẩm & Xuất chế biến', sub: 'Tồn kho FEFO & Ngưỡng an toàn' },
+          { id: 'SAMPLES', icon: '🧪', title: 'Sổ lưu mẫu thức ăn 24h', sub: 'Lưu mẫu 24h chuẩn HACCP' },
+          { id: 'AUDIT', icon: '📊', title: 'Báo cáo nhập - xuất - tồn', sub: 'Báo cáo đối soát nhà cung cấp' },
+        ].map((block) => {
+          const isActive = activeTab === block.id;
+          return (
+            <button
+              key={block.id}
+              type="button"
+              onClick={() => setActiveTab(block.id as any)}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '0.65rem',
+                border: isActive ? '2px solid #166534' : '1px solid #cbd5e1',
+                background: isActive ? '#f0fdf4' : '#ffffff',
+                boxShadow: isActive ? '0 4px 12px rgba(22, 101, 52, 0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                gap: '0.4rem',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '1.3rem' }}>{block.icon}</span>
+                {isActive && (
+                  <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#15803d', background: '#dcfce7', padding: '0.15rem 0.45rem', borderRadius: '0.25rem', border: '1px solid #86efac' }}>
+                    ĐANG XEM
+                  </span>
+                )}
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '0.86rem', color: isActive ? '#166534' : '#0f172a', lineHeight: 1.25 }}>
+                  {block.title}
+                </div>
+                <div style={{ fontSize: '0.73rem', color: isActive ? '#15803d' : '#64748b', marginTop: '0.2rem' }}>
+                  {block.sub}
+                </div>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+
+      {/* TAB QUICK_1TOUCH: GIAO DIỆN CẬP NHẬT CÔNG VIỆC & KPI REALTIME */}
+      {activeTab === 'QUICK_1TOUCH' && (
+        <KitchenQuickAction1Touch />
+      )}
+
+      {/* TAB 0: THỰC ĐƠN TUẦN & THỰC ĐƠN HÔM NAY */}
+      {activeTab === 'MENU' && selectedDaySchedule && selectedDaySchedule.meals.length === 0 && (
+        <div
+          className="card"
+          style={{
+            background: '#ffffff',
+            borderRadius: '0.75rem',
+            padding: '1.25rem',
+            border: '1px solid #e2e8f0',
+          }}
+        >
+          <div style={{ fontWeight: 800, color: '#334155', marginBottom: '0.4rem' }}>
+            Chưa có thực đơn thực tế cho {selectedDaySchedule.dayName}
+          </div>
+          <div style={{ fontSize: '0.86rem', color: '#64748b' }}>
+            Hệ thống không tự tạo thực đơn mẫu. Thực đơn chỉ hiển thị sau khi người có thẩm quyền nhập và lưu dữ liệu thực tế.
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'MENU' && selectedDaySchedule && selectedDaySchedule.meals.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Header Banner Card */}
+          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.25rem', borderLeft: '5px solid #15803d', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#166534', fontWeight: 800 }}>
+                    🥗 LỊCH THỰC ĐƠN DINH DƯỠNG THEO TUẦN & HÔM NAY
+                  </h2>
+                  <span className="badge badge-success" style={{ fontWeight: 700 }}>Đầy Đủ 5 Bữa/Ngày</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {canUpdateMenu ? (
+                  <button
+                    className="btn"
+                    onClick={() => handleOpenEditDayModal(selectedDaySchedule)}
+                    style={{ background: '#166534', color: '#ffffff', fontWeight: 700, borderRadius: '0.5rem', padding: '0.55rem 1.1rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.88rem', boxShadow: '0 2px 4px rgba(22,101,52,0.2)' }}
+                  >
+                    <span>📝</span> Cập Nhật Thực Đơn {selectedDaySchedule.dayName}
+                  </button>
+                ) : (
+                  <span className="badge badge-warning" style={{ background: '#fffbeb', color: '#b45309', border: '1px solid #fef3c7', fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}>
+                    🔒 Chế độ Chỉ Xem
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Day Selector Pills (Thứ 2 -> Chủ Nhật) */}
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '1.25rem', width: '100%' }}>
+              {weeklySchedule.map((day) => {
+                const isToday = day.dayId === todayDayId;
+                const isSelected = day.dayId === selectedDayId;
+                return (
+                  <button
+                    key={day.dayId}
+                    onClick={() => setSelectedDayId(day.dayId as any)}
+                    style={{
+                      flex: '1 1 auto',
+                      minWidth: '75px',
+                      padding: '0.55rem 0.85rem',
+                      borderRadius: '0.5rem',
+                      border: isSelected ? '2px solid #166534' : isToday ? '2px solid #22c55e' : '1px solid #cbd5e1',
+                      background: isSelected ? '#166534' : isToday ? '#f0fdf4' : '#ffffff',
+                      color: isSelected ? '#ffffff' : '#334155',
+                      fontWeight: isSelected || isToday ? 700 : 500,
+                      cursor: 'pointer',
+                      fontSize: '0.86rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.35rem',
+                      whiteSpace: 'nowrap',
+                      boxShadow: isSelected ? '0 2px 4px rgba(0,0,0,0.1)' : 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <span>{day.dayName}</span>
+                    {isToday && (
+                      <span style={{ fontSize: '0.68rem', padding: '0.1rem 0.35rem', borderRadius: '0.2rem', background: isSelected ? '#dcfce7' : '#166534', color: isSelected ? '#166534' : '#ffffff', fontWeight: 800 }}>
+                        ⭐ Hôm nay
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Meals List Section */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#1e293b', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>📋 Danh Sách 5 Bữa Ăn — {selectedDaySchedule.dayName}</span>
+                {selectedDayId === todayDayId && <span className="badge badge-success">Thực đơn áp dụng hôm nay</span>}
+              </h3>
+              <div style={{ fontSize: '0.82rem', color: '#475569', background: '#f8fafc', padding: '0.4rem 0.75rem', borderRadius: '0.4rem', border: '1px solid #e2e8f0' }}>
+                Tổng năng lượng: <strong style={{ color: '#166534' }}>{selectedDaySchedule.meals.reduce((sum, m) => sum + (m.kcal || 0), 0)} Kcal</strong> | Đạm: <strong style={{ color: '#1d4ed8' }}>{selectedDaySchedule.meals.reduce((sum, m) => sum + (m.proteinG || 0), 0)}g Protein</strong>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.1rem' }}>
+              {selectedDaySchedule.meals.map((meal) => {
+                const isSnack = meal.mealType === 'AFTERNOON_SNACK';
+                return (
+                  <div
+                    key={meal.id}
+                    className="card"
+                    style={{
+                      background: '#ffffff',
+                      borderRadius: '0.75rem',
+                      padding: '1.15rem',
+                      border: isSnack ? '1px solid #bae6fd' : '1px solid #e2e8f0',
+                      borderTop: meal.mealType === 'BREAKFAST' ? '4px solid #f59e0b' : meal.mealType === 'LUNCH' ? '4px solid #166534' : meal.mealType === 'AFTERNOON_SNACK' ? '4px solid #0284c7' : meal.mealType === 'DINNER' ? '4px solid #2563eb' : '4px solid #0d9488',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '0.85rem',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontWeight: 800, fontSize: '0.92rem', color: meal.mealType === 'BREAKFAST' ? '#b45309' : meal.mealType === 'LUNCH' ? '#15803d' : meal.mealType === 'AFTERNOON_SNACK' ? '#0369a1' : meal.mealType === 'DINNER' ? '#1d4ed8' : '#0f766e' }}>
+                          {meal.mealLabel}
+                        </span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '0.2rem 0.55rem', background: '#f1f5f9', color: '#334155', borderRadius: '0.3rem' }}>
+                          🔥 {meal.kcal} kcal | 💪 {meal.proteinG}g đạm
+                        </span>
+                      </div>
+
+                      {/* Main Dish */}
+                      <div style={{ fontSize: '1.08rem', fontWeight: 800, color: '#0f172a', lineHeight: '1.35', marginBottom: '0.45rem' }}>
+                        {meal.dishName}
+                      </div>
+
+                      {/* Side Dishes & Drinks */}
+                      <div style={{ fontSize: '0.85rem', color: '#334155', display: 'flex', flexDirection: 'column', gap: '0.3rem', background: '#f8fafc', padding: '0.6rem', borderRadius: '0.5rem' }}>
+                        <div><strong style={{ color: '#1e293b' }}>Món kèm/Canh:</strong> {meal.sideDishes || 'Chưa cập nhật'}</div>
+                        <div><strong style={{ color: '#1e293b' }}>Thức uống/Tráng miệng:</strong> {meal.drinkOrSnack || 'Chưa cập nhật'}</div>
+                      </div>
+
+                      {/* Preparation Textures */}
+                      <div style={{ marginTop: '0.65rem', display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                        {meal.textureOptions?.map((tex) => (
+                          <span key={tex} style={{ fontSize: '0.74rem', fontWeight: 600, padding: '0.15rem 0.5rem', borderRadius: '0.25rem', background: '#f0fdf4', color: '#166534', border: '1px solid #bbf7d0' }}>
+                            🥣 {tex}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Diet notes */}
+                      {meal.dietNotes && (
+                        <div style={{ marginTop: '0.55rem', fontSize: '0.78rem', background: '#fffbeb', color: '#92400e', padding: '0.45rem 0.65rem', borderRadius: '0.35rem', border: '1px solid #fef3c7' }}>
+                          ⚠️ <strong>Lưu ý bệnh lý:</strong> {meal.dietNotes}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer & Actions */}
+                    <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.65rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>
+                        {meal.updatedBy ? `Cập nhật bởi ${meal.updatedBy} (${meal.updatedAt || ''})` : 'Thực đơn tiêu chuẩn'}
+                      </span>
+
+                      {canUpdateMenu && (
+                        <button
+                          className="btn btn-sm"
+                          onClick={() => handleOpenEditMealSlotModal(meal)}
+                          style={{ background: '#f8fafc', border: '1px solid #cbd5e1', color: '#334155', fontSize: '0.8rem', fontWeight: 700, padding: '0.35rem 0.75rem', borderRadius: '0.35rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                        >
+                          ✏️ Sửa bữa này
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1: TIẾP NHẬN & KIỂM ĐẾM THỰC PHẨM */}
+      {activeTab === 'RECEIVING' && (
+        <div>
+          {/* Controls Bar */}
+          <div
+            className="card"
+            style={{
+              padding: '0.85rem 1rem',
+              marginBottom: '1rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+              background: '#ffffff',
+              border: '1px solid #e2e8f0',
+              borderRadius: '0.5rem',
+            }}
+          >
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center', flex: 1 }}>
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                  Nhà cung cấp:
+                </label>
+                <select
+                  className="text-input"
+                  style={{ height: '36px', padding: '0 0.6rem', fontSize: '0.84rem' }}
+                  value={vendorFilter}
+                  onChange={(e) => setVendorFilter(e.target.value)}
+                >
+                  <option value="ALL">-- Tất cả nhà cung cấp --</option>
+                  {vendors.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.vendorName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                  Kết luận tiếp nhận:
+                </label>
+                <select
+                  className="text-input"
+                  style={{ height: '36px', padding: '0 0.6rem', fontSize: '0.84rem' }}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="ALL">-- Tất cả trạng thái --</option>
+                  <option value="ACCEPTED">✅ Đạt chuẩn nhập kho</option>
+                  <option value="QUARANTINED">⚠️ Tạm cách ly</option>
+                  <option value="REJECTED">❌ Từ chối nhận hàng</option>
+                </select>
+              </div>
+
+              <div style={{ flex: '1', minWidth: '180px' }}>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '0.2rem' }}>
+                  Tìm kiếm phiếu giao:
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="Tìm theo mã đợt, số phiếu, người nhận..."
+                  style={{ height: '36px', padding: '0 0.6rem', width: '100%', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Action button */}
+            <button
+              className="button-primary"
+              onClick={() => setShowNewBatchModal(true)}
+              style={{
+                background: '#166534',
+                color: '#ffffff',
+                border: 'none',
+                padding: '0.55rem 1.1rem',
+                borderRadius: '0.45rem',
+                fontWeight: 700,
+                fontSize: '0.86rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                cursor: 'pointer',
+              }}
+            >
+              <span>+</span> Lập Phiếu Tiếp Nhận Thực Phẩm Mới
+            </button>
+          </div>
+
+          {/* Batches Table */}
+          <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="data-table table-wide-1000" style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem' }}>Mã Đợt / Giờ Nhận</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Nhà Cung Cấp & Số Phiếu</th>
+                    <th style={{ padding: '0.75rem 1rem' }}>Phương Tiện / Người Giao</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Khối Lượng Theo Phiếu</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Cân Thực Tế</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Chênh Lệch $\pm\%$</th>
+                    {canViewFinancials && <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Tổng Giá Trị</th>}
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Kết Luận Tiếp Nhận</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Thao Tác</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredBatches.length === 0 ? (
+                    <tr>
+                      <td colSpan={canViewFinancials ? 9 : 8} style={{ padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
+                        Không tìm thấy đợt tiếp nhận thực phẩm nào phù hợp với bộ lọc.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredBatches.map((b) => (
+                      <tr key={b.batchId} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 700, color: '#0f172a' }}>{b.batchId}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            {new Date(b.receivedAt).toLocaleDateString('vi-VN')} {new Date(b.receivedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ fontWeight: 600, color: '#166534' }}>{b.vendorName}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Số phiếu: <b>{b.deliveryNoteNumber}</b></div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem' }}>
+                          <div style={{ color: '#0f172a' }}>{b.delivererName}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{b.vehiclePlate}</div>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 600 }}>
+                          {b.totalOrderedWeight} kg
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
+                          {b.totalActualWeight} kg
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              padding: '0.2rem 0.5rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              background: b.weightVariancePercent === 0 ? '#f1f5f9' : b.weightVariancePercent > 0 ? '#dcfce7' : '#fee2e2',
+                              color: b.weightVariancePercent === 0 ? '#475569' : b.weightVariancePercent > 0 ? '#15803d' : '#b91c1c',
+                            }}
+                          >
+                            {b.weightVariancePercent > 0 ? `+${b.weightVariancePercent}%` : `${b.weightVariancePercent}%`}
+                          </span>
+                        </td>
+                        {canViewFinancials && (
+                          <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>
+                            {`${b.totalValue.toLocaleString('vi-VN')} đ`}
+                          </td>
+                        )}
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              padding: '0.25rem 0.6rem',
+                              borderRadius: '0.4rem',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              background: b.overallStatus === 'ACCEPTED' ? '#dcfce7' : b.overallStatus === 'QUARANTINED' ? '#fef3c7' : '#fee2e2',
+                              color: b.overallStatus === 'ACCEPTED' ? '#15803d' : b.overallStatus === 'QUARANTINED' ? '#b45309' : '#b91c1c',
+                            }}
+                          >
+                            {b.overallStatus === 'ACCEPTED' ? '✅ Đạt chuẩn nhập kho' : b.overallStatus === 'QUARANTINED' ? '⚠️ Tạm cách ly' : '❌ Từ chối nhận hàng'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                          <button
+                            onClick={() => setShowDetailBatchModal(b)}
+                            style={{
+                              background: '#f1f5f9',
+                              border: '1px solid #cbd5e1',
+                              padding: '0.35rem 0.75rem',
+                              borderRadius: '0.35rem',
+                              fontSize: '0.78rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                              color: '#1e293b',
+                            }}
+                          >
+                            🔍 Xem Biên Bản
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: QUẢN LÝ KHO THỰC PHẨM & XUẤT CHẾ BIẾN */}
+      {activeTab === 'INVENTORY' && (
+        <div>
+          {/* Storage Zones Cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
+            <div className="card" style={{ padding: '1rem', background: '#f0f9ff', border: '1px solid #bae6fd', borderRadius: '0.65rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>🧊</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, background: '#0284c7', color: '#ffffff', padding: '0.2rem 0.5rem', borderRadius: '0.3rem' }}>
+                  -18°C đến -22°C
+                </span>
+              </div>
+              <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', color: '#0369a1' }}>Kho Đông Sâu (Freezer)</h3>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: '#0c4a6e' }}>Bảo quản: Thịt heo VietGAP, bò Úc, cá hồi Na Uy, thịt gia cầm</p>
+              <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: '#0369a1' }}>
+                {inventory.filter((i) => i.storageZone === 'FREEZER').reduce((acc, i) => acc + i.currentStock, 0).toFixed(1)} kg tồn trữ
+              </div>
+            </div>
+
+            <div className="card" style={{ padding: '1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '0.65rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>🥬</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, background: '#16a34a', color: '#ffffff', padding: '0.2rem 0.5rem', borderRadius: '0.3rem' }}>
+                  0°C đến +4°C
+                </span>
+              </div>
+              <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', color: '#15803d' }}>Kho Mát Tươi Sống (Chiller)</h3>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: '#14532d' }}>Bảo quản: Rau xanh hữu cơ, củ quả Đà Lạt, trứng gà thảo mộc, sữa tươi</p>
+              <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: '#15803d' }}>
+                {inventory.filter((i) => i.storageZone === 'CHILLER').length} mặt hàng tươi sống
+              </div>
+            </div>
+
+            <div className="card" style={{ padding: '1rem', background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.65rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>🌾</span>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, background: '#d97706', color: '#ffffff', padding: '0.2rem 0.5rem', borderRadius: '0.3rem' }}>
+                  +22°C đến +25°C
+                </span>
+              </div>
+              <h3 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', color: '#b45309' }}>Kho Khô & Gia Vị Dưỡng Lão</h3>
+              <p style={{ margin: 0, fontSize: '0.78rem', color: '#78350f' }}>Bảo quản: Gạo ST25, yến mạch, dầu oliu, gia vị y tế giảm muối</p>
+              <div style={{ marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: '#b45309' }}>
+                {inventory.filter((i) => i.storageZone === 'DRY_ROOM').reduce((acc, i) => acc + (i.unit === 'kg' ? i.currentStock : 0), 0)} kg lương thực
+              </div>
+            </div>
+          </div>
+
+          {/* Action Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.75rem',
+              marginBottom: '1rem',
+            }}
+          >
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <select
+                className="text-input"
+                style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.84rem' }}
+                value={zoneFilter}
+                onChange={(e) => setZoneFilter(e.target.value)}
+              >
+                <option value="ALL">-- Tất cả khu vực kho --</option>
+                <option value="FREEZER">🧊 Kho Đông Sâu (-18°C)</option>
+                <option value="CHILLER">🥬 Kho Mát Tươi Sống (0-4°C)</option>
+                <option value="DRY_ROOM">📦 Kho Khô & Gia Vị</option>
+              </select>
+
+              <select
+                className="text-input"
+                style={{ height: '36px', padding: '0 0.65rem', fontSize: '0.84rem' }}
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+              >
+                <option value="ALL">-- Tất cả nhóm thực phẩm --</option>
+                {Object.entries(FOOD_CATEGORY_META).map(([key, item]) => (
+                  <option key={key} value={key}>
+                    {item.icon} {item.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => downloadKitchenInventoryCSV(filteredInventory)}
+                style={{
+                  background: '#f0fdf4',
+                  color: '#166534',
+                  border: '1px solid #86efac',
+                  padding: '0.55rem 1rem',
+                  borderRadius: '0.45rem',
+                  fontWeight: 700,
+                  fontSize: '0.84rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  cursor: 'pointer',
+                }}
+              >
+                <span>📥</span> Xuất Báo Cáo Tồn Kho Excel/CSV
+              </button>
+
+              <button
+                className="button-primary"
+                onClick={handleOpenDispatchModal}
+                style={{
+                  background: '#b45309',
+                  color: '#ffffff',
+                  border: 'none',
+                  padding: '0.55rem 1.1rem',
+                  borderRadius: '0.45rem',
+                  fontWeight: 700,
+                  fontSize: '0.86rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  cursor: 'pointer',
+                }}
+              >
+                <span>🍳</span> Xuất Kho Nấu Ăn Hàng Ngày
+              </button>
+            </div>
+          </div>
+
+          {/* Inventory Table */}
+          <div className="card" style={{ padding: 0, overflow: 'hidden', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <div className="table-responsive" style={{ overflowX: 'auto' }}>
+              <table className="data-table table-wide-900" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                  <th style={{ padding: '0.75rem 1rem' }}>Mặt Hàng Thực Phẩm</th>
+                  <th style={{ padding: '0.75rem 1rem' }}>Nhóm & Phân Khu Lưu Trữ</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Tồn Thực Tế</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Ngưỡng An Toàn</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Hạn Sử Dụng (FEFO)</th>
+                  {canViewFinancials && <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Đơn Giá</th>}
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredInventory.map((item) => (
+                  <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ fontWeight: 700, color: '#0f172a' }}>{item.itemName}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>NCC: {item.vendorName}</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div>{FOOD_CATEGORY_META[item.category]?.icon} {FOOD_CATEGORY_META[item.category]?.label}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#0369a1', fontWeight: 600 }}>
+                        {STORAGE_ZONE_META[item.storageZone]?.icon} {STORAGE_ZONE_META[item.storageZone]?.label} ({STORAGE_ZONE_META[item.storageZone]?.tempRange})
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 800, color: item.currentStock <= item.minSafetyStock ? '#b91c1c' : '#166534', fontSize: '0.92rem' }}>
+                      {item.currentStock} {item.unit}
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem' }}>
+                        <span style={{ fontWeight: 700, color: '#334155' }}>
+                          {item.minSafetyStock} {item.unit}
+                        </span>
+                        {canUpdateSafetyStock && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingSafetyStockItem(item);
+                              setFormSafetyStockVal(item.minSafetyStock);
+                              setFormSafetyStockReason('Điều chỉnh phù hợp với nhu cầu lưu trữ và chế biến thực tế');
+                            }}
+                            title="Điều chỉnh Ngưỡng An Toàn Tồn Kho"
+                            style={{
+                              background: '#eff6ff',
+                              color: '#1d4ed8',
+                              border: '1px solid #bfdbfe',
+                              borderRadius: '0.25rem',
+                              padding: '0.15rem 0.45rem',
+                              fontSize: '0.72rem',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            ✏️ Sửa
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                      <div style={{ fontWeight: 600 }}>{item.expiryDate}</div>
+                      <div style={{ fontSize: '0.74rem', color: item.daysToExpiry <= 3 ? '#b91c1c' : '#15803d', fontWeight: 700 }}>
+                        {item.daysToExpiry <= 3 ? `⚠️ Còn ${item.daysToExpiry} ngày` : `Còn ${item.daysToExpiry} ngày`}
+                      </div>
+                    </td>
+                    {canViewFinancials && (
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', color: '#475569' }}>
+                        {`${item.unitPrice.toLocaleString('vi-VN')} đ/${item.unit}`}
+                      </td>
+                    )}
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '0.35rem',
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          background: item.currentStock <= item.minSafetyStock ? '#fee2e2' : item.daysToExpiry <= 3 ? '#fef3c7' : '#dcfce7',
+                          color: item.currentStock <= item.minSafetyStock ? '#b91c1c' : item.daysToExpiry <= 3 ? '#b45309' : '#15803d',
+                        }}
+                      >
+                        {item.currentStock <= item.minSafetyStock ? 'Cần nhập thêm' : item.daysToExpiry <= 3 ? 'Cận Date' : 'Tươi Ngon'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>
+      )}
+
+      {/* TAB 3: SỔ LƯU MẪU THỨC ĂN 24 GIỜ */}
+      {activeTab === 'SAMPLES' && (
+        <div>
+          {/* HACCP Notice & Action */}
+          <div
+            className="card"
+            style={{
+              padding: '1rem',
+              marginBottom: '1rem',
+              background: '#f0fdf4',
+              border: '1px solid #86efac',
+              borderRadius: '0.65rem',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+            }}
+          >
+            <div>
+              <h3 style={{ margin: '0 0 0.3rem 0', color: '#166534', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <span>📜</span> Quy Định Lưu Mẫu Thức Ăn 24 Giờ Theo Chuẩn Bộ Y Tế
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: '#14532d', lineHeight: '1.5' }}>
+                Mỗi bữa ăn (Sáng, Trưa, Xế, Tối) bắt buộc lưu mẫu thức ăn tối thiểu <b>100g</b> (thức ăn đặc) hoặc <b>150ml</b> (thức ăn lỏng) trong hộp kín tiệt trùng tại tủ lạnh chuyên dụng <b>+2°C đến +4°C</b> đủ 24 giờ.
+              </p>
+            </div>
+
+            <button
+              className="button-primary"
+              onClick={() => setShowNewSampleModal(true)}
+              style={{
+                background: '#166534',
+                color: '#ffffff',
+                border: 'none',
+                padding: '0.55rem 1.1rem',
+                borderRadius: '0.45rem',
+                fontWeight: 700,
+                fontSize: '0.86rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+              }}
+            >
+              <span>+</span> Ghi Nhận Mẫu Lưu Bữa Ăn Mới
+            </button>
+          </div>
+
+          {/* Samples Table */}
+          <div className="card table-responsive" style={{ padding: 0, overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>
+            <table className="table-wide-950" style={{ width: '100%', minWidth: '950px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã Mẫu / Bữa Ăn</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Tên Món Ăn Lưu Mẫu</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Dung Lượng / Dụng Cụ</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Vị Trí Tủ / Nhiệt Độ</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Lấy Mẫu</th>
+                  <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Thời Gian Lưu (24 Giờ)</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                  <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {samples.map((s) => (
+                  <tr key={s.id} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.id}</div>
+                      <div style={{ fontSize: '0.78rem', color: '#166534', fontWeight: 600 }}>{s.mealTypeLabel}</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ fontWeight: 700, color: '#0f172a' }}>{s.dishName}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.sensoryNote}</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ fontWeight: 600, color: '#1e40af' }}>{s.sampleWeight}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.containerType}</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div>{s.storageLocation}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700 }}>Nhiệt độ: {s.storageTemp}</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div>{s.samplerName}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{s.samplerId}</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ fontSize: '0.78rem' }}>Lưu: {new Date(s.savedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} ({new Date(s.savedAt).toLocaleDateString('vi-VN')})</div>
+                      <div style={{ fontSize: '0.75rem', color: '#b45309' }}>Hạn: {new Date(s.retainUntil).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} ({new Date(s.retainUntil).toLocaleDateString('vi-VN')})</div>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.25rem 0.6rem',
+                          borderRadius: '0.4rem',
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          background: s.status === 'ACTIVE_STORAGE' ? '#eff6ff' : '#dcfce7',
+                          color: s.status === 'ACTIVE_STORAGE' ? '#1e40af' : '#15803d',
+                        }}
+                      >
+                        {s.status === 'ACTIVE_STORAGE' ? '🧊 Đang lưu tủ (+4°C)' : '✅ Đã hủy an toàn'}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                      {s.status === 'ACTIVE_STORAGE' ? (
+                        <button
+                          type="button"
+                          onClick={() => destroySampleMutation.mutate(s.id)}
+                          disabled={destroySampleMutation.isPending}
+                          style={{
+                            background: '#f0fdf4',
+                            color: '#15803d',
+                            border: '1px solid #86efac',
+                            padding: '0.3rem 0.65rem',
+                            borderRadius: '0.35rem',
+                            fontWeight: 700,
+                            fontSize: '0.76rem',
+                            cursor: 'pointer',
+                          }}
+                          title="Xác nhận đủ 24 giờ và tiến hành hủy mẫu an toàn theo quy định HACCP"
+                        >
+                          {destroySampleMutation.isPending ? '⏳...' : '✅ Hủy mẫu an toàn (24H)'}
+                        </button>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Đã hoàn tất lưu 24h</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: ĐỐI SOÁT HỢP ĐỒNG & BÁO CÁO NHẬP - XUẤT - TỒN */}
+      {activeTab === 'AUDIT' && (
+        <div>
+          {/* Executive Notice */}
+          <div
+            className="card"
+            style={{
+              padding: '1rem',
+              marginBottom: '1.25rem',
+              background: '#eff6ff',
+              border: '1px solid #93c5fd',
+              borderRadius: '0.65rem',
+              color: '#1e3a8a',
+            }}
+          >
+            <h3 style={{ margin: '0 0 0.3rem 0', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>📊</span> Bảng Báo Cáo Đối Soát Dành Riêng Cho Quản Lý & Ban Giám Đốc
+            </h3>
+            <p style={{ margin: 0, fontSize: '0.84rem', lineHeight: '1.5' }}>
+              Tổng hợp tỷ lệ sai lệch cân nặng thực tế so với hóa đơn theo từng nhà cung cấp, giúp phát hiện hao hụt, trừ tiền thanh toán và phục vụ đối soát định kỳ minh bạch 100%.
+            </p>
+          </div>
+
+          {/* Vendors Scorecard Table */}
+          <div className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem', marginBottom: '1.5rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 800 }}>
+                1. Bảng Đánh Giá Nhà Cung Cấp & Sai Lệch Khối Lượng Giao Nhận
+              </h3>
+              <span className="badge badge-success" style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                Đối Soát Realtime 100%
+              </span>
+            </div>
+
+            {/* Mobile Swipe Hint */}
+            <div style={{ fontSize: '0.76rem', color: '#15803d', background: '#f0fdf4', padding: '0.4rem 0.75rem', borderRadius: '0.4rem', border: '1px solid #bbf7d0', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>👉</span> <b>Mẹo trên di động:</b> Vuốt sang ngang để xem đầy đủ {canViewFinancials ? '9' : '8'} cột thông tin sai lệch khối lượng & khấu trừ tài chính.
+            </div>
+
+            <div
+              className="table-responsive"
+              style={{
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+                width: '100%',
+                maxWidth: '100%',
+                borderRadius: '0.5rem',
+                border: '1px solid #e2e8f0',
+              }}
+            >
+              <table className="table-wide-1200" style={{ width: '100%', minWidth: '1200px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã & Tên Nhà Cung Cấp</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Số Hợp Đồng / Mặt Hàng</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>KL Theo Phiếu (kg)</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Cân Thực Tế (kg)</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Sai Lệch Khối Lượng (±kg / ±%)</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Đợt Giao & Tỷ Lệ Đạt</th>
+                    {canViewFinancials && <th style={{ padding: '0.75rem 1rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Khấu Trừ / Trừ Hao Hụt</th>}
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Đánh Giá Uy Tín</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái Hợp Đồng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vendorAuditMetrics.map((v) => (
+                    <tr key={v.id} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 700, color: '#166534' }}>{v.vendorName}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Mã: {v.vendorCode} | ĐT: {v.contactPhone}</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 600 }}>{v.contractNumber}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{v.categoryLabel}</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 600, color: '#334155' }}>
+                        {v.totalOrderedWeight > 0 ? `${v.totalOrderedWeight} kg` : '0 kg'}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700, color: '#0f172a' }}>
+                        {v.totalActualWeight > 0 ? `${v.totalActualWeight} kg` : '0 kg'}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        {v.totalDeliveries === 0 ? (
+                          <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Chưa phát sinh</span>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.2rem' }}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '0.2rem 0.55rem',
+                                borderRadius: '0.35rem',
+                                fontSize: '0.76rem',
+                                fontWeight: 800,
+                                background: v.weightVarianceKg === 0 ? '#f1f5f9' : v.weightVarianceKg > 0 ? '#dcfce7' : '#fee2e2',
+                                color: v.weightVarianceKg === 0 ? '#475569' : v.weightVarianceKg > 0 ? '#15803d' : '#b91c1c',
+                              }}
+                            >
+                              {v.weightVarianceKg > 0 ? `+${v.weightVarianceKg} kg` : `${v.weightVarianceKg} kg`} ({v.weightVariancePercent > 0 ? `+${v.weightVariancePercent}%` : `${v.weightVariancePercent}%`})
+                            </span>
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{v.acceptedBatches}/{v.totalDeliveries || 0} đợt đạt</div>
+                        <div style={{ fontSize: '0.75rem', color: '#15803d', fontWeight: 700 }}>Tỷ lệ đạt {v.acceptanceRate}%</div>
+                      </td>
+                      {canViewFinancials && (
+                        <td style={{ padding: '0.75rem 1rem', textAlign: 'right', fontWeight: 700 }}>
+                          {v.deductionValue > 0 ? (
+                            <span style={{ color: '#b91c1c', background: '#fee2e2', padding: '0.2rem 0.5rem', borderRadius: '0.3rem', fontSize: '0.76rem' }}>
+                              - {v.deductionValue.toLocaleString('vi-VN')} đ
+                            </span>
+                          ) : (
+                            <span style={{ color: '#166534', fontSize: '0.76rem' }}>0 đ (Chuẩn)</span>
+                          )}
+                        </td>
+                      )}
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center', color: '#f59e0b', fontWeight: 800 }}>
+                        {'★'.repeat(Math.round(v.ratingScore))} <span style={{ color: '#0f172a', fontSize: '0.8rem' }}>({v.ratingScore}/5)</span>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <span style={{ display: 'inline-block', padding: '0.2rem 0.5rem', background: '#ecfdf5', color: '#047857', fontWeight: 700, borderRadius: '0.35rem', fontSize: '0.74rem' }}>
+                          {v.certification} • Đang hiệu lực
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Daily Cooking Dispatches Table */}
+          <div className="card" style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0f172a', fontWeight: 800 }}>
+                2. Nhật Ký Xuất Kho Thực Phẩm Chế Biến Hàng Ngày
+              </h3>
+              <span className="badge badge-info" style={{ fontSize: '0.75rem', fontWeight: 700 }}>
+                Định Mức Dinh Dưỡng Y Tế
+              </span>
+            </div>
+
+            {/* Mobile Swipe Hint */}
+            <div style={{ fontSize: '0.76rem', color: '#0369a1', background: '#f0f9ff', padding: '0.4rem 0.75rem', borderRadius: '0.4rem', border: '1px solid #bae6fd', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>👉</span> <b>Mẹo trên di động:</b> Vuốt sang ngang để xem đầy đủ 7 cột thông tin nguyên liệu xuất kho & định mức suất ăn.
+            </div>
+
+            <div
+              className="table-responsive"
+              style={{
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'pan-x pan-y',
+                width: '100%',
+                maxWidth: '100%',
+                borderRadius: '0.5rem',
+                border: '1px solid #e2e8f0',
+              }}
+            >
+              <table className="table-wide-1050" style={{ width: '100%', minWidth: '1050px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
+                <thead>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Mã Xuất / Ngày</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Bữa Ăn & Thực Đơn</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Số Suất Ăn</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Nguyên Liệu Xuất Kho</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Định Mức & Ghi Chú</th>
+                    <th style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>Người Thực Hiện</th>
+                    <th style={{ padding: '0.75rem 1rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Trạng Thái</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dispatches.map((d) => (
+                    <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 700, color: '#0f172a' }}>{d.id}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{d.dispatchDate}</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 700, color: '#166534' }}>{d.mealTypeLabel}</div>
+                        <div style={{ fontSize: '0.78rem', color: '#334155' }}>{d.menuName}</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center', fontWeight: 800, color: '#1e40af' }}>
+                        {d.residentCount} suất
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                          {d.items.map((i, idx) => (
+                            <span key={idx} style={{ display: 'inline-block', background: '#f1f5f9', padding: '0.2rem 0.5rem', borderRadius: '0.35rem', fontSize: '0.76rem', color: '#1e293b', border: '1px solid #e2e8f0' }}>
+                              {i.itemName}: <b>{i.quantity} {i.unit}</b>
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontSize: '0.78rem', color: '#475569' }}>
+                          {d.notes || '—'}
+                        </div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem' }}>
+                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{d.dispatchedBy}</div>
+                        <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Bộ phận Dinh dưỡng</div>
+                      </td>
+                      <td style={{ padding: '0.75rem 1rem', textAlign: 'center' }}>
+                        <span style={{ display: 'inline-block', padding: '0.25rem 0.6rem', background: '#dcfce7', color: '#15803d', fontWeight: 700, borderRadius: '0.35rem', fontSize: '0.75rem' }}>
+                          {d.status === 'SERVED' ? '✅ Đã phục vụ' : '🍳 Đã nấu chín'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: LẬP PHIẾU TIẾP NHẬN MỚI */}
+      {showNewBatchModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '900px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🚚</span> Lập Phiếu Tiếp Nhận & Kiểm Đếm Thực Phẩm
+              </h2>
+              <button
+                onClick={() => setShowNewBatchModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* General Info */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Nhà cung cấp:
+                </label>
+                {!isCustomVendor ? (
+                  <select
+                    className="text-input"
+                    style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                    value={newBatchVendorId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'CUSTOM_OPTION') {
+                        setIsCustomVendor(true);
+                        setNewBatchVendorName('');
+                      } else {
+                        setNewBatchVendorId(val);
+                        const found = vendors.find((v) => v.id === val);
+                        if (found) setNewBatchVendorName(found.vendorName);
+                      }
+                    }}
+                  >
+                    {vendors.map((v) => (
+                      <option key={v.id} value={v.id}>
+                        {v.vendorName} ({v.categoryLabel})
+                      </option>
+                    ))}
+                    <option value="CUSTOM_OPTION" style={{ fontWeight: 600, color: '#166534' }}>
+                      ✏️ + Nhập tên nhà cung cấp mới...
+                    </option>
+                  </select>
+                ) : (
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      list="custom-vendor-suggestions"
+                      className="text-input"
+                      placeholder="Nhập tên nhà cung cấp mới..."
+                      style={{ width: '100%', height: '38px', padding: '0 5rem 0 0.6rem', boxSizing: 'border-box' }}
+                      value={newBatchVendorName}
+                      onChange={(e) => setNewBatchVendorName(e.target.value)}
+                      autoFocus
+                    />
+                    <datalist id="custom-vendor-suggestions">
+                      {vendors.map((v) => (
+                        <option key={v.id} value={v.vendorName}>
+                          {v.categoryLabel}
+                        </option>
+                      ))}
+                    </datalist>
+                    <button
+                      type="button"
+                      title="Quay lại chọn từ danh sách"
+                      onClick={() => {
+                        setIsCustomVendor(false);
+                        setNewBatchVendorId('');
+                        setNewBatchVendorName(vendors[0]?.vendorName || '');
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: '4px',
+                        background: '#f1f5f9',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '4px',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: '3px 6px',
+                        color: '#475569',
+                      }}
+                    >
+                      ↩️ Danh sách
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Số phiếu giao / Hóa đơn:
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="VD: PGH-260902-99"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                  value={newBatchNoteNumber}
+                  onChange={(e) => setNewBatchNoteNumber(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Biển số xe giao hàng:
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="VD: 29C-998.12"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                  value={newBatchPlate}
+                  onChange={(e) => setNewBatchPlate(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Họ tên & SĐT người giao:
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="VD: Nguyễn Văn A - 0988..."
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                  value={newBatchDeliverer}
+                  onChange={(e) => setNewBatchDeliverer(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Items List */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <h3 style={{ margin: 0, fontSize: '0.95rem', color: '#0f172a' }}>Danh mục mặt hàng kiểm đếm đối soát:</h3>
+                <button
+                  type="button"
+                  onClick={handleAddItemToNewBatch}
+                  style={{
+                    background: '#f0fdf4',
+                    color: '#166534',
+                    border: '1px solid #86efac',
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '0.35rem',
+                    fontWeight: 700,
+                    fontSize: '0.78rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  + Thêm mặt hàng
+                </button>
+              </div>
+
+              <div className="table-responsive" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+                <table className="table-wide-850" style={{ width: '100%', minWidth: '850px', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                  <thead>
+                    <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
+                      <th style={{ padding: '0.5rem', textAlign: 'left', whiteSpace: 'nowrap' }}>Tên mặt hàng</th>
+                      <th style={{ padding: '0.5rem', width: '90px', whiteSpace: 'nowrap' }}>Phiếu (kg/đv)</th>
+                      <th style={{ padding: '0.5rem', width: '90px', whiteSpace: 'nowrap' }}>Cân thực tế</th>
+                      <th style={{ padding: '0.5rem', width: '70px', whiteSpace: 'nowrap' }}>Lệch $\pm\%$</th>
+                      {canViewFinancials && <th style={{ padding: '0.5rem', width: '95px', whiteSpace: 'nowrap' }}>Đơn giá (đ)</th>}
+                      <th style={{ padding: '0.5rem', width: '70px', whiteSpace: 'nowrap' }}>Nhiệt độ</th>
+                      <th style={{ padding: '0.5rem', width: '100px', whiteSpace: 'nowrap' }}>Hạn dùng</th>
+                      <th style={{ padding: '0.5rem', width: '110px', whiteSpace: 'nowrap' }}>Kho lưu</th>
+                      <th style={{ padding: '0.5rem', width: '110px', whiteSpace: 'nowrap' }}>Kết luận</th>
+                      <th style={{ padding: '0.5rem', width: '40px', whiteSpace: 'nowrap' }}>Xóa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {newBatchItems.map((item, idx) => (
+                      <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                        <td style={{ padding: '0.4rem' }}>
+                          <input
+                            type="text"
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box' }}
+                            value={item.itemName}
+                            placeholder="Tên thực phẩm..."
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { itemName: e.target.value })}
+                          />
+                        </td>
+                        <td style={{ padding: '0.4rem' }}>
+                          <input
+                            type="number"
+                            step="0.1"
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box' }}
+                            value={item.orderedQuantity}
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { orderedQuantity: parseFloat(e.target.value) || 0 })}
+                          />
+                        </td>
+                        <td style={{ padding: '0.4rem' }}>
+                          <input
+                            type="number"
+                            step="0.1"
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box', fontWeight: 700 }}
+                            value={item.actualQuantity}
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { actualQuantity: parseFloat(e.target.value) || 0 })}
+                          />
+                        </td>
+                        <td style={{ padding: '0.4rem', textAlign: 'center', fontWeight: 700, color: item.variancePercent === 0 ? '#64748b' : item.variancePercent > 0 ? '#15803d' : '#b91c1c' }}>
+                          {item.variancePercent > 0 ? `+${item.variancePercent}%` : `${item.variancePercent}%`}
+                        </td>
+                        {canViewFinancials && (
+                          <td style={{ padding: '0.4rem', textAlign: 'center' }}>
+                            <input
+                              type="number"
+                              className="text-input"
+                              style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box' }}
+                              value={item.unitPrice}
+                              onChange={(e) => handleUpdateNewBatchItem(idx, { unitPrice: parseFloat(e.target.value) || 0 })}
+                            />
+                          </td>
+                        )}
+                        <td style={{ padding: '0.4rem' }}>
+                          <input
+                            type="number"
+                            step="0.1"
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.8rem', padding: '0 0.4rem', boxSizing: 'border-box' }}
+                            value={item.deliveryTemp}
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { deliveryTemp: parseFloat(e.target.value) || 0 })}
+                          />
+                        </td>
+                        <td style={{ padding: '0.4rem' }}>
+                          <input
+                            type="date"
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.75rem', padding: '0 0.2rem', boxSizing: 'border-box' }}
+                            value={item.expiryDate}
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { expiryDate: e.target.value })}
+                          />
+                        </td>
+                        <td style={{ padding: '0.4rem' }}>
+                          <select
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.75rem', padding: '0 0.2rem', boxSizing: 'border-box' }}
+                            value={item.storageZone}
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { storageZone: e.target.value as StorageZone })}
+                          >
+                            <option value="FREEZER">🧊 Đông (-18°C)</option>
+                            <option value="CHILLER">🥬 Mát (0-4°C)</option>
+                            <option value="DRY_ROOM">📦 Khô</option>
+                          </select>
+                        </td>
+                        <td style={{ padding: '0.4rem' }}>
+                          <select
+                            className="text-input"
+                            style={{ width: '100%', height: '32px', fontSize: '0.75rem', padding: '0 0.2rem', boxSizing: 'border-box' }}
+                            value={item.status}
+                            onChange={(e) => handleUpdateNewBatchItem(idx, { status: e.target.value as InspectionStatus })}
+                          >
+                            <option value="ACCEPTED">✅ Đạt chuẩn nhập kho</option>
+                            <option value="QUARANTINED">⚠️ Tạm cách ly</option>
+                            <option value="REJECTED">❌ Từ chối nhận hàng</option>
+                          </select>
+                        </td>
+                        <td style={{ padding: '0.4rem', textAlign: 'center' }}>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveItemFromNewBatch(idx)}
+                            style={{ background: 'none', border: 'none', color: '#b91c1c', cursor: 'pointer', fontWeight: 700 }}
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Note & Overall Conclusion */}
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1.25rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Ghi chú cảm quan / Đánh giá bao bì & nhiệt độ:
+                </label>
+                <textarea
+                  className="text-input"
+                  rows={2}
+                  placeholder="Ghi rõ tình trạng thực phẩm, kẹp chì xe lạnh, độ đàn hồi, màu sắc..."
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.82rem', boxSizing: 'border-box' }}
+                  value={newBatchNotes}
+                  onChange={(e) => setNewBatchNotes(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Kết luận tiếp nhận:
+                </label>
+                <select
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 700 }}
+                  value={newBatchOverallStatus}
+                  onChange={(e) => setNewBatchOverallStatus(e.target.value as InspectionStatus)}
+                >
+                  <option value="ACCEPTED">✅ Đạt chuẩn nhập kho</option>
+                  <option value="QUARANTINED">⚠️ Tạm cách ly</option>
+                  <option value="REJECTED">❌ Từ chối nhận hàng</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowNewBatchModal(false)}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => createBatchMutation.mutate()}
+                disabled={createBatchMutation.isPending}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: 'none',
+                  background: '#166534',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {createBatchMutation.isPending ? 'Đang lưu...' : '✓ Xác Nhận Nhập Kho & Ký Biên Bản'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: XEM CHI TIẾT BIÊN BẢN TIẾP NHẬN */}
+      {showDetailBatchModal && (
+        <div
+          className="modal-overlay print-modal-overlay"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            className="modal-card printable-a4-sheet"
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '850px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              padding: '1.75rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #166534', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#166534', textTransform: 'uppercase' }}>TRUNG TÂM DƯỠNG LÃO TÂM AN CARE — BỘ PHẬN DINH DƯỠNG & BẾP ĂN</div>
+                <h2 style={{ margin: '0.2rem 0 0 0', fontSize: '1.3rem', color: '#0f172a' }}>BIÊN BẢN TIẾP NHẬN & KIỂM ĐẾM THỰC PHẨM 3 BƯỚC</h2>
+                <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.2rem' }}>
+                  Mẫu số: <b style={{ color: '#0f172a' }}>05/BBKN-TA</b> &nbsp;|&nbsp; Mã phiếu: <b>{showDetailBatchModal.batchId}</b> &nbsp;|&nbsp; Ngày giờ: {new Date(showDetailBatchModal.receivedAt).toLocaleString('vi-VN')}
+                </div>
+              </div>
+              <button
+                onClick={() => setShowDetailBatchModal(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Info Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+              <div>
+                <div>Đơn vị giao hàng: <b>{showDetailBatchModal.vendorName}</b></div>
+                <div>Số phiếu giao hàng: <b>{showDetailBatchModal.deliveryNoteNumber}</b></div>
+                <div>Phương tiện / Biển số: <b>{showDetailBatchModal.vehiclePlate}</b></div>
+                <div>Người giao hàng: <b>{showDetailBatchModal.delivererName} ({showDetailBatchModal.delivererPhone})</b></div>
+              </div>
+              <div>
+                <div>Người nhận (Dinh dưỡng): <b>{showDetailBatchModal.receiverName}</b></div>
+                <div>Mã nhân sự: <b>{showDetailBatchModal.receiverId}</b></div>
+                <div>Tổng khối lượng phiếu: <b>{showDetailBatchModal.totalOrderedWeight} kg</b> | Cân thực tế: <b>{showDetailBatchModal.totalActualWeight} kg</b></div>
+                <div>
+                  Chênh lệch: <b style={{ color: showDetailBatchModal.weightVariancePercent < 0 ? '#b91c1c' : '#15803d' }}>{showDetailBatchModal.weightVariancePercent}%</b>
+                  {canViewFinancials && <> | Tổng giá trị: <b>{`${showDetailBatchModal.totalValue.toLocaleString('vi-VN')} đ`}</b></>}
+                </div>
+                <div style={{ marginTop: '0.25rem' }}>
+                  Kết luận tiếp nhận: <b style={{ color: showDetailBatchModal.overallStatus === 'ACCEPTED' ? '#15803d' : showDetailBatchModal.overallStatus === 'QUARANTINED' ? '#b45309' : '#b91c1c' }}>
+                    {showDetailBatchModal.overallStatus === 'ACCEPTED' ? '✅ Đạt chuẩn nhập kho' : showDetailBatchModal.overallStatus === 'QUARANTINED' ? '⚠️ Tạm cách ly' : '❌ Từ chối nhận hàng'}
+                  </b>
+                </div>
+              </div>
+            </div>
+
+            {/* Items Table */}
+            <h3 style={{ fontSize: '0.95rem', margin: '0 0 0.5rem 0', color: '#0f172a' }}>Chi tiết kiểm đếm từng mặt hàng:</h3>
+            <div className="table-responsive" style={{ overflowX: 'auto', border: '1px solid #e2e8f0', borderRadius: '0.5rem', marginBottom: '1.25rem' }}>
+              <table className="table-wide-800" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                <thead>
+                  <tr style={{ background: '#f1f5f9', borderBottom: '1px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
+                    <th style={{ padding: '0.5rem 0.75rem', whiteSpace: 'nowrap' }}>Tên Mặt Hàng</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Phiếu Giao</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right', whiteSpace: 'nowrap' }}>Cân Thực Tế</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center', whiteSpace: 'nowrap' }}>Lệch</th>
+                    {canViewFinancials && (
+                      <>
+                        <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Đơn Giá</th>
+                        <th style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>Thành Tiền</th>
+                      </>
+                    )}
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Nhiệt Độ</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Kho Lưu</th>
+                    <th style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>Kết Luận Tiếp Nhận</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {showDetailBatchModal.items.map((item, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid #f8fafc' }}>
+                      <td style={{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>{item.itemName}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>{item.orderedQuantity} {item.unit}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right', fontWeight: 700 }}>{item.actualQuantity} {item.unit}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center', fontWeight: 700, color: item.variancePercent === 0 ? '#64748b' : item.variancePercent > 0 ? '#15803d' : '#b91c1c' }}>
+                        {item.variancePercent > 0 ? `+${item.variancePercent}%` : `${item.variancePercent}%`}
+                      </td>
+                      {canViewFinancials && (
+                        <>
+                          <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right' }}>{`${item.unitPrice.toLocaleString('vi-VN')} đ`}</td>
+                          <td style={{ padding: '0.5rem 0.75rem', textAlign: 'right', fontWeight: 700, color: '#166534' }}>{`${item.totalPrice.toLocaleString('vi-VN')} đ`}</td>
+                        </>
+                      )}
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center', fontWeight: 600 }}>{item.deliveryTemp}°C</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>{STORAGE_ZONE_META[item.storageZone]?.label}</td>
+                      <td style={{ padding: '0.5rem 0.75rem', textAlign: 'center' }}>
+                        <span style={{ padding: '0.2rem 0.55rem', borderRadius: '0.35rem', fontSize: '0.74rem', fontWeight: 700, background: item.status === 'ACCEPTED' ? '#dcfce7' : item.status === 'QUARANTINED' ? '#fef3c7' : '#fee2e2', color: item.status === 'ACCEPTED' ? '#15803d' : item.status === 'QUARANTINED' ? '#b45309' : '#b91c1c' }}>
+                          {item.status === 'ACCEPTED' ? 'Đạt chuẩn nhập kho' : item.status === 'QUARANTINED' ? 'Tạm cách ly' : 'Từ chối nhận hàng'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Note & Signature Box */}
+            <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '0.5rem', marginBottom: '1.25rem', fontSize: '0.84rem' }}>
+              <b>Ghi chú kiểm tra:</b> {showDetailBatchModal.notes || '—'}
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2rem', textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem' }}>
+              <div>
+                <div style={{ fontWeight: 700 }}>ĐẠI DIỆN BÊN GIAO HÀNG</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '3.5rem' }}>(Ký và ghi rõ họ tên)</div>
+                <div style={{ fontWeight: 600, color: '#0f172a' }}>{showDetailBatchModal.delivererName}</div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 700 }}>NHÂN VIÊN DINH DƯỠNG TIẾP NHẬN</div>
+                <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '3.5rem' }}>(Đã kiểm đếm & ký điện tử)</div>
+                <div style={{ fontWeight: 700, color: '#166534' }}>{showDetailBatchModal.receiverName}</div>
+              </div>
+            </div>
+
+            <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem', marginTop: '1.5rem' }}>
+              <button
+                type="button"
+                className="no-print"
+                onClick={() => triggerPrint()}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                }}
+              >
+                <span>🖨️</span> In Biên Bản Tiếp Nhận
+              </button>
+              <button
+                onClick={() => setShowDetailBatchModal(null)}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: 'none',
+                  background: '#166534',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: XUẤT KHO NẤU ĂN */}
+      {showDispatchModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '600px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#b45309', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🍳</span> Xuất Kho Thực Phẩm Chế Biến Bữa Ăn
+              </h2>
+              <button
+                onClick={() => setShowDispatchModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Bữa ăn:
+                </label>
+                <select
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                  value={dispatchMealType}
+                  onChange={(e) => handleDispatchMealTypeChange(e.target.value as WeeklyMealType)}
+                >
+                  <option value="BREAKFAST">Bữa Sáng (06:45 - 07:30)</option>
+                  <option value="LUNCH">Bữa Trưa (11:15 - 12:00)</option>
+                  <option value="AFTERNOON_SNACK">Bữa Xế Chiều (14:30 - 15:00)</option>
+                  <option value="DINNER">Bữa Tối (17:30 - 18:15)</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Số lượng người cao tuổi (Suất):
+                </label>
+                <input
+                  type="number"
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 700 }}
+                  value={dispatchResidentCount}
+                  onChange={(e) => setDispatchResidentCount(parseInt(e.target.value) || 0)}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155' }}>
+                  Tên thực đơn / Món ăn (Đồng bộ với Thực đơn từng bữa):
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const suggested = getSuggestedMenuName(dispatchMealType);
+                    if (suggested) setDispatchMenuName(suggested);
+                  }}
+                  style={{
+                    background: '#e0f2fe',
+                    color: '#0369a1',
+                    border: '1px solid #bae6fd',
+                    borderRadius: '0.3rem',
+                    padding: '0.2rem 0.55rem',
+                    fontSize: '0.73rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.25rem',
+                  }}
+                  title="Tải lại tên món chuẩn từ Thực đơn"
+                >
+                  <span>🔄</span> Đồng bộ từ Thực đơn
+                </button>
+              </div>
+
+              {/* Quick Select from Today's/Selected Day Menu Schedule */}
+              {selectedDaySchedule?.meals && selectedDaySchedule.meals.length > 0 && (
+                <div style={{ marginBottom: '0.45rem' }}>
+                  <select
+                    className="text-input"
+                    style={{
+                      width: '100%',
+                      height: '34px',
+                      padding: '0 0.5rem',
+                      fontSize: '0.78rem',
+                      color: '#1e293b',
+                      background: '#f8fafc',
+                      borderColor: '#cbd5e1',
+                      borderRadius: '0.35rem',
+                    }}
+                    value={dispatchMenuName}
+                    onChange={(e) => setDispatchMenuName(e.target.value)}
+                  >
+                    <option value="">-- Chọn món ăn từ Thực đơn {selectedDaySchedule.dayName} --</option>
+                    {selectedDaySchedule.meals.map((m) => {
+                      const fullTitle = m.dishName + (m.sideDishes ? ` & ${m.sideDishes}` : '');
+                      return (
+                        <option key={m.id} value={fullTitle}>
+                          [{m.mealLabel.split(' ')[1] || m.mealType}] {m.dishName}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              )}
+
+              <input
+                type="text"
+                className="text-input"
+                style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 600 }}
+                value={dispatchMenuName}
+                onChange={(e) => setDispatchMenuName(e.target.value)}
+                placeholder="Nhập hoặc chỉnh sửa tên thực đơn chế biến..."
+              />
+
+              {/* Sync Status Badge */}
+              {(() => {
+                const currentSlot = selectedDaySchedule?.meals?.find((m) => m.mealType === dispatchMealType);
+                const suggested = getSuggestedMenuName(dispatchMealType);
+                const isExactSync = dispatchMenuName.trim() === suggested.trim() || (currentSlot && dispatchMenuName.includes(currentSlot.dishName));
+
+                return (
+                  <div
+                    style={{
+                      marginTop: '0.4rem',
+                      padding: '0.4rem 0.65rem',
+                      borderRadius: '0.35rem',
+                      fontSize: '0.75rem',
+                      background: isExactSync ? '#f0fdf4' : '#fffbeb',
+                      border: `1px solid ${isExactSync ? '#bbf7d0' : '#fde68a'}`,
+                      color: isExactSync ? '#15803d' : '#b45309',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <span>{isExactSync ? '✅' : 'ℹ️'}</span>
+                    <span>
+                      {isExactSync ? (
+                        <>
+                          <b>Đồng bộ chuẩn Thực đơn ({selectedDaySchedule?.dayName}):</b> {currentSlot?.dishName || dispatchMenuName}
+                        </>
+                      ) : (
+                        <>
+                          <b>Tùy chỉnh:</b> Món chuẩn trong thực đơn là <i>"{suggested || 'Chưa thiết lập'}"</i>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                );
+              })()}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowDispatchModal(false)}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => dispatchMutation.mutate()}
+                disabled={dispatchMutation.isPending}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: 'none',
+                  background: '#b45309',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {dispatchMutation.isPending ? 'Đang xuất...' : '✓ Xác Nhận Xuất Kho'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: LƯU MẪU THỨC ĂN 24H */}
+      {showNewSampleModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '600px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', color: '#166534', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🍱</span> Ghi Nhận Mẫu Lưu Thức Ăn 24 Giờ (Bộ Y Tế)
+              </h2>
+              <button
+                onClick={() => setShowNewSampleModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Bữa ăn lấy mẫu:
+                </label>
+                <select
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                  value={sampleMealType}
+                  onChange={(e) => setSampleMealType(e.target.value as any)}
+                >
+                  <option value="BREAKFAST">Bữa Sáng</option>
+                  <option value="LUNCH">Bữa Trưa</option>
+                  <option value="AFTERNOON_SNACK">Bữa Xế chiều</option>
+                  <option value="DINNER">Bữa Tối</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Dung lượng mẫu lưu (từ 100g trở lên):
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 700 }}
+                  value={sampleWeight}
+                  onChange={(e) => setSampleWeight(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                Tên món ăn lấy mẫu:
+              </label>
+              <input
+                type="text"
+                className="text-input"
+                placeholder="VD: Canh rau ngót thịt bằm, Cháo gà hạt sen..."
+                style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                value={sampleDishName}
+                onChange={(e) => setSampleDishName(e.target.value)}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.85rem', marginBottom: '1rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Vị trí ngăn tủ lưu:
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                  value={sampleLocation}
+                  onChange={(e) => setSampleLocation(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                  Nhiệt độ tủ (+2°C đến +4°C):
+                </label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 700 }}
+                  value={sampleTemp}
+                  onChange={(e) => setSampleTemp(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                Ghi chú cảm quan mẫu khi lưu:
+              </label>
+              <textarea
+                className="text-input"
+                rows={2}
+                style={{ width: '100%', padding: '0.5rem', fontSize: '0.82rem', boxSizing: 'border-box' }}
+                value={sampleSensory}
+                onChange={(e) => setSampleSensory(e.target.value)}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowNewSampleModal(false)}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => createSampleMutation.mutate()}
+                disabled={createSampleMutation.isPending || !sampleDishName.trim()}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: 'none',
+                  background: '#166534',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {createSampleMutation.isPending ? 'Đang lưu...' : '✓ Xác Nhận Lưu Mẫu 24 Giờ'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 1: EDIT ALL 5 MEALS FOR A DAY */}
+      {editingDaySchedule && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(3px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div className="card" style={{ background: '#ffffff', width: '100%', maxWidth: '850px', maxHeight: '90vh', overflowY: 'auto', borderRadius: '0.75rem', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#166534', fontWeight: 800 }}>
+                  📝 Cập Nhật Chi Tiết Thực Đơn — {editingDaySchedule.dayName}
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Chỉnh sửa khẩu phần 5 bữa ăn áp dụng cho {editingDaySchedule.dayName}</span>
+              </div>
+              <button type="button" onClick={() => setEditingDaySchedule(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
+              {formDayMeals.map((meal, index) => (
+                <div key={meal.id} style={{ background: '#f8fafc', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#15803d', marginBottom: '0.6rem' }}>
+                    {meal.mealLabel}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginBottom: '0.6rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Tên Món Ăn Chính (*):</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 600 }}
+                        value={meal.dishName}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].dishName = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Món Kèm / Canh / Rau:</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                        value={meal.sideDishes}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].sideDishes = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem' }}>
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Đồ Uống / Tráng Miệng:</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                        value={meal.drinkOrSnack}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].drinkOrSnack = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Kcal:</label>
+                        <input
+                          type="number"
+                          className="text-input"
+                          style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                          value={meal.kcal}
+                          onChange={(e) => {
+                            const updated = [...formDayMeals];
+                            updated[index].kcal = Number(e.target.value) || 0;
+                            setFormDayMeals(updated);
+                          }}
+                        />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Đạm (g):</label>
+                        <input
+                          type="number"
+                          className="text-input"
+                          style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                          value={meal.proteinG}
+                          onChange={(e) => {
+                            const updated = [...formDayMeals];
+                            updated[index].proteinG = Number(e.target.value) || 0;
+                            setFormDayMeals(updated);
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ fontSize: '0.78rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.2rem' }}>Lưu Ý Bệnh Lý:</label>
+                      <input
+                        type="text"
+                        className="text-input"
+                        placeholder="Ví dụ: Ăn nhạt, Tiểu đường..."
+                        style={{ width: '100%', padding: '0.45rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                        value={meal.dietNotes}
+                        onChange={(e) => {
+                          const updated = [...formDayMeals];
+                          updated[index].dietNotes = e.target.value;
+                          setFormDayMeals(updated);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setEditingDaySchedule(null)}
+                style={{ padding: '0.55rem 1.25rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => updateDayScheduleMutation.mutate()}
+                disabled={updateDayScheduleMutation.isPending}
+                style={{ padding: '0.55rem 1.25rem', borderRadius: '0.4rem', border: 'none', background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                {updateDayScheduleMutation.isPending ? 'Đang lưu thực đơn...' : `✓ Lưu Thực Đơn ${editingDaySchedule.dayName}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: EDIT SINGLE MEAL SLOT */}
+      {editingMealSlot && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(3px)', zIndex: 1100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div className="card" style={{ background: '#ffffff', width: '100%', maxWidth: '580px', borderRadius: '0.75rem', padding: '1.5rem', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#166534', fontWeight: 800 }}>
+                  ✏️ Sửa Nhanh {editingMealSlot.mealLabel}
+                </h3>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Cập nhật món ăn trực tiếp cho thực đơn</span>
+              </div>
+              <button type="button" onClick={() => setEditingMealSlot(null)} className="modal-close" title="Đóng cửa sổ" aria-label="Đóng cửa sổ">✕</button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginBottom: '1.25rem' }}>
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Tên Món Ăn Chính (*):</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.9rem', boxSizing: 'border-box', fontWeight: 700 }}
+                  value={formSingleDishName}
+                  onChange={(e) => setFormSingleDishName(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Món Kèm / Canh / Rau:</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  value={formSingleSideDishes}
+                  onChange={(e) => setFormSingleSideDishes(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Đồ Uống / Tráng Miệng:</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  value={formSingleDrinkOrSnack}
+                  onChange={(e) => setFormSingleDrinkOrSnack(e.target.value)}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Định mức Năng lượng (Kcal):</label>
+                  <input
+                    type="number"
+                    className="text-input"
+                    style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                    value={formSingleKcal}
+                    onChange={(e) => setFormSingleKcal(Number(e.target.value))}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Định mức Đạm (Protein g):</label>
+                  <input
+                    type="number"
+                    className="text-input"
+                    style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box', fontWeight: 700 }}
+                    value={formSingleProteinG}
+                    onChange={(e) => setFormSingleProteinG(Number(e.target.value))}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>Lưu Ý Chế Độ Bệnh Lý / Dị Ứng:</label>
+                <input
+                  type="text"
+                  className="text-input"
+                  placeholder="VD: Chế độ tiểu đường ăn nhạt, kiêng hải sản..."
+                  style={{ width: '100%', padding: '0.5rem', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                  value={formSingleDietNotes}
+                  onChange={(e) => setFormSingleDietNotes(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setEditingMealSlot(null)}
+                style={{ padding: '0.5rem 1.25rem', borderRadius: '0.4rem', border: '1px solid #cbd5e1', background: '#f8fafc', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSingleMealSlotMutation.mutate()}
+                disabled={updateSingleMealSlotMutation.isPending || !formSingleDishName.trim()}
+                style={{ padding: '0.5rem 1.25rem', borderRadius: '0.4rem', border: 'none', background: '#166534', color: '#ffffff', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+              >
+                {updateSingleMealSlotMutation.isPending ? 'Đang lưu...' : '✓ Lưu Bữa Ăn'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CẬP NHẬT NGƯỠNG AN TOÀN THỰC PHẨM */}
+      {editingSafetyStockItem && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '0.75rem',
+              maxWidth: '540px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.75rem', marginBottom: '1.25rem' }}>
+              <h2 style={{ margin: 0, fontSize: '1.15rem', color: '#0369a1', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span>🛡️</span> Điều Chỉnh Ngưỡng An Toàn Tồn Kho
+              </h2>
+              <button
+                onClick={() => setEditingSafetyStockItem(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '0.5rem', marginBottom: '1rem', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: '#0f172a' }}>{editingSafetyStockItem.itemName}</div>
+              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.2rem', display: 'flex', gap: '1rem' }}>
+                <span>Phân khu: <b>{STORAGE_ZONE_META[editingSafetyStockItem.storageZone]?.label}</b></span>
+                <span>Tồn thực tế: <b style={{ color: '#0369a1' }}>{editingSafetyStockItem.currentStock} {editingSafetyStockItem.unit}</b></span>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                Ngưỡng an toàn tối thiểu ({editingSafetyStockItem.unit}) *:
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="0.5"
+                className="text-input"
+                style={{ width: '100%', height: '40px', padding: '0 0.6rem', boxSizing: 'border-box', fontWeight: 700, fontSize: '1.05rem', color: '#0f172a' }}
+                value={formSafetyStockVal}
+                onChange={(e) => setFormSafetyStockVal(parseFloat(e.target.value) || 0)}
+              />
+
+              {/* Quick Presets */}
+              <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.45rem', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Gợi ý:</span>
+                <button
+                  type="button"
+                  onClick={() => setFormSafetyStockVal(Math.max(1, formSafetyStockVal - 5))}
+                  style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.72rem', cursor: 'pointer' }}
+                >
+                  -5 {editingSafetyStockItem.unit}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormSafetyStockVal(formSafetyStockVal + 5)}
+                  style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #cbd5e1', background: '#ffffff', fontSize: '0.72rem', cursor: 'pointer' }}
+                >
+                  +5 {editingSafetyStockItem.unit}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormSafetyStockVal(Math.round(editingSafetyStockItem.currentStock * 0.3))}
+                  style={{ padding: '0.2rem 0.5rem', borderRadius: '0.25rem', border: '1px solid #3b82f6', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  30% Tồn Hiện Tại ({Math.round(editingSafetyStockItem.currentStock * 0.3)} {editingSafetyStockItem.unit})
+                </button>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ fontSize: '0.8rem', fontWeight: 600, color: '#334155', display: 'block', marginBottom: '0.25rem' }}>
+                Lý do điều chỉnh ngưỡng (Đảm bảo điều kiện thực tế Trung tâm Tâm An):
+              </label>
+              <input
+                type="text"
+                className="text-input"
+                style={{ width: '100%', height: '38px', padding: '0 0.6rem', boxSizing: 'border-box' }}
+                value={formSafetyStockReason}
+                onChange={(e) => setFormSafetyStockReason(e.target.value)}
+                placeholder="Ví dụ: Phù hợp với công suất lưu trú thực tế của Trung tâm..."
+              />
+            </div>
+
+            {/* Warning threshold preview */}
+            <div style={{ background: '#f0fdf4', padding: '0.55rem 0.75rem', borderRadius: '0.35rem', border: '1px solid #bbf7d0', fontSize: '0.75rem', color: '#15803d', marginBottom: '1.25rem' }}>
+              ℹ️ Khi số lượng tồn thực tế nhỏ hơn hoặc bằng <b>{formSafetyStockVal} {editingSafetyStockItem.unit}</b>, hệ thống sẽ phát cảnh báo màu đỏ <b>"Cần nhập thêm"</b> giúp Nhân viên dinh dưỡng và Quản lý lập phiếu tiếp nhận kịp thời.
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+              <button
+                type="button"
+                onClick={() => setEditingSafetyStockItem(null)}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="button"
+                onClick={() => updateSafetyStockMutation.mutate()}
+                disabled={updateSafetyStockMutation.isPending}
+                style={{
+                  padding: '0.5rem 1.25rem',
+                  borderRadius: '0.4rem',
+                  border: 'none',
+                  background: '#0284c7',
+                  color: '#ffffff',
+                  fontWeight: 700,
+                  fontSize: '0.85rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {updateSafetyStockMutation.isPending ? 'Đang lưu...' : '✓ Lưu Ngưỡng An Toàn'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

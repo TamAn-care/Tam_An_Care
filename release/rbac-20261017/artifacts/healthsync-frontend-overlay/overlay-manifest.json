@@ -1,0 +1,8 @@
+{
+  "baseImage": "tamancare-health-sync-frontend:v37.4-20261013",
+  "expectedBaseImageId": "sha256:7252e1521bcd55a9a5302c5a888169c97574fd19539abe01cb8b8dbb86475aa7",
+  "source": "Health Sync frontend source with reviewed RBAC patch",
+  "patchedFiles": 11,
+  "productionChanged": false,
+  "build": "PASS"
+}

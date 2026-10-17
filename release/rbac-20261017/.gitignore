@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.tsbuildinfo
+test-results/
+*.log
+source/frontend/vite.config.js
+source/frontend/vite.config.d.ts

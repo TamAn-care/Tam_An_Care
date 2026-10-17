@@ -1,0 +1,4032 @@
+@import "./tokens.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--surface-page);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  transition: grid-template-columns 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.app-shell.sidebar-collapsed {
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+
+.sidebar {
+  background: var(--surface-panel);
+  border-right: 1px solid var(--border-default);
+  padding: var(--space-6) var(--space-4);
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), padding 0.22s ease;
+}
+
+.sidebar.collapsed {
+  padding: var(--space-6) var(--space-2);
+}
+
+.desktop-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 0.35rem;
+  border: 1px solid var(--border-default);
+  background: #ffffff;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.desktop-sidebar-toggle:hover {
+  background: var(--surface-muted);
+  color: var(--action-primary);
+  border-color: var(--action-primary);
+}
+
+@media (max-width: 767px) {
+  .desktop-sidebar-toggle {
+    display: none !important;
+  }
+}
+
+.brand {
+  margin-bottom: var(--space-6);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.brand-subtitle {
+  margin-top: 2px;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navigation {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.nav-link {
+  display: block;
+  padding: 0.75rem 0.85rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background: var(--surface-muted);
+  color: var(--action-primary);
+  font-weight: 600;
+}
+
+.main-shell {
+  min-width: 0;
+}
+
+.topbar {
+  min-height: 72px;
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-panel);
+  border-bottom: 1px solid var(--border-default);
+  padding: var(--space-3) var(--space-6);
+}
+
+.page-content {
+  padding: var(--space-6);
+  max-width: 1500px;
+}
+
+.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.page-title {
+  margin: 0;
+  font-family: var(--font-family, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-size: clamp(1.2rem, 1.8vw + 0.6rem, 1.65rem);
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.page-description {
+  margin-top: var(--space-2);
+  color: var(--text-secondary);
+}
+
+.card {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+}
+
+.card + .card {
+  margin-top: var(--space-4);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns:
+    repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  background: var(--surface-muted);
+  font-size: 0.875rem;
+}
+
+.status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--status-information);
+}
+
+.status.online .status-dot {
+  background: var(--status-success);
+}
+
+.status.offline .status-dot {
+  background: var(--status-danger);
+}
+
+.actor-panel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.actor-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.actor-value {
+  font-weight: 600;
+}
+
+.development-badge {
+  border-radius: 999px;
+  padding: 0.3rem 0.6rem;
+  background: #fff4db;
+  color: #7b5417;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.placeholder {
+  color: var(--text-secondary);
+}
+
+.button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.9rem;
+  cursor: pointer;
+}
+
+.button-primary {
+  background: var(--action-primary);
+  color: white;
+}
+
+.button-primary:hover {
+  background: var(--action-primary-hover);
+}
+
+.form-grid {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 600px;
+}
+
+.form-field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.form-field label {
+  font-weight: 600;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.8rem;
+  background: white;
+}
+
+.helper {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  .page-content {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 767px) {
+  .app-shell {
+    display: block;
+  }
+
+  .sidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--border-default);
+    padding: var(--space-3);
+  }
+
+  .brand {
+    margin-bottom: var(--space-3);
+  }
+
+  .navigation {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+  }
+
+  .nav-link {
+    white-space: nowrap;
+  }
+
+  .topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .page-content {
+    padding: var(--space-4);
+  }
+}
+
+/* STEP 9D — application shell hardening */
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  padding: 2px;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-panel);
+  color: inherit;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+transform: scale(1.28);
+  transform-origin: center;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: var(--space-6);
+}
+
+.version-text {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.topbar-start,
+.topbar-end {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.topbar-end {
+  justify-content: flex-end;
+}
+
+.topbar-title {
+  font-family: var(--font-family, Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-weight: 800;
+  font-size: clamp(0.92rem, 1.1vw + 0.45rem, 1.18rem);
+  line-height: 1.3;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: clamp(200px, 38vw, 520px);
+}
+
+.topbar-subtitle {
+  margin-top: 0.15rem;
+  max-width: clamp(220px, 42vw, 580px);
+  color: var(--text-secondary);
+  font-size: clamp(0.72rem, 0.75vw + 0.4rem, 0.82rem);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 640px) {
+  .topbar-brand-divider,
+  .topbar-brand-slogan {
+    display: none !important;
+  }
+}
+
+.actor-summary {
+  display: grid;
+  min-width: 130px;
+}
+
+.actor-role {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+/* Balanced 2-Line Mobile & Desktop Staff Info + Bell Notice Block */
+.actor-profile-bell-block {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 42px;
+}
+
+.actor-summary-2lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.actor-name-line {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.actor-role-line {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #166534;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+.mobile-menu-button {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: white;
+  padding: 0.55rem 0.7rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.button-subtle {
+  border: 1px solid var(--border-default);
+  background: white;
+  color: var(--text-primary);
+}
+
+.eyebrow {
+  margin-bottom: var(--space-2);
+  color: var(--action-primary);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.notice {
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.notice-info {
+  background: #eef5fb;
+}
+
+.notice-warning {
+  background: #fff6e5;
+}
+
+.section-heading {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.metric-label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.metric-value {
+  display: block;
+  margin: var(--space-2) 0;
+  font-size: 2rem;
+}
+
+.feedback-state {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.feedback-error {
+  border-style: solid;
+  background: #fff1f1;
+}
+
+.feedback-symbol {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  font-weight: 800;
+}
+
+.feedback-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border-default);
+  border-top-color: var(--action-primary);
+  border-radius: 999px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* DESKTOP RESPONSIVE RULES (>= 768px) */
+@media (min-width: 768px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .sidebar-backdrop {
+    display: none !important;
+  }
+
+  .mobile-sidebar-close {
+    display: none !important;
+  }
+}
+
+/* MOBILE OFF-CANVAS DRAWER & RESPONSIVE RULES (< 768px) */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-sidebar-close {
+  background: #f1f5f9;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .mobile-menu-button {
+    display: inline-flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 290px;
+    max-width: 85vw;
+    z-index: 9999;
+    background: var(--surface-panel);
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.18);
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid var(--border-default);
+    padding: var(--space-4);
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-open .navigation {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+  }
+
+  .topbar-start {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.45rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .topbar-end {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .actor-panel {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .actor-info-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .actor-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .topbar-subtitle {
+    display: none;
+  }
+
+  .topbar-brand-divider-vert {
+    display: none !important;
+  }
+
+  .topbar-btn-text {
+    font-size: 0.7rem;
+  }
+
+  .page-content {
+    padding: var(--space-4);
+    padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .section-heading {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+/* RESPONSIVE TABLE CONTAINERS & TOUCH ENHANCEMENTS */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-panel);
+}
+
+.table-responsive table {
+  width: 100%;
+  min-width: 680px;
+  border-collapse: collapse;
+}
+
+/* STEP 9E.B — Resident Management UI */
+
+.resident-summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.resident-summary-card {
+  min-height: 120px;
+}
+
+.resident-toolbar {
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 1fr)
+    minmax(180px, 240px)
+    auto;
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.field-group {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.field-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.text-input {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  background: white;
+  padding: 0.65rem 0.75rem;
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.text-input:focus {
+  outline: 2px solid
+    color-mix(
+      in srgb,
+      var(--action-primary) 25%,
+      transparent
+    );
+  border-color: var(--action-primary);
+}
+
+.resident-refresh {
+  min-height: 42px;
+}
+
+.resident-list {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.resident-card {
+  display: flex;
+  gap: var(--space-5);
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.resident-card-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.resident-card-heading {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.resident-card-heading h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.resident-code {
+  margin-top: var(--space-1);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.resident-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--surface-muted);
+  padding: 0.3rem 0.55rem;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.resident-status-active {
+  background: #e7f6ec;
+  color: #23653a;
+}
+
+.resident-facts,
+.care-authority-facts {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-5) 0 0;
+}
+
+.resident-facts div,
+.care-authority-facts div {
+  min-width: 0;
+}
+
+.resident-facts dt,
+.care-authority-facts dt {
+  margin-bottom: var(--space-1);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+.resident-facts dd,
+.care-authority-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 650;
+}
+
+.resident-card-actions {
+  display: flex;
+  align-items: center;
+}
+
+.resident-open-button {
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.resident-authority-note {
+  margin-top: var(--space-4);
+}
+
+.resident-back-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.resident-back-row .button {
+  text-decoration: none;
+}
+
+.care-view-header {
+  margin-bottom: var(--space-5);
+}
+
+.care-view-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.care-view-meta span {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--surface-muted);
+  padding: 0.35rem 0.65rem;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+.care-authority-card {
+  margin-bottom: var(--space-4);
+}
+
+.care-domain-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.care-domain-card {
+  min-height: 150px;
+}
+
+.care-domain-top {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.care-domain-top h2 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.care-domain-count {
+  display: block;
+  margin-top: var(--space-5);
+  font-size: 2rem;
+}
+
+.availability {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.availability-available {
+  background: #e7f6ec;
+  color: #23653a;
+}
+
+.availability-empty {
+  background: #f3f4f6;
+  color: #5b6470;
+}
+
+.availability-unavailable {
+  background: #fff2e2;
+  color: #8b5519;
+}
+
+@media (max-width: 1024px) {
+  .resident-facts,
+  .care-authority-facts {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .care-domain-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .resident-summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .resident-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-card {
+    flex-direction: column;
+  }
+
+  .resident-card-actions {
+    align-items: stretch;
+  }
+
+  .resident-open-button {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .resident-facts,
+  .care-authority-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .care-domain-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .resident-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-facts,
+  .care-authority-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .resident-back-row {
+    flex-direction: column;
+  }
+}
+/* V7.5 STEP 9F.C1-R2-R1 — STAFF ACCESS RESPONSIVE START */
+
+/*
+ * Responsive rules are intentionally scoped to Staff Access selectors.
+ * No global shell, resident-care, backend, or shared API behavior is changed.
+ */
+
+.staff-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.staff-toolbar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.staff-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.staff-card {
+  min-width: 0;
+}
+
+.staff-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.staff-card .resident-facts {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.staff-assignment-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: var(--space-4);
+  align-items: end;
+}
+
+.staff-assignment-form .field-group,
+.staff-toolbar .field-group {
+  min-width: 0;
+}
+
+.staff-assignment-form .text-input,
+.staff-toolbar .text-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.staff-feedback {
+  margin-top: var(--space-4);
+}
+
+.assignment-list {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.assignment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.assignment-row > * {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .staff-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .staff-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .staff-assignment-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .staff-card .resident-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .staff-summary-grid,
+  .staff-toolbar,
+  .staff-assignment-form {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-card-heading,
+  .assignment-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .staff-card .resident-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .staff-toolbar .button,
+  .staff-assignment-form .button,
+  .assignment-row .button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  .staff-summary-grid,
+  .staff-card .resident-facts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* V7.5 STEP 9F.C1-R2-R1 — STAFF ACCESS RESPONSIVE END */
+
+/* OPS-1-F — Operational Work UI */
+.operations-summary-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.operations-panel {
+  margin-bottom: 1rem;
+}
+
+.operations-filter-grid,
+.operations-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1rem;
+}
+
+.operations-wide-field {
+  grid-column: 1 / -1;
+}
+
+.operations-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.operations-inline-error {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+}
+
+.operations-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.operations-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.operations-table th,
+.operations-table td {
+  padding: 0.75rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid
+    var(--border-color, #d8d8d8);
+}
+
+.operations-status {
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.operations-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .operations-filter-grid,
+  .operations-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .operations-wide-field {
+    grid-column: auto;
+  }
+}
+
+/* OPS-1-F-I1-P2-R2 — detail contract completion */
+.operations-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.operations-detail-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.operations-detail-grid div {
+  min-width: 0;
+}
+
+.operations-detail-grid dt {
+  font-size: 0.85rem;
+  font-weight: 600;
+  opacity: 0.72;
+}
+
+.operations-detail-grid dd {
+  margin: 0.25rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.operations-governance {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   ENTERPRISE UI SUITE — DATA TABLES, KPI CARDS, BADGES, MODALS, TOOLBARS
+   ========================================================================== */
+
+/* KPI / Metric Grids */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.kpi-card {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.kpi-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+.kpi-val {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.kpi-sub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* Filter Toolbar */
+.filter-card {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.filter-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.form-select,
+.form-input {
+  min-height: 38px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.75rem;
+  background: var(--surface-panel);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-select:focus,
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--action-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--action-primary) 15%, transparent);
+}
+
+.form-textarea {
+  width: 100%;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-panel);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+/* Data Table Component */
+.table-responsive {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.ui-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.ui-table thead {
+  background: #f8faf8;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.ui-table th {
+  padding: 0.85rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.ui-table th.text-right,
+.ui-table td.text-right {
+  text-align: right;
+}
+
+.ui-table th.text-center,
+.ui-table td.text-center {
+  text-align: center;
+}
+
+.ui-table tbody tr {
+  border-bottom: 1px solid #edf1ee;
+  transition: background-color 0.15s ease;
+}
+
+.ui-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.ui-table tbody tr:hover {
+  background: #f4f7f4;
+}
+
+.ui-table td {
+  padding: 0.85rem 1rem;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.cell-primary {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cell-secondary {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 0.15rem;
+}
+
+/* Modern Pill Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.badge-success {
+  background: #e6f6ec;
+  color: #1a6b38;
+  border: 1px solid #bce6cb;
+}
+
+.badge-warning {
+  background: #fff6e5;
+  color: #92580a;
+  border: 1px solid #fedfa8;
+}
+
+.badge-info {
+  background: #edf5fd;
+  color: #1a568c;
+  border: 1px solid #c2defc;
+}
+
+.badge-purple {
+  background: #f5f0fd;
+  color: #5c2c9d;
+  border: 1px solid #dfcef8;
+}
+
+.badge-danger {
+  background: #fdf0f0;
+  color: #9e2a2b;
+  border: 1px solid #f9c9c9;
+}
+
+.badge-neutral {
+  background: #f1f3f2;
+  color: #49574f;
+  border: 1px solid #d9e1dd;
+}
+
+/* Action Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--action-primary);
+  color: #ffffff;
+  border-color: var(--action-primary);
+  box-shadow: 0 1px 2px rgba(20, 36, 27, 0.1);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--action-primary-hover);
+  border-color: var(--action-primary-hover);
+}
+
+.btn-secondary {
+  background: var(--surface-panel);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--surface-muted);
+}
+
+.btn-success {
+  background: #237845;
+  color: #ffffff;
+  border-color: #237845;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #1a5e36;
+}
+
+.btn-danger-outline {
+  background: transparent;
+  color: #c0392b;
+  border-color: #f1c0b9;
+}
+
+.btn-danger-outline:hover:not(:disabled) {
+  background: #fdf2f0;
+  border-color: #e74c3c;
+}
+
+.btn-sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.78rem;
+  border-radius: 0.35rem;
+}
+
+.btn-group {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Modals & Dialogs */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 30, 24, 0.48);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 1000;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.modal-dialog {
+  background: var(--surface-panel, #ffffff);
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 540px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: scaleUp 0.2s ease-out;
+}
+
+.modal-card {
+  background: #ffffff;
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: var(--radius-lg, 0.75rem);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 580px;
+  padding: 1.5rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: scaleUp 0.2s ease-out;
+  position: relative;
+  z-index: 1001;
+}
+
+.modal-dialog-lg {
+  max-width: 720px;
+}
+
+/* ========================================================================== */
+/* DESKTOP POP-UP WINDOW RESIZABLE HANDLES & CORNER GRIP                      */
+/* ========================================================================== */
+@media (min-width: 768px) {
+  .modal-dialog,
+  .modal-card,
+  .modal-print-card,
+  .printable-a4-sheet,
+  [data-modal="true"] {
+    position: relative !important;
+  }
+
+  .modal-resize-handle {
+    position: absolute;
+    z-index: 9999;
+    user-select: none;
+    touch-action: none;
+    box-sizing: border-box;
+  }
+
+  /* Edges */
+  .modal-resize-handle-n {
+    top: 0;
+    left: 14px;
+    right: 14px;
+    height: 8px;
+    cursor: ns-resize;
+  }
+  .modal-resize-handle-s {
+    bottom: 0;
+    left: 14px;
+    right: 14px;
+    height: 8px;
+    cursor: ns-resize;
+  }
+  .modal-resize-handle-w {
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 8px;
+    cursor: ew-resize;
+  }
+  .modal-resize-handle-e {
+    right: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 8px;
+    cursor: ew-resize;
+  }
+
+  /* Corners */
+  .modal-resize-handle-nw {
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+  }
+  .modal-resize-handle-ne {
+    top: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nesw-resize;
+  }
+  .modal-resize-handle-sw {
+    bottom: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nesw-resize;
+  }
+  .modal-resize-handle-se {
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    cursor: nwse-resize;
+  }
+
+  /* Hover visual highlight on edges */
+  .modal-resize-handle:hover {
+    background: rgba(22, 101, 52, 0.12);
+  }
+
+  /* Bottom-right corner grip visual indicator */
+  .modal-resize-grip-se {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 14px;
+    height: 14px;
+    pointer-events: auto;
+    cursor: nwse-resize;
+    opacity: 0.5;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9998;
+    background-image: radial-gradient(circle, #475569 1.5px, transparent 1.5px);
+    background-size: 4px 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+  .modal-card:hover .modal-resize-grip-se,
+  .modal-dialog:hover .modal-resize-grip-se {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+
+  body.is-modal-resizing {
+    user-select: none !important;
+    cursor: grabbing !important;
+  }
+  body.is-modal-resizing * {
+    user-select: none !important;
+  }
+}
+
+.modal-header {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #334155;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: all 0.15s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.modal-close:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fca5a5;
+  transform: scale(1.06);
+}
+
+.modal-close:active {
+  transform: scale(0.94);
+}
+
+@media (max-width: 640px) {
+  .modal-close {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1.65rem;
+  }
+}
+
+.modal-body {
+  padding: var(--space-6);
+  display: grid;
+  gap: var(--space-4);
+  max-height: calc(85vh - 120px);
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: var(--space-4) var(--space-6);
+  border-top: 1px solid var(--border-default);
+  background: #fbfdfb;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.adl-option-text {
+  display: none;
+}
+
+.adl-radio-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.form-label .req {
+  color: #c0392b;
+  margin-left: 0.2rem;
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.alert-card {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.alert-danger {
+  background: #fdf2f2;
+  color: #9b1c1c;
+  border: 1px solid #f8b4b4;
+}
+
+.alert-info {
+  background: #f0f7ff;
+  color: #1e429f;
+  border: 1px solid #b4c6e7;
+}
+
+.alert-success {
+  background: #edf7ed;
+  color: #1e4620;
+  border: 1px solid #c8e6c9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ========================================================================= */
+/* UNIFIED DESIGN SYSTEM — CONSISTENT CARD SIZING, TOOLBARS & ENTITY GRIDS */
+/* ========================================================================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-box {
+  background: var(--surface-panel, #ffffff);
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: var(--radius-md, 0.75rem);
+  padding: 1.15rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 105px;
+}
+
+.kpi-box .kpi-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary, #64748b);
+  margin-bottom: 0.35rem;
+}
+
+.kpi-box .kpi-number {
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--text-primary, #0f172a);
+}
+
+.kpi-box .kpi-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted, #94a3b8);
+  margin-top: 0.35rem;
+}
+
+.filter-toolbar {
+  background: var(--surface-panel, #ffffff);
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: var(--radius-md, 0.75rem);
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 1.5rem;
+}
+
+.filter-toolbar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.85rem;
+  align-items: flex-end;
+}
+
+.entity-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.15rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .filter-toolbar-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .entity-grid-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+.entity-card-uniform {
+  background: var(--surface-panel, #ffffff);
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: var(--radius-md, 0.75rem);
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.entity-card-uniform:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ========================================================================= */
+/* PRINT OPTIMIZATION (A4 SINGLE-PAGE FIT & ZERO OVERFLOW)                   */
+/* ========================================================================= */
+/* UNIVERSAL HIGH-FIDELITY PRINT ENGINE (STRICT DOCUMENT ISOLATION)          */
+/* ========================================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 6mm 10mm 6mm 10mm;
+  }
+
+  /* 1. Reset root layout wrappers to static block print flow */
+  html,
+  body,
+  #root,
+  .app-shell-fullwidth,
+  .app-shell,
+  .main-shell,
+  .content,
+  main,
+  .page-content,
+  .page-container {
+    display: block !important;
+    position: static !important;
+    float: none !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: auto !important;
+  }
+
+  /* 2. Hide non-printable app UI controls, navigation, sidebars, topbars, buttons */
+  header.topbar,
+  header,
+  footer,
+  aside,
+  nav,
+  .sidebar,
+  .navigation,
+  .tab-nav,
+  .filter-toolbar,
+  .no-print,
+  .no-print-area,
+  .no-print *,
+  .modal-header.no-print,
+  .modal-footer.no-print,
+  .modal-close,
+  button:not(.printable-button) {
+    display: none !important;
+  }
+
+  /* 3. When a print modal is active, hide all background page content cards, headers, & tables */
+  body:has(.print-modal-overlay) .page-header,
+  body:has(.print-modal-overlay) .page-content > *:not(.print-modal-overlay):not(:has(.print-modal-overlay)),
+  body:has(.print-modal-overlay) .main-shell > *:not(.print-modal-overlay):not(:has(.print-modal-overlay)),
+  body:has(.print-modal-overlay) .card:not(.modal-card):not(.modal-print-card),
+  body:has(.print-modal-overlay) .grid,
+  body:has(.print-modal-overlay) .kpi-metric-grid,
+  body:has(.print-modal-overlay) .kpi-grid,
+  body:has(.print-modal-overlay) .data-table-card {
+    display: none !important;
+  }
+
+  /* Fallback for browsers: when print-modal-overlay is present, hide standard background cards */
+  .print-modal-overlay ~ .card,
+  .print-modal-overlay ~ .grid,
+  .card:has(~ .print-modal-overlay),
+  .grid:has(~ .print-modal-overlay),
+  .page-header:has(~ .print-modal-overlay),
+  .data-table-card:has(~ .print-modal-overlay),
+  .filter-toolbar:has(~ .print-modal-overlay) {
+    display: none !important;
+  }
+
+  /* 4. Force display & static layout ONLY for active print modals & printable document sheets */
+  .print-modal-overlay,
+  .modal-overlay.print-modal-overlay,
+  .modal-backdrop.print-modal-overlay,
+  .modal-dialog,
+  .modal-dialog-lg,
+  .modal-card,
+  .modal-print-card,
+  .printable-a4-sheet,
+  .contract-print-document,
+  #printable-fee-notice-area,
+  .health-report-sheet,
+  .initial-assessment-sheet,
+  [class*="printable"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: static !important;
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* 5. Ensure all elements inside printable sheets are explicitly visible */
+  .printable-a4-sheet *,
+  .contract-print-document *,
+  #printable-fee-notice-area *,
+  .health-report-sheet *,
+  .initial-assessment-sheet * {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* 5. High-fidelity table formatting for printed documents */
+  .printable-a4-sheet table,
+  .contract-print-document table,
+  #printable-fee-notice-area table,
+  .data-table-card table,
+  .table-responsive table {
+    font-size: 8.8pt !important;
+    margin-bottom: 6px !important;
+    border-collapse: collapse !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .printable-a4-sheet th,
+  .printable-a4-sheet td,
+  .contract-print-document th,
+  .contract-print-document td,
+  #printable-fee-notice-area th,
+  #printable-fee-notice-area td,
+  .data-table-card th,
+  .data-table-card td {
+    padding: 4px 6px !important;
+    line-height: 1.25 !important;
+    border: 1px solid #475569 !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+
+  .printable-a4-sheet table thead,
+  .contract-print-document table thead,
+  #printable-fee-notice-area table thead {
+    display: table-header-group !important;
+  }
+
+  .printable-a4-sheet table tbody,
+  .contract-print-document table tbody,
+  #printable-fee-notice-area table tbody {
+    display: table-row-group !important;
+  }
+
+  .printable-a4-sheet table tr,
+  .contract-print-document table tr,
+  #printable-fee-notice-area table tr {
+    display: table-row !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .printable-a4-sheet .signature-box,
+  .contract-print-document .signature-box {
+    margin-top: 18px !important;
+    margin-bottom: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Contract specific page break helper */
+  .contract-page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  /* Independent Print Sheet Filtering (Admission assessment vs handover) */
+  .print-target-assessment .print-section-handover {
+    display: none !important;
+  }
+
+  .print-target-handover .print-section-assessment {
+    display: none !important;
+  }
+
+  .print-target-all .print-section-handover {
+    page-break-before: always !important;
+    break-before: page !important;
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+  }
+
+  /* Universal print color adjust & shadow removal */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ========================================================================== */
+/* MOBILE NATIVE UI & RESPONSIVE DESIGN ENHANCEMENTS (< 768px)               */
+/* ========================================================================== */
+
+@media (max-width: 767px) {
+  /* Prevent horizontal page overflow & safe area padding */
+  html, body {
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
+
+  body {
+    padding-bottom: 72px; /* Space for Mobile Bottom Navigation Bar */
+  }
+
+  /* Safe Area for iOS notch & home bar */
+  .topbar {
+    min-height: auto !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    padding: 0.65rem 0.75rem !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
+  .topbar-start {
+    gap: 0.4rem !important;
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .topbar-title {
+    font-size: 0.9rem !important;
+  }
+
+  .topbar-subtitle {
+    display: block !important;
+    font-size: 0.68rem !important;
+    color: #64748b !important;
+  }
+
+  .topbar-end {
+    width: 100% !important;
+    justify-content: space-between !important;
+    gap: 0.35rem !important;
+    padding-top: 0.35rem !important;
+    border-top: 1px solid var(--border-default) !important;
+  }
+
+  .actor-panel {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem !important;
+  }
+
+  .actor-info-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.35rem !important;
+    min-width: 0 !important;
+  }
+
+  .actor-summary {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    flex-wrap: wrap !important;
+    min-width: 0 !important;
+  }
+
+  .page-content {
+    padding: 0.75rem 0.65rem 5rem 0.65rem !important;
+  }
+
+  /* Touch Targets (44px Minimum height on Mobile) */
+  input[type="text"],
+  input[type="number"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="email"],
+  input[type="password"],
+  select,
+  textarea,
+  .form-input,
+  .form-select,
+  .form-textarea {
+    font-size: 16px !important; /* Prevents iOS Safari auto-zoom */
+    min-height: 44px;
+    padding: 0.6rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+  }
+
+  button,
+  .btn,
+  .button {
+    min-height: 42px;
+    padding: 0.55rem 0.75rem !important;
+    font-size: 0.85rem !important;
+    touch-action: manipulation;
+  }
+
+  /* Responsive Multi-column Grids to Single Column on Mobile */
+  .grid,
+  .form-row,
+  .stats-grid,
+  div[style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Card Spacing & Touch Borders */
+  .card {
+    padding: 0.85rem !important;
+    border-radius: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .card.data-table-card,
+  .data-table-card {
+    padding: 0 !important;
+  }
+
+  /* Touch-friendly Data Tables with Smooth Horizontal Scroll */
+  .table-responsive,
+  .table-container,
+  .fee-table-responsive {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: pan-x pan-y !important;
+    overscroll-behavior-x: contain !important;
+    border-radius: 0.5rem;
+    box-sizing: border-box !important;
+  }
+
+  .table-responsive table,
+  .table-container table,
+  .fee-table-responsive table,
+  table.table,
+  table.data-table,
+  table.ui-table,
+  table.operations-table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 750px !important;
+    table-layout: auto !important;
+  }
+
+  table th,
+  table td {
+    padding: 0.6rem 0.65rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Modal Bottom Sheet Transformation on Mobile */
+  .modal-overlay,
+  .modal-backdrop {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+
+  /* Exception & Optimization for Print Preview Modals on Mobile */
+  .modal-overlay.print-modal-overlay,
+  .modal-backdrop.print-modal-overlay,
+  .print-modal-overlay {
+    align-items: flex-start !important;
+    justify-content: center !important;
+    padding: 0.5rem !important;
+    z-index: 999999 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .print-modal-overlay .modal-dialog,
+  .print-modal-overlay .modal-card,
+  .print-modal-overlay .modal-dialog-lg {
+    max-height: 98vh !important;
+    border-radius: 0.75rem !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* Sticky Header inside Print Preview Modals so Print/Printer Action buttons are ALWAYS 1-tap reachable */
+  .print-modal-overlay .no-print:first-child,
+  .print-modal-overlay .modal-header.no-print {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 100 !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.75rem 0.85rem !important;
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+  }
+
+  .modal-dialog,
+  .modal-card {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 94vh !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 1.25rem !important;
+    border-top-right-radius: 1.25rem !important;
+    padding: 1.15rem 1rem !important;
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  .modal-header {
+    padding-bottom: 0.6rem !important;
+  }
+
+  .modal-body {
+    padding: 0.5rem 0 !important;
+    max-height: 74vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-footer {
+    padding-top: 0.75rem !important;
+    flex-direction: column-reverse !important;
+    gap: 0.5rem !important;
+  }
+
+  .modal-footer button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* ========================================================================== */
+/* IOS PWA SPECIFIC ANIMATIONS & NATIVE INTERACTIONS                         */
+/* ========================================================================== */
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* iOS active press feedback */
+.ios-press {
+  transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.12s ease;
+}
+
+.ios-press:active {
+  transform: scale(0.96) !important;
+  opacity: 0.85 !important;
+}
+
+/* Glassmorphism Navigation Blur */
+.ios-nav-blur {
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+/* ========================================================================== */
+/* GLOBAL TABLE RESPONSIVENESS & TOUCH ENHANCEMENTS                          */
+/* ========================================================================== */
+
+.data-table,
+.ui-table,
+.operations-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+div:has(> table.data-table),
+div:has(> table.ui-table),
+div:has(> table.operations-table),
+div:has(> table),
+.table-responsive,
+.table-container,
+.table-wrapper,
+.operations-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+/* Ensure all tables inside scroll wrappers have a readable minimum width fallback */
+.table-responsive > table,
+.table-container > table,
+.table-wrapper > table,
+.operations-table-wrap > table,
+div:has(> table) > table {
+  min-width: 720px;
+}
+
+.table-responsive::-webkit-scrollbar,
+.table-container::-webkit-scrollbar,
+div:has(> table)::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track,
+.table-container::-webkit-scrollbar-track,
+div:has(> table)::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb,
+div:has(> table)::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover,
+.table-container::-webkit-scrollbar-thumb:hover,
+div:has(> table)::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Sticky first column helper for mobile touch scroll */
+.sticky-col-first-th,
+.sticky-col-first-td {
+  position: sticky !important;
+  left: 0 !important;
+  z-index: 10 !important;
+}
+
+th.sticky-col-first-th {
+  background-color: #f8fafc !important;
+  box-shadow: 2px 0 5px -2px rgba(15, 23, 42, 0.12) !important;
+}
+
+td.sticky-col-first-td {
+  background-color: #ffffff !important;
+  box-shadow: 2px 0 5px -2px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Touch Pan & Overscroll containment for mobile table containers */
+.table-wrapper,
+.table-responsive {
+  touch-action: pan-x pan-y !important;
+  overscroll-behavior-x: contain !important;
+}
+
+/* Width Helper Classes for Wide Tables & Overflow Protection */
+.table-wide-1600 { min-width: 1600px !important; }
+.table-wide-1500 { min-width: 1500px !important; }
+.table-wide-1400 { min-width: 1400px !important; }
+.table-wide-1300 { min-width: 1300px !important; }
+.table-wide-1200 { min-width: 1200px !important; }
+.table-wide-1150 { min-width: 1150px !important; }
+.table-wide-1100 { min-width: 1100px !important; }
+.table-wide-1050 { min-width: 1050px !important; }
+.table-wide-1000 { min-width: 1000px !important; }
+.table-wide-900  { min-width: 900px  !important; }
+.table-wide-800  { min-width: 800px  !important; }
+.table-wide-750  { min-width: 750px  !important; }
+.table-wide-700  { min-width: 700px  !important; }
+.table-wide-650  { min-width: 650px  !important; }
+
+/* Table header & cell overflow protection */
+.table-responsive th,
+.table-container th,
+.data-table th,
+.ui-table th,
+.operations-table th,
+table th {
+  white-space: nowrap;
+}
+
+/* Badge, Date, Currency & Action Button wrapping prevention in tables */
+.table-responsive td .badge,
+.table-container td .badge,
+.table-responsive td .btn,
+.table-container td .btn,
+.table-responsive td button,
+.table-container td button,
+td .badge,
+td .btn {
+  white-space: nowrap !important;
+}
+
+.td-nowrap {
+  white-space: nowrap !important;
+}
+
+.td-wrap-text {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  min-width: 160px;
+}
+
+@media (max-width: 767px) {
+  .data-table,
+  .ui-table,
+  .operations-table {
+    min-width: 640px;
+  }
+
+  button,
+  input,
+  select,
+  .button,
+  .text-input,
+  .form-select,
+  .form-input {
+    min-height: 44px;
+    font-size: 16px; /* Prevents auto-zoom on iOS Safari */
+  }
+}
+
+/* iOS PWA Standalone status bar gap */
+@media all and (display-mode: standalone) {
+  body {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  input, textarea, select, [contenteditable="true"] {
+    -webkit-user-select: text;
+  }
+}
+
+/* RESPONSIVE NOTIFICATION BELL DROPDOWN MOBILE FIX */
+.notification-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 0.65rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 99999;
+  overflow: hidden;
+  animation: notificationDropdownFadeIn 0.18s ease-out;
+}
+
+@keyframes notificationDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 639px) {
+  .notification-dropdown {
+    position: fixed !important;
+    top: 68px !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 0 auto !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+    z-index: 99999 !important;
+  }
+}
+
+/* ========================================================================= */
+/* COMPREHENSIVE CROSS-PLATFORM UI OPTIMIZATION SYSTEM                       */
+/* Desktop (macOS & Windows) | Tablet (iPad & Android) | Mobile (iOS & Android) */
+/* ========================================================================= */
+
+/* 1. DESKTOP (MACOS & WINDOWS) OPTIMIZATION */
+html,
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Cross-Platform Custom Smooth Scrollbars (Windows Chrome/Edge & macOS) */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.app-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Normalization for Native Inputs & Selects across Chrome, Safari, Firefox */
+input,
+select,
+textarea,
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  color-scheme: light;
+}
+
+input[type="date"],
+input[type="datetime-local"],
+select.form-select,
+input.form-input {
+  min-height: 44px;
+  font-size: 16px; /* Prevents auto-zoom on mobile browsers & improves tap precision */
+}
+
+/* Flex Toolbar wrapping resilience for high-DPI Windows desktop scaling (125%-150%) */
+.filter-toolbar,
+.toolbar,
+.page-header-actions,
+.table-actions {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* 2. MOBILE SPECIFIC RULES (IOS SAFARI & ANDROID CHROME < 768PX) */
+@media (max-width: 767px) {
+  /* Safe area padding for Android gesture navigation bar & iOS home indicator */
+  .mobile-bottom-nav,
+  .bottom-toolbar,
+  .modal-backdrop,
+  .page-content {
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  }
+
+  /* Smooth momentum scrolling & overscroll containment for touch tables & drawers */
+  .table-responsive,
+  .data-table-container,
+  .operations-table-container,
+  .sidebar {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Modal cards on Mobile Android & iOS */
+  .modal-card,
+  .modal-dialog {
+    width: calc(100vw - 24px) !important;
+    max-width: 100% !important;
+    max-height: 90vh !important;
+    max-height: 90dvh !important;
+    border-radius: 0.75rem !important;
+    padding: 1.25rem !important;
+    margin: 0 auto !important;
+    overscroll-behavior-y: contain;
+  }
+
+  /* KPI Cards Grid on Mobile (2 columns) */
+  .kpi-grid,
+  .grid-kpi,
+  .dashboard-kpi-grid,
+  .summary-grid,
+  .resident-summary-grid,
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.65rem !important;
+  }
+
+  /* Entity List Cards on Mobile (1 full-width column) */
+  .entity-grid-cards,
+  .resident-grid,
+  .contract-grid,
+  .staff-grid,
+  .room-grid,
+  .bed-grid,
+  .leave-grid,
+  .health-grid,
+  .kitchen-grid,
+  .family-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Form Filter Toolbars on Mobile */
+  .filter-toolbar-grid,
+  .resident-toolbar {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* 3. IPAD & TABLET LAYOUT OPTIMIZATION (768PX - 1024PX / 1180PX) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* App Shell grid structure on Tablets */
+  .app-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .app-shell.sidebar-collapsed {
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  /* Tablet KPI Grid: 3 balanced columns */
+  .kpi-grid,
+  .grid-kpi,
+  .dashboard-kpi-grid,
+  .summary-grid,
+  .resident-summary-grid,
+  .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  /* Tablet Entity Grid (Residents, Contracts, Leave, Health, Workforce, Rooms, Billing): 2 columns */
+  .entity-grid-cards,
+  .resident-grid,
+  .contract-grid,
+  .staff-grid,
+  .room-grid,
+  .bed-grid,
+  .leave-grid,
+  .health-grid,
+  .kitchen-grid,
+  .family-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+
+  /* Tablet Filter Toolbars: 2 or 3 balanced columns */
+  .filter-toolbar-grid,
+  .resident-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Tablet Modals: Centered 88vw width for optimal reading line length */
+  .modal-card,
+  .modal-dialog {
+    max-width: 88vw !important;
+    width: 720px !important;
+    max-height: 88vh !important;
+    max-height: 88dvh !important;
+    padding: 1.75rem !important;
+  }
+
+  /* Tablet Table Containers with custom smooth scroll & sticky header */
+  .table-responsive,
+  .data-table-container,
+  .operations-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  .table-responsive table,
+  .data-table,
+  .operations-table {
+    min-width: 720px;
+  }
+
+  .table-responsive th,
+  .data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--surface-panel, #ffffff);
+  }
+
+  /* Tablet Touch Targets */
+  .nav-link,
+  .btn,
+  .form-input,
+  .form-select {
+    min-height: 44px;
+  }
+}
+
+/* 4. TOUCH DEVICE HOVER STATE FIX (Prevents sticky hover effects on Mobile & iPad Touch) */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover,
+  .nav-link:hover,
+  .card:hover {
+    box-shadow: none;
+  }
+
+  .btn:active,
+  .nav-link:active,
+  .card:active {
+    opacity: 0.88;
+    transform: scale(0.985);
+    transition: transform 0.08s ease, opacity 0.08s ease;
+  }
+}
+
+/* ========================================================================= */
+/* MOBILE CARD LIST VIEW & RESPONSIVE TABLE UTILITIES (< 768px)               */
+/* ========================================================================= */
+
+.mobile-only-cards {
+  display: none;
+}
+
+.desktop-only-table {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .desktop-only-table {
+    display: none !important;
+  }
+
+  .mobile-only-cards {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: 100%;
+  }
+
+  .mobile-card-item {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.5rem;
+  }
+
+  .mobile-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+  }
+
+  .mobile-card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 0.85rem;
+    gap: 0.5rem;
+  }
+
+  .mobile-card-label {
+    color: #64748b;
+    font-weight: 500;
+    min-width: 110px;
+  }
+
+  .mobile-card-value {
+    color: #0f172a;
+    font-weight: 600;
+    text-align: right;
+    word-break: break-word;
+  }
+
+  .mobile-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+    padding-top: 0.6rem;
+    border-top: 1px dashed #e2e8f0;
+    flex-wrap: wrap;
+  }
+
+  .mobile-card-actions button,
+  .mobile-card-actions .btn {
+    flex: 1;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+}
+
+/* ========================================================================= */
+/* SERVICE CONTRACTS MOBILE RESPONSIVE LAYOUT ENHANCEMENTS                 */
+/* ========================================================================= */
+
+.contract-form-grid-3,
+.contract-form-grid-4,
+.contract-form-grid-2,
+.contract-form-grid-room,
+.contract-form-grid-discount {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.contract-form-grid-3 {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.contract-form-grid-4 {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.contract-form-grid-2 {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.contract-form-grid-room {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.contract-form-grid-discount {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+@media (max-width: 640px) {
+  .contract-form-grid-3,
+  .contract-form-grid-4,
+  .contract-form-grid-2,
+  .contract-form-grid-room,
+  .contract-form-grid-discount {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+}
+
+.contract-service-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+@media (max-width: 520px) {
+  .contract-service-item {
+    flex-wrap: wrap;
+  }
+  .contract-service-item-name {
+    width: 100%;
+    margin-bottom: 0.2rem;
+  }
+}
+
+/* ========================================================================== */
+/* RESPONSIVE MOBILE & TABLET LAYOUT: PHIẾU ĐÁNH GIÁ SỨC KHỎE ĐỊNH KỲ         */
+/* Supports: iOS (iPhones), Android, iPad Mini, iPad Air, iPad Pro, Tablets   */
+/* ========================================================================== */
+@media screen and (max-width: 1024px) {
+  /* Scale & bounds reduction for health report sheet on mobile/tablet screen */
+  .printable-a4-sheet.health-report-sheet,
+  .health-report-sheet {
+    padding: 0.65rem !important;
+    font-size: 0.8rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Header vertical presentation */
+  .health-report-sheet .health-report-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 0.5rem !important;
+  }
+
+  .health-report-sheet .health-report-header-right {
+    text-align: left !important;
+    font-size: 0.75rem !important;
+    width: 100% !important;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 0.35rem;
+    margin-top: 0.25rem;
+    white-space: normal !important;
+  }
+
+  .health-report-sheet h1 {
+    font-size: 0.98rem !important;
+    text-align: center !important;
+    line-height: 1.3 !important;
+    margin: 0.4rem 0 !important;
+  }
+
+  /* Vertical Stacking for Admin Info, Grids, and Conditions */
+  .health-report-sheet .health-report-admin-grid,
+  .health-report-sheet .health-report-grid-2col,
+  .health-report-sheet .health-report-conditions-grid,
+  .health-report-sheet .health-report-psych-grid,
+  .health-report-vitals-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    width: 100% !important;
+  }
+
+  .health-report-allergy-input {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Override table min-width 650px on mobile/tablet viewports so it fits screen frame */
+  .health-report-sheet .table-wide-650,
+  .health-report-sheet table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    font-size: 0.76rem !important;
+  }
+
+  /* Transform table rows & cells into stacked vertical cards for mobile/tablet */
+  .health-report-sheet table thead {
+    display: none !important; /* Hide wide table header on mobile/tablet */
+  }
+
+  .health-report-sheet table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .health-report-sheet table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 0.65rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .health-report-sheet table td {
+    border: none !important;
+    padding: 0.2rem 0 !important;
+    display: block !important;
+    text-align: left !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  .health-report-sheet table td.adl-cell-empty {
+    display: none !important; /* Hide unselected empty cells in ADL table on mobile/tablet cards */
+  }
+
+  .health-report-sheet table td.adl-cell-selected {
+    display: block !important;
+    background: #f0fdf4 !important;
+    color: #15803d !important;
+    font-weight: 600 !important;
+    border-radius: 0.375rem !important;
+    padding: 0.35rem 0.6rem !important;
+    border: 1px solid #86efac !important;
+    margin-top: 0.2rem !important;
+  }
+
+  .health-report-sheet table td:first-child {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    font-size: 0.82rem !important;
+    border-bottom: 1px dashed #e2e8f0 !important;
+    padding-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  .health-report-eval-options {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 0.35rem 0.75rem !important;
+  }
+
+  .health-report-eval-option {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+  }
+
+  /* Care Level proposal options vertical stack */
+  .health-report-sheet .health-report-care-levels {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* Signature Box centered/stacked on mobile/tablet */
+  .health-report-sheet .signature-box,
+  .health-report-sheet .health-report-signature {
+    justify-content: center !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+  }
+
+  .health-report-sheet .signature-box > div,
+  .health-report-sheet .health-report-signature > div {
+    width: 100% !important;
+    max-width: 260px !important;
+    margin: 0 auto !important;
+  }
+
+  /* Modal Dialog & Form for Health Report Creation/Editing & Sheet Viewing on Mobile/Tablet */
+  .health-report-editor-modal,
+  .health-report-sheet-modal {
+    width: 98vw !important;
+    max-width: 98vw !important;
+    padding: 0.5rem !important;
+    margin: 0.25rem auto !important;
+    max-height: 94vh !important;
+    box-sizing: border-box !important;
+  }
+
+  .health-report-editor-modal .table-responsive,
+  .health-report-sheet-modal .table-responsive {
+    overflow-x: visible !important;
+  }
+
+  /* ADL Table conversion to Vertical Mobile Cards when editing */
+  .health-report-editor-adl-table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+  }
+
+  .health-report-editor-adl-table thead {
+    display: none !important;
+  }
+
+  .health-report-editor-adl-table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    width: 100% !important;
+  }
+
+  .health-report-editor-adl-table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #ffffff !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 0.6rem !important;
+    padding: 0.75rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .health-report-editor-adl-table td {
+    border: none !important;
+    padding: 0.25rem 0 !important;
+    display: block !important;
+    text-align: left !important;
+    width: 100% !important;
+  }
+
+  .health-report-editor-adl-table td:first-child {
+    font-size: 0.92rem !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding-bottom: 0.5rem !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .adl-radio-label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.6rem !important;
+    padding: 0.6rem 0.75rem !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.4rem !important;
+    background: #f8fafc !important;
+    font-size: 0.85rem !important;
+    color: #1e293b !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: transparent !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .adl-radio-label:has(input:checked) {
+    background: #f0fdf4 !important;
+    border-color: #22c55e !important;
+    color: #15803d !important;
+    font-weight: 600 !important;
+  }
+
+  .adl-option-text {
+    display: inline-block !important;
+  }
+
+  .health-report-radio-group,
+  .health-report-allergy-row,
+  .health-report-record-row {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    align-items: stretch !important;
+  }
+
+  .health-report-radio-group label {
+    padding: 0.5rem 0.75rem !important;
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.375rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ========================================================================== */
+  /* RESPONSIVE MOBILE LAYOUT: PHIẾU ĐÁNH GIÁ SỨC KHỎE BAN ĐẦU (02/PĐG-TA)     */
+  /* ========================================================================== */
+  .initial-assessment-modal {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    padding: 0.5rem !important;
+    margin: 0.25rem auto !important;
+    box-sizing: border-box !important;
+  }
+
+  .printable-a4-sheet.initial-assessment-sheet,
+  .initial-assessment-sheet {
+    padding: 0.65rem !important;
+    font-size: 0.8rem !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Header flex presentation */
+  .initial-assessment-sheet .initial-header-flex {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    gap: 0.5rem !important;
+  }
+
+  .initial-assessment-sheet .initial-meta-info {
+    text-align: left !important;
+    font-size: 0.75rem !important;
+    width: 100% !important;
+    white-space: normal !important;
+    border-top: 1px dashed #cbd5e1;
+    padding-top: 0.35rem;
+    margin-top: 0.25rem;
+  }
+
+  .initial-assessment-sheet h1 {
+    font-size: 0.98rem !important;
+    text-align: center !important;
+    line-height: 1.3 !important;
+    margin: 0.4rem 0 !important;
+  }
+
+  /* Force 1-column grid layout on mobile screens */
+  .initial-assessment-sheet .initial-grid-2col,
+  .initial-assessment-sheet .initial-grid-3col,
+  .initial-assessment-modal .initial-grid-2col,
+  .initial-assessment-modal .initial-grid-3col {
+    grid-template-columns: 1fr !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+  }
+
+  /* Flex between items (e.g., total fee box) */
+  .initial-assessment-sheet .initial-flex-between {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.4rem !important;
+    width: 100% !important;
+  }
+
+  /* Care Level proposal options vertical stack */
+  .initial-assessment-sheet .initial-care-levels {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.35rem !important;
+    margin-top: 0.25rem !important;
+  }
+
+  /* Override tables on mobile viewports so they fit screen frame */
+  .initial-assessment-sheet .table-wide-650,
+  .initial-assessment-sheet table {
+    min-width: 0 !important;
+    width: 100% !important;
+    display: block !important;
+    font-size: 0.76rem !important;
+  }
+
+  .initial-assessment-sheet table thead {
+    display: none !important; /* Hide wide table header on mobile */
+  }
+
+  .initial-assessment-sheet table tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .initial-assessment-sheet table tr {
+    display: flex !important;
+    flex-direction: column !important;
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 0.5rem !important;
+    padding: 0.5rem 0.65rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .initial-assessment-sheet table td {
+    border: none !important;
+    padding: 0.2rem 0 !important;
+    display: block !important;
+    text-align: left !important;
+    word-break: break-word !important;
+  }
+
+  .initial-assessment-sheet table td:first-child {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    font-size: 0.82rem !important;
+    border-bottom: 1px dashed #e2e8f0 !important;
+    padding-bottom: 0.25rem !important;
+    margin-bottom: 0.2rem !important;
+  }
+
+  /* Signature Box centered/stacked on mobile */
+  .initial-assessment-sheet .initial-signature-grid,
+  .initial-assessment-modal .initial-signature-grid {
+    grid-template-columns: 1fr !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+    gap: 1.25rem !important;
+  }
+
+  .initial-assessment-sheet .initial-signature-grid > div,
+  .initial-assessment-modal .initial-signature-grid > div {
+    width: 100% !important;
+    max-width: 260px !important;
+    margin: 0 auto !important;
+  }
+
+
+  /* KPI Supervision & Synthesis Mobile Responsive Rules */
+  .kpi-submode-nav {
+    flex-direction: column !important;
+    gap: 0.4rem !important;
+    padding: 0.4rem !important;
+  }
+
+  .kpi-submode-btn {
+    width: 100% !important;
+    font-size: 0.78rem !important;
+    padding: 0.45rem 0.6rem !important;
+    justify-content: flex-start !important;
+  }
+
+  .kpi-card {
+    padding: 0.85rem 0.65rem !important;
+    border-radius: 0.55rem !important;
+  }
+
+  .kpi-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.4rem !important;
+    padding-bottom: 0.65rem !important;
+  }
+
+  .kpi-card-title {
+    font-size: 0.92rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .kpi-card-subtitle {
+    font-size: 0.76rem !important;
+  }
+
+  .kpi-form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+    padding: 0.65rem !important;
+  }
+
+  .kpi-form-grid label {
+    font-size: 0.72rem !important;
+  }
+
+  .kpi-form-grid select,
+  .kpi-form-grid input {
+    font-size: 0.8rem !important;
+    padding: 0.4rem 0.55rem !important;
+  }
+
+  .kpi-criteria-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.25rem !important;
+  }
+
+  .kpi-criteria-title {
+    font-size: 0.8rem !important;
+  }
+
+  .kpi-criteria-staff {
+    font-size: 0.74rem !important;
+  }
+
+  .kpi-criterion-item {
+    padding: 0.65rem 0.65rem !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+  }
+
+  .kpi-criterion-info {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .kpi-criterion-title {
+    font-size: 0.82rem !important;
+    word-break: break-word !important;
+  }
+
+  .kpi-criterion-desc {
+    font-size: 0.75rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .kpi-criterion-actions {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.3rem !important;
+    width: 100% !important;
+    flex-shrink: 1 !important;
+  }
+
+  .kpi-criterion-btn {
+    padding: 0.4rem 0.15rem !important;
+    font-size: 0.68rem !important;
+    text-align: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .kpi-submit-btn {
+    width: 100% !important;
+    padding: 0.6rem 0.85rem !important;
+    font-size: 0.84rem !important;
+    justify-content: center !important;
+  }
+
+  .kpi-synthesis-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.4rem !important;
+  }
+
+  .kpi-synthesis-actions button {
+    width: 100% !important;
+    font-size: 0.76rem !important;
+    padding: 0.45rem 0.6rem !important;
+    justify-content: center !important;
+  }
+
+  .kpi-metric-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.5rem !important;
+  }
+
+  .kpi-metric-card {
+    padding: 0.65rem 0.65rem !important;
+  }
+
+  .kpi-metric-title {
+    font-size: 0.64rem !important;
+  }
+
+  .kpi-metric-number {
+    font-size: 1.15rem !important;
+  }
+
+  .kpi-metric-subtext {
+    font-size: 0.68rem !important;
+  }
+
+  .kpi-facility-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+
+  .kpi-history-table th,
+  .kpi-history-table td,
+  .kpi-synthesis-table th,
+  .kpi-synthesis-table td {
+    font-size: 0.76rem !important;
+    padding: 0.4rem 0.45rem !important;
+  }
+}
+
+/* KPI Supervision & Synthesis Desktop Base Classes */
+.kpi-submode-nav {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  padding: 0.5rem;
+  border-radius: 0.65rem;
+  border: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.kpi-submode-btn {
+  font-weight: 700;
+  border-radius: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.kpi-card {
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.kpi-card-header {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.85rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.kpi-card-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.kpi-card-subtitle {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.kpi-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.55rem;
+  border: 1px solid #e2e8f0;
+}
+
+.kpi-criteria-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.kpi-criterion-item {
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.kpi-criterion-info {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.kpi-criterion-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.kpi-criterion-btn {
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.kpi-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-synthesis-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.kpi-facility-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Health Reports Module 2-Tab Navigation & Print Formatting */
+.health-report-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+
+.health-report-tab-btn {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.health-report-tab-btn:hover {
+  color: #15803d;
+  background-color: #f0fdf4;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.health-report-tab-btn.active {
+  color: #166534;
+  border-bottom-color: #166534;
+  background-color: #dcfce7;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+.daily-vitals-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.daily-vitals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.daily-vitals-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.daily-vitals-history-table th,
+.daily-vitals-history-table td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+}
+
+.daily-vitals-history-table th {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* Ensure print mode retains standard paper sheet formatting and blank signature box for Medical Head */
+@media print {
+  .health-report-sheet table thead {
+    display: table-header-group !important;
+  }
+  .health-report-sheet table tbody {
+    display: table-row-group !important;
+  }
+  .health-report-sheet table tr {
+    display: table-row !important;
+  }
+  .health-report-sheet table td {
+    display: table-cell !important;
+  }
+
+  /* Leave signature box blank above pre-filled name for manual signing */
+  .health-report-sheet .medical-head-digital-stamp {
+    display: none !important;
+  }
+  .health-report-sheet .medical-head-signature-blank-space {
+    height: 4rem !important;
+    display: block !important;
+  }
+}
+
+
+
+
+/* TAMANCARE_MOBILE_TABLE_SCROLL_GATE5_BEGIN
+   Production Test — mobile/tablet operational tables only.
+   Desktop >1024px is intentionally untouched.
+*/
+@media screen and (max-width: 1024px) {
+
+  /*
+   * Named operational table wrappers.
+   * The wrapper, not the page, owns horizontal scrolling.
+   */
+  .table-responsive,
+  .table-container,
+  .table-wrapper,
+  .fee-table-responsive,
+  .operations-table-wrap,
+  .data-table-container,
+  .operations-table-container {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  /*
+   * Some operational tables are direct children of a div and do not have
+   * a named wrapper. Limit fallback strictly to known DATA table classes.
+   * We deliberately do NOT target generic "div:has(> table)" here.
+   */
+  div:has(> table.data-table),
+  div:has(> table.ui-table),
+  div:has(> table.operations-table) {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x pan-y;
+  }
+
+  /*
+   * Preserve special medical/admission responsive forms.
+   * Their existing dedicated mobile rules remain authoritative.
+   */
+  .health-report-sheet,
+  .initial-assessment-sheet {
+    max-width: 100%;
+  }
+}
+/* TAMANCARE_MOBILE_TABLE_SCROLL_GATE5_END */
+
+/* TAMANCARE_MEDICATION_IOS_SCROLL_BEGIN */
+@media screen and (max-width: 1024px) {
+  [data-tamancare-medication-orders-section="true"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+  }
+
+  [data-tamancare-medication-orders-section="true"]
+  > [data-tamancare-medication-orders-scroll="true"] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: scroll !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-x: contain !important;
+    touch-action: pan-x pan-y !important;
+  }
+
+  [data-tamancare-medication-orders-scroll="true"] > table {
+    display: table !important;
+    width: max-content !important;
+    min-width: 850px !important;
+    max-width: none !important;
+    table-layout: auto !important;
+  }
+
+  [data-tamancare-medication-orders-scroll="true"] th,
+  [data-tamancare-medication-orders-scroll="true"] td {
+    white-space: nowrap;
+  }
+}
+/* TAMANCARE_MEDICATION_IOS_SCROLL_END */

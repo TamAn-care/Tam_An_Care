@@ -1,0 +1,793 @@
+import {
+  Injectable,
+} from '@nestjs/common';
+
+import {
+  PoolClient,
+  QueryResult,
+  QueryResultRow,
+} from 'pg';
+
+import {
+  DatabaseService,
+} from '../database/database.service';
+
+import {
+  CareAction,
+  CareActionAuditEvent,
+  CareActionEventType,
+  CareActionPriority,
+  CareActionStatus,
+  CareActionTransfer,
+} from './care-action.types';
+
+
+type QueryExecutor = {
+  query<
+    T extends QueryResultRow = any
+  >(
+    text: string,
+    params?: any[],
+  ): Promise<QueryResult<T>>;
+};
+
+
+type CareActionRow = {
+  id: string;
+
+  resident_id: string;
+  pattern_id: string;
+
+  status: CareActionStatus;
+
+  assigned_to: string | null;
+  assigned_role: string | null;
+  assigned_at: Date | null;
+
+  priority: CareActionPriority | null;
+  due_at: Date | null;
+
+  review_started_at: Date | null;
+
+  resolved_at: Date | null;
+  resolution_reason: string | null;
+  resolution_note: string | null;
+
+  created_at: Date;
+  updated_at: Date;
+};
+
+
+type TransferRow = {
+  id: string;
+
+  care_action_id: string;
+
+  event_type:
+    'ASSIGNMENT' |
+    'TRANSFER';
+
+  from_assigned_to: string | null;
+  from_assigned_role: string | null;
+
+  to_assigned_to: string;
+  to_assigned_role: string;
+
+  priority: CareActionPriority | null;
+  due_at: Date | null;
+
+  transferred_at: Date;
+
+  actor_id: string | null;
+  actor_role: string | null;
+
+  created_at: Date;
+};
+
+
+type AuditRow = {
+  id: string;
+
+  care_action_id: string;
+  resident_id: string;
+  pattern_id: string;
+
+  event_type: CareActionEventType;
+
+  actor_id: string | null;
+  actor_role: string | null;
+
+  previous_state:
+    Record<string, unknown> | null;
+
+  new_state:
+    Record<string, unknown> | null;
+
+  created_at: Date;
+};
+
+
+export type CareActionUpdate = {
+  status?: CareActionStatus;
+
+  assignedTo?: string | null;
+  assignedRole?: string | null;
+  assignedAt?: Date | null;
+
+  priority?: CareActionPriority | null;
+  dueAt?: Date | null;
+
+  startedAt?: Date | null;
+
+  resolvedAt?: Date | null;
+  resolutionReason?: string | null;
+  careNote?: string | null;
+};
+
+
+export type InsertTransferInput = {
+  careActionId: string;
+
+  eventType:
+    'ASSIGNMENT' |
+    'TRANSFER';
+
+  fromAssignedTo: string | null;
+  fromAssignedRole: string | null;
+
+  toAssignedTo: string;
+  toAssignedRole: string;
+
+  priority: CareActionPriority | null;
+  dueAt: Date | null;
+
+  actorId: string | null;
+  actorRole: string | null;
+};
+
+
+export type InsertAuditInput = {
+  careActionId: string;
+
+  residentId: string;
+  patternId: string;
+
+  eventType: CareActionEventType;
+
+  actorId: string | null;
+  actorRole: string | null;
+
+  previousState:
+    Record<string, unknown> | null;
+
+  newState:
+    Record<string, unknown> | null;
+};
+
+
+@Injectable()
+export class CareActionRepository {
+
+  constructor(
+    private readonly db: DatabaseService,
+  ) {}
+
+
+  private executor(
+    client?: PoolClient,
+  ): QueryExecutor {
+
+    return client || this.db;
+
+  }
+
+
+  private mapCareAction(
+    row: CareActionRow,
+  ): CareAction {
+
+    return {
+      id: row.id,
+
+      residentId:
+        row.resident_id,
+
+      patternId:
+        row.pattern_id,
+
+      status:
+        row.status,
+
+      assignedTo:
+        row.assigned_to,
+
+      assignedRole:
+        row.assigned_role,
+
+      assignedAt:
+        row.assigned_at
+          ? new Date(row.assigned_at)
+          : null,
+
+      priority:
+        row.priority,
+
+      dueAt:
+        row.due_at
+          ? new Date(row.due_at)
+          : null,
+
+      startedAt:
+        row.review_started_at
+          ? new Date(
+              row.review_started_at,
+            )
+          : null,
+
+      careNote:
+        row.resolution_note,
+
+      resolutionReason:
+        row.resolution_reason,
+
+      resolvedAt:
+        row.resolved_at
+          ? new Date(
+              row.resolved_at,
+            )
+          : null,
+
+      createdAt:
+        new Date(row.created_at),
+
+      updatedAt:
+        new Date(row.updated_at),
+    };
+
+  }
+
+
+  private mapTransfer(
+    row: TransferRow,
+  ): CareActionTransfer {
+
+    return {
+      id:
+        row.id,
+
+      careActionId:
+        row.care_action_id,
+
+      fromAssignedTo:
+        row.from_assigned_to,
+
+      fromAssignedRole:
+        row.from_assigned_role,
+
+      toAssignedTo:
+        row.to_assigned_to,
+
+      toAssignedRole:
+        row.to_assigned_role,
+
+      priority:
+        row.priority,
+
+      dueAt:
+        row.due_at
+          ? new Date(row.due_at)
+          : null,
+
+      transferredAt:
+        new Date(
+          row.transferred_at,
+        ),
+    };
+
+  }
+
+
+  private mapAudit(
+    row: AuditRow,
+  ): CareActionAuditEvent {
+
+    return {
+      id:
+        row.id,
+
+      careActionId:
+        row.care_action_id,
+
+      residentId:
+        row.resident_id,
+
+      patternId:
+        row.pattern_id,
+
+      eventType:
+        row.event_type,
+
+      actorId:
+        row.actor_id,
+
+      actorRole:
+        row.actor_role,
+
+      previousState:
+        row.previous_state,
+
+      newState:
+        row.new_state,
+
+      createdAt:
+        new Date(row.created_at),
+    };
+
+  }
+
+
+  async findById(
+    id: string,
+    client?: PoolClient,
+  ): Promise<CareAction | null> {
+
+    const result =
+      await this.executor(client)
+        .query<CareActionRow>(
+          `
+          SELECT *
+          FROM care_actions
+          WHERE id = $1
+          LIMIT 1
+          `,
+          [id],
+        );
+
+    if (!result.rows.length) {
+      return null;
+    }
+
+    return this.mapCareAction(
+      result.rows[0],
+    );
+
+  }
+
+
+  async findByResidentAndPattern(
+    residentId: string,
+    patternId: string,
+    client?: PoolClient,
+  ): Promise<CareAction | null> {
+
+    const result =
+      await this.executor(client)
+        .query<CareActionRow>(
+          `
+          SELECT *
+          FROM care_actions
+          WHERE resident_id = $1
+            AND pattern_id = $2
+          LIMIT 1
+          `,
+          [
+            residentId,
+            patternId,
+          ],
+        );
+
+    if (!result.rows.length) {
+      return null;
+    }
+
+    return this.mapCareAction(
+      result.rows[0],
+    );
+
+  }
+
+
+  async insert(
+    residentId: string,
+    patternId: string,
+    client?: PoolClient,
+  ): Promise<CareAction> {
+
+    const result =
+      await this.executor(client)
+        .query<CareActionRow>(
+          `
+          INSERT INTO care_actions (
+            resident_id,
+            pattern_id
+          )
+          VALUES ($1, $2)
+          RETURNING *
+          `,
+          [
+            residentId,
+            patternId,
+          ],
+        );
+
+    return this.mapCareAction(
+      result.rows[0],
+    );
+
+  }
+
+
+  async update(
+    id: string,
+    changes: CareActionUpdate,
+    client?: PoolClient,
+  ): Promise<CareAction> {
+
+    const columns:
+      string[] = [];
+
+    const values:
+      any[] = [];
+
+    const add = (
+      column: string,
+      value: unknown,
+    ) => {
+
+      values.push(value);
+
+      columns.push(
+        `${column} = $${values.length}`,
+      );
+
+    };
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'status',
+      )
+    ) {
+      add(
+        'status',
+        changes.status,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'assignedTo',
+      )
+    ) {
+      add(
+        'assigned_to',
+        changes.assignedTo,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'assignedRole',
+      )
+    ) {
+      add(
+        'assigned_role',
+        changes.assignedRole,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'assignedAt',
+      )
+    ) {
+      add(
+        'assigned_at',
+        changes.assignedAt,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'priority',
+      )
+    ) {
+      add(
+        'priority',
+        changes.priority,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'dueAt',
+      )
+    ) {
+      add(
+        'due_at',
+        changes.dueAt,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'startedAt',
+      )
+    ) {
+      add(
+        'review_started_at',
+        changes.startedAt,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'resolvedAt',
+      )
+    ) {
+      add(
+        'resolved_at',
+        changes.resolvedAt,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'resolutionReason',
+      )
+    ) {
+      add(
+        'resolution_reason',
+        changes.resolutionReason,
+      );
+    }
+
+
+    if (
+      Object.prototype.hasOwnProperty.call(
+        changes,
+        'careNote',
+      )
+    ) {
+      add(
+        'resolution_note',
+        changes.careNote,
+      );
+    }
+
+
+    if (!columns.length) {
+
+      const existing =
+        await this.findById(
+          id,
+          client,
+        );
+
+      if (!existing) {
+        throw new Error(
+          'Care Action not found.',
+        );
+      }
+
+      return existing;
+
+    }
+
+
+    add(
+      'updated_at',
+      new Date(),
+    );
+
+
+    values.push(id);
+
+    const result =
+      await this.executor(client)
+        .query<CareActionRow>(
+          `
+          UPDATE care_actions
+          SET
+            ${columns.join(', ')}
+          WHERE id = $${values.length}
+          RETURNING *
+          `,
+          values,
+        );
+
+
+    if (!result.rows.length) {
+      throw new Error(
+        'Care Action not found.',
+      );
+    }
+
+
+    return this.mapCareAction(
+      result.rows[0],
+    );
+
+  }
+
+
+  async insertTransfer(
+    input: InsertTransferInput,
+    client?: PoolClient,
+  ): Promise<void> {
+
+    await this.executor(client)
+      .query(
+        `
+        INSERT INTO care_action_transfers (
+          care_action_id,
+          event_type,
+
+          from_assigned_to,
+          from_assigned_role,
+
+          to_assigned_to,
+          to_assigned_role,
+
+          priority,
+          due_at,
+
+          actor_id,
+          actor_role
+        )
+        VALUES (
+          $1, $2,
+          $3, $4,
+          $5, $6,
+          $7, $8,
+          $9, $10
+        )
+        `,
+        [
+          input.careActionId,
+          input.eventType,
+
+          input.fromAssignedTo,
+          input.fromAssignedRole,
+
+          input.toAssignedTo,
+          input.toAssignedRole,
+
+          input.priority,
+          input.dueAt,
+
+          input.actorId,
+          input.actorRole,
+        ],
+      );
+
+  }
+
+
+  async insertAudit(
+    input: InsertAuditInput,
+    client?: PoolClient,
+  ): Promise<void> {
+
+    await this.executor(client)
+      .query(
+        `
+        INSERT INTO care_action_audit (
+          care_action_id,
+          resident_id,
+          pattern_id,
+          event_type,
+
+          actor_id,
+          actor_role,
+
+          previous_state,
+          new_state
+        )
+        VALUES (
+          $1, $2, $3, $4,
+          $5, $6,
+          $7::jsonb,
+          $8::jsonb
+        )
+        `,
+        [
+          input.careActionId,
+          input.residentId,
+          input.patternId,
+          input.eventType,
+
+          input.actorId,
+          input.actorRole,
+
+          input.previousState
+            ? JSON.stringify(
+                input.previousState,
+              )
+            : null,
+
+          input.newState
+            ? JSON.stringify(
+                input.newState,
+              )
+            : null,
+        ],
+      );
+
+  }
+
+
+  async listTransfers(
+    careActionId: string,
+    client?: PoolClient,
+  ): Promise<CareActionTransfer[]> {
+
+    const result =
+      await this.executor(client)
+        .query<TransferRow>(
+          `
+          SELECT *
+          FROM care_action_transfers
+          WHERE care_action_id = $1
+          ORDER BY
+            transferred_at ASC,
+            created_at ASC,
+            id ASC
+          `,
+          [careActionId],
+        );
+
+
+    return result.rows.map(
+      row =>
+        this.mapTransfer(row),
+    );
+
+  }
+
+
+  async listAudit(
+    careActionId: string,
+    client?: PoolClient,
+  ): Promise<CareActionAuditEvent[]> {
+
+    const result =
+      await this.executor(client)
+        .query<AuditRow>(
+          `
+          SELECT *
+          FROM care_action_audit
+          WHERE care_action_id = $1
+          ORDER BY
+            created_at ASC,
+            id ASC
+          `,
+          [careActionId],
+        );
+
+
+    return result.rows.map(
+      row =>
+        this.mapAudit(row),
+    );
+
+  }
+
+}

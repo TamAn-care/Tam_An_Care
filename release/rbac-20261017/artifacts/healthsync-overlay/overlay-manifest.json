@@ -1,0 +1,123 @@
+{
+  "baseImage": "tamancare-health-sync-api:v21.4-20261013",
+  "expectedBaseImageId": "sha256:72057c2f6f06070d5ebe7abc09f2402449f9367d348d1496528b6dc345ee9a5c",
+  "modules": [
+    {
+      "path": "dist/auth/auth.controller.js",
+      "sha256": "f5d10a9ce227eba94cd85ad8968a16e9ef3323b387030c3977b14afaabd3155f"
+    },
+    {
+      "path": "dist/auth/auth.service.js",
+      "sha256": "ebddce9fb9fa7456abe1377e3d7846447c2e3ff10e0cb23a88bbf3c9859cdd8a"
+    },
+    {
+      "path": "dist/clinical-observations/clinical.controller.js",
+      "sha256": "690b99a8a65b4ad4489f0e005acc89e80b018afa0b4387142662dfa00b237915"
+    },
+    {
+      "path": "dist/clinical-observations/clinical.module.js",
+      "sha256": "2fe63e5a95db5bf9c0c76ebb7be082c44b8005c9e135adbd2585cc4a4dae530c"
+    },
+    {
+      "path": "dist/clinical-observations/clinical.service.js",
+      "sha256": "f3e1920db83c063138bc73a48e89c1aa4c40a2d6fbe33503ef57cafcc50bfb5b"
+    },
+    {
+      "path": "dist/clinical-observations/vital-sign.controller.js",
+      "sha256": "16390a5badc3b5d9bf9e2ad236bcca20b09358e7fd4368f6c4038a4323fa7ee5"
+    },
+    {
+      "path": "dist/clinical-observations/vital-sign.service.js",
+      "sha256": "ecf55cd0aca86a3cdb7975445b2b6e2a24d25ca60e35a60ad7cd233e0005e5bf"
+    },
+    {
+      "path": "dist/cross-domain-integration/cross-domain-integration.controller.js",
+      "sha256": "b474e955234b75a3d42125ed9c2074e24dae05f9761bc762bd5ae4a88c855a61"
+    },
+    {
+      "path": "dist/cross-domain-integration/cross-domain-integration.module.js",
+      "sha256": "31131e3a91f0a57a6d9986b6790770f84855cb38298f4c3d213c809464d0b7f4"
+    },
+    {
+      "path": "dist/health-reports/health-report.controller.js",
+      "sha256": "feb065aca13de53340778c6f9fc209d6f7fe4cef0a25a3d4cb9ffde35f091651"
+    },
+    {
+      "path": "dist/health-reports/health-report.module.js",
+      "sha256": "91adae499e1eb690683ae3e5d3c7e1983cb3fa6385266d363ad07d4e9be76903"
+    },
+    {
+      "path": "dist/health-reports/health-report.service.js",
+      "sha256": "46a4f293efe6ffe886ff393edc192af28a3a23170b60d2ae41f7c0de3e9e8908"
+    },
+    {
+      "path": "dist/notifications/notifications.service.js",
+      "sha256": "8d8c261ae0af1d6cc10f7ee28cde85258f7c0705999fea2ab8ea5d0c9b144dc4"
+    },
+    {
+      "path": "dist/operational-care-view/operational-care-view.service.js",
+      "sha256": "f27b6a0fb7af6caf5b144976d1a39f0d70033b8ccdbcd8de87d492e28b8412f9"
+    },
+    {
+      "path": "dist/operational-work/operational-work-event-type.service.js",
+      "sha256": "318289e2e7d6539ebb9fa0b0a32efe61f7b4a713918eac65264832bd103b77f7"
+    },
+    {
+      "path": "dist/resident-access-scope/assigned-resident.controller.js",
+      "sha256": "d204bdfc62e01d48895a83c6c04932141494afd67c2ed5bf7417e7074bf196ce"
+    },
+    {
+      "path": "dist/resident-access-scope/guardian-resident.controller.js",
+      "sha256": "06ab95d58c3ca6dda002a6273c177db92fe4cdc5b68733d8b5d3da102692951c"
+    },
+    {
+      "path": "dist/resident-access-scope/guardian-resident.service.js",
+      "sha256": "7cb0f2bbced894adf0f381125ac7d5bb3ea91baa41c0d07ea8c16863d94ddb4b"
+    },
+    {
+      "path": "dist/resident-access-scope/resident-access-scope.module.js",
+      "sha256": "d967db38e86aae750a6ceb34d81182d80a3ddbde0fabe9254a0d98ae0bc93643"
+    },
+    {
+      "path": "dist/resident-access-scope/resident-access-scope.service.js",
+      "sha256": "b526dc0bbdc81c72128ab1e68711a469c8fd8695e2008b28dd4a91948b01c0bb"
+    },
+    {
+      "path": "dist/residents/resident.controller.js",
+      "sha256": "10074ab21c3376fe0a3841b713c0e279007c17f304a5c9674aab354833206c3e"
+    },
+    {
+      "path": "dist/residents/resident.module.js",
+      "sha256": "8012a17238f0647104707cb66314f96b0ed2ff53c34ad5bc63a1e41ab32972ef"
+    },
+    {
+      "path": "dist/security/actor-roles.js",
+      "sha256": "731de07fed882f7f58085fc67583e459efbc77abd525d917201883d9fdb66ea8"
+    },
+    {
+      "path": "dist/security/production-auth.middleware.js",
+      "sha256": "35ef9a148fa611f5e1565d03c6f247f84dffc87de56f6580b07318406b54dd94"
+    },
+    {
+      "path": "dist/staff-actors/staff-actor.controller.js",
+      "sha256": "3eaa08b56fdef7a90e71253b7572967840cbba8ea33d1c17546f607bb1f8a0cd"
+    },
+    {
+      "path": "dist/staff-actors/staff-actor.service.js",
+      "sha256": "5ce723b2c64130a2345acc4f944c434376527e1f440864e3296b8bd4c99e7c19"
+    },
+    {
+      "path": "dist/workforce/workforce.service.js",
+      "sha256": "2f4091d78b71e7914c8d726b727122fe12ca7e56e840c019b4d7bf313bfc4457"
+    }
+  ],
+  "dependencies": [
+    "@nestjs/platform-express",
+    "multer",
+    "proxy-addr",
+    "brace-expansion",
+    "fast-uri",
+    "source-map-js"
+  ],
+  "productionChanged": false
+}
