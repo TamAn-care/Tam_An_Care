@@ -106,3 +106,6 @@ INSERT INTO public.finance_entries(
 SQL
 
 node ops/ci/finance-pnl-postgres-http-e2e.cjs
+if [[ -n "${GITHUB_ENV:-}" ]]; then
+  printf 'FINANCE_PNL_HTTP_POSTGRES_E2E=PASS\n' >> "$GITHUB_ENV"
+fi

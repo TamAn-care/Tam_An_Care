@@ -131,6 +131,7 @@ jobs:
           node ops/ci/finance-v3818-43-entry-types-test.cjs
           node ops/ci/finance-v3818-38-month-close-gate-test.cjs
           node ops/ci/finance-v3818-70-source-map-readonly-test.cjs
+          node ops/ci/finance-v3818-54-catalog-readonly-test.cjs
           node ops/ci/finance-v3818-66-real-source-gap-test.cjs
           node ops/ci/finance-v3818-67-real-source-readiness-test.cjs
           node ops/ci/finance-month-close-evidence-test.cjs
@@ -142,6 +143,8 @@ jobs:
         run: |
           set -euo pipefail
           node ops/ci/finance-deploy-readiness.cjs > "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'GATE_ISOLATED_PNL_HTTP_JWT_POSTGRES_E2E=PASS' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'GATE_PRODUCTION_EQUIVALENT_HTTP_JWT_E2E=BLOCKED' "$RUNNER_TEMP/finance-readiness.txt"
           grep -Fxq 'FINANCE_DEPLOY_READINESS=NO_GO' "$RUNNER_TEMP/finance-readiness.txt"
           grep -Fxq 'PRODUCTION_DEPLOY=NO' "$RUNNER_TEMP/finance-readiness.txt"
           grep -Fxq 'PRODUCTION_MIGRATION=NO' "$RUNNER_TEMP/finance-readiness.txt"

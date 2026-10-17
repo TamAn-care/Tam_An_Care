@@ -29,7 +29,7 @@ SELECT n.nspname AS schema_name,
  (SELECT count(*) FROM candidates c WHERE c.nspname=n.nspname) AS finance_candidate_count
 FROM namespaces n WHERE EXISTS(SELECT 1 FROM relations r WHERE r.nspname=n.nspname)
 ORDER BY n.nspname;
-SELECT c.nspname AS schema_name,c.relname AS candidate_relation,
+SELECT n.nspname AS schema_name,c.relname AS candidate_relation,
  c.relkind AS relation_kind,
  has_table_privilege(c.oid,'SELECT') AS can_select,
  (SELECT string_agg(a.attname::text,', ' ORDER BY a.attnum)
