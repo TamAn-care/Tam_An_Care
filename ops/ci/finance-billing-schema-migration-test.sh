@@ -14,7 +14,8 @@ export PGDATABASE=postgres
 
 database="finance_migration_schema_ci_${GITHUB_RUN_ID:-local}_${BASHPID}"
 restore_database="${database}_restore"
-if [[ ! "$database" =~ ^[a-zA-Z0-9_]+$ || ! "$restore_database" =~ ^[a-zA-Z0-9_]+$ ]]; then
+empty_database="${database}_empty"
+if [[ ! "$database" =~ ^[a-zA-Z0-9_]+$ || ! "$restore_database" =~ ^[a-zA-Z0-9_]+$ || ! "$empty_database" =~ ^[a-zA-Z0-9_]+$ ]]; then
   echo "INVALID_DISPOSABLE_DATABASE_NAME"
   exit 2
 fi
@@ -27,6 +28,9 @@ cleanup() {
   fi
   if [[ "${restore_created:-0}" == 1 ]]; then
     PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "DROP DATABASE \"$restore_database\" WITH (FORCE)" >/dev/null
+  fi
+  if [[ "${empty_created:-0}" == 1 ]]; then
+    PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "DROP DATABASE \"$empty_database\" WITH (FORCE)" >/dev/null
   fi
 }
 trap cleanup EXIT
@@ -112,6 +116,7 @@ cmp "$data_before_normalized" "$data_restored_normalized"
 echo "FINANCE_V317_RESTORE_BASELINE_EXACT=PASS"
 
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v31/007_finance_invoice_ledger_origin.sql
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/008_discount_and_absence_policy.sql
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $verify$
@@ -129,6 +134,11 @@ DECLARE
     'service_contract_signing_evidence',
     'service_contract_approval_decisions',
     'finance_entries'
+    ,'finance_discount_policies'
+    ,'finance_discount_assignments'
+    ,'billing_discount_applications'
+    ,'finance_absence_deduction_evidence'
+    ,'finance_discount_policy_audit'
   ];
   expected_triggers text[] := ARRAY[
     'finance_allocation_guard',
@@ -143,6 +153,12 @@ DECLARE
     'finance_invoice_issue_guard',
     'finance_invoice_state_transition_guard',
     'finance_invoice_items_immutable_after_approval'
+    ,'finance_discount_policy_guard'
+    ,'finance_discount_assignment_guard'
+    ,'finance_discount_application_guard'
+    ,'finance_discount_policy_audit_on_change'
+    ,'finance_discount_audit_immutable'
+    ,'finance_absence_evidence_guard'
   ];
   name text;
 BEGIN
@@ -166,6 +182,11 @@ BEGIN
      OR to_regclass('public.uq_billing_invoice_item_financial_origin') IS NULL
      OR to_regclass('public.uq_finance_entries_financial_origin') IS NULL THEN
     RAISE EXCEPTION 'MIGRATION_INDEX_MISSING';
+  END IF;
+
+  IF to_regclass('public.finance_discount_assignment_lookup') IS NULL
+     OR to_regclass('public.billing_discount_application_invoice') IS NULL THEN
+    RAISE EXCEPTION 'DISCOUNT_INDEX_MISSING';
   END IF;
 
   IF (SELECT format_type(a.atttypid,a.atttypmod)
@@ -194,6 +215,14 @@ BEGIN
      + (SELECT count(*) FROM public.service_contract_signing_evidence)
      + (SELECT count(*) FROM public.service_contract_approval_decisions) <> 0 THEN
     RAISE EXCEPTION 'MIGRATION_CREATED_BUSINESS_ROWS';
+  END IF;
+
+  IF (SELECT count(*) FROM public.finance_discount_policies)
+     + (SELECT count(*) FROM public.finance_discount_assignments)
+     + (SELECT count(*) FROM public.billing_discount_applications)
+     + (SELECT count(*) FROM public.finance_absence_deduction_evidence)
+     + (SELECT count(*) FROM public.finance_discount_policy_audit) <> 0 THEN
+    RAISE EXCEPTION 'DISCOUNT_MIGRATION_CREATED_BUSINESS_ROWS';
   END IF;
 END
 $verify$;
@@ -228,10 +257,103 @@ INSERT INTO public.billing_invoices(
           TIMESTAMPTZ '2026-09-22 10:00:00+07',repeat('a',64));
 INSERT INTO public.billing_invoice_items(
   item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,
-  line_kind,service_period_start,service_period_end,financial_origin_key
+  line_kind,service_period_start,service_period_end,financial_origin_key,discount_scope
 ) VALUES ('ci_line','ci_invoice','CI base monthly fee',1,1000,1000,
           'CONTRACT_FEE',DATE '2026-10-01',DATE '2026-11-01',
-          'contract-fee:ci-contract:202610');
+          'contract-fee:ci-contract:202610','ROOM');
+INSERT INTO public.finance_discount_policies(
+  discount_id,code,name,discount_type,discount_value,eligible_fee_scope,application_mode,
+  effective_from,effective_to,approval_state,created_by,approved_by,approved_at,approval_reason,
+  decision_by,decision_at,decision_reason
+) VALUES ('ci_discount','CI-10P','CI approved room discount','PERCENT',10,'ROOM','PERCENT',
+  DATE '2026-10-01',NULL,'APPROVED','ci_proposer','ci_approver',now(),'CI approved isolated fixture',
+  'ci_approver',now(),'Approved in isolated fixture');
+INSERT INTO public.finance_discount_assignments(
+  assignment_id,discount_id,resident_id,contract_id,effective_from,assigned_by,source_reference
+) VALUES ('ci_assignment','ci_discount','ci_resident','ci_contract',DATE '2026-10-01','ci_assigner','ci-approval-record-1');
+UPDATE public.billing_invoices SET total_amount_vnd=900 WHERE invoice_id='ci_invoice';
+INSERT INTO public.billing_invoice_items(
+  item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,line_kind,
+  service_period_start,service_period_end,source_domain,source_entity_type,source_entity_id,
+  source_evidence_sha256,financial_origin_key
+) VALUES ('ci_discount_line','ci_invoice','CI room discount',1,-100,-100,'DISCOUNT',
+  DATE '2026-10-01',DATE '2026-11-01','DISCOUNT','POLICY','ci_discount',repeat('b',64),
+  'discount-line:ci-discount:202610');
+INSERT INTO public.billing_discount_applications(
+  application_id,discount_id,assignment_id,invoice_id,eligible_invoice_item_id,invoice_item_id,source_key,
+  effective_from,effective_to,eligible_base_vnd,amount_vnd,created_by
+) VALUES ('ci_application','ci_discount','ci_assignment','ci_invoice','ci_line','ci_discount_line','ci-invoice-discount-1',
+  DATE '2026-10-01',DATE '2026-10-31',1000,100,'ci_billing_actor');
+DO $discount_constraint_tests$
+BEGIN
+  BEGIN
+    INSERT INTO public.finance_discount_policies(
+      discount_id,code,name,discount_type,discount_value,eligible_fee_scope,application_mode,
+      effective_from,approval_state,created_by
+    ) VALUES ('ci_bad_percent','CI-BAD-P','Bad percent','PERCENT',101,'ROOM','PERCENT',
+      DATE '2026-10-01','PROPOSED','ci_actor');
+    RAISE EXCEPTION 'EXPECTED_PERCENT_RANGE_REJECTION';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+  BEGIN
+    INSERT INTO public.finance_discount_policies(
+      discount_id,code,name,discount_type,discount_value,eligible_fee_scope,application_mode,
+      effective_from,approval_state,created_by
+    ) VALUES ('ci_proposed','CI-PROP','CI proposed policy','FIXED_AMOUNT',1000,'CARE','MONTHLY_PRORATED',
+      DATE '2026-10-01','PROPOSED','ci_actor');
+    UPDATE public.finance_discount_policies SET approval_state='REVOKED' WHERE discount_id='ci_proposed';
+    RAISE EXCEPTION 'EXPECTED_DISCOUNT_TRANSITION_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_DISCOUNT_STATE_TRANSITION_FORBIDDEN' THEN RAISE; END IF;
+  END;
+  BEGIN
+    UPDATE public.finance_discount_policies SET discount_value=11 WHERE discount_id='ci_discount';
+    RAISE EXCEPTION 'EXPECTED_APPROVED_POLICY_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_APPROVED_DISCOUNT_TERMS_IMMUTABLE' THEN RAISE; END IF;
+  END;
+  BEGIN
+    DELETE FROM public.finance_discount_policy_audit WHERE discount_id='ci_discount';
+    RAISE EXCEPTION 'EXPECTED_AUDIT_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_DISCOUNT_AUDIT_IMMUTABLE' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.billing_discount_applications(
+      application_id,discount_id,assignment_id,invoice_id,eligible_invoice_item_id,invoice_item_id,source_key,
+      effective_from,effective_to,eligible_base_vnd,amount_vnd,created_by
+    ) VALUES ('ci_duplicate_application','ci_discount','ci_assignment','ci_invoice','ci_line','ci_discount_line','ci-invoice-discount-2',
+      DATE '2026-10-10',DATE '2026-10-20',1000,100,'ci_billing_actor');
+    RAISE EXCEPTION 'EXPECTED_DISCOUNT_NONSTACKING';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_DISCOUNT_STACKING_FORBIDDEN' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.finance_absence_deduction_evidence(
+      evidence_id,source_domain,source_id,resident_id,absence_from,absence_to,notified_at,
+      approved_by,approved_at,approval_reason,created_by
+    ) VALUES ('ci_bad_absence','RESIDENT_LEAVE','leave-ci-bad','ci_resident',DATE '2026-10-10',
+      DATE '2026-10-11',TIMESTAMPTZ '2026-10-08 00:00:00+07','ci_approver',now(),
+      'Missing family confirmation','ci_creator');
+    RAISE EXCEPTION 'EXPECTED_UNCONFIRMED_ABSENCE_REJECTION';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+  INSERT INTO public.finance_absence_deduction_evidence(
+    evidence_id,source_domain,source_id,resident_id,absence_from,absence_to,notified_at,
+    family_confirmed_at,family_confirmation_reference,required_update_dates,
+    approved_by,approved_at,approval_reason,created_by
+  ) VALUES ('ci_absence','RESIDENT_LEAVE','leave-ci-1','ci_resident',DATE '2026-10-10',
+    DATE '2026-10-12',TIMESTAMPTZ '2026-10-08 00:00:00+07',now(),'family-confirmation-ci',
+    ARRAY[DATE '2026-10-11'],'ci_absence_approver',now(),'CI evidence approved','ci_creator');
+  BEGIN
+    UPDATE public.finance_absence_deduction_evidence SET approval_reason='mutated'
+      WHERE evidence_id='ci_absence';
+    RAISE EXCEPTION 'EXPECTED_ABSENCE_EVIDENCE_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_ABSENCE_EVIDENCE_IMMUTABLE' THEN RAISE; END IF;
+  END;
+END
+$discount_constraint_tests$;
 UPDATE public.billing_invoices SET status='APPROVED' WHERE invoice_id='ci_invoice';
 COMMIT;
 
@@ -324,10 +446,59 @@ $total_test$;
 ROLLBACK;
 SQL
 
+# The same canonical sequence must install into an empty isolated schema.
+PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$empty_database\""
+empty_created=1
+PGDATABASE="$empty_database" psql -X -v ON_ERROR_STOP=1 <<'SQL'
+CREATE TABLE public.residents (resident_id text PRIMARY KEY);
+CREATE TABLE public.finance_entries (
+  finance_entry_id text PRIMARY KEY, entry_type text NOT NULL, category text,
+  description text, amount_vnd numeric(18,2) NOT NULL, recognition_date date NOT NULL,
+  cash_date date, resident_id text, source_mode text, source_domain text,
+  source_entity_type text, source_entity_id text, status text NOT NULL,
+  reference_number text, note text, created_by text, created_by_role text,
+  created_at timestamptz DEFAULT now(), updated_at timestamptz DEFAULT now()
+);
+CREATE UNIQUE INDEX uq_finance_entries_system_source
+  ON public.finance_entries(source_domain,source_entity_type,source_entity_id,entry_type)
+  WHERE source_mode='SYSTEM' AND source_domain IS NOT NULL
+    AND source_entity_type IS NOT NULL AND source_entity_id IS NOT NULL;
+SQL
+empty_migrations=(
+  ops/finance/v22/001_finance_foundation.sql
+  ops/finance/v28/002_finance_transaction_safety.sql
+  ops/finance/v29/003_finance_allocation_invariants.sql
+  ops/finance/v29/004_finance_integrity_hardening.sql
+  ops/finance/v30/005_shared_contract_version_history.sql
+  ops/finance/v30/006_shared_contract_signoff_evidence.sql
+  ops/finance/v31/007_finance_invoice_ledger_origin.sql
+  ops/finance/v32/008_discount_and_absence_policy.sql
+)
+for migration in "${empty_migrations[@]}"; do
+  echo "APPLY_EMPTY_SCHEMA=$migration"
+  PGDATABASE="$empty_database" psql -X -v ON_ERROR_STOP=1 -f "$migration"
+done
+PGDATABASE="$empty_database" psql -X -v ON_ERROR_STOP=1 <<'SQL'
+DO $empty_check$
+BEGIN
+  IF to_regclass('public.finance_discount_policies') IS NULL
+     OR to_regclass('public.billing_discount_applications') IS NULL
+     OR to_regclass('public.finance_absence_deduction_evidence') IS NULL
+     OR (SELECT count(*) FROM public.finance_discount_policies) <> 0
+     OR (SELECT count(*) FROM public.billing_discount_applications) <> 0
+     OR (SELECT count(*) FROM public.finance_absence_deduction_evidence) <> 0 THEN
+    RAISE EXCEPTION 'FINANCE_EMPTY_SCHEMA_MIGRATION_INVALID';
+  END IF;
+END
+$empty_check$;
+SQL
+echo "FINANCE_V320_EMPTY_SCHEMA_MIGRATIONS=PASS"
+
 echo "FINANCE_BILLING_MIGRATION_SCHEMA_ONLY_PASS"
 echo "FINANCE_BILLING_MIGRATION_CREATED_BUSINESS_ROWS=0"
 echo "FINANCE_V317_INVOICE_LEDGER_CONSTRAINTS=PASS"
 echo "FINANCE_V317_SYNTHETIC_ROWS=DISPOSABLE_CI_ONLY"
 echo "FINANCE_V317_RESTORE_BASELINE_EXACT=PASS"
+echo "FINANCE_V320_DISCOUNT_ABSENCE_CONSTRAINTS=PASS"
 echo "FINANCE_V317_ROLLBACK_CANDIDATE=RESTORE_PREMIGRATION_BACKUP"
 echo "FINANCE_BILLING_MIGRATION_DISPOSABLE_DATABASE=$database"

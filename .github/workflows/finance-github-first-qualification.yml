@@ -14,6 +14,7 @@ on:
       - 'ops/ci/finance-billing-schema-migration-test.sh'
       - 'ops/finance/**'
       - 'docs/finance-github-first-transition-20261012.md'
+      - 'docs/finance-rules-v1.0-*'
       - 'docs/finance-checkpoint-porting-manifest-20261012.json'
       - 'ops/ci/finance-github-first-checkpoint-gate.cjs'
       - 'ops/ci/finance-paper-record-integration-safety.cjs'
@@ -70,6 +71,9 @@ jobs:
           echo 'SOURCE_CONTRACT=PASS'
           echo 'DEPLOY=NO'
           echo 'PRODUCTION_DATABASE_CONNECTION=NO'
+      - name: Bind Finance V1 source manifest to the integrated candidate SHA
+        shell: bash
+        run: node ops/ci/finance-v1-source-manifest-check.cjs
       - name: Verify imported checkpoint manifest and canonical safety semantics
         shell: bash
         run: |
@@ -105,6 +109,12 @@ jobs:
           ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit
           ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
           ./node_modules/.bin/vite build
+      - name: Finance V1 discount and absence rules
+        working-directory: api
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ../ops/ci/finance-discount-rules-v1-test.cjs
       - name: Canonical Finance isolated PostgreSQL regression
         shell: bash
         run: |

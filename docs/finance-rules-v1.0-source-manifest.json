@@ -1,0 +1,18 @@
+{
+  "ruleset": "Finance Business Rules & Mapping V1.0",
+  "branch": "feature/finance-github-first-transition-20261012",
+  "starting_head": "c4b9f8513193c50ed27cdf48bd5d839ee62b79ed",
+  "source_files": {
+    "api/src/finance-billing/finance-discount-rules.ts": "462939f17d69bf7d15f823c7a203d753348d129f3e5ef1b782be77f11a351893",
+    "ops/finance/v32/008_discount_and_absence_policy.sql": "10dce2cdd7d571d152f95ea8e4604c044a509331ef6efade315c4e133c6416b1",
+    "ops/finance/v32/008_discount_and_absence_policy.md": "aa2ad62d5c385a826004cb8b9aa79a6a49b9f4d5fffa727e6e4f92388394747d",
+    "ops/ci/finance-discount-rules-v1-test.cjs": "643117ab0201a525f392c60b3c85f3504b3d751ead19daaf01990bf4d9609101",
+    "ops/ci/finance-billing-schema-migration-test.sh": "92e42874a4ca5851cb72922e57efa20331b9044c55436ec8d94d4c777d8e909e",
+    "ops/ci/finance-v1-source-manifest-check.cjs": "df096038167a56133895d4788a2482eeab20579e54d5967f3d4ce318c4ef5087",
+    "docs/finance-rules-v1.0-readiness-20261018.md": "5d325342ff8eb555e7f14ecea9975b5244fb4a93d3a9c22a396c3aff9111df45",
+    ".github/workflows/finance-github-first-qualification.yml": "06441f56ad21b2f065a37a0b27439818d087e8faf40f6ffc52f524d64d5e0f26"
+  },
+  "production_database_connection": false,
+  "production_migration": false,
+  "production_deployment": false
+}
