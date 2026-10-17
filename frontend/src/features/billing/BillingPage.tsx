@@ -407,6 +407,17 @@ export default function BillingPage() {
   const formatNum = (num: number) => (num ? num.toLocaleString('vi-VN') : '0');
   const formatVndText = (num: number) => `${formatNum(num)} đ`;
 
+  if (invoicesQuery.isError || receiptsQuery.isError || pricingQuery.isError || detailedFeeNoticesQuery.isError) {
+    return (
+      <main className="page">
+        <ErrorState
+          title="Finance chưa kết nối nguồn dữ liệu đã xác minh"
+          description="Không hiển thị số 0 hoặc dữ liệu mẫu thay cho hóa đơn, phiếu thu, biểu phí hay thông báo thu phí. Chức năng thu, duyệt và phát hành sẽ khả dụng khi API Finance có backend được xác minh."
+        />
+      </main>
+    );
+  }
+
   return (
     <div className="page-container">
 

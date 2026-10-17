@@ -1523,6 +1523,8 @@ export default function FamilyPortalPage() {
 
             {feeNoticesQuery.isLoading ? (
               <LoadingState title="Đang tải thông báo thu phí..." />
+            ) : feeNoticesQuery.isError ? (
+              <ErrorState title="Chưa thể xác minh thông báo thu phí" description="Nguồn thông báo thu phí chưa được kết nối với backend Finance đã xác thực. Không hiển thị dữ liệu mẫu hoặc số tiền chưa được đối soát." />
             ) : (feeNoticesQuery.data || []).length === 0 ? (
               <EmptyState title="Chưa có thông báo thu phí" description="Chưa có bảng thông báo thu phí tháng nào được phát hành." />
             ) : (
