@@ -114,6 +114,9 @@ jobs:
       - name: Finance billing migration chain — isolated schema only
         shell: bash
         run: bash ops/ci/finance-billing-schema-migration-test.sh
+      - name: Finance P&L production-mode HTTP/JWT/PostgreSQL E2E
+        shell: bash
+        run: bash ops/ci/finance-pnl-postgres-http-e2e.sh
       - name: Finance isolation, evidence and security regression
         shell: bash
         run: |
