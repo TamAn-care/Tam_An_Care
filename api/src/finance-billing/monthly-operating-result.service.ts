@@ -21,11 +21,13 @@ const REQUIRED_LEDGER_COLUMNS = [
 // A real month-close attestation and reconciliation proof must be independently
 // implemented/verified before any monetary result may be called READY.
 import { verifyIndependentMonthlyClose } from './monthly-close-evidence';
+import { classifyV43 } from './finance-v381843-canonical-entry-types';
 
 export type MonthlyOperatingResultRead = MonthlyResult & {
   source: 'POSTGRESQL';
   ledgerSchemaReady: boolean;
   missingColumns: string[];
+  updatedAt: string;
 };
 
 /**
@@ -81,6 +83,7 @@ export class MonthlyOperatingResultService {
         ledgerSchemaReady: false,
         missingColumns: [...missingColumns],
         ...result,
+        updatedAt: new Date().toISOString(),
       };
     }
 
@@ -108,27 +111,30 @@ export class MonthlyOperatingResultService {
          FROM public.finance_entries
         WHERE recognition_date >= $1::date
           AND recognition_date < ($1::date + INTERVAL '1 month')
+          AND status NOT IN ('DRAFT','VOID')
         ORDER BY recognition_date, finance_entry_id
         LIMIT 10001`,
       [start],
     );
 
-    const entries: MonthlyLedgerEntry[] = rows.rows.map((row) => ({
-      entryId: row.finance_entry_id,
-      kind:
-        row.entry_type === 'REVENUE'
-          ? 'REVENUE'
-          : row.entry_type === 'EXPENSE'
-            ? 'EXPENSE'
-            : (['DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX'].includes(row.entry_type)
-              ? 'EXPENSE'
-              : (row.entry_type as MonthlyLedgerEntry['kind'])),
-      recognitionDate: row.recognition_date,
-      amountVnd: row.amount_vnd,
-      posted: row.status === 'POSTED',
-      // Row posting alone cannot prove an independently reconciled source.
-      sourceVerified: false,
-    }));
+    const entries: MonthlyLedgerEntry[] = rows.rows.map((row) => {
+      // Database entry_type is strictly the seven canonical ledger classes.
+      // EXPENSE is a reporting group, NOT a valid persisted ledger type.
+      // Reject legacy/unknown types instead of silently counting them.
+      const classification = classifyV43(row.entry_type);
+      if (!classification.valid || !classification.canonicalKind) {
+        throw new Error('MONTHLY_FINANCE_UNKNOWN_LEDGER_KIND');
+      }
+      return {
+        entryId: row.finance_entry_id,
+        kind: classification.canonicalKind,
+        recognitionDate: row.recognition_date,
+        amountVnd: row.amount_vnd,
+        posted: row.status === 'POSTED',
+        // Row posting alone cannot prove an independently reconciled source.
+        sourceVerified: false,
+      };
+    });
 
     const rowsBounded = rows.rows.length <= 10000;
     const reconciliationComplete = rows.rows.every(
@@ -146,7 +152,7 @@ export class MonthlyOperatingResultService {
     const result = calculateMonthlyOperatingResult({
       month,
       entries,
-      ledgerCoverageComplete: rowsBounded && rows.rows.length > 0 && attestation.verified,
+      ledgerCoverageComplete: rowsBounded && attestation.verified,
       reconciliationComplete: reconciliationComplete && attestation.verified,
     });
     for (const reason of attestation.reasons) {
@@ -158,6 +164,7 @@ export class MonthlyOperatingResultService {
       ledgerSchemaReady: true,
       missingColumns: [],
       ...result,
+      updatedAt: new Date().toISOString(),
     };
   }
 }

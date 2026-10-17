@@ -10,7 +10,8 @@ CREATE TABLE finance_source_documents (
  entry_type text NOT NULL CHECK(entry_type IN
  ('REVENUE','DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX')),
  recognition_date date NOT NULL,
- amount_vnd numeric(18,0) NOT NULL CHECK(amount_vnd >= 0),
+ amount_vnd numeric NOT NULL CHECK(amount_vnd = trunc(amount_vnd)
+   AND amount_vnd BETWEEN 0 AND 9999999999999999),
  external_evidence_sha256 char(64) NOT NULL CHECK(external_evidence_sha256 ~ '^[a-f0-9]{64}$'),
  approval_evidence_sha256 char(64) CHECK(approval_evidence_sha256 ~ '^[a-f0-9]{64}$'),
  reference_number text NOT NULL CHECK(length(trim(reference_number)) >= 2),

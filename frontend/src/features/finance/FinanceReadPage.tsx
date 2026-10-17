@@ -110,7 +110,7 @@ export default function FinanceReadPage({ options }: Props) {
     <main className="space-y-5 p-4 md:p-6">
       <header>
         <h1 className="text-2xl font-semibold">
-          Tài chính — Hóa đơn và phiếu thu
+          Tài chính — Hóa đơn, phiếu thu và kết quả kinh doanh
         </h1>
         <p className="text-sm text-slate-600">
           Chế độ chỉ xem, dữ liệu từ Finance API.
@@ -119,10 +119,10 @@ export default function FinanceReadPage({ options }: Props) {
 
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1">
-          <span>Tháng hóa đơn: {formatFinanceMonth(month)}</span>
+          <span>Tháng báo cáo: {formatFinanceMonth(month)}</span>
           <input
             type="month"
-            aria-label="Tháng hóa đơn"
+            aria-label="Tháng báo cáo tài chính"
             value={month}
             onChange={event => {
               const value = event.target.value;

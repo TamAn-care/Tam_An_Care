@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Post, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Post, Req, BadRequestException, ConflictException, UnprocessableEntityException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { readVerifiedFinanceIdentity } from '../security/verified-finance-identity';
 import { FinanceBillingService } from './finance-billing.service';
@@ -37,10 +37,47 @@ export class FinanceWriteController {
     if (Object.keys(v).sort().join('|')!==keys.slice().sort().join('|') ||
         keys.some(k=>typeof v[k]!=='string'))
       throw new BadRequestException('FINANCE_INVALID_ALLOCATION_FIELDS');
-    return this.billing.allocatePayment({
-      receiptId:v.receiptId as string,invoiceId:v.invoiceId as string,
-      allocationId:v.allocationId as string,amountVnd:v.amountVnd as string,
-      operationKey:v.operationKey as string,actorId,
-    });
+    try {
+      return await this.billing.allocatePayment({
+        receiptId:v.receiptId as string,invoiceId:v.invoiceId as string,
+        allocationId:v.allocationId as string,amountVnd:v.amountVnd as string,
+        operationKey:v.operationKey as string,actorId,
+      });
+    } catch (error) {
+      const code = error instanceof Error ? error.message : '';
+
+      const validationErrors = new Set([
+        'FINANCE_CROSS_RESIDENT_FORBIDDEN',
+        'CROSS_RESIDENT_ALLOCATION_FORBIDDEN',
+        'FINANCE_RECEIPT_NOT_CONFIRMED',
+        'FINANCE_INVOICE_NOT_PAYABLE',
+        'FINANCE_INVALID_INTEGER_VND',
+        'FINANCE_VND_LIMIT',
+        'INVALID_VND_AMOUNT',
+        'VND_AMOUNT_OUT_OF_RANGE',
+        'FINANCE_ZERO_ALLOCATION',
+        'INVALID_DOCUMENT_ID',
+        'FINANCE_DOCUMENT_NOT_FOUND',
+      ]);
+
+      const conflictErrors = new Set([
+        'FINANCE_ALLOCATION_OUT_OF_BOUNDS',
+        'RECEIPT_BALANCE_EXCEEDED',
+        'INVOICE_BALANCE_EXCEEDED',
+        'FINANCE_IDEMPOTENCY_CONFLICT',
+        'FINANCE_OPERATION_INCOMPLETE',
+      ]);
+
+      if (validationErrors.has(code)) {
+        throw new UnprocessableEntityException(code);
+      }
+
+      if (conflictErrors.has(code)) {
+        throw new ConflictException(code);
+      }
+
+      // Unknown errors remain server failures.
+      throw error;
+    }
   }
 }

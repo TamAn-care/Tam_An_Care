@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict');
 const {calculateV38MonthlyClose:run}=require('../../api/dist/finance-billing/finance-v381838-month-close-gate.js');
 const evidence={invoices:true,careFees:true,leaveAdjustments:true,inventoryConsumption:true,payroll:true,manualVouchers:true,otherExpenses:true,unpostedApprovedCount:0,duplicateOriginCount:0,unlinkedSourceCount:0};
-const entries=[{entryId:'rev38',kind:'REVENUE',recognitionDate:'2026-09-01',amountVnd:'1000000',posted:true,sourceVerified:true},{entryId:'exp38',kind:'EXPENSE',recognitionDate:'2026-09-29',amountVnd:'650000',posted:true,sourceVerified:true}];
+const entries=[{entryId:'rev38',kind:'REVENUE',recognitionDate:'2026-09-01',amountVnd:'1000000',posted:true,sourceVerified:true},{entryId:'exp38',kind:'DIRECT_COST',recognitionDate:'2026-09-29',amountVnd:'650000',posted:true,sourceVerified:true}];
 const good=run('2026-09',entries,evidence);
 assert.equal(good.state,'READY');assert.equal(good.profitVnd,'350000');assert.equal(good.operationalReleaseReady,false);
 for(const key of ['invoices','careFees','leaveAdjustments','inventoryConsumption','payroll','manualVouchers','otherExpenses']){

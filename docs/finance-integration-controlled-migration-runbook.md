@@ -1,14 +1,16 @@
 # Finance integration and controlled migration runbook
 
+The target source-of-truth architecture is selected in [finance-canonical-source-of-truth-adr-20261017.md](finance-canonical-source-of-truth-adr-20261017.md). This does not prove the corresponding records exist in Production Test or authorize its migration.
+
 ## Authoritative live baseline (metadata only, 2026-10-09)
 - PostgreSQL 16.15, public residents(resident_id), admission_cases(resident_id), finance_entries and finance_entry_audit present.
 - New Finance billing, contract and allocation/idempotency tables are absent.
 - Existing finance_entries supports source_mode, source_domain, source_entity_type, source_entity_id, amount_vnd, recognition_date, entry_type, status.
 - Partial uniqueness applies to SYSTEM entries with nonnull source keys, not all MANUAL/SYSTEM economic duplicates.
-- Frontend service-contracts.ts uses localStorage fallback and swallows backend errors; backend /api/service-contracts persistence NOT established on this branch.
+- The Finance branch now rejects browser-local contract persistence and exposes a server-only contract read boundary. Production Test backend persistence is still NOT established; its current runtime image also requires a fresh parity check before relying on that boundary.
 
 ## Deployment prerequisites (hard stop until all verified)
-1. Identify real contract persistence and approve its canonical identifier, effective signed pricing, terms, change approval and version. Do not assume service_contract_records is authoritative or copy frontend localStorage records.
+1. Prove actual approved contract persistence and map it to the selected `service_contract_records` plus immutable version/signature/approval model, including canonical identifier, effective signed pricing, terms, change approval and version. The candidate schema is not live; do not copy browser-local records or treat an unverified candidate table as operational authority.
 2. Define invariant map: admission_cases.resident_id -> residents.resident_id; invoices resident_id must match canonical residents; contract relationship must be enforced after backend source is verified.
 3. Document exact ledger entry_type/status/category/source keys for revenue recognition from constraints and existing implementation without reading personal business rows. No revenue write until reconciled. Receipts/allocations NEVER create revenue.
 4. Use separate isolated PostgreSQL 16 CI migration and transaction tests with synthetic CI-only records; block any automatic seed or schema-changing startup hook.

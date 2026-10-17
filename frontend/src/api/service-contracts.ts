@@ -96,12 +96,12 @@ export interface ContractAppendix {
   healthStatusAtAdmission: string;
   roomType: string;
   bedCode: string;
-  baseMonthlyFee: number;
+  baseMonthlyFee: number | null;
   baseMonthlyFeeText: string;
   additionalServices: AppendixServiceItem[];
-  discount: number;
+  discount: number | null;
   discountReason: string;
-  totalMonthlyFee: number;
+  totalMonthlyFee: number | null;
   totalMonthlyFeeText: string;
 }
 
@@ -115,7 +115,7 @@ export interface ServiceContract {
   partyA: ContractPartyA;
   partyB: ContractPartyB;
   appendix: ContractAppendix;
-  depositAmount: number;
+  depositAmount: number | null;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -134,43 +134,19 @@ export const DEFAULT_PARTY_B: ContractPartyB = {
   centerAddress: 'Khu Phố Đông 8, Khu đô thị Vinhomes Ocean Park 2, Xã Nghĩa Trụ, Tỉnh Hưng Yên',
 };
 
-export const DEFAULT_APPENDIX_SERVICES: AppendixServiceItem[] = [
-  { stt: 1, name: 'Hỗ trợ tắm gội', fee: 500000, note: 'Hỗ trợ tắm rửa sinh hoạt hàng ngày', selected: false },
-  { stt: 2, name: 'Hỗ trợ nâng đỡ, di chuyển', fee: 800000, note: 'Hỗ trợ xoay trở, nâng đỡ di chuyển chống loét', selected: false },
-  { stt: 3, name: 'Hỗ trợ xúc ăn', fee: 600000, note: 'Hỗ trợ bón cháo/cơm theo bữa', selected: false },
-  { stt: 4, name: 'Hỗ trợ vệ sinh', fee: 700000, note: 'Thay tã bỉm & vệ sinh bài tiết', selected: false },
-  { stt: 5, name: 'Hỗ trợ ăn qua sonde', fee: 1200000, note: 'Bơm thức ăn dinh dưỡng qua ống Sonde 6 bữa/ngày', selected: false },
-  { stt: 6, name: 'Chăm sóc NCT bị lẫn tuổi già', fee: 1500000, note: 'Theo dõi đặc biệt người sa sút trí tuệ, hay quên', selected: false },
-  { stt: 7, name: 'Chăm sóc hỗ trợ tập luyện, xoa bóp, vật lý trị liệu, phục hồi chức năng chuyên sâu sử dụng công nghệ AI', fee: 2000000, note: 'Trị liệu phục hồi chức năng cao cấp', selected: false },
-  { stt: 8, name: 'Chăm sóc các ổ loét', fee: 1000000, note: 'Rửa, thay băng & điều trị ổ loét tì đè', selected: false },
-  { stt: 9, name: 'Chăm sóc người đặt sonde bàng quang', fee: 800000, note: 'Vệ sinh & theo dõi sonde dẫn lưu nước tiểu', selected: false },
-  { stt: 10, name: 'Chăm sóc người đặt nội khí quản', fee: 2500000, note: 'Chăm sóc chuyên sâu đường thở', selected: false },
-  { stt: 11, name: 'Thay băng, rửa vết thương', fee: 500000, note: 'Thay băng y tế định kỳ theo chỉ định', selected: false },
-  { stt: 12, name: 'Chi phí nhân viên đi cùng đưa đón đi Bệnh viện, hoặc đưa đón theo yêu cầu GD NCT(Chi phí xe: theo nhà cung cấp (TT gọi hộ)', fee: 300000, note: 'Đưa đón khám chữa bệnh ngoài Trung tâm', selected: false },
-];
+// Service prices are supplied by the approved server-side contract terms.
+// Never preload an unverified price catalogue into a new draft.
 
 
 
-const LS_CONTRACTS_KEY = 'taman_service_contracts_v1';
-
-export function getStoredServiceContracts(): ServiceContract[] {
-  try {
-    const raw = localStorage.getItem(LS_CONTRACTS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (error) {
-    throw new Error('CONTRACT_LOCAL_STORAGE_READ_FAILED');
-  }
-  return [];
-}
-
-export function saveStoredServiceContracts(items: ServiceContract[]) {
-  try {
-    localStorage.setItem(LS_CONTRACTS_KEY, JSON.stringify(items));
-  } catch {}
-}
+/**
+ * Contracts are exclusively server-authoritative.
+ * No browser persistence, offline fallback or automatic
+ * migration of legacy records is permitted.
+ *
+ * Legacy contract JSON remains in the separately verified
+ * backup and requires an approved controlled import.
+ */
 
 export function generateAutoContractCode(existingContracts: ServiceContract[]): string {
   const currentYear = new Date().getFullYear();

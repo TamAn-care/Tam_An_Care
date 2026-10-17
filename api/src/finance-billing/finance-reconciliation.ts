@@ -10,7 +10,8 @@ export type FinanceReconciliationIssueCode =
   | 'MISSING_LEDGER_REVENUE'
   | 'DUPLICATE_LEDGER_REVENUE'
   | 'LEDGER_REVENUE_MISMATCH'
-  | 'REVENUE_SOURCE_UNVERIFIED';
+  | 'REVENUE_SOURCE_UNVERIFIED'
+  | 'INVOICE_STATUS_UNRECOGNIZED';
 
 export interface InvoiceSnapshot {
   invoiceId: string;
@@ -38,6 +39,11 @@ export interface ReconciliationResult {
   invoicesChecked: number;
   receiptsChecked: number;
 }
+
+// Match the canonical invoice status CHECK constraint in v22 foundation SQL.
+// Any future status must be explicitly reviewed before revenue reconciliation.
+const REVENUE_INVOICE_STATUSES = new Set(['ISSUED', 'PARTIAL', 'PAID']);
+const NON_REVENUE_INVOICE_STATUSES = new Set(['DRAFT', 'APPROVED', 'VOID']);
 
 function vnd(input: string): bigint {
   if (typeof input !== 'string' ||
@@ -79,12 +85,16 @@ export function reconcileFinanceSnapshots(
         invoice.ledgerRevenueMatches < 0) {
       throw new Error('FINANCE_LEDGER_MATCH_COUNT_INVALID');
     }
-    if (!invoice.canonicalSourceVerified) {
+    const statusRecognized = REVENUE_INVOICE_STATUSES.has(invoice.status) ||
+      NON_REVENUE_INVOICE_STATUSES.has(invoice.status);
+    if (!statusRecognized) add('INVOICE_STATUS_UNRECOGNIZED', key);
+    if (invoice.canonicalSourceVerified !== true) {
       add('REVENUE_SOURCE_UNVERIFIED', key);
       continue;
     }
-    // No ledger revenue required for draft, voided or pre-issue invoices.
-    const expected = ['ISSUED', 'PARTIAL', 'PAID'].includes(invoice.status);
+    if (!statusRecognized) continue;
+    // Only issued/partial/paid invoices require a canonical revenue match.
+    const expected = REVENUE_INVOICE_STATUSES.has(invoice.status);
     if (expected && invoice.ledgerRevenueMatches === 0) {
       add('MISSING_LEDGER_REVENUE', key);
     } else if (invoice.ledgerRevenueMatches > 1) {

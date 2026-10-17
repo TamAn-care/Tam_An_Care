@@ -26,7 +26,7 @@ const GO_LIVE_EXACT_STORAGE_KEYS = new Set([
   'taman_kitchen_meal_stage_v2',
   'taman_nutrition_diet_profiles',
   'taman_nutrition_extra_meals',
-  'taman_service_contracts_v1',
+  // Historical contract data must never be deleted by go-live cleanup.
   'taman_weekly_menu_schedule_v2',
   'taman_workforce_shifts_v1',
   'taman_care_mock_work_events',

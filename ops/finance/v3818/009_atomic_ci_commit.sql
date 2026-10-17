@@ -8,7 +8,7 @@ CREATE TABLE finance_sync_ci.ledger_ci (
  entry_type text NOT NULL CHECK (entry_type IN
  ('REVENUE','DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX')),
  recognition_date date NOT NULL,
- amount_vnd numeric(18,0) NOT NULL CHECK(amount_vnd >= 0),
+ amount_vnd numeric NOT NULL CHECK(amount_vnd = trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  recorded_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE OR REPLACE FUNCTION finance_sync_ci.commit_verified_ci(

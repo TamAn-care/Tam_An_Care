@@ -178,6 +178,10 @@ export class FinanceReadController {
     @Req() request: object,
     @Param('month') month: string,
   ) {
+    const identity = readVerifiedFinanceIdentity(request);
+    if (!identity || !['ADMIN', 'SUPERVISOR'].includes(identity.actorRole)) {
+      throw new ForbiddenException('FINANCE_PNL_ROLE_NOT_AUTHORIZED');
+    }
     await this.authorize(request);
     if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
       throw new BadRequestException('FINANCE_INVALID_OPERATING_MONTH');
