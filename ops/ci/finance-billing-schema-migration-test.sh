@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# CI-only ephemeral PostgreSQL 16 service; no business rows are inserted.
+# CI-only disposable PostgreSQL 16 service; no Production Test access.
 if [[ "${GITHUB_ACTIONS:-}" != "true" ]]; then
   echo "CI_ONLY_MIGRATION_TEST"
   exit 2
@@ -28,6 +28,43 @@ cleanup() {
 trap cleanup EXIT
 
 export PGDATABASE="$database"
+
+# Disposable schema-compatibility fixture based on read-only Production Test
+# metadata. One synthetic legacy ledger row proves widening preserves the
+# stored decimal while the NOT VALID guard rejects new fractional-VND writes.
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+CREATE TABLE public.residents (resident_id text PRIMARY KEY);
+CREATE TABLE public.admission_cases (admission_case_id text PRIMARY KEY, resident_id text NOT NULL);
+CREATE TABLE public.finance_entries (
+  finance_entry_id text PRIMARY KEY,
+  entry_type text NOT NULL,
+  category text,
+  description text,
+  amount_vnd numeric(18,2) NOT NULL,
+  recognition_date date NOT NULL,
+  cash_date date,
+  resident_id text,
+  source_mode text,
+  source_domain text,
+  source_entity_type text,
+  source_entity_id text,
+  status text NOT NULL,
+  reference_number text,
+  note text,
+  created_by text,
+  created_by_role text,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+CREATE UNIQUE INDEX uq_finance_entries_system_source
+  ON public.finance_entries(source_domain,source_entity_type,source_entity_id,entry_type)
+  WHERE source_mode='SYSTEM' AND source_domain IS NOT NULL
+    AND source_entity_type IS NOT NULL AND source_entity_id IS NOT NULL;
+INSERT INTO public.finance_entries(
+  finance_entry_id,entry_type,amount_vnd,recognition_date,status,source_mode
+) VALUES ('ci_legacy_amount','OPERATING_EXPENSE',123.45,DATE '2026-10-01','POSTED','MANUAL');
+SQL
+
 migrations=(
   ops/finance/v22/001_finance_foundation.sql
   ops/finance/v28/002_finance_transaction_safety.sql
@@ -35,6 +72,7 @@ migrations=(
   ops/finance/v29/004_finance_integrity_hardening.sql
   ops/finance/v30/005_shared_contract_version_history.sql
   ops/finance/v30/006_shared_contract_signoff_evidence.sql
+  ops/finance/v31/007_finance_invoice_ledger_origin.sql
 )
 
 for migration in "${migrations[@]}"; do
@@ -56,7 +94,8 @@ DECLARE
     'finance_operation_audit',
     'service_contract_versions',
     'service_contract_signing_evidence',
-    'service_contract_approval_decisions'
+    'service_contract_approval_decisions',
+    'finance_entries'
   ];
   expected_triggers text[] := ARRAY[
     'finance_allocation_guard',
@@ -67,7 +106,10 @@ DECLARE
     'finance_linked_invoice_status_guard',
     'service_contract_revision_immutability',
     'immutable_contract_signature_evidence',
-    'immutable_contract_approval_decision'
+    'immutable_contract_approval_decision',
+    'finance_invoice_issue_guard',
+    'finance_invoice_state_transition_guard',
+    'finance_invoice_items_immutable_after_approval'
   ];
   name text;
 BEGIN
@@ -87,8 +129,24 @@ BEGIN
   END LOOP;
 
   IF to_regclass('public.finance_operation_audit_key_idx') IS NULL
-     OR to_regclass('public.uq_contract_single_active_version') IS NULL THEN
+     OR to_regclass('public.uq_contract_single_active_version') IS NULL
+     OR to_regclass('public.uq_billing_invoice_item_financial_origin') IS NULL
+     OR to_regclass('public.uq_finance_entries_financial_origin') IS NULL THEN
     RAISE EXCEPTION 'MIGRATION_INDEX_MISSING';
+  END IF;
+
+  IF (SELECT format_type(a.atttypid,a.atttypmod)
+        FROM pg_attribute a
+       WHERE a.attrelid='public.finance_entries'::regclass
+         AND a.attname='amount_vnd' AND NOT a.attisdropped) <> 'numeric'
+     OR (SELECT amount_vnd FROM public.finance_entries
+          WHERE finance_entry_id='ci_legacy_amount') <> 123.45 THEN
+    RAISE EXCEPTION 'LEDGER_AMOUNT_TYPE_OR_HISTORICAL_VALUE_CHANGED';
+  END IF;
+  IF (SELECT convalidated FROM pg_constraint
+       WHERE conrelid='public.finance_entries'::regclass
+         AND conname='finance_entries_whole_vnd_ck') IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'LEGACY_LEDGER_CHECK_MUST_REMAIN_NOT_VALID';
   END IF;
 
   IF (SELECT count(*) FROM public.service_contract_records)
@@ -108,6 +166,126 @@ END
 $verify$;
 SQL
 
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+BEGIN;
+INSERT INTO public.residents(resident_id) VALUES ('ci_resident');
+INSERT INTO public.service_contract_records(
+  contract_id,contract_code,resident_id,status,effective_date,payload
+) VALUES ('ci_contract','CI-CONTRACT','ci_resident','ACTIVE',DATE '2026-10-01','{}');
+INSERT INTO public.service_contract_versions(
+  contract_id,version,payload,status,effective_date,signed_at,approved_at,approved_by
+) VALUES ('ci_contract',1,'{}','ACTIVE',DATE '2026-10-01',
+          TIMESTAMPTZ '2026-09-20 10:00:00+07',TIMESTAMPTZ '2026-09-21 10:00:00+07','ci_contract_approver');
+INSERT INTO public.service_contract_signing_evidence(
+  contract_id,version,document_sha256,document_reference,signing_method,
+  verified_by,signed_at
+) VALUES ('ci_contract',1,repeat('a',64),'CI-CONTRACT-SIGNED-1',
+          'SIGNED_PAPER_ARCHIVED','ci_signer',TIMESTAMPTZ '2026-09-20 10:00:00+07');
+INSERT INTO public.service_contract_approval_decisions(
+  contract_id,version,approved_by,approved_at,approval_reason,approved_sha256,
+  admission_care_level,room_id,bed_id,monthly_fee_vnd
+) VALUES ('ci_contract',1,'ci_contract_approver',TIMESTAMPTZ '2026-09-21 10:00:00+07',
+          'CI isolated contract approval',repeat('a',64),'STANDARD','ci_room','ci_bed',1000);
+INSERT INTO public.billing_invoices(
+  invoice_id,invoice_code,resident_id,contract_id,contract_version,billing_month,
+  status,total_amount_vnd,prepared_by,reviewed_by,approved_by,approved_at,
+  approval_evidence_sha256
+) VALUES ('ci_invoice','CI-INV-1','ci_resident','ci_contract',1,
+          DATE '2026-10-01','DRAFT',1000,'ci_maker','ci_reviewer','ci_invoice_approver',
+          TIMESTAMPTZ '2026-09-22 10:00:00+07',repeat('a',64));
+INSERT INTO public.billing_invoice_items(
+  item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,
+  line_kind,service_period_start,service_period_end,financial_origin_key
+) VALUES ('ci_line','ci_invoice','CI base monthly fee',1,1000,1000,
+          'CONTRACT_FEE',DATE '2026-10-01',DATE '2026-11-01',
+          'contract-fee:ci-contract:202610');
+UPDATE public.billing_invoices SET status='APPROVED' WHERE invoice_id='ci_invoice';
+COMMIT;
+
+DO $constraint_tests$
+BEGIN
+  BEGIN
+    INSERT INTO public.finance_entries(
+      finance_entry_id,entry_type,amount_vnd,recognition_date,status
+    ) VALUES ('ci_fractional_ledger','DIRECT_COST',100.005,DATE '2026-10-01','DRAFT');
+    RAISE EXCEPTION 'EXPECTED_FRACTIONAL_LEDGER_REJECTION';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+
+  BEGIN
+    INSERT INTO public.finance_entries(
+      finance_entry_id,entry_type,amount_vnd,recognition_date,status,source_mode,
+      source_domain,source_entity_type,source_entity_id,financial_origin_key
+    ) VALUES ('ci_duplicate_origin','REVENUE',1000,DATE '2026-10-01','POSTED','MANUAL',
+      'BILLING','INVOICE_LINE','ci_line','contract-fee:ci-contract:202610');
+    RAISE EXCEPTION 'EXPECTED_DUPLICATE_ORIGIN_REJECTION';
+  EXCEPTION WHEN unique_violation THEN NULL;
+  END;
+
+  BEGIN
+    INSERT INTO public.billing_invoices(
+      invoice_id,invoice_code,resident_id,contract_id,contract_version,billing_month,
+      status,total_amount_vnd
+    ) VALUES ('ci_bad_fraction_invoice','CI-INV-FRACTION','ci_resident','ci_contract',1,
+      DATE '2026-10-01','DRAFT',10);
+    INSERT INTO public.billing_invoice_items(
+      item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,
+      line_kind,service_period_start,service_period_end,financial_origin_key
+    ) VALUES ('ci_bad_fraction_line','ci_bad_fraction_invoice','CI fraction probe',1,
+      10.005,10.005,'CONTRACT_FEE',DATE '2026-10-01',DATE '2026-11-01',
+      'ci-fraction-origin-0001');
+    RAISE EXCEPTION 'EXPECTED_FRACTIONAL_INVOICE_REJECTION';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+
+  BEGIN
+    UPDATE public.billing_invoice_items SET line_total_vnd=999
+     WHERE item_id='ci_line';
+    RAISE EXCEPTION 'EXPECTED_APPROVED_LINE_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_ISSUED_INVOICE_LINES_IMMUTABLE' THEN RAISE; END IF;
+  END;
+
+  BEGIN
+    UPDATE public.billing_invoices SET status='DRAFT' WHERE invoice_id='ci_invoice';
+    RAISE EXCEPTION 'EXPECTED_INVALID_INVOICE_STATE_TRANSITION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_INVOICE_STATUS_TRANSITION_FORBIDDEN' THEN RAISE; END IF;
+  END;
+END
+$constraint_tests$;
+
+-- A final invoice whose total does not equal its lines must be rejected at
+-- deferred constraint-check time, not accepted based on an intermediate state.
+DO $total_test$
+BEGIN
+  BEGIN
+    INSERT INTO public.billing_invoices(
+      invoice_id,invoice_code,resident_id,contract_id,contract_version,billing_month,
+      status,total_amount_vnd,prepared_by,reviewed_by,approved_by,approved_at,
+      approval_evidence_sha256
+    ) VALUES ('ci_bad_total_invoice','CI-INV-TOTAL','ci_resident','ci_contract',1,
+      DATE '2026-10-01','DRAFT',999,'ci_maker2','ci_reviewer2','ci_approver2',
+      TIMESTAMPTZ '2026-09-22 10:00:00+07',repeat('a',64));
+    INSERT INTO public.billing_invoice_items(
+      item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,
+      line_kind,service_period_start,service_period_end,financial_origin_key
+    ) VALUES ('ci_bad_total_line','ci_bad_total_invoice','CI base fee',1,1000,1000,
+      'CONTRACT_FEE',DATE '2026-10-01',DATE '2026-11-01','ci-bad-total-origin-0001');
+    UPDATE public.billing_invoices SET status='APPROVED'
+      WHERE invoice_id='ci_bad_total_invoice';
+    SET CONSTRAINTS finance_invoice_issue_guard IMMEDIATE;
+    RAISE EXCEPTION 'EXPECTED_INVOICE_TOTAL_MISMATCH';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_INVOICE_TOTAL_DOES_NOT_MATCH_LINES' THEN RAISE; END IF;
+  END;
+END
+$total_test$;
+ROLLBACK;
+SQL
+
 echo "FINANCE_BILLING_MIGRATION_SCHEMA_ONLY_PASS"
-echo "FINANCE_BILLING_MIGRATION_BUSINESS_ROWS=0"
+echo "FINANCE_BILLING_MIGRATION_CREATED_BUSINESS_ROWS=0"
+echo "FINANCE_V317_INVOICE_LEDGER_CONSTRAINTS=PASS"
+echo "FINANCE_V317_SYNTHETIC_ROWS=DISPOSABLE_CI_ONLY"
 echo "FINANCE_BILLING_MIGRATION_DISPOSABLE_DATABASE=$database"

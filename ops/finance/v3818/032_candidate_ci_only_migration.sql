@@ -16,7 +16,7 @@ CREATE TABLE finance_manual_canonical.documents(
  financial_origin_key text NOT NULL UNIQUE,
  kind text NOT NULL CHECK(kind IN('PAYROLL','REVENUE','DIRECT_COST','OPERATING_EXPENSE')),
  recognition_date date NOT NULL,
- amount_vnd numeric(18,0) NOT NULL CHECK(amount_vnd>=0),
+ amount_vnd numeric NOT NULL CHECK(amount_vnd=trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  description text NOT NULL CHECK(length(btrim(description))>=8),
  evidence_type text NOT NULL,
  evidence_digest text,

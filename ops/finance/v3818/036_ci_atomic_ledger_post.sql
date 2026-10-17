@@ -6,7 +6,7 @@ CREATE TABLE finance_manual_v26_ci.ledger_v36(
  financial_origin_key text NOT NULL UNIQUE,
  document_id text NOT NULL UNIQUE REFERENCES finance_manual_v26_ci.documents(document_id),
  recognition_date date NOT NULL,entry_type text NOT NULL CHECK(entry_type IN ('REVENUE','EXPENSE')),
- category text NOT NULL, amount_vnd numeric(18,0) NOT NULL CHECK(amount_vnd>=0),
+ category text NOT NULL, amount_vnd numeric NOT NULL CHECK(amount_vnd=trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  recorded_at timestamptz NOT NULL DEFAULT clock_timestamp()
 );
 CREATE TABLE finance_manual_v26_ci.posting_audit_v36(
