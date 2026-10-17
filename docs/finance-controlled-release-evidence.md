@@ -1,12 +1,12 @@
 # Finance controlled release evidence (NO DEPLOY)
 
-Last reviewed: 2026-10-17 (Finance HEAD `777a49500bd36f1be223339f286e4b9f6a906b2c`). This evidence separates isolated CI success from authorization to use real Finance data.
+Last reviewed: 2026-10-17 (Finance evidence checkpoint `e90ad4f2b4e57d375ee6e2076a3bd63c36f314a2`). This evidence separates isolated CI success from authorization to use real Finance data.
 
 ## Current source and CI
 
 - Finance branch: `feature/finance-github-first-transition-20261012`.
 - Finance implementation HEAD under review: `777a49500bd36f1be223339f286e4b9f6a906b2c` on `feature/finance-github-first-transition-20261012`; PR #5 remains open and Draft.
-- Latest GitHub Actions runs on this exact HEAD: qualification `39038139003` PASS (duplicate push run `39038135366` PASS), Finance Business Error `39038139076` PASS, and Contracts Server-Only `39038139027` PASS. Qualification covers API/frontend builds, isolated PostgreSQL regression and migrations, and fail-closed readiness. Queued/in-progress results are not counted as PASS.
+- Finance code HEAD `777a49500bd36f1be223339f286e4b9f6a906b2c` had qualification `39038139003` PASS (duplicate push run `39038135366` PASS), Finance Business Error `39038139076` PASS, and Contracts Server-Only `39038139027` PASS. The docs-only evidence checkpoint `e90ad4f2b4e57d375ee6e2076a3bd63c36f314a2` also passed qualification `39038569831`, Finance Business Error `39038569813`, and Contracts Server-Only `39038569793`. Qualification includes API/frontend builds, isolated PostgreSQL regression and migrations, and fail-closed readiness. Queued/in-progress results are not counted as PASS.
 - PR #5 remains open and Draft; no merge or Production Test deployment was performed for Finance.
 - Frontend production build: PASS.
 - The latest change removes legacy in-memory invoice, receipt, fee notice and pricing fixtures. Legacy billing API operations fail closed until backed by a verified Finance API; Billing and Family Portal display an unavailable-source error instead of mock values or a false zero. The new regression is included in both qualification CI and the read-only reconciliation aggregator.
