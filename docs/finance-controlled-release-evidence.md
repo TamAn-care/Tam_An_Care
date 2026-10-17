@@ -5,8 +5,7 @@ Last reviewed: 2026-10-17 (after commit `9d87f6141534273c1f5eff47a1855c964539472
 ## Current source and CI
 
 - Finance branch: `feature/finance-github-first-transition-20261012`.
-- PR #5 remains open and Draft. It has not been merged.
-- Latest Finance commit: `9d87f6141534273c1f5eff47a1855c964539472e` (`fix(finance): remove unverified billing mock data`).
+- Finance implementation commit under review: `9d87f6141534273c1f5eff47a1855c964539472e` (`fix(finance): remove unverified billing mock data`).
 - GitHub Actions run `39030595865` on that exact SHA: PASS, including API/frontend builds, isolated PostgreSQL regression, isolated billing migration chain, Finance security/evidence regression, and fail-closed readiness.
 - PR #5 remains open and Draft; no merge or Production Test deployment was performed for Finance.
 - Frontend production build: PASS.
