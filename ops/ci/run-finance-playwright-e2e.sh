@@ -7,6 +7,8 @@ database="finance_e2e_${run_id//[^a-zA-Z0-9_]/_}"
 secret_file="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/finance-e2e-database-url-${run_id}"
 api_pid=''
 vite_pid=''
+api_log="${RUNNER_TEMP:-/tmp}/finance-playwright-api.log"
+vite_log="${RUNNER_TEMP:-/tmp}/finance-playwright-vite.log"
 
 cleanup() {
   local status=$?
@@ -64,9 +66,9 @@ export TAMANCARE_FINANCE_WRITE_ROLES='ACCOUNTANT'
 export TAMANCARE_FINANCE_BILLING_DRAFT_ROLES='ACCOUNTANT'
 export PORT=3000
 
-node ops/ci/finance-playwright-api.cjs >"${RUNNER_TEMP:-/tmp}/finance-playwright-api.log" 2>&1 &
+node ops/ci/finance-playwright-api.cjs >"$api_log" 2>&1 &
 api_pid=$!
-npm --prefix frontend run dev -- --host 127.0.0.1 >"${RUNNER_TEMP:-/tmp}/finance-playwright-vite.log" 2>&1 &
+npm --prefix frontend run dev -- --host 127.0.0.1 >"$vite_log" 2>&1 &
 vite_pid=$!
 
 for attempt in $(seq 1 60); do
@@ -77,8 +79,16 @@ for attempt in $(seq 1 60); do
   if ! kill -0 "$api_pid" 2>/dev/null || ! kill -0 "$vite_pid" 2>/dev/null; then
     echo 'FINANCE_PLAYWRIGHT_APP_START=FAIL'
     if ! kill -0 "$api_pid" 2>/dev/null; then
-      rg -o 'FINANCE_PLAYWRIGHT_API_START_FAILED=[^[:cntrl:]]{1,300}' \
-        "${RUNNER_TEMP:-/tmp}/finance-playwright-api.log" || true
+      echo 'FINANCE_PLAYWRIGHT_API_PROCESS=EXITED'
+      grep -Eo 'FINANCE_PLAYWRIGHT_API_START_FAILED=[^[:cntrl:]]{1,300}' "$api_log" || true
+    else
+      echo 'FINANCE_PLAYWRIGHT_API_PROCESS=ALIVE'
+    fi
+    if ! kill -0 "$vite_pid" 2>/dev/null; then
+      echo 'FINANCE_PLAYWRIGHT_VITE_PROCESS=EXITED'
+      grep -Ei '(^|[[:space:]])(error|failed)(:|[[:space:]])' "$vite_log" | tail -n 3 | cut -c1-240 || true
+    else
+      echo 'FINANCE_PLAYWRIGHT_VITE_PROCESS=ALIVE'
     fi
     exit 1
   fi
