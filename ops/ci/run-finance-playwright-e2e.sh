@@ -81,6 +81,14 @@ for attempt in $(seq 1 60); do
     if ! kill -0 "$api_pid" 2>/dev/null; then
       echo 'FINANCE_PLAYWRIGHT_API_PROCESS=EXITED'
       grep -Eo 'FINANCE_PLAYWRIGHT_API_START_FAILED=[^[:cntrl:]]{1,300}' "$api_log" || true
+      if [[ -s "$api_log" ]]; then
+        sed -E \
+          -e 's#(postgres(ql)?://)[^[:space:]]+#\1[REDACTED]#Ig' \
+          -e 's#((password|token|secret)=?)[^[:space:]&]+#\1[REDACTED]#Ig' \
+          "$api_log" | tail -n 8 | cut -c1-240
+      else
+        echo 'FINANCE_PLAYWRIGHT_API_LOG=EMPTY'
+      fi
     else
       echo 'FINANCE_PLAYWRIGHT_API_PROCESS=ALIVE'
     fi
