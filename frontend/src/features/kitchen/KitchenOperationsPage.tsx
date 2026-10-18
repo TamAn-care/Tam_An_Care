@@ -32,6 +32,7 @@ import {
 } from '../../api/kitchen-operations';
 import { createWorkEvent } from '../../api/operational-work';
 import { KitchenQuickAction1Touch } from './KitchenQuickAction1Touch';
+import { NutritionBoard } from '../nutrition/NutritionBoard';
 
 export default function KitchenOperationsPage() {
   const { actor } = useActor();
@@ -66,7 +67,7 @@ export default function KitchenOperationsPage() {
   };
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'QUICK_1TOUCH' | 'MENU' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('QUICK_1TOUCH');
+  const [activeTab, setActiveTab] = useState<'QUICK_1TOUCH' | 'MENU' | 'NUTRITION_DIET' | 'RECEIVING' | 'INVENTORY' | 'SAMPLES' | 'AUDIT'>('QUICK_1TOUCH');
 
   // Permissions (RBAC)
   const isNutritionist = actor?.actorRole === 'NUTRITIONIST';
@@ -523,6 +524,7 @@ export default function KitchenOperationsPage() {
         {[
           { id: 'QUICK_1TOUCH', icon: '⚡', title: 'Cập nhật công việc', sub: 'Tiến độ, bàn giao & KPI 1-tap' },
           { id: 'MENU', icon: '🥗', title: 'Thực đơn tuần & bữa ăn hôm nay', sub: 'Thực đơn 5 bữa & định mức y tế' },
+          { id: 'NUTRITION_DIET', icon: '🥣', title: 'Chế độ ăn & Khẩu phần', sub: '4 dạng mềm/xay/sonde & báo cơm' },
           { id: 'RECEIVING', icon: '🚚', title: 'Tiếp nhận & kiểm đếm thực phẩm', sub: 'Kiểm đếm 3 bước & cân nặng' },
           { id: 'INVENTORY', icon: '📦', title: 'Kho thực phẩm & Xuất chế biến', sub: 'Tồn kho FEFO & Ngưỡng an toàn' },
           { id: 'SAMPLES', icon: '🧪', title: 'Sổ lưu mẫu thức ăn 24h', sub: 'Lưu mẫu 24h chuẩn HACCP' },
@@ -1525,6 +1527,13 @@ export default function KitchenOperationsPage() {
               </table>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB: CHẾ ĐỘ DINH DƯỠNG & KHẨU PHẦN 4 DẠNG */}
+      {activeTab === 'NUTRITION_DIET' && (
+        <div style={{ marginTop: '0.5rem' }}>
+          <NutritionBoard />
         </div>
       )}
 

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { notificationService } from './notification.service';
 import { NotificationCenterModal } from './NotificationCenterModal';
 
-interface NotificationBellProps {
+export interface ShiftNotificationButtonProps {
   currentActorId: string;
 }
 
-export const NotificationBell: React.FC<NotificationBellProps> = ({ currentActorId }) => {
+export const ShiftNotificationButton: React.FC<ShiftNotificationButtonProps> = ({ currentActorId }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -74,3 +74,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({ currentActor
     </div>
   );
 };
+
+// Backward-compatible alias
+export const NotificationBell = ShiftNotificationButton;
+

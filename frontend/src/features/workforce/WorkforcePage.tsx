@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
 import { triggerPrint } from '../../utils/print';
 import { exportWorkforceScheduleExcel } from '../../utils/workforceExcelExport';
-import { NotificationBell } from '../notifications/NotificationBell';
+import { ShiftNotificationButton } from '../notifications/ShiftNotificationButton';
 import {
   acknowledgeHandover,
   autoCompletePastShifts,
@@ -626,7 +626,7 @@ export default function WorkforcePage() {
           </div>
 
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <NotificationBell currentActorId={actorId} />
+            <ShiftNotificationButton currentActorId={actorId} />
 
             <button
               type="button"
