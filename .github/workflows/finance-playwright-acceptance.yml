@@ -69,10 +69,13 @@ jobs:
           echo "FINANCE_PLAYWRIGHT_SHA=$GITHUB_SHA"
           echo 'PRODUCTION_DATABASE_CONFIG=ABSENT'
           echo 'PRODUCTION_DEPLOY=NO'
+      - name: Generate redacted candidate provenance manifest
+        shell: bash
+        run: node ops/ci/finance-ci-provenance.cjs frontend/test-results/finance/candidate-provenance.json
       - name: Build actual Finance API and run Chromium acceptance on disposable PostgreSQL 16
         shell: bash
         run: bash ops/ci/run-finance-playwright-e2e.sh
-      - name: Upload sanitized Playwright report and failure traces
+      - name: Upload candidate provenance, Playwright report and failure screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:

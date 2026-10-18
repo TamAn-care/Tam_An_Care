@@ -76,6 +76,10 @@ for attempt in $(seq 1 60); do
   fi
   if ! kill -0 "$api_pid" 2>/dev/null || ! kill -0 "$vite_pid" 2>/dev/null; then
     echo 'FINANCE_PLAYWRIGHT_APP_START=FAIL'
+    if ! kill -0 "$api_pid" 2>/dev/null; then
+      rg -o 'FINANCE_PLAYWRIGHT_API_START_FAILED=[^[:cntrl:]]{1,300}' \
+        "${RUNNER_TEMP:-/tmp}/finance-playwright-api.log" || true
+    fi
     exit 1
   fi
   sleep 1

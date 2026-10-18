@@ -40,6 +40,12 @@ async function main() {
 }
 
 main().catch((error) => {
-  process.stderr.write(`FINANCE_PLAYWRIGHT_API_START_FAILED=${error.code || error.name || 'Error'}\n`);
+  const category = error.code || error.name || 'Error';
+  const detail = String(error.message || '')
+    .replace(/postgres(?:ql)?:\/\/[^\s]+/gi, '[DATABASE_URL_REDACTED]')
+    .replace(/(?:password|token|secret)=?[^\s&]+/gi, '[REDACTED]')
+    .replace(/[\r\n]+/g, ' ')
+    .slice(0, 240);
+  process.stderr.write(`FINANCE_PLAYWRIGHT_API_START_FAILED=${category}${detail ? `:${detail}` : ''}\n`);
   process.exitCode = 1;
 });
