@@ -15,8 +15,11 @@ const accountant = () => account('FINANCE_E2E_ACCOUNTANT_ID', 'FINANCE_E2E_ACCOU
 
 async function login(page: Page, user: Account) {
   await page.goto('/');
-  await page.getByLabel('Tên đăng nhập / Mã nhân viên').fill(user.id);
-  await page.getByLabel('Mật khẩu đăng nhập').fill(user.password);
+  // The current login labels are not associated with their inputs in the
+  // shared RBAC worktree. Use the visible placeholders without changing that
+  // agent-owned auth UI from the Finance branch.
+  await page.getByPlaceholder(/Nhập Mã nhân viên/).fill(user.id);
+  await page.getByPlaceholder('Nhập mật khẩu...').fill(user.password);
   await page.getByRole('button', { name: /Đăng Nhập Hệ Thống/ }).click();
   await expect(page.getByText('Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền')).toHaveCount(0);
   await page.goto('/billing-invoicing');
