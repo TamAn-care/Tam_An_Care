@@ -43,5 +43,28 @@ if ! grep -q 'TAMANCARE_DATABASE_URL_FILE' "$temp_root/missing-secret-error"; th
   exit 1
 fi
 
+# Validate the production Compose source with disposable secret files and paths only.
+export TAMANCARE_POSTGRES_PASSWORD_FILE="$temp_root/postgres-password"
+export TAMANCARE_DATABASE_URL_FILE="$temp_root/database-url"
+printf '%s' 'synthetic-jwt-secret-only' > "$temp_root/jwt-secret"
+chmod 600 "$temp_root/jwt-secret"
+export TAMANCARE_JWT_SECRET_FILE="$temp_root/jwt-secret"
+export POSTGRES_DB=synthetic_ci POSTGRES_USER=synthetic_ci
+export CORS_ORIGIN=https://synthetic.invalid
+export TAMANCARE_SERVER_NAME=synthetic.invalid
+export TAMANCARE_WEB_DIST="$temp_root/web"
+export TAMANCARE_TLS_DIR="$temp_root/tls"
+export TAMANCARE_ACME_DIR="$temp_root/acme"
+mkdir -p "$TAMANCARE_WEB_DIST" "$TAMANCARE_TLS_DIR" "$TAMANCARE_ACME_DIR"
+if ! docker compose -f "$repo_root/deploy/production/docker-compose.production.yml" config -q >"$temp_root/production-compose-validation-output" 2>&1; then
+  echo 'PRODUCTION_COMPOSE_SYNTHETIC_SECRET_VALIDATION=FAIL'
+  exit 1
+fi
+if grep -Eq 'synthetic-ci-password-only|synthetic_ci:synthetic-ci-password-only|synthetic-jwt-secret-only' "$temp_root/production-compose-validation-output"; then
+  echo 'PRODUCTION_COMPOSE_SECRET_LEAKED_TO_OUTPUT=FAIL'
+  exit 1
+fi
+
+echo 'PRODUCTION_COMPOSE_SYNTHETIC_SECRET_VALIDATION=PASS'
 echo 'COMPOSE_SYNTHETIC_SECRET_VALIDATION=PASS'
 echo 'MISSING_DATABASE_URL_SECRET_FAIL_CLOSED=PASS'

@@ -76,6 +76,50 @@ async function main() {
     }
 
     console.log('API_POSTGRES16_SECRET_FILE_CONNECTION=PASS');
+
+    fs.writeFileSync(secretFile, '');
+    let emptySecretRejected = false;
+    try {
+      new DatabaseService();
+    } catch (error) {
+      emptySecretRejected = error.message.includes('DATABASE_URL_FILE is empty');
+    }
+    if (!emptySecretRejected) {
+      throw new Error('API did not fail closed when the database secret file was empty');
+    }
+    fs.writeFileSync(secretFile, databaseUrl, { mode: 0o600 });
+    fs.chmodSync(secretFile, 0o644);
+    let unsafePermissionsRejected = false;
+    try {
+      new DatabaseService();
+    } catch (error) {
+      unsafePermissionsRejected = error.message.includes('unsafe permissions');
+    }
+    if (!unsafePermissionsRejected) {
+      throw new Error('API accepted a database secret file readable by group/other');
+    }
+    fs.chmodSync(secretFile, 0o600);
+
+    const symlinkFile = `${secretFile}-link`;
+    fs.symlinkSync(secretFile, symlinkFile);
+    const previousSecretFile = process.env.DATABASE_URL_FILE;
+    process.env.DATABASE_URL_FILE = symlinkFile;
+    let symlinkRejected = false;
+    try {
+      new DatabaseService();
+    } catch (error) {
+      symlinkRejected = error.message.includes('unsafe permissions');
+    } finally {
+      process.env.DATABASE_URL_FILE = previousSecretFile;
+      fs.unlinkSync(symlinkFile);
+    }
+    if (!symlinkRejected) {
+      throw new Error('API accepted a symlink as the database secret file');
+    }
+
+    console.log('API_EMPTY_SECRET_FAIL_CLOSED=PASS');
+    console.log('API_SECRET_FILE_PERMISSIONS=PASS');
+    console.log('API_SECRET_FILE_SYMLINK_REJECTED=PASS');
     console.log('API_MISSING_SECRET_FAIL_CLOSED=PASS');
   } finally {
     process.stdout.write = originalStdoutWrite;

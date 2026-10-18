@@ -1,7 +1,9 @@
 #!/bin/sh
 set -eu
 
-: "${DATABASE_URL:?DATABASE_URL_REQUIRED}"
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+. "$SCRIPT_DIR/lib/database-url.sh"
+load_database_url
 : "${BACKUP_DIR:?BACKUP_DIR_REQUIRED}"
 
 RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"

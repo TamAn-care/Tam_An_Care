@@ -1,7 +1,9 @@
 #!/bin/sh
 set -eu
 
-: "${DATABASE_URL:?DATABASE_URL_REQUIRED}"
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+. "$SCRIPT_DIR/../backup/lib/database-url.sh"
+load_database_url
 
 echo "=================================================="
 echo " Tâm An Care - Restore Verification & Integrity Drill"

@@ -19,7 +19,9 @@ Tài liệu hướng dẫn thao tác chuẩn (Standard Operating Procedure - SOP
 Tạo hoặc chuẩn bị cơ sở dữ liệu thử nghiệm cách ly (ví dụ: `tamancare_dr_test`):
 
 ```bash
-export DATABASE_URL="postgresql://postgres:secret@localhost:5432/tamancare_dr_test?sslmode=disable"
+# Cấp phát secret file ngoài repository cho database sandbox/DR được phép.
+# Không dùng credential Production hoặc trỏ vào database đang phục vụ cư dân.
+export DATABASE_URL_FILE="/secure/path/tamancare-dr-test-database_url"
 export BACKUP_DIR="/path/to/tamancare/backups"
 ```
 
@@ -38,7 +40,7 @@ export BACKUP_DIR="/path/to/tamancare/backups"
 Script `restore.sh` sẽ tự động:
 - Đọc file `.manifest` tương ứng (nếu có) và đối soát mã băm SHA-256 (`sha256sum`).
 - Kiểm tra cấu trúc tệp dump bằng `pg_restore --list`.
-- Khôi phục schema và dữ liệu vào database chỉ định qua `DATABASE_URL`.
+- Khôi phục schema và dữ liệu vào database chỉ định qua `DATABASE_URL_FILE` (hoặc biến tương thích `DATABASE_URL` nếu đã được cấp qua secret manager).
 
 ---
 
@@ -67,7 +69,7 @@ Trong trường hợp xảy ra sự cố thảm họa vật lý hoặc hỏng h�
 
 1. **Khóa truy cập Production Edge (Nginx)** để tránh ghi dữ liệu sai lệch mới.
 2. Khôi phục cơ sở dữ liệu vào Instance PostgreSQL mới theo **Bước 2** & **Bước 3**.
-3. Sau khi `verify-restore.sh` báo `SUCCESS`, thực hiện cập nhật chuỗi kết nối `DATABASE_URL` trong file secret `/run/secrets/database_url`.
+3. Sau khi `verify-restore.sh` báo `SUCCESS`, thực hiện cập nhật file secret `/run/secrets/database_url` theo quy trình change đã phê duyệt; không đặt URL trong shell history hoặc tài liệu.
 4. Khởi động lại API Service:
    ```bash
    docker compose -f deploy/production/docker-compose.production.yml restart api

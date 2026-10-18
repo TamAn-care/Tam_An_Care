@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { lstatSync, readFileSync } from 'fs';
 import { PoolConfig } from 'pg';
 
 export function databaseConnectionString(): string | undefined {
@@ -7,9 +7,13 @@ export function databaseConnectionString(): string | undefined {
   if (secretFile) {
     let value: string;
     try {
+      const secretMetadata = lstatSync(secretFile);
+      if (!secretMetadata.isFile() || (secretMetadata.mode & 0o077) !== 0) {
+        throw new Error('unsafe secret file');
+      }
       value = readFileSync(secretFile, 'utf8').trim();
     } catch {
-      throw new Error('DATABASE_URL_FILE could not be read');
+      throw new Error('DATABASE_URL_FILE is unavailable or has unsafe permissions');
     }
 
     if (!value) {

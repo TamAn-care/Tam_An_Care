@@ -27,6 +27,11 @@ on:
       - 'ops/ci/production-compose-secret-*'
       - 'ops/ci/production-test-compose-secret-validation.sh'
       - 'ops/ci/database-url-secret-pg16-test.cjs'
+      - 'ops/x3-production/**'
+      - 'ops/examples/production-test-secret-paths.env.example'
+      - 'deploy/production/**'
+      - 'docs/security/database-credential-*'
+      - 'docs/DEPLOYMENT_DEBIAN_DOCKER.md'
       - '.github/workflows/finance-github-first-qualification.yml'
   workflow_dispatch:
 
@@ -121,6 +126,9 @@ jobs:
       - name: Validate Compose secret delivery with synthetic credentials
         shell: bash
         run: bash ops/ci/production-test-compose-secret-validation.sh
+      - name: Verify operational secret-file reader and permission failures
+        shell: bash
+        run: bash ops/ci/operational-database-url-file-test.sh
       - name: Connect actual API to isolated PostgreSQL 16 through secret file
         shell: bash
         env:

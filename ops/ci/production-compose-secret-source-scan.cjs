@@ -40,6 +40,16 @@ if (!compose.includes('DATABASE_URL_FILE: /run/secrets/database_url')) {
 if (!compose.includes('POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password')) {
   findings.push('docker-compose.production-test.yml:missing mounted PostgreSQL password secret');
 }
+const productionCompose = fs.readFileSync('deploy/production/docker-compose.production.yml', 'utf8');
+if (!productionCompose.includes('DATABASE_URL_FILE: /run/secrets/database_url')) {
+  findings.push('deploy/production/docker-compose.production.yml:missing database URL secret mount');
+}
+if (!productionCompose.includes('TAMANCARE_DATABASE_URL_FILE:?Set TAMANCARE_DATABASE_URL_FILE')) {
+  findings.push('deploy/production/docker-compose.production.yml:database URL source must be externally configured');
+}
+if (productionCompose.includes('export DATABASE_URL=$$(cat /run/secrets/database_url)')) {
+  findings.push('deploy/production/docker-compose.production.yml:database URL must not be exported by shell entrypoint');
+}
 
 if (findings.length) {
   console.error(findings.join('\n'));

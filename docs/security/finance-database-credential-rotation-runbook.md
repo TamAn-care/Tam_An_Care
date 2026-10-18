@@ -23,8 +23,12 @@ This procedure is a future controlled change. The source fix does not change the
 
 ## Rollback
 
-If the API cannot connect, restore the previous protected URL file and return the API to the recorded last-good image/configuration using the approved service procedure. If the database-side password has already changed, use the database owner's recovery procedure to restore the old credential or complete the new credential repair. Do not roll back by editing Compose with inline credentials. Keep the previous credential only for the owner-approved rollback window, then revoke it.
+If the API cannot connect, do not restore or reactivate the credential identified in public history. Return to the last-good API image/configuration only with a newly provisioned alternate credential whose owner and validity are verified through the approved control plane. If the database-side password has changed, the database owner must provision or repair that alternate credential before API recovery. Do not restart PostgreSQL, edit Compose with inline credentials, or use the exposed credential as rollback. If no safe alternate is available, stop and escalate rather than re-enabling it.
 
 ## Git history
 
-The currently committed source is being changed to remove inline database credentials. Git history contains an earlier source revision with credential-shaped values, so treat the credential as exposed and rotate it through the controlled process. Do not rewrite public history or force-push as part of this fix; coordinate any history-cleanup decision separately because rewriting shared history does not replace credential rotation.
+The current source has removed the known inline Production Test credential. Public Git history still contains the earlier credential-shaped value at commit `63f9248b2377784eb5865542af946c9367b6e0e1`, path `docker-compose.production-test.yml`; classify it as `SUSPECTED_REAL_SECRET` and rotate through the controlled process. Do not reproduce the value or test whether it still authenticates.
+
+Historical credential-shaped examples also appeared in commit `0246064857fb733542ff804ed49f59ca0dc6d15e`, paths `ops/x3-production/backup/REMOTE-INSTANCE-GUIDE.md` and `ops/x3-production/dr/RESTORE-RUNBOOK.md`. They have been removed from current source. Their active status is unverified; do not attempt login. Have the database owner classify/revoke them as part of the rotation inventory.
+
+Do not rewrite public history or force-push as part of this fix. Coordinate history cleanup separately because rewriting shared history does not replace credential rotation. Current runtime credential state remains `UNVERIFIED` until the owner performs an authorized, non-secret metadata verification.
