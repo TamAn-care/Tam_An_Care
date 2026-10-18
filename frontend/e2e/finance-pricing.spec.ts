@@ -20,7 +20,14 @@ async function login(page: Page, user: Account) {
   // agent-owned auth UI from the Finance branch.
   await page.getByPlaceholder(/Nhập Mã nhân viên/).fill(user.id);
   await page.getByPlaceholder('Nhập mật khẩu...').fill(user.password);
+  const loginResponse = page.waitForResponse(response =>
+    response.url().includes('/api/auth/login') && response.request().method() === 'POST',
+  );
   await page.getByRole('button', { name: /Đăng Nhập Hệ Thống/ }).click();
+  const response = await loginResponse;
+  if (!response.ok()) {
+    throw new Error(`Synthetic Finance E2E login failed with HTTP ${response.status()}`);
+  }
   await expect(page.getByText('Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền')).toHaveCount(0);
   await page.goto('/billing-invoicing');
   await page.getByRole('button', { name: 'Mở bảng giá dịch vụ' }).click();
@@ -37,10 +44,10 @@ async function withActorPage<T>(browser: Browser, user: Account, run: (page: Pag
   const page = await context.newPage();
   let tracing = false;
   try {
-    await login(page, user);
     await context.tracing.start({ screenshots: true, snapshots: true, sources: false });
     tracing = true;
     try {
+      await login(page, user);
       return await run(page);
     } catch (error) {
       await context.tracing.stop({ path: test.info().outputPath(`${test.info().project.name}-failure.zip`) });
