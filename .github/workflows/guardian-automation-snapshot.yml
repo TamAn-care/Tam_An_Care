@@ -1,0 +1,83 @@
+name: Guardian Automation — Security Snapshot
+
+on:
+  push:
+    branches:
+      - feature/guardian-resident-scope-auth-20261012
+    paths:
+      - 'api/src/security/**'
+      - 'api/src/staff-actors/**'
+      - 'api/src/resident-access-scope/**'
+      - 'api/src/residents/**'
+      - 'scripts/guardian-ci/**'
+      - 'docs/guardian-auth/**'
+      - '.github/workflows/guardian-automation-snapshot.yml'
+  pull_request:
+    paths:
+      - 'api/src/security/**'
+      - 'api/src/staff-actors/**'
+      - 'api/src/resident-access-scope/**'
+      - 'api/src/residents/**'
+      - 'scripts/guardian-ci/**'
+      - 'docs/guardian-auth/**'
+      - '.github/workflows/guardian-automation-snapshot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-security-snapshot-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot:
+    name: Guardian security/readiness snapshot (no deployment)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code (no persistent credentials)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Produce read-only JSON status
+        id: snapshot
+        continue-on-error: true
+        run: |
+          python3 scripts/guardian-ci/automation_snapshot.py \
+            --output "$RUNNER_TEMP/guardian-readiness.json"
+      - name: Publish human-readable summary
+        if: always()
+        env:
+          SNAPSHOT_OUTCOME: ${{ steps.snapshot.outcome }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"guardian-readiness.json"
+          data=json.loads(p.read_text()) if p.exists() else {}
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
+              f.write("## Guardian automation — safe readiness summary\n\n")
+              f.write(f"Static security checks: **{data.get('static_guard','UNKNOWN')}**\n\n")
+              f.write(f"Static blocker(s): {', '.join(data.get('static_blockers',[])) or 'None detected'}\n\n")
+              f.write("Staff and Guardian executable regression status: **NOT PROVEN by this job**\n\n")
+              f.write("Canonical source provenance: **NOT PROVEN**\n\n")
+              f.write("**PRODUCTION_GO_NO_GO=NO_GO**\n")
+          print("SNAPSHOT_CHECK_OUTCOME="+os.environ["SNAPSHOT_OUTCOME"])
+          print("PRODUCTION_GO_NO_GO=NO_GO")
+          PY
+      - name: Upload non-sensitive verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardian-readiness-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/guardian-readiness.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail closed on static findings or missing report
+        if: always()
+        env:
+          SNAPSHOT_OUTCOME: ${{ steps.snapshot.outcome }}
+        run: |
+          test "$SNAPSHOT_OUTCOME" = "success"
+          test -s "$RUNNER_TEMP/guardian-readiness.json"
