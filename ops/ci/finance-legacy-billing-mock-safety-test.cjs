@@ -14,5 +14,7 @@ for (const marker of ['FINANCE_BILLING_WRITE_API_NOT_READY', 'FINANCE_PRICING_RE
 }
 assert.ok(billing.includes('basicCarePackages: []'), 'pricing fallback must not publish an unverified tariff');
 assert.ok(billingPage.includes('Finance chưa kết nối nguồn dữ liệu đã xác minh'));
-assert.ok(familyPage.includes('Chưa thể xác minh thông báo thu phí'));
+assert.ok(familyPage.includes('Chưa thể xác minh thông báo thu tiền'));
+assert.ok(familyPage.includes('fetchIssuedPaymentNotice'));
+assert.ok(!familyPage.includes('updateFeeNoticePayment'), 'family portal must not write payment status directly');
 console.log('TAMANCARE_FINANCE_LEGACY_BILLING_MOCK_AND_WRITE_PATHS_FAIL_CLOSED_PASS');

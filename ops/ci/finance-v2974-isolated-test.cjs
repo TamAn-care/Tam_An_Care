@@ -60,8 +60,8 @@ const db={
     const normalized=sql.trim();
     assert.match(normalized,/^SELECT\b/i,'Finance Read must perform only SELECT');
     queries.push({sql:normalized,values});
-    if (normalized.includes('FROM auth_sessions')) {
-      return {rows:[{actor_id:values[1],actor_role:values[2]}]};
+    if (normalized.includes('auth_sessions')) {
+      return {rowCount:1,rows:[{actor_id:values[1],actor_role:values[2]}]};
     }
     if (normalized.includes('FROM information_schema.columns')) {
       return {rows:[{available:true}]};
@@ -105,13 +105,14 @@ const methods=[
   ['getInvoiceWithItems','invoices/:invoiceId'],
   ['listLatestReceipts','receipts'],
   ['listReceiptsForInvoice','receipts/invoice/:invoiceId'],
-  ['getInvoiceLedgerLinks','invoices/:invoiceId/ledger-links']
+  ['getInvoiceLedgerLinks','invoices/:invoiceId/ledger-links'],
+  ['listResidentPaymentNotices','residents/:residentId/payment-notices/:month']
 ];
 async function main(){
   assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController),'api/finance-read');
   const defined=Object.getOwnPropertyNames(FinanceReadController.prototype);
   const declared=defined.filter(x=>x!=='constructor' && Reflect.getOwnMetadata(PATH_METADATA,FinanceReadController.prototype[x])!==undefined);
-  assert.equal(declared.length,7,'Exactly seven HTTP endpoints required');
+  assert.equal(declared.length,8,'Exactly eight HTTP endpoints required');
   for(const [method,route] of methods) {
     assert.equal(Reflect.getMetadata(PATH_METADATA,FinanceReadController.prototype[method]),route);
     assert.equal(Reflect.getMetadata(METHOD_METADATA,FinanceReadController.prototype[method]),0,'Must be GET');
@@ -136,6 +137,14 @@ async function main(){
   await app.listInvoicesByMonth(req(),'2026-10');
   const invoiceDetail=await app.getInvoiceWithItems(req(),'ci-invoice');
   assert.equal(invoiceDetail.invoice.snapshot_integrity,'VERIFIED');
+  const guardian={};
+  publishVerifiedFinanceIdentity(guardian,{...identity,actorRole:'GUARDIAN'});
+  const guardianController=new FinanceReadController(db,monthly,{async canAccessResident(actorId,role,residentId){return actorId==='ci-actor'&&role==='GUARDIAN'&&residentId==='ci-resident';}});
+  const notice=await guardianController.listResidentPaymentNotices(guardian,'ci-resident','2026-10');
+  assert.equal(notice.residentId,'ci-resident');
+  assert.equal(notice.notices.length,1);
+  const deniedScopeController=new FinanceReadController(db,monthly,{async canAccessResident(){return false;}});
+  await assert.rejects(deniedScopeController.listResidentPaymentNotices(guardian,'other-resident','2026-10'),e=>e.getStatus?.()===403);
   await app.listLatestReceipts(req());
   await app.listReceiptsForInvoice(req(),'ci-invoice');
   const linked=await app.getInvoiceLedgerLinks(req(),'ci-invoice');
@@ -167,7 +176,7 @@ async function main(){
   await assert.rejects(app.getInvoiceBalance(req(),'bad/id'),e=>e.getStatus?.()===400);
   assert.ok(queries.length>=8);
   console.log('FINANCE_V2974_ISOLATED_CONTROLLER_TEST_PASS');
-  console.log('ROUTES_GET=7 AUTH_ALLOWED=3 AUTH_DENIED=6 INPUT_REJECTED=3');
+  console.log('ROUTES_GET=8 AUTH_ALLOWED=3 GUARDIAN_NOTICE_SCOPED=PASS AUTH_DENIED=6 INPUT_REJECTED=3');
   console.log('DATA_SOURCE=EPHEMERAL_MEMORY_SQL_STUB; REAL_DB=NO; HTTP_JWT_ISOLATED_SMOKE=SEPARATE_CI');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1;});

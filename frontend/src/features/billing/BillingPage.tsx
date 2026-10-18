@@ -33,6 +33,7 @@ import {
 import { LoadingState, ErrorState } from '../../components/feedback/FeedbackStates';
 import { ServicePriceCatalogPanel } from './ServicePriceCatalogPanel';
 import { ServiceCodeMappingPanel } from './ServiceCodeMappingPanel';
+import { FamilyMealBillingDraftPanel } from './FamilyMealBillingDraftPanel';
 
 const STATUS_CONFIG: Record<InvoiceStatus, { label: string; badgeClass: string; icon: string }> = {
   PENDING: { label: 'Chờ thanh toán', badgeClass: 'badge-warning', icon: '⏳' },
@@ -419,6 +420,7 @@ export default function BillingPage() {
           title="Finance chưa kết nối nguồn dữ liệu đã xác minh"
           description="Không hiển thị số 0 hoặc dữ liệu mẫu thay cho hóa đơn, phiếu thu hay thông báo thu phí. Bảng giá chính thức có thể được mở riêng; quyền đọc và ghi sẽ do backend xác minh."
         />
+        <FamilyMealBillingDraftPanel actor={actor} />
         <button type="button" className="btn btn-neutral" onClick={() => setActiveTab('pricing')}>Mở bảng giá dịch vụ</button>
       </main>
     );
@@ -523,6 +525,7 @@ export default function BillingPage() {
       {/* ========================================================================= */}
       {activeTab === 'invoices' && (
         <div>
+          <FamilyMealBillingDraftPanel actor={actor} />
           {/* Uniform 5 KPI Cards Grid */}
           <div className="no-print kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
             <div className="card" style={{ padding: '0.9rem 1rem', background: '#f8fafc', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '115px', border: '1px solid #e2e8f0', borderRadius: '0.65rem' }}>

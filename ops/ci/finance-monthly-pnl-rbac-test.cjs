@@ -4,8 +4,8 @@ const controllerFile=path.resolve(__dirname,'../../api/dist/finance-billing/fina
 let identity=null;const original=Module._load;
 Module._load=function(id,parent,isMain){
  if(id==='@nestjs/common')return new Proxy({}, {get:(_,key)=>{
-  if(['Controller','Get','Param','Req'].includes(key))return ()=>()=>{};
-  if(['ForbiddenException','BadRequestException','NotFoundException'].includes(key))return class extends Error{constructor(message){super(message);this.status=403;}};
+  if(['Controller','Get','Param','Req','Optional'].includes(key))return ()=>()=>{};
+  if(['ForbiddenException','BadRequestException','NotFoundException','ConflictException'].includes(key))return class extends Error{constructor(message){super(message);this.status=403;}};
   return ()=>{};
  }});
  if(id==='../database/database.service')return {DatabaseService:class{}};

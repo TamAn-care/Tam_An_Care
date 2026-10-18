@@ -1,12 +1,13 @@
-import { Body, Controller, ForbiddenException, Post, Req, BadRequestException, ConflictException, UnprocessableEntityException } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Post, Req, BadRequestException, ConflictException, UnprocessableEntityException, Param } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { readVerifiedFinanceIdentity } from '../security/verified-finance-identity';
 import { FinanceBillingService } from './finance-billing.service';
+import { FamilyMealBillingService } from './family-meal-billing.service';
 
 /** Protected finance mutation. No environment default role and no client-trusted identity. */
 @Controller('api/finance-write')
 export class FinanceWriteController {
-  constructor(private readonly db: DatabaseService, private readonly billing: FinanceBillingService) {}
+  constructor(private readonly db: DatabaseService, private readonly billing: FinanceBillingService, private readonly familyMealBilling: FamilyMealBillingService) {}
 
   private async authorize(request: object): Promise<string> {
     // Block write paths until cross-module contract/ledger/runtime acceptance.
@@ -79,5 +80,54 @@ export class FinanceWriteController {
       // Unknown errors remain server failures.
       throw error;
     }
+  }
+
+  @Post('invoices/drafts/family-meals')
+  async generateFamilyMealDraft(@Req() request: object, @Body() body: unknown) {
+    const actorId = await this.authorize(request);
+    const identity = readVerifiedFinanceIdentity(request)!;
+    const draftRoles = (process.env.TAMANCARE_FINANCE_BILLING_DRAFT_ROLES || '').split(',').map(x => x.trim()).filter(Boolean);
+    if (!draftRoles.length || draftRoles.some(x => !/^[A-Z][A-Z0-9_]{1,63}$/.test(x)) || !draftRoles.includes(identity.actorRole)) throw new ForbiddenException('FINANCE_BILLING_DRAFT_PERMISSION_DENIED');
+    const activeActor = await this.db.query(`SELECT 1 FROM public.staff_actors WHERE actor_id=$1 AND status='ACTIVE' AND primary_operational_role=$2`, [actorId,identity.actorRole]);
+    if (activeActor.rowCount !== 1) throw new ForbiddenException('FINANCE_ACTIVE_ACTOR_REQUIRED');
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new BadRequestException('FAMILY_MEAL_BILLING_REQUEST_INVALID');
+    const input = body as Record<string, unknown>;
+    if (Object.keys(input).sort().join('|') !== 'billingMonth|residentId' || typeof input.residentId !== 'string' || typeof input.billingMonth !== 'string') throw new BadRequestException('FAMILY_MEAL_BILLING_REQUEST_INVALID');
+    return this.familyMealBilling.generateDraft({ residentId: input.residentId, billingMonth: input.billingMonth, actorId });
+  }
+
+  private async authorizeInvoiceAction(request: object, action: 'REVIEW'|'APPROVE'|'ISSUE'): Promise<{actorId:string;actorRole:string}> {
+    const actorId = await this.authorize(request);
+    const identity = readVerifiedFinanceIdentity(request)!;
+    const roles = (process.env[`TAMANCARE_FINANCE_INVOICE_${action}_ROLES`] || '').split(',').map(x => x.trim()).filter(Boolean);
+    if (!roles.length || roles.some(x => !/^[A-Z][A-Z0-9_]{1,63}$/.test(x)) || !roles.includes(identity.actorRole)) throw new ForbiddenException(`FINANCE_INVOICE_${action}_PERMISSION_DENIED`);
+    const activeActor = await this.db.query(`SELECT 1 FROM public.staff_actors WHERE actor_id=$1 AND status='ACTIVE' AND primary_operational_role=$2`, [actorId,identity.actorRole]);
+    if (activeActor.rowCount !== 1) throw new ForbiddenException('FINANCE_ACTIVE_ACTOR_REQUIRED');
+    return {actorId,actorRole:identity.actorRole};
+  }
+
+  private actionReason(body: unknown): string {
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new BadRequestException('FINANCE_INVOICE_ACTION_INVALID');
+    const value = body as Record<string, unknown>;
+    if (Object.keys(value).join('|') !== 'reason' || typeof value.reason !== 'string' || value.reason.trim().length < 5 || value.reason.length > 1000) throw new BadRequestException('FINANCE_INVOICE_ACTION_INVALID');
+    return value.reason.trim();
+  }
+
+  @Post('invoices/:invoiceId/review')
+  async reviewFamilyMealInvoice(@Req() request: object, @Param('invoiceId') invoiceId: string, @Body() body: unknown) {
+    const identity = await this.authorizeInvoiceAction(request,'REVIEW');
+    return this.familyMealBilling.reviewInvoice({invoiceId,...identity,reason:this.actionReason(body)});
+  }
+
+  @Post('invoices/:invoiceId/approve')
+  async approveFamilyMealInvoice(@Req() request: object, @Param('invoiceId') invoiceId: string, @Body() body: unknown) {
+    const identity = await this.authorizeInvoiceAction(request,'APPROVE');
+    return this.familyMealBilling.approveInvoice({invoiceId,...identity,reason:this.actionReason(body)});
+  }
+
+  @Post('invoices/:invoiceId/issue')
+  async issueFamilyMealInvoice(@Req() request: object, @Param('invoiceId') invoiceId: string, @Body() body: unknown) {
+    const identity = await this.authorizeInvoiceAction(request,'ISSUE');
+    return this.familyMealBilling.issueInvoice({invoiceId,...identity,reason:this.actionReason(body)});
   }
 }

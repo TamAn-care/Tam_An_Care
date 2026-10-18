@@ -7,6 +7,8 @@ import {
   ForbiddenException,
   BadRequestException,
   NotFoundException,
+  Optional,
+  ConflictException,
 } from '@nestjs/common';
 
 import { DatabaseService } from '../database/database.service';
@@ -14,6 +16,7 @@ import { MonthlyOperatingResultService } from './monthly-operating-result.servic
 import {
   readVerifiedFinanceIdentity,
 } from '../security/verified-finance-identity';
+import { ResidentAccessScopeService } from '../resident-access-scope/resident-access-scope.service';
 
 /**
  * Development-only Finance read controller.
@@ -29,6 +32,7 @@ export class FinanceReadController {
   constructor(
     private readonly db: DatabaseService,
     private readonly monthlyResult: MonthlyOperatingResultService,
+    @Optional() private readonly residentScope?: ResidentAccessScopeService,
   ) {}
 
   private async authorize(request: object): Promise<void> {
@@ -222,6 +226,53 @@ export class FinanceReadController {
       [month + '-01'],
     );
     return { source: 'POSTGRESQL', items: result.rows };
+  }
+
+  @Get('residents/:residentId/payment-notices/:month')
+  async listResidentPaymentNotices(
+    @Req() request: object,
+    @Param('residentId') residentId: string,
+    @Param('month') month: string,
+  ) {
+    const identity = readVerifiedFinanceIdentity(request);
+    if (!identity) throw new ForbiddenException('FINANCE_VERIFIED_IDENTITY_REQUIRED');
+    if (!/^[A-Za-z0-9_-]{1,160}$/.test(residentId) || !/^\d{4}-(0[1-9]|1[0-2])$/.test(month)) {
+      throw new BadRequestException('FINANCE_PAYMENT_NOTICE_REQUEST_INVALID');
+    }
+    if (identity.actorRole === 'GUARDIAN') {
+      if (!this.residentScope) throw new ForbiddenException('FINANCE_RESIDENT_SCOPE_UNAVAILABLE');
+      const active = await this.db.query(
+        `SELECT 1 FROM public.auth_sessions WHERE session_id=$1 AND actor_id=$2 AND actor_role='GUARDIAN' AND revoked_at IS NULL AND expires_at>now() LIMIT 1`,
+        [identity.sessionId,identity.actorId],
+      );
+      if (active.rowCount !== 1 || !await this.residentScope.canAccessResident(identity.actorId,'GUARDIAN',residentId)) {
+        throw new ForbiddenException('FINANCE_PAYMENT_NOTICE_RESIDENT_SCOPE_DENIED');
+      }
+    } else {
+      await this.authorize(request);
+    }
+    const result = await this.db.query(
+      `SELECT i.invoice_id,i.invoice_code,i.resident_id,i.contract_id,
+              to_char(i.billing_month,'YYYY-MM') AS billing_month,i.status,
+              i.total_amount_vnd::text AS total_amount_vnd,
+              COALESCE(SUM(a.amount_vnd) FILTER (WHERE r.receipt_id IS NOT NULL),0)::text AS allocated_amount_vnd,
+              (i.total_amount_vnd-COALESCE(SUM(a.amount_vnd) FILTER (WHERE r.receipt_id IS NOT NULL),0))::text AS balance_vnd,
+              i.source_snapshot,trim(i.source_snapshot_sha256) AS source_snapshot_sha256,i.issued_at
+         FROM public.billing_invoices i
+         LEFT JOIN public.billing_payment_allocations a ON a.invoice_id=i.invoice_id
+         LEFT JOIN public.billing_receipts r ON r.receipt_id=a.receipt_id AND r.resident_id=i.resident_id AND r.status='CONFIRMED'
+        WHERE i.resident_id=$1 AND i.billing_month=$2::date
+          AND i.status IN ('ISSUED','PARTIAL','PAID')
+          AND i.source_snapshot IS NOT NULL
+          AND encode(sha256(convert_to(i.source_snapshot::text,'UTF8')),'hex')=trim(i.source_snapshot_sha256)
+        GROUP BY i.invoice_id,i.invoice_code,i.resident_id,i.contract_id,
+                 i.billing_month,i.status,i.total_amount_vnd,i.source_snapshot,
+                 i.source_snapshot_sha256,i.issued_at
+        ORDER BY i.invoice_code,i.invoice_id LIMIT 2`,
+      [residentId,month+'-01'],
+    );
+    if (result.rows.length > 1) throw new ConflictException('FINANCE_DUPLICATE_ISSUED_NOTICE');
+    return {source:'POSTGRESQL',residentId,billingMonth:month,notices:result.rows};
   }
 
   @Get('invoices/:invoiceId')

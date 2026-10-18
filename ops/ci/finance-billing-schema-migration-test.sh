@@ -127,6 +127,7 @@ psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/009_service_price_catalog.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/010_immutable_invoice_snapshot.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/011_service_code_mapping.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/012_family_extra_meal_source.sql
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/013_family_meal_invoice_snapshot.sql
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 INSERT INTO public.residents(resident_id) VALUES ('synthetic_family_meal_resident');
@@ -221,6 +222,7 @@ DECLARE
     ,'finance_service_mapping_audit_immutable_guard'
     ,'family_extra_meal_order_guard'
     ,'family_extra_meal_audit_immutable'
+    ,'zz_finance_snapshot_family_meals'
   ];
   name text;
 BEGIN
@@ -259,6 +261,12 @@ BEGIN
        WHERE conrelid='public.billing_invoices'::regclass
          AND conname='billing_invoice_snapshot_tuple_ck') THEN
     RAISE EXCEPTION 'INVOICE_SNAPSHOT_SCHEMA_MISSING';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public'
+      AND table_name='billing_invoice_items' AND column_name='service_code')
+     OR NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid='public.billing_invoice_items'::regclass
+       AND conname='billing_invoice_item_family_meal_source_ck') THEN
+    RAISE EXCEPTION 'FAMILY_MEAL_INVOICE_SOURCE_SCHEMA_MISSING';
   END IF;
 
   IF (SELECT format_type(a.atttypid,a.atttypmod)
@@ -430,8 +438,64 @@ BEGIN
   END;
 END
 $discount_constraint_tests$;
+INSERT INTO public.family_extra_meal_orders(
+  order_id,resident_id,contract_id,service_date,meal_type,registered_quantity,
+  registered_by,registered_role,idempotency_key
+) VALUES ('ci_fme_invoice','ci_resident','ci_contract',DATE '2026-10-12','LUNCH',2,
+  'ci_guardian','GUARDIAN','ci_fme_invoice_idem');
+UPDATE public.family_extra_meal_orders
+   SET status='CONFIRMED',confirmed_quantity=2,confirmed_by='ci_nutrition',
+       confirmed_role='NUTRITIONIST',confirmed_at=now(),price_list_id='synthetic_family_meal_prices',
+       price_list_version=1,service_code='FAMILY_EXTRA_MEAL',unit_price_vnd=12345,
+       amount_vnd=24690,confirmation_reason='CI confirmed family meal'
+ WHERE order_id='ci_fme_invoice';
+INSERT INTO public.billing_invoice_items(
+  item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,line_kind,
+  service_period_start,service_period_end,source_domain,source_entity_type,source_entity_id,
+  source_evidence_sha256,financial_origin_key,discount_scope,service_code,price_list_id,price_list_version
+) VALUES ('ci_family_meal_line','ci_invoice','FAMILY_EXTRA_MEAL',2,12345,24690,'APPROVED_SERVICE',
+  DATE '2026-10-12',DATE '2026-10-13','NUTRITION','FAMILY_EXTRA_MEAL','ci_fme_invoice',repeat('c',64),
+  'NUTRITION:FAMILY_EXTRA_MEAL:ci_fme_invoice','SERVICE','FAMILY_EXTRA_MEAL','synthetic_family_meal_prices',1);
+UPDATE public.billing_invoices SET total_amount_vnd=25590 WHERE invoice_id='ci_invoice';
 UPDATE public.billing_invoices SET status='APPROVED' WHERE invoice_id='ci_invoice';
+INSERT INTO public.family_extra_meal_orders(
+  order_id,resident_id,contract_id,service_date,meal_type,registered_quantity,
+  registered_by,registered_role,idempotency_key
+) VALUES ('ci_fme_omitted','ci_resident','ci_contract',DATE '2026-11-12','DINNER',1,
+  'ci_guardian','GUARDIAN','ci_fme_omitted_idem');
+UPDATE public.family_extra_meal_orders
+   SET status='CONFIRMED',confirmed_quantity=1,confirmed_by='ci_nutrition',
+       confirmed_role='NUTRITIONIST',confirmed_at=now(),price_list_id='synthetic_family_meal_prices',
+       price_list_version=1,service_code='FAMILY_EXTRA_MEAL',unit_price_vnd=12345,
+       amount_vnd=12345,confirmation_reason='CI confirmed family meal'
+ WHERE order_id='ci_fme_omitted';
+INSERT INTO public.billing_invoices(
+  invoice_id,invoice_code,resident_id,contract_id,contract_version,billing_month,
+  status,total_amount_vnd,prepared_by,reviewed_by,approved_by,approved_at,approval_evidence_sha256
+) VALUES ('ci_invoice_omitted','CI-INV-OMITTED','ci_resident','ci_contract',1,DATE '2026-11-01',
+  'DRAFT',1000,'ci_maker_nov','ci_reviewer_nov','ci_approver_nov',now(),repeat('a',64));
+INSERT INTO public.billing_invoice_items(
+  item_id,invoice_id,description,quantity,unit_price_vnd,line_total_vnd,line_kind,
+  service_period_start,service_period_end,financial_origin_key,discount_scope
+) VALUES ('ci_line_omitted','ci_invoice_omitted','CI base monthly fee',1,1000,1000,
+  'CONTRACT_FEE',DATE '2026-11-01',DATE '2026-12-01','contract-fee:ci-contract:202611','ROOM');
+UPDATE public.billing_invoices SET status='APPROVED' WHERE invoice_id='ci_invoice_omitted';
 COMMIT;
+
+DO $omitted_family_meal_test$
+BEGIN
+  BEGIN
+    UPDATE public.billing_invoices SET status='ISSUED' WHERE invoice_id='ci_invoice_omitted';
+    RAISE EXCEPTION 'EXPECTED_FAMILY_MEAL_SOURCE_OMISSION_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM<>'FINANCE_FAMILY_MEAL_SOURCE_OMITTED' THEN RAISE; END IF;
+  END;
+  IF NOT EXISTS (SELECT 1 FROM public.billing_invoices
+      WHERE invoice_id='ci_invoice_omitted' AND status='APPROVED' AND source_snapshot IS NULL) THEN
+    RAISE EXCEPTION 'FAMILY_MEAL_OMISSION_FAILURE_MUTATED_INVOICE';
+  END IF;
+END
+$omitted_family_meal_test$;
 
 UPDATE public.billing_invoices SET status='ISSUED' WHERE invoice_id='ci_invoice';
 DO $snapshot_tests$
@@ -442,10 +506,15 @@ BEGIN
     FROM public.billing_invoices WHERE invoice_id='ci_invoice';
   IF length(trim(before_hash))<>64 OR before_issued_at IS NULL
      OR before_snapshot->>'schemaVersion'<>'FINANCE_INVOICE_SNAPSHOT_V1'
-     OR before_snapshot#>>'{invoice,totalAmountVnd}'<>'900'
-     OR jsonb_array_length(before_snapshot->'lines')<>2
+     OR before_snapshot#>>'{invoice,totalAmountVnd}'<>'25590'
+     OR jsonb_array_length(before_snapshot->'lines')<>3
      OR jsonb_array_length(before_snapshot->'discountApplications')<>1
-     OR before_snapshot#>>'{contract,contractVersion}'<>'1' THEN
+     OR before_snapshot#>>'{contract,contractVersion}'<>'1'
+     OR before_snapshot#>>'{residentMealPolicy,includedInContractPackage}'<>'true'
+     OR before_snapshot#>>'{residentMealPolicy,separatelyBillable}'<>'false'
+     OR jsonb_array_length(before_snapshot->'familyExtraMeals')<>1
+     OR before_snapshot#>>'{familyExtraMeals,0,serviceCode}'<>'FAMILY_EXTRA_MEAL'
+     OR before_snapshot#>>'{familyExtraMeals,0,priceListVersion}'<>'1' THEN
     RAISE EXCEPTION 'INVOICE_SNAPSHOT_CONTENT_INVALID';
   END IF;
   UPDATE public.billing_invoices SET status='ISSUED' WHERE invoice_id='ci_invoice';

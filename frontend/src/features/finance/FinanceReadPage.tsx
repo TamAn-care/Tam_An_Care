@@ -211,6 +211,38 @@ export default function FinanceReadPage({ options }: Props) {
                 }
                 {detail.snapshot.issuedAt && ` — ${new Date(detail.snapshot.issuedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`}
               </p>
+              {detail.snapshot.integrity === 'VERIFIED' &&
+                detail.snapshot.source?.residentMealPolicy &&
+                <p>Bữa ăn người cao tuổi đã bao gồm trong giá gói hợp đồng; không thu riêng.</p>}
+              {detail.snapshot.integrity === 'VERIFIED' &&
+                Array.isArray(detail.snapshot.source?.familyExtraMeals) &&
+                detail.snapshot.source.familyExtraMeals.length > 0 &&
+                <section aria-label="Suất ăn người nhà trong snapshot" className="space-y-2">
+                  <h3 className="font-medium">Chi tiết suất ăn người nhà đã xác nhận</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[620px] text-sm">
+                      <thead><tr>
+                        <th className="p-2 text-left">Ngày</th>
+                        <th className="p-2 text-left">Bữa</th>
+                        <th className="p-2 text-left">Mã dịch vụ</th>
+                        <th className="p-2 text-right">Số suất</th>
+                        <th className="p-2 text-right">Đơn giá</th>
+                        <th className="p-2 text-right">Thành tiền</th>
+                      </tr></thead>
+                      <tbody>{detail.snapshot.source.familyExtraMeals.map((value, index) => {
+                        const meal = value as Record<string, unknown>;
+                        return <tr key={String(meal.sourceEventId || index)} className="border-t">
+                          <td className="p-2">{String(meal.serviceDate ?? '—')}</td>
+                          <td className="p-2">{String(meal.mealType ?? '—')}</td>
+                          <td className="p-2">{String(meal.serviceCode ?? '—')} · v{String(meal.priceListVersion ?? '—')}</td>
+                          <td className="p-2 text-right">{String(meal.confirmedQuantity ?? '—')}</td>
+                          <td className="p-2 text-right">{typeof meal.unitPriceVnd === 'string' ? vnd(meal.unitPriceVnd) : '—'}</td>
+                          <td className="p-2 text-right">{typeof meal.amountVnd === 'string' ? vnd(meal.amountVnd) : '—'}</td>
+                        </tr>;
+                      })}</tbody>
+                    </table>
+                  </div>
+                </section>}
               {detail.items.length === 0 &&
                 <p>Chưa có khoản mục hóa đơn.</p>}
               {detail.items.length > 0 &&
