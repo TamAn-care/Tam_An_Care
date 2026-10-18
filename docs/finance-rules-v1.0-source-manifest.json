@@ -43,7 +43,7 @@
     "frontend/src/features/billing/FamilyMealBillingDraftPanel.tsx": "d0e090563f8d1376d2531fd03b29850dda7c19c9ed3e8ad0de976c195e4bbb1c",
     "ops/finance/v32/013_family_meal_invoice_snapshot.sql": "2293222ef826cc756cadee1d9fa334e96e3a97d7f95816e00f7e70731d02916f",
     "ops/finance/v32/013_family_meal_invoice_snapshot.md": "ee5ca27427c7b3f5ec5ff24fdeb29483d5d38ee369d68cb2bbd311b7e63d8b65",
-    "ops/ci/family-meal-billing-source-safety-test.cjs": "154da842613ead2c44ebe676b9d11cda363216d5115b2c23b4294b9f0fdbd3e6",
+    "ops/ci/family-meal-billing-source-safety-test.cjs": "60b8ae1ca9203a76c3b95a0681c2a28e3d8efb4b2db5c7d12f3a6e1913fc2c13",
     "frontend/src/api/finance-payment-notices.ts": "bb8f8312aea88852c1c57aa29b3b918a7cbc56b79eea62b73a7914f13c200844",
     "frontend/src/features/family-portal/FamilyPortalPage.tsx": "6efbf22c7c62349d693fd42acb3ca9eabf4896b813af5fa1e6c71bb73be067f9",
     "ops/ci/finance-legacy-billing-mock-safety-test.cjs": "116ef74762da03ad932534d541b077fdf4c807797ca3b3b747c14beaf1563898",

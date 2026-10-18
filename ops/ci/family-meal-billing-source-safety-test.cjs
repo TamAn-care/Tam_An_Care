@@ -1,11 +1,15 @@
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
+const path = require('node:path');
 
-const source = fs.readFileSync('api/src/finance-billing/family-meal-billing.service.ts', 'utf8');
-const controller = fs.readFileSync('api/src/finance-billing/finance-write.controller.ts', 'utf8');
-const migration = fs.readFileSync('ops/finance/v32/013_family_meal_invoice_snapshot.sql', 'utf8');
-const ui = fs.readFileSync('frontend/src/features/billing/FamilyMealBillingDraftPanel.tsx', 'utf8');
-const billingPage = fs.readFileSync('frontend/src/features/billing/BillingPage.tsx', 'utf8');
+const root = path.resolve(__dirname, '../..');
+const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf8');
+
+const source = read('api/src/finance-billing/family-meal-billing.service.ts');
+const controller = read('api/src/finance-billing/finance-write.controller.ts');
+const migration = read('ops/finance/v32/013_family_meal_invoice_snapshot.sql');
+const ui = read('frontend/src/features/billing/FamilyMealBillingDraftPanel.tsx');
+const billingPage = read('frontend/src/features/billing/BillingPage.tsx');
 
 assert.match(controller, /invoices\/drafts\/family-meals/);
 assert.match(controller, /invoices\/:invoiceId\/review/);
@@ -32,10 +36,10 @@ assert.match(ui, /runAction\('review'\)/);
 assert.match(ui, /runAction\('approve'\)/);
 assert.match(ui, /runAction\('issue'\)/);
 assert.match(billingPage, /<FamilyMealBillingDraftPanel actor=\{actor\} \/>/);
-assert.match(fs.readFileSync('frontend/src/features/finance/FinanceReadPage.tsx', 'utf8'), /residentMealPolicy/);
-const familyPortal = fs.readFileSync('frontend/src/features/family-portal/FamilyPortalPage.tsx', 'utf8');
-const noticeApi = fs.readFileSync('frontend/src/api/finance-payment-notices.ts', 'utf8');
-const noticeController = fs.readFileSync('api/src/finance-billing/finance-read.controller.ts', 'utf8');
+assert.match(read('frontend/src/features/finance/FinanceReadPage.tsx'), /residentMealPolicy/);
+const familyPortal = read('frontend/src/features/family-portal/FamilyPortalPage.tsx');
+const noticeApi = read('frontend/src/api/finance-payment-notices.ts');
+const noticeController = read('api/src/finance-billing/finance-read.controller.ts');
 assert.match(familyPortal, /IssuedFamilyPaymentNotice actor=\{actor\} residentId=\{activeResId\}/);
 assert.doesNotMatch(familyPortal, /updateFeeNoticePayment|fetchDetailedFeeNotices|verifyingFeeNotice/);
 assert.match(noticeApi, /FINANCE_INVOICE_SNAPSHOT_V1/);
