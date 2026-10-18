@@ -85,6 +85,7 @@ for attempt in $(seq 1 60); do
       api_exit=$?
       set -e
       echo "FINANCE_PLAYWRIGHT_API_EXIT_CODE=$api_exit"
+      grep -Eo 'FINANCE_PLAYWRIGHT_AUTH_MODULE_LOAD_FAILED=[^[:cntrl:]]{1,300}' "$api_log" || true
       grep -Eo 'FINANCE_PLAYWRIGHT_API_START_FAILED=[^[:cntrl:]]{1,300}' "$api_log" || true
       if [[ -s "$api_log" ]]; then
         sed -E \

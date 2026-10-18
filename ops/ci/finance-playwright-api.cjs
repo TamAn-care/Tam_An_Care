@@ -8,7 +8,18 @@ const { Module, Controller, Get } = apiRequire('@nestjs/common');
 const { NestFactory } = apiRequire('@nestjs/core');
 
 const { DatabaseService } = require('../../api/dist/database/database.service.js');
-const { AuthModule } = require('../../api/dist/auth/auth.module.js');
+let AuthModule;
+try {
+  ({ AuthModule } = require('../../api/dist/auth/auth.module.js'));
+} catch (error) {
+  const detail = String(error.message || '')
+    .replace(/postgres(?:ql)?:\/\/[^\s]+/gi, '[DATABASE_URL_REDACTED]')
+    .replace(/(?:password|token|secret)=?[^\s&]+/gi, '[REDACTED]')
+    .replace(/[\r\n]+/g, ' ')
+    .slice(0, 240);
+  process.stderr.write(`FINANCE_PLAYWRIGHT_AUTH_MODULE_LOAD_FAILED=${error.code || error.name || 'Error'}:${detail}\n`);
+  process.exit(1);
+}
 const { ServicePricingController } = require('../../api/dist/finance-billing/service-pricing.controller.js');
 const { ProductionAuthMiddleware } = require('../../api/dist/security/production-auth.middleware.js');
 
