@@ -12,7 +12,7 @@ export PGUSER=finance_ci
 export PGPASSWORD=finance_ci_only
 export PGDATABASE=postgres
 
-database="finance_migration_schema_ci_${GITHUB_RUN_ID:-local}_${BASHPID}"
+database="finance_migration_schema_ci_${GITHUB_RUN_ID:-local}_${BASHPID:-$$}"
 restore_database="${database}_restore"
 empty_database="${database}_empty"
 if [[ ! "$database" =~ ^[a-zA-Z0-9_]+$ || ! "$restore_database" =~ ^[a-zA-Z0-9_]+$ || ! "$empty_database" =~ ^[a-zA-Z0-9_]+$ ]]; then
@@ -117,6 +117,7 @@ echo "FINANCE_V317_RESTORE_BASELINE_EXACT=PASS"
 
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v31/007_finance_invoice_ledger_origin.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/008_discount_and_absence_policy.sql
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/009_service_price_catalog.sql
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $verify$
@@ -446,6 +447,58 @@ $total_test$;
 ROLLBACK;
 SQL
 
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+BEGIN;
+INSERT INTO public.service_price_lists(price_list_id,code,name,created_by)
+VALUES ('ci_price_list','CI-PRICE','CI price list','ci_creator');
+INSERT INTO public.service_price_list_versions(price_list_id,version,status,effective_from,effective_to,items,created_by)
+VALUES ('ci_price_list',1,'DRAFT',DATE '2026-10-01',NULL,
+ '[{"serviceCode":"ROOM_STANDARD","name":"CI room","unit":"MONTH","scope":"ROOM","amountVnd":"123456"}]'::jsonb,'ci_creator');
+UPDATE public.service_price_list_versions SET status='PENDING_APPROVAL',submitted_by='ci_submitter',submitted_at=now()
+ WHERE price_list_id='ci_price_list' AND version=1;
+UPDATE public.service_price_list_versions SET status='APPROVED',decided_by='ci_approver',decided_at=now(),decision_reason='Independent isolated approval'
+ WHERE price_list_id='ci_price_list' AND version=1;
+DO $pricing_constraint_tests$
+BEGIN
+  BEGIN
+    UPDATE public.service_price_list_versions SET items='[{"serviceCode":"ROOM_STANDARD","name":"changed","unit":"MONTH","scope":"ROOM","amountVnd":"1"}]'::jsonb WHERE price_list_id='ci_price_list' AND version=1;
+    RAISE EXCEPTION 'EXPECTED_APPROVED_PRICE_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_PRICE_VERSION_IMMUTABLE' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.service_price_list_versions(price_list_id,version,status,effective_from,effective_to,items,created_by)
+    VALUES ('ci_price_list',2,'DRAFT',DATE '2026-10-15',NULL,
+     '[{"serviceCode":"ROOM_STANDARD","name":"overlap","unit":"MONTH","scope":"ROOM","amountVnd":"1"}]'::jsonb,'ci_creator2');
+    UPDATE public.service_price_list_versions SET status='PENDING_APPROVAL',submitted_by='ci_submitter2',submitted_at=now() WHERE price_list_id='ci_price_list' AND version=2;
+    UPDATE public.service_price_list_versions SET status='APPROVED',decided_by='ci_approver2',decided_at=now(),decision_reason='Overlapping approval must fail' WHERE price_list_id='ci_price_list' AND version=2;
+    RAISE EXCEPTION 'EXPECTED_PRICE_OVERLAP_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_PRICE_EFFECTIVE_PERIOD_CONFLICT' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.service_price_list_versions(price_list_id,version,status,effective_from,items,created_by)
+    VALUES ('ci_price_list',3,'DRAFT',DATE '2026-11-01',
+      '[{"serviceCode":"ROOM_BAD","name":"bad","unit":"MONTH","scope":"ROOM","amountVnd":"-1"}]'::jsonb,'ci_creator3');
+    RAISE EXCEPTION 'EXPECTED_NEGATIVE_PRICE_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_PRICE_ITEM_INVALID' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.service_price_list_versions(price_list_id,version,status,effective_from,items,created_by)
+    VALUES ('ci_price_list',4,'DRAFT',DATE '2027-01-01',
+      '[{"serviceCode":"CARE_STANDARD","name":"care","unit":"MONTH","scope":"CARE","amountVnd":"100"}]'::jsonb,'ci_self_approver');
+    UPDATE public.service_price_list_versions SET status='PENDING_APPROVAL',submitted_by='ci_submitter4',submitted_at=now() WHERE price_list_id='ci_price_list' AND version=4;
+    UPDATE public.service_price_list_versions SET status='APPROVED',decided_by='ci_self_approver',decided_at=now(),decision_reason='Self approval must fail' WHERE price_list_id='ci_price_list' AND version=4;
+    RAISE EXCEPTION 'EXPECTED_PRICE_SELF_APPROVAL_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_PRICE_APPROVAL_SEPARATION_REQUIRED' THEN RAISE; END IF;
+  END;
+END
+$pricing_constraint_tests$;
+ROLLBACK;
+SQL
+
 # The same canonical sequence must install into an empty isolated schema.
 PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$empty_database\""
 empty_created=1
@@ -473,6 +526,7 @@ empty_migrations=(
   ops/finance/v30/006_shared_contract_signoff_evidence.sql
   ops/finance/v31/007_finance_invoice_ledger_origin.sql
   ops/finance/v32/008_discount_and_absence_policy.sql
+  ops/finance/v32/009_service_price_catalog.sql
 )
 for migration in "${empty_migrations[@]}"; do
   echo "APPLY_EMPTY_SCHEMA=$migration"
@@ -489,10 +543,15 @@ BEGIN
      OR (SELECT count(*) FROM public.finance_absence_deduction_evidence) <> 0 THEN
     RAISE EXCEPTION 'FINANCE_EMPTY_SCHEMA_MIGRATION_INVALID';
   END IF;
+  IF to_regclass('public.service_price_list_versions') IS NULL
+     OR (SELECT count(*) FROM public.service_price_list_versions) <> 0 THEN
+    RAISE EXCEPTION 'FINANCE_EMPTY_PRICE_CATALOG_MIGRATION_INVALID';
+  END IF;
 END
 $empty_check$;
 SQL
 echo "FINANCE_V320_EMPTY_SCHEMA_MIGRATIONS=PASS"
+echo "FINANCE_V320_SERVICE_PRICE_CONSTRAINTS=PASS"
 
 echo "FINANCE_BILLING_MIGRATION_SCHEMA_ONLY_PASS"
 echo "FINANCE_BILLING_MIGRATION_CREATED_BUSINESS_ROWS=0"

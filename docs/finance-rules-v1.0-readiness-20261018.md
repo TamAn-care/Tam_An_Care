@@ -42,3 +42,12 @@
 The migration was tested only in disposable PostgreSQL 16 databases. Do not apply it to Production Test as part of this change. There is no destructive down migration because that could remove audit evidence; before live write enablement, rollback is restoration of the exact pre-migration backup in an isolated environment. Any later live business records require a separately reviewed forward correction plan.
 
 `FINANCE_RELEASE_READY=NO`. PR #5 remains unmerged and Production Test deployment/migration is `NO`.
+
+## V1.1 service price catalog continuation (2026-10-18)
+
+- Added `ops/finance/v32/009_service_price_catalog.sql`, additive versioned price catalog tables, VND/date/item constraints, approval overlap checks, immutable approved terms and audit records.
+- Added `ServicePricingController` with list/draft/edit/copy-version/submit/approve/reject endpoints. JWT identity, active session and active staff are checked; permission-specific role allowlists default to empty and therefore deny. No RBAC grants or production config were changed.
+- Added the service price catalog panel to the existing Finance pricing tab. It uses server data and displays an explicit unavailable/denied state instead of displaying legacy pricing as official.
+- The PG16 empty-schema and compatibility-schema migration suite passed on an ephemeral container. Synthetic tests exercised approval, overlap, negative-amount and immutable-approved-version constraints; no business rows were retained.
+- API build and frontend production build passed. Browser acceptance and GitHub Actions for the new candidate SHA have not run yet.
+- Remaining release blockers: approved permission mapping/configuration, multi-item catalog editing, discount UI/API connection, contract-specific price precedence, verified room/care/meal price sources, invoice snapshot integration, browser acceptance, source/runtime parity, and integrated CI for the final SHA.
