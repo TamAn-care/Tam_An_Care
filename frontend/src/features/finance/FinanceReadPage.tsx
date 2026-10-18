@@ -202,6 +202,15 @@ export default function FinanceReadPage({ options }: Props) {
                 {detail.invoice.invoiceCode} — Tháng{' '}
                 {formatFinanceMonth(detail.invoice.billingMonth)}
               </p>
+              <p role="status" aria-label="Tính toàn vẹn snapshot hóa đơn">
+                Snapshot phát hành: {
+                  detail.snapshot.integrity === 'VERIFIED' ? 'Đã xác minh' :
+                  detail.snapshot.integrity === 'MISSING' ? 'Thiếu snapshot' :
+                  detail.snapshot.integrity === 'INVALID' ? 'Không hợp lệ' :
+                  'Schema chưa hỗ trợ'
+                }
+                {detail.snapshot.issuedAt && ` — ${new Date(detail.snapshot.issuedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`}
+              </p>
               {detail.items.length === 0 &&
                 <p>Chưa có khoản mục hóa đơn.</p>}
               {detail.items.length > 0 &&

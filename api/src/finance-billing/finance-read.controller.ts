@@ -234,10 +234,30 @@ export class FinanceReadController {
       throw new BadRequestException('FINANCE_INVALID_INVOICE_ID');
     }
 
+    const snapshotColumns = await this.db.query<{ available: boolean }>(
+      `SELECT count(*) = 3 AS available
+         FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'billing_invoices'
+          AND column_name IN ('source_snapshot', 'source_snapshot_sha256', 'issued_at')`,
+    );
+    const hasSnapshotSchema = snapshotColumns.rows[0]?.available === true;
+    const snapshotFields = hasSnapshotSchema
+      ? `i.source_snapshot, i.source_snapshot_sha256,
+         i.issued_at,
+         CASE WHEN i.source_snapshot IS NULL THEN 'MISSING'
+              WHEN encode(sha256(convert_to(i.source_snapshot::text, 'UTF8')), 'hex')
+                   = trim(i.source_snapshot_sha256) THEN 'VERIFIED'
+              ELSE 'INVALID' END AS snapshot_integrity,`
+      : `'NOT_AVAILABLE'::text AS snapshot_integrity,
+         NULL::jsonb AS source_snapshot,
+         NULL::text AS source_snapshot_sha256,
+         NULL::timestamptz AS issued_at,`;
     const invoice = await this.db.query(
       `SELECT i.invoice_id, i.invoice_code,
               i.resident_id, i.contract_id,
               i.billing_month, i.status,
+              ${snapshotFields}
               i.total_amount_vnd::text AS total_amount_vnd,
               COALESCE(SUM(a.amount_vnd), 0)::text
                 AS allocated_amount_vnd,
@@ -251,6 +271,7 @@ export class FinanceReadController {
         GROUP BY i.invoice_id, i.invoice_code,
                  i.resident_id, i.contract_id,
                  i.billing_month, i.status,
+                 ${hasSnapshotSchema ? 'i.source_snapshot, i.source_snapshot_sha256, i.issued_at,' : ''}
                  i.total_amount_vnd`,
       [invoiceId],
     );

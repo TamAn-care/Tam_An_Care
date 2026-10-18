@@ -118,6 +118,7 @@ echo "FINANCE_V317_RESTORE_BASELINE_EXACT=PASS"
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v31/007_finance_invoice_ledger_origin.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/008_discount_and_absence_policy.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/009_service_price_catalog.sql
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/010_immutable_invoice_snapshot.sql
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $verify$
@@ -154,6 +155,7 @@ DECLARE
     'finance_invoice_issue_guard',
     'finance_invoice_state_transition_guard',
     'finance_invoice_items_immutable_after_approval'
+    ,'finance_invoice_snapshot_before_issue'
     ,'finance_discount_policy_guard'
     ,'finance_discount_assignment_guard'
     ,'finance_discount_application_guard'
@@ -188,6 +190,15 @@ BEGIN
   IF to_regclass('public.finance_discount_assignment_lookup') IS NULL
      OR to_regclass('public.billing_discount_application_invoice') IS NULL THEN
     RAISE EXCEPTION 'DISCOUNT_INDEX_MISSING';
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+    WHERE table_schema='public' AND table_name='billing_invoices'
+      AND column_name='source_snapshot' AND data_type='jsonb')
+     OR NOT EXISTS (SELECT 1 FROM pg_constraint
+       WHERE conrelid='public.billing_invoices'::regclass
+         AND conname='billing_invoice_snapshot_tuple_ck') THEN
+    RAISE EXCEPTION 'INVOICE_SNAPSHOT_SCHEMA_MISSING';
   END IF;
 
   IF (SELECT format_type(a.atttypid,a.atttypmod)
@@ -358,6 +369,39 @@ $discount_constraint_tests$;
 UPDATE public.billing_invoices SET status='APPROVED' WHERE invoice_id='ci_invoice';
 COMMIT;
 
+UPDATE public.billing_invoices SET status='ISSUED' WHERE invoice_id='ci_invoice';
+DO $snapshot_tests$
+DECLARE before_hash char(64); before_snapshot jsonb; before_issued_at timestamptz;
+BEGIN
+  SELECT source_snapshot_sha256,source_snapshot,issued_at
+    INTO before_hash,before_snapshot,before_issued_at
+    FROM public.billing_invoices WHERE invoice_id='ci_invoice';
+  IF length(trim(before_hash))<>64 OR before_issued_at IS NULL
+     OR before_snapshot->>'schemaVersion'<>'FINANCE_INVOICE_SNAPSHOT_V1'
+     OR before_snapshot#>>'{invoice,totalAmountVnd}'<>'900'
+     OR jsonb_array_length(before_snapshot->'lines')<>2
+     OR jsonb_array_length(before_snapshot->'discountApplications')<>1
+     OR before_snapshot#>>'{contract,contractVersion}'<>'1' THEN
+    RAISE EXCEPTION 'INVOICE_SNAPSHOT_CONTENT_INVALID';
+  END IF;
+  UPDATE public.billing_invoices SET status='ISSUED' WHERE invoice_id='ci_invoice';
+  IF NOT EXISTS (SELECT 1 FROM public.billing_invoices
+    WHERE invoice_id='ci_invoice' AND source_snapshot_sha256=before_hash
+      AND source_snapshot=before_snapshot AND issued_at=before_issued_at) THEN
+    RAISE EXCEPTION 'INVOICE_SNAPSHOT_REPLAY_CHANGED_EVIDENCE';
+  END IF;
+  BEGIN
+    UPDATE public.billing_invoices
+       SET source_snapshot=jsonb_set(source_snapshot,'{invoice,totalAmountVnd}','"1"'::jsonb)
+     WHERE invoice_id='ci_invoice';
+    RAISE EXCEPTION 'EXPECTED_INVOICE_SNAPSHOT_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM<>'FINANCE_INVOICE_SOURCE_SNAPSHOT_IMMUTABLE' THEN RAISE; END IF;
+  END;
+END
+$snapshot_tests$;
+SELECT 'FINANCE_INVOICE_SNAPSHOT_ISSUE_REPLAY_IMMUTABILITY_PASS';
+
 BEGIN;
 INSERT INTO public.finance_entries(
   finance_entry_id,entry_type,amount_vnd,recognition_date,status,source_mode,
@@ -527,6 +571,7 @@ empty_migrations=(
   ops/finance/v31/007_finance_invoice_ledger_origin.sql
   ops/finance/v32/008_discount_and_absence_policy.sql
   ops/finance/v32/009_service_price_catalog.sql
+  ops/finance/v32/010_immutable_invoice_snapshot.sql
 )
 for migration in "${empty_migrations[@]}"; do
   echo "APPLY_EMPTY_SCHEMA=$migration"
