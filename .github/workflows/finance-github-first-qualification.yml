@@ -117,6 +117,8 @@ jobs:
           node ../ops/ci/finance-discount-rules-v1-test.cjs
           node ../ops/ci/finance-rbac-policy-test.cjs
           node ../ops/ci/finance-price-resolution-test.cjs
+          node ../ops/ci/finance-contract-pricing-mode-test.cjs
+          node ../ops/ci/finance-service-mapping-rbac-test.cjs
       - name: Canonical Finance isolated PostgreSQL regression
         shell: bash
         run: |

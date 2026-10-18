@@ -6,15 +6,16 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" ]]; then
   echo "CI_ONLY_MIGRATION_TEST"
   exit 2
 fi
-export PGHOST=127.0.0.1
-export PGPORT=5432
-export PGUSER=finance_ci
-export PGPASSWORD=finance_ci_only
-export PGDATABASE=postgres
+export PGHOST="${PGHOST:-127.0.0.1}"
+export PGPORT="${PGPORT:-5432}"
+export PGUSER="${PGUSER:-finance_ci}"
+export PGPASSWORD="${PGPASSWORD:-finance_ci_only}"
+export PGDATABASE="${PGDATABASE:-postgres}"
 
-database="finance_migration_schema_ci_${GITHUB_RUN_ID:-local}_${BASHPID:-$$}"
-restore_database="${database}_restore"
-empty_database="${database}_empty"
+database="fmb_${GITHUB_RUN_ID:-local}_${BASHPID:-$$}"
+restore_database="${database}_r"
+empty_database="${database}_e"
+temporary_files=()
 if [[ ! "$database" =~ ^[a-zA-Z0-9_]+$ || ! "$restore_database" =~ ^[a-zA-Z0-9_]+$ || ! "$empty_database" =~ ^[a-zA-Z0-9_]+$ ]]; then
   echo "INVALID_DISPOSABLE_DATABASE_NAME"
   exit 2
@@ -31,6 +32,9 @@ cleanup() {
   fi
   if [[ "${empty_created:-0}" == 1 ]]; then
     PGDATABASE=postgres psql -X -v ON_ERROR_STOP=1 -c "DROP DATABASE \"$empty_database\" WITH (FORCE)" >/dev/null
+  fi
+  if [[ "${#temporary_files[@]}" -gt 0 ]]; then
+    rm -f -- "${temporary_files[@]}"
   fi
 }
 trap cleanup EXIT
@@ -99,6 +103,8 @@ schema_before_normalized="${RUNNER_TEMP:-/tmp}/${database}.schema.before.normali
 schema_restored_normalized="${RUNNER_TEMP:-/tmp}/${database}.schema.restored.normalized.sql"
 data_before_normalized="${RUNNER_TEMP:-/tmp}/${database}.data.before.normalized.sql"
 data_restored_normalized="${RUNNER_TEMP:-/tmp}/${database}.data.restored.normalized.sql"
+temporary_files=("$backup_file" "$schema_before" "$schema_restored" "$data_before" "$data_restored" \
+  "$schema_before_normalized" "$schema_restored_normalized" "$data_before_normalized" "$data_restored_normalized")
 pg_dump -Fc --no-owner --no-privileges --dbname="$database" --file="$backup_file"
 pg_dump --schema-only --no-owner --no-privileges --dbname="$database" > "$schema_before"
 pg_dump --data-only --column-inserts --no-owner --no-privileges --dbname="$database" > "$data_before"
@@ -119,6 +125,7 @@ psql -X -v ON_ERROR_STOP=1 -f ops/finance/v31/007_finance_invoice_ledger_origin.
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/008_discount_and_absence_policy.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/009_service_price_catalog.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/010_immutable_invoice_snapshot.sql
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/011_service_code_mapping.sql
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $verify$
@@ -141,6 +148,8 @@ DECLARE
     ,'billing_discount_applications'
     ,'finance_absence_deduction_evidence'
     ,'finance_discount_policy_audit'
+    ,'finance_service_code_mappings'
+    ,'finance_service_mapping_audit'
   ];
   expected_triggers text[] := ARRAY[
     'finance_allocation_guard',
@@ -162,6 +171,10 @@ DECLARE
     ,'finance_discount_policy_audit_on_change'
     ,'finance_discount_audit_immutable'
     ,'finance_absence_evidence_guard'
+    ,'finance_service_mapping_guard'
+    ,'finance_service_mapping_audit_on_insert'
+    ,'finance_service_mapping_audit_on_state'
+    ,'finance_service_mapping_audit_immutable_guard'
   ];
   name text;
 BEGIN
@@ -188,7 +201,8 @@ BEGIN
   END IF;
 
   IF to_regclass('public.finance_discount_assignment_lookup') IS NULL
-     OR to_regclass('public.billing_discount_application_invoice') IS NULL THEN
+     OR to_regclass('public.billing_discount_application_invoice') IS NULL
+     OR to_regclass('public.finance_service_mapping_lookup') IS NULL THEN
     RAISE EXCEPTION 'DISCOUNT_INDEX_MISSING';
   END IF;
 
@@ -235,6 +249,10 @@ BEGIN
      + (SELECT count(*) FROM public.finance_absence_deduction_evidence)
      + (SELECT count(*) FROM public.finance_discount_policy_audit) <> 0 THEN
     RAISE EXCEPTION 'DISCOUNT_MIGRATION_CREATED_BUSINESS_ROWS';
+  END IF;
+  IF (SELECT count(*) FROM public.finance_service_code_mappings)
+     + (SELECT count(*) FROM public.finance_service_mapping_audit) <> 0 THEN
+    RAISE EXCEPTION 'SERVICE_MAPPING_MIGRATION_CREATED_BUSINESS_ROWS';
   END IF;
 END
 $verify$;
@@ -502,6 +520,16 @@ UPDATE public.service_price_list_versions SET status='PENDING_APPROVAL',submitte
  WHERE price_list_id='ci_price_list' AND version=1;
 UPDATE public.service_price_list_versions SET status='APPROVED',decided_by='ci_approver',decided_at=now(),decision_reason='Independent isolated approval'
  WHERE price_list_id='ci_price_list' AND version=1;
+SELECT set_config('taman.finance_actor_role','ADMIN',true);
+INSERT INTO public.service_price_list_versions(price_list_id,version,status,effective_from,effective_to,items,created_by)
+VALUES('ci_price_list',5,'DRAFT',DATE '2026-10-01',NULL,
+ '[{"serviceCode":"CARE_STANDARD","name":"CI care","unit":"MONTH","scope":"CARE","amountVnd":"54321"}]'::jsonb,'ci_price_maker');
+INSERT INTO public.finance_service_code_mappings(mapping_id,version,source_domain,source_entity_id,service_code,service_scope,price_list_id,price_list_version,effective_from,effective_to,status,created_by,source_evidence_ref,change_reason)
+VALUES('ci_room_mapping',1,'ROOM_TYPE','CI_ROOM_TYPE','ROOM_STANDARD','ROOM','ci_price_list',1,DATE '2026-10-01',NULL,'DRAFT','ci_mapping_maker','public.accommodation_rooms.room_type:CI_ROOM_TYPE','Approved source mapping test');
+UPDATE public.finance_service_code_mappings SET status='PENDING_APPROVAL',submitted_by='ci_mapping_submitter',submitted_at=now()
+ WHERE mapping_id='ci_room_mapping' AND version=1;
+UPDATE public.finance_service_code_mappings SET status='APPROVED',decided_by='ci_mapping_approver',decided_at=now(),decision_reason='Independent verified mapping approval'
+ WHERE mapping_id='ci_room_mapping' AND version=1;
 DO $pricing_constraint_tests$
 BEGIN
   BEGIN
@@ -538,6 +566,71 @@ BEGIN
   EXCEPTION WHEN raise_exception THEN
     IF SQLERRM <> 'FINANCE_PRICE_APPROVAL_SEPARATION_REQUIRED' THEN RAISE; END IF;
   END;
+  BEGIN
+    INSERT INTO public.finance_service_code_mappings(mapping_id,version,source_domain,source_entity_id,service_code,service_scope,price_list_id,price_list_version,effective_from,status,created_by,source_evidence_ref,change_reason)
+    VALUES('ci_room_mapping_conflict',1,'ROOM_TYPE','CI_ROOM_TYPE','ROOM_STANDARD','ROOM','ci_price_list',1,DATE '2026-10-15','DRAFT','ci_mapping_maker2','public.accommodation_rooms.room_type:CI_ROOM_TYPE','Overlapping mapping must fail');
+    UPDATE public.finance_service_code_mappings SET status='PENDING_APPROVAL',submitted_by='ci_mapping_submitter2',submitted_at=now()
+     WHERE mapping_id='ci_room_mapping_conflict' AND version=1;
+    UPDATE public.finance_service_code_mappings SET status='APPROVED',decided_by='ci_mapping_approver2',decided_at=now(),decision_reason='Overlapping source mapping'
+     WHERE mapping_id='ci_room_mapping_conflict' AND version=1;
+    RAISE EXCEPTION 'EXPECTED_SERVICE_MAPPING_CONFLICT';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_SERVICE_MAPPING_EFFECTIVE_CONFLICT' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.finance_service_code_mappings(mapping_id,version,source_domain,source_entity_id,service_code,service_scope,price_list_id,price_list_version,effective_from,status,created_by,change_reason)
+    VALUES('ci_room_mapping_unknown',1,'ROOM_TYPE','CI_ROOM_TYPE','UNKNOWN_SERVICE','ROOM','ci_price_list',1,DATE '2027-01-01','DRAFT','ci_mapping_maker3','Unknown code must fail');
+    RAISE EXCEPTION 'EXPECTED_UNKNOWN_SERVICE_CODE_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_SERVICE_MAPPING_CODE_NOT_IN_PRICE_VERSION' THEN RAISE; END IF;
+  END;
+  BEGIN
+    UPDATE public.finance_service_code_mappings SET service_code='CARE_STANDARD' WHERE mapping_id='ci_room_mapping' AND version=1;
+    RAISE EXCEPTION 'EXPECTED_APPROVED_MAPPING_IMMUTABILITY';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_SERVICE_MAPPING_IMMUTABLE' THEN RAISE; END IF;
+  END;
+  BEGIN
+    INSERT INTO public.finance_service_code_mappings(mapping_id,version,source_domain,source_entity_id,service_code,service_scope,price_list_id,price_list_version,effective_from,status,created_by,change_reason)
+    VALUES('ci_care_mapping_draft_price',1,'CARE_LEVEL','CI_CARE_LEVEL','CARE_STANDARD','CARE','ci_price_list',5,DATE '2026-10-01','DRAFT','ci_care_maker','Draft price must not qualify');
+    UPDATE public.finance_service_code_mappings SET status='PENDING_APPROVAL',submitted_by='ci_care_submitter',submitted_at=now()
+     WHERE mapping_id='ci_care_mapping_draft_price' AND version=1;
+    UPDATE public.finance_service_code_mappings SET status='APPROVED',decided_by='ci_care_approver',decided_at=now(),decision_reason='Must reject unapproved price source'
+     WHERE mapping_id='ci_care_mapping_draft_price' AND version=1;
+    RAISE EXCEPTION 'EXPECTED_DRAFT_PRICE_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_SERVICE_MAPPING_PRICE_VERSION_NOT_APPROVED' THEN RAISE; END IF;
+  END;
+  UPDATE public.finance_service_code_mappings
+     SET status='SUPERSEDED',superseded_effective_from=DATE '2026-11-01',
+         decided_by='ci_mapping_superseder',decided_at=now(),decision_reason='New mapping takes effect next month'
+   WHERE mapping_id='ci_room_mapping' AND version=1;
+  IF NOT EXISTS (
+       SELECT 1 FROM public.finance_service_code_mappings m
+        WHERE m.mapping_id='ci_room_mapping' AND m.status='SUPERSEDED'
+          AND m.effective_from<=DATE '2026-10-31' AND m.superseded_effective_from>DATE '2026-10-31'
+     ) OR EXISTS (
+       SELECT 1 FROM public.finance_service_code_mappings m
+        WHERE m.mapping_id='ci_room_mapping' AND m.status IN ('APPROVED','SUPERSEDED')
+          AND m.effective_from<=DATE '2026-11-01' AND m.superseded_effective_from>DATE '2026-11-01'
+     ) THEN
+    RAISE EXCEPTION 'SERVICE_MAPPING_SUPERSEDE_BOUNDARY_INVALID';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM public.finance_service_mapping_audit WHERE mapping_id='ci_room_mapping' AND action='SUPERSEDED') THEN
+    RAISE EXCEPTION 'SERVICE_MAPPING_SUPERSEDE_AUDIT_MISSING';
+  END IF;
+  INSERT INTO public.finance_service_code_mappings(mapping_id,version,source_domain,source_entity_id,service_code,service_scope,price_list_id,price_list_version,effective_from,status,created_by,source_evidence_ref,change_reason)
+  VALUES('ci_room_mapping',2,'ROOM_TYPE','CI_ROOM_TYPE','ROOM_STANDARD','ROOM','ci_price_list',1,DATE '2026-11-01','DRAFT','ci_mapping_maker_v2','public.accommodation_rooms.room_type:CI_ROOM_TYPE','Future approved mapping version');
+  IF NOT EXISTS (SELECT 1 FROM public.finance_service_mapping_audit WHERE mapping_id='ci_room_mapping' AND version=2 AND action='CREATED' AND previous_version=1) THEN
+    RAISE EXCEPTION 'SERVICE_MAPPING_VERSION_AUDIT_LINK_MISSING';
+  END IF;
+  BEGIN
+    INSERT INTO public.finance_service_code_mappings(mapping_id,version,source_domain,source_entity_id,service_code,service_scope,price_list_id,price_list_version,effective_from,status,created_by,source_evidence_ref,change_reason)
+    VALUES('ci_room_mapping',4,'ROOM_TYPE','CI_ROOM_TYPE','ROOM_STANDARD','ROOM','ci_price_list',1,DATE '2027-01-01','DRAFT','ci_mapping_maker_v4','public.accommodation_rooms.room_type:CI_ROOM_TYPE','Version gap must fail');
+    RAISE EXCEPTION 'EXPECTED_MAPPING_VERSION_GAP_REJECTION';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM <> 'FINANCE_SERVICE_MAPPING_VERSION_SEQUENCE_INVALID' THEN RAISE; END IF;
+  END;
 END
 $pricing_constraint_tests$;
 ROLLBACK;
@@ -572,6 +665,7 @@ empty_migrations=(
   ops/finance/v32/008_discount_and_absence_policy.sql
   ops/finance/v32/009_service_price_catalog.sql
   ops/finance/v32/010_immutable_invoice_snapshot.sql
+  ops/finance/v32/011_service_code_mapping.sql
 )
 for migration in "${empty_migrations[@]}"; do
   echo "APPLY_EMPTY_SCHEMA=$migration"
@@ -589,7 +683,9 @@ BEGIN
     RAISE EXCEPTION 'FINANCE_EMPTY_SCHEMA_MIGRATION_INVALID';
   END IF;
   IF to_regclass('public.service_price_list_versions') IS NULL
-     OR (SELECT count(*) FROM public.service_price_list_versions) <> 0 THEN
+     OR (SELECT count(*) FROM public.service_price_list_versions) <> 0
+     OR to_regclass('public.finance_service_code_mappings') IS NULL
+     OR (SELECT count(*) FROM public.finance_service_code_mappings) <> 0 THEN
     RAISE EXCEPTION 'FINANCE_EMPTY_PRICE_CATALOG_MIGRATION_INVALID';
   END IF;
 END

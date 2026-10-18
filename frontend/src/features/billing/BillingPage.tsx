@@ -32,6 +32,7 @@ import {
 } from '../../api/billing';
 import { LoadingState, ErrorState } from '../../components/feedback/FeedbackStates';
 import { ServicePriceCatalogPanel } from './ServicePriceCatalogPanel';
+import { ServiceCodeMappingPanel } from './ServiceCodeMappingPanel';
 
 const STATUS_CONFIG: Record<InvoiceStatus, { label: string; badgeClass: string; icon: string }> = {
   PENDING: { label: 'Chờ thanh toán', badgeClass: 'badge-warning', icon: '⏳' },
@@ -410,7 +411,7 @@ export default function BillingPage() {
 
   if (invoicesQuery.isError || receiptsQuery.isError || pricingQuery.isError || detailedFeeNoticesQuery.isError) {
     if (activeTab === 'pricing') {
-      return <main className="page"><ServicePriceCatalogPanel actor={actor} /></main>;
+      return <main className="page"><ServicePriceCatalogPanel actor={actor} /><ServiceCodeMappingPanel actor={actor} /></main>;
     }
     return (
       <main className="page">
