@@ -17,5 +17,22 @@ for (const [file, expected] of Object.entries(manifest.source_files)) {
 const head = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
 if (process.env.GITHUB_SHA) assert.equal(head, process.env.GITHUB_SHA.toLowerCase(), 'workflow source SHA must equal checked out candidate');
 const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME;
-if (branch) assert.equal(branch, 'feature/finance-github-first-transition-20261012', 'unexpected Finance branch');
+if (branch === 'feature/finance-github-first-transition-20261012') {
+  // Standalone Finance qualification branch.
+} else if (branch === 'integration/finance-guardian-20261019') {
+  // This isolated cross-module candidate must retain the exact owner-approved
+  // Finance and Guardian source commits; source checksums above remain active.
+  for (const sourceSha of [
+    '027f36205e792561f6b0494f11e299b42d70db87',
+    'cb575338b52443671527ce65b9148fe828bb1213',
+  ]) {
+    try {
+      execFileSync('git', ['merge-base', '--is-ancestor', sourceSha, head], { cwd: root });
+    } catch {
+      assert.fail(`approved integration source is not an ancestor: ${sourceSha}`);
+    }
+  }
+} else if (branch) {
+  assert.fail(`unexpected Finance branch: ${branch}`);
+}
 console.log(`FINANCE_V1_SOURCE_MANIFEST_PASS=${head}`);
