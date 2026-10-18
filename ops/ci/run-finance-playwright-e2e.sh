@@ -70,7 +70,7 @@ npm --prefix frontend run dev -- --host 127.0.0.1 >"${RUNNER_TEMP:-/tmp}/finance
 vite_pid=$!
 
 for attempt in $(seq 1 60); do
-  if curl --silent --fail http://127.0.0.1:3000/__ci/ready >/dev/null && \
+  if curl --silent --fail http://127.0.0.1:3000/api/health/ready >/dev/null && \
      curl --silent --fail http://127.0.0.1:5173/ >/dev/null; then
     break
   fi
@@ -80,7 +80,7 @@ for attempt in $(seq 1 60); do
   fi
   sleep 1
 done
-curl --silent --fail http://127.0.0.1:3000/__ci/ready >/dev/null
+curl --silent --fail http://127.0.0.1:3000/api/health/ready >/dev/null
 curl --silent --fail http://127.0.0.1:5173/ >/dev/null
 
 export FINANCE_E2E_BASE_URL='http://127.0.0.1:5173'

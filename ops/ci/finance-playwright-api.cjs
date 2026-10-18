@@ -16,7 +16,8 @@ const { ProductionAuthMiddleware } = require('../../api/dist/security/production
 class CiHealthController {
   ready() { return { ready: true, environment: 'synthetic-disposable' }; }
 }
-Controller('__ci')(CiHealthController);
+// Reuse the production middleware's explicitly exempt readiness path.
+Controller('api/health')(CiHealthController);
 Get('ready')(CiHealthController.prototype, 'ready', Object.getOwnPropertyDescriptor(CiHealthController.prototype, 'ready'));
 
 class FinancePlaywrightModule {}
