@@ -41,7 +41,7 @@ async function closeSession(page: Page) {
 }
 
 async function withActorPage<T>(browser: Browser, user: Account, run: (page: Page) => Promise<T>): Promise<T> {
-  const context = await browser.newContext({ baseURL: process.env.FINANCE_E2E_BASE_URL, viewport: { width: 1440, height: 1000 } });
+  const context = await browser.newContext({ baseURL: process.env.FINANCE_E2E_BASE_URL, viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
   const page = await context.newPage();
   try {
     await login(page, user);
@@ -121,7 +121,7 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
     expect(deniedStatus).toBe(403);
   });
 
-  const mobileContext = await browser.newContext({ baseURL: process.env.FINANCE_E2E_BASE_URL, viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  const mobileContext = await browser.newContext({ baseURL: process.env.FINANCE_E2E_BASE_URL, viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true, serviceWorkers: 'block' });
   const mobile = await mobileContext.newPage();
   try {
     await login(mobile, accountantUser);
