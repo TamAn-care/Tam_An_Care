@@ -1,6 +1,7 @@
 import {
   Pool,
 } from 'pg';
+import { readSecretOrEnv } from '../config/env';
 
 type Arguments = {
   actorId: string;
@@ -70,13 +71,11 @@ function parseArguments(): Arguments {
 
 async function main(): Promise<void> {
   const databaseUrl =
-    String(
-      process.env.DATABASE_URL || '',
-    ).trim();
+    readSecretOrEnv('DATABASE_URL', 'DATABASE_URL_FILE', '/run/secrets/database_url') || '';
 
   if (!databaseUrl) {
     throw new Error(
-      'DATABASE_URL must be explicitly supplied',
+      'DATABASE_URL or DATABASE_URL_FILE must be explicitly supplied',
     );
   }
 

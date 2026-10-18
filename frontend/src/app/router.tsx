@@ -163,6 +163,22 @@ export const router =
           },
         },
         {
+          path: "/resident-lifecycle",
+          lazy: async () => {
+            const module = await import("../features/resident-lifecycle/ResidentLifecyclePage");
+            const Component = module.default;
+            return {
+              Component: () => (
+                <RequireActor>
+                  <RequireRole route="resident-lifecycle">
+                    <Component />
+                  </RequireRole>
+                </RequireActor>
+              ),
+            };
+          },
+        },
+        {
           path: "/workforce",
           lazy: async () => {
             const module = await import("../features/workforce/WorkforcePage");

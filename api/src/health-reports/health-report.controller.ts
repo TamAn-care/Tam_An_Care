@@ -16,7 +16,7 @@ import {
   HealthReportService,
 } from './health-report.service';
 
-@Controller('health-reports')
+@Controller('api/health-reports')
 export class HealthReportController {
   constructor(
     private readonly service:

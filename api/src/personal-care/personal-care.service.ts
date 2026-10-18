@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { Pool, PoolClient } from 'pg';
+import { DatabaseService } from '../database/database.service';
 import { OperationalWorkProjectionService } from '../operational-work/operational-work-projection.service';
 
 type Cmd = {
@@ -20,15 +21,9 @@ export class PersonalCareService {
 
   constructor(
     private readonly operationalWorkProjection: OperationalWorkProjectionService,
-) {
-    this.pool = new Pool({
-      connectionString: process.env.DATABASE_URL,
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT ? Number(process.env.DB_PORT) : undefined,
-      user: process.env.DB_USER ?? process.env.POSTGRES_USER,
-      password: process.env.DB_PASSWORD ?? process.env.POSTGRES_PASSWORD,
-      database: process.env.DB_NAME ?? process.env.POSTGRES_DB,
-    });
+    private readonly db: DatabaseService,
+  ) {
+    this.pool = this.db.getPool();
   }
 
   summary() {

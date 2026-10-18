@@ -5,12 +5,14 @@ node_modules/
 .pnpm-store/
 .npm/
 
-# Build outputs
+# Build outputs & TypeScript incremental builds
 dist/
 build/
 .next/
 out/
 *.out
+*.tsbuildinfo
+*.js.map
 
 # Environment variables & Secret Files (NEVER COMMIT)
 .env
@@ -25,14 +27,19 @@ out/
 *.crt
 secrets/
 
-# System & IDE files
-.DS_Store
-Thumbs.db
-.idea/
-.vscode/
+# Temporary, Backup & Artifact Files
 *.log
 *.tmp
 *.bak
+*.backup*
+*.pre-*
+*.dump
+*.failed-build-copy
+*.pre-write
+*.zip
+
+# AI Agents & Automation Artifacts
+.agents/
 
 # Python
 __pycache__/

@@ -1,0 +1,23 @@
+{
+  "name": "tam-an-care-workspace",
+  "version": "7.5.0",
+  "private": true,
+  "description": "Viện Dưỡng Lão Tâm An Care V7.5 - Comprehensive Elderly Care Platform",
+  "workspaces": [
+    "api",
+    "frontend"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=api && npm run build --workspace=frontend",
+    "test": "npm run test --workspace=api && npm run test --workspace=frontend",
+    "test:api": "npm run test --workspace=api",
+    "test:frontend": "npm run test --workspace=frontend",
+    "security:audit": "node scripts/security-audit.mjs",
+    "db:seed": "node scripts/seed-demo-data.mjs",
+    "start:api": "npm run start:dev --workspace=api",
+    "start:frontend": "npm run dev --workspace=frontend"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

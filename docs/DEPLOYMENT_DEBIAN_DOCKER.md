@@ -81,7 +81,7 @@ cd ~
 git clone https://github.com/<YOUR_USERNAME>/tam-an-care.git
 
 # Enter the project directory
-cd tam-an-care/TamAnCare_V7_4_3_Development
+cd tam-an-care
 ```
 
 ---

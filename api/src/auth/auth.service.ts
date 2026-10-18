@@ -13,6 +13,7 @@ import {
 import {
   DatabaseService,
 } from '../database/database.service';
+import { ConfigService } from '../config/config.service';
 
 interface CredentialRow {
   actor_id: string;
@@ -30,6 +31,8 @@ export class AuthService {
   constructor(
     private readonly db:
       DatabaseService,
+    private readonly config?:
+      ConfigService,
   ) {}
 
   async listActiveStaff() {
@@ -279,6 +282,7 @@ export class AuthService {
     expiresAt: number,
   ): string {
     const secret =
+      this.config?.jwtSecret ||
       process.env.JWT_SECRET;
 
     if (!secret || secret.length < 32) {

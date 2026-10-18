@@ -62,6 +62,16 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
     badgeBg: '#059669',
   },
   {
+    key: 'resident-lifecycle',
+    to: '/resident-lifecycle',
+    label: 'Vòng Đời & Xuất Viện',
+    icon: '📜',
+    category: 'Lâm Sàng & Chăm Sóc',
+    gradient: 'linear-gradient(135deg, #0d9488, #115e59)',
+    badge: 'Kế Hoạch',
+    badgeBg: '#0d9488',
+  },
+  {
     key: 'operations',
     to: '/operations',
     label: 'Chăm Sóc & Vận Hành',

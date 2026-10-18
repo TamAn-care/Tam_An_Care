@@ -58,6 +58,10 @@ export function DevelopmentActorPanel() {
   ];
 
   const isAdmin = actor?.actorRole === 'ADMIN';
+  const isDevSwitcherEnabled =
+    Boolean((import.meta as any)?.env?.DEV) ||
+    (typeof window !== 'undefined' && window.__TAMAN_CONFIG__?.ENABLE_DEV_SWITCHER === true) ||
+    (import.meta as any)?.env?.VITE_ENABLE_DEV_SWITCHER === 'true';
 
   // Unified Single Login Handler
   const handleUnifiedLogin = async (e: React.FormEvent) => {
@@ -463,8 +467,8 @@ export function DevelopmentActorPanel() {
         </div>
       </div>
 
-      {/* QUICK STAFF SELECTOR (ONLY FOR LOGGED IN ADMIN) */}
-      {isAdmin && (
+      {/* QUICK STAFF SELECTOR (ONLY IN DEVELOPMENT OR WHEN DEV SWITCHER IS EXPLICITLY ENABLED) */}
+      {isAdmin && isDevSwitcherEnabled && (
         <div style={{ background: '#f8fafc', borderTop: '1px solid #e2e8f0', padding: '1rem 1.5rem' }}>
           <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', marginBottom: '0.5rem' }}>
             👥 Chuyển nhanh vai trò nhân viên thử nghiệm (Dành riêng cho Admin):

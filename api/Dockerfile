@@ -20,6 +20,9 @@ RUN npm ci --omit=dev \
  && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
+COPY --from=build /app/assets ./assets
+
+EXPOSE 3000
 
 USER node
 

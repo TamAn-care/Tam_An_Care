@@ -65,7 +65,9 @@ services:
       - no-new-privileges:true
 
   web:
-    image: nginx:1.27-alpine
+    build:
+      context: ../../frontend
+      dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
       api:
@@ -75,7 +77,6 @@ services:
       - "443:443"
     volumes:
       - ./nginx/tamancare.conf:/etc/nginx/templates/default.conf.template:ro
-      - ${TAMANCARE_WEB_DIST:?TAMANCARE_WEB_DIST_REQUIRED}:/usr/share/nginx/html:ro
       - ${TAMANCARE_TLS_DIR:?TAMANCARE_TLS_DIR_REQUIRED}:/etc/nginx/tls:ro
       - ${TAMANCARE_ACME_DIR:?TAMANCARE_ACME_DIR_REQUIRED}:/var/www/certbot:ro
     environment:
