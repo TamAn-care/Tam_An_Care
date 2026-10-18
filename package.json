@@ -13,6 +13,7 @@
     "test:api": "npm run test --workspace=api",
     "test:frontend": "npm run test --workspace=frontend",
     "security:audit": "node scripts/security-audit.mjs",
+    "db:seed": "node scripts/seed-demo-data.mjs",
     "start:api": "npm run start:dev --workspace=api",
     "start:frontend": "npm run dev --workspace=frontend"
   },

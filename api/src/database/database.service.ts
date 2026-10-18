@@ -11,6 +11,7 @@ import {
   QueryResultRow,
 } from 'pg';
 
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class DatabaseService
@@ -21,80 +22,35 @@ export class DatabaseService
 
   private readonly pool: Pool;
 
-  constructor() {
+  constructor(private readonly config?: ConfigService) {
+    const activeConfig = this.config ?? new ConfigService();
+    const db = activeConfig.database;
 
-    const connectionString =
-      process.env.DATABASE_URL;
-
-    if (
-      process.env.NODE_ENV === 'production' &&
-      !connectionString
-    ) {
-      throw new Error(
-        'DATABASE_URL is required in production',
-      );
-    }
-
-    this.pool = connectionString
+    this.pool = db.connectionString
       ? new Pool({
-          connectionString,
-          max: 10,
+          connectionString: db.connectionString,
+          max: db.maxConnections,
           idleTimeoutMillis: 30000,
           connectionTimeoutMillis: 5000,
         })
       : new Pool({
-          host:
-            process.env.DB_HOST ||
-            (process.env.NODE_ENV === 'production'
-              ? 'postgres'
-              : '127.0.0.1'),
-
-          port:
-            Number(
-              process.env.DB_PORT ||
-              5432
-            ),
-
-          user:
-            process.env.POSTGRES_USER ||
-            process.env.DB_USER ||
-            'taman',
-
-          password:
-            process.env.POSTGRES_PASSWORD ||
-            process.env.DB_PASSWORD ||
-            (() => {
-              if (
-                process.env.NODE_ENV === 'production'
-              ) {
-                throw new Error(
-                  'Database password is required in production',
-                );
-              }
-              return 'taman_dev_password';
-            })(),
-
-          database:
-            process.env.POSTGRES_DB ||
-            process.env.DB_NAME ||
-            'taman_care',
-
-          max: 10,
-
+          host: db.host,
+          port: db.port,
+          user: db.user,
+          password: db.password,
+          database: db.database,
+          max: db.maxConnections,
           idleTimeoutMillis: 30000,
-
           connectionTimeoutMillis: 5000,
         });
 
     this.pool.on(
       'error',
       (error: Error) => {
-
         this.logger.error(
           'Unexpected PostgreSQL pool error',
           error.stack,
         );
-
       },
     );
   }

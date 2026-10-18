@@ -135,7 +135,7 @@ export async function listHealthReports(
   actor: HumanActorSession,
 ): Promise<HealthReportRow[]> {
   try {
-    const result = await apiRequest<HealthReportRow[] | { reports: HealthReportRow[] }>('/health-reports', { actor });
+    const result = await apiRequest<HealthReportRow[] | { reports: HealthReportRow[] }>('/api/health-reports', { actor });
     const list = Array.isArray(result) ? result : result.reports ?? [];
     if (list.length > 0) return list;
     return [...mockHealthReports];
@@ -166,7 +166,7 @@ export async function createHealthReport(
   };
 
   try {
-    const res = await apiRequest<HealthReportRow>('/health-reports', {
+    const res = await apiRequest<HealthReportRow>('/api/health-reports', {
       actor,
       method: 'POST',
       body: JSON.stringify({ ...input, initialStatus }),
@@ -200,7 +200,7 @@ export async function updateHealthReport(
   }
 
   try {
-    await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}`, {
+    await apiRequest<Record<string, unknown>>(`/api/health-reports/${encodeURIComponent(id)}`, {
       actor,
       method: 'PUT',
       body: JSON.stringify({ summary: summaryData, status }),
@@ -228,7 +228,7 @@ export async function submitHealthReportForReview(
   }
 
   try {
-    await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/start-review`, {
+    await apiRequest<Record<string, unknown>>(`/api/health-reports/${encodeURIComponent(id)}/start-review`, {
       actor,
       method: 'POST',
       body: summaryData ? JSON.stringify({ summary: summaryData }) : undefined,
@@ -273,7 +273,7 @@ export async function approveHealthReport(
 
   try {
     await apiRequest<Record<string, unknown>>(
-      `/health-reports/${encodeURIComponent(id)}/approve`,
+      `/api/health-reports/${encodeURIComponent(id)}/approve`,
       {
         actor,
         method: 'POST',
@@ -292,7 +292,7 @@ export async function generateHealthReport(
   id: string,
 ) {
   try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/generate`, { actor, method: 'POST' });
+    return await apiRequest<Record<string, unknown>>(`/api/health-reports/${encodeURIComponent(id)}/generate`, { actor, method: 'POST' });
   } catch (error) {
     return { status: 'OK' };
   }
@@ -303,7 +303,7 @@ export async function startHealthReportReview(
   id: string,
 ) {
   try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/start-review`, { actor, method: 'POST' });
+    return await apiRequest<Record<string, unknown>>(`/api/health-reports/${encodeURIComponent(id)}/start-review`, { actor, method: 'POST' });
   } catch (error) {
     return { status: 'OK' };
   }
@@ -318,7 +318,7 @@ export async function deliverHealthReport(
   if (r) r.status = 'DELIVERED';
 
   try {
-    return await apiRequest<Record<string, unknown>>(`/health-reports/${encodeURIComponent(id)}/deliver`, {
+    return await apiRequest<Record<string, unknown>>(`/api/health-reports/${encodeURIComponent(id)}/deliver`, {
       actor,
       method: 'POST',
       body: JSON.stringify(input),
@@ -339,7 +339,7 @@ export async function downloadHealthReportPdf(
   headers.set('x-actor-role', actor.actorRole);
 
   const response = await fetch(
-    `${API_BASE_URL}/health-reports/${encodeURIComponent(id)}/pdf`,
+    `${API_BASE_URL}/api/health-reports/${encodeURIComponent(id)}/pdf`,
     { headers },
   );
 

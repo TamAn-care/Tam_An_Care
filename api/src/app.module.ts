@@ -70,7 +70,9 @@ import { ResidentLifecycleModule } from './resident-lifecycle/resident-lifecycle
 import { ResidentLeaveModule } from './resident-leave/resident-leave.module';
 import { WorkforceModule } from './workforce/workforce.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ConfigModule } from './config/config.module';
 @Module({imports:[
+    ConfigModule,
     NotificationsModule,
     WorkforceModule,
     ResidentLeaveModule,

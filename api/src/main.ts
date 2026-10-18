@@ -6,23 +6,15 @@ import {
   SwaggerModule,
 } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ConfigService } from './config/config.service';
 import { enterpriseOperationsMiddleware } from './security/enterprise-operations.middleware';
-
-function allowedOrigins(): string[] {
-  return (
-    process.env.CORS_ALLOWED_ORIGINS ?? ''
-  )
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-}
 
 async function bootstrap() {
   const app =
     await NestFactory.create(AppModule);
 
-  const production =
-    process.env.NODE_ENV === 'production';
+  const configService = app.get(ConfigService);
+  const production = configService.isProduction;
 
   if (production) {
     app
@@ -31,16 +23,7 @@ async function bootstrap() {
       .set('trust proxy', 1);
   }
 
-  const origins = allowedOrigins();
-
-  if (
-    production &&
-    origins.length === 0
-  ) {
-    throw new Error(
-      'CORS_ALLOWED_ORIGINS is required in production',
-    );
-  }
+  const origins = configService.corsOrigins;
 
   app.enableCors(
     production
@@ -107,10 +90,7 @@ async function bootstrap() {
 
 
 
-  if (
-    !production ||
-    process.env.ENABLE_SWAGGER === 'true'
-  ) {
+  if (configService.swaggerEnabled) {
     const config =
       new DocumentBuilder()
         .setTitle('Tâm An Care API')
@@ -128,9 +108,7 @@ async function bootstrap() {
   }
 
   await app.listen(
-    process.env.PORT
-      ? Number(process.env.PORT)
-      : 3000,
+    configService.port,
     '0.0.0.0',
   );
 }

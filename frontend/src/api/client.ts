@@ -12,25 +12,41 @@ import {
   readStoredAccessToken,
 } from '../auth/session';
 
-const DEFAULT_API_BASE = 'http://127.0.0.1:3000';
-
-const configuredApiBase =
-  (
-    (import.meta as any)?.env?.VITE_API_BASE_URL as string | undefined
-  )?.replace(/\/$/, '') || DEFAULT_API_BASE;
+declare global {
+  interface Window {
+    __TAMAN_CONFIG__?: {
+      API_BASE_URL?: string;
+      ENABLE_DEV_SWITCHER?: boolean;
+    };
+  }
+}
 
 /**
- * Production is served from the same origin behind Nginx reverse proxy.
- * Application API paths already begin with /api.
- * Therefore, in production or when configuredApiBase is '/api', base URL should be empty string
- * to prevent double '/api/api' paths.
+ * Resolve API_BASE_URL:
+ * 1. Runtime dynamic config via window.__TAMAN_CONFIG__ (e.g. from /config.js)
+ * 2. Build-time Vite env var VITE_API_BASE_URL
+ * 3. Default to empty string '' for origin-relative routing (e.g. /api/...)
+ *    - In Development: Vite dev server proxies /api/* -> http://127.0.0.1:3000
+ *    - In Production: Nginx reverse proxy forwards /api/* -> http://api:3000
+ *    - In Standalone/CDN: window.__TAMAN_CONFIG__.API_BASE_URL can provide absolute host
  */
-export const API_BASE_URL =
-  (import.meta as any)?.env?.PROD
-    ? ''
-    : configuredApiBase === '/api'
-      ? ''
-      : configuredApiBase;
+function resolveApiBaseUrl(): string {
+  if (typeof window !== 'undefined' && window.__TAMAN_CONFIG__?.API_BASE_URL !== undefined) {
+    const runtimeVal = window.__TAMAN_CONFIG__.API_BASE_URL.trim();
+    if (runtimeVal === '/api') return '';
+    return runtimeVal.replace(/\/$/, '');
+  }
+
+  const envVal = ((import.meta as any)?.env?.VITE_API_BASE_URL as string | undefined)?.trim();
+  if (envVal) {
+    if (envVal === '/api') return '';
+    return envVal.replace(/\/$/, '');
+  }
+
+  return '';
+}
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 export interface RequestOptions
   extends RequestInit {

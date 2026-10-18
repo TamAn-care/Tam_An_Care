@@ -12,6 +12,7 @@ import {
 import {
   DatabaseService,
 } from '../database/database.service';
+import { ConfigService } from '../config/config.service';
 
 type ActorRole =
   | 'CAREGIVER'
@@ -218,6 +219,8 @@ export class ProductionAuthMiddleware
   constructor(
     private readonly db:
       DatabaseService,
+    private readonly config?:
+      ConfigService,
   ) {}
 
   async use(
@@ -225,10 +228,11 @@ export class ProductionAuthMiddleware
     _res: HttpResponse,
     next: Next,
   ): Promise<void> {
-    if (
-      process.env.NODE_ENV !==
-        'production'
-    ) {
+    const isProd =
+      this.config?.isProduction ??
+      (process.env.NODE_ENV === 'production');
+
+    if (!isProd) {
       next();
       return;
     }
@@ -252,6 +256,7 @@ export class ProductionAuthMiddleware
     }
 
     const secret =
+      this.config?.jwtSecret ||
       process.env.JWT_SECRET;
 
     if (
