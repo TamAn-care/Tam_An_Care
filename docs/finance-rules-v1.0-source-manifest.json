@@ -9,7 +9,7 @@
     "ops/ci/finance-discount-rules-v1-test.cjs": "643117ab0201a525f392c60b3c85f3504b3d751ead19daaf01990bf4d9609101",
     "ops/ci/finance-billing-schema-migration-test.sh": "c44cd843440cfe3b2ea0766a8930e1e7a9e36e460a99ca7e1c569fd2cf74ff45",
     "ops/ci/finance-v1-source-manifest-check.cjs": "df096038167a56133895d4788a2482eeab20579e54d5967f3d4ce318c4ef5087",
-    "docs/finance-rules-v1.0-readiness-20261018.md": "e8ff8f0f045cf17e4f4f03324279a51e9ace8d604d323fc5ed5797dfe087b384",
+    "docs/finance-rules-v1.0-readiness-20261018.md": "320f474138cacaaf3c85a9b4f266ddadf12cf0a4a442ac8b37739f30227f08ee",
     ".github/workflows/finance-github-first-qualification.yml": "06441f56ad21b2f065a37a0b27439818d087e8faf40f6ffc52f524d64d5e0f26",
     "api/src/app.module.ts": "08fa9f356a4ec3b14d2f1420be16faf5169c42b98add5ce674e43983293ad1f0",
     "api/src/finance-billing/service-pricing.controller.ts": "6e6920d35a0c04895896c3197f4ce8d973e2f072348c0fa39c007e8d1b241cb7",
