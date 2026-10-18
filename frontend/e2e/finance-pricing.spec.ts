@@ -31,7 +31,7 @@ async function login(page: Page, user: Account) {
   }
   await expect(page.getByText('Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền')).toHaveCount(0);
   await page.goto('/billing-invoicing');
-  await page.getByRole('button', { name: 'Mở bảng giá dịch vụ' }).click();
+  await page.getByRole('button', { name: /Bảng Giá Dịch Vụ/ }).click();
   await expect(page.getByRole('heading', { name: 'Bảng giá dịch vụ chính thức' })).toBeVisible();
 }
 

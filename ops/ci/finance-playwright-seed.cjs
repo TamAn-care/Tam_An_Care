@@ -20,7 +20,10 @@ const pool = new Pool({
 });
 
 const accounts = [
-  ['CI_MAKER', 'CI_MAKER', 'CARE_MANAGER'],
+  // Pricing editors can enter the Billing route in the frontend policy.
+  // CARE_MANAGER can edit through the API but is intentionally not granted
+  // the Billing route, so use the approved supervisor role for browser E2E.
+  ['CI_MAKER', 'CI_MAKER', 'SUPERVISOR'],
   ['CI_SUBMITTER', 'CI_SUBMITTER', 'SUPERVISOR'],
   ['CI_APPROVER', 'CI_APPROVER', 'ADMIN'],
   ['CI_ACCOUNTANT', 'CI_ACCOUNTANT', 'ACCOUNTANT'],
