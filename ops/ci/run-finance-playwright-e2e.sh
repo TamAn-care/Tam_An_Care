@@ -90,7 +90,7 @@ for attempt in $(seq 1 60); do
         sed -E \
           -e 's#(postgres(ql)?://)[^[:space:]]+#\1[REDACTED]#Ig' \
           -e 's#((password|token|secret)=?)[^[:space:]&]+#\1[REDACTED]#Ig' \
-          "$api_log" | tail -n 8 | cut -c1-240
+          "$api_log" | { head -n 4; tail -n 8; } | cut -c1-240
       else
         echo 'FINANCE_PLAYWRIGHT_API_LOG=EMPTY'
       fi
