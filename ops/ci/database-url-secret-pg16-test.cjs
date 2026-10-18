@@ -73,6 +73,7 @@ async function main() {
       throw new Error('API did not fail closed when the database secret was missing');
     }
 
+    process.env.DATABASE_URL_FILE = secretFile;
     if (capturedOutput.some((entry) => entry.includes(password) || entry.includes(databaseUrl))) {
       throw new Error('Credential material was written to application output');
     }
