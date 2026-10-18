@@ -1,123 +1,218 @@
-# Viện Dưỡng Lão Tâm An Care V7.5 — Progressive Web App & Enterprise Management
+# Viện Dưỡng Lão Tâm An Care V7.5 — Enterprise Elderly Care Management Platform
 
-**Tâm An Care V7.5** là Hệ thống Quản trị & Vận hành Viện Dưỡng Lão toàn diện, hỗ trợ quản lý cư dân, tiếp nhận y khoa ban đầu, kế hoạch chăm sóc hàng ngày (ADL/eMAR), dinh dưỡng & bếp ăn HACCP, phân công nhân sự và báo cáo chỉ đạo dành cho Ban Giám đốc.
+[![Tam An Care CI](https://github.com/homeassistantnerd/Tam_An_Care/actions/workflows/ci.yml/badge.svg)](https://github.com/homeassistantnerd/Tam_An_Care/actions/workflows/ci.yml)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![NestJS](https://img.shields.io/badge/NestJS-12.0.1-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9%20%2F%206.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-blue.svg)](LICENSE)
 
----
-
-## 🌟 TÍNH NĂNG VÀ NÂNG CẤP CHÍNH TRONG PHIÊN BẢN V7.5
-
-### 1. 📊 Executive Command Center (Dashboard Ban Giám Đốc)
-- Tích hợp giao diện chỉ đạo trực quan dành riêng cho Ban Giám đốc và Quản lý.
-- Hiển thị 5 nhóm chỉ số chỉ đạo thời gian thực: *Số hồ sơ tiếp nhận chờ duyệt, Cư dân tạm vắng/tạm về, Ca phân công nhân sự đang trực, Cảnh báo y tế*.
-
-### 2. 🥗 Báo Cáo Tồn Kho & Hủy Mẫu HACCP 24H (Bếp Ăn & Dinh Dưỡng)
-- Quản lý kho thực phẩm tươi và thực đơn theo dạng chế biến (*Cơm mềm, Cháo, Xay nhuyễn, Sonde*).
-- Nút **`📥 Xuất Báo Cáo Tồn Kho Excel/CSV`** không lỗi font Tiếng Việt (UTF-8 BOM).
-- Tự động đếm giờ và phát thông báo **Hủy mẫu an toàn 24H** tại tủ mát lưu mẫu.
-
-### 3. 📜 Lịch Sử Phiếu Tiếp Nhận Thuốc & Đồ Dùng Cá Nhân (A4 Print Ready)
-- Lưu vết toàn bộ phiếu bàn giao tư trang và thuốc cá nhân của người cao tuổi lúc tiếp nhận.
-- Tra cứu lịch sử bàn giao và in phiếu A4 chuẩn y khoa bộ 3 chữ ký (*Thân nhân bàn giao — Điều dưỡng tiếp nhận — Quản lý xác nhận*).
-
-### 4. 🛡️ CareView Gate — Bảo Mật Nhật Ký Chăm Sóc Theo Phân Công
-- Màn hình khóa bảo mật 🔒 ngăn chặn truy cập trái phép vào nhật ký chăm sóc y khoa và eMAR nếu nhân viên chưa được Ban Giám đốc cấp quyền phụ trách cư dân đó.
-
-### 5. 🔔 Hệ Thống Thông Báo Nội Bộ Realtime (In-App Notification Bell)
-- **Soạn & Phát thông báo thủ công**: Ban Giám đốc & Quản lý phát thông báo chỉ đạo tới toàn thể nhân sự trực tiếp từ menu chuông 🔔 Topbar.
-- **Kích hoạt tự động**: Tự động phát cảnh báo khi có phân công mới, nhắc hủy mẫu HACCP 24H, hoặc sinh hiệu bất thường (> 37.5°C).
-
-### 6. 📥 Xuất Báo Cáo CSV / Excel UTF-8 BOM Hàng Loạt
-- Tích hợp bộ xuất báo cáo dữ liệu định dạng CSV chuẩn UTF-8 BOM (`\uFEFF`) mở trực tiếp trên Excel không lỗi font tại 4 phân hệ: *Quản lý Nhân sự*, *Phân công Phụ trách*, *Hồ sơ Cư dân*, *Lịch trực & Ca kíp*.
-
-### 7. 📱 Hỗ Trợ Cài Đặt Trực Tiếp (Installable PWA)
-- Tích hợp `manifest.json`, Service Worker (`sw.js`) và nút **`📱 Cài Đặt App`** ở Topbar.
-- Cho phép cài đặt ứng dụng chạy độc lập full-screen trên iPhone, iPad, Android, macOS và Windows PC mà không cần qua App Store.
-
-### 8. 🔒 Khóa Bảo Mật Quyền Đăng Nhập & Phân Lập Vai Trò
-- Ẩn hoàn toàn thanh chuyển vai trò nhân sự đối với các tài khoản không phải Admin.
-- Đảm bảo mỗi nhân viên chỉ truy cập đúng tài khoản và phạm vi công việc được phân công.
-
-### 9. 🧭 Bộ Nút Điều Hướng "Quay Lại / Tiếp Tục"
-- Tích hợp nút **`◀ Quay lại`** và **`Tiếp tục ▶`** tại thanh tiêu đề Topbar và chân các biểu mẫu multi-step.
+**Tâm An Care V7.5** is an enterprise-grade nursing home and geriatric care management platform. It delivers comprehensive clinical workflows, medical admissions, medication management (eMAR), daily living assistance (ADL), HACCP 24-hour food safety operations, 15-role RBAC security enforcement, and executive intelligence dashboards for nursing facility leadership.
 
 ---
 
-## 🐳 TRIỂN KHAI BẰNG DOCKER & DEBIAN (DOCKER & DEBIAN DEPLOYMENT)
+## 🏛️ System Architecture & Workspace Structure
 
-### 1. Khởi chạy nhanh bằng Docker Compose (Development / Testing)
-```bash
-# Thao tác tại thư mục gốc của dự án
-docker compose up -d --build
+The project is structured as a unified npm monorepo with high-performance native TypeScript execution:
+
 ```
-- **NestJS API Service**: Chạy tại `http://localhost:3000`
-- **PostgreSQL 16 Database**: Khởi tạo tự động schema từ `database/schema.sql`
-
-### 2. Triển khai Production trên Máy Chủ Debian Linux
-Vui lòng tham khảo tài liệu chi tiết đầy đủ từng bước tại:
-📄 **[Debian & Docker Deployment Guide](docs/DEPLOYMENT_DEBIAN_DOCKER.md)**
-
-Tóm tắt các bước triển khai trên máy chủ Debian:
-```bash
-# 1. Cài đặt Docker & Docker Compose trên Debian
-sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# 2. Clone dự án từ GitHub
-git clone https://github.com/YOUR_USERNAME/tam-an-care.git
-cd tam-an-care/TamAnCare_V7_4_3_Development
-
-# 3. Khởi chạy ứng dụng với Docker Compose
-docker compose up -d --build
+Tam_An_Care/
+├── api/                       # Backend service (NestJS 12 + Express + pg + pdf-lib)
+│   ├── src/
+│   │   ├── admissions/        # A4 medical handover & personal belongings intake
+│   │   ├── audit/             # Immutable audit logging & compliance tracking
+│   │   ├── common/            # Enterprise HTTP security middleware & request tracing
+│   │   ├── database/          # PostgreSQL connection pooling & migrations
+│   │   ├── health/            # Liveness, readiness, and database health probes
+│   │   └── health-reports/    # Clinical summaries, vital stats & PDF report generator
+│   └── test/                  # Backend smoke & integration tests (Node native test runner)
+├── frontend/                  # Modern PWA frontend (React 18 + Vite 6 + Tailwind CSS)
+│   ├── src/
+│   │   ├── api/               # Typed HTTP client with Bearer auth & 401 handling
+│   │   ├── app/               # Application router & Lazy-loaded feature routes
+│   │   ├── auth/              # 15-Role RBAC matrix, capabilities, and session tokens
+│   │   ├── components/        # Reusable UI primitives, navigation & notifications
+│   │   ├── features/          # Modular domain pages (Kitchen, Billing, eMAR, etc.)
+│   │   └── types/             # Shared TypeScript domain contracts
+│   └── test/                  # Frontend smoke & RBAC verification tests
+├── database/
+│   └── schema.sql             # Canonical PostgreSQL DDL (residents, admissions, audit)
+├── deploy/                    # Production deployment configurations (Nginx, SSL, Systemd)
+├── docs/                      # Clinical specifications, domain logic & deployment guides
+│   └── domain/                # Preserved clinical standards, RBAC matrix & operations
+├── scripts/                   # Automated repository maintenance & security audit tools
+├── .env.example               # Unified environment variables template
+├── docker-compose.yml         # Containerized development & production orchestration
+└── package.json               # Root monorepo workspace configuration
 ```
 
 ---
 
-## 💻 HƯỚNG DẪN KHỞI CHẠY CỤC BỘ (LOCAL DEVELOPMENT)
+## 🚀 Key Clinical & Operational Features
 
-### 1. Khởi chạy Frontend (React + Vite + TypeScript)
+1. **Executive Command Center**: Real-time leadership KPI overview tracking pending admissions, resident leaves, on-duty staffing levels, and critical medical alerts.
+2. **HACCP 24-Hour Food Safety Architecture**:
+   - 3-zone temperature control (`FREEZER` ≤ -18°C, `CHILLER` 0–4°C, `DRY_ROOM` ≤ 25°C).
+   - Automated 24-hour retention countdown timer with mandatory disposal logging.
+   - Standardized 4-texture diet matrix: `REGULAR_SOFT` (Cơm mềm), `MASHED_SOFT` (Cháo/Cơm nghiền), `PUREED_SOUP` (Xay nhuyễn), `TUBE_FEEDING` (Ăn qua Sonde).
+3. **A4 Medical Admission & Handover System**:
+   - Printable handover records with `@media print` layout and binary PDF rendering via `pdf-lib`.
+   - Mandatory 3-party physical/digital signatures: Guardian / Resident, Receiving Nurse, and Shift Supervisor.
+4. **CareView Gate & 15-Role RBAC Policy**:
+   - Explicit role-based route guards and capability checks spanning 15 distinct healthcare roles (`ADMIN`, `SUPERVISOR`, `CARE_MANAGER`, `MEDICAL_HEAD`, `PSYCHOLOGIST`, `SOCIAL_WORKER`, `NURSE`, `CAREGIVER`, `NUTRITIONIST`, `HOUSEKEEPING`, `REHABILITATION_SPECIALIST`, `SECURITY`, `ACCOUNTANT`, `RECEPTIONIST`, `GUARDIAN`).
+   - Granular caregiver assignment scopes preventing unauthorized inspection of clinical notes.
+5. **UTF-8 BOM CSV Exports**:
+   - All administrative, resident, and kitchen export routines prepend the UTF-8 Byte Order Mark (`﻿`), guaranteeing zero mojibake or character distortion in Microsoft Excel for Vietnamese diacritics.
+6. **Progressive Web App (PWA)**:
+   - Offline-capable service worker, responsive touch interfaces for iPad and Android tablets, and one-click desktop/mobile installation.
+7. **Enterprise Security Standards**:
+   - Automated secret scanning, `x-request-id` header correlation, strict HTTP security headers (`nosniff`, `DENY`, `no-referrer`), and JWT bearer token invalidation on HTTP 401.
+
+---
+
+## 📋 Prerequisites
+
+- **Node.js**: `v20.0.0` or higher (Tested on Node 22 LTS and Node 24)
+- **npm**: `v9.0.0` or higher
+- **PostgreSQL**: `v16.0` or higher (or run via Docker Compose)
+- **Docker & Docker Compose** (Optional, for containerized execution)
+
+---
+
+## ⚙️ Environment Configuration
+
+Copy the unified environment template to `.env` in the root (or in `./api/.env` and `./frontend/.env`):
+
 ```bash
-cd frontend
+cp .env.example .env
+```
+
+### Key Environment Variables
+
+| Variable | Default Value | Description |
+|---|---|---|
+| `NODE_ENV` | `development` | Runtime environment (`development` / `production`) |
+| `PORT` | `3000` | Port for the NestJS API service |
+| `DATABASE_URL` | `postgresql://taman:taman_dev_password@localhost:5432/taman_care` | PostgreSQL connection string |
+| `JWT_SECRET` | *(Random 32+ char string)* | Cryptographic secret for signing and verifying authentication tokens |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173,http://127.0.0.1:5173` | Comma-separated whitelist of allowed CORS origins |
+| `VITE_API_BASE_URL` | `http://localhost:3000` | Base URL used by the frontend to communicate with the backend |
+
+---
+
+## 🛠️ Installation & Quick Start
+
+### 1. Unified Monorepo Setup
+
+Install dependencies across all workspaces in a single command from the repository root:
+
+```bash
+# Clone the repository
+git clone https://github.com/homeassistantnerd/Tam_An_Care.git
+cd Tam_An_Care
+
+# Install all workspace dependencies
 npm install
-npm run dev
 ```
-Truy cập trình duyệt: [http://127.0.0.1:5173](http://127.0.0.1:5173)
 
-### 2. Kiểm tra & Build Sản Phẩm
+### 2. Local Development Mode
+
+Start both the backend API and frontend development servers concurrently:
+
 ```bash
-cd frontend
+# Terminal 1: Start Backend API (NestJS with hot reload)
+npm run start:api
+# API will be live at http://localhost:3000 (Swagger docs at http://localhost:3000/api/docs)
+
+# Terminal 2: Start Frontend PWA (Vite dev server)
+npm run start:frontend
+# Frontend will be live at http://localhost:5173
+```
+
+### 3. Docker Compose Deployment
+
+Run the complete stack (PostgreSQL 16 + NestJS API) with pre-configured schemas:
+
+```bash
+docker compose up -d --build
+```
+
+Verify service readiness:
+```bash
+curl http://localhost:3000/api/health/ready
+```
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+The repository utilizes Node.js native test runner and type-stripping for lightning-fast test execution without transpilation overhead.
+
+```bash
+# Run all smoke tests across both workspaces (API + Frontend)
+npm test
+
+# Run backend API tests only
+npm run test:api
+
+# Run frontend tests only
+npm run test:frontend
+
+# Run the automated secret and security audit scanner
+npm run security:audit
+
+# Verify production builds for all workspaces
 npm run build
 ```
 
----
+### Smoke Test Coverage Highlights
 
-## 🐙 HƯỚNG DẪN QUẢN LÝ MÃ NGUỒN TRÊN GITHUB
-
-### 1. Đẩy mã nguồn lên GitHub (Push to GitHub)
-1. Tạo một repository mới trên GitHub (Ví dụ: `tam-an-care`).
-2. Mở Terminal tại thư mục dự án và chạy các lệnh:
-```bash
-# Thêm remote repository
-git remote add origin https://github.com/YOUR_USERNAME/tam-an-care.git
-
-# Đặt tên branch chính là main
-git branch -M main
-
-# Đẩy toàn bộ mã nguồn lên GitHub
-git push -u origin main
-```
-
-### 2. Cập nhật mã nguồn từ GitHub (Pull Updates)
-Khi có sự thay đổi từ trên GitHub hoặc triển khai lên server mới:
-```bash
-# Kéo mã nguồn mới nhất về
-git pull origin main
-
-# Rebuild lại container với mã nguồn mới
-docker compose up -d --build
-```
+- **Frontend (`frontend/test/smoke.test.ts`)**:
+  - Full RBAC route guard validation for `ADMIN`, `CAREGIVER`, `NURSE`, and supervisory staff.
+  - Verification of director-exclusive capabilities and eMAR medication administration permissions.
+  - Resident lifecycle route permissions (`canManageLifecycle`).
+  - Validation of all 15 human actor roles with Vietnamese human-readable labels.
+  - Caregiver assigned resident scope filtering.
+  - UTF-8 BOM (`﻿`) byte prefixing and character integrity for Vietnamese strings.
+  - Recognition of all 4 HACCP diet preparation textures.
+- **Backend API (`api/test/smoke.test.mts`)**:
+  - HTTP security response headers (`x-content-type-options`, `x-frame-options`, `referrer-policy`, `permissions-policy`).
+  - Automatic `x-request-id` tracking across requests.
+  - HACCP 24-hour food retention expiration calculations.
+  - Storage zone temperature compliance thresholds (`FREEZER`, `CHILLER`, `DRY_ROOM`).
+  - A4 medical admission 3-party required signatures validation.
+  - Binary PDF document generation using `pdf-lib`.
 
 ---
 
-## 📚 TÀI LIỆU HƯỚNG DẪN LIÊN QUAN
-- 📄 [Hướng dẫn Triển khai Debian & Docker](docs/DEPLOYMENT_DEBIAN_DOCKER.md)
-- 📄 [Hướng dẫn Dành cho Tester & QA](TESTERS_GUIDE.md)
-- 📄 [Tài liệu Thiết kế Design Spec](DESIGN.md)
+## 🚢 Production Deployment
+
+For enterprise production deployments on Debian Linux:
+
+1. Refer to the comprehensive [Debian & Docker Deployment Guide](docs/DEPLOYMENT_DEBIAN_DOCKER.md).
+2. Configure production secrets under `deploy/production/secrets/`.
+3. Launch with production compose:
+   ```bash
+   docker compose -f deploy/production/docker-compose.production.yml --env-file deploy/production/.env up -d --build
+   ```
+
+---
+
+## 📖 Clinical & Technical Documentation
+
+- **Domain Specifications**: [docs/domain/](docs/domain/)
+  - [Clinical Standards & Health Trends](docs/domain/taman-care-clinical-standards.md)
+  - [Roles & RBAC Access Matrix](docs/domain/taman-care-roles-rbac.md)
+  - [Facility Management & Operations](docs/domain/taman-care-facility.md)
+  - [Medication Inventory & eMAR Workflows](docs/domain/taman-care-medication-inventory.md)
+  - [Billing & Financial Invoicing](docs/domain/taman-care-billing.md)
+  - [Family Portal Specifications](docs/domain/taman-care-family-portal.md)
+- **Deployment Guide**: [docs/DEPLOYMENT_DEBIAN_DOCKER.md](docs/DEPLOYMENT_DEBIAN_DOCKER.md)
+- **Testing Guide**: [TESTERS_GUIDE.md](TESTERS_GUIDE.md)
+- **Design Specifications**: [DESIGN.md](DESIGN.md)
+
+---
+
+## 📄 License
+
+Proprietary — All rights reserved © 2026 Viện Dưỡng Lão Tâm An Care.
