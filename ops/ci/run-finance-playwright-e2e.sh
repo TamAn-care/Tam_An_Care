@@ -80,6 +80,11 @@ for attempt in $(seq 1 60); do
     echo 'FINANCE_PLAYWRIGHT_APP_START=FAIL'
     if ! kill -0 "$api_pid" 2>/dev/null; then
       echo 'FINANCE_PLAYWRIGHT_API_PROCESS=EXITED'
+      set +e
+      wait "$api_pid"
+      api_exit=$?
+      set -e
+      echo "FINANCE_PLAYWRIGHT_API_EXIT_CODE=$api_exit"
       grep -Eo 'FINANCE_PLAYWRIGHT_API_START_FAILED=[^[:cntrl:]]{1,300}' "$api_log" || true
       if [[ -s "$api_log" ]]; then
         sed -E \
