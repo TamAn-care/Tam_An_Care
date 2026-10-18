@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const { DatabaseService } = require('../../api/dist/database/database.service.js');
+const sensitiveValues = [];
 
 async function main() {
   const secretFile = path.join(
@@ -45,6 +46,7 @@ async function main() {
       ':5432/',
       encodeURIComponent(database),
     ].join('');
+    sensitiveValues.push(databaseUrl, password);
     fs.writeFileSync(secretFile, databaseUrl, { mode: 0o600 });
     process.env.NODE_ENV = 'production';
     process.env.DATABASE_URL_FILE = secretFile;
@@ -133,6 +135,12 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`DB_SECRET_TEST_FAILED=${error.name || 'Error'}`);
+  let message = String(error?.message || 'Unknown failure');
+  for (const value of sensitiveValues) {
+    if (value) message = message.split(value).join('[REDACTED]');
+  }
+  message = message.replace(/postgres(?:ql)?:\/\/[^\s'"<>]+/gi, '[REDACTED_DATABASE_URL]');
+  const code = /^[A-Z0-9_]+$/.test(String(error?.code || '')) ? error.code : 'NONE';
+  console.error(`DB_SECRET_TEST_FAILED=${error.name || 'Error'} CODE=${code} MESSAGE=${message}`);
   process.exitCode = 1;
 });
