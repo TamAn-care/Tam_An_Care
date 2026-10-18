@@ -138,6 +138,7 @@ jobs:
           node ops/ci/finance-monthly-result-arithmetic-failclosed-gate.cjs
           node ops/ci/finance-monthly-operating-result-test.cjs
           node ops/ci/finance-monthly-pnl-rbac-test.cjs
+          node ops/ci/finance-v2974-isolated-test.cjs
           node ops/ci/finance-monthly-operating-result-service-test.cjs
           node ops/ci/finance-legacy-billing-mock-safety-test.cjs
           node ops/ci/finance-v3818-43-entry-types-test.cjs

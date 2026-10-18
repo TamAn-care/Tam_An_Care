@@ -10,7 +10,7 @@
     "ops/ci/finance-billing-schema-migration-test.sh": "3369025fb0901afd667687bcaf8e0411973f760c747be964dc712bc1d22da98c",
     "ops/ci/finance-v1-source-manifest-check.cjs": "df096038167a56133895d4788a2482eeab20579e54d5967f3d4ce318c4ef5087",
     "docs/finance-rules-v1.0-readiness-20261018.md": "3850eea3a5e1f1096ac69306889e88560735a7c4a6e838b247fc5ee3e6f931de",
-    ".github/workflows/finance-github-first-qualification.yml": "0447529917239cf58b7a56fb0afe491ec3b8fb6ac7d8e5e3e5ffab6844b48907",
+    ".github/workflows/finance-github-first-qualification.yml": "bd480a159e81d7bfa16912db42b2705e1081005e7b093c56b5e96c5aa02aa8df",
     "api/src/app.module.ts": "08fa9f356a4ec3b14d2f1420be16faf5169c42b98add5ce674e43983293ad1f0",
     "api/src/finance-billing/service-pricing.controller.ts": "df39c66f64962566501fbcd374c1f808bedf54c2d2e725850bb4456b4a66e805",
     "frontend/src/features/billing/BillingPage.tsx": "3782c339c88ab235e27bac1365617198032e7f54db0ca7f1d1cf9cb14d971b69",
@@ -29,7 +29,8 @@
     "frontend/src/api/finance-read-client.ts": "9bc6d3184ac9dc025f1c30ff178c80fd8a2bbc1e7b319d0055135d4eeac406cf",
     "frontend/src/features/finance/FinanceReadPage.tsx": "5f031297fac71e3dd5a99ec9a4f8f7d62ef5c3c10d48465eeeb0ddc378ff29ef",
     "ops/finance/v32/010_immutable_invoice_snapshot.sql": "5baf5bf500e3a2b8a039ea8dd9d340af79eccc9068392da306e187874e221a3c",
-    "ops/finance/v32/010_immutable_invoice_snapshot.md": "0223bddabecd23f6cb6ff4b0fc5c76a1bcf66af28ac0bb76f50528f2e6ca89a6"
+    "ops/finance/v32/010_immutable_invoice_snapshot.md": "0223bddabecd23f6cb6ff4b0fc5c76a1bcf66af28ac0bb76f50528f2e6ca89a6",
+    "ops/ci/finance-v2974-isolated-test.cjs": "17534d689554a0f7943c256e7a8e733c9241b6997297f15373958599556aa34e"
   },
   "production_database_connection": false,
   "production_migration": false,

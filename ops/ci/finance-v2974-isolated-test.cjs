@@ -47,7 +47,7 @@ try {
 } finally {
   Module._load=load;
 }
-const { publishVerifiedFinanceIdentity }=require(identityPath);
+const { publishVerifiedFinanceIdentity, readVerifiedFinanceIdentity }=require(identityPath);
 
 const roles=['ADMIN','SUPERVISOR','ACCOUNTANT'];
 process.env.TAMANCARE_FINANCE_READ_ROLES=roles.join(',');
@@ -61,7 +61,10 @@ const db={
     assert.match(normalized,/^SELECT\b/i,'Finance Read must perform only SELECT');
     queries.push({sql:normalized,values});
     if (normalized.includes('FROM auth_sessions')) {
-      return {rows:[{actor_id:identity.actorId,actor_role:identity.actorRole}]};
+      return {rows:[{actor_id:values[1],actor_role:values[2]}]};
+    }
+    if (normalized.includes('FROM information_schema.columns')) {
+      return {rows:[{available:true}]};
     }
     if (normalized.includes('FROM public.finance_source_links')) {
       return {rows:[{source_domain:'BILLING',source_type:'INVOICE',source_id:'ci-invoice',posting_kind:'REVENUE',finance_entry_id:'ci-entry',entry_exists:true}]};
@@ -76,6 +79,9 @@ const db={
       return {rows:[{invoice_id:'ci-invoice', invoice_code:'CI',
         resident_id:'ci-resident',contract_id:'ci-contract',
         billing_month:'2026-10-01',status:'ISSUED',
+        source_snapshot:{schemaVersion:'FINANCE_INVOICE_SNAPSHOT_V1',lines:[]},
+        source_snapshot_sha256:'a'.repeat(64),issued_at:'2026-10-05T12:00:00.000Z',
+        snapshot_integrity:'VERIFIED',
         total_amount_vnd:'100',allocated_amount_vnd:'0',
         balance_vnd:'100'}]};
     }
@@ -91,7 +97,7 @@ const monthly={
   }
 };
 const app=new FinanceReadController(db,monthly);
-const req=()=>{const request={};publishVerifiedFinanceIdentity(request,identity);return request;};
+const req=(actorRole=identity.actorRole)=>{const request={};publishVerifiedFinanceIdentity(request,{...identity,actorRole});return request;};
 const methods=[
   ['getInvoiceBalance','invoices/:invoiceId/balance'],
   ['getMonthlyOperatingResult','operating-result/month/:month'],
@@ -121,11 +127,15 @@ async function main(){
     db.query=old;
   }
   await app.getInvoiceBalance(req(),'ci-invoice');
-  const monthlyOut=await app.getMonthlyOperatingResult(req(),'2026-10');
+  const adminRequest=req('ADMIN');
+  assert.equal(readVerifiedFinanceIdentity(adminRequest).actorRole,'ADMIN');
+  const monthlyOut=await app.getMonthlyOperatingResult(adminRequest,'2026-10');
   assert.equal(monthlyOut.state,'CHUA_DU_DU_LIEU');
   assert.equal(monthlyOut.profitVnd,null);
+  await assert.rejects(app.getMonthlyOperatingResult(req('ACCOUNTANT'),'2026-10'),e=>e.getStatus?.()===403);
   await app.listInvoicesByMonth(req(),'2026-10');
-  await app.getInvoiceWithItems(req(),'ci-invoice');
+  const invoiceDetail=await app.getInvoiceWithItems(req(),'ci-invoice');
+  assert.equal(invoiceDetail.invoice.snapshot_integrity,'VERIFIED');
   await app.listLatestReceipts(req());
   await app.listReceiptsForInvoice(req(),'ci-invoice');
   const linked=await app.getInvoiceLedgerLinks(req(),'ci-invoice');
@@ -138,23 +148,23 @@ async function main(){
     async()=>{const r=req(); const old=db.query;db.query=async()=>({rows:[]});try{return await app.listLatestReceipts(r)}finally{db.query=old}}
   ];
   for(const attempt of denied) {
-    await assert.rejects(attempt(),e=>e.status===403);
+    await assert.rejects(attempt(),e=>e.getStatus?.()===403);
   }
-  await assert.rejects(app.listInvoicesByMonth(req(),'2026-13'),e=>e.status===400);
+  await assert.rejects(app.listInvoicesByMonth(req(),'2026-13'),e=>e.getStatus?.()===400);
   {
     const unauthorized={};
     publishVerifiedFinanceIdentity(unauthorized,{...identity,actorRole:'CAREGIVER'});
-    await assert.rejects(app.getMonthlyOperatingResult(unauthorized,'2026-10'),e=>e.status===403);
+    await assert.rejects(app.getMonthlyOperatingResult(unauthorized,'2026-10'),e=>e.getStatus?.()===403);
   }
   {
-    const revoked=req();
+    const revoked=req('ADMIN');
     const previous=db.query;
     db.query=async()=>({rows:[]});
-    try {await assert.rejects(app.getMonthlyOperatingResult(revoked,'2026-10'),e=>e.status===403);}
+    try {await assert.rejects(app.getMonthlyOperatingResult(revoked,'2026-10'),e=>e.getStatus?.()===403);}
     finally {db.query=previous;}
   }
-  await assert.rejects(app.getMonthlyOperatingResult(req(),'2026-13'),e=>e.status===400);
-  await assert.rejects(app.getInvoiceBalance(req(),'bad/id'),e=>e.status===400);
+  await assert.rejects(app.getMonthlyOperatingResult(req('ADMIN'),'2026-13'),e=>e.getStatus?.()===400);
+  await assert.rejects(app.getInvoiceBalance(req(),'bad/id'),e=>e.getStatus?.()===400);
   assert.ok(queries.length>=8);
   console.log('FINANCE_V2974_ISOLATED_CONTROLLER_TEST_PASS');
   console.log('ROUTES_GET=7 AUTH_ALLOWED=3 AUTH_DENIED=6 INPUT_REJECTED=3');
