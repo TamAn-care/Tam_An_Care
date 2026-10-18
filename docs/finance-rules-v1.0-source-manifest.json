@@ -24,7 +24,7 @@
     "frontend/package.json": "01a069244b1f5fbabde7fe8a763938c3d3a63beb65f648922f274a96cd35e782",
     "frontend/package-lock.json": "aacab038499e19614ad05bba212d3bb60fa129ca701571cf64e783a9f1b33672",
     "frontend/playwright.finance.config.ts": "6ddfa71a47830c4e35025cab90ab130a0771c26bd3348bd09b2ea7ca62d5ba24",
-    "frontend/e2e/finance-pricing.spec.ts": "b87067ccdc5430db5e29d13c09c55258422dd538fb163462903d4dc69a3b0676",
+    "frontend/e2e/finance-pricing.spec.ts": "df1223623ba368c6c5e2f3b876f4ed6630caeca369478c21473ef6088b4dea44",
     "api/src/finance-billing/finance-read.controller.ts": "eed841b69123f585757f8b5f79692fdc54a7127d909a048c1d4689862f403e9a",
     "frontend/src/api/finance-read-client.ts": "9bc6d3184ac9dc025f1c30ff178c80fd8a2bbc1e7b319d0055135d4eeac406cf",
     "frontend/src/features/finance/FinanceReadPage.tsx": "f54ebbcb72c72f7d1590f23aac30b60de19c729a117bbf1e6e5c5c9281e7d092",

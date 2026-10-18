@@ -73,23 +73,25 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
     await pricing.getByLabel('Mã dịch vụ').fill(serviceCode);
     await pricing.getByLabel('Tên dịch vụ').fill('Synthetic service test');
     await pricing.getByLabel('Đơn giá VND').fill('123456');
+    const catalogRefresh = page.waitForResponse(response =>
+      new URL(response.url()).pathname === '/api/finance/service-prices' &&
+      response.request().method() === 'GET' && response.ok(),
+    );
     await pricing.getByRole('button', { name: 'Tạo bản nháp' }).click();
     await expect(page.getByText('Đã lưu bản nháp trên máy chủ.')).toBeVisible();
+    const catalogResponse = await catalogRefresh;
+    const catalog = await catalogResponse.json() as Array<{ priceListId: string; version: number; code: string }>;
+    const created = catalog.find(item => item.code === code);
+    expect(created).toBeTruthy();
+    priceListId = created!.priceListId;
+    version = created!.version;
     const row = pricing.getByRole('row').filter({ hasText: code });
     await expect(row).toContainText('Bản nháp');
     await row.getByRole('button', { name: 'Sửa nháp' }).click();
     await pricing.getByRole('heading', { name: /Chỉnh sửa bản nháp/ }).locator('..').getByLabel('Đơn giá VND').fill('123457');
     await pricing.getByRole('button', { name: 'Lưu nháp' }).click();
     await expect(page.getByText('Đã cập nhật bản nháp.')).toBeVisible();
-    const catalog = await page.evaluate(async () => {
-      const response = await fetch('/api/finance/service-prices');
-      if (!response.ok) throw new Error(`catalog read ${response.status}`);
-      return response.json();
-    }) as Array<{ priceListId: string; version: number; code: string }>;
-    const created = catalog.find(item => item.code === code);
-    expect(created).toBeTruthy();
-    priceListId = created!.priceListId;
-    version = created!.version;
+    await expect(row).toContainText('123.457');
   });
 
   await withActorPage(browser, submitterUser, async page => {
@@ -116,8 +118,10 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
     await expect(row).toContainText('Đã phê duyệt');
     await expect(row.getByRole('button', { name: /Phê duyệt|Từ chối|Sao chép thành bản mới/ })).toHaveCount(0);
     const deniedStatus = await page.evaluate(async ({ priceListId, version }) => {
+      const token = localStorage.getItem('taman-care-production-access-token');
+      if (!token) throw new Error('Synthetic test session token missing');
       const response = await fetch(`/api/finance/service-prices/${priceListId}/versions/${version}/approve`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ reason: 'Synthetic forbidden approval attempt' }),
       });
       return response.status;
