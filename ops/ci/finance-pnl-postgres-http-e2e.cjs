@@ -32,8 +32,12 @@ const controllerFile=find('finance-read.controller.js');
 const serviceFile=find('monthly-operating-result.service.js');
 const middlewareFile=find('production-auth.middleware.js');
 class DatabaseServiceMarker{}
+class ResidentAccessScopeServiceMarker{}
 const originalLoad=Native._load;
 Native._load=function(request,parent,isMain){
+  if(request==='../resident-access-scope/resident-access-scope.service' &&
+    parent?.filename===controllerFile)
+    return {ResidentAccessScopeService:ResidentAccessScopeServiceMarker};
   if(request==='../database/database.service' &&
     [controllerFile,serviceFile,middlewareFile].includes(parent?.filename))
     return {DatabaseService:DatabaseServiceMarker};
