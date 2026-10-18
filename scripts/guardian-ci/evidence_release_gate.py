@@ -6,8 +6,9 @@ This gate PASSES only when:
   1. docs/guardian-auth/staff-guardian-regression-matrix.md contains all 22 cases.
   2. api/test-results/guardian-isolated-results.json exists and was written by
      the current GitHub Actions run (head_sha == GITHUB_SHA).
-  3. All 22 required cases (STAFF01-STAFF10, GUARD01-GUARD12) are present with
-     status == "passed".
+  3. The evidence explicitly identifies a disposable PostgreSQL 16 HTTP run.
+  4. All 22 required cases (STAFF01-STAFF10, GUARD01-GUARD12) are present with
+     status == "passed" and the same DB-backed HTTP environment.
 
 Build success, matching names, or static assertions DO NOT substitute for this.
 """
@@ -92,6 +93,20 @@ else:
     print("EVIDENCE_SHA_CHECK=MATCHED")
 
 # ---------------------------------------------------------------------------
+# Gate 5: Real integration provenance — an in-memory harness is useful for
+# unit tests but cannot attest to HTTP/JWT/session/database authorization.
+# ---------------------------------------------------------------------------
+required_environment = "isolated-postgresql-16-http"
+if data.get("environment") != required_environment:
+    actual_environment = data.get("environment", "MISSING")
+    print(f"TEST_ENVIRONMENT={actual_environment}")
+    print("REQUIRED_TEST_ENVIRONMENT=isolated-postgresql-16-http")
+    print("TEST_EVIDENCE=NOT_DATABASE_BACKED_HTTP")
+    print("RELEASE_DECISION=NO_GO")
+    print("CI_BLOCKER=GUARDIAN_HTTP_POSTGRES16_E2E_REQUIRED")
+    sys.exit(1)
+
+# ---------------------------------------------------------------------------
 # Gate 5: All 22 required cases must be present and passed
 # ---------------------------------------------------------------------------
 passed_map = {}
@@ -110,6 +125,16 @@ if missing:
     print("TEST_EVIDENCE=INCOMPLETE")
     print("RELEASE_DECISION=NO_GO")
     print("CI_BLOCKER=NOT_ALL_22_CASES_PASSED")
+    sys.exit(1)
+
+wrong_environment = [
+    c for c, item in passed_map.items()
+    if item.get("environment") != required_environment
+]
+if wrong_environment:
+    print(f"NON_HTTP_CASES={','.join(wrong_environment)}")
+    print("RELEASE_DECISION=NO_GO")
+    print("CI_BLOCKER=GUARDIAN_CASES_NOT_RUN_OVER_POSTGRES16_HTTP")
     sys.exit(1)
 
 # ---------------------------------------------------------------------------
