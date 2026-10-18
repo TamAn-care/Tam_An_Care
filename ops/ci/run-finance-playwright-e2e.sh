@@ -47,6 +47,13 @@ psql --set=ON_ERROR_STOP=1 --file=ops/finance/v32/009_service_price_catalog.sql
 
 npm --prefix api ci --ignore-scripts --no-audit --no-fund
 npm --prefix api run build
+# The Nest incremental build can omit a required module from a clean dist tree.
+# Compile the complete configured TypeScript project before starting the actual
+# AuthModule, then assert its runtime dependency is present.
+node api/node_modules/typescript/bin/tsc -p api/tsconfig.json --incremental false
+test -s api/dist/auth/auth.module.js
+test -s api/dist/database/database.module.js
+echo 'FINANCE_API_CLEAN_DIST_REQUIRED_MODULES=PASS'
 npm --prefix frontend ci --ignore-scripts --no-audit --no-fund
 frontend/node_modules/.bin/playwright install --with-deps chromium
 
