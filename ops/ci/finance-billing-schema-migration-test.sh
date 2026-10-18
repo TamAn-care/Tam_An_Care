@@ -293,7 +293,14 @@ BEGIN
      + (SELECT count(*) FROM public.finance_operation_audit)
      + (SELECT count(*) FROM public.service_contract_versions)
      + (SELECT count(*) FROM public.service_contract_signing_evidence)
-     + (SELECT count(*) FROM public.service_contract_approval_decisions) <> 0 THEN
+     + (SELECT count(*) FROM public.service_contract_approval_decisions) <> 0
+     OR (SELECT count(*) FROM public.finance_entries) <> 1
+     OR NOT EXISTS (
+       SELECT 1 FROM public.finance_entries
+        WHERE finance_entry_id='ci_legacy_amount'
+          AND amount_vnd=123.45
+          AND source_mode='MANUAL'
+     ) THEN
     RAISE EXCEPTION 'MIGRATION_CREATED_BUSINESS_ROWS';
   END IF;
 
