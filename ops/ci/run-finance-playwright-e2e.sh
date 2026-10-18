@@ -4,7 +4,13 @@ set -euo pipefail
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 run_id="${GITHUB_RUN_ID:-local-${RANDOM}}-${GITHUB_RUN_ATTEMPT:-1}"
 database="finance_e2e_${run_id//[^a-zA-Z0-9_]/_}"
+restore_database="${database}_restore"
+[[ "$database" =~ ^finance_e2e_[A-Za-z0-9_]+$ && "$restore_database" == "${database}_restore" ]] || {
+  echo 'FINANCE_E2E_OWNED_DATABASE_NAME_INVALID' >&2
+  exit 1
+}
 secret_file="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/finance-e2e-database-url-${run_id}"
+restore_archive="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/finance-e2e-restore-${run_id}.dump"
 api_pid=''
 vite_pid=''
 api_log="${RUNNER_TEMP:-/tmp}/finance-playwright-api.log"
@@ -16,17 +22,20 @@ cleanup() {
   [[ -n "$api_pid" ]] && kill "$api_pid" 2>/dev/null || true
   if command -v dropdb >/dev/null 2>&1; then
     dropdb --if-exists --maintenance-db=postgres --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" \
+      --username="$PGUSER" "$restore_database" >/dev/null 2>&1 || status=1
+    dropdb --if-exists --maintenance-db=postgres --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" \
       --username="$PGUSER" "$database" >/dev/null 2>&1 || status=1
   else
     psql --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" --username="$PGUSER" \
       --dbname=postgres --set=ON_ERROR_STOP=1 -c \
-      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='${database}' AND pid<>pg_backend_pid(); DROP DATABASE IF EXISTS \"${database}\";" \
+      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname IN ('${database}','${restore_database}') AND pid<>pg_backend_pid(); DROP DATABASE IF EXISTS \"${restore_database}\"; DROP DATABASE IF EXISTS \"${database}\";" \
       >/dev/null 2>&1 || status=1
   fi
   rm -f "$secret_file"
+  rm -f "$restore_archive"
   if psql --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" --username="$PGUSER" \
       --dbname=postgres --tuples-only --no-align --command \
-      "SELECT count(*) FROM pg_database WHERE datname='${database}'" 2>/dev/null | grep -qx '0'; then
+      "SELECT count(*) FROM pg_database WHERE datname IN ('${database}','${restore_database}')" 2>/dev/null | grep -qx '0'; then
     echo 'FINANCE_E2E_DISPOSABLE_DATABASE_CLEANUP=PASS'
   else
     echo 'FINANCE_E2E_DISPOSABLE_DATABASE_CLEANUP=FAIL'
@@ -140,3 +149,23 @@ export FINANCE_E2E_APPROVER_PASSWORD="$FINANCE_E2E_PASSWORD"
 export FINANCE_E2E_ACCOUNTANT_PASSWORD="$FINANCE_E2E_PASSWORD"
 export FINANCE_E2E_ENVIRONMENT='synthetic-disposable-postgresql-16'
 npm --prefix frontend run test:e2e:finance
+
+# Exercise a real PostgreSQL 16 backup and restore using only this run's
+# synthetic database. The archive stays outside the checkout and is removed
+# by cleanup, including when a later assertion fails.
+umask 077
+pg_dump --format=custom --file="$restore_archive" --dbname="$database"
+test -s "$restore_archive"
+createdb --host="$PGHOST" --port="$PGPORT" --username="$PGUSER" "$restore_database"
+pg_restore --exit-on-error --no-owner --no-privileges --dbname="$restore_database" "$restore_archive"
+restored_actor_count="$(psql --no-psqlrc --tuples-only --no-align --set=ON_ERROR_STOP=1 \
+  --dbname="$restore_database" --command='SELECT count(*) FROM public.staff_actors')"
+restored_table_count="$(psql --no-psqlrc --tuples-only --no-align --set=ON_ERROR_STOP=1 \
+  --dbname="$restore_database" --command="SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_type='BASE TABLE'")"
+test "$restored_actor_count" = 4
+test "$restored_table_count" -gt 0
+dropdb --if-exists --maintenance-db=postgres --host="$PGHOST" --port="$PGPORT" \
+  --username="$PGUSER" "$restore_database"
+rm -f "$restore_archive"
+test ! -e "$restore_archive"
+echo "FINANCE_E2E_SYNTHETIC_RESTORE=PASS actors=$restored_actor_count tables=$restored_table_count"
