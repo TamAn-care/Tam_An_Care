@@ -32,7 +32,7 @@ async function login(page: Page, user: Account) {
   await expect(page.getByText('Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền')).toHaveCount(0);
   await page.goto('/billing-invoicing');
   await page.getByRole('button', { name: /Bảng Giá Dịch Vụ/ }).click();
-  await expect(page.getByRole('heading', { name: 'Bảng giá dịch vụ chính thức' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Bảng giá dịch vụ chính thức' })).toBeVisible();
 }
 
 async function closeSession(page: Page) {
@@ -66,19 +66,20 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
   let version = 1;
 
   await withActorPage(browser, makerUser, async page => {
-    await page.getByLabel('Mã bảng giá').fill(code);
-    await page.getByLabel('Tên phiên bản').fill(`Synthetic E2E ${stamp}`);
-    await page.getByLabel('Hiệu lực từ').fill(effectiveFrom);
-    await page.getByLabel('Mã dịch vụ').fill(serviceCode);
-    await page.getByLabel('Tên dịch vụ').fill('Synthetic service test');
-    await page.getByLabel('Đơn giá VND').fill('123456');
-    await page.getByRole('button', { name: 'Tạo bản nháp' }).click();
+    const pricing = page.getByRole('region', { name: 'Bảng giá dịch vụ chính thức' });
+    await pricing.getByLabel('Mã bảng giá').fill(code);
+    await pricing.getByLabel('Tên phiên bản').fill(`Synthetic E2E ${stamp}`);
+    await pricing.getByLabel('Hiệu lực từ').fill(effectiveFrom);
+    await pricing.getByLabel('Mã dịch vụ').fill(serviceCode);
+    await pricing.getByLabel('Tên dịch vụ').fill('Synthetic service test');
+    await pricing.getByLabel('Đơn giá VND').fill('123456');
+    await pricing.getByRole('button', { name: 'Tạo bản nháp' }).click();
     await expect(page.getByRole('status')).toContainText('Đã lưu bản nháp trên máy chủ');
-    const row = page.getByRole('row').filter({ hasText: code });
+    const row = pricing.getByRole('row').filter({ hasText: code });
     await expect(row).toContainText('Bản nháp');
     await row.getByRole('button', { name: 'Sửa nháp' }).click();
-    await page.getByRole('heading', { name: /Chỉnh sửa bản nháp/ }).locator('..').getByLabel('Đơn giá VND').fill('123457');
-    await page.getByRole('button', { name: 'Lưu nháp' }).click();
+    await pricing.getByRole('heading', { name: /Chỉnh sửa bản nháp/ }).locator('..').getByLabel('Đơn giá VND').fill('123457');
+    await pricing.getByRole('button', { name: 'Lưu nháp' }).click();
     await expect(page.getByRole('status')).toContainText('Đã cập nhật bản nháp');
     const catalog = await page.evaluate(async () => {
       const response = await fetch('/api/finance/service-prices');
@@ -92,23 +93,26 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
   });
 
   await withActorPage(browser, submitterUser, async page => {
-    const row = page.getByRole('row').filter({ hasText: code });
+    const pricing = page.getByRole('region', { name: 'Bảng giá dịch vụ chính thức' });
+    const row = pricing.getByRole('row').filter({ hasText: code });
     await expect(row).toContainText('Bản nháp');
     await row.getByRole('button', { name: 'Trình duyệt' }).click();
     await expect(page.getByRole('status')).toContainText('Thao tác đã được máy chủ xác nhận');
-    await expect(page.getByRole('row').filter({ hasText: code })).toContainText('Chờ phê duyệt');
+    await expect(pricing.getByRole('row').filter({ hasText: code })).toContainText('Chờ phê duyệt');
   });
 
   await withActorPage(browser, approverUser, async page => {
-    const row = page.getByRole('row').filter({ hasText: code });
-    await page.getByLabel('Lý do phê duyệt/từ chối').fill('Approved synthetic Finance E2E evidence');
+    const pricing = page.getByRole('region', { name: 'Bảng giá dịch vụ chính thức' });
+    const row = pricing.getByRole('row').filter({ hasText: code });
+    await pricing.getByLabel('Lý do phê duyệt/từ chối').fill('Approved synthetic Finance E2E evidence');
     await row.getByRole('button', { name: 'Phê duyệt' }).click();
     await expect(page.getByRole('status')).toContainText('Thao tác đã được máy chủ xác nhận');
-    await expect(page.getByRole('row').filter({ hasText: code })).toContainText('Đã phê duyệt');
+    await expect(pricing.getByRole('row').filter({ hasText: code })).toContainText('Đã phê duyệt');
   });
 
   await withActorPage(browser, accountantUser, async page => {
-    const row = page.getByRole('row').filter({ hasText: code });
+    const pricing = page.getByRole('region', { name: 'Bảng giá dịch vụ chính thức' });
+    const row = pricing.getByRole('row').filter({ hasText: code });
     await expect(row).toContainText('Đã phê duyệt');
     await expect(row.getByRole('button', { name: /Phê duyệt|Từ chối|Sao chép thành bản mới/ })).toHaveCount(0);
     const deniedStatus = await page.evaluate(async ({ priceListId, version }) => {
@@ -125,7 +129,7 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
   const mobile = await mobileContext.newPage();
   try {
     await login(mobile, accountantUser);
-    const table = mobile.getByRole('table');
+    const table = mobile.getByRole('region', { name: 'Bảng giá dịch vụ chính thức' }).getByRole('table');
     await expect(table).toBeVisible();
     const horizontalOverflow = await table.evaluate(node => node.parentElement!.scrollWidth > node.parentElement!.clientWidth);
     expect(horizontalOverflow).toBe(true);
