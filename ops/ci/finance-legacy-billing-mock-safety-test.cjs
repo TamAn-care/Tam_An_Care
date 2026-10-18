@@ -1,10 +1,13 @@
 'use strict';
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const path = require('node:path');
 
-const billing = fs.readFileSync('frontend/src/api/billing.ts', 'utf8');
-const billingPage = fs.readFileSync('frontend/src/features/billing/BillingPage.tsx', 'utf8');
-const familyPage = fs.readFileSync('frontend/src/features/family-portal/FamilyPortalPage.tsx', 'utf8');
+const root = path.resolve(__dirname, '../..');
+const read = file => fs.readFileSync(path.join(root, file), 'utf8');
+const billing = read('frontend/src/api/billing.ts');
+const billingPage = read('frontend/src/features/billing/BillingPage.tsx');
+const familyPage = read('frontend/src/features/family-portal/FamilyPortalPage.tsx');
 
 for (const marker of ['mockInvoices', 'mockReceipts', 'mockDetailedFeeNotices', 'res-demo-', 'INV-202609-']) {
   assert.ok(!billing.includes(marker), `legacy mock data remains: ${marker}`);
