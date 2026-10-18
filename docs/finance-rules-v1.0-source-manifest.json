@@ -14,7 +14,7 @@
     "api/src/app.module.ts": "d681a9da6f57b9693de8349afdbce9f2327eb4c1ef9b4eafef0a7441e1928a01",
     "api/src/finance-billing/service-pricing.controller.ts": "df39c66f64962566501fbcd374c1f808bedf54c2d2e725850bb4456b4a66e805",
     "frontend/src/features/billing/BillingPage.tsx": "8e3a496357da95db8a0aeb0a7a28fb3e28cf7049ef75a98f3f5b90360494af50",
-    "frontend/src/features/billing/ServicePriceCatalogPanel.tsx": "9debc4eaf19115931d0211894d7bf492b17c69aedecd863d8187e34dc4a1ed9b",
+    "frontend/src/features/billing/ServicePriceCatalogPanel.tsx": "4139012bd40d0f35411a5296652ea246e1a8f85cb8af3bb66b10bebdf79911e3",
     "ops/finance/v32/009_service_price_catalog.sql": "93eac8e4dc6e2f2c5e69d6099220c746f6dad80c77b460e48771850b908d0a3d",
     "ops/finance/v32/009_service_price_catalog.md": "257d3bfe840c861855d486da7da234dc9d0f3be2addaba5988808facec6155da",
     "api/src/finance-billing/finance-rbac-policy.ts": "12e969d6102f323bcfa05f474f038a0b9256035de7cf040c3c9d822782f37dbf",
