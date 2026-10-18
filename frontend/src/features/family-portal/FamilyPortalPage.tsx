@@ -104,7 +104,8 @@ export default function FamilyPortalPage() {
   const [mealBookingDate, setMealBookingDate] = useState<string>('');
   const [mealBookingType, setMealBookingType] = useState<'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER'>('LUNCH');
   const [mealPortionCount, setMealPortionCount] = useState<number>(2);
-  const [mealDietNotes, setMealDietNotes] = useState<string>('');
+  const [mealIdempotencyKey, setMealIdempotencyKey] = useState('');
+  const [mealBookingSaving, setMealBookingSaving] = useState(false);
   const [mealBookingSuccessMsg, setMealBookingSuccessMsg] = useState<string>('');
 
   // Payment Verification Modal State
@@ -292,8 +293,8 @@ export default function FamilyPortalPage() {
   // Fetch Family Meal Bookings
   const familyMealsQuery = useQuery({
     queryKey: ['family-meal-bookings', activeResId],
-    queryFn: () => fetchFamilyMealBookings(activeResId),
-    enabled: Boolean(activeResId),
+    queryFn: () => fetchFamilyMealBookings(actor!, activeResId),
+    enabled: Boolean(actor) && Boolean(activeResId),
   });
 
   // Fetch Leave Requests for this Resident
@@ -1717,12 +1718,17 @@ export default function FamilyPortalPage() {
               🍽️ Đăng Ký Ăn Cơm Tại Tâm An Cho Thân Nhân
             </h3>
             <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.86rem', color: '#64748b' }}>
-              Quý người nhà có nhu cầu dùng cơm cùng Cụ tại Tâm An vui lòng đăng ký trước. Chi phí bữa ăn (50.000đ/suất) sẽ tự động tích hợp vào Thông báo thu phí hàng tháng.
+              Quý người nhà có nhu cầu dùng cơm cùng Cụ tại Tâm An vui lòng đăng ký trước. Đăng ký chỉ ghi nhận nhu cầu; phí chỉ được xác nhận khi nhân viên xác nhận suất ăn và giá dịch vụ đã được phê duyệt, còn hiệu lực. Bữa ăn của người cao tuổi đã nằm trong gói hợp đồng và không thu riêng.
             </p>
 
             {mealBookingSuccessMsg && (
               <div className="alert-card alert-success" style={{ marginBottom: '1rem' }}>
                 <span>{mealBookingSuccessMsg}</span>
+              </div>
+            )}
+            {familyMealsQuery.isError && (
+              <div className="alert-card alert-warning" role="status" style={{ marginBottom: '1rem' }}>
+                Không thể xác minh dữ liệu đăng ký từ máy chủ. Chưa ghi nhận phí; vui lòng thử tải lại.
               </div>
             )}
 
@@ -1733,23 +1739,26 @@ export default function FamilyPortalPage() {
                   alert('Vui lòng chọn ngày đăng ký ăn.');
                   return;
                 }
+                const requestKey = mealIdempotencyKey || crypto.randomUUID();
+                setMealIdempotencyKey(requestKey);
+                setMealBookingSaving(true);
                 try {
                   const res = await bookFamilyMeal(actor!, {
                     residentId: activeResId,
-                    residentName: currentResident?.resident.displayName || 'Người cao tuổi',
-                    guardianName: actor?.displayName || 'Thân nhân',
-                    bookingDate: mealBookingDate,
+                    serviceDate: mealBookingDate,
                     mealType: mealBookingType,
-                    portionCount: mealPortionCount,
-                    dietNotes: mealDietNotes,
+                    quantity: mealPortionCount,
+                    idempotencyKey: requestKey,
                   });
-                  setMealBookingSuccessMsg(`✅ Đăng ký thành công ${res.portionCount} suất cơm (${res.totalFee.toLocaleString('vi-VN')}đ) cho bữa ngày ${res.bookingDate}!`);
+                  setMealBookingSuccessMsg(`Đã ghi nhận đăng ký ${res.registeredQuantity} suất cho ngày ${res.serviceDate}. Trạng thái: ${res.status === 'REGISTERED' ? 'chờ xác nhận phục vụ và giá' : 'đã xác nhận'}. Chưa cộng phí vào thông báo thu.`);
                   setMealBookingDate('');
-                  setMealDietNotes('');
+                  setMealIdempotencyKey('');
                   queryClient.invalidateQueries({ queryKey: ['family-meal-bookings'] });
                   queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
                 } catch (err: any) {
                   alert(err.message || 'Lỗi khi đăng ký suất ăn');
+                } finally {
+                  setMealBookingSaving(false);
                 }
               }}
             >
@@ -1760,7 +1769,7 @@ export default function FamilyPortalPage() {
                     type="date"
                     className="text-input"
                     value={mealBookingDate}
-                    onChange={(e) => setMealBookingDate(e.target.value)}
+                    onChange={(e) => { setMealBookingDate(e.target.value); setMealIdempotencyKey(''); }}
                     required
                   />
                 </label>
@@ -1770,7 +1779,7 @@ export default function FamilyPortalPage() {
                   <select
                     className="text-input"
                     value={mealBookingType}
-                    onChange={(e) => setMealBookingType(e.target.value as any)}
+                    onChange={(e) => { setMealBookingType(e.target.value as any); setMealIdempotencyKey(''); }}
                   >
                     <option value="BREAKFAST">Bữa Sáng (07:00 - 08:00)</option>
                     <option value="LUNCH">Bữa Trưa (11:00 - 12:00)</option>
@@ -1780,38 +1789,22 @@ export default function FamilyPortalPage() {
                 </label>
 
                 <label className="field-group">
-                  <span className="field-label">Số lượng suất ăn (50.000đ/suất) *</span>
+                  <span className="field-label">Số lượng suất ăn *</span>
                   <input
                     type="number"
                     min="1"
-                    max="10"
+                    max="100"
                     className="text-input"
                     value={mealPortionCount}
-                    onChange={(e) => setMealPortionCount(Number(e.target.value))}
+                    onChange={(e) => { setMealPortionCount(Number(e.target.value)); setMealIdempotencyKey(''); }}
                     required
                   />
                 </label>
 
-                <div className="field-group">
-                  <span className="field-label">Thành tiền tạm tính</span>
-                  <div style={{ padding: '0.65rem', background: '#f0fdf4', borderRadius: '0.375rem', fontWeight: 800, color: '#166534', border: '1px solid #bbf7d0' }}>
-                    {(mealPortionCount * 50000).toLocaleString('vi-VN')} VNĐ
-                  </div>
-                </div>
               </div>
 
-              <label className="field-group" style={{ marginBottom: '1.25rem' }}>
-                <span className="field-label">Yêu cầu khẩu vị / Chế độ ăn (nếu có)</span>
-                <input
-                  className="text-input"
-                  value={mealDietNotes}
-                  placeholder="Ví dụ: 1 suất ăn kiêng đường, ăn cùng Cụ tại sảnh tầng 1..."
-                  onChange={(e) => setMealDietNotes(e.target.value)}
-                />
-              </label>
-
-              <button type="submit" className="btn btn-primary" style={{ padding: '0.65rem 1.5rem', fontWeight: 700 }}>
-                🍽️ Xác Nhận Đăng Ký Bữa Ăn
+              <button type="submit" className="btn btn-primary" disabled={mealBookingSaving} style={{ padding: '0.65rem 1.5rem', fontWeight: 700 }}>
+                {mealBookingSaving ? 'Đang ghi nhận…' : '🍽️ Đăng Ký Bữa Ăn'}
               </button>
             </form>
           </div>
@@ -1828,20 +1821,20 @@ export default function FamilyPortalPage() {
                     <th>Ngày dùng bữa</th>
                     <th>Bữa ăn</th>
                     <th>Số suất</th>
-                    <th>Thành tiền</th>
+                    <th>Phí</th>
                     <th>Trạng thái</th>
-                    <th>Yêu cầu khẩu vị</th>
                   </tr>
                 </thead>
                 <tbody>
+                  {familyMealsQuery.isLoading && <tr><td colSpan={5}>Đang tải đăng ký từ máy chủ…</td></tr>}
+                  {!familyMealsQuery.isLoading && !familyMealsQuery.isError && (familyMealsQuery.data || []).length === 0 && <tr><td colSpan={5}>Chưa có đăng ký suất ăn người nhà.</td></tr>}
                   {(familyMealsQuery.data || []).map((b) => (
                     <tr key={b.id}>
-                      <td><b>{b.bookingDate}</b></td>
+                      <td><b>{b.serviceDate}</b></td>
                       <td>{b.mealTypeLabel}</td>
-                      <td>{b.portionCount} suất</td>
-                      <td><b>{b.totalFee.toLocaleString('vi-VN')} đ</b></td>
-                      <td><span className="badge badge-success">{b.status === 'SERVED' ? 'Đã phục vụ' : 'Đã xác nhận'}</span></td>
-                      <td style={{ fontSize: '0.82rem', color: '#64748b' }}>{b.dietNotes || '—'}</td>
+                      <td>{b.confirmedQuantity ?? b.registeredQuantity} suất</td>
+                      <td>{b.amountVnd === null ? 'Chưa xác nhận giá' : `${BigInt(b.amountVnd).toLocaleString('vi-VN')} đ`}</td>
+                      <td><span className={`badge ${b.status === 'CONFIRMED' ? 'badge-success' : 'badge-warning'}`}>{b.status === 'CONFIRMED' ? 'Đã xác nhận' : 'Chờ xác nhận'}</span></td>
                     </tr>
                   ))}
                 </tbody>

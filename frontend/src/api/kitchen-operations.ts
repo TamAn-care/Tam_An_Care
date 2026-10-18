@@ -1,4 +1,5 @@
 import { HumanActorSession } from '../types/actor';
+import { apiRequest } from './client';
 import { recordSystemAuditLog } from './audit-log';
 import { ROLE_LABELS } from '../auth/role-policy';
 
@@ -1479,98 +1480,42 @@ export async function updateTodayMealSlot(
 // ----------------------------------------------------------------------
 export interface FamilyMealBooking {
   id: string;
+  orderId: string;
   residentId: string;
-  residentName: string;
-  guardianName: string;
-  bookingDate: string; // YYYY-MM-DD
+  contractId: string;
+  serviceDate: string; // YYYY-MM-DD
   mealType: 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER';
   mealTypeLabel: string;
-  portionCount: number;
-  pricePerPortion: number; // 50.000đ/suất
-  totalFee: number;
-  dietNotes?: string;
-  status: 'CONFIRMED' | 'SERVED' | 'CANCELLED';
-  bookedAt: string;
+  registeredQuantity: number;
+  confirmedQuantity: number | null;
+  unitPriceVnd: string | null;
+  amountVnd: string | null;
+  status: 'REGISTERED' | 'CONFIRMED';
+  registeredAt: string;
 }
 
-let mockFamilyMealBookings: FamilyMealBooking[] = [
-  {
-    id: 'FMB-20260906-01',
-    residentId: 'res-demo-001',
-    residentName: 'Nguyễn Văn An',
-    guardianName: 'Lê Gia Bảo (Con trai)',
-    bookingDate: '2026-09-06',
-    mealType: 'LUNCH',
-    mealTypeLabel: 'Bữa Trưa (11:00 - 12:00)',
-    portionCount: 3,
-    pricePerPortion: 50000,
-    totalFee: 150000,
-    dietNotes: 'Ăn cùng cụ tại Sảnh Vườn Hoa, 1 suất ăn nhạt',
-    status: 'SERVED',
-    bookedAt: '2026-09-05T10:30:00+07:00',
-  },
-];
+const familyMealLabels: Record<FamilyMealBooking['mealType'], string> = {
+  BREAKFAST: 'Bữa Sáng', LUNCH: 'Bữa Trưa', AFTERNOON_SNACK: 'Bữa Phụ', DINNER: 'Bữa Tối',
+};
 
-export async function fetchFamilyMealBookings(residentId?: string): Promise<FamilyMealBooking[]> {
-  await new Promise((r) => setTimeout(r, 100));
-  if (residentId) {
-    return mockFamilyMealBookings.filter((b) => b.residentId === residentId);
-  }
-  return [...mockFamilyMealBookings];
+export async function fetchFamilyMealBookings(actor: HumanActorSession, residentId: string): Promise<FamilyMealBooking[]> {
+  const rows = await apiRequest<Array<Omit<FamilyMealBooking, 'id' | 'mealTypeLabel'> & { orderId: string; mealType: FamilyMealBooking['mealType'] }>>(`/api/nutrition/family-meals?residentId=${encodeURIComponent(residentId)}`, { actor });
+  return rows.map((row) => ({ ...row, id: row.orderId, mealTypeLabel: familyMealLabels[row.mealType] }));
 }
 
 export async function bookFamilyMeal(
   actor: HumanActorSession,
   input: {
     residentId: string;
-    residentName: string;
-    guardianName: string;
-    bookingDate: string;
+    serviceDate: string;
     mealType: 'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER';
-    portionCount: number;
-    dietNotes?: string;
+    quantity: number;
+    idempotencyKey: string;
   }
 ): Promise<FamilyMealBooking> {
-  await new Promise((r) => setTimeout(r, 150));
-
-  const mealLabels: Record<string, string> = {
-    BREAKFAST: 'Bữa Sáng (07:00 - 08:00)',
-    LUNCH: 'Bữa Trưa (11:00 - 12:00)',
-    AFTERNOON_SNACK: 'Bữa Phụ (14:00)',
-    DINNER: 'Bữa Tối (17:00 - 18:00)',
-  };
-
-  const pricePerPortion = 50000; // 50.000 VNĐ / suất
-  const totalFee = input.portionCount * pricePerPortion;
-
-  const newBooking: FamilyMealBooking = {
-    ...input,
-    id: `FMB-${Date.now().toString().slice(-8)}`,
-    mealTypeLabel: mealLabels[input.mealType] || input.mealType,
-    pricePerPortion,
-    totalFee,
-    status: 'CONFIRMED',
-    bookedAt: new Date().toISOString(),
-  };
-
-  mockFamilyMealBookings = [newBooking, ...mockFamilyMealBookings];
-
-  // Ghi nhật ký kiểm toán hệ thống
-  await recordSystemAuditLog({
-    actorId: actor.actorId || 'STAFF-GD-001',
-    actorName: actor.displayName || input.guardianName,
-    actorRole: actor.actorRole || 'GUARDIAN',
-    actorRoleLabel: ROLE_LABELS[actor.actorRole] || actor.actorRole || 'Thân nhân',
-    actionType: 'CREATE',
-    actionLabel: 'Người nhà đăng ký ăn cơm tại Tâm An',
-    module: 'CARE_OPERATIONS',
-    moduleLabel: 'Cổng Thân Nhân - Đăng Ký Cơm',
-    targetEntityId: newBooking.id,
-    targetEntityName: `Đăng ký ${newBooking.portionCount} suất ${newBooking.mealTypeLabel} ngày ${newBooking.bookingDate}`,
-    summary: `${input.guardianName} đã đăng ký ${newBooking.portionCount} suất cơm (${totalFee.toLocaleString('vi-VN')} đ) ăn cùng cụ ${newBooking.residentName}.`,
-    details: `Tự động cộng dồn ${totalFee.toLocaleString('vi-VN')} đ vào Thông báo thu phí hàng tháng.`,
-    severity: 'NORMAL',
+  const row = await apiRequest<Omit<FamilyMealBooking, 'id' | 'mealTypeLabel'>>('/api/nutrition/family-meals', {
+    method: 'POST', actor,
+    body: JSON.stringify(input),
   });
-
-  return newBooking;
+  return { ...row, id: row.orderId, mealTypeLabel: familyMealLabels[row.mealType] };
 }

@@ -126,6 +126,48 @@ psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/008_discount_and_absence_policy.sq
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/009_service_price_catalog.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/010_immutable_invoice_snapshot.sql
 psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/011_service_code_mapping.sql
+psql -X -v ON_ERROR_STOP=1 -f ops/finance/v32/012_family_extra_meal_source.sql
+
+psql -X -v ON_ERROR_STOP=1 <<'SQL'
+INSERT INTO public.residents(resident_id) VALUES ('synthetic_family_meal_resident');
+INSERT INTO public.service_contract_records(contract_id,contract_code,resident_id,status,effective_date,payload)
+VALUES ('synthetic_family_meal_contract','synthetic_family_meal_contract','synthetic_family_meal_resident','ACTIVE',DATE '2026-01-01','{}'::jsonb);
+INSERT INTO public.service_price_lists(price_list_id,code,name,created_by)
+VALUES ('synthetic_family_meal_prices','synthetic_family_meal_prices','Synthetic family meal prices','synthetic_actor');
+INSERT INTO public.service_price_list_versions(price_list_id,version,status,effective_from,items,created_by,submitted_by,submitted_at,decided_by,decided_at,decision_reason)
+VALUES ('synthetic_family_meal_prices',1,'APPROVED',DATE '2026-01-01','[{"serviceCode":"FAMILY_EXTRA_MEAL","name":"Synthetic meal","unit":"MEAL","scope":"MEAL","amountVnd":"12345"}]'::jsonb,'synthetic_actor','synthetic_submitter',now(),'synthetic_approver',now(),'Synthetic CI approval evidence');
+INSERT INTO public.family_extra_meal_orders(order_id,resident_id,contract_id,service_date,meal_type,registered_quantity,registered_by,registered_role,idempotency_key)
+VALUES ('synthetic_fme_1','synthetic_family_meal_resident','synthetic_family_meal_contract',DATE '2026-03-02','LUNCH',2,'synthetic_guardian','GUARDIAN','synthetic_family_meal_idem_0001');
+DO $$ BEGIN
+  BEGIN
+    UPDATE public.family_extra_meal_orders SET status='CONFIRMED',confirmed_quantity=1 WHERE order_id='synthetic_fme_1';
+    RAISE EXCEPTION 'FAMILY_MEAL_INCOMPLETE_CONFIRMATION_ACCEPTED';
+  EXCEPTION WHEN check_violation THEN NULL;
+  END;
+END $$;
+UPDATE public.family_extra_meal_orders SET status='CONFIRMED',confirmed_quantity=2,confirmed_by='synthetic_nutrition',confirmed_role='NUTRITIONIST',confirmed_at=now(),price_list_id='synthetic_family_meal_prices',price_list_version=1,service_code='FAMILY_EXTRA_MEAL',unit_price_vnd=12345,amount_vnd=24690,confirmation_reason='Synthetic service confirmation'
+WHERE order_id='synthetic_fme_1';
+INSERT INTO public.family_extra_meal_audit(order_id,actor_id,actor_role,action,reason)
+VALUES ('synthetic_fme_1','synthetic_nutrition','NUTRITIONIST','CONFIRMED','Synthetic service confirmation');
+DO $$ BEGIN
+  BEGIN
+    UPDATE public.family_extra_meal_orders SET amount_vnd=1 WHERE order_id='synthetic_fme_1';
+    RAISE EXCEPTION 'FAMILY_MEAL_CONFIRMED_AMOUNT_MUTATION_ACCEPTED';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM='FAMILY_MEAL_CONFIRMED_AMOUNT_MUTATION_ACCEPTED' THEN RAISE; END IF;
+    IF SQLERRM<>'FAMILY_EXTRA_MEAL_CONFIRMATION_IMMUTABLE' THEN RAISE; END IF;
+  END;
+END $$;
+DO $$ BEGIN
+  BEGIN
+    UPDATE public.family_extra_meal_audit SET reason='tampered' WHERE order_id='synthetic_fme_1';
+    RAISE EXCEPTION 'FAMILY_MEAL_AUDIT_MUTATION_ACCEPTED';
+  EXCEPTION WHEN raise_exception THEN
+    IF SQLERRM='FAMILY_MEAL_AUDIT_MUTATION_ACCEPTED' THEN RAISE; END IF;
+    IF SQLERRM<>'FAMILY_EXTRA_MEAL_AUDIT_IMMUTABLE' THEN RAISE; END IF;
+  END;
+END $$;
+SQL
 
 psql -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $verify$
@@ -150,6 +192,8 @@ DECLARE
     ,'finance_discount_policy_audit'
     ,'finance_service_code_mappings'
     ,'finance_service_mapping_audit'
+    ,'family_extra_meal_orders'
+    ,'family_extra_meal_audit'
   ];
   expected_triggers text[] := ARRAY[
     'finance_allocation_guard',
@@ -175,6 +219,8 @@ DECLARE
     ,'finance_service_mapping_audit_on_insert'
     ,'finance_service_mapping_audit_on_state'
     ,'finance_service_mapping_audit_immutable_guard'
+    ,'family_extra_meal_order_guard'
+    ,'family_extra_meal_audit_immutable'
   ];
   name text;
 BEGIN
