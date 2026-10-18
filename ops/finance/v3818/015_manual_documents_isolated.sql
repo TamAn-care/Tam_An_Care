@@ -6,7 +6,7 @@ CREATE TABLE finance_manual_ci.documents(
  document_id text PRIMARY KEY,
  origin_key text NOT NULL UNIQUE,
  document_type text NOT NULL CHECK(document_type IN ('PAYROLL','REVENUE','DIRECT_COST','OPERATING_EXPENSE')),
- amount_vnd numeric(18,0) NOT NULL CHECK(amount_vnd>=0 AND amount_vnd<=9999999999999999),
+ amount_vnd numeric NOT NULL CHECK(amount_vnd=trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  recognition_date date NOT NULL,
  evidence_type text NOT NULL,
  description text NOT NULL CHECK(length(btrim(description))>=8),

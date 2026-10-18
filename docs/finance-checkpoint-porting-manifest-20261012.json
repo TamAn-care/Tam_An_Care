@@ -1,0 +1,74 @@
+{
+  "version": "2026-10-12-GITHUB-FIRST-FINANCE",
+  "source": "User-provided server-side execution logs, not GitHub CI assertions",
+  "sourceBranch": "feature/finance-v381861-isolated-integration",
+  "serverCandidatesTransferred": false,
+  "v169": {
+    "topic": "Real JWT middleware -> Finance controller authorization",
+    "reported": "14 isolated HTTP cases PASS",
+    "githubProof": "PENDING"
+  },
+  "v174": {
+    "topic": "Original calculateMonthlyPnl adapter; null versus zero",
+    "reported": "14 isolated tests PASS",
+    "githubProof": "PENDING"
+  },
+  "v175": {
+    "topic": "Provider registry and claimed evidence contracts",
+    "reported": "14 isolated tests PASS",
+    "githubProof": "PENDING"
+  },
+  "v176": {
+    "topic": "Source SQL and 7 ledger types",
+    "reported": "12 acceptance gates PASS",
+    "githubProof": "PARTIAL_EXISTING_CANONICAL_LEDGER"
+  },
+  "v177": {
+    "topic": "Monthly ledger reader, exact PostgreSQL numeric",
+    "reported": "15 isolated tests PASS",
+    "githubProof": "PENDING"
+  },
+  "v1782": {
+    "topic": "PostgreSQL 16 ephemeral isolation",
+    "reported": "8 actual PostgreSQL isolated SQL tests PASS",
+    "githubProof": "PENDING"
+  },
+  "v179": {
+    "topic": "7-class Ledger-to-PnL original algorithm bridge",
+    "reported": "12 isolated tests PASS",
+    "githubProof": "PENDING"
+  },
+  "v180": {
+    "topic": "Monthly profit preview HTTP with mocked identity",
+    "reported": "6 HTTP cases PASS",
+    "githubProof": "PENDING"
+  },
+  "v1811": {
+    "topic": "Real JWT session middleware with isolated session DB",
+    "reported": "9 HTTP cases PASS",
+    "githubProof": "PENDING"
+  },
+  "v182": {
+    "topic": "Document reconciliation, deposit/receivable and lock gates",
+    "reported": "16 isolated tests PASS",
+    "githubProof": "PENDING"
+  },
+  "v183": {
+    "topic": "Source-grounded detailed ledger SQL",
+    "reported": "Script supplied in conversation; no PASS output observed",
+    "githubProof": "NOT_VERIFIED"
+  },
+  "release": {
+    "required": [
+      "safe canonical source reconciliation",
+      "real earned revenue / seven types",
+      "financial precision",
+      "independent document proof",
+      "period lock",
+      "JWT/RBAC end-to-end",
+      "production source/runtime parity",
+      "isolated restore and approved deploy"
+    ],
+    "status": "NO_GO"
+  }
+}

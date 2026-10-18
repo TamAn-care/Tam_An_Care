@@ -7,6 +7,7 @@ const sql=['ops/finance/v22/001_finance_foundation.sql','ops/finance/v28/002_fin
 const app=read('api/src/app.module.ts');
 const mid=read('api/src/security/production-auth.middleware.ts');
 const svc=read('api/src/finance-billing/finance-billing.service.ts');
+const isolatedPnlHttpE2e=process.env.FINANCE_PNL_HTTP_POSTGRES_E2E==='PASS';
 const gates=[
  ['CANONICAL_SQL',sql.every(has)],
  ['READ_IDENTITY_WIRED',app.includes('FinanceReadController')&&mid.includes('publishVerifiedFinanceIdentity')],
@@ -19,6 +20,7 @@ const gates=[
  ['CONTRACT_MAPPING_APPROVED',false],
  ['RUNTIME_SCHEMA_APPROVED',false],
  ['ISOLATED_NEST_HTTP_SMOKE_SOURCE',has('ops/ci/finance-nest-http-jwt-test.cjs')],
+ ['ISOLATED_PNL_HTTP_JWT_POSTGRES_E2E',isolatedPnlHttpE2e],
  ['PRODUCTION_EQUIVALENT_HTTP_JWT_E2E',false]
 ];
 for(const [name,pass] of gates) console.log('GATE_'+name+'='+(pass?'PASS':'BLOCKED'));

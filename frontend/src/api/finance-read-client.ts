@@ -49,6 +49,14 @@ function vnd(value: unknown, field: string): string {
   return text.split('.')[0];
 }
 
+function signedVnd(value: unknown, field: string): string {
+  const text = required(value, field);
+  if (!/^-?(0|[1-9]\d*)(?:\.0{1,2})?$/.test(text)) {
+    throw new Error('FINANCE_INVALID_VND_AMOUNT:' + field);
+  }
+  return text.replace(/\.0{1,2}$/, '');
+}
+
 export interface FinanceInvoiceItem {
   itemId: string;
   invoiceId: string;
@@ -61,6 +69,12 @@ export interface FinanceInvoiceItem {
 export interface FinanceInvoiceDetail {
   invoice: FinanceInvoice;
   items: FinanceInvoiceItem[];
+  snapshot: {
+    integrity: 'VERIFIED' | 'MISSING' | 'INVALID' | 'NOT_AVAILABLE';
+    sha256: string | null;
+    issuedAt: string | null;
+    source: Record<string, unknown> | null;
+  };
 }
 
 function parseItem(value: unknown): FinanceInvoiceItem {
@@ -74,8 +88,8 @@ function parseItem(value: unknown): FinanceInvoiceItem {
     invoiceId: required(row.invoice_id, 'invoice_id'),
     description: required(row.description, 'description'),
     quantity,
-    unitPriceVnd: vnd(row.unit_price_vnd, 'unit_price_vnd'),
-    lineTotalVnd: vnd(row.line_total_vnd, 'line_total_vnd'),
+    unitPriceVnd: signedVnd(row.unit_price_vnd, 'unit_price_vnd'),
+    lineTotalVnd: signedVnd(row.line_total_vnd, 'line_total_vnd'),
   };
 }
 
@@ -112,7 +126,44 @@ export async function readFinanceInvoiceDetail(
   if (items.some(item => item.invoiceId !== id)) {
     throw new Error('FINANCE_ITEM_INVOICE_MISMATCH');
   }
-  return { invoice, items };
+  const invoiceRow = object(payload.invoice);
+  const integrity = invoiceRow.snapshot_integrity;
+  if (!['VERIFIED', 'MISSING', 'INVALID', 'NOT_AVAILABLE'].includes(String(integrity))) {
+    throw new Error('FINANCE_INVALID_SNAPSHOT_INTEGRITY');
+  }
+  const hash = invoiceRow.source_snapshot_sha256;
+  const issuedAt = invoiceRow.issued_at;
+  const sourceSnapshot = invoiceRow.source_snapshot;
+  let displayItems = items;
+  let parsedSource: Record<string, unknown> | null = null;
+  if (integrity === 'VERIFIED') {
+    parsedSource = object(sourceSnapshot);
+    if (parsedSource.schemaVersion !== 'FINANCE_INVOICE_SNAPSHOT_V1' ||
+        !Array.isArray(parsedSource.lines)) {
+      throw new Error('FINANCE_INVALID_ISSUED_SNAPSHOT');
+    }
+    displayItems = parsedSource.lines.map((value) => {
+      const line = object(value);
+      return {
+        itemId: required(line.itemId, 'snapshot.itemId'),
+        invoiceId: id,
+        description: required(line.description, 'snapshot.description'),
+        quantity: required(line.quantity, 'snapshot.quantity'),
+        unitPriceVnd: signedVnd(line.unitPriceVnd, 'snapshot.unitPriceVnd'),
+        lineTotalVnd: signedVnd(line.lineTotalVnd, 'snapshot.lineTotalVnd'),
+      };
+    });
+  }
+  return {
+    invoice,
+    items: displayItems,
+    snapshot: {
+      integrity: integrity as FinanceInvoiceDetail['snapshot']['integrity'],
+      sha256: typeof hash === 'string' && hash.trim().length > 0 ? hash.trim() : null,
+      issuedAt: typeof issuedAt === 'string' && issuedAt.length > 0 ? issuedAt : null,
+      source: parsedSource,
+    },
+  };
 }
 
 export async function readFinanceLatestReceipts(

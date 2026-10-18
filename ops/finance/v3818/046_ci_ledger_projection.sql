@@ -5,7 +5,7 @@ CREATE TABLE finance_manual_v26_ci.ledger_projection_v46 (
  finance_entry_id text PRIMARY KEY,
  entry_type text NOT NULL CHECK(entry_type IN ('REVENUE','DIRECT_COST','PAYROLL','OPERATING_EXPENSE','DEPRECIATION','INTEREST','TAX')),
  category text NOT NULL,description text NOT NULL,
- amount_vnd numeric(18,0) NOT NULL CHECK(amount_vnd>=0),
+ amount_vnd numeric NOT NULL CHECK(amount_vnd=trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  recognition_date date NOT NULL,cash_date date,
  source_mode text NOT NULL CHECK(source_mode='MANUAL'),
  source_domain text NOT NULL,source_entity_type text NOT NULL,source_entity_id text NOT NULL,

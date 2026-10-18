@@ -78,12 +78,17 @@ import { MonthlyOperatingResultService } from './finance-billing/monthly-operati
 import { CanonicalServiceContractsController } from './finance-billing/canonical-service-contracts.controller';
 import { CanonicalContractDraftController } from './finance-billing/canonical-contract-draft.controller';
 import { ContractSignoffController } from './finance-billing/contract-signoff.controller';
+import { ServicePricingController } from './finance-billing/service-pricing.controller';
+import { ServiceMappingController } from './finance-billing/service-mapping.controller';
+import { FamilyMealBillingService } from './finance-billing/family-meal-billing.service';
+import { ResidentAccessScopeModule } from './resident-access-scope/resident-access-scope.module';
 
 @Module({imports:[
     PaperRecordModule,
     NotificationsModule,
     WorkforceModule,
     ResidentLeaveModule,
+    ResidentAccessScopeModule,
     ResidentLifecycleModule,
     AccommodationModule,
     ResidentCostModule,
@@ -115,5 +120,5 @@ import { ContractSignoffController } from './finance-billing/contract-signoff.co
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService,MonthlyOperatingResultService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController,ServicePricingController,ServiceMappingController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService,FamilyMealBillingService,MonthlyOperatingResultService]})
 export class AppModule {}

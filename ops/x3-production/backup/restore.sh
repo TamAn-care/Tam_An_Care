@@ -2,7 +2,9 @@
 set -eu
 
 # Target database URL to restore into
-: "${DATABASE_URL:?DATABASE_URL_REQUIRED}"
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+. "$SCRIPT_DIR/lib/database-url.sh"
+load_database_url
 
 DUMP_INPUT="${1:-}"
 

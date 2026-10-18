@@ -110,7 +110,7 @@ export default function FinanceReadPage({ options }: Props) {
     <main className="space-y-5 p-4 md:p-6">
       <header>
         <h1 className="text-2xl font-semibold">
-          Tài chính — Hóa đơn và phiếu thu
+          Tài chính — Hóa đơn, phiếu thu và kết quả kinh doanh
         </h1>
         <p className="text-sm text-slate-600">
           Chế độ chỉ xem, dữ liệu từ Finance API.
@@ -119,10 +119,10 @@ export default function FinanceReadPage({ options }: Props) {
 
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1">
-          <span>Tháng hóa đơn: {formatFinanceMonth(month)}</span>
+          <span>Tháng báo cáo: {formatFinanceMonth(month)}</span>
           <input
             type="month"
-            aria-label="Tháng hóa đơn"
+            aria-label="Tháng báo cáo tài chính"
             value={month}
             onChange={event => {
               const value = event.target.value;
@@ -202,6 +202,47 @@ export default function FinanceReadPage({ options }: Props) {
                 {detail.invoice.invoiceCode} — Tháng{' '}
                 {formatFinanceMonth(detail.invoice.billingMonth)}
               </p>
+              <p role="status" aria-label="Tính toàn vẹn snapshot hóa đơn">
+                Snapshot phát hành: {
+                  detail.snapshot.integrity === 'VERIFIED' ? 'Đã xác minh' :
+                  detail.snapshot.integrity === 'MISSING' ? 'Thiếu snapshot' :
+                  detail.snapshot.integrity === 'INVALID' ? 'Không hợp lệ' :
+                  'Schema chưa hỗ trợ'
+                }
+                {detail.snapshot.issuedAt && ` — ${new Date(detail.snapshot.issuedAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`}
+              </p>
+              {detail.snapshot.integrity === 'VERIFIED' &&
+                detail.snapshot.source?.residentMealPolicy &&
+                <p>Bữa ăn người cao tuổi đã bao gồm trong giá gói hợp đồng; không thu riêng.</p>}
+              {detail.snapshot.integrity === 'VERIFIED' &&
+                Array.isArray(detail.snapshot.source?.familyExtraMeals) &&
+                detail.snapshot.source.familyExtraMeals.length > 0 &&
+                <section aria-label="Suất ăn người nhà trong snapshot" className="space-y-2">
+                  <h3 className="font-medium">Chi tiết suất ăn người nhà đã xác nhận</h3>
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[620px] text-sm">
+                      <thead><tr>
+                        <th className="p-2 text-left">Ngày</th>
+                        <th className="p-2 text-left">Bữa</th>
+                        <th className="p-2 text-left">Mã dịch vụ</th>
+                        <th className="p-2 text-right">Số suất</th>
+                        <th className="p-2 text-right">Đơn giá</th>
+                        <th className="p-2 text-right">Thành tiền</th>
+                      </tr></thead>
+                      <tbody>{detail.snapshot.source.familyExtraMeals.map((value, index) => {
+                        const meal = value as Record<string, unknown>;
+                        return <tr key={String(meal.sourceEventId || index)} className="border-t">
+                          <td className="p-2">{String(meal.serviceDate ?? '—')}</td>
+                          <td className="p-2">{String(meal.mealType ?? '—')}</td>
+                          <td className="p-2">{String(meal.serviceCode ?? '—')} · v{String(meal.priceListVersion ?? '—')}</td>
+                          <td className="p-2 text-right">{String(meal.confirmedQuantity ?? '—')}</td>
+                          <td className="p-2 text-right">{typeof meal.unitPriceVnd === 'string' ? vnd(meal.unitPriceVnd) : '—'}</td>
+                          <td className="p-2 text-right">{typeof meal.amountVnd === 'string' ? vnd(meal.amountVnd) : '—'}</td>
+                        </tr>;
+                      })}</tbody>
+                    </table>
+                  </div>
+                </section>}
               {detail.items.length === 0 &&
                 <p>Chưa có khoản mục hóa đơn.</p>}
               {detail.items.length > 0 &&

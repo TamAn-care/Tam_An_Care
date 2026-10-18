@@ -7,7 +7,7 @@ CREATE TABLE finance_manual_v26_ci.documents (
  financial_origin_key text NOT NULL UNIQUE,
  kind text NOT NULL CHECK (kind IN ('PAYROLL','REVENUE','DIRECT_COST','OPERATING_EXPENSE')),
  recognition_date date NOT NULL,
- amount_vnd numeric(18,0) NOT NULL CHECK (amount_vnd BETWEEN 0 AND 9999999999999999),
+ amount_vnd numeric NOT NULL CHECK (amount_vnd = trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  category text NOT NULL CHECK (length(btrim(category)) >= 2),
  description text NOT NULL CHECK (length(btrim(description)) >= 8),
  counterparty_ref text NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE finance_manual_v26_ci.audit (
 CREATE TABLE finance_manual_v26_ci.payroll_components (
  document_id text NOT NULL REFERENCES finance_manual_v26_ci.documents(document_id),
  component_key text NOT NULL CHECK (component_key IN ('BASE_AGREED','ALLOWANCE','BONUS','DEDUCTION','EMPLOYER_COST')),
- amount_vnd numeric(18,0) NOT NULL CHECK (amount_vnd BETWEEN 0 AND 9999999999999999),
+ amount_vnd numeric NOT NULL CHECK (amount_vnd = trunc(amount_vnd) AND amount_vnd BETWEEN 0 AND 9999999999999999),
  PRIMARY KEY (document_id, component_key)
 );
 -- Explicitly no ledger auto-posting, no foreign table attachments, no background jobs.

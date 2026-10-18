@@ -1,0 +1,49 @@
+name: Finance Business Error Regression
+
+on:
+  push:
+    branches:
+      - feature/finance-github-first-transition-20261012
+    paths:
+      - 'api/**'
+      - '.github/workflows/finance-business-error-regression.yml'
+  pull_request:
+    paths:
+      - 'api/**'
+      - '.github/workflows/finance-business-error-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finance-error-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Remove tracked incremental build metadata in disposable runner
+        run: |
+          rm -f tsconfig.tsbuildinfo
+          rm -rf dist
+      - name: Build API from clean source
+        run: npm run build
+      - name: Verify complete runtime build
+        run: |
+          test -f dist/database/database.service.js
+          test -f dist/finance-billing/finance-write.controller.js
+          test -f dist/security/verified-finance-identity.js
+      - name: Finance business error regression
+        run: node tests/finance-business-error-mapping.test.cjs

@@ -37,6 +37,7 @@ require('./finance-v3818-5-source-sync-test.cjs');
 require('./finance-v3818-4-monthly-recognition-test.cjs');
 require('./finance-v3818-3-gap-gate.cjs');
 require('./finance-v3818-2-integration-readiness-test.cjs');
+require('./finance-legacy-billing-mock-safety-test.cjs');
 require('./finance-v3818-baseline-safety-test.cjs');
 require('./finance-v3817-9-runtime-guard-test.cjs');
 require('./finance-v3817-forensic-safety-test.cjs');

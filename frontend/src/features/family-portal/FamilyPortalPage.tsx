@@ -13,11 +13,72 @@ import {
   fetchPsychologicalAssessments,
   EMOTIONAL_STATE_META,
 } from '../../api/psychological-assessment';
-import { fetchDetailedFeeNotices, updateFeeNoticePayment } from '../../api/billing';
+import { fetchIssuedPaymentNotice } from '../../api/finance-payment-notices';
 import { fetchResidentIntegrationOverview } from '../../api/integration';
+import type { HumanActorSession } from '../../types/actor';
 import { LoadingState, ErrorState, EmptyState } from '../../components/feedback/FeedbackStates';
 import ElderlyAvatar from '../../components/common/ElderlyAvatar';
 import { formatResidentNameWithSalutation, getSalutation, isFemaleGender } from '../residents/resident-ui';
+
+function currentBillingMonth(): string {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit' }).formatToParts(new Date());
+  const year = parts.find(part => part.type === 'year')?.value;
+  const month = parts.find(part => part.type === 'month')?.value;
+  if (!year || !month) throw new Error('FINANCE_BILLING_MONTH_UNAVAILABLE');
+  return `${year}-${month}`;
+}
+
+function moneyVnd(value: string): string {
+  return `${BigInt(value).toLocaleString('vi-VN')} ₫`;
+}
+
+function IssuedFamilyPaymentNotice({ actor, residentId }: { actor: HumanActorSession | null; residentId: string }) {
+  const [month, setMonth] = useState(currentBillingMonth);
+  const noticeQuery = useQuery({
+    queryKey: ['family-issued-finance-notice', actor?.actorId, residentId, month],
+    queryFn: () => fetchIssuedPaymentNotice(actor!, residentId, month),
+    enabled: Boolean(actor && residentId),
+    retry: false,
+  });
+
+  return <section className="card" style={{ background: '#fff', border: '1px solid #cbd5e1', borderRadius: '0.75rem', padding: '1.25rem' }}>
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
+      <div>
+        <h3 style={{ margin: 0, color: '#065f46' }}>Thông báo thu tiền tháng</h3>
+        <p style={{ margin: '0.35rem 0 0', color: '#64748b' }}>Số liệu lấy từ hóa đơn đã phát hành và snapshot Finance bất biến.</p>
+      </div>
+      <label className="field-group"><span className="field-label">Kỳ thu</span><input className="text-input" type="month" value={month} onChange={event => setMonth(event.target.value)} /></label>
+    </div>
+    {noticeQuery.isLoading ? <LoadingState title="Đang tải thông báo đã phát hành..." /> : null}
+    {noticeQuery.isError ? <ErrorState title="Chưa thể xác minh thông báo thu tiền" description="Finance chưa trả về snapshot đã phát hành hợp lệ. Không hiển thị số liệu thay thế hoặc dữ liệu mẫu." /> : null}
+    {noticeQuery.isSuccess && noticeQuery.data.length === 0 ? <EmptyState title="Chưa có thông báo đã phát hành" description="Kỳ này chưa có hóa đơn Finance đã chốt cho cư dân." /> : null}
+    {noticeQuery.data?.map(notice => {
+      const snapshot = notice.source_snapshot;
+      const invoiceSnapshot = snapshot.invoice && typeof snapshot.invoice === 'object' ? snapshot.invoice as Record<string, unknown> : {};
+      const contract = snapshot.contract && typeof snapshot.contract === 'object' ? snapshot.contract as Record<string, unknown> : {};
+      const lines = Array.isArray(snapshot.lines) ? snapshot.lines as Array<Record<string, unknown>> : [];
+      const familyMeals = Array.isArray(snapshot.familyExtraMeals) ? snapshot.familyExtraMeals as Array<Record<string, unknown>> : [];
+      return <article key={notice.invoice_id} style={{ borderTop: '1px solid #e2e8f0', marginTop: '1rem', paddingTop: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+          <div><b>{notice.invoice_code || notice.invoice_id}</b><div>Kỳ {notice.billing_month} · Đã phát hành {notice.issued_at ? new Date(notice.issued_at).toLocaleDateString('vi-VN') : ''}</div></div>
+          <span className="badge badge-success">{notice.status === 'PAID' ? 'Đã thanh toán' : notice.status === 'PARTIAL' ? 'Thanh toán một phần' : 'Đã phát hành'}</span>
+        </div>
+        <div style={{ marginTop: '0.75rem', overflowX: 'auto' }}><table className="data-table" style={{ minWidth: 600, width: '100%' }}><thead><tr><th>Khoản thu theo snapshot</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead><tbody>
+          {lines.map((line, index) => <tr key={String(line.itemId || index)}><td>{String(line.description || line.lineKind || 'Dịch vụ')}</td><td>{String(line.quantity ?? '—')}</td><td>{validSnapshotMoney(line.unitPriceVnd) ? moneyVnd(line.unitPriceVnd) : '—'}</td><td>{validSnapshotMoney(line.lineTotalVnd) ? moneyVnd(line.lineTotalVnd) : '—'}</td></tr>)}
+          {familyMeals.length > 0 && <tr><td colSpan={4}><b>Chi tiết bữa ăn người nhà đã xác nhận</b><ul style={{ margin: '0.4rem 0' }}>{familyMeals.map((meal, index) => <li key={String(meal.sourceEventId || index)}>{String(meal.serviceDate)} · {String(meal.mealType)} · {String(meal.confirmedQuantity)} suất · {validSnapshotMoney(meal.amountVnd) ? moneyVnd(meal.amountVnd) : '—'}</li>)}</ul></td></tr>}
+        </tbody></table></div>
+        <p style={{ margin: '0.75rem 0 0', color: '#334155' }}>Phí gói hợp đồng: <b>{validSnapshotMoney(contract.approvedMonthlyFeeVnd) ? moneyVnd(contract.approvedMonthlyFeeVnd) : 'xem chi tiết snapshot'}</b>. Bữa ăn của người cao tuổi đã bao gồm trong gói; không thu riêng.</p>
+        <p style={{ margin: '0.35rem 0', fontWeight: 700 }}>Tổng phải thanh toán: {moneyVnd(notice.total_amount_vnd)} · Đã phân bổ: {moneyVnd(notice.allocated_amount_vnd)} · Còn lại: {moneyVnd(notice.balance_vnd)}</p>
+        <small style={{ color: '#64748b' }}>Snapshot {notice.source_snapshot_sha256.slice(0, 12)}… · Finance source {String(invoiceSnapshot.invoiceId || notice.invoice_id)}</small>
+        <div><button type="button" className="btn btn-neutral no-print" onClick={() => triggerPrint()}>In thông báo</button></div>
+      </article>;
+    })}
+  </section>;
+}
+
+function validSnapshotMoney(value: unknown): value is string {
+  return typeof value === 'string' && /^(0|[1-9]\d*)$/.test(value);
+}
 
 const CARE_LEVEL_CONFIG: Record<string, { label: string; badgeClass: string; desc: string }> = {
   INDEPENDENT: { label: 'Chăm sóc Cấp độ 1', badgeClass: 'badge-success', desc: 'Tự chủ sinh hoạt cơ bản, cần hỗ trợ nhẹ' },
@@ -104,14 +165,10 @@ export default function FamilyPortalPage() {
   const [mealBookingDate, setMealBookingDate] = useState<string>('');
   const [mealBookingType, setMealBookingType] = useState<'BREAKFAST' | 'LUNCH' | 'AFTERNOON_SNACK' | 'DINNER'>('LUNCH');
   const [mealPortionCount, setMealPortionCount] = useState<number>(2);
-  const [mealDietNotes, setMealDietNotes] = useState<string>('');
+  const [mealIdempotencyKey, setMealIdempotencyKey] = useState('');
+  const [mealBookingSaving, setMealBookingSaving] = useState(false);
   const [mealBookingSuccessMsg, setMealBookingSuccessMsg] = useState<string>('');
 
-  // Payment Verification Modal State
-  const [verifyingFeeNotice, setVerifyingFeeNotice] = useState<any | null>(null);
-  const [paymentStatusInput, setPaymentStatusInput] = useState<'PAID' | 'UNPAID' | 'PARTIAL'>('PAID');
-  const [paidAmountValue, setPaidAmountValue] = useState<number>(0);
-  const [paymentNotesInput, setPaymentNotesInput] = useState<string>('');
 
   const todayMenuQuery = useQuery({
     queryKey: [
@@ -282,18 +339,11 @@ export default function FamilyPortalPage() {
       Boolean(activeResId),
   });
 
-  // Fetch Monthly Fee Notices (Chỉ bảng kê đã được Kế toán duyệt phát hành sang Cổng Thân Nhân)
-  const feeNoticesQuery = useQuery({
-    queryKey: ['family-fee-notices', activeResId],
-    queryFn: () => fetchDetailedFeeNotices(activeResId, { publishedOnly: true }),
-    enabled: Boolean(activeResId),
-  });
-
   // Fetch Family Meal Bookings
   const familyMealsQuery = useQuery({
     queryKey: ['family-meal-bookings', activeResId],
-    queryFn: () => fetchFamilyMealBookings(activeResId),
-    enabled: Boolean(activeResId),
+    queryFn: () => fetchFamilyMealBookings(actor!, activeResId),
+    enabled: Boolean(actor) && Boolean(activeResId),
   });
 
   // Fetch Leave Requests for this Resident
@@ -1506,205 +1556,9 @@ export default function FamilyPortalPage() {
         </div>
       )}
 
-      {/* TAB 7: THÔNG BÁO THU PHÍ & THANH TOÁN (17 MỤC EXCEL) */}
+      {/* Issued payment notice is read from Finance immutable invoice snapshot. */}
       {activeTab === 'fee-notice' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div className="card" style={{ background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem', border: '1px solid #cbd5e1' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <h3 style={{ margin: 0, color: '#065f46', fontSize: '1.15rem', fontWeight: 800 }}>
-                  💳 Thông Báo Thu Phí Tháng & Xác Thực Thanh Toán
-                </h3>
-                <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: '#64748b' }}>
-                  Hiển thị bảng tổng hợp viện phí hàng tháng (chỉ liệt kê các mục có chi phí {`> 0`}) và tiến trình xác nhận đóng phí.
-                </p>
-              </div>
-            </div>
-
-            {feeNoticesQuery.isLoading ? (
-              <LoadingState title="Đang tải thông báo thu phí..." />
-            ) : (feeNoticesQuery.data || []).length === 0 ? (
-              <EmptyState title="Chưa có thông báo thu phí" description="Chưa có bảng thông báo thu phí tháng nào được phát hành." />
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {(feeNoticesQuery.data || []).map((notice) => {
-                  // Tính xem có khoản chăm sóc hỗ trợ chi tiết nào > 0 không
-                  const subServicesSum =
-                    (notice.bathingLaundryFee || 0) +
-                    (notice.mobilityFee || 0) +
-                    (notice.hygieneFee || 0) +
-                    (notice.feedingSondeFee || 0) +
-                    (notice.dementiaCareFee || 0) +
-                    (notice.soreCareFee || 0) +
-                    (notice.catheterCareFee || 0) +
-                    (notice.tracheostomyCareFee || 0) +
-                    (notice.woundDressingFee || 0) +
-                    (notice.rehabFee || 0);
-
-                  // Chỉ hiển thị mục cha 'Phí dịch vụ chăm sóc hỗ trợ' nếu không có mục chi tiết nào > 0
-                  const includeParentSupport = subServicesSum === 0 && (notice.supportFee || 0) > 0;
-
-                  // Chỉ hiển thị các mục có phí > 0 ("Ghi có"), tuyệt đối không hiển thị mục bằng 0 ("Ghi không")
-                  const feeItemsList = [
-                    { name: 'Phí chăm sóc cơ bản', category: 'Gói lưu trú', badgeBg: '#dcfce7', badgeColor: '#15803d', amount: notice.basicFee, note: 'Theo hợp đồng lưu trú' },
-                    ...(includeParentSupport ? [{ name: 'Phí dịch vụ chăm sóc hỗ trợ', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.supportFee, note: 'Trọn gói hỗ trợ' }] : []),
-                    { name: 'Hỗ trợ tắm gội', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.bathingLaundryFee, note: 'Theo tần suất đăng ký' },
-                    { name: 'Hỗ trợ nâng đỡ, di chuyển', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.mobilityFee, note: 'Hỗ trợ di chuyển an toàn' },
-                    { name: 'Hỗ trợ vệ sinh', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.hygieneFee, note: 'Phụ thuộc mức chăm sóc' },
-                    { name: 'Hỗ trợ xúc ăn / ăn qua sonde', category: 'CS hỗ trợ', badgeBg: '#e0f2fe', badgeColor: '#0369a1', amount: notice.feedingSondeFee, note: 'Hỗ trợ dinh dưỡng' },
-                    { name: 'Chăm sóc NCT bị lẫn tuổi già', category: 'CS hỗ trợ', badgeBg: '#fef3c7', badgeColor: '#b45309', amount: notice.dementiaCareFee, note: 'Theo dõi & giám sát an toàn' },
-                    { name: 'Chăm sóc các ổ loét', category: 'CS chuyên khoa', badgeBg: '#fee2e2', badgeColor: '#b91c1c', amount: notice.soreCareFee, note: 'Điều trị & thay băng ổ loét' },
-                    { name: 'Chăm sóc sonde bàng quang', category: 'CS chuyên khoa', badgeBg: '#fee2e2', badgeColor: '#b91c1c', amount: notice.catheterCareFee, note: 'Vệ sinh & thay sonde định kỳ' },
-                    { name: 'Chăm sóc nội khí quản', category: 'CS chuyên khoa', badgeBg: '#fee2e2', badgeColor: '#b91c1c', amount: notice.tracheostomyCareFee, note: 'Hút đờm & chăm sóc chuyên khoa' },
-                    { name: 'Thay băng, rửa vết thương', category: 'CS y tế', badgeBg: '#e0e7ff', badgeColor: '#4338ca', amount: notice.woundDressingFee, note: 'Xử lý vết thương hàng ngày' },
-                    { name: 'Vật lý trị liệu - PHCN', category: 'CS y tế', badgeBg: '#e0e7ff', badgeColor: '#4338ca', amount: notice.rehabFee, note: 'Tập PHCN theo phác đồ' },
-                    { name: 'Phí phát sinh trong tháng', category: 'Mục phát sinh', badgeBg: '#ffedd5', badgeColor: '#c2410c', amount: notice.incurredFee, note: notice.incurredContent || 'Phát sinh cấp cứu / đi viện / mua thêm vật tư' },
-                    { name: 'Nợ tháng trước chuyển sang', category: 'Công nợ cũ', badgeBg: '#fecdd3', badgeColor: '#be123c', amount: notice.previousMonthDebt, note: notice.debtNotes || 'Chưa hoàn tất kỳ trước' },
-                    { name: 'Suất ăn thân nhân đăng ký', category: 'Dịch vụ gia đình', badgeBg: '#f3e8ff', badgeColor: '#6b21a8', amount: notice.familyMealsFee, note: 'Cơm thân nhân ăn cùng Cụ' },
-                    { name: 'Vật tư y tế tiêu hao', category: 'Vật tư & Y tế', badgeBg: '#f1f5f9', badgeColor: '#334155', amount: notice.consumablesFee, note: 'Bổ sung vật tư thực tế' },
-                    { name: 'Nợ tiền đặt cọc tiếp nhận lưu trú', category: 'Ký quỹ lưu trú', badgeBg: '#fffbebf0', badgeColor: '#92400e', amount: notice.unpaidDepositDebt || (notice.depositStatus === 'UNPAID' ? 20000000 : 0), note: 'Chưa nộp tiền đặt cọc ký quỹ (1 lần)' },
-                  ].filter((item) => (item.amount || 0) > 0);
-
-                  const statusClass = notice.status === 'PAID' ? 'badge-success' : notice.status === 'PARTIAL' ? 'badge-warning' : 'badge-danger';
-
-                  return (
-                    <div
-                      key={notice.id}
-                      style={{
-                        border: '2px solid #a7f3d0',
-                        borderRadius: '0.75rem',
-                        padding: '1.25rem',
-                        background: '#ffffff',
-                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.05)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid #ecfdf5', paddingBottom: '0.75rem' }}>
-                        <div>
-                          <div style={{ fontSize: '0.85rem', color: '#047857', fontWeight: 700 }}>THÔNG BÁO THU PHÍ THÁNG {notice.billingMonth}</div>
-                          <h4 style={{ margin: '0.2rem 0 0 0', fontSize: '1.2rem', color: '#064e3b', fontWeight: 800 }}>
-                            Cụ {notice.residentName} (Mã HĐ: {notice.residentCode})
-                          </h4>
-                        </div>
-
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <span className={`badge ${statusClass}`} style={{ fontSize: '0.9rem', padding: '0.4rem 0.85rem', fontWeight: 800 }}>
-                            {notice.statusLabel}
-                          </span>
-
-                          <button
-                            type="button"
-                            className="btn btn-primary"
-                            style={{ fontWeight: 700, padding: '0.45rem 1rem' }}
-                            onClick={() => {
-                              setVerifyingFeeNotice(notice);
-                              setPaymentStatusInput(notice.status);
-                              setPaidAmountValue(notice.paidAmount);
-                              setPaymentNotesInput(notice.notes || '');
-                            }}
-                          >
-                            ✏️ Xác Thực Đóng Phí
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Cảnh báo nợ cọc nếu chưa đóng */}
-                      {((notice.unpaidDepositDebt || 0) > 0 || notice.depositStatus === 'UNPAID') && (
-                        <div style={{ background: '#fffbebf0', border: '1px solid #fde68a', borderRadius: '0.5rem', padding: '0.75rem 1rem', marginBottom: '1rem', color: '#92400e', fontSize: '0.86rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <span style={{ fontSize: '1.2rem' }}>⚠️</span>
-                          <div>
-                            <b>CẢNH BÁO NỢ TIỀN ĐẶT CỌC:</b> Cụ chưa hoàn tất nộp tiền đặt cọc tiếp nhận lưu trú: <b>{(notice.unpaidDepositDebt || 20000000).toLocaleString('vi-VN')} VNĐ</b> (Tiền đặt cọc chỉ nộp 1 lần khi nhập vào Trung tâm). Thân nhân vui lòng liên hệ Bộ phận Kế toán để hoàn tất.
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Chi tiết các mục phát sinh (hiển thị đầy đủ thông tin 5 cột + vuốt ngang mobile) */}
-                      <div style={{ marginBottom: '1.25rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                          <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#1e293b' }}>
-                            📋 Bảng Chi Tiết Phí Viện Phí & Các Hạng Mục Phát Sinh (Chỉ liệt kê các khoản có chi phí thực tế):
-                          </div>
-                          <div style={{ fontSize: '0.78rem', color: '#0369a1', background: '#f0f9ff', padding: '0.25rem 0.6rem', borderRadius: '0.375rem', border: '1px solid #bae6fd', fontWeight: 700 }}>
-                            ↔️ Vuốt sang ngang để xem đầy đủ thông tin (STT, Phân loại, Số tiền, Ghi chú)
-                          </div>
-                        </div>
-
-                        <div className="table-responsive fee-table-responsive" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch', touchAction: 'pan-x pan-y', width: '100%', maxWidth: '100%', borderRadius: '0.5rem', border: '1px solid #cbd5e1' }}>
-                          <table className="table-wide-800" style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', fontSize: '0.84rem' }}>
-                            <thead>
-                              <tr style={{ background: '#f0fdf4', color: '#166534', textAlign: 'left', borderBottom: '2px solid #a7f3d0' }}>
-                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', textAlign: 'center', width: '45px', whiteSpace: 'nowrap' }}>STT</th>
-                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', whiteSpace: 'nowrap', width: '240px' }}>Nội dung chi phí / Hạng mục</th>
-                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', textAlign: 'center', width: '130px', whiteSpace: 'nowrap' }}>Phân loại</th>
-                                <th style={{ padding: '0.6rem 0.75rem', borderRight: '1px solid #d1fae5', textAlign: 'right', width: '150px', whiteSpace: 'nowrap' }}>Số tiền (VNĐ)</th>
-                                <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left', minWidth: '200px' }}>Ghi chú & Chi tiết phát sinh</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {feeItemsList.map((item, idx) => (
-                                <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0', background: idx % 2 === 0 ? '#ffffff' : '#f8fafc' }}>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', textAlign: 'center', color: '#64748b', fontWeight: 600 }}>
-                                    {idx + 1}
-                                  </td>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', fontWeight: 700, color: '#0f172a' }}>
-                                    {item.name}
-                                  </td>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', textAlign: 'center' }}>
-                                    <span className="badge" style={{ background: item.badgeBg, color: item.badgeColor, fontSize: '0.75rem', padding: '0.25rem 0.5rem', fontWeight: 700 }}>
-                                      {item.category}
-                                    </span>
-                                  </td>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #e2e8f0', textAlign: 'right', fontWeight: 800, color: '#166534', fontVariantNumeric: 'tabular-nums' }}>
-                                    {(item.amount || 0).toLocaleString('vi-VN')} đ
-                                  </td>
-                                  <td style={{ padding: '0.5rem 0.75rem', color: '#475569', fontSize: '0.82rem', fontStyle: 'italic' }}>
-                                    {item.note || '---'}
-                                  </td>
-                                </tr>
-                              ))}
-
-                              {/* Giảm trừ nếu có */}
-                              {notice.deductionFee > 0 && (
-                                <tr style={{ background: '#fff1f2', color: '#be123c', borderTop: '2px solid #fecdd3' }}>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', textAlign: 'center', fontWeight: 700 }}>➖</td>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', fontWeight: 800 }}>Chi phí giảm trừ / Khuyến mãi</td>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', textAlign: 'center' }}>
-                                    <span className="badge" style={{ background: '#fecdd3', color: '#9f1239', fontSize: '0.75rem', padding: '0.25rem 0.5rem', fontWeight: 700 }}>Giảm trừ</span>
-                                  </td>
-                                  <td style={{ padding: '0.5rem 0.75rem', borderRight: '1px solid #fecdd3', textAlign: 'right', fontWeight: 800, color: '#be123c', fontVariantNumeric: 'tabular-nums' }}>
-                                    - {notice.deductionFee.toLocaleString('vi-VN')} đ
-                                  </td>
-                                  <td style={{ padding: '0.5rem 0.75rem', fontSize: '0.82rem', fontStyle: 'italic', fontWeight: 600 }}>
-                                    {notice.deductionNotes || 'Theo phê duyệt Giám đốc / Giảm trừ vắng mặt'}
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      {/* Tổng Hợp Thu Phí */}
-                      <div style={{ background: '#f0fdf4', padding: '1rem 1.25rem', borderRadius: '0.5rem', border: '1px solid #a7f3d0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-                        <div>
-                          <div>💵 Tổng tiền cần thu: <b style={{ fontSize: '1.1rem', color: '#166534' }}>{notice.totalDue.toLocaleString('vi-VN')} VNĐ</b></div>
-                          <div style={{ fontSize: '0.85rem', color: '#4b5563', marginTop: '0.2rem' }}>
-                            Đã thanh toán: <b style={{ color: '#15803d' }}>{notice.paidAmount.toLocaleString('vi-VN')} đ</b> | Số dư còn phải thu: <b style={{ color: '#dc2626' }}>{notice.remainingAmount.toLocaleString('vi-VN')} đ</b>
-                          </div>
-                        </div>
-
-                        {notice.notes && (
-                          <div style={{ fontSize: '0.82rem', color: '#475569', fontStyle: 'italic', maxWidth: '400px' }}>
-                            💬 Ghi chú thu ngân: {notice.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
+        <IssuedFamilyPaymentNotice actor={actor} residentId={activeResId} />
       )}
 
       {/* TAB 8: ĐĂNG KÝ ĂN CƠM TẠI TÂM AN CHO NGƯỜI NHÀ */}
@@ -1715,12 +1569,17 @@ export default function FamilyPortalPage() {
               🍽️ Đăng Ký Ăn Cơm Tại Tâm An Cho Thân Nhân
             </h3>
             <p style={{ margin: '0 0 1.25rem 0', fontSize: '0.86rem', color: '#64748b' }}>
-              Quý người nhà có nhu cầu dùng cơm cùng Cụ tại Tâm An vui lòng đăng ký trước. Chi phí bữa ăn (50.000đ/suất) sẽ tự động tích hợp vào Thông báo thu phí hàng tháng.
+              Quý người nhà có nhu cầu dùng cơm cùng Cụ tại Tâm An vui lòng đăng ký trước. Đăng ký chỉ ghi nhận nhu cầu; phí chỉ được xác nhận khi nhân viên xác nhận suất ăn và giá dịch vụ đã được phê duyệt, còn hiệu lực. Bữa ăn của người cao tuổi đã nằm trong gói hợp đồng và không thu riêng.
             </p>
 
             {mealBookingSuccessMsg && (
               <div className="alert-card alert-success" style={{ marginBottom: '1rem' }}>
                 <span>{mealBookingSuccessMsg}</span>
+              </div>
+            )}
+            {familyMealsQuery.isError && (
+              <div className="alert-card alert-warning" role="status" style={{ marginBottom: '1rem' }}>
+                Không thể xác minh dữ liệu đăng ký từ máy chủ. Chưa ghi nhận phí; vui lòng thử tải lại.
               </div>
             )}
 
@@ -1731,23 +1590,25 @@ export default function FamilyPortalPage() {
                   alert('Vui lòng chọn ngày đăng ký ăn.');
                   return;
                 }
+                const requestKey = mealIdempotencyKey || crypto.randomUUID();
+                setMealIdempotencyKey(requestKey);
+                setMealBookingSaving(true);
                 try {
                   const res = await bookFamilyMeal(actor!, {
                     residentId: activeResId,
-                    residentName: currentResident?.resident.displayName || 'Người cao tuổi',
-                    guardianName: actor?.displayName || 'Thân nhân',
-                    bookingDate: mealBookingDate,
+                    serviceDate: mealBookingDate,
                     mealType: mealBookingType,
-                    portionCount: mealPortionCount,
-                    dietNotes: mealDietNotes,
+                    quantity: mealPortionCount,
+                    idempotencyKey: requestKey,
                   });
-                  setMealBookingSuccessMsg(`✅ Đăng ký thành công ${res.portionCount} suất cơm (${res.totalFee.toLocaleString('vi-VN')}đ) cho bữa ngày ${res.bookingDate}!`);
+                  setMealBookingSuccessMsg(`Đã ghi nhận đăng ký ${res.registeredQuantity} suất cho ngày ${res.serviceDate}. Trạng thái: ${res.status === 'REGISTERED' ? 'chờ xác nhận phục vụ và giá' : 'đã xác nhận'}. Chưa cộng phí vào thông báo thu.`);
                   setMealBookingDate('');
-                  setMealDietNotes('');
+                  setMealIdempotencyKey('');
                   queryClient.invalidateQueries({ queryKey: ['family-meal-bookings'] });
-                  queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
                 } catch (err: any) {
                   alert(err.message || 'Lỗi khi đăng ký suất ăn');
+                } finally {
+                  setMealBookingSaving(false);
                 }
               }}
             >
@@ -1758,7 +1619,7 @@ export default function FamilyPortalPage() {
                     type="date"
                     className="text-input"
                     value={mealBookingDate}
-                    onChange={(e) => setMealBookingDate(e.target.value)}
+                    onChange={(e) => { setMealBookingDate(e.target.value); setMealIdempotencyKey(''); }}
                     required
                   />
                 </label>
@@ -1768,7 +1629,7 @@ export default function FamilyPortalPage() {
                   <select
                     className="text-input"
                     value={mealBookingType}
-                    onChange={(e) => setMealBookingType(e.target.value as any)}
+                    onChange={(e) => { setMealBookingType(e.target.value as any); setMealIdempotencyKey(''); }}
                   >
                     <option value="BREAKFAST">Bữa Sáng (07:00 - 08:00)</option>
                     <option value="LUNCH">Bữa Trưa (11:00 - 12:00)</option>
@@ -1778,38 +1639,22 @@ export default function FamilyPortalPage() {
                 </label>
 
                 <label className="field-group">
-                  <span className="field-label">Số lượng suất ăn (50.000đ/suất) *</span>
+                  <span className="field-label">Số lượng suất ăn *</span>
                   <input
                     type="number"
                     min="1"
-                    max="10"
+                    max="100"
                     className="text-input"
                     value={mealPortionCount}
-                    onChange={(e) => setMealPortionCount(Number(e.target.value))}
+                    onChange={(e) => { setMealPortionCount(Number(e.target.value)); setMealIdempotencyKey(''); }}
                     required
                   />
                 </label>
 
-                <div className="field-group">
-                  <span className="field-label">Thành tiền tạm tính</span>
-                  <div style={{ padding: '0.65rem', background: '#f0fdf4', borderRadius: '0.375rem', fontWeight: 800, color: '#166534', border: '1px solid #bbf7d0' }}>
-                    {(mealPortionCount * 50000).toLocaleString('vi-VN')} VNĐ
-                  </div>
-                </div>
               </div>
 
-              <label className="field-group" style={{ marginBottom: '1.25rem' }}>
-                <span className="field-label">Yêu cầu khẩu vị / Chế độ ăn (nếu có)</span>
-                <input
-                  className="text-input"
-                  value={mealDietNotes}
-                  placeholder="Ví dụ: 1 suất ăn kiêng đường, ăn cùng Cụ tại sảnh tầng 1..."
-                  onChange={(e) => setMealDietNotes(e.target.value)}
-                />
-              </label>
-
-              <button type="submit" className="btn btn-primary" style={{ padding: '0.65rem 1.5rem', fontWeight: 700 }}>
-                🍽️ Xác Nhận Đăng Ký Bữa Ăn
+              <button type="submit" className="btn btn-primary" disabled={mealBookingSaving} style={{ padding: '0.65rem 1.5rem', fontWeight: 700 }}>
+                {mealBookingSaving ? 'Đang ghi nhận…' : '🍽️ Đăng Ký Bữa Ăn'}
               </button>
             </form>
           </div>
@@ -1826,20 +1671,20 @@ export default function FamilyPortalPage() {
                     <th>Ngày dùng bữa</th>
                     <th>Bữa ăn</th>
                     <th>Số suất</th>
-                    <th>Thành tiền</th>
+                    <th>Phí</th>
                     <th>Trạng thái</th>
-                    <th>Yêu cầu khẩu vị</th>
                   </tr>
                 </thead>
                 <tbody>
+                  {familyMealsQuery.isLoading && <tr><td colSpan={5}>Đang tải đăng ký từ máy chủ…</td></tr>}
+                  {!familyMealsQuery.isLoading && !familyMealsQuery.isError && (familyMealsQuery.data || []).length === 0 && <tr><td colSpan={5}>Chưa có đăng ký suất ăn người nhà.</td></tr>}
                   {(familyMealsQuery.data || []).map((b) => (
                     <tr key={b.id}>
-                      <td><b>{b.bookingDate}</b></td>
+                      <td><b>{b.serviceDate}</b></td>
                       <td>{b.mealTypeLabel}</td>
-                      <td>{b.portionCount} suất</td>
-                      <td><b>{b.totalFee.toLocaleString('vi-VN')} đ</b></td>
-                      <td><span className="badge badge-success">{b.status === 'SERVED' ? 'Đã phục vụ' : 'Đã xác nhận'}</span></td>
-                      <td style={{ fontSize: '0.82rem', color: '#64748b' }}>{b.dietNotes || '—'}</td>
+                      <td>{b.confirmedQuantity ?? b.registeredQuantity} suất</td>
+                      <td>{b.amountVnd === null ? 'Chưa xác nhận giá' : `${BigInt(b.amountVnd).toLocaleString('vi-VN')} đ`}</td>
+                      <td><span className={`badge ${b.status === 'CONFIRMED' ? 'badge-success' : 'badge-warning'}`}>{b.status === 'CONFIRMED' ? 'Đã xác nhận' : 'Chờ xác nhận'}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -1850,91 +1695,7 @@ export default function FamilyPortalPage() {
       )}
 
       {/* MODAL XÁC THỰC ĐÓNG PHÍ */}
-      {verifyingFeeNotice && (
-        <div className="modal-overlay" onClick={() => setVerifyingFeeNotice(null)}>
-          <div
-            className="modal-dialog"
-            style={{ maxWidth: '520px', background: '#ffffff', borderRadius: '0.75rem', padding: '1.5rem' }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: '0 0 1rem 0', color: '#065f46', fontSize: '1.15rem', fontWeight: 800 }}>
-              ✏️ Xác Thực Tiến Trình Đóng Phí
-            </h3>
-            <p style={{ fontSize: '0.88rem', color: '#475569', marginBottom: '1.25rem' }}>
-              Cập nhật trạng thái thanh toán cho thông báo thu phí tháng <b>{verifyingFeeNotice.billingMonth}</b> (Cụ {verifyingFeeNotice.residentName}).
-            </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-              <label className="field-group">
-                <span className="field-label">Chọn Trạng Thái Thanh Toán *</span>
-                <select
-                  className="text-input"
-                  value={paymentStatusInput}
-                  onChange={(e) => {
-                    const status = e.target.value as any;
-                    setPaymentStatusInput(status);
-                    if (status === 'PAID') setPaidAmountValue(verifyingFeeNotice.totalDue);
-                    else if (status === 'UNPAID') setPaidAmountValue(0);
-                  }}
-                >
-                  <option value="PAID">✅ Đã thu phí (Đã nhận đủ {verifyingFeeNotice.totalDue.toLocaleString('vi-VN')} đ)</option>
-                  <option value="PARTIAL">⚠️ Thu một phần (Nhập số tiền đã nhận bên dưới)</option>
-                  <option value="UNPAID">❌ Chưa thu phí (Nợ chưa thanh toán)</option>
-                </select>
-              </label>
-
-              {paymentStatusInput === 'PARTIAL' && (
-                <label className="field-group">
-                  <span className="field-label">Số tiền thực tế đã thu (VNĐ) *</span>
-                  <input
-                    type="number"
-                    className="text-input"
-                    value={paidAmountValue}
-                    onChange={(e) => setPaidAmountValue(Number(e.target.value))}
-                    max={verifyingFeeNotice.totalDue}
-                  />
-                  <span style={{ fontSize: '0.8rem', color: '#dc2626', marginTop: '0.2rem' }}>
-                    Còn nợ: {Math.max(0, verifyingFeeNotice.totalDue - paidAmountValue).toLocaleString('vi-VN')} VNĐ
-                  </span>
-                </label>
-              )}
-
-              <label className="field-group">
-                <span className="field-label">Ghi chú xác thực / Giao dịch</span>
-                <textarea
-                  className="text-input"
-                  rows={3}
-                  value={paymentNotesInput}
-                  placeholder="Ví dụ: Đã nhận chuyển khoản đợt 1 ngày 12/09..."
-                  onChange={(e) => setPaymentNotesInput(e.target.value)}
-                />
-              </label>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
-              <button type="button" className="btn btn-neutral" onClick={() => setVerifyingFeeNotice(null)}>
-                Hủy
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary"
-                style={{ fontWeight: 700 }}
-                onClick={async () => {
-                  try {
-                    await updateFeeNoticePayment(actor!, verifyingFeeNotice.id, paymentStatusInput, paidAmountValue, paymentNotesInput);
-                    setVerifyingFeeNotice(null);
-                    queryClient.invalidateQueries({ queryKey: ['family-fee-notices'] });
-                  } catch (err: any) {
-                    alert(err.message || 'Lỗi khi cập nhật trạng thái');
-                  }
-                }}
-              >
-                💾 Lưu Trạng Thái Thanh Toán
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ========================================================================= */}
       {/* MODAL: XEM & IN PHIẾU ĐÁNH GIÁ CHUẨN Y KHOA (PRINT VIEW) */}

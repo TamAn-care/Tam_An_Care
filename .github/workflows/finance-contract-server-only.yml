@@ -1,0 +1,99 @@
+name: Finance Contracts Server-Only CI
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - 'api/**'
+      - 'ops/ci/contract-*.cjs'
+      - 'ops/finance/**'
+      - '.github/workflows/finance-contract-server-only.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract-source-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            api/package-lock.json
+      - name: Block browser contract persistence
+        run: node ops/ci/contract-server-only-check.cjs
+      - name: Check quarantine policy
+        run: node ops/ci/contract-quarantine-safety.cjs
+      - name: Install frontend dependencies
+        run: npm --prefix frontend ci --no-audit --no-fund
+      - name: Build frontend
+        run: npm --prefix frontend run build
+      - name: Install API dependencies
+        run: npm --prefix api ci --no-audit --no-fund
+      - name: Build API
+        run: npm --prefix api run build
+
+
+  contract-draft-pg16:
+    name: Contract Draft HTTP + PostgreSQL 16
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: contract_ci
+          POSTGRES_PASSWORD: contract_ci_ephemeral
+          POSTGRES_DB: contract_ci_v38
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U contract_ci -d contract_ci_v38"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: contract_ci
+      PGPASSWORD: contract_ci_ephemeral
+      PGDATABASE: contract_ci_v38
+      FINANCE_PRODUCTION_GO_NO_GO: NO_GO
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+
+      - name: Install API dependencies
+        run: npm --prefix api ci --ignore-scripts --no-audit --no-fund
+
+      - name: Build API
+        run: npm --prefix api run build
+
+      - name: Run isolated PostgreSQL contract draft HTTP tests
+        shell: bash
+        run: bash ops/ci/contract-draft-pg16-run.sh
+
+      - name: Verify fail-closed release
+        shell: bash
+        run: |
+          test "$FINANCE_PRODUCTION_GO_NO_GO" = NO_GO
+          echo 'CONTRACT_DRAFT_CI=PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo 'PRODUCTION_DEPLOY=NO' >> "$GITHUB_STEP_SUMMARY"
+          echo 'PRODUCTION_MIGRATION=NO' >> "$GITHUB_STEP_SUMMARY"

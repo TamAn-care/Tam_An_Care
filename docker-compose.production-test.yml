@@ -1,13 +1,15 @@
 services:
-
   postgres:
     image: postgres:16
     restart: unless-stopped
 
     environment:
       POSTGRES_USER: taman
-      POSTGRES_PASSWORD: 54eb3e4a93ed550e02dd3b258939de6c938f92ddf9006807
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_DB: taman_care
+
+    secrets:
+      - postgres_password
 
     volumes:
       - tamancare_production_test_db:/var/lib/postgresql/data
@@ -34,7 +36,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
-      DATABASE_URL: postgresql://taman:54eb3e4a93ed550e02dd3b258939de6c938f92ddf9006807@postgres:5432/taman_care
+      DATABASE_URL_FILE: /run/secrets/database_url
+
+    secrets:
+      - database_url
 
     depends_on:
       postgres:
@@ -61,3 +66,9 @@ services:
 
 volumes:
   tamancare_production_test_db:
+
+secrets:
+  postgres_password:
+    file: "${TAMANCARE_POSTGRES_PASSWORD_FILE:?Set TAMANCARE_POSTGRES_PASSWORD_FILE to a protected secret file}"
+  database_url:
+    file: "${TAMANCARE_DATABASE_URL_FILE:?Set TAMANCARE_DATABASE_URL_FILE to a protected secret file}"

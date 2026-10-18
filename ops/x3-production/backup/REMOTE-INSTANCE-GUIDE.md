@@ -4,24 +4,17 @@ Tài liệu cấu hình và thực thi quy trình Sao lưu & Phục hồi dữ l
 
 ---
 
-## 1. Cấu hình Môi trường Server (`.env`)
+## 1. Cấu hình Môi trường Server
 
-Tại máy chủ triển khai domain `taman-dev.shiroisdumb.com`, cập nhật các tham số môi trường trong tệp `deploy/production/.env`:
+Cấp phát secret files bên ngoài repository và web roots. Đưa các đường dẫn tuyệt đối (không phải giá trị secret) vào một file operator-only, ví dụ `/etc/tamancare/production-secret-paths.env`, rồi dùng `docker compose --env-file /etc/tamancare/production-secret-paths.env`. Không lưu file này trong checkout.
 
 ```env
-TAMANCARE_ENV=production
-TAMANCARE_SERVER_NAME=taman-dev.shiroisdumb.com
-CORS_ORIGIN=https://taman-dev.shiroisdumb.com
-
-POSTGRES_DB=taman_care
-POSTGRES_USER=taman
-POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
-
-DATABASE_URL_FILE=/run/secrets/database_url
-JWT_SECRET_FILE=/run/secrets/jwt_secret
-
-BACKUP_RETENTION_DAYS=14
+TAMANCARE_POSTGRES_PASSWORD_FILE=/secure/path/postgres-password
+TAMANCARE_DATABASE_URL_FILE=/secure/path/database-url
+TAMANCARE_JWT_SECRET_FILE=/secure/path/jwt-secret
 ```
+
+Set the non-secret service configuration through the approved operator environment. Secret files should be regular, non-symlink files with mode `0400` or `0600`; keep parent directories restricted as well.
 
 ---
 
@@ -31,17 +24,17 @@ BACKUP_RETENTION_DAYS=14
 
 ```bash
 # Truy cập vào máy chủ VPS/Server của taman-dev.shiroisdumb.com
-docker compose -f deploy/production/docker-compose.production.yml exec db-backup sh /scripts/backup.sh
+docker compose --env-file /etc/tamancare/production-secret-paths.env -f deploy/production/docker-compose.production.yml exec db-backup sh /scripts/backup.sh
 ```
 
 Tệp sao lưu `.dump` và tệp đối soát `.manifest` sẽ tự động tạo tại thư mục `/backups` (gắn volume `tamancare_backups`).
 
-### Cách 2: Chạy từ xa qua kết nối DATABASE_URL
+### Cách 2: Chạy từ xa bằng secret file được bảo vệ
 
 Nếu bạn kết nối trực tiếp đến PostgreSQL của `taman-dev.shiroisdumb.com`:
 
 ```bash
-export DATABASE_URL="postgresql://taman:SECRET_PASSWORD@taman-dev.shiroisdumb.com:5432/taman_care"
+export DATABASE_URL_FILE="/secure/path/database_url"
 export BACKUP_DIR="./backups-taman-dev"
 
 sh ops/x3-production/backup/backup.sh
@@ -57,7 +50,7 @@ sh ops/x3-production/backup/backup.sh
 
 ```bash
 # Thiết lập kết nối tới DB thử nghiệm/DR Instance
-export DATABASE_URL="postgresql://taman:SECRET_PASSWORD@taman-dev.shiroisdumb.com:5432/taman_care_dr_test"
+export DATABASE_URL_FILE="/secure/path/database_url"
 
 # Thực hiện phục hồi từ file dump đã xác minh SHA-256
 sh ops/x3-production/backup/restore.sh ./backups-taman-dev/tamancare-20260915T103000Z.dump
@@ -66,7 +59,7 @@ sh ops/x3-production/backup/restore.sh ./backups-taman-dev/tamancare-20260915T10
 ### Bước 2: Chạy kiểm định tính toàn vẹn dữ liệu
 
 ```bash
-export DATABASE_URL="postgresql://taman:SECRET_PASSWORD@taman-dev.shiroisdumb.com:5432/taman_care_dr_test"
+export DATABASE_URL_FILE="/secure/path/database_url"
 
 sh ops/x3-production/dr/verify-restore.sh
 ```
@@ -78,7 +71,7 @@ sh ops/x3-production/dr/verify-restore.sh
 Khi khởi chạy hệ thống bằng Docker Compose trên server:
 
 ```bash
-docker compose -f deploy/production/docker-compose.production.yml up -d
+docker compose --env-file /etc/tamancare/production-secret-paths.env -f deploy/production/docker-compose.production.yml up -d
 ```
 
 Container `db-backup` sẽ tự động khởi động và chạy sao lưu mỗi ngày vào lúc 02:00 AM UTC, duy trì lịch sử bản sao lưu trong 14 ngày.

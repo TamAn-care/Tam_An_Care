@@ -1,0 +1,209 @@
+name: Finance GitHub-first qualification — NO DEPLOY
+
+on:
+  push:
+    branches:
+      - feature/finance-github-first-transition-*
+  pull_request:
+    branches:
+      - feature/finance-v381861-isolated-integration
+    paths:
+      - 'api/src/finance-billing/**'
+      - 'api/src/security/**'
+      - 'ops/ci/finance-*.cjs'
+      - 'ops/ci/finance-billing-schema-migration-test.sh'
+      - 'ops/finance/**'
+      - 'docs/finance-github-first-transition-20261012.md'
+      - 'docs/finance-rules-v1.0-*'
+      - 'docs/finance-checkpoint-porting-manifest-20261012.json'
+      - 'ops/ci/finance-github-first-checkpoint-gate.cjs'
+      - 'ops/ci/finance-paper-record-integration-safety.cjs'
+      - 'ops/ci/finance-github-first-ledger-pnl-regression.cjs'
+      - 'ops/ci/finance-github-first-trusted-month-close-boundary.cjs'
+      - 'api/src/paper-records/**'
+      - 'api/src/database/**'
+      - 'api/src/**/*.ts'
+      - 'docker-compose.production-test.yml'
+      - 'ops/ci/production-compose-secret-*'
+      - 'ops/ci/production-test-compose-secret-validation.sh'
+      - 'ops/ci/database-url-secret-pg16-test.cjs'
+      - 'ops/x3-production/**'
+      - 'ops/examples/production-test-secret-paths.env.example'
+      - 'deploy/production/**'
+      - 'docs/security/database-credential-*'
+      - 'docs/DEPLOYMENT_DEBIAN_DOCKER.md'
+      - '.github/workflows/finance-github-first-qualification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  finance-isolated-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: finance_ci
+          POSTGRES_PASSWORD: finance_ci_only
+          POSTGRES_DB: finance_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U finance_ci -d finance_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      FINANCE_PRODUCTION_GO_NO_GO: NO_GO
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Node environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Enforce no-production and source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$FINANCE_PRODUCTION_GO_NO_GO" = NO_GO
+          test -f api/src/finance-billing/monthly-operating-result.service.ts
+          test -f api/src/finance-billing/monthly-close-evidence.ts
+          test -f api/src/security/production-auth.middleware.ts
+          test -f ops/ci/finance-deploy-readiness.cjs
+          test -f docs/finance-github-first-transition-20261012.md
+          echo 'SOURCE_CONTRACT=PASS'
+          echo 'DEPLOY=NO'
+          echo 'PRODUCTION_DATABASE_CONNECTION=NO'
+      - name: Bind Finance V1 source manifest to the integrated candidate SHA
+        shell: bash
+        run: node ops/ci/finance-v1-source-manifest-check.cjs
+      - name: Verify imported checkpoint manifest and canonical safety semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-github-first-checkpoint-gate.cjs
+      - name: Check cross-module source parity before build
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -Fq "from './paper-records/paper-record.module'" api/src/app.module.ts &&
+             test ! -f api/src/paper-records/paper-record.module.ts; then
+            echo "::error title=Canonical source parity missing::app.module.ts imports PaperRecordModule, but the Finance branch does not contain the module. Source is present in antigravity-production-test. Integrate all dependent sources with independent security review; do not delete the import or add a fake stub."
+            echo 'CROSS_MODULE_SOURCE_PARITY=BLOCKED'
+            echo 'FINANCE_PRODUCTION_GO_NO_GO=NO_GO'
+            exit 1
+          fi
+          echo 'CROSS_MODULE_SOURCE_PARITY=PASS'
+      - name: Verify preserved Paper Records source and authentication boundary
+        run: node ops/ci/finance-paper-record-integration-safety.cjs
+      - name: Remove tracked incremental metadata and generated API output
+        working-directory: api
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f tsconfig.tsbuildinfo
+          rm -rf dist
+      - name: Build API in disposable GitHub runner
+        working-directory: api
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+          test -f dist/database/database.service.js
+          test -f dist/finance-billing/family-meal-billing.service.js
+      - name: Scan changed source for embedded database credentials
+        shell: bash
+        run: node ops/ci/production-compose-secret-source-scan.cjs
+      - name: Validate Compose secret delivery with synthetic credentials
+        shell: bash
+        run: bash ops/ci/production-test-compose-secret-validation.sh
+      - name: Verify operational secret-file reader and permission failures
+        shell: bash
+        run: bash ops/ci/operational-database-url-file-test.sh
+      - name: Connect actual API to isolated PostgreSQL 16 through secret file
+        shell: bash
+        env:
+          PG_TEST_USER: finance_ci
+          PG_TEST_PASSWORD: finance_ci_only
+          PG_TEST_DATABASE: finance_ci
+          PG_TEST_HOST: 127.0.0.1
+        run: node ops/ci/database-url-secret-pg16-test.cjs
+      - name: Build frontend in disposable GitHub runner
+        working-directory: frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          ./node_modules/.bin/tsc -p tsconfig.node.json --noEmit
+          ./node_modules/.bin/tsc -p tsconfig.app.json --noEmit
+          ./node_modules/.bin/vite build
+      - name: Finance V1 discount and absence rules
+        working-directory: api
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ../ops/ci/finance-discount-rules-v1-test.cjs
+          node ../ops/ci/finance-rbac-policy-test.cjs
+          node ../ops/ci/finance-price-resolution-test.cjs
+          node ../ops/ci/finance-contract-pricing-mode-test.cjs
+          node ../ops/ci/finance-service-mapping-rbac-test.cjs
+          node ../ops/ci/family-meal-billing-source-safety-test.cjs
+      - name: Canonical Finance isolated PostgreSQL regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v psql >/dev/null || { echo '::error::PostgreSQL client unavailable'; exit 1; }
+          bash ops/ci/finance-pg-lab-run.sh
+      - name: Finance billing migration chain — isolated schema only
+        shell: bash
+        run: bash ops/ci/finance-billing-schema-migration-test.sh
+      - name: Finance P&L production-mode HTTP/JWT/PostgreSQL E2E
+        shell: bash
+        run: bash ops/ci/finance-pnl-postgres-http-e2e.sh
+      - name: Finance isolation, evidence and security regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-github-first-trusted-month-close-boundary.cjs
+          node ops/ci/finance-github-first-ledger-pnl-regression.cjs
+          node ops/ci/finance-monthly-result-arithmetic-failclosed-gate.cjs
+          node ops/ci/finance-monthly-operating-result-test.cjs
+          node ops/ci/finance-monthly-pnl-rbac-test.cjs
+          node ops/ci/finance-v2974-isolated-test.cjs
+          node ops/ci/finance-monthly-operating-result-service-test.cjs
+          node ops/ci/finance-legacy-billing-mock-safety-test.cjs
+          node ops/ci/finance-v3818-43-entry-types-test.cjs
+          node ops/ci/finance-v3818-38-month-close-gate-test.cjs
+          node ops/ci/finance-v3818-70-source-map-readonly-test.cjs
+          node ops/ci/finance-v3818-54-catalog-readonly-test.cjs
+          node ops/ci/finance-v3818-66-real-source-gap-test.cjs
+          node ops/ci/finance-v3818-67-real-source-readiness-test.cjs
+          node ops/ci/finance-month-close-evidence-test.cjs
+          node ops/ci/finance-reconciliation-test.cjs
+          node ops/ci/finance-http-jwt-isolated-test.cjs
+          node ops/ci/finance-nest-http-jwt-test.cjs
+      - name: Fail closed on readiness decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/finance-deploy-readiness.cjs > "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'GATE_ISOLATED_PNL_HTTP_JWT_POSTGRES_E2E=PASS' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'GATE_PRODUCTION_EQUIVALENT_HTTP_JWT_E2E=BLOCKED' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'FINANCE_DEPLOY_READINESS=NO_GO' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'PRODUCTION_DEPLOY=NO' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'PRODUCTION_MIGRATION=NO' "$RUNNER_TEMP/finance-readiness.txt"
+          grep -Fxq 'PRODUCTION_SEED=NO' "$RUNNER_TEMP/finance-readiness.txt"
+          {
+            echo '## Finance GitHub-first qualification'
+            echo 'Build and isolated checks must pass; no production release is authorized.'
+            echo 'FINANCE_PRODUCTION_GO_NO_GO=NO_GO'
+          } >> "$GITHUB_STEP_SUMMARY"

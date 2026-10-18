@@ -130,7 +130,8 @@ mkdir -p deploy/production/secrets
 
 # Generate strong secrets
 echo "YOUR_STRONG_POSTGRES_PASSWORD" > deploy/production/secrets/postgres_password
-echo "postgresql://taman:YOUR_STRONG_POSTGRES_PASSWORD@postgres:5432/taman_care" > deploy/production/secrets/database_url
+# Put the approved connection URL in an external protected file; do not echo it into the checkout.
+export TAMANCARE_DATABASE_URL_FILE=/etc/tamancare/secrets/database_url
 echo "YOUR_JWT_SECRET_KEY_MINIMUM_32_CHARACTERS_LONG" > deploy/production/secrets/jwt_secret
 
 # Secure secret permissions

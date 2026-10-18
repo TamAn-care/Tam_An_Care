@@ -110,13 +110,13 @@ services:
       - tamancare_backups:/backups
       - "../../ops/x3-production/backup:/scripts:ro"
     environment:
+      DATABASE_URL_FILE: /run/secrets/database_url
       BACKUP_DIR: /backups
       BACKUP_RETENTION_DAYS: 14
     entrypoint:
       - /bin/sh
       - -c
       - |
-        export DATABASE_URL=$$(cat /run/secrets/database_url)
         echo "0 2 * * * sh /scripts/backup.sh >> /var/log/backup.log 2>&1" > /etc/crontabs/root
         exec crond -f -d 8
     mem_limit: ${BACKUP_MEMORY_LIMIT:-256m}
@@ -128,11 +128,11 @@ services:
 
 secrets:
   postgres_password:
-    file: ./secrets/postgres_password
+    file: ${TAMANCARE_POSTGRES_PASSWORD_FILE:?Set TAMANCARE_POSTGRES_PASSWORD_FILE to an external protected secret file}
   database_url:
-    file: ./secrets/database_url
+    file: ${TAMANCARE_DATABASE_URL_FILE:?Set TAMANCARE_DATABASE_URL_FILE to an external protected secret file}
   jwt_secret:
-    file: ./secrets/jwt_secret
+    file: ${TAMANCARE_JWT_SECRET_FILE:?Set TAMANCARE_JWT_SECRET_FILE to an external protected secret file}
 
 volumes:
   tamancare_postgres_data:

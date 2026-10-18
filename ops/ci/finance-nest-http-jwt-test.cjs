@@ -10,7 +10,7 @@ const {createRequire}=ModuleNative;
 const apiRequire=createRequire(path.join(__dirname,'../../api/package.json'));
 const {Module}=apiRequire('@nestjs/common');
 const {NestFactory}=apiRequire('@nestjs/core');
-const dist=path.join(__dirname,'../../api/dist');
+const dist=process.env.FINANCE_API_DIST_DIR||path.join(__dirname,'../../api/dist');
 function find(name){
  const hits=[];
  function walk(dir){for(const x of fs.readdirSync(dir,{withFileTypes:true})){
@@ -23,10 +23,12 @@ const midFile=find('production-auth.middleware.js');
 const controllerFile=find('finance-write.controller.js');
 class DatabaseServiceMarker{}
 class FinanceBillingServiceMarker{}
+class FamilyMealBillingServiceMarker{}
 const original=ModuleNative._load;
 ModuleNative._load=function(name,parent,isMain){
  if(name==='../database/database.service'&&[midFile,controllerFile].includes(parent?.filename))return {DatabaseService:DatabaseServiceMarker};
  if(name==='./finance-billing.service'&&parent?.filename===controllerFile)return {FinanceBillingService:FinanceBillingServiceMarker};
+ if(name==='./family-meal-billing.service'&&parent?.filename===controllerFile)return {FamilyMealBillingService:FamilyMealBillingServiceMarker};
  return original.apply(this,arguments);
 };
 let Middleware,Controller;
@@ -52,6 +54,7 @@ class IsolatedModule{}
 Module({controllers:[Controller],providers:[
  {provide:DatabaseServiceMarker,useValue:db},
  {provide:FinanceBillingServiceMarker,useValue:billing},
+ {provide:FamilyMealBillingServiceMarker,useValue:{}},
 ]})(IsolatedModule);
 function jwt({role=identity.role,jti=identity.sessionId,exp=Math.floor(Date.now()/1000)+300}={}){
  const encode=v=>Buffer.from(JSON.stringify(v)).toString('base64url');
