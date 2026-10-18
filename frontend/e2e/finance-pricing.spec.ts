@@ -26,7 +26,8 @@ async function login(page: Page, user: Account) {
   await page.getByRole('button', { name: /Đăng Nhập Hệ Thống/ }).click();
   const response = await loginResponse;
   if (!response.ok()) {
-    throw new Error(`Synthetic Finance E2E login failed with HTTP ${response.status()}`);
+    const route = new URL(response.url()).pathname;
+    throw new Error(`Synthetic Finance E2E login failed at ${route} with HTTP ${response.status()}`);
   }
   await expect(page.getByText('Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền')).toHaveCount(0);
   await page.goto('/billing-invoicing');
@@ -42,20 +43,9 @@ async function closeSession(page: Page) {
 async function withActorPage<T>(browser: Browser, user: Account, run: (page: Page) => Promise<T>): Promise<T> {
   const context = await browser.newContext({ baseURL: process.env.FINANCE_E2E_BASE_URL, viewport: { width: 1440, height: 1000 } });
   const page = await context.newPage();
-  let tracing = false;
   try {
-    await context.tracing.start({ screenshots: true, snapshots: true, sources: false });
-    tracing = true;
-    try {
-      await login(page, user);
-      return await run(page);
-    } catch (error) {
-      await context.tracing.stop({ path: test.info().outputPath(`${test.info().project.name}-failure.zip`) });
-      tracing = false;
-      throw error;
-    } finally {
-      if (tracing) await context.tracing.stop().catch(() => undefined);
-    }
+    await login(page, user);
+    return await run(page);
   } finally {
     await closeSession(page);
     await context.close();
@@ -135,18 +125,10 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
   const mobile = await mobileContext.newPage();
   try {
     await login(mobile, accountantUser);
-    await mobileContext.tracing.start({ screenshots: true, snapshots: true, sources: false });
-    try {
     const table = mobile.getByRole('table');
     await expect(table).toBeVisible();
     const horizontalOverflow = await table.evaluate(node => node.parentElement!.scrollWidth > node.parentElement!.clientWidth);
     expect(horizontalOverflow).toBe(true);
-    } catch (error) {
-      await mobileContext.tracing.stop({ path: test.info().outputPath(`${test.info().project.name}-mobile-failure.zip`) });
-      throw error;
-    } finally {
-      await mobileContext.tracing.stop().catch(() => undefined);
-    }
   } finally {
     await closeSession(mobile);
     await mobileContext.close();

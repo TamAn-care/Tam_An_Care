@@ -8,8 +8,7 @@ const { Module, Controller, Get } = apiRequire('@nestjs/common');
 const { NestFactory } = apiRequire('@nestjs/core');
 
 const { DatabaseService } = require('../../api/dist/database/database.service.js');
-const { AuthController } = require('../../api/dist/auth/auth.controller.js');
-const { AuthService } = require('../../api/dist/auth/auth.service.js');
+const { AuthModule } = require('../../api/dist/auth/auth.module.js');
 const { ServicePricingController } = require('../../api/dist/finance-billing/service-pricing.controller.js');
 const { ProductionAuthMiddleware } = require('../../api/dist/security/production-auth.middleware.js');
 
@@ -22,8 +21,9 @@ Get('ready')(CiHealthController.prototype, 'ready', Object.getOwnPropertyDescrip
 
 class FinancePlaywrightModule {}
 Module({
-  controllers: [CiHealthController, AuthController, ServicePricingController],
-  providers: [DatabaseService, AuthService],
+  imports: [AuthModule],
+  controllers: [CiHealthController, ServicePricingController],
+  providers: [DatabaseService],
 })(FinancePlaywrightModule);
 
 async function main() {
