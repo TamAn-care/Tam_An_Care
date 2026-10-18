@@ -71,7 +71,7 @@ jobs:
           echo 'PRODUCTION_DEPLOY=NO'
       - name: Generate redacted candidate provenance manifest
         shell: bash
-        run: node ops/ci/finance-ci-provenance.cjs frontend/test-results/finance/candidate-provenance.json
+        run: node ops/ci/finance-ci-provenance.cjs frontend/finance-artifacts/candidate-provenance.json
       - name: Build actual Finance API and run Chromium acceptance on disposable PostgreSQL 16
         shell: bash
         run: bash ops/ci/run-finance-playwright-e2e.sh
@@ -80,6 +80,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: finance-playwright-${{ github.sha }}-${{ github.run_id }}
-          path: frontend/test-results/finance/
-          if-no-files-found: ignore
+          path: |
+            frontend/finance-artifacts/
+            frontend/test-results/finance/
+          if-no-files-found: error
           retention-days: 7

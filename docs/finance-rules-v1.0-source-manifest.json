@@ -23,7 +23,7 @@
     "ops/ci/finance-price-resolution-test.cjs": "a94063fc2dfbb472f7cd76bfa950e8ada73d87f95cf63ff9b57474398550fd0f",
     "frontend/package.json": "01a069244b1f5fbabde7fe8a763938c3d3a63beb65f648922f274a96cd35e782",
     "frontend/package-lock.json": "aacab038499e19614ad05bba212d3bb60fa129ca701571cf64e783a9f1b33672",
-    "frontend/playwright.finance.config.ts": "6ddfa71a47830c4e35025cab90ab130a0771c26bd3348bd09b2ea7ca62d5ba24",
+    "frontend/playwright.finance.config.ts": "f3874463d4437fcc4bf3ddbd990d8a4b0860cd16a74e5d234d9c51b7bfb821c2",
     "frontend/e2e/finance-pricing.spec.ts": "df1223623ba368c6c5e2f3b876f4ed6630caeca369478c21473ef6088b4dea44",
     "api/src/finance-billing/finance-read.controller.ts": "eed841b69123f585757f8b5f79692fdc54a7127d909a048c1d4689862f403e9a",
     "frontend/src/api/finance-read-client.ts": "9bc6d3184ac9dc025f1c30ff178c80fd8a2bbc1e7b319d0055135d4eeac406cf",

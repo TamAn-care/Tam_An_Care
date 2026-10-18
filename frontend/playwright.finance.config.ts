@@ -11,7 +11,7 @@ export default defineConfig({
   workers: 1,
   timeout: 90_000,
   expect: { timeout: 10_000 },
-  reporter: 'list',
+  reporter: [['list'], ['json', { outputFile: 'test-results/finance/playwright-report.json' }]],
   outputDir: 'test-results/finance',
   use: {
     baseURL,
