@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+run_id="${GITHUB_RUN_ID:-local-${RANDOM}}-${GITHUB_RUN_ATTEMPT:-1}"
+database="finance_e2e_${run_id//[^a-zA-Z0-9_]/_}"
+secret_file="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/finance-e2e-database-url-${run_id}"
+api_pid=''
+vite_pid=''
+
+cleanup() {
+  local status=$?
+  [[ -n "$vite_pid" ]] && kill "$vite_pid" 2>/dev/null || true
+  [[ -n "$api_pid" ]] && kill "$api_pid" 2>/dev/null || true
+  if command -v dropdb >/dev/null 2>&1; then
+    dropdb --if-exists --maintenance-db=postgres --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" \
+      --username="$PGUSER" "$database" >/dev/null 2>&1 || status=1
+  else
+    psql --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" --username="$PGUSER" \
+      --dbname=postgres --set=ON_ERROR_STOP=1 -c \
+      "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='${database}' AND pid<>pg_backend_pid(); DROP DATABASE IF EXISTS \"${database}\";" \
+      >/dev/null 2>&1 || status=1
+  fi
+  rm -f "$secret_file"
+  if psql --host="${PGHOST:-127.0.0.1}" --port="${PGPORT:-5432}" --username="$PGUSER" \
+      --dbname=postgres --tuples-only --no-align --command \
+      "SELECT count(*) FROM pg_database WHERE datname='${database}'" 2>/dev/null | grep -qx '0'; then
+    echo 'FINANCE_E2E_DISPOSABLE_DATABASE_CLEANUP=PASS'
+  else
+    echo 'FINANCE_E2E_DISPOSABLE_DATABASE_CLEANUP=FAIL'
+    status=1
+  fi
+  exit "$status"
+}
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+cd "$root"
+export PGHOST="${PGHOST:-127.0.0.1}" PGPORT="${PGPORT:-5432}"
+createdb --host="$PGHOST" --port="$PGPORT" --username="$PGUSER" "$database"
+export PGDATABASE="$database"
+psql --set=ON_ERROR_STOP=1 --file=ops/ci/finance-playwright-bootstrap.sql
+psql --set=ON_ERROR_STOP=1 --file=ops/finance/v32/009_service_price_catalog.sql
+
+npm --prefix api ci --ignore-scripts --no-audit --no-fund
+npm --prefix api run build
+npm --prefix frontend ci --ignore-scripts --no-audit --no-fund
+frontend/node_modules/.bin/playwright install --with-deps chromium
+
+export FINANCE_E2E_PASSWORD="${FINANCE_E2E_PASSWORD:-synthetic-only-finance-e2e-password}"
+node ops/ci/finance-playwright-seed.cjs
+
+umask 077
+printf '%s%s%s:%s@%s:%s/%s' 'postgresql' '://' "$PGUSER" "$PGPASSWORD" \
+  "$PGHOST" "$PGPORT" "$PGDATABASE" > "$secret_file"
+chmod 600 "$secret_file"
+export DATABASE_URL_FILE="$secret_file"
+export JWT_SECRET='finance-playwright-synthetic-key-only-not-production'
+export TAMANCARE_FINANCE_READ_ROLES='ADMIN,SUPERVISOR'
+export TAMANCARE_FINANCE_CENTERWIDE_READ_ROLES='ADMIN,SUPERVISOR'
+export TAMANCARE_FINANCE_WRITE_ENABLED='true'
+export TAMANCARE_FINANCE_WRITE_ROLES='ACCOUNTANT'
+export TAMANCARE_FINANCE_BILLING_DRAFT_ROLES='ACCOUNTANT'
+export PORT=3000
+
+node ops/ci/finance-playwright-api.cjs >"${RUNNER_TEMP:-/tmp}/finance-playwright-api.log" 2>&1 &
+api_pid=$!
+npm --prefix frontend run dev -- --host 127.0.0.1 >"${RUNNER_TEMP:-/tmp}/finance-playwright-vite.log" 2>&1 &
+vite_pid=$!
+
+for attempt in $(seq 1 60); do
+  if curl --silent --fail http://127.0.0.1:3000/__ci/ready >/dev/null && \
+     curl --silent --fail http://127.0.0.1:5173/ >/dev/null; then
+    break
+  fi
+  if ! kill -0 "$api_pid" 2>/dev/null || ! kill -0 "$vite_pid" 2>/dev/null; then
+    echo 'FINANCE_PLAYWRIGHT_APP_START=FAIL'
+    exit 1
+  fi
+  sleep 1
+done
+curl --silent --fail http://127.0.0.1:3000/__ci/ready >/dev/null
+curl --silent --fail http://127.0.0.1:5173/ >/dev/null
+
+export FINANCE_E2E_BASE_URL='http://127.0.0.1:5173'
+export FINANCE_E2E_MAKER_ID='CI_MAKER'
+export FINANCE_E2E_SUBMITTER_ID='CI_SUBMITTER'
+export FINANCE_E2E_APPROVER_ID='CI_APPROVER'
+export FINANCE_E2E_ACCOUNTANT_ID='CI_ACCOUNTANT'
+export FINANCE_E2E_MAKER_PASSWORD="$FINANCE_E2E_PASSWORD"
+export FINANCE_E2E_SUBMITTER_PASSWORD="$FINANCE_E2E_PASSWORD"
+export FINANCE_E2E_APPROVER_PASSWORD="$FINANCE_E2E_PASSWORD"
+export FINANCE_E2E_ACCOUNTANT_PASSWORD="$FINANCE_E2E_PASSWORD"
+export FINANCE_E2E_ENVIRONMENT='synthetic-disposable-postgresql-16'
+npm --prefix frontend run test:e2e:finance
