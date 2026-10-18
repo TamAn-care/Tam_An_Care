@@ -30,7 +30,7 @@
     "frontend/src/features/finance/FinanceReadPage.tsx": "f54ebbcb72c72f7d1590f23aac30b60de19c729a117bbf1e6e5c5c9281e7d092",
     "ops/finance/v32/010_immutable_invoice_snapshot.sql": "5baf5bf500e3a2b8a039ea8dd9d340af79eccc9068392da306e187874e221a3c",
     "ops/finance/v32/010_immutable_invoice_snapshot.md": "0223bddabecd23f6cb6ff4b0fc5c76a1bcf66af28ac0bb76f50528f2e6ca89a6",
-    "ops/ci/finance-v2974-isolated-test.cjs": "b9f94ba662565acad966d4a2e131366bc4234add55340e348ebe18aabae14aea",
+    "ops/ci/finance-v2974-isolated-test.cjs": "f499e23e8ebecc5af93254f04b0865757982836a44e0551978bf705914fa59fb",
     "api/src/finance-billing/contract-pricing-mode.ts": "02602f7344865048dcd25f3e6b3d5d5d33517449b5a4a8b01684acb26de2cf0f",
     "api/src/finance-billing/service-mapping-rbac.ts": "826c5d2e5de3d2b4cea2b45d875fbe9ab282cbca435ee325bffb067d4eaf99c3",
     "api/src/finance-billing/service-mapping.controller.ts": "792ad30292c1a2907bf1cef356282772f11c3ac462d13b3dd5af05ef27276f1d",

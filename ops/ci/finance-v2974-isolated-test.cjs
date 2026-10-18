@@ -31,6 +31,10 @@ const identityPath=findCompiled(dist,'verified-finance-identity.js');
 const Module=require('node:module');
 const load=Module._load;
 Module._load=function(request,parent,isMain){
+  if(request==='../resident-access-scope/resident-access-scope.service' &&
+     parent && parent.filename===controllerPath){
+    return { ResidentAccessScopeService: class IsolatedResidentScopeMarker {} };
+  }
   if(request==='../database/database.service' &&
      parent && parent.filename===controllerPath){
     return { DatabaseService: class IsolatedDatabaseServiceMarker {} };
