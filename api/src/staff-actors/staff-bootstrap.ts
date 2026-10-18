@@ -1,3 +1,4 @@
+import { databaseConnectionString } from '../database/database-connection';
 import {
   Pool,
 } from 'pg';
@@ -69,10 +70,7 @@ function parseArguments(): Arguments {
 }
 
 async function main(): Promise<void> {
-  const databaseUrl =
-    String(
-      process.env.DATABASE_URL || '',
-    ).trim();
+  const databaseUrl = databaseConnectionString() || '';
 
   if (!databaseUrl) {
     throw new Error(

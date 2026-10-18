@@ -21,6 +21,12 @@ on:
       - 'ops/ci/finance-github-first-ledger-pnl-regression.cjs'
       - 'ops/ci/finance-github-first-trusted-month-close-boundary.cjs'
       - 'api/src/paper-records/**'
+      - 'api/src/database/**'
+      - 'api/src/**/*.ts'
+      - 'docker-compose.production-test.yml'
+      - 'ops/ci/production-compose-secret-*'
+      - 'ops/ci/production-test-compose-secret-validation.sh'
+      - 'ops/ci/database-url-secret-pg16-test.cjs'
       - '.github/workflows/finance-github-first-qualification.yml'
   workflow_dispatch:
 
@@ -109,6 +115,20 @@ jobs:
           npm run build
           test -f dist/database/database.service.js
           test -f dist/finance-billing/family-meal-billing.service.js
+      - name: Scan changed source for embedded database credentials
+        shell: bash
+        run: node ops/ci/production-compose-secret-source-scan.cjs
+      - name: Validate Compose secret delivery with synthetic credentials
+        shell: bash
+        run: bash ops/ci/production-test-compose-secret-validation.sh
+      - name: Connect actual API to isolated PostgreSQL 16 through secret file
+        shell: bash
+        env:
+          PG_TEST_USER: finance_ci
+          PG_TEST_PASSWORD: finance_ci_only
+          PG_TEST_DATABASE: finance_ci
+          PG_TEST_HOST: 127.0.0.1
+        run: node ops/ci/database-url-secret-pg16-test.cjs
       - name: Build frontend in disposable GitHub runner
         working-directory: frontend
         shell: bash

@@ -1,0 +1,6 @@
+scheme=postgresql
+username=DB_USER
+password=REPLACE_WITH_NEW_RANDOM_PASSWORD
+host=postgres
+port=5432
+database=DB_NAME
