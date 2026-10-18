@@ -2,6 +2,7 @@ import { BadRequestException, Body, Controller, ForbiddenException, Get, Param, 
 import { randomUUID } from 'node:crypto';
 import { DatabaseService } from '../database/database.service';
 import { readVerifiedFinanceIdentity } from '../security/verified-finance-identity';
+import { canViewUnapprovedPricing, hasPricingCapability, type PricingCapability } from './finance-rbac-policy';
 
 type Identity={actorId:string;actorRole:string;sessionId:string};
 const validId=(v:unknown):v is string=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,160}$/.test(v);
@@ -15,11 +16,10 @@ const validItems=(v:unknown):v is Array<Record<string,string>>=>Array.isArray(v)
 @Controller('api/finance/service-prices')
 export class ServicePricingController {
   constructor(private readonly db:DatabaseService){}
-  private async actor(req:object,capability:'VIEW'|'EDIT_DRAFT'|'SUBMIT'|'APPROVE') :Promise<Identity>{
+  private async actor(req:object,capability:PricingCapability) :Promise<Identity>{
     const identity=readVerifiedFinanceIdentity(req);
     if(!identity)throw new ForbiddenException('FINANCE_VERIFIED_SESSION_REQUIRED');
-    const allowed=(process.env[`TAMANCARE_PRICING_${capability}_ROLES`]||'').split(',').map(x=>x.trim()).filter(Boolean);
-    if(!allowed.length||allowed.some(x=>!/^[A-Z][A-Z0-9_]{1,63}$/.test(x))||!allowed.includes(identity.actorRole))
+    if(!hasPricingCapability(identity.actorRole,capability))
       throw new ForbiddenException('PRICING_CAPABILITY_NOT_GRANTED');
     const active=await this.db.query(`SELECT 1 FROM public.auth_sessions s JOIN public.staff_actors a ON a.actor_id=s.actor_id
       WHERE s.session_id=$1 AND s.actor_id=$2 AND s.actor_role=$3 AND s.revoked_at IS NULL AND s.expires_at>now()
@@ -29,10 +29,11 @@ export class ServicePricingController {
   }
   @Get()
   async list(@Req() req:object){
-    await this.actor(req,'VIEW');
+    const actor=await this.actor(req,'VIEW');
     const r=await this.db.query(`SELECT l.price_list_id AS "priceListId",l.code,v.version,v.status,v.effective_from AS "effectiveFrom",v.effective_to AS "effectiveTo",v.items,v.created_at AS "createdAt"
       FROM public.service_price_lists l JOIN public.service_price_list_versions v USING(price_list_id)
-      WHERE v.status='APPROVED' OR v.status IN ('DRAFT','PENDING_APPROVAL') ORDER BY l.code,v.version DESC LIMIT 500`);
+      WHERE v.status='APPROVED' OR ($1::boolean AND v.status IN ('DRAFT','PENDING_APPROVAL')) ORDER BY l.code,v.version DESC LIMIT 500`,
+      [canViewUnapprovedPricing(actor.actorRole)]);
     return r.rows;
   }
   @Post()
