@@ -23,6 +23,8 @@ Module._load=function(id,parent,isMain){
     [middlewareFile,controllerFile].includes(parent.filename)) return {DatabaseService:class{}};
  if(id==='./finance-billing.service' && parent?.filename===controllerFile)
     return {FinanceBillingService:class{}};
+ if(id==='./family-meal-billing.service' && parent?.filename===controllerFile)
+    return {FamilyMealBillingService:class{}};
  return load.apply(this,arguments);
 };
 let Middleware,Controller;

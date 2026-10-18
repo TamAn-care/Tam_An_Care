@@ -48,7 +48,8 @@
     "frontend/src/features/family-portal/FamilyPortalPage.tsx": "6efbf22c7c62349d693fd42acb3ca9eabf4896b813af5fa1e6c71bb73be067f9",
     "ops/ci/finance-legacy-billing-mock-safety-test.cjs": "116ef74762da03ad932534d541b077fdf4c807797ca3b3b747c14beaf1563898",
     "ops/ci/finance-monthly-pnl-rbac-test.cjs": "a3b06aa343deac137a7d0f5018152648b7a2c8eb68d80b1df3e04f1d3e14fbd2",
-    "ops/ci/finance-pnl-postgres-http-e2e.cjs": "0c2c49d3b48702984d7ee546bc8cdda9f5ae9b71d8af1a29b473bb982af6d31d"
+    "ops/ci/finance-pnl-postgres-http-e2e.cjs": "0c2c49d3b48702984d7ee546bc8cdda9f5ae9b71d8af1a29b473bb982af6d31d",
+    "ops/ci/finance-http-jwt-isolated-test.cjs": "c520634327d0b0c0842d8fbef08164ef59c139bfc8d566ed46e5791d0918646a"
   },
   "production_database_connection": false,
   "production_migration": false,
