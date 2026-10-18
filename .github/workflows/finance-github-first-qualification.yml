@@ -93,6 +93,13 @@ jobs:
           echo 'CROSS_MODULE_SOURCE_PARITY=PASS'
       - name: Verify preserved Paper Records source and authentication boundary
         run: node ops/ci/finance-paper-record-integration-safety.cjs
+      - name: Remove tracked incremental metadata and generated API output
+        working-directory: api
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f tsconfig.tsbuildinfo
+          rm -rf dist
       - name: Build API in disposable GitHub runner
         working-directory: api
         shell: bash
@@ -100,6 +107,8 @@ jobs:
           set -euo pipefail
           npm ci --ignore-scripts --no-audit --no-fund
           npm run build
+          test -f dist/database/database.service.js
+          test -f dist/finance-billing/family-meal-billing.service.js
       - name: Build frontend in disposable GitHub runner
         working-directory: frontend
         shell: bash
