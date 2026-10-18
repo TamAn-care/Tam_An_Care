@@ -118,6 +118,16 @@ done
 curl --silent --fail http://127.0.0.1:3000/api/health/ready >/dev/null
 curl --silent --fail http://127.0.0.1:5173/ >/dev/null
 grep -E 'Mapped \{/api/(auth|health|finance)' "$api_log" | cut -c1-200 || echo 'FINANCE_PLAYWRIGHT_ROUTE_MAP=EMPTY'
+direct_auth_status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+  --request POST --header 'Content-Type: application/json' --data '{}' \
+  http://127.0.0.1:3000/api/auth/login)"
+proxy_auth_status="$(curl --silent --output /dev/null --write-out '%{http_code}' \
+  --request POST --header 'Content-Type: application/json' --data '{}' \
+  http://127.0.0.1:5173/api/auth/login)"
+echo "FINANCE_PLAYWRIGHT_AUTH_ROUTE_DIRECT_STATUS=$direct_auth_status"
+echo "FINANCE_PLAYWRIGHT_AUTH_ROUTE_VITE_PROXY_STATUS=$proxy_auth_status"
+test "$direct_auth_status" = 401
+test "$proxy_auth_status" = 401
 
 export FINANCE_E2E_BASE_URL='http://127.0.0.1:5173'
 export FINANCE_E2E_MAKER_ID='CI_MAKER'
