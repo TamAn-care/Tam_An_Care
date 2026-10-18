@@ -39,7 +39,7 @@ Module({
 
 async function main() {
   process.env.NODE_ENV = 'production';
-  const app = await NestFactory.create(FinancePlaywrightModule, { logger: false });
+  const app = await NestFactory.create(FinancePlaywrightModule, { logger: ['log', 'warn', 'error'] });
   const database = app.get(DatabaseService);
   const auth = new ProductionAuthMiddleware(database);
   app.use((request, response, next) => Promise.resolve(auth.use(request, response, next)).catch(next));

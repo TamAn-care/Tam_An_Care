@@ -117,6 +117,7 @@ for attempt in $(seq 1 60); do
 done
 curl --silent --fail http://127.0.0.1:3000/api/health/ready >/dev/null
 curl --silent --fail http://127.0.0.1:5173/ >/dev/null
+grep -E 'Mapped \{/api/(auth|health|finance)' "$api_log" | cut -c1-200 || echo 'FINANCE_PLAYWRIGHT_ROUTE_MAP=EMPTY'
 
 export FINANCE_E2E_BASE_URL='http://127.0.0.1:5173'
 export FINANCE_E2E_MAKER_ID='CI_MAKER'
