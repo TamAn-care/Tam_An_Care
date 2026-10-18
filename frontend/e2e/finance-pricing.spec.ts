@@ -74,13 +74,13 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
     await pricing.getByLabel('Tên dịch vụ').fill('Synthetic service test');
     await pricing.getByLabel('Đơn giá VND').fill('123456');
     await pricing.getByRole('button', { name: 'Tạo bản nháp' }).click();
-    await expect(page.getByRole('status')).toContainText('Đã lưu bản nháp trên máy chủ');
+    await expect(page.getByText('Đã lưu bản nháp trên máy chủ.')).toBeVisible();
     const row = pricing.getByRole('row').filter({ hasText: code });
     await expect(row).toContainText('Bản nháp');
     await row.getByRole('button', { name: 'Sửa nháp' }).click();
     await pricing.getByRole('heading', { name: /Chỉnh sửa bản nháp/ }).locator('..').getByLabel('Đơn giá VND').fill('123457');
     await pricing.getByRole('button', { name: 'Lưu nháp' }).click();
-    await expect(page.getByRole('status')).toContainText('Đã cập nhật bản nháp');
+    await expect(page.getByText('Đã cập nhật bản nháp.')).toBeVisible();
     const catalog = await page.evaluate(async () => {
       const response = await fetch('/api/finance/service-prices');
       if (!response.ok) throw new Error(`catalog read ${response.status}`);
@@ -97,7 +97,7 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
     const row = pricing.getByRole('row').filter({ hasText: code });
     await expect(row).toContainText('Bản nháp');
     await row.getByRole('button', { name: 'Trình duyệt' }).click();
-    await expect(page.getByRole('status')).toContainText('Thao tác đã được máy chủ xác nhận');
+    await expect(page.getByText('Thao tác đã được máy chủ xác nhận.')).toBeVisible();
     await expect(pricing.getByRole('row').filter({ hasText: code })).toContainText('Chờ phê duyệt');
   });
 
@@ -106,7 +106,7 @@ test('pricing lifecycle uses separate synthetic maker, submitter and approver; a
     const row = pricing.getByRole('row').filter({ hasText: code });
     await pricing.getByLabel('Lý do phê duyệt/từ chối').fill('Approved synthetic Finance E2E evidence');
     await row.getByRole('button', { name: 'Phê duyệt' }).click();
-    await expect(page.getByRole('status')).toContainText('Thao tác đã được máy chủ xác nhận');
+    await expect(page.getByText('Thao tác đã được máy chủ xác nhận.')).toBeVisible();
     await expect(pricing.getByRole('row').filter({ hasText: code })).toContainText('Đã phê duyệt');
   });
 
