@@ -1,0 +1,90 @@
+name: Release readiness synthetic PostgreSQL 16 restore (NO DEPLOY)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-readiness-synthetic-restore-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  synthetic-restore:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    container:
+      image: postgres:16
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: postgres
+      PGPORT: '5432'
+      PGUSER: postgres
+      PGDATABASE: postgres
+    steps:
+      - name: Create, dump, restore and verify synthetic data
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          test "$(psql -XAtqc 'SHOW server_version_num' | cut -c1-2)" = "16"
+
+          source_db="restore_src_${GITHUB_RUN_ID}"
+          target_db="restore_dst_${GITHUB_RUN_ID}"
+          dump_file="${RUNNER_TEMP}/taman-care-synthetic-${GITHUB_RUN_ID}.dump"
+          checksum_file="${dump_file}.sha256"
+
+          cleanup() {
+            status=$?
+            set +e
+            dropdb --if-exists "$source_db" >/dev/null 2>&1
+            dropdb --if-exists "$target_db" >/dev/null 2>&1
+            rm -f -- "$dump_file" "$checksum_file"
+            remaining="$(psql -XAtqc "SELECT count(*) FROM pg_database WHERE datname IN ('$source_db','$target_db')" 2>/dev/null)"
+            if [[ "$remaining" == "0" && ! -e "$dump_file" && ! -e "$checksum_file" ]]; then
+              echo "SYNTHETIC_DB_REMAINING=0"
+              echo "TEST_RESOURCES_CLEANUP=PASS"
+            else
+              echo "SYNTHETIC_DB_REMAINING=${remaining:-UNVERIFIED}"
+              echo "TEST_RESOURCES_CLEANUP=FAIL"
+              status=1
+            fi
+            exit "$status"
+          }
+          trap cleanup EXIT
+
+          createdb "$source_db"
+          psql -X -v ON_ERROR_STOP=1 -v run_id="$GITHUB_RUN_ID" -d "$source_db" <<'SQL'
+          CREATE TABLE restore_fixture (
+            fixture_id text PRIMARY KEY,
+            run_id text NOT NULL,
+            payload text NOT NULL
+          );
+          INSERT INTO restore_fixture VALUES
+            ('row-1', :'run_id', 'synthetic-only'),
+            ('row-2', :'run_id', 'synthetic-only');
+          SQL
+
+          pg_dump -Fc --no-owner --no-acl -d "$source_db" -f "$dump_file"
+          test -s "$dump_file"
+          pg_restore --list "$dump_file" >/dev/null
+          sha256sum "$dump_file" > "$checksum_file"
+
+          dropdb "$source_db"
+          createdb "$target_db"
+          pg_restore --exit-on-error --no-owner --no-acl -d "$target_db" "$dump_file"
+          sha256sum --check "$checksum_file"
+
+          restored="$(psql -XAtqc "SELECT count(*) FROM restore_fixture WHERE run_id = '$GITHUB_RUN_ID' AND payload = 'synthetic-only'" -d "$target_db")"
+          test "$restored" = "2"
+          echo "POSTGRES_MAJOR=16"
+          echo "SYNTHETIC_ROWS_RESTORED=$restored"
