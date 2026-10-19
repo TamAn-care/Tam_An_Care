@@ -275,6 +275,16 @@ async function verify() {
 if (process.argv[2] === 'seed') seed().catch(() => { process.exitCode = 1; });
 else if (process.argv[2] === 'verify') verify().catch(error => {
   process.stderr.write(`GUARDIAN_HTTP_E2E_FAILED=${error.code || error.name || 'AssertionError'}\n`);
+  if (error.name === 'AssertionError') {
+    const detail = {
+      operator: typeof error.operator === 'string' ? error.operator : undefined,
+      expected: error.expected,
+      actual: error.actual,
+      message: String(error.message || '').replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+        .replace(/(password|token|secret)[^\n]*/gi, '$1 [REDACTED]').slice(0, 1200),
+    };
+    process.stderr.write(`GUARDIAN_HTTP_E2E_ASSERTION=${JSON.stringify(detail)}\n`);
+  }
   process.exitCode = 1;
 });
 else throw new Error('Use seed or verify');
