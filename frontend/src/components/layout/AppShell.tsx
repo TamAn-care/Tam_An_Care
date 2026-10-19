@@ -10,6 +10,8 @@ import { NotificationBell } from '../notifications/NotificationBell';
 import { IOSPWAInstallBanner } from '../pwa/IOSPWAInstallBanner';
 import { PWAInstallModal } from '../pwa/PWAInstallModal';
 import { GlobalModalResizer } from '../common/GlobalModalResizer';
+import { MobileBackBar } from '../navigation/MobileBackBar';
+import '../navigation/mobile-back.css';
 
 export function AppShell() {
   const { actor, clearActor } = useActor();
@@ -132,19 +134,24 @@ export function AppShell() {
           {/* Vertical Separator */}
           <div className="topbar-brand-divider-vert" style={{ width: '1px', height: '20px', background: '#cbd5e1', flexShrink: 0, margin: '0 0.1rem' }} />
 
-          {/* Return / Back Arrow Icon Button - Youthful Icon Design */}
+          {/* Return / Back button: mobile, tablet and desktop */}
           <button
             type="button"
             className={`topbar-back-btn ${isHome ? 'is-active' : ''}`}
             onClick={() => {
-              navigate('/dashboard');
-              window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+              if (window.history.state && typeof window.history.state.idx === 'number' && window.history.state.idx > 0) {
+                navigate(-1);
+              } else {
+                navigate('/dashboard');
+              }
             }}
-            title="Quay lại Trang Chủ"
-            aria-label="Quay lại Trang Chủ"
+            title="Quay lại trang trước"
+            aria-label="Quay lại trang trước"
             style={{
-              width: '34px',
+              minWidth: '34px',
               height: '34px',
+              padding: '0 0.65rem',
+              gap: '0.35rem',
               borderRadius: '10px',
               background: isHome ? '#e2f4ea' : '#f1f5f9',
               color: isHome ? '#166534' : '#475569',
@@ -170,6 +177,7 @@ export function AppShell() {
             >
               <path d="M19 12H5M12 19l-7-7 7-7" />
             </svg>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, whiteSpace: 'nowrap' }}>Quay lại</span>
           </button>
 
           {/* Module Status Badge - Only Module Name (No 'Phân hệ:' word) */}
@@ -380,6 +388,8 @@ export function AppShell() {
         )}
         <Outlet />
       </main>
+
+      <MobileBackBar />
 
       {/* FOOTER BAR */}
       <footer
