@@ -260,6 +260,46 @@ CREATE TABLE IF NOT EXISTS residents (
         NOT NULL DEFAULT now()
 );
 
+-- Canonical Finance ledger baseline. Production Test has this public ledger
+-- already; keeping its schema in the fresh-install baseline lets the versioned
+-- Finance migrations add provenance constraints instead of relying on an
+-- undocumented pre-existing table. The columns/checks below are aligned with
+-- the verified runtime contract and existing isolated Finance integration
+-- fixtures. This creates schema only; it does not seed financial entries.
+CREATE TABLE IF NOT EXISTS public.finance_entries (
+    finance_entry_id text PRIMARY KEY,
+    entry_type text NOT NULL CHECK (entry_type IN (
+        'REVENUE', 'DIRECT_COST', 'PAYROLL', 'OPERATING_EXPENSE',
+        'DEPRECIATION', 'INTEREST', 'TAX'
+    )),
+    category text,
+    description text,
+    amount_vnd numeric(18,2) NOT NULL,
+    recognition_date date NOT NULL,
+    cash_date date,
+    resident_id text,
+    source_mode text CHECK (source_mode IN ('MANUAL', 'SYSTEM')),
+    source_domain text,
+    source_entity_type text,
+    source_entity_id text,
+    status text NOT NULL CHECK (status IN ('DRAFT', 'POSTED', 'VOID')),
+    reference_number text,
+    note text,
+    created_by text,
+    created_by_role text,
+    created_at timestamptz DEFAULT now(),
+    updated_at timestamptz DEFAULT now()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_finance_entries_system_source
+    ON public.finance_entries(
+        source_domain, source_entity_type, source_entity_id, entry_type
+    )
+    WHERE source_mode = 'SYSTEM'
+      AND source_domain IS NOT NULL
+      AND source_entity_type IS NOT NULL
+      AND source_entity_id IS NOT NULL;
+
 CREATE INDEX IF NOT EXISTS
     idx_residents_active_status
 ON residents (
