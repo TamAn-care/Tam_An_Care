@@ -282,6 +282,7 @@ else if (process.argv[2] === 'verify') verify().catch(error => {
       actual: error.actual,
       message: String(error.message || '').replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
         .replace(/(password|token|secret)[^\n]*/gi, '$1 [REDACTED]').slice(0, 1200),
+      stack: String(error.stack || '').split('\n').slice(0, 5).join('\n'),
     };
     process.stderr.write(`GUARDIAN_HTTP_E2E_ASSERTION=${JSON.stringify(detail)}\n`);
   }
