@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useActor } from '../../auth/ActorContext';
 import { DevelopmentActorPanel } from '../../auth/DevelopmentActorPanel';
@@ -18,6 +18,18 @@ export function AppShell() {
   const navigate = useNavigate();
 
   const [showTopLogin, setShowTopLogin] = useState(false);
+  const [loginNotice, setLoginNotice] = useState<string | null>(null);
+  const previousActor = useRef(actor);
+
+  useEffect(() => {
+    const wasLoggedOut = previousActor.current === null;
+    previousActor.current = actor;
+    if (!wasLoggedOut || !actor) return;
+
+    setLoginNotice(`✅ Đăng nhập thành công: ${actor.displayName || actor.actorId} (${ROLE_LABELS[actor.actorRole] || actor.actorRole})`);
+    const timeout = window.setTimeout(() => setLoginNotice(null), 6000);
+    return () => window.clearTimeout(timeout);
+  }, [actor]);
 
   // PWA Install Prompt State
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -378,10 +390,25 @@ export function AppShell() {
 
       {/* MAIN CONTENT CONTAINER - FULL WIDTH */}
       <main className="page-content" style={{ flex: 1, padding: '1.25rem', maxWidth: '1440px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
-        {showTopLogin && (
-          actor?.actorRole === 'ADMIN' ||
-          (actor?.actorRole === 'GUARDIAN' && location.pathname === '/dashboard')
-        ) && (
+        {loginNotice && (
+          <div
+            role="status"
+            aria-live="polite"
+            style={{
+              marginBottom: '1rem',
+              padding: '0.6rem 0.85rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.83rem',
+              fontWeight: 600,
+              background: '#f0fdf4',
+              color: '#14532d',
+              border: '1px solid #bbf7d0',
+            }}
+          >
+            {loginNotice}
+          </div>
+        )}
+        {actor?.actorRole === 'ADMIN' && showTopLogin && (
           <div style={{ marginBottom: '1.25rem' }}>
             <DevelopmentActorPanel />
           </div>

@@ -259,23 +259,6 @@ export function DevelopmentActorPanel() {
         <div style={{ padding: '2.5rem 2.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           {actor ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {loginFeedback && (
-                <div
-                  role={loginFeedback.isError ? 'alert' : 'status'}
-                  aria-live={loginFeedback.isError ? 'assertive' : 'polite'}
-                  style={{
-                    padding: '0.6rem 0.85rem',
-                    borderRadius: '0.5rem',
-                    fontSize: '0.83rem',
-                    fontWeight: 600,
-                    background: loginFeedback.isError ? '#fef2f2' : '#f0fdf4',
-                    color: loginFeedback.isError ? '#991b1b' : '#14532d',
-                    border: loginFeedback.isError ? '1px solid #fecaca' : '1px solid #bbf7d0',
-                  }}
-                >
-                  {loginFeedback.text}
-                </div>
-              )}
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '1.25rem' }}>✅</span>
                 <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#166534', fontWeight: 800 }}>
