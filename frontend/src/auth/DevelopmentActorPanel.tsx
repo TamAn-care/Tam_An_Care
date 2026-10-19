@@ -341,6 +341,7 @@ export function DevelopmentActorPanel() {
               <form onSubmit={handleUnifiedLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                 <div>
                   <label
+                    htmlFor="login-identifier"
                     style={{
                       display: 'block',
                       fontSize: '0.83rem',
@@ -352,6 +353,7 @@ export function DevelopmentActorPanel() {
                     {loginPrincipal === 'GUARDIAN' ? 'Tên đăng nhập thân nhân' : 'Tên đăng nhập / Mã nhân viên'} <span style={{ color: '#dc2626' }}>*</span>
                   </label>
                   <input
+                    id="login-identifier"
                     type="text"
                     value={loginIdentifier}
                     onChange={(e) => setLoginIdentifier(e.target.value)}
@@ -373,6 +375,7 @@ export function DevelopmentActorPanel() {
 
                 <div>
                   <label
+                    htmlFor="login-password"
                     style={{
                       display: 'block',
                       fontSize: '0.83rem',
@@ -384,6 +387,7 @@ export function DevelopmentActorPanel() {
                     Mật khẩu đăng nhập <span style={{ color: '#dc2626' }}>*</span>
                   </label>
                   <input
+                    id="login-password"
                     type="password"
                     value={loginPassword}
                     onChange={(e) => setLoginPassword(e.target.value)}
