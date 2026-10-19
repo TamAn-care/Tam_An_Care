@@ -117,8 +117,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          (cd api && nohup node dist/main.js > "$RUNNER_TEMP/guardian-api.log" 2>&1 & echo $! > "$RUNNER_TEMP/guardian-api.pid")
-          (cd frontend && nohup npm run dev -- --host 127.0.0.1 --port 5173 > "$RUNNER_TEMP/guardian-frontend.log" 2>&1 & echo $! > "$RUNNER_TEMP/guardian-frontend.pid")
+          cd api
+          nohup node dist/main.js > "$RUNNER_TEMP/guardian-api.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/guardian-api.pid"
+          cd ../frontend
+          nohup ./node_modules/.bin/vite --host 127.0.0.1 --port 5173 > "$RUNNER_TEMP/guardian-frontend.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/guardian-frontend.pid"
+          cd ..
           for attempt in $(seq 1 60); do
             if curl --fail --silent http://127.0.0.1:3000/api/health/ready >/dev/null && curl --fail --silent http://127.0.0.1:5173 >/dev/null; then
               echo 'GUARDIAN_API_FRONTEND_STARTED=PASS'
@@ -166,17 +171,33 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cleanup_failed=0
           for pid_file in "$RUNNER_TEMP/guardian-api.pid" "$RUNNER_TEMP/guardian-frontend.pid"; do
             if [[ -f "$pid_file" ]]; then
               pid="$(cat "$pid_file")"
-              kill "$pid" 2>/dev/null || true
+              if kill -0 "$pid" 2>/dev/null; then
+                kill "$pid" 2>/dev/null || cleanup_failed=1
+                for attempt in $(seq 1 10); do
+                  kill -0 "$pid" 2>/dev/null || break
+                  sleep 1
+                done
+                if kill -0 "$pid" 2>/dev/null; then
+                  kill -KILL "$pid" 2>/dev/null || true
+                  cleanup_failed=1
+                fi
+              fi
             fi
           done
           dropdb --if-exists --force "$DB_NAME"
           if psql -X -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" | grep -q 1; then
             echo 'GUARDIAN_DISPOSABLE_DB_CLEANUP=FAIL'
+            cleanup_failed=1
+          fi
+          if [[ "$cleanup_failed" == 1 ]]; then
+            echo 'GUARDIAN_TEST_PROCESS_CLEANUP=FAIL'
             exit 1
           fi
+          echo 'GUARDIAN_TEST_PROCESS_CLEANUP=PASS'
           echo 'GUARDIAN_DISPOSABLE_DB_CLEANUP=PASS'
           echo 'PRODUCTION_NETWORK=NOT_CONFIGURED'
           echo 'DEPLOY=NO PRODUCTION_MIGRATION=NO'
