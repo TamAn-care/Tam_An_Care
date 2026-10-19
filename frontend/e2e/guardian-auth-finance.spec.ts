@@ -18,6 +18,7 @@ test('Guardian uses separate login, sees linked issued notice, and remains read-
   await expect(page.getByText(/Đăng nhập thành công/)).toBeVisible();
 
   await page.goto('/family-portal');
+  await page.getByRole('button', { name: /Thông Báo Thu Phí/ }).click();
   await expect(page.getByRole('heading', { name: 'Thông báo thu tiền tháng' })).toBeVisible();
   await expect(page.getByText('Synthetic Guardian Resident')).toBeVisible();
   await expect(page.getByText('10.000 ₫', { exact: false }).first()).toBeVisible();
