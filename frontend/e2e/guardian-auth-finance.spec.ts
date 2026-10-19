@@ -31,7 +31,7 @@ test('Guardian uses separate login, sees linked issued notice, and remains read-
   await page.getByLabel(/Số lượng suất ăn/).fill('2');
   await page.getByRole('button', { name: '🍽️ Đăng Ký Bữa Ăn' }).click();
   await expect(page.getByText(/Đã ghi nhận đăng ký 2 suất/)).toBeVisible();
-  await expect(page.getByText('Chờ xác nhận')).toBeVisible();
+  await expect(page.getByText('Chờ xác nhận', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Thông Báo Thu Phí' }).click();
   await expect(page.getByText('10.000 ₫', { exact: false }).first()).toBeVisible();
   await expect(page.getByText('7.500 ₫', { exact: false })).toBeVisible();
