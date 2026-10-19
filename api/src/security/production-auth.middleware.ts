@@ -3,6 +3,7 @@ import {
   Injectable,
   NestMiddleware,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 
 import {
@@ -20,7 +21,7 @@ type ActorRole =
   | 'MEDICAL_HEAD'
   | 'CARE_MANAGER'
   | 'SUPERVISOR'
-  | 'ADMIN' | 'ACCOUNTANT';
+  | 'ADMIN' | 'ACCOUNTANT' | 'GUARDIAN';
 
 interface JwtPayload {
   sub?: unknown;
@@ -32,6 +33,7 @@ interface JwtPayload {
 
 interface HttpRequest {
   originalUrl: string;
+  method?: string;
 
   headers: Record<
     string,
@@ -55,8 +57,9 @@ const VALID_ROLES =
     'MEDICAL_HEAD',
     'ADMIN',
     'SUPERVISOR',
-  
-    'ACCOUNTANT',]);
+    'ACCOUNTANT',
+    'GUARDIAN',
+  ]);
 
 function decode(
   value: string,
@@ -247,6 +250,8 @@ export class ProductionAuthMiddleware
       path ===
         '/api/auth/login' ||
       path ===
+        '/api/auth/guardian/login' ||
+      path ===
         '/api/health' ||
       path ===
         '/api/health/live' ||
@@ -304,11 +309,39 @@ export class ProductionAuthMiddleware
     const actorRole =
       payload.role as string;
 
+    const method = String(req.method || 'GET').toUpperCase();
+    const isGuardianResidentRead =
+      path === '/api/family-portal/residents' ||
+      path === '/api/family-portal/residents/ids' ||
+      /^\/api\/family-portal\/residents\/[A-Za-z0-9_-]{1,160}$/.test(path);
+    const isGuardianFinanceNoticeRead =
+      /^\/api\/finance-read\/residents\/[A-Za-z0-9_-]{1,160}\/payment-notices\/\d{4}-(0[1-9]|1[0-2])$/.test(path);
+    const isGuardianFamilyMealRead = path === '/api/nutrition/family-meals';
+    const isGuardianFamilyMealRegistration = method === 'POST' && path === '/api/nutrition/family-meals';
+    if (actorRole === 'GUARDIAN'
+      && !((method === 'GET' && (isGuardianResidentRead || isGuardianFinanceNoticeRead || isGuardianFamilyMealRead))
+        || isGuardianFamilyMealRegistration || (method === 'POST' && path === '/api/auth/logout'))) {
+      throw new ForbiddenException('GUARDIAN_READ_ONLY_SCOPE');
+    }
+    if (actorRole !== 'GUARDIAN' && path.startsWith('/api/family-portal/')) {
+      throw new ForbiddenException('STAFF_CANNOT_USE_GUARDIAN_ROUTE');
+    }
+
     const sessionId =
       payload.jti as string;
 
-    const session =
-      await this.db.query<{
+    const session = actorRole === 'GUARDIAN'
+      ? await this.db.query(
+        `SELECT s.session_id
+           FROM guardian_sessions s
+           JOIN guardian_identities g ON g.guardian_id=s.guardian_id
+          WHERE s.session_id=$1 AND s.guardian_id=$2
+            AND g.status='ACTIVE' AND s.revoked_at IS NULL
+            AND s.expires_at>now()
+          LIMIT 1`,
+        [sessionId, actorId],
+      )
+      : await this.db.query<{
         actor_id: string;
         actor_role: string;
       }>(
@@ -352,11 +385,17 @@ export class ProductionAuthMiddleware
     ] = sessionId;
 
     // Publish only after validated active session.
-    publishVerifiedFinanceIdentity(req, {
-      actorId,
-      actorRole,
-      sessionId,
-    });
+    const requiresVerifiedBusinessIdentity =
+      path.startsWith('/api/finance-read/') ||
+      path.startsWith('/api/finance-write/') ||
+      path.startsWith('/api/finance/') ||
+      path.startsWith('/api/service-contract-drafts/') ||
+      path.startsWith('/api/service-contracts/') ||
+      path.startsWith('/api/service-contract-signoff/') ||
+      path === '/api/nutrition/family-meals';
+    if (requiresVerifiedBusinessIdentity) {
+      publishVerifiedFinanceIdentity(req, { actorId, actorRole, sessionId });
+    }
     next();
   }
 }

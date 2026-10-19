@@ -168,7 +168,7 @@ export async function fetchGuardianResidentIds(
     await apiRequest<{
       residentIds: string[];
     }>(
-      '/behavioral-cognitive/guardian-resident-ids',
+      '/api/family-portal/residents/ids',
       {
         actor,
       },

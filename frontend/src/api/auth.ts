@@ -107,6 +107,33 @@ export async function loginWithPassword(
   return data.actor;
 }
 
+export async function loginGuardianWithPassword(
+  loginId: string,
+  password: string,
+): Promise<ActiveStaffMember> {
+  const cleanLoginId = loginId.trim();
+  if (!cleanLoginId || !password) {
+    throw new Error('Vui lòng nhập tên đăng nhập và mật khẩu.');
+  }
+  const response = await fetch(`${API_BASE_URL}/api/auth/guardian/login`, {
+    method: 'POST',
+    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ loginId: cleanLoginId, password }),
+  });
+  if (!response.ok) {
+    clearStoredAuthSession();
+    if (response.status === 401) throw new Error('Tên đăng nhập hoặc mật khẩu không chính xác.');
+    throw new Error('Không thể đăng nhập cổng thân nhân.');
+  }
+  const data = await response.json() as LoginResponse;
+  if (!data.accessToken || !data.actor?.actorId || data.actor.actorRole !== 'GUARDIAN') {
+    clearStoredAuthSession();
+    throw new Error('Máy chủ trả về phiên Guardian không hợp lệ.');
+  }
+  storeAccessToken(data.accessToken);
+  return data.actor;
+}
+
 export async function logoutCurrentSession():
   Promise<void> {
   const auth =

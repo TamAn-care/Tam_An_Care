@@ -1,0 +1,168 @@
+name: Guardian identity and Finance notice — PostgreSQL 16 + Chromium (NO DEPLOY)
+
+on:
+  push:
+    branches: [integration/finance-guardian-20261019]
+    paths:
+      - 'api/**'
+      - 'database/**'
+      - 'frontend/**'
+      - 'ops/finance/**'
+      - 'ops/ci/guardian-integration-postgres-setup.sh'
+      - '.github/workflows/guardian-finance-postgres-browser.yml'
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'database/**'
+      - 'frontend/**'
+      - 'ops/finance/**'
+      - 'ops/ci/guardian-integration-postgres-setup.sh'
+      - '.github/workflows/guardian-finance-postgres-browser.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-finance-pg16-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guardian-http-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci_guardian
+          POSTGRES_PASSWORD: ci_guardian_only
+          POSTGRES_DB: postgres
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U ci_guardian -d postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 12
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: ci_guardian
+      PGPASSWORD: ci_guardian_only
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_USER: ci_guardian
+      DB_PASSWORD: ci_guardian_only
+      DB_NAME: guardian_e2e_${{ github.run_id }}
+      DATABASE_URL: postgresql://ci_guardian:ci_guardian_only@127.0.0.1:5432/guardian_e2e_${{ github.run_id }}
+      NODE_ENV: production
+      JWT_SECRET: synthetic-guardian-e2e-jwt-key-only-never-production-20261019
+      GUARDIAN_TEST_PASSWORD: synthetic-only-guardian-password-20261019
+      TAMANCARE_FINANCE_WRITE_ENABLED: 'true'
+      TAMANCARE_FINANCE_WRITE_ROLES: SUPERVISOR
+      TAMANCARE_FINANCE_BILLING_DRAFT_ROLES: SUPERVISOR
+      CORS_ALLOWED_ORIGINS: http://127.0.0.1:5173
+      API_BASE_URL: http://127.0.0.1:3000
+      VITE_API_BASE_URL: http://127.0.0.1:3000
+      PLAYWRIGHT_BASE_URL: http://127.0.0.1:5173
+      GUARDIAN_TEST_LOGIN: ci-guardian-${{ github.run_id }}@example.invalid
+      GUARDIAN_TEST_RESIDENT_ID: ci-resident-${{ github.run_id }}
+      GUARDIAN_TEST_OTHER_RESIDENT_ID: ci-other-${{ github.run_id }}
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            api/package-lock.json
+            frontend/package-lock.json
+      - name: Install locked API and browser dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd api && npm ci --ignore-scripts --no-audit --no-fund)
+          (cd frontend && npm ci --ignore-scripts --no-audit --no-fund)
+          (cd frontend && npx playwright install --with-deps chromium)
+      - name: Build actual NestJS API and React frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd api && npm run build)
+          (cd frontend && npm run build)
+      - name: Create owned disposable PostgreSQL database
+        run: createdb "$DB_NAME"
+      - name: Apply canonical schema and Finance 008–013 plus Guardian additive migration
+        shell: bash
+        run: bash ops/ci/guardian-integration-postgres-setup.sh
+      - name: Seed synthetic Guardian, two residents, signed contract, issued snapshot and receipt
+        working-directory: api
+        run: node test/guardian-auth-postgres-http.e2e.cjs seed
+      - name: Start actual production-mode NestJS API and Vite frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd api && nohup node dist/main.js > "$RUNNER_TEMP/guardian-api.log" 2>&1 & echo $! > "$RUNNER_TEMP/guardian-api.pid")
+          (cd frontend && nohup npm run dev -- --host 127.0.0.1 --port 5173 > "$RUNNER_TEMP/guardian-frontend.log" 2>&1 & echo $! > "$RUNNER_TEMP/guardian-frontend.pid")
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3000/api/health/ready >/dev/null && curl --fail --silent http://127.0.0.1:5173 >/dev/null; then
+              echo 'GUARDIAN_API_FRONTEND_STARTED=PASS'
+              exit 0
+            fi
+            sleep 2
+          done
+          echo 'GUARDIAN_API_FRONTEND_START=FAIL'
+          exit 1
+      - name: Actual HTTP JWT, PostgreSQL resident scope, notice snapshot and staff separation E2E
+        working-directory: api
+        run: node test/guardian-auth-postgres-http.e2e.cjs verify
+      - name: Real Chromium Guardian login, monthly notice and mobile scope acceptance
+        working-directory: frontend
+        run: npx playwright test --config=playwright.guardian.config.ts
+      - name: Verify browser report includes executed passing Chromium assertions
+        if: always()
+        working-directory: frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const p = 'test-results/guardian-playwright-report.json';
+          if (!fs.existsSync(p)) throw new Error('GUARDIAN_PLAYWRIGHT_REPORT_MISSING');
+          const report = JSON.parse(fs.readFileSync(p, 'utf8'));
+          const stats = report.stats || {};
+          console.log(`GUARDIAN_BROWSER_EXPECTED=${stats.expected || 0}`);
+          console.log(`GUARDIAN_BROWSER_FAILED=${stats.unexpected || 0}`);
+          if (stats.expected < 1 || stats.unexpected !== 0 || stats.skipped !== 0) process.exit(1);
+          NODE
+      - name: Upload sanitized browser report and failure trace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: guardian-finance-browser-${{ github.sha }}
+          path: |
+            frontend/test-results/guardian-playwright-report.json
+            frontend/test-results/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Stop exact test processes and remove only this run's disposable database
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          for pid_file in "$RUNNER_TEMP/guardian-api.pid" "$RUNNER_TEMP/guardian-frontend.pid"; do
+            if [[ -f "$pid_file" ]]; then
+              pid="$(cat "$pid_file")"
+              kill "$pid" 2>/dev/null || true
+            fi
+          done
+          dropdb --if-exists --force "$DB_NAME"
+          if psql -X -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" | grep -q 1; then
+            echo 'GUARDIAN_DISPOSABLE_DB_CLEANUP=FAIL'
+            exit 1
+          fi
+          echo 'GUARDIAN_DISPOSABLE_DB_CLEANUP=PASS'
+          echo 'PRODUCTION_NETWORK=NOT_CONFIGURED'
+          echo 'DEPLOY=NO PRODUCTION_MIGRATION=NO'

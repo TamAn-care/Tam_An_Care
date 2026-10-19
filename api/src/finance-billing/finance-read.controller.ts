@@ -242,7 +242,10 @@ export class FinanceReadController {
     if (identity.actorRole === 'GUARDIAN') {
       if (!this.residentScope) throw new ForbiddenException('FINANCE_RESIDENT_SCOPE_UNAVAILABLE');
       const active = await this.db.query(
-        `SELECT 1 FROM public.auth_sessions WHERE session_id=$1 AND actor_id=$2 AND actor_role='GUARDIAN' AND revoked_at IS NULL AND expires_at>now() LIMIT 1`,
+        `SELECT 1 FROM public.guardian_sessions s
+           JOIN public.guardian_identities g ON g.guardian_id=s.guardian_id
+          WHERE s.session_id=$1 AND s.guardian_id=$2 AND g.status='ACTIVE'
+            AND s.revoked_at IS NULL AND s.expires_at>now() LIMIT 1`,
         [identity.sessionId,identity.actorId],
       );
       if (active.rowCount !== 1 || !await this.residentScope.canAccessResident(identity.actorId,'GUARDIAN',residentId)) {

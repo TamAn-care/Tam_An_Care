@@ -25,6 +25,19 @@ interface CredentialRow {
   status: string;
 }
 
+interface GuardianCredentialRow {
+  guardian_id: string;
+  login_id: string;
+  display_name: string;
+  status: string;
+  password_hash: string;
+  password_salt: string;
+  password_iterations: number;
+  password_digest: string;
+  failed_attempts: number;
+  locked_until: Date | string | null;
+}
+
 export interface ResolvedActor {
   actorId: string;
   staffCode: string;
@@ -319,6 +332,102 @@ export class AuthService {
     };
   }
 
+  async loginGuardian(loginIdInput: string, password: string) {
+    const loginId = String(loginIdInput || '').trim().toLowerCase();
+    if (!loginId || loginId.length > 254 || !password || password.length > 256) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const result = await this.db.query<GuardianCredentialRow>(
+      `SELECT g.guardian_id, g.login_id, g.display_name, g.status,
+              c.password_hash, c.password_salt, c.password_iterations,
+              c.password_digest, c.failed_attempts, c.locked_until
+         FROM guardian_identities g
+         JOIN guardian_credentials c ON c.guardian_id=g.guardian_id
+        WHERE g.login_id=$1
+        LIMIT 1`,
+      [loginId],
+    );
+    const row = result.rows[0];
+    if (!row || row.status !== 'ACTIVE' || (row.locked_until && new Date(row.locked_until).getTime() > Date.now())) {
+      if (row) await this.recordGuardianLoginFailure(row.guardian_id);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    let valid = false;
+    try {
+      if (row.password_digest === 'sha256' && row.password_iterations >= 100000 && row.password_iterations <= 1000000
+        && /^[0-9a-f]{64}$/.test(row.password_hash) && /^[0-9a-f]{48,128}$/.test(row.password_salt)) {
+        const calculated = pbkdf2Sync(password, row.password_salt, row.password_iterations, 32, 'sha256');
+        const expected = Buffer.from(row.password_hash, 'hex');
+        valid = expected.length === calculated.length && timingSafeEqual(expected, calculated);
+      }
+    } catch {
+      valid = false;
+    }
+    if (!valid) {
+      await this.recordGuardianLoginFailure(row.guardian_id);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    const expiresAt = now + 28800;
+    const sessionId = randomUUID();
+    await this.db.withTransaction(async client => {
+      const active = await client.query<GuardianCredentialRow>(
+        `SELECT g.guardian_id, g.login_id, g.display_name, g.status,
+                c.password_hash, c.password_salt, c.password_iterations,
+                c.password_digest, c.failed_attempts, c.locked_until
+           FROM guardian_identities g
+          JOIN guardian_credentials c ON c.guardian_id=g.guardian_id
+         WHERE g.guardian_id=$1 AND g.status='ACTIVE'
+           AND (c.locked_until IS NULL OR c.locked_until<=now())
+         FOR UPDATE OF g,c`,
+        [row.guardian_id],
+      );
+      const lockedRow = active.rows[0];
+      if (!lockedRow || lockedRow.password_hash !== row.password_hash
+        || lockedRow.password_salt !== row.password_salt
+        || lockedRow.password_iterations !== row.password_iterations
+        || lockedRow.password_digest !== row.password_digest) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+      await client.query(
+        `UPDATE guardian_credentials SET failed_attempts=0, locked_until=NULL, updated_at=now()
+          WHERE guardian_id=$1`, [row.guardian_id],
+      );
+      await client.query(
+        `INSERT INTO guardian_sessions(session_id,guardian_id,issued_at,expires_at)
+         VALUES($1,$2,to_timestamp($3),to_timestamp($4))`,
+        [sessionId,row.guardian_id,now,expiresAt],
+      );
+      await client.query(
+        `INSERT INTO guardian_auth_audit(guardian_id,event_type,session_id)
+         VALUES($1,'LOGIN_SUCCEEDED',$2)`, [row.guardian_id,sessionId],
+      );
+    });
+
+    return {
+      accessToken: this.issueToken(row.guardian_id, 'GUARDIAN', sessionId, now, expiresAt),
+      tokenType: 'Bearer',
+      expiresIn: 28800,
+      actor: { actorId: row.guardian_id, displayName: row.display_name, actorRole: 'GUARDIAN' as const },
+    };
+  }
+
+  private async recordGuardianLoginFailure(guardianId: string): Promise<void> {
+    await this.db.query(
+      `UPDATE guardian_credentials
+          SET failed_attempts=failed_attempts+1,
+              locked_until=CASE WHEN failed_attempts+1>=5 THEN now()+interval '15 minutes' ELSE locked_until END,
+              updated_at=now()
+        WHERE guardian_id=$1`, [guardianId],
+    );
+    await this.db.query(
+      `INSERT INTO guardian_auth_audit(guardian_id,event_type) VALUES($1,'LOGIN_FAILED')`, [guardianId],
+    );
+  }
+
   async revokeSession(
     actorId: string,
     sessionId: string,
@@ -349,11 +458,17 @@ export class AuthService {
         ],
       );
 
-    if (result.rowCount !== 1) {
-      throw new UnauthorizedException(
-        'Authentication session is not active',
-      );
-    }
+    if (result.rowCount === 1) return;
+    const guardianResult = await this.db.query(
+      `UPDATE guardian_sessions SET revoked_at=now(), revoked_reason='LOGOUT'
+        WHERE session_id=$1 AND guardian_id=$2 AND revoked_at IS NULL`,
+      [sessionId, actorId],
+    );
+    if (guardianResult.rowCount !== 1) throw new UnauthorizedException('Authentication session is not active');
+    await this.db.query(
+      `INSERT INTO guardian_auth_audit(guardian_id,event_type,session_id)
+       VALUES($1,'SESSION_REVOKED',$2)`, [actorId,sessionId],
+    );
   }
 
   private issueToken(

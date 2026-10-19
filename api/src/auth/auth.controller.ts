@@ -45,6 +45,17 @@ export class AuthController {
     );
   }
 
+  @Post('guardian/login')
+  @HttpCode(200)
+  loginGuardian(
+    @Body() body: { loginId?: string; password?: string },
+  ) {
+    return this.authService.loginGuardian(
+      String(body.loginId || ''),
+      String(body.password || ''),
+    );
+  }
+
   @Post('logout')
   @HttpCode(204)
   async logout(

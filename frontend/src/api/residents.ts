@@ -32,7 +32,7 @@ export interface ResidentContext {
 
 export interface ResidentContextResponse {
   resident: ResidentContext;
-  source: 'V7.4.3_DEVELOPMENT_CONTEXT';
+  source: 'V7.4.3_DEVELOPMENT_CONTEXT' | 'POSTGRESQL';
   clinicalRecord: false;
 }
 
@@ -106,8 +106,11 @@ export interface OperationalCareViewResponse {
 export async function listResidents(
   actor?: HumanActorSession | null,
 ): Promise<ResidentContextResponse[]> {
+  const path = actor?.actorRole === 'GUARDIAN'
+    ? '/api/family-portal/residents'
+    : '/api/residents';
   return apiRequest<ResidentContextResponse[]>(
-    '/api/residents',
+    path,
     {
       actor,
     },

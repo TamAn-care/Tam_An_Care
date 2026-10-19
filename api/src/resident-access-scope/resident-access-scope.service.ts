@@ -70,6 +70,23 @@ export class ResidentAccessScopeService {
       return false;
     }
 
+    if (actorRole === 'GUARDIAN') {
+      const result = await this.db.query(
+        `SELECT 1
+           FROM guardian_identities g
+           JOIN guardian_resident_links l ON l.guardian_id=g.guardian_id
+           JOIN residents r ON r.resident_id=l.resident_id
+          WHERE g.guardian_id=$1 AND g.status='ACTIVE'
+            AND l.resident_id=$2 AND l.status='ACTIVE'
+            AND l.effective_from<=now()
+            AND (l.effective_to IS NULL OR l.effective_to>now())
+            AND r.active_status=true
+          LIMIT 1`,
+        [actorId,residentId],
+      );
+      return result.rowCount === 1;
+    }
+
     const canonicalActor =
       await this.staffActors
         .resolveActiveActorWithRole(
@@ -161,6 +178,22 @@ export class ResidentAccessScopeService {
       return [];
     }
 
+    if (actorRole === 'GUARDIAN') {
+      const result = await this.db.query<{ resident_id: string }>(
+        `SELECT DISTINCT r.resident_id
+           FROM guardian_identities g
+           JOIN guardian_resident_links l ON l.guardian_id=g.guardian_id
+           JOIN residents r ON r.resident_id=l.resident_id
+          WHERE g.guardian_id=$1 AND g.status='ACTIVE'
+            AND l.status='ACTIVE' AND l.effective_from<=now()
+            AND (l.effective_to IS NULL OR l.effective_to>now())
+            AND r.active_status=true
+          ORDER BY r.resident_id`,
+        [actorId],
+      );
+      return result.rows.map(row => row.resident_id);
+    }
+
     const canonicalActor =
       await this.staffActors
         .resolveActiveActorWithRole(
@@ -241,6 +274,28 @@ export class ResidentAccessScopeService {
         sql: 'FALSE',
         params: [],
         nextParameter: startParameter,
+        enforcement: 'ASSIGNMENT_SCOPED',
+      };
+    }
+
+    if (actorRole === 'GUARDIAN') {
+      const guardianIdParameter = startParameter;
+      return {
+        sql: `
+          ${residentAlias}.active_status = true
+          AND EXISTS (
+            SELECT 1 FROM guardian_identities gi
+            JOIN guardian_resident_links grl ON grl.guardian_id=gi.guardian_id
+            WHERE gi.guardian_id=$${guardianIdParameter}
+              AND gi.status='ACTIVE'
+              AND grl.resident_id=${residentAlias}.resident_id
+              AND grl.status='ACTIVE'
+              AND grl.effective_from<=now()
+              AND (grl.effective_to IS NULL OR grl.effective_to>now())
+          )
+        `,
+        params: [actorId],
+        nextParameter: startParameter + 1,
         enforcement: 'ASSIGNMENT_SCOPED',
       };
     }

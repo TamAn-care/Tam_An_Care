@@ -7,6 +7,7 @@ import {
   getStoredAdminPassword,
   setStoredAdminPassword,
   loginWithPassword,
+  loginGuardianWithPassword,
   logoutCurrentSession,
 } from '../api/auth';
 import { ROLE_LABELS } from './role-policy';
@@ -19,6 +20,7 @@ export function DevelopmentActorPanel() {
   // Unified Login State
   const [loginIdentifier, setLoginIdentifier] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
+  const [loginPrincipal, setLoginPrincipal] = useState<'STAFF' | 'GUARDIAN'>('STAFF');
   const [loginFeedback, setLoginFeedback] = useState<{ text: string; isError: boolean } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,7 +35,7 @@ export function DevelopmentActorPanel() {
   const { data: staffList, isLoading } = useQuery({
     queryKey: ['auth-active-staff'],
     queryFn: fetchActiveStaff,
-    enabled: Boolean(actor),
+    enabled: actor?.actorRole === 'ADMIN',
   });
 
   const allAccounts = staffList ?? [];
@@ -67,10 +69,9 @@ export function DevelopmentActorPanel() {
     setIsSubmitting(true);
 
     try {
-      const resolved = await loginWithPassword(
-        userStr,
-        passStr,
-      );
+      const resolved = loginPrincipal === 'GUARDIAN'
+        ? await loginGuardianWithPassword(userStr, passStr)
+        : await loginWithPassword(userStr, passStr);
 
       setActor({
         actorId: resolved.actorId,
@@ -84,9 +85,9 @@ export function DevelopmentActorPanel() {
       });
 
       setLoginPassword('');
-      await queryClient.invalidateQueries({
-        queryKey: ['auth-active-staff'],
-      });
+      if (resolved.actorRole !== 'GUARDIAN') {
+        await queryClient.invalidateQueries({ queryKey: ['auth-active-staff'] });
+      }
 
       setTimeout(
         () => setLoginFeedback(null),
@@ -332,6 +333,11 @@ export function DevelopmentActorPanel() {
                 Đăng nhập tài khoản để thực thi nhiệm vụ đúng thẩm quyền
               </p>
 
+              <div role="group" aria-label="Loại tài khoản" style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                <button type="button" aria-pressed={loginPrincipal === 'STAFF'} onClick={() => setLoginPrincipal('STAFF')} style={{ minHeight: 40, padding: '0.5rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #94a3b8', background: loginPrincipal === 'STAFF' ? '#166534' : '#fff', color: loginPrincipal === 'STAFF' ? '#fff' : '#334155' }}>Nhân viên</button>
+                <button type="button" aria-pressed={loginPrincipal === 'GUARDIAN'} onClick={() => setLoginPrincipal('GUARDIAN')} style={{ minHeight: 40, padding: '0.5rem 0.85rem', borderRadius: '0.5rem', border: '1px solid #94a3b8', background: loginPrincipal === 'GUARDIAN' ? '#166534' : '#fff', color: loginPrincipal === 'GUARDIAN' ? '#fff' : '#334155' }}>Thân nhân</button>
+              </div>
+
               <form onSubmit={handleUnifiedLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                 <div>
                   <label
@@ -343,13 +349,13 @@ export function DevelopmentActorPanel() {
                       marginBottom: '0.35rem',
                     }}
                   >
-                    Tên đăng nhập / Mã nhân viên <span style={{ color: '#dc2626' }}>*</span>
+                    {loginPrincipal === 'GUARDIAN' ? 'Tên đăng nhập thân nhân' : 'Tên đăng nhập / Mã nhân viên'} <span style={{ color: '#dc2626' }}>*</span>
                   </label>
                   <input
                     type="text"
                     value={loginIdentifier}
                     onChange={(e) => setLoginIdentifier(e.target.value)}
-                    placeholder="Nhập Mã nhân viên (VD: NV-DIR-001, DIR-001) hoặc Admin..."
+                    placeholder={loginPrincipal === 'GUARDIAN' ? 'Nhập tên đăng nhập đã được cấp' : 'Nhập Mã nhân viên hoặc tên đăng nhập'}
                     className="form-input"
                     style={{
                       width: '100%',
@@ -429,7 +435,7 @@ export function DevelopmentActorPanel() {
                     marginTop: '0.25rem',
                   }}
                 >
-                  {isSubmitting ? '⏳ Đang xác thực thông tin đăng nhập...' : '🔑 Đăng Nhập Hệ Thống'}
+                  {isSubmitting ? '⏳ Đang xác thực thông tin đăng nhập...' : loginPrincipal === 'GUARDIAN' ? '🔑 Đăng nhập Cổng Thân Nhân' : '🔑 Đăng Nhập Hệ Thống'}
                 </button>
               </form>
             </>

@@ -7,6 +7,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createHmac } = require('node:crypto');
 const { ProductionAuthMiddleware } = require('../dist/security/production-auth.middleware.js');
+const { readVerifiedFinanceIdentity } = require('../dist/security/verified-finance-identity.js');
 
 const SECRET = 'isolated-ci-only-nonproduction-jwt-key-000000001';
 const now = () => Math.floor(Date.now() / 1000);
@@ -24,24 +25,27 @@ function claims(overrides = {}) {
 }
 
 async function invoke({ authorization, rows = [{ actor_id: 'staff-ci-1', actor_role: 'CAREGIVER' }],
-  path = '/api/residents', spoof = {} } = {}) {
+  path = '/api/residents', method = 'GET', actorRole = 'CAREGIVER', spoof = {} } = {}) {
   let queryCount = 0;
   let nextCount = 0;
   const db = { query: async (_sql, params) => {
     queryCount++;
-    assert.deepEqual(params, ['session-ci-1', 'staff-ci-1', 'CAREGIVER']);
+    assert.deepEqual(params, actorRole === 'GUARDIAN'
+      ? ['session-ci-1', 'staff-ci-1']
+      : ['session-ci-1', 'staff-ci-1', actorRole]);
     return { rows };
   }};
   const middleware = new ProductionAuthMiddleware(db);
   const req = {
     originalUrl: path,
+    method,
     headers: { ...spoof },
     header(name) { return name.toLowerCase() === 'authorization' ? authorization : undefined; }
   };
   let error;
   try { await middleware.use(req, undefined, () => { nextCount++; }); }
   catch (e) { error = e; }
-  return { req, error, nextCount, queryCount };
+  return { req, error, nextCount, queryCount, verifiedIdentity: readVerifiedFinanceIdentity(req) };
 }
 
 const oldNodeEnv = process.env.NODE_ENV;
@@ -96,4 +100,22 @@ test('AUTH-MW11 explicitly public health path is exempt from staff JWT check', a
   assert.equal(r.error, undefined);
   assert.equal(r.nextCount, 1);
   assert.equal(r.queryCount, 0);
+});
+
+test('AUTH-MW12 Guardian family meal registration receives verified identity only on the exact registration route', async () => {
+  const guardianToken = 'Bearer ' + token(claims({ role: 'GUARDIAN' }));
+  const allowed = await invoke({ authorization: guardianToken, actorRole: 'GUARDIAN', method: 'POST', path: '/api/nutrition/family-meals' });
+  assert.equal(allowed.error, undefined);
+  assert.equal(allowed.req.headers['x-actor-role'], 'GUARDIAN');
+  assert.deepEqual(allowed.verifiedIdentity, { actorId: 'staff-ci-1', actorRole: 'GUARDIAN', sessionId: 'session-ci-1' });
+  const denied = await invoke({ authorization: guardianToken, actorRole: 'GUARDIAN', method: 'POST', path: '/api/nutrition/family-meals/fme_0123456789abcdef0123456789abcdef/confirm' });
+  assert.ok(denied.error);
+  assert.equal(denied.nextCount, 0);
+  assert.equal(denied.queryCount, 0);
+});
+
+test('AUTH-MW13 verified staff Finance write route receives only server-validated identity', async () => {
+  const r = await invoke({ authorization: 'Bearer ' + token(claims()), path: '/api/finance-write/invoices/drafts/family-meals', method: 'POST' });
+  assert.equal(r.error, undefined);
+  assert.deepEqual(r.verifiedIdentity, { actorId: 'staff-ci-1', actorRole: 'CAREGIVER', sessionId: 'session-ci-1' });
 });

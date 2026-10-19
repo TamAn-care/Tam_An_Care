@@ -12,7 +12,9 @@ export class FamilyMealService {
   constructor(private readonly db: DatabaseService, private readonly residentScope: ResidentAccessScopeService) {}
 
   private async active(identity: ServerVerifiedFinanceIdentity) {
-    const r = await this.db.query(`SELECT 1 FROM public.auth_sessions s JOIN public.staff_actors a ON a.actor_id=s.actor_id WHERE s.session_id=$1 AND s.actor_id=$2 AND s.actor_role=$3 AND s.revoked_at IS NULL AND s.expires_at>now() AND a.status='ACTIVE' AND a.primary_operational_role=$3 LIMIT 1`, [identity.sessionId, identity.actorId, identity.actorRole]);
+    const r = identity.actorRole === 'GUARDIAN'
+      ? await this.db.query(`SELECT 1 FROM public.guardian_sessions s JOIN public.guardian_identities g ON g.guardian_id=s.guardian_id WHERE s.session_id=$1 AND s.guardian_id=$2 AND g.status='ACTIVE' AND s.revoked_at IS NULL AND s.expires_at>now() LIMIT 1`, [identity.sessionId, identity.actorId])
+      : await this.db.query(`SELECT 1 FROM public.auth_sessions s JOIN public.staff_actors a ON a.actor_id=s.actor_id WHERE s.session_id=$1 AND s.actor_id=$2 AND s.actor_role=$3 AND s.revoked_at IS NULL AND s.expires_at>now() AND a.status='ACTIVE' AND a.primary_operational_role=$3 LIMIT 1`, [identity.sessionId, identity.actorId, identity.actorRole]);
     if (r.rowCount !== 1) throw new ForbiddenException('ACTIVE_SESSION_REQUIRED');
   }
 
