@@ -318,6 +318,8 @@ export class ProductionAuthMiddleware
       /^\/api\/finance-read\/residents\/[A-Za-z0-9_-]{1,160}\/payment-notices\/\d{4}-(0[1-9]|1[0-2])$/.test(path);
     const isGuardianFamilyMealRead = path === '/api/nutrition/family-meals';
     const isGuardianFamilyMealRegistration = method === 'POST' && path === '/api/nutrition/family-meals';
+    const isFamilyMealConfirmation = method === 'POST'
+      && /^\/api\/nutrition\/family-meals\/fme_[a-f0-9]{32}\/confirm$/.test(path);
     if (actorRole === 'GUARDIAN'
       && !((method === 'GET' && (isGuardianResidentRead || isGuardianFinanceNoticeRead || isGuardianFamilyMealRead))
         || isGuardianFamilyMealRegistration || (method === 'POST' && path === '/api/auth/logout'))) {
@@ -392,7 +394,8 @@ export class ProductionAuthMiddleware
       path.startsWith('/api/service-contract-drafts/') ||
       path.startsWith('/api/service-contracts/') ||
       path.startsWith('/api/service-contract-signoff/') ||
-      path === '/api/nutrition/family-meals';
+      path === '/api/nutrition/family-meals' ||
+      isFamilyMealConfirmation;
     if (requiresVerifiedBusinessIdentity) {
       publishVerifiedFinanceIdentity(req, { actorId, actorRole, sessionId });
     }

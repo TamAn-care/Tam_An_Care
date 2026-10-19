@@ -119,3 +119,23 @@ test('AUTH-MW13 verified staff Finance write route receives only server-validate
   assert.equal(r.error, undefined);
   assert.deepEqual(r.verifiedIdentity, { actorId: 'staff-ci-1', actorRole: 'CAREGIVER', sessionId: 'session-ci-1' });
 });
+
+test('AUTH-MW14 only a valid family-meal confirmation route receives verified staff identity', async () => {
+  const orderId = 'fme_0123456789abcdef0123456789abcdef';
+  const r = await invoke({
+    authorization: 'Bearer ' + token(claims({ role: 'SUPERVISOR' })),
+    actorRole: 'SUPERVISOR',
+    path: `/api/nutrition/family-meals/${orderId}/confirm`,
+    method: 'POST',
+  });
+  assert.equal(r.error, undefined);
+  assert.deepEqual(r.verifiedIdentity, { actorId: 'staff-ci-1', actorRole: 'SUPERVISOR', sessionId: 'session-ci-1' });
+  const malformed = await invoke({
+    authorization: 'Bearer ' + token(claims({ role: 'SUPERVISOR' })),
+    actorRole: 'SUPERVISOR',
+    path: '/api/nutrition/family-meals/not-an-order/confirm',
+    method: 'POST',
+  });
+  assert.equal(malformed.error, undefined);
+  assert.equal(malformed.verifiedIdentity, undefined);
+});
