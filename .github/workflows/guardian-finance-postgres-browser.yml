@@ -132,10 +132,11 @@ jobs:
         working-directory: api
         run: node test/guardian-auth-postgres-http.e2e.cjs verify
       - name: Real Chromium Guardian login, monthly notice and mobile scope acceptance
+        id: browser_acceptance
         working-directory: frontend
         run: npx playwright test --config=playwright.guardian.config.ts
       - name: Verify browser report includes executed passing Chromium assertions
-        if: always()
+        if: always() && steps.browser_acceptance.outcome == 'success'
         working-directory: frontend
         shell: bash
         run: |
