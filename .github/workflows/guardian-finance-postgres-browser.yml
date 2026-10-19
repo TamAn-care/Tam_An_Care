@@ -92,6 +92,19 @@ jobs:
           set -euo pipefail
           (cd api && npm run build)
           (cd frontend && npm run build)
+      - name: Staff RBAC and Guardian authorization regression
+        working-directory: api
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          node --test test/guardian-auth-middleware.test.cjs test/resident-access-scope.test.cjs test/resident-controller-authorization.test.cjs test/guardian-22-case-evidence.test.cjs
+      - name: Nutrition to Billing source and Ledger/P&L fail-closed regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          node ops/ci/family-meal-billing-source-safety-test.cjs
+          node ops/ci/finance-github-first-ledger-pnl-regression.cjs
       - name: Create owned disposable PostgreSQL database
         run: createdb "$DB_NAME"
       - name: Apply canonical schema and Finance 008–013 plus Guardian additive migration
