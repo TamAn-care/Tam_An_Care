@@ -258,7 +258,7 @@ async function verify() {
     assert.equal(expiredLogin.status,200);
     const expiredToken = (await expiredLogin.json()).accessToken;
     const claims = JSON.parse(Buffer.from(expiredToken.split('.')[1],'base64url').toString('utf8'));
-    await db.query(`UPDATE guardian_sessions SET expires_at=now()-interval '1 minute' WHERE session_id=$1`,[claims.jti]);
+    await db.query(`UPDATE guardian_sessions SET issued_at=now()-interval '2 hours',expires_at=now()-interval '1 minute' WHERE session_id=$1`,[claims.jti]);
     assert.equal((await request('/api/family-portal/residents/ids',expiredToken)).status,401,
       'expired Guardian session must be denied');
     await db.query(`UPDATE guardian_identities SET status='SUSPENDED' WHERE guardian_id=$1`,[ids.guardian]);
@@ -275,6 +275,9 @@ async function verify() {
 if (process.argv[2] === 'seed') seed().catch(() => { process.exitCode = 1; });
 else if (process.argv[2] === 'verify') verify().catch(error => {
   process.stderr.write(`GUARDIAN_HTTP_E2E_FAILED=${error.code || error.name || 'AssertionError'}\n`);
+  if (typeof error.constraint === 'string') process.stderr.write(`GUARDIAN_HTTP_E2E_DB_CONSTRAINT=${error.constraint}\n`);
+  if (typeof error.table === 'string') process.stderr.write(`GUARDIAN_HTTP_E2E_DB_TABLE=${error.table}\n`);
+  if (typeof error.column === 'string') process.stderr.write(`GUARDIAN_HTTP_E2E_DB_COLUMN=${error.column}\n`);
   if (error.name === 'AssertionError') {
     const detail = {
       operator: typeof error.operator === 'string' ? error.operator : undefined,
