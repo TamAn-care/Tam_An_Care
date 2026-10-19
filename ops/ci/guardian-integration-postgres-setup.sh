@@ -14,6 +14,9 @@ fi
 psql -X -v ON_ERROR_STOP=1 -d "$database" -f database/schema.sql
 psql -X -v ON_ERROR_STOP=1 -d "$database" -f database/migrations/20260829_001_enterprise_foundation.sql
 psql -X -v ON_ERROR_STOP=1 -d "$database" -f database/migrations/20260829_002_auth_session_lifecycle.sql
+psql -X -v ON_ERROR_STOP=1 -d "$database" -f database/migrations/20260829_003_ops_operational_work_foundation.sql
+psql -X -v ON_ERROR_STOP=1 -d "$database" -f database/migrations/20260902_013A_ops_expand_work_event_categories.sql
+psql -X -v ON_ERROR_STOP=1 -d "$database" -f database/migrations/20260902_014_ops_comprehensive_work_event_types.sql
 
 migrations=(
   ops/finance/v22/001_finance_foundation.sql
