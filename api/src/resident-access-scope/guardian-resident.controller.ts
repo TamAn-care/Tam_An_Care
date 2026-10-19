@@ -34,7 +34,7 @@ export class GuardianResidentController {
       `SELECT r.resident_id AS "residentId",
               r.resident_code AS "residentCode",
               r.display_name AS "displayName",
-              COALESCE(r.date_of_birth::text,r.birth_year::text) AS "dateOfBirth",
+              COALESCE(to_jsonb(r)->>'date_of_birth',to_jsonb(r)->>'birth_year') AS "dateOfBirth",
               r.gender, r.room, r.bed, r.care_level AS "careLevel",
               r.active_status AS "activeStatus"
          FROM residents r
@@ -72,7 +72,7 @@ export class GuardianResidentController {
       `SELECT r.resident_id AS "residentId",
               r.resident_code AS "residentCode",
               r.display_name AS "displayName",
-              COALESCE(r.date_of_birth::text,r.birth_year::text) AS "dateOfBirth",
+              COALESCE(to_jsonb(r)->>'date_of_birth',to_jsonb(r)->>'birth_year') AS "dateOfBirth",
               r.gender, r.room, r.bed, r.care_level AS "careLevel",
               r.active_status AS "activeStatus"
          FROM residents r WHERE r.resident_id=$1 AND r.active_status=true LIMIT 1`,
