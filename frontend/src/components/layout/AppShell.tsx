@@ -378,7 +378,10 @@ export function AppShell() {
 
       {/* MAIN CONTENT CONTAINER - FULL WIDTH */}
       <main className="page-content" style={{ flex: 1, padding: '1.25rem', maxWidth: '1440px', width: '100%', margin: '0 auto', boxSizing: 'border-box' }}>
-        {actor?.actorRole === 'ADMIN' && showTopLogin && (
+        {showTopLogin && (
+          actor?.actorRole === 'ADMIN' ||
+          (actor?.actorRole === 'GUARDIAN' && location.pathname === '/dashboard')
+        ) && (
           <div style={{ marginBottom: '1.25rem' }}>
             <DevelopmentActorPanel />
           </div>
