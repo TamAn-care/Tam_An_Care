@@ -53,7 +53,6 @@ jobs:
       DB_PASSWORD: ci_guardian_only
       DB_NAME: guardian_e2e_${{ github.run_id }}
       DATABASE_URL: postgresql://ci_guardian:ci_guardian_only@127.0.0.1:5432/guardian_e2e_${{ github.run_id }}
-      NODE_ENV: production
       JWT_SECRET: synthetic-guardian-e2e-jwt-key-only-never-production-20261019
       GUARDIAN_TEST_PASSWORD: synthetic-only-guardian-password-20261019
       TAMANCARE_FINANCE_WRITE_ENABLED: 'true'
@@ -115,6 +114,8 @@ jobs:
         run: node test/guardian-auth-postgres-http.e2e.cjs seed
       - name: Start actual production-mode NestJS API and Vite frontend
         shell: bash
+        env:
+          NODE_ENV: production
         run: |
           set -euo pipefail
           cd api
