@@ -23,6 +23,9 @@ try {
 const { ServicePricingController } = require('../../api/dist/finance-billing/service-pricing.controller.js');
 const { GeneralFinanceWorkflowController } = require('../../api/dist/finance-billing/general-finance-workflow.controller.js');
 const { GeneralFinanceWorkflowService } = require('../../api/dist/finance-billing/general-finance-workflow.service.js');
+const { FinanceWriteController } = require('../../api/dist/finance-billing/finance-write.controller.js');
+const { FinanceBillingService } = require('../../api/dist/finance-billing/finance-billing.service.js');
+const { FamilyMealBillingService } = require('../../api/dist/finance-billing/family-meal-billing.service.js');
 const { ProductionAuthMiddleware } = require('../../api/dist/security/production-auth.middleware.js');
 
 class CiHealthController {
@@ -35,8 +38,8 @@ Get('ready')(CiHealthController.prototype, 'ready', Object.getOwnPropertyDescrip
 class FinancePlaywrightModule {}
 Module({
   imports: [AuthModule],
-  controllers: [CiHealthController, ServicePricingController, GeneralFinanceWorkflowController],
-  providers: [DatabaseService, GeneralFinanceWorkflowService],
+  controllers: [CiHealthController, ServicePricingController, GeneralFinanceWorkflowController, FinanceWriteController],
+  providers: [DatabaseService, GeneralFinanceWorkflowService, FinanceBillingService, FamilyMealBillingService],
 })(FinancePlaywrightModule);
 
 async function main() {
