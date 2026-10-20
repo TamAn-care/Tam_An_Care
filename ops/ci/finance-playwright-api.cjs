@@ -21,6 +21,8 @@ try {
   process.exit(1);
 }
 const { ServicePricingController } = require('../../api/dist/finance-billing/service-pricing.controller.js');
+const { GeneralFinanceWorkflowController } = require('../../api/dist/finance-billing/general-finance-workflow.controller.js');
+const { GeneralFinanceWorkflowService } = require('../../api/dist/finance-billing/general-finance-workflow.service.js');
 const { ProductionAuthMiddleware } = require('../../api/dist/security/production-auth.middleware.js');
 
 class CiHealthController {
@@ -33,8 +35,8 @@ Get('ready')(CiHealthController.prototype, 'ready', Object.getOwnPropertyDescrip
 class FinancePlaywrightModule {}
 Module({
   imports: [AuthModule],
-  controllers: [CiHealthController, ServicePricingController],
-  providers: [DatabaseService],
+  controllers: [CiHealthController, ServicePricingController, GeneralFinanceWorkflowController],
+  providers: [DatabaseService, GeneralFinanceWorkflowService],
 })(FinancePlaywrightModule);
 
 async function main() {
