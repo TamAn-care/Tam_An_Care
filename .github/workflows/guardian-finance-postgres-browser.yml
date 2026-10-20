@@ -8,6 +8,7 @@ on:
       - 'database/**'
       - 'frontend/**'
       - 'ops/finance/**'
+      - 'ops/security/**'
       - 'ops/ci/guardian-integration-postgres-setup.sh'
       - '.github/workflows/guardian-finance-postgres-browser.yml'
   pull_request:
@@ -16,6 +17,7 @@ on:
       - 'database/**'
       - 'frontend/**'
       - 'ops/finance/**'
+      - 'ops/security/**'
       - 'ops/ci/guardian-integration-postgres-setup.sh'
       - '.github/workflows/guardian-finance-postgres-browser.yml'
   workflow_dispatch:
