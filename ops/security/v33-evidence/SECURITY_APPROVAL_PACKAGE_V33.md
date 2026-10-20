@@ -1,6 +1,6 @@
 # Tam An Care — Security approval package V33
 
-Prepared 2026-10-20 ICT. Integration checkpoint: `f79fe2b7e0919e7035838bae7ce5f46df01b7e36`. Source/code candidate: `9933cd076638b19053e02e10e68e3694b7e48d6f`. Evidence branch revision before V33 documents: `a69ad0e564c3f59f634f77b1af81a03faaa5d6b8`. Exact-SHA Actions on a69: Auth run `39386735780` SUCCESS; PG16 HTTP/Chromium run `39386735779` SUCCESS. Baseline integration run `39230834225` remains a historical checkpoint, not evidence for this branch.
+Prepared 2026-10-20 ICT. Integration checkpoint: `f79fe2b7e0919e7035838bae7ce5f46df01b7e36`. Source/code candidate: `9933cd076638b19053e02e10e68e3694b7e48d6f`. Evidence branch revision before V33 documents: `a69ad0e564c3f59f634f77b1af81a03faaa5d6b8`. Exact-SHA Actions on a69: Auth run `39386735780` SUCCESS; PG16 HTTP/Chromium run `39386735779` SUCCESS. V33 evidence commit `3a79971298adc7a18d9e85a81b652fa0351ee99f`: Auth run `39389069937` SUCCESS; PG16 HTTP/Chromium run `39389069789` SUCCESS. Baseline integration run `39230834225` remains a historical checkpoint, not evidence for this branch.
 
 All attached Markdown files have SHA-256 values in `SHA256SUMS`. Protected catalog evidence remains outside Git at `/private/tmp/v33-dba-protected/prodtest-catalog.json` (mode 0600), SHA-256 `df77951d946f70654e283448bb61be28c776e48a0d12b72acdb00a8c5db0394b`. No credential values, older-adult personal data or full environment were written into this package.
 
