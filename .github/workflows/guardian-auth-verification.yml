@@ -18,6 +18,7 @@ on:
       - 'docs/guardian-auth/**'
       - 'scripts/guardian-ci/**'
       - '.github/workflows/guardian-auth-verification.yml'
+      - 'ops/security/**'
   workflow_dispatch:
 
 permissions:

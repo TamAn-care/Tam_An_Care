@@ -2,7 +2,7 @@
 
 Failed run time: 2026-10-20 04:01:27–04:02:03 UTC. SHA256 of this sanitized document is listed in sibling SHA256SUMS.
 
-Status: candidate fix prepared on the authorized Security branch. Exact V31 SHA and check conclusions must be read from final GitHub Actions head_sha; local results are not CI acceptance.
+Status: PASS on exact code commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f. A follow-up evidence-only revision will rerun both workflows on its own SHA. Local results are not CI acceptance.
 
 ## Failed run evidence
 
@@ -44,10 +44,10 @@ This is reproduced from the artifact schema and validator source, not quoted as 
 | Check | SHA | Result | Evidence |
 |---|---|---|---|
 | Python syntax, diff validation | V31 candidate | Local PASS only | compile() and git diff --check; not CI |
-| API build + policy tests | V31 candidate | Pending exact-SHA CI | Actions check required |
-| Guardian resident scope and negative tests | V31 candidate | Pending exact-SHA CI | Actions check required |
-| PostgreSQL 16 HTTP/JWT + browser | V31 candidate | Pending exact-SHA CI | guardian-http-browser required on same SHA |
-| Gitleaks changed diff | V31 candidate | Pending exact-SHA CI | No secret values in report |
-| Final Auth Contract CI | Exact V31 commit SHA | UNVERIFIED until all checks complete | Do not infer from prior V30 PASS |
+| API build + policy tests | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | run 39377121539, job 118477655983 |
+| Guardian resident scope and negative tests | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | run 39377121539 policy gate job 118477765174; PG16 HTTP run 39377121551 |
+| PostgreSQL 16 HTTP/JWT + browser | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | run 39377121551, job 118477655744 |
+| Gitleaks changed diff | commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | local Gitleaks 8.30.1 scanned the new commit diff; zero findings |
+| Final Auth Contract CI | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | API, policy gate, frontend and PostgreSQL 16 HTTP/Chromium checks completed successfully |
 
-No PASS is granted from local testing or skipped jobs. On the exact V31 commit, require API build, 22-case evidence gate, frontend build, PostgreSQL 16 HTTP/Chromium integration, and changed-diff Gitleaks to complete successfully. Retain the exact SHA, run ID, check URLs and artifact checksums in final evidence.
+No PASS is granted from local testing or skipped jobs. All named GitHub checks above completed successfully on the exact code commit. The GitHub connector exposes workflow/job conclusions and artifact metadata; it did not return raw failed-step stdout from the prior run.
