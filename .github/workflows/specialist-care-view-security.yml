@@ -1,0 +1,39 @@
+name: Care View Specialist Security Gate (NO DEPLOY)
+on:
+  push:
+    branches: [fix/specialist-resident-care-view-auth-20261012]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security-static:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci
+        working-directory: api
+      - run: npm run build
+        working-directory: api
+      - name: Enforce no unconditional authorization bypass
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          scope=Path('api/src/resident-access-scope/resident-access-scope.service.ts').read_text()
+          spec=Path('docs/specialist-care-view-access-release-gate.md').read_text()
+          assert 'return result.rowCount === 1 || true' not in scope
+          assert 'return result.rowCount === 1;' in scope
+          care_api=Path('frontend/src/api/residents.ts').read_text()
+          care_fn=care_api.split('export async function getResidentCareView(', 1)[1]
+          assert 'Offline/Fallback mode' not in care_fn
+          assert 'serverAuthorized: true' not in care_fn
+          assert 'return apiRequest<OperationalCareViewResponse>(' in care_fn
+          assert 'PRODUCTION_TEST_DEPLOY=BLOCKED' in spec
+          assert 'SPECIALIST_ACCESS_READY=NO' in spec
+          print('UNCONDITIONAL_ACCESS_BYPASS=REMOVED')
+          print('SPECIALIST_AUTHENTICATION_RELEASE=BLOCKED')
+          PY
