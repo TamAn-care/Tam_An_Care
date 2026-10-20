@@ -8,7 +8,7 @@
     "ops/finance/v32/008_discount_and_absence_policy.md": "aa2ad62d5c385a826004cb8b9aa79a6a49b9f4d5fffa727e6e4f92388394747d",
     "ops/ci/finance-discount-rules-v1-test.cjs": "643117ab0201a525f392c60b3c85f3504b3d751ead19daaf01990bf4d9609101",
     "ops/ci/finance-billing-schema-migration-test.sh": "cc4e49211d513f194d5a3f701bf4936aae886e0ed01416cb69d2c4eb76323133",
-    "ops/ci/finance-v1-source-manifest-check.cjs": "335107342ca90d9ea41ab6ebe41239efe6c6f0cf6809db103b48c2a1c7c266d8",
+    "ops/ci/finance-v1-source-manifest-check.cjs": "4634675543e53bf3a081a994baccc44916f4e8bfdfe2b7fae8d97c2193af9208",
     "docs/finance-rules-v1.0-readiness-20261018.md": "6564cbb55760e179f047d4a0e55b1c213eeca9942da8f60d4693dcdc11bad2e7",
     ".github/workflows/finance-github-first-qualification.yml": "6e21ede61ecc86126a265fe1f8cd21e6f10c17ee596feb4e53b2133946349fab",
     "api/src/app.module.ts": "d681a9da6f57b9693de8349afdbce9f2327eb4c1ef9b4eafef0a7441e1928a01",

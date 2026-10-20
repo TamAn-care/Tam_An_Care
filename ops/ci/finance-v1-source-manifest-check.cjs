@@ -19,7 +19,7 @@ if (process.env.GITHUB_SHA) assert.equal(head, process.env.GITHUB_SHA.toLowerCas
 const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME;
 if (branch === 'feature/finance-github-first-transition-20261012') {
   // Standalone Finance qualification branch.
-} else if (branch === 'integration/finance-guardian-20261019') {
+} else if (branch === 'integration/finance-guardian-20261019' || branch === 'release/v35-successor') {
   // This isolated cross-module candidate must retain the exact owner-approved
   // Finance and Guardian source commits; source checksums above remain active.
   for (const sourceSha of [
