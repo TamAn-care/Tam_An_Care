@@ -64,6 +64,9 @@ const db={
     const normalized=sql.trim();
     assert.match(normalized,/^SELECT\b/i,'Finance Read must perform only SELECT');
     queries.push({sql:normalized,values});
+    if (normalized.includes('guardian_sessions')) {
+      return {rowCount:1,rows:[{guardian_id:values[1]}]};
+    }
     if (normalized.includes('auth_sessions')) {
       return {rowCount:1,rows:[{actor_id:values[1],actor_role:values[2]}]};
     }
