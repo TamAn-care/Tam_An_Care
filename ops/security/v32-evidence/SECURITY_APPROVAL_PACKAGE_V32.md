@@ -1,6 +1,6 @@
 # Tam An Care security approval package — V32
 
-Prepared: 2026-10-20 ICT. Integration checkpoint: `f79fe2b7e0919e7035838bae7ce5f46df01b7e36`. Evidence candidate branch at preparation: `security/runtime-role-jwt-20261020`, SHA `9933cd076638b19053e02e10e68e3694b7e48d6f`. Baseline CI checkpoint `39230834225` PASS retained as baseline only. Exact current evidence SHA CI: Auth run `39379888909` PASS; PostgreSQL 16 HTTP/Chromium run `39379888908` PASS. These CI results do not prove live provider state or target DB-role completeness.
+Prepared: 2026-10-20 ICT. Integration checkpoint: `f79fe2b7e0919e7035838bae7ce5f46df01b7e36`. Evidence candidate branch at preparation: `security/runtime-role-jwt-20261020`, SHA `9933cd076638b19053e02e10e68e3694b7e48d6f`. Baseline CI checkpoint `39230834225` PASS retained as baseline only. Exact dossier commit `5481d28f9d5d3ff1fbe548f6ff5db9c213ec2de8` CI: Auth run `39386353979` PASS; PostgreSQL 16 HTTP/Chromium run `39386353980` PASS. Prior exact code candidate `9933cd076638b19053e02e10e68e3694b7e48d6f` also passed Auth run `39379888909` and PG16 HTTP/Chromium run `39379888908`. These CI results do not prove live provider state or target DB-role completeness.
 
 No sensitive values, older-adult personal data, database passwords or token values are included. No live DB permissions, secret, Production Test data, deployment, merge or backup were changed.
 
@@ -14,7 +14,7 @@ No sensitive values, older-adult personal data, database passwords or token valu
 | Application RBAC | Exact-SHA Auth and PG16 HTTP/Chromium CI pass for stated cases | Application Owner | CI artifacts + complete module tests under proposed runtime role | No complete target-role Admin/Staff/Medical/Care/Nutrition/Contracts/Finance matrix | PENDING_EVIDENCE |
 | H01–H36 | 36 individually listed, all UNKNOWN | Security | Protected provider/account/secret audit and per-finding redacted disposition | 0/36 closed; no proof of revoke or non-use | PENDING_EVIDENCE |
 | JWT provider and runtime | Source single-key path; one API snapshot | Security + Platform | Provider metadata, secret version refs and all-process deployment audit | Key version, replicas, last-use, session invalidation and revoke unknown | PENDING_EVIDENCE |
-| Security CI | Exact SHA `9933cd076638b19053e02e10e68e3694b7e48d6f`, two required runs PASS; Gitleaks changed diff required before final commit | Security/CI | GitHub check head SHA and run artifacts; Gitleaks diff | Current SHA is before this V32 documentation commit; final SHA must rerun CI | PENDING_FINAL_SHA_CI |
+| Security CI | Exact SHA `9933cd076638b19053e02e10e68e3694b7e48d6f`, two required runs PASS; Gitleaks changed diff required before final commit | Security/CI | GitHub check head SHA and run artifacts; Gitleaks diff | V32 evidence commit `5481d28f9d5d3ff1fbe548f6ff5db9c213ec2de8` exact-SHA runs 39386353979 and 39386353980 success; later report/checksum-only update, if made, is documentation metadata | PENDING_FINAL_SHA_CI |
 
 ## Independent owner attestations
 
