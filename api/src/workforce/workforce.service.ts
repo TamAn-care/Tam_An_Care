@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
@@ -30,47 +29,11 @@ const MGMT_ROLES = new Set(['CARE_MANAGER', 'SUPERVISOR']);
 const VALID_SHIFT_TYPES = new Set(['MORNING', 'AFTERNOON', 'NIGHT', 'CUSTOM']);
 
 @Injectable()
-export class WorkforceService implements OnModuleInit {
+export class WorkforceService {
   constructor(
     private readonly db: DatabaseService,
     private readonly notificationsService?: NotificationsService,
   ) {}
-
-  async onModuleInit() {
-    try {
-      await this.db.query(`
-        CREATE TABLE IF NOT EXISTS shift_swap_requests (
-          swap_request_id TEXT PRIMARY KEY,
-          requester_actor_id TEXT NOT NULL REFERENCES staff_actors(actor_id),
-          original_shift_id TEXT NOT NULL REFERENCES shift_assignments(shift_id),
-          target_actor_id TEXT REFERENCES staff_actors(actor_id),
-          target_shift_id TEXT REFERENCES shift_assignments(shift_id),
-          reason TEXT NOT NULL,
-          status TEXT NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
-          approved_by TEXT REFERENCES staff_actors(actor_id),
-          approved_by_role TEXT,
-          rejection_reason TEXT,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-        );
-
-        CREATE TABLE IF NOT EXISTS staff_recognitions (
-          recognition_id TEXT PRIMARY KEY,
-          staff_actor_id TEXT NOT NULL REFERENCES staff_actors(actor_id),
-          recognition_type TEXT NOT NULL CHECK (recognition_type IN ('COMMENDATION', 'SPECIAL_ACHIEVEMENT', 'EFFORT_RECOGNITION', 'DISCIPLINE_WARNING', 'SAFETY_AWARD')),
-          title TEXT NOT NULL,
-          description TEXT NOT NULL,
-          kpi_bonus_points INT NOT NULL DEFAULT 0,
-          awarded_by TEXT NOT NULL REFERENCES staff_actors(actor_id),
-          awarded_by_role TEXT NOT NULL,
-          awarded_date DATE NOT NULL DEFAULT CURRENT_DATE,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-        );
-      `);
-    } catch (err) {
-      console.warn('WorkforceService onModuleInit table check skipped or failed:', err);
-    }
-  }
 
   private req(v: any, name: string): string {
     const x = String(v ?? '').trim();

@@ -418,41 +418,7 @@ export class ResidentLeaveService {
     };
   }
 
-  private tableEnsured = false;
-  private async ensureStaffLeaveTable() {
-    if (this.tableEnsured) return;
-    try {
-      await this.db.query(`
-        CREATE TABLE IF NOT EXISTS staff_leave_requests (
-          leave_id TEXT PRIMARY KEY,
-          staff_actor_id TEXT NOT NULL REFERENCES staff_actors(actor_id),
-          staff_role TEXT NOT NULL,
-          leave_type TEXT NOT NULL CHECK (leave_type IN ('ANNUAL', 'PERSONAL', 'SICK', 'UNPAID', 'OTHER')),
-          start_date TIMESTAMPTZ NOT NULL,
-          end_date TIMESTAMPTZ NOT NULL,
-          reason TEXT NOT NULL,
-          is_special_case BOOLEAN NOT NULL DEFAULT false,
-          special_reason TEXT,
-          notice_hours NUMERIC(8,2) NOT NULL,
-          is_advance_notice_48h BOOLEAN NOT NULL,
-          status TEXT NOT NULL CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED', 'CANCELLED')),
-          reviewed_by TEXT REFERENCES staff_actors(actor_id),
-          reviewed_by_role TEXT,
-          reviewed_at TIMESTAMPTZ,
-          review_note TEXT,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          CONSTRAINT staff_leave_date_order CHECK (end_date >= start_date)
-        );
-      `);
-      this.tableEnsured = true;
-    } catch (e) {
-      // ignore table exists or race conditions
-    }
-  }
-
   async createStaffLeaveRequest(a: Actor, body: any = {}) {
-    await this.ensureStaffLeaveTable();
     await this.auth(a, ALL_STAFF_ROLES);
 
     const leaveType = this.req(body?.leaveType, 'leaveType').toUpperCase();
@@ -529,7 +495,6 @@ export class ResidentLeaveService {
   }
 
   async listStaffLeaveRequests(a: Actor, query: any = {}) {
-    await this.ensureStaffLeaveTable();
     await this.auth(a, ALL_STAFF_ROLES);
     const p = this.page(query?.limit, query?.offset);
     const params: any[] = [];
@@ -574,7 +539,6 @@ export class ResidentLeaveService {
   }
 
   async approveStaffLeaveRequest(a: Actor, id?: string, body: any = {}) {
-    await this.ensureStaffLeaveTable();
     await this.auth(a, STAFF_LEAVE_APPROVER_ROLES);
     const leaveId = this.req(id, 'leaveId');
 
@@ -620,7 +584,6 @@ export class ResidentLeaveService {
   }
 
   async rejectStaffLeaveRequest(a: Actor, id?: string, body: any = {}) {
-    await this.ensureStaffLeaveTable();
     await this.auth(a, STAFF_LEAVE_APPROVER_ROLES);
     const leaveId = this.req(id, 'leaveId');
 
@@ -666,7 +629,6 @@ export class ResidentLeaveService {
   }
 
   async cancelStaffLeaveRequest(a: Actor, id?: string, body: any = {}) {
-    await this.ensureStaffLeaveTable();
     await this.auth(a, ALL_STAFF_ROLES);
     const leaveId = this.req(id, 'leaveId');
 

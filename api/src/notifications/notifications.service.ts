@@ -1,4 +1,4 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { DatabaseService } from '../database/database.service';
 
@@ -20,45 +20,10 @@ export interface PushSubscriptionPayload {
 }
 
 @Injectable()
-export class NotificationsService implements OnModuleInit {
+export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   constructor(private readonly db: DatabaseService) {}
-
-  async onModuleInit() {
-    try {
-      await this.db.query(`
-        CREATE TABLE IF NOT EXISTS notifications (
-          notification_id TEXT PRIMARY KEY,
-          staff_actor_id TEXT NOT NULL,
-          title TEXT NOT NULL,
-          message TEXT NOT NULL,
-          type TEXT NOT NULL DEFAULT 'SHIFT_ASSIGNMENT',
-          sound TEXT NOT NULL DEFAULT 'ALERT_CHIME',
-          metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-          is_read BOOLEAN NOT NULL DEFAULT FALSE,
-          is_acknowledged BOOLEAN NOT NULL DEFAULT FALSE,
-          acknowledged_at TIMESTAMPTZ,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-        );
-
-        CREATE TABLE IF NOT EXISTS push_subscriptions (
-          subscription_id TEXT PRIMARY KEY,
-          staff_actor_id TEXT NOT NULL,
-          endpoint TEXT NOT NULL UNIQUE,
-          keys JSONB NOT NULL,
-          created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-          updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_notifications_staff ON notifications(staff_actor_id, created_at DESC);
-        CREATE INDEX IF NOT EXISTS idx_push_sub_staff ON push_subscriptions(staff_actor_id);
-      `);
-      this.logger.log('Notifications database tables initialized successfully.');
-    } catch (err: any) {
-      this.logger.error('Failed to initialize notifications tables', err.stack);
-    }
-  }
 
   /**
    * Tạo thông báo mới và tự động kích hoạt đẩy chuông báo tới điện thoại nhân viên

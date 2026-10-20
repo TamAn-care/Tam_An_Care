@@ -2,7 +2,7 @@ name: Guardian identity and Finance notice — PostgreSQL 16 + Chromium (NO DEPL
 
 on:
   push:
-    branches: [integration/finance-guardian-20261019]
+    branches: [integration/finance-guardian-20261019, security/runtime-role-jwt-20261020]
     paths:
       - 'api/**'
       - 'database/**'

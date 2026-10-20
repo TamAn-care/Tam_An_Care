@@ -11,6 +11,7 @@ on:
   push:
     branches:
       - feature/guardian-resident-scope-auth-20261012
+      - security/runtime-role-jwt-20261020
     paths:
       - 'api/**'
       - 'frontend/**'
