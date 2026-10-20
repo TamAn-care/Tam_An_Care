@@ -4,7 +4,7 @@ const baseURL = process.env.FINANCE_E2E_BASE_URL;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: 'finance-pricing.spec.ts',
+  testMatch: 'finance-*.spec.ts',
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

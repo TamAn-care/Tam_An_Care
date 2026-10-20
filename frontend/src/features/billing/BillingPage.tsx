@@ -34,6 +34,7 @@ import { LoadingState, ErrorState } from '../../components/feedback/FeedbackStat
 import { ServicePriceCatalogPanel } from './ServicePriceCatalogPanel';
 import { ServiceCodeMappingPanel } from './ServiceCodeMappingPanel';
 import { FamilyMealBillingDraftPanel } from './FamilyMealBillingDraftPanel';
+import { GeneralFinanceWorkflowPanel } from './GeneralFinanceWorkflowPanel';
 
 const STATUS_CONFIG: Record<InvoiceStatus, { label: string; badgeClass: string; icon: string }> = {
   PENDING: { label: 'Chờ thanh toán', badgeClass: 'badge-warning', icon: '⏳' },
@@ -60,7 +61,7 @@ export default function BillingPage() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'invoices' | 'pricing' | 'discounts' | 'receipts' | 'reports'>('invoices');
+  const [activeTab, setActiveTab] = useState<'invoices' | 'pricing' | 'discounts' | 'receipts' | 'reports' | 'general-finance'>('invoices');
   const [selectedMonth, setSelectedMonth] = useState<string>('2026-09');
   const [selectedStatus, setSelectedStatus] = useState<InvoiceStatus | 'ALL'>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -411,6 +412,9 @@ export default function BillingPage() {
   const formatVndText = (num: number) => `${formatNum(num)} đ`;
 
   if (invoicesQuery.isError || receiptsQuery.isError || pricingQuery.isError || detailedFeeNoticesQuery.isError) {
+    if (activeTab === 'general-finance') {
+      return <main className="page"><GeneralFinanceWorkflowPanel /></main>;
+    }
     if (activeTab === 'pricing') {
       return <main className="page"><ServicePriceCatalogPanel actor={actor} /><ServiceCodeMappingPanel actor={actor} /></main>;
     }
@@ -433,6 +437,7 @@ export default function BillingPage() {
       {/* Primary Tabs (Block Cards Grid) */}
       <div className="no-print" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
         {[
+          { id: 'general-finance' as const, title: 'Finance Tổng Hợp', icon: '💼', badgeText: 'Quy trình', desc: 'Hợp đồng, hóa đơn, thu tiền, sổ cái & khóa kỳ' },
           {
             id: 'invoices' as const,
             title: 'Bảng Kê Thu Phí',
@@ -523,6 +528,7 @@ export default function BillingPage() {
       {/* ========================================================================= */}
       {/* TAB 1: BẢNG KÊ THU PHÍ */}
       {/* ========================================================================= */}
+      {activeTab === 'general-finance' && <GeneralFinanceWorkflowPanel />}
       {activeTab === 'invoices' && (
         <div>
           <FamilyMealBillingDraftPanel actor={actor} />

@@ -52,7 +52,48 @@ export PGHOST="${PGHOST:-127.0.0.1}" PGPORT="${PGPORT:-5432}"
 createdb --host="$PGHOST" --port="$PGPORT" --username="$PGUSER" "$database"
 export PGDATABASE="$database"
 psql --set=ON_ERROR_STOP=1 --file=ops/ci/finance-playwright-bootstrap.sql
-psql --set=ON_ERROR_STOP=1 --file=ops/finance/v32/009_service_price_catalog.sql
+psql --set=ON_ERROR_STOP=1 <<'SQL'
+CREATE TABLE public.residents (resident_id text PRIMARY KEY);
+CREATE TABLE public.finance_entries (
+  finance_entry_id text PRIMARY KEY, entry_type text NOT NULL, category text,
+  description text, amount_vnd numeric(18,2) NOT NULL, recognition_date date NOT NULL,
+  cash_date date, resident_id text, source_mode text, source_domain text,
+  source_entity_type text, source_entity_id text, status text NOT NULL,
+  reference_number text, note text, created_by text, created_by_role text,
+  created_at timestamptz DEFAULT now(), updated_at timestamptz DEFAULT now()
+);
+CREATE UNIQUE INDEX uq_finance_entries_system_source ON public.finance_entries(source_domain,source_entity_type,source_entity_id,entry_type)
+WHERE source_mode='SYSTEM' AND source_domain IS NOT NULL AND source_entity_type IS NOT NULL AND source_entity_id IS NOT NULL;
+SQL
+for migration in \
+  ops/finance/v22/001_finance_foundation.sql \
+  ops/finance/v28/002_finance_transaction_safety.sql \
+  ops/finance/v29/003_finance_allocation_invariants.sql \
+  ops/finance/v29/004_finance_integrity_hardening.sql \
+  ops/finance/v30/005_shared_contract_version_history.sql \
+  ops/finance/v30/006_shared_contract_signoff_evidence.sql \
+  ops/finance/v31/007_finance_invoice_ledger_origin.sql \
+  ops/finance/v32/008_discount_and_absence_policy.sql \
+  ops/finance/v32/009_service_price_catalog.sql \
+  ops/finance/v32/010_immutable_invoice_snapshot.sql \
+  ops/finance/v32/011_service_code_mapping.sql \
+  ops/finance/v32/012_family_extra_meal_source.sql \
+  ops/finance/v32/013_family_meal_invoice_snapshot.sql \
+  ops/finance/v42/001_general_workflows.sql
+do
+  psql --set=ON_ERROR_STOP=1 --file="$migration"
+done
+psql --set=ON_ERROR_STOP=1 <<'SQL'
+INSERT INTO residents VALUES ('RES_V428');
+INSERT INTO service_contract_records(contract_id,contract_code,resident_id,status,effective_date,payload,version)
+VALUES ('CONTRACT_V428','CONTRACT-V428','RES_V428','ACTIVE','2026-07-01','{"package":"STANDARD"}',1);
+INSERT INTO service_contract_versions(contract_id,version,payload,status,effective_date,signed_at,approved_at,approved_by,change_reason)
+VALUES ('CONTRACT_V428',1,'{"package":"STANDARD"}','ACTIVE','2026-07-01',now(),now(),'CI_APPROVER','synthetic browser contract');
+INSERT INTO service_contract_signing_evidence(contract_id,version,document_sha256,document_reference,signing_method,verified_by,signed_at)
+VALUES ('CONTRACT_V428',1,repeat('a',64),'synthetic-v428-document','SIGNED_PAPER_ARCHIVED','CI_APPROVER',now());
+INSERT INTO service_contract_approval_decisions(contract_id,version,approved_by,approval_reason,approved_sha256,admission_care_level,room_id,bed_id,monthly_fee_vnd)
+VALUES ('CONTRACT_V428',1,'CI_APPROVER','Synthetic browser acceptance contract',repeat('a',64),'STANDARD','ROOM-V428','BED-V428',12000000);
+SQL
 
 npm --prefix api ci --ignore-scripts --no-audit --no-fund
 npm --prefix api run build
@@ -80,6 +121,13 @@ export TAMANCARE_FINANCE_CENTERWIDE_READ_ROLES='ADMIN,SUPERVISOR'
 export TAMANCARE_FINANCE_WRITE_ENABLED='true'
 export TAMANCARE_FINANCE_WRITE_ROLES='ACCOUNTANT'
 export TAMANCARE_FINANCE_BILLING_DRAFT_ROLES='ACCOUNTANT'
+export TAMANCARE_FINANCE_INVOICE_REVIEW_ROLES='SUPERVISOR'
+export TAMANCARE_FINANCE_INVOICE_APPROVE_ROLES='ADMIN,SUPERVISOR'
+export TAMANCARE_FINANCE_INVOICE_ISSUE_ROLES='ADMIN,SUPERVISOR'
+export TAMANCARE_FINANCE_RECEIPT_WRITE_ROLES='ACCOUNTANT'
+export TAMANCARE_FINANCE_RECEIPT_VERIFY_ROLES='ADMIN,SUPERVISOR'
+export TAMANCARE_FINANCE_LEDGER_POST_ROLES='ACCOUNTANT,ADMIN,SUPERVISOR'
+export TAMANCARE_FINANCE_ALLOW_UNRECONCILED_CLOSE='true'
 export PORT=3000
 
 node ops/ci/finance-playwright-api.cjs >"$api_log" 2>&1 &
