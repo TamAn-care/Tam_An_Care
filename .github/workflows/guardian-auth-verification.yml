@@ -111,7 +111,7 @@ jobs:
         run: npm run build
 
   auth-release-gate:
-    name: Guardian 22-case release gate (fail closed)
+    name: Guardian 22-case isolated policy evidence gate (fail closed)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: build-api
@@ -124,7 +124,7 @@ jobs:
         with:
           name: guardian-22-case-evidence-${{ github.sha }}
           path: api/test-results/
-      - name: Validate acceptance matrix and executable test evidence
+      - name: Validate exact-SHA in-memory policy evidence
         env:
           GITHUB_SHA: ${{ github.sha }}
         run: python3 scripts/guardian-ci/evidence_release_gate.py
@@ -150,9 +150,9 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$API_RESULT" == "success" && "$FRONTEND_RESULT" == "success" && "$RELEASE_GATE_RESULT" == "success" ]]; then
-            DECISION="TECHNICAL_ACCEPTANCE_GATES_PASSED — awaiting human deployment approval"
+            DECISION="AUTH_POLICY_EVIDENCE_PASS; release acceptance is evaluated by the separate PostgreSQL 16 HTTP/Chromium workflow"
           else
-            DECISION="NO_GO"
+            DECISION="AUTH_POLICY_EVIDENCE_NO_GO"
           fi
           {
             echo '## Tâm An Care — Guardian CI automation'
@@ -161,12 +161,14 @@ jobs:
             echo "|---|---|"
             echo "| API build + 22-case evidence (STAFF01-STAFF10, GUARD01-GUARD12) | $API_RESULT |"
             echo "| Frontend build | $FRONTEND_RESULT |"
-            echo "| Evidence release gate | $RELEASE_GATE_RESULT |"
+            echo "| Exact-SHA isolated policy evidence gate | $RELEASE_GATE_RESULT |"
             echo
-            echo "### Release decision: $DECISION"
+            echo "### Workflow decision: $DECISION"
             echo
-            echo 'A build PASS alone is insufficient. All 22 cases must have executed'
-            echo 'and production deployment requires separate human approval.'
+            echo 'All 22 isolated policy cases must have executed with exact-SHA evidence.'
+            echo 'These in-memory cases are policy tests, not PostgreSQL/HTTP acceptance.'
+            echo 'The PostgreSQL 16 HTTP/Chromium workflow is a separate required check on the same SHA.'
+            echo 'No workflow authorizes production deployment.'
           } >> "$GITHUB_STEP_SUMMARY"
           printf 'AUTOMATION_SUMMARY=RECORDED\n'
-          printf 'RELEASE_DECISION=%s\n' "$DECISION"
+          printf 'AUTH_POLICY_WORKFLOW_DECISION=%s\n' "$DECISION"

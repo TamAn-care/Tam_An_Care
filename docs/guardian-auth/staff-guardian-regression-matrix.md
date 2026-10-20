@@ -1,7 +1,7 @@
 # Staff authentication and Guardian resident-scope regression specification
 
-**Scope:** isolated test harness only; no live Production Test database, services or resident records.  
-**Status:** specifications prepared; **no case has executed or passed**.  
+**Scope:** isolated in-memory policy harness only; it does not claim PostgreSQL or HTTP execution and does not use live Production Test data.
+**Status:** all 22 named policy cases execute in the in-memory harness. PostgreSQL 16 HTTP and Chromium checks run independently in `guardian-http-browser` on the same commit SHA.
 **Origin:** locally prepared Gate 50.32 regression matrices, transcribed as actionable GitHub acceptance scenarios.
 
 ## Staff Auth — 10 cases
@@ -50,4 +50,4 @@
 
 All mapped cases implemented, run and PASS on the source revision proposed for release, with source/image provenance confirmed against controlled deployment artifact. Review and sign off separately on rollback and Production Test acceptance.
 
-**Status: 22 specified / 22 executable cases implemented in api/test/guardian-22-case-evidence.test.cjs; production deployment requires separate human approval.**
+**Status:** 22 in-memory policy cases are implemented in api/test/guardian-22-case-evidence.test.cjs. This is not a database-backed E2E report; PostgreSQL 16 HTTP/Chromium is checked separately, and neither workflow approves production deployment.
