@@ -11,7 +11,7 @@ This is a prepared approval record. Blank signature fields are intentionally uns
 - Current backup archive checksum and TOC pass; real restore is not proven.
 - JWT source shows a single environment-key path. Provider, secret-record version, replicas, last-use and live revoke state are unknown.
 - 36 Gitleaks baseline detections are individually listed in HISTORICAL_SECRET_DISPOSITION.md; all remain UNKNOWN.
-- V31 fixes the auth evidence contract. API build, 22-case policy evidence gate, frontend build and PostgreSQL 16 HTTP/Chromium passed on exact code commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f. The final evidence-only revision triggers both workflows again.
+- V31 fixes the auth evidence contract. API build, 22-case policy evidence gate, frontend build and PostgreSQL 16 HTTP/Chromium passed on exact code commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f. The final evidence revision 7ac469236b6a62c2466173020a4bbd75aebce5aa passed both workflows on the exact SHA (Auth run 39378856687; PostgreSQL 16 HTTP/Chromium run 39378856649).
 - No live DB role/credential, JWT key, Production Test dataset or deployment was changed.
 
 ## Signature table

@@ -2,7 +2,7 @@
 
 Failed run time: 2026-10-20 04:01:27–04:02:03 UTC. SHA256 of this sanitized document is listed in sibling SHA256SUMS.
 
-Status: PASS on exact code commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f. A follow-up evidence-only revision will rerun both workflows on its own SHA. Local results are not CI acceptance.
+Status: PASS on code commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f and evidence revision 7ac469236b6a62c2466173020a4bbd75aebce5aa. Both Auth and PostgreSQL 16 HTTP/Chromium workflows passed on the exact 7ac SHA. Local results are not CI acceptance.
 
 ## Failed run evidence
 
@@ -48,6 +48,6 @@ This is reproduced from the artifact schema and validator source, not quoted as 
 | Guardian resident scope and negative tests | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | run 39377121539 policy gate job 118477765174; PG16 HTTP run 39377121551 |
 | PostgreSQL 16 HTTP/JWT + browser | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | run 39377121551, job 118477655744 |
 | Gitleaks changed diff | commit 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | local Gitleaks 8.30.1 scanned the new commit diff; zero findings |
-| Final Auth Contract CI | 1f0ca57f7974a64bf36c71f378c5bc3525b12e0f | PASS | API, policy gate, frontend and PostgreSQL 16 HTTP/Chromium checks completed successfully |
+| Final Auth Contract CI | 7ac469236b6a62c2466173020a4bbd75aebce5aa | PASS | Auth run 39378856687; PostgreSQL 16 HTTP/Chromium run 39378856649; both head_sha values match |
 
-No PASS is granted from local testing or skipped jobs. All named GitHub checks above completed successfully on the exact code commit. The GitHub connector exposes workflow/job conclusions and artifact metadata; it did not return raw failed-step stdout from the prior run.
+No PASS is granted from local testing or skipped jobs. All named GitHub checks completed successfully on both the code commit and exact evidence revision. On 7ac469236b6a62c2466173020a4bbd75aebce5aa, Auth completed 2026-10-20T06:10:16Z–06:10:57Z and HTTP/Chromium completed 2026-10-20T06:10:16Z–06:11:24Z. The GitHub connector exposes workflow/job conclusions and artifact metadata; it did not return raw failed-step stdout from the prior run.
