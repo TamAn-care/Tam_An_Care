@@ -33,7 +33,7 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   const panel = accountant.getByRole('region', { name: 'Finance tổng hợp' });
   await panel.getByLabel('Mã hợp đồng Finance').fill('CONTRACT_V428');
   await panel.getByLabel('Mã người cao tuổi Finance').fill('RES_V428');
-  await panel.getByLabel('Kỳ lập hóa đơn Finance').fill('2026-08');
+  await expect(panel.getByLabel('Kỳ lập hóa đơn Finance')).toHaveValue('2026-07');
   await panel.getByRole('button', { name: 'Lập hóa đơn nháp' }).click();
   await expect(panel.getByText(/Đã thực hiện/)).toBeVisible();
   invoiceId = await panel.getByLabel('Mã hóa đơn Finance').inputValue();
