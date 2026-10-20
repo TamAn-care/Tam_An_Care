@@ -70,4 +70,23 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   await expect(mobilePanel.getByText(/Đã thực hiện/)).toBeVisible();
   await expect(mobilePanel.getByText('Chưa đủ dữ liệu để xác nhận')).toBeVisible();
   await logout(accountant2); await accountant2Context.close();
+
+  const financeAdminContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
+  const financeAdmin = await financeAdminContext.newPage();
+  await login(financeAdmin, users.admin);
+  const financePanel = financeAdmin.getByRole('region', { name: 'Finance tổng hợp' });
+  await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
+  await financePanel.getByLabel('Mã phiếu thu Finance').fill(`REC_${stamp}`);
+  await financePanel.getByRole('button', { name: 'Xác minh phiếu thu' }).click();
+  await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await financePanel.getByLabel('Số tiền phân bổ Finance').fill('12000000');
+  await financePanel.getByRole('button', { name: 'Phân bổ khoản thu' }).click();
+  await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await financePanel.getByRole('button', { name: 'Ghi nhận sổ cái' }).click();
+  await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await financePanel.getByRole('button', { name: 'Khóa kỳ' }).click();
+  await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await financePanel.getByRole('button', { name: 'Mở lại kỳ' }).click();
+  await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await logout(financeAdmin); await financeAdminContext.close();
 });
