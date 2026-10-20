@@ -1,0 +1,107 @@
+name: Release V35 immutable images and provenance (NO DEPLOY)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release/v35-successor
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: release-v35-image-provenance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-attest:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      IMAGE_PREFIX: ghcr.io/tam-an-care/tam-an-care
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Login to GHCR
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push API image by candidate SHA
+        id: api
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: api/Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}/api:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.tamancare.release=v35-successor
+
+      - name: Build and push frontend image by candidate SHA
+        id: frontend
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: production-test/Dockerfile.frontend
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}/frontend:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.tamancare.release=v35-successor
+
+      - name: Generate API SBOM from pushed digest
+        uses: anchore/sbom-action@fffec3d851af758d56fee099cf3fbf8aa8779843 # v0.24.3
+        with:
+          image: ${{ env.IMAGE_PREFIX }}/api@${{ steps.api.outputs.digest }}
+          format: cyclonedx-json
+          output-file: api-sbom.cdx.json
+          artifact-name: api-sbom-${{ github.sha }}.cdx.json
+
+      - name: Generate frontend SBOM from pushed digest
+        uses: anchore/sbom-action@fffec3d851af758d56fee099cf3fbf8aa8779843 # v0.24.3
+        with:
+          image: ${{ env.IMAGE_PREFIX }}/frontend@${{ steps.frontend.outputs.digest }}
+          format: cyclonedx-json
+          output-file: frontend-sbom.cdx.json
+          artifact-name: frontend-sbom-${{ github.sha }}.cdx.json
+
+      - name: Attest API image provenance
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-name: ${{ env.IMAGE_PREFIX }}/api
+          subject-digest: ${{ steps.api.outputs.digest }}
+          push-to-registry: true
+
+      - name: Attest frontend image provenance
+        uses: actions/attest-build-provenance@96b4a1ef7235a096b17240c259729fdd70c83d45 # v2
+        with:
+          subject-name: ${{ env.IMAGE_PREFIX }}/frontend
+          subject-digest: ${{ steps.frontend.outputs.digest }}
+          push-to-registry: true
+
+      - name: Emit immutable release manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > release-v35-image-manifest.json <<EOF
+          {
+            "sourceSha": "${GITHUB_SHA}",
+            "api": {"image": "${IMAGE_PREFIX}/api", "digest": "${{ steps.api.outputs.digest }}"},
+            "frontend": {"image": "${IMAGE_PREFIX}/frontend", "digest": "${{ steps.frontend.outputs.digest }}"},
+            "deploy": false
+          }
+          EOF
+          cat release-v35-image-manifest.json
