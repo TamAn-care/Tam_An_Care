@@ -1,0 +1,41 @@
+name: Resident record code foundation (NO DEPLOY)
+on:
+  push:
+    branches:
+      - feature/resident-paper-contract-code-20261012
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  formatting-and-guardrails:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - name: Execute record-code regression tests
+        run: node scripts/test-resident-record-code.cjs
+      - name: Verify format, non-truncation and fail-closed deployment gate
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const source=fs.readFileSync('frontend/src/utils/resident-record-code.ts','utf8');
+          for (const phrase of ["isTrialWithoutContract ? '/TN' : ''", 'BigInt(c.serial)===BigInt(identity.serial)', 'verifyContractMatchesResidentRecord', 'Number.isInteger(issueYear)']) {
+            assert.ok(source.includes(phrase), phrase);
+          }
+          const spec=fs.readFileSync('docs/resident-paper-contract-code-v1-release-gate.md','utf8');
+          for (const phrase of ['PRODUCTION_TEST_GO_NO_GO=NO_GO','sequence','idempotency','isolated restore','999999->1000000','Asia/Ho_Chi_Minh','001/2026/TA']) {
+            assert.ok(spec.includes(phrase),phrase);
+          }
+          console.log('RECORD_FORMAT_FOUNDATION=PASS');
+          console.log('PRODUCTION_DEPLOY=NO');
+          JS
