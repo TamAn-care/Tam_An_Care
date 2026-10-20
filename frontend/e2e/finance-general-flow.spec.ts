@@ -79,9 +79,12 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   await financePanel.getByLabel('Mã phiếu thu Finance').fill(`REC_${stamp}`);
   await financePanel.getByRole('button', { name: 'Xác minh phiếu thu' }).click();
   await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
+  await financePanel.getByLabel('Mã phiếu thu Finance').fill(`REC_${stamp}`);
   await financePanel.getByLabel('Số tiền phân bổ Finance').fill('12000000');
   await financePanel.getByRole('button', { name: 'Phân bổ khoản thu' }).click();
   await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+  await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
   await financePanel.getByRole('button', { name: 'Ghi nhận sổ cái' }).click();
   await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
   await financePanel.getByRole('button', { name: 'Khóa kỳ' }).click();
