@@ -82,6 +82,8 @@ import { ServicePricingController } from './finance-billing/service-pricing.cont
 import { ServiceMappingController } from './finance-billing/service-mapping.controller';
 import { FamilyMealBillingService } from './finance-billing/family-meal-billing.service';
 import { ResidentAccessScopeModule } from './resident-access-scope/resident-access-scope.module';
+import { GeneralFinanceWorkflowController } from './finance-billing/general-finance-workflow.controller';
+import { GeneralFinanceWorkflowService } from './finance-billing/general-finance-workflow.service';
 
 @Module({imports:[
     PaperRecordModule,
@@ -120,5 +122,5 @@ import { ResidentAccessScopeModule } from './resident-access-scope/resident-acce
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController,ServicePricingController,ServiceMappingController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService,FamilyMealBillingService,MonthlyOperatingResultService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController,ServicePricingController,ServiceMappingController,GeneralFinanceWorkflowController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService,FamilyMealBillingService,MonthlyOperatingResultService,GeneralFinanceWorkflowService]})
 export class AppModule {}

@@ -391,6 +391,7 @@ export class ProductionAuthMiddleware
       path.startsWith('/api/finance-read/') ||
       path.startsWith('/api/finance-write/') ||
       path.startsWith('/api/finance/') ||
+      path.startsWith('/api/finance-workflows/') ||
       path.startsWith('/api/service-contract-drafts/') ||
       path.startsWith('/api/service-contracts/') ||
       path.startsWith('/api/service-contract-signoff/') ||
