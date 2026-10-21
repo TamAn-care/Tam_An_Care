@@ -69,6 +69,10 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   await mobilePanel.getByRole('button', { name: 'Tạo phiếu thu' }).click();
   await expect(mobilePanel.getByText(/Đã thực hiện/)).toBeVisible();
   await expect(mobilePanel.getByText('Chưa đủ dữ liệu để xác nhận')).toBeVisible();
+  await mobilePanel.getByLabel('Số tiền phân bổ Finance').fill('12000000');
+  const allocationResponse = accountant2.waitForResponse(response => response.url().includes('/api/finance-write/allocations') && response.request().method() === 'POST');
+  await mobilePanel.getByRole('button', { name: 'Phân bổ khoản thu' }).click();
+  expect((await allocationResponse).status()).toBeLessThan(300);
   await logout(accountant2); await accountant2Context.close();
 
   const financeAdminContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
@@ -80,11 +84,6 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   await financePanel.getByRole('button', { name: 'Xác minh phiếu thu' }).click();
   await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
   await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
-  await financePanel.getByLabel('Mã phiếu thu Finance').fill(`REC_${stamp}`);
-  await financePanel.getByLabel('Số tiền phân bổ Finance').fill('12000000');
-  const allocationResponse = financeAdmin.waitForResponse(response => response.url().includes('/api/finance-write/allocations') && response.request().method() === 'POST');
-  await financePanel.getByRole('button', { name: 'Phân bổ khoản thu' }).click();
-  expect((await allocationResponse).status()).toBeLessThan(300);
   await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
   const ledgerResponse = financeAdmin.waitForResponse(response => response.url().includes('/post-ledger') && response.request().method() === 'POST');
   await financePanel.getByRole('button', { name: 'Ghi nhận sổ cái' }).click();
