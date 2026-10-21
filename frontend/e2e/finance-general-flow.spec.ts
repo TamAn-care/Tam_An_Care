@@ -69,10 +69,6 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   await mobilePanel.getByRole('button', { name: 'Tạo phiếu thu' }).click();
   await expect(mobilePanel.getByText(/Đã thực hiện/)).toBeVisible();
   await expect(mobilePanel.getByText('Chưa đủ dữ liệu để xác nhận')).toBeVisible();
-  await mobilePanel.getByLabel('Số tiền phân bổ Finance').fill('12000000');
-  const allocationResponse = accountant2.waitForResponse(response => response.url().includes('/api/finance-write/allocations') && response.request().method() === 'POST');
-  await mobilePanel.getByRole('button', { name: 'Phân bổ khoản thu' }).click();
-  expect((await allocationResponse).status()).toBeLessThan(300);
   await logout(accountant2); await accountant2Context.close();
 
   const financeAdminContext = await browser.newContext({ viewport: { width: 1440, height: 1000 }, serviceWorkers: 'block' });
@@ -83,6 +79,19 @@ test('general Finance browser workflow preserves server-side RBAC', async ({ bro
   await financePanel.getByLabel('Mã phiếu thu Finance').fill(`REC_${stamp}`);
   await financePanel.getByRole('button', { name: 'Xác minh phiếu thu' }).click();
   await expect(financePanel.getByText(/Đã thực hiện/)).toBeVisible();
+
+  const allocationContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, serviceWorkers: 'block' });
+  const allocationPage = await allocationContext.newPage();
+  await login(allocationPage, users.accountant);
+  const allocationPanel = allocationPage.getByRole('region', { name: 'Finance tổng hợp' });
+  await allocationPanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
+  await allocationPanel.getByLabel('Mã phiếu thu Finance').fill(`REC_${stamp}`);
+  await allocationPanel.getByLabel('Số tiền phân bổ Finance').fill('12000000');
+  const allocationResponse = allocationPage.waitForResponse(response => response.url().includes('/api/finance-write/allocations') && response.request().method() === 'POST');
+  await allocationPanel.getByRole('button', { name: 'Phân bổ khoản thu' }).click();
+  expect((await allocationResponse).status()).toBeLessThan(300);
+  await logout(allocationPage); await allocationContext.close();
+
   await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
   await financePanel.getByLabel('Mã hóa đơn Finance').fill(invoiceId);
   const ledgerResponse = financeAdmin.waitForResponse(response => response.url().includes('/post-ledger') && response.request().method() === 'POST');
