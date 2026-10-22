@@ -1,0 +1,59 @@
+name: DOB V132.10.45 compiled controller E2E (NO DEPLOY)
+on:
+  push:
+    branches: [test/dob-rc-isolated-v1321043-20261016]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  dob-controller-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: dob_ci_synthetic
+          POSTGRES_USER: dob_ci
+          POSTGRES_PASSWORD: synthetic-ci-only-not-production
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dob_ci -d dob_ci_synthetic"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      PGHOST: 127.0.0.1
+      PGDATABASE: dob_ci_synthetic
+      PGUSER: dob_ci
+      PGPASSWORD: synthetic-ci-only-not-production
+      DB_HOST: 127.0.0.1
+      DB_PORT: "5432"
+      DB_USER: dob_ci
+      DB_PASSWORD: synthetic-ci-only-not-production
+      DB_NAME: dob_ci_synthetic
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install and compile API
+        working-directory: api
+        run: |
+          npm ci --no-audit --no-fund
+          rm -f tsconfig.tsbuildinfo
+          npm run build
+          test -f dist/database/database.service.js
+          test -f dist/residents/resident-demographic-amendment.controller.js
+      - name: Execute compiled controller against disposable PostgreSQL
+        working-directory: api
+        run: node tests/dob-v1321045-isolated.cjs
+      - name: Fail-closed RC release decision
+        run: |
+          echo "GITHUB_COMPILED_CONTROLLER_E2E=PASS"
+          echo "EXACT_SERVER_RC_IMAGE_EQUIVALENCE=HOLD"
+          echo "OLD_API_NEW_SCHEMA_COMPATIBILITY=HOLD"
+          echo "PRODUCTION_RELEASE_READY=NO"
+          echo "DEPLOY=NO"
