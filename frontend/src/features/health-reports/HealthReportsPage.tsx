@@ -1,3 +1,4 @@
+import { EMOTION_OPTIONS, SLEEP_OPTIONS, emotionChoices, sleepChoices, toggleChoice, type Emotion, type Sleep } from './assessment-multi-select';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useActor } from '../../auth/ActorContext';
@@ -88,7 +89,9 @@ export interface ClinicalAssessmentData {
     alertAndResponsive: boolean;
     memoryCognition: 'NORMAL' | 'MILD_DECLINE' | 'CONFUSED_SEVERE';
     emotionalState: 'HAPPY_SOCIABLE' | 'WITHDRAWN' | 'IRRITABLE' | 'ANXIOUS_DEPRESSED';
+    emotionalStates?: Emotion[];
     sleepQuality: 'GOOD' | 'INSOMNIA' | 'NIGHT_WAKING';
+    sleepQualities?: Sleep[];
   };
 
   // V-B. Đánh giá Tâm lý & Công tác xã hội
@@ -1326,6 +1329,39 @@ export default function HealthReportsPage() {
                   </div>
                 </div>
 
+                <div style={{ border: '1px solid #d1e6d7', padding: '1rem', borderRadius: '0.5rem', marginBottom: '1rem' }}>
+                  <h3>V. Tinh thần – Trạng thái cảm xúc và giấc ngủ</h3>
+                  <p style={{ fontSize: '0.8rem' }}>Chọn tất cả đặc điểm quan sát được của đúng người cao tuổi trong kỳ báo cáo.</p>
+                  <div className="form-row">
+                    <fieldset style={{ border: 0 }}>
+                      <legend>Trạng thái cảm xúc (chọn nhiều)</legend>
+                      {EMOTION_OPTIONS.map(option => (
+                        <label key={option.value} style={{ display: 'block', margin: '0.3rem 0' }}>
+                          <input type="checkbox" checked={emotionChoices(assessment.mental).includes(option.value)}
+                            onChange={() => setAssessment(prev => {
+                              const values = toggleChoice(emotionChoices(prev.mental), option.value);
+                              return { ...prev, mental: { ...prev.mental, emotionalStates: values, emotionalState: values[0] || prev.mental.emotionalState } };
+                            })} />
+                          {' '}{option.label}
+                        </label>
+                      ))}
+                    </fieldset>
+                    <fieldset style={{ border: 0 }}>
+                      <legend>Giấc ngủ (chọn nhiều)</legend>
+                      {SLEEP_OPTIONS.map(option => (
+                        <label key={option.value} style={{ display: 'block', margin: '0.3rem 0' }}>
+                          <input type="checkbox" checked={sleepChoices(assessment.mental).includes(option.value)}
+                            onChange={() => setAssessment(prev => {
+                              const values = toggleChoice(sleepChoices(prev.mental), option.value);
+                              return { ...prev, mental: { ...prev.mental, sleepQualities: values, sleepQuality: values[0] || prev.mental.sleepQuality } };
+                            })} />
+                          {' '}{option.label}
+                        </label>
+                      ))}
+                    </fieldset>
+                  </div>
+                </div>
+
                 {/* III. BỆNH LÝ & THUỐC ĐANG SỬ DỤNG */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1.25rem' }}>
                   <h3 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: '#1e293b', fontWeight: 700 }}>
@@ -1513,6 +1549,8 @@ export default function HealthReportsPage() {
             </div>
 
             <div className="modal-body health-report-sheet printable-a4-sheet" style={{ background: '#ffffff', color: '#0f172a', padding: '1.2rem', fontFamily: 'serif' }}>
+              <p><strong>Trạng thái cảm xúc:</strong> {emotionChoices(viewingReport.data.mental).map(value => EMOTION_OPTIONS.find(x => x.value === value)?.label).join('; ') || 'Chưa đánh giá'}</p>
+              <p><strong>Chất lượng giấc ngủ:</strong> {sleepChoices(viewingReport.data.mental).map(value => SLEEP_OPTIONS.find(x => x.value === value)?.label).join('; ') || 'Chưa đánh giá'}</p>
               {/* Header Mẫu 06/PTDYS-TA */}
               <div style={{ textAlign: 'center', marginBottom: '0.75rem', borderBottom: '2px solid #315b46', paddingBottom: '0.5rem' }}>
                 <div className="health-report-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
