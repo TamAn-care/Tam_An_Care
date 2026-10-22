@@ -1,0 +1,62 @@
+name: Resident Vietnamese ABC CI
+on:
+  push:
+    branches: [feature/resident-alphabetical-list-20261013]
+  pull_request:
+    paths:
+      - 'api/src/residents/resident.repository.ts'
+      - 'frontend/src/api/residents.ts'
+      - 'api/test/resident-alphabetical-order.test.cjs'
+      - '.github/workflows/resident-alphabetical-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: isolated_ci_only
+          POSTGRES_DB: resident_sort_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Isolated PostgreSQL Vietnamese locale availability
+        env:
+          PGPASSWORD: isolated_ci_only
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+          test "$(psql -h 127.0.0.1 -U postgres -d resident_sort_test -Atc "SELECT count(*) FROM pg_collation WHERE collname = 'vi-x-icu'")" = "1"
+          psql -h 127.0.0.1 -U postgres -d resident_sort_test -v ON_ERROR_STOP=1 -c "SELECT 'Ánh' COLLATE \"vi-x-icu\" < 'Bình' COLLATE \"vi-x-icu\" AS ordered"
+      - name: Check source query contract
+        run: node --test api/test/resident-alphabetical-order.test.cjs
+      - name: Compile API from locked packages
+        working-directory: api
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Compile frontend with shared resident alphabetic sorting
+        working-directory: frontend
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Evidence
+        if: always()
+        run: |
+          echo "COMMIT_SHA=$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "RELEASE_DECISION=NO_GO_PENDING_FULL_ACCEPTANCE" >> "$GITHUB_STEP_SUMMARY"

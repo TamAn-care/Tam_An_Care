@@ -182,8 +182,12 @@ export class ResidentRepository {
               care_level,
               active_status
             FROM residents
+            -- Vietnamese given-name (last word) ordering, independent of
+            -- admission date, contract sequence, and resident code.
+            -- ICU Vietnamese collation is verified in isolated CI before deploy.
             ORDER BY
-              resident_code ASC,
+              (regexp_replace(btrim(display_name), '^.*[[:space:]]', '')) COLLATE "vi-x-icu" ASC,
+              btrim(display_name) COLLATE "vi-x-icu" ASC,
               resident_id ASC
             `,
           );
@@ -231,8 +235,12 @@ export class ResidentRepository {
               care_level,
               active_status
             FROM residents
+            -- Vietnamese given-name (last word) ordering, independent of
+            -- admission date, contract sequence, and resident code.
+            -- ICU Vietnamese collation is verified in isolated CI before deploy.
             ORDER BY
-              resident_code ASC,
+              (regexp_replace(btrim(display_name), '^.*[[:space:]]', '')) COLLATE "vi-x-icu" ASC,
+              btrim(display_name) COLLATE "vi-x-icu" ASC,
               resident_id ASC
             LIMIT $1
             OFFSET $2
