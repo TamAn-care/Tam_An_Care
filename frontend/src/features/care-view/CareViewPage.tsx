@@ -757,6 +757,26 @@ export function CareViewPage() {
 
       {activeTab === 'clinical' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {data.initialAssessment && (
+            <section className="card" style={{ padding: '1.25rem', border: '1px solid #bbf7d0', borderRadius: '0.75rem' }}>
+              <h3 style={{ marginTop: 0 }}>Phiếu đánh giá sức khỏe ban đầu</h3>
+              <p style={{ margin: '0.5rem 0' }}>
+                Phiên bản {data.initialAssessment.assessmentVersion} · Trạng thái {data.initialAssessment.assessmentStatus}
+                {data.initialAssessment.updatedAt ? ` · Cập nhật: ${formatVietnameseDate(data.initialAssessment.updatedAt)}` : ''}
+              </p>
+              <p style={{ color: '#475569', fontSize: '0.9rem' }}>
+                Thông tin gốc từ hồ sơ tiếp nhận; không thay thế chỉ định và ghi nhận chăm sóc hiện tại.
+              </p>
+              <details>
+                <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Xem nội dung đánh giá</summary>
+                <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxHeight: '28rem', overflowY: 'auto', fontSize: '0.85rem' }}>
+                  {typeof data.initialAssessment.summary === 'string'
+                    ? data.initialAssessment.summary
+                    : JSON.stringify(data.initialAssessment.summary, null, 2) ?? 'Chưa có nội dung'}
+                </pre>
+              </details>
+            </section>
+          )}
           {/* Summary Min-Max Banner for Monthly Periodic Report */}
           <div style={{ background: '#f0fdf4', border: '1.5px solid #bbf7d0', borderRadius: '0.75rem', padding: '1.25rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>

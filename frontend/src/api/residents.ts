@@ -47,6 +47,12 @@ export interface OperationalCareViewResponse {
   viewMode: 'OPERATIONAL_READ_ONLY';
 
   resident: Record<string, unknown>;
+  initialAssessment?: null | {
+    assessmentVersion: number;
+    assessmentStatus: string;
+    updatedAt: string | null;
+    summary: unknown;
+  };
   carePlan: Record<string, unknown> | null;
   workQueue: Array<Record<string, unknown>>;
   clinical: Array<Record<string, unknown>>;

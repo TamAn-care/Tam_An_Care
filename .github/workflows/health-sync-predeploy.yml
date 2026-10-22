@@ -1,0 +1,65 @@
+name: Health Sync Predeploy
+on:
+  push:
+    branches:
+      - fix/admission-resident-sync-20261013
+  pull_request:
+    paths:
+      - 'api/src/operational-care-view/**'
+      - 'api/src/resident-access-scope/**'
+      - 'api/src/admissions/**'
+      - 'frontend/src/features/care-view/**'
+      - 'frontend/src/api/residents.ts'
+      - '.github/workflows/health-sync-predeploy.yml'
+permissions:
+  contents: read
+jobs:
+  backend-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - name: Executable care-view authorization and projection tests
+        run: node --test tests/health-sync-care-view.test.cjs
+      - name: Health sync source boundary test
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const assert = require('assert/strict');
+          const care = fs.readFileSync('src/operational-care-view/operational-care-view.service.ts','utf8');
+          const scope = fs.readFileSync('src/resident-access-scope/resident-access-scope.service.ts','utf8');
+          const start = care.indexOf('async getResidentCareView(');
+          const auth = care.indexOf('.canAccessResident(', start);
+          const read = care.indexOf('FROM admission_assessments a', start);
+          assert(start >= 0 && auth > start && read > auth, 'Care view must authorize resident before reading assessment');
+          assert(care.includes('c.resident_id = $1'), 'Assessment query must scope to resident ID');
+          assert(care.includes('a.assessment_version DESC'), 'Assessment version order required');
+          assert(!/rowCount\s*===\s*1\s*\|\|\s*true/.test(scope), 'Supervisor scope bypass forbidden');
+          assert(scope.includes('if (!canonicalActor)'), 'Canonical active staff check required');
+          console.log('HEALTH_SYNC_SOURCE_SECURITY_GATES=PASS');
+          NODE
+  frontend-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
