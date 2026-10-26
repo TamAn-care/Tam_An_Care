@@ -91,12 +91,18 @@ export class NutritionOperationsService {
       await this.residentAccess(client, actor, meal.resident_id);
       if (portions !== Number(meal.portions)) throw new ConflictException('Dispatch portions must match registration');
       const dispatchId = randomUUID();
-      const inserted = await client.query(
-        `INSERT INTO nutrition_tray_dispatches
-         (dispatch_id,registration_id,resident_id,meal_date,meal_type,portions,destination_floor,dispatched_by)
-         VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
-        [dispatchId, registrationId, meal.resident_id, meal.meal_date, meal.meal_type, portions, destinationFloor, actor.actorId],
-      );
+      let inserted;
+      try {
+        inserted = await client.query(
+          `INSERT INTO nutrition_tray_dispatches
+           (dispatch_id,registration_id,resident_id,meal_date,meal_type,portions,destination_floor,dispatched_by)
+           VALUES($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+          [dispatchId, registrationId, meal.resident_id, meal.meal_date, meal.meal_type, portions, destinationFloor, actor.actorId],
+        );
+      } catch (error: any) {
+        if (error?.code === '23505') throw new ConflictException('Tray dispatch already exists for this meal registration');
+        throw error;
+      }
       await client.query(
         `INSERT INTO nutrition_tray_handover_events
          (event_id,dispatch_id,event_type,actor_id,actor_role,destination_floor,portions)

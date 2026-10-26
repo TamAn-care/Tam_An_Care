@@ -33,7 +33,7 @@ export function NutritionDurableOperationsPanel({ actor }: { actor: HumanActorSe
       <h3 style={{ marginTop: 0 }}>Nghiệp vụ dinh dưỡng bền vững</h3>
       <p style={{ color: '#475569' }}>Các thao tác dưới đây ghi trực tiếp qua API và không dùng dữ liệu mô phỏng.</p>
       {message && <p role="status">{message}</p>}
-      {(role === 'NUTRITIONIST' || role === 'CARE_MANAGER' || role === 'SUPERVISOR') && (
+      {(role === 'NUTRITIONIST' || role === 'CARE_MANAGER') && (
         <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))' }}>
           <input aria-label="Resident ID" placeholder="Resident ID" value={residentId} onChange={e => setResidentId(e.target.value)} />
           <input aria-label="Meal registration ID" placeholder="Meal registration ID" value={registrationId} onChange={e => setRegistrationId(e.target.value)} />
@@ -50,7 +50,7 @@ export function NutritionDurableOperationsPanel({ actor }: { actor: HumanActorSe
         <input aria-label="Received portions" type="number" min={0} value={portions} onChange={e => setPortions(Number(e.target.value))} />
         <button type="button" onClick={() => run(() => acknowledgeTray(actor, dispatchId, { floor, receivedPortions: portions }))}>Xác nhận nhận khay</button>
       </div>}
-      {(role === 'CARE_MANAGER' || role === 'SUPERVISOR') && <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', marginTop: 8 }}>
+      {role === 'CARE_MANAGER' && <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', marginTop: 8 }}>
         <input aria-label="Hygiene record ID" placeholder="Hygiene record ID" value={recordId} onChange={e => setRecordId(e.target.value)} />
         <input aria-label="Sample ID" placeholder="Sample ID" value={sampleId} onChange={e => setSampleId(e.target.value)} />
         <button type="button" onClick={() => run(() => inspectNutritionHygiene(actor, { recordId, finding: 'Đã kiểm tra', decision: 'CONFIRMED' }))}>Kiểm tra vệ sinh</button>

@@ -382,6 +382,7 @@ export const ROLE_CAPABILITIES: Record<HumanActorRole, RoleCapability> = {
       'resident-leave',
       'operations',
       'workforce',
+      'kitchen-operations',
     ],
     canManageStaff: false,
     canManageDirectorStaff: false,
