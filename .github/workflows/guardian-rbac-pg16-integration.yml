@@ -56,6 +56,8 @@ jobs:
         run: test "$(psql -XAtqc 'SHOW server_version_num' | cut -c1-2)" = "16"
       - name: Run clean, upgrade, integrity and repeatability migration gates
         run: bash scripts/ci/guardian-migration-pg16.sh
+      - name: Run synthetic backup, restore and rollback acceptance
+        run: bash scripts/ci/guardian-rollback-pg16.sh
       - name: Install API dependencies
         working-directory: api
         run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
