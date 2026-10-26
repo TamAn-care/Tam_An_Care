@@ -1,6 +1,6 @@
 BEGIN;
 
-CREATE TABLE guardian_principals (
+CREATE TABLE IF NOT EXISTS guardian_principals (
   guardian_principal_id TEXT PRIMARY KEY,
   status TEXT NOT NULL DEFAULT 'ACTIVE'
     CHECK (status IN ('ACTIVE', 'REVOKED', 'INACTIVE')),
@@ -8,7 +8,7 @@ CREATE TABLE guardian_principals (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE guardian_sessions (
+CREATE TABLE IF NOT EXISTS guardian_sessions (
   session_id TEXT PRIMARY KEY,
   guardian_principal_id TEXT NOT NULL
     REFERENCES guardian_principals(guardian_principal_id)
@@ -27,11 +27,11 @@ CREATE TABLE guardian_sessions (
     )
 );
 
-CREATE INDEX idx_guardian_sessions_active
+CREATE INDEX IF NOT EXISTS idx_guardian_sessions_active
   ON guardian_sessions(guardian_principal_id, expires_at)
   WHERE revoked_at IS NULL;
 
-CREATE TABLE guardian_resident_relationships (
+CREATE TABLE IF NOT EXISTS guardian_resident_relationships (
   relationship_id TEXT PRIMARY KEY,
   guardian_principal_id TEXT NOT NULL
     REFERENCES guardian_principals(guardian_principal_id),
@@ -64,14 +64,14 @@ CREATE TABLE guardian_resident_relationships (
     CHECK (cardinality(permissions) > 0)
 );
 
-CREATE UNIQUE INDEX uq_guardian_active_relationship
+CREATE UNIQUE INDEX IF NOT EXISTS uq_guardian_active_relationship
   ON guardian_resident_relationships(
     guardian_principal_id,
     resident_id
   )
   WHERE status = 'ACTIVE';
 
-CREATE INDEX idx_guardian_relationship_lookup
+CREATE INDEX IF NOT EXISTS idx_guardian_relationship_lookup
   ON guardian_resident_relationships(
     guardian_principal_id,
     resident_id,
@@ -92,6 +92,36 @@ ALTER TABLE staff_actors
       'CAREGIVER', 'NURSE', 'SUPERVISOR', 'CARE_MANAGER',
       'MEDICAL_HEAD', 'PSYCHOLOGIST', 'SOCIAL_WORKER'
     )
+  );
+
+ALTER TABLE auth_sessions
+  DROP CONSTRAINT IF EXISTS auth_sessions_role_check;
+
+ALTER TABLE auth_sessions
+  ADD CONSTRAINT auth_sessions_role_check
+  CHECK (
+    actor_role IN (
+      'CAREGIVER', 'NURSE', 'SUPERVISOR', 'CARE_MANAGER',
+      'MEDICAL_HEAD', 'PSYCHOLOGIST', 'SOCIAL_WORKER'
+    )
+  );
+
+ALTER TABLE resident_access_assignments
+  DROP CONSTRAINT IF EXISTS resident_access_assignments_actor_role_check;
+
+ALTER TABLE resident_access_assignments
+  ADD CONSTRAINT resident_access_assignments_actor_role_check
+  CHECK (
+    actor_role IN ('CAREGIVER', 'NURSE', 'PSYCHOLOGIST', 'SOCIAL_WORKER')
+  );
+
+ALTER TABLE resident_access_assignments
+  DROP CONSTRAINT IF EXISTS resident_access_assignments_access_scope_check;
+
+ALTER TABLE resident_access_assignments
+  ADD CONSTRAINT resident_access_assignments_access_scope_check
+  CHECK (
+    access_scope IN ('DIRECT_CARE', 'CLINICAL_CARE', 'PSYCHOSOCIAL_CARE')
   );
 
 ALTER TABLE resident_access_assignments
