@@ -1,9 +1,9 @@
 {
-  "checkpoint": "V52.67.45",
+  "checkpoint": "V52.67.46",
   "repository": "/Users/anhha/TamAnCare-rbac-v52-67-43",
   "baseline_commit": "5b4bfe371ca373c7b1f5b6333976af490662cda3",
   "integration_branch": "integration/rbac-guardian-staff-v52-67-43",
-  "integration_head": "c52309ce5e98964d2bee45a3abf71d1323893736",
+  "integration_head": "5c69d160644521b480b3426a99c56f4cff72b33f",
   "source_branches": {
     "guardian": "origin/feature/guardian-resident-scope-auth-20261012",
     "staff_rbac": "origin/feature/staff-rbac-system-20261012",
@@ -35,13 +35,18 @@
     "clean_migration",
     "upgrade_migration",
     "integrity_and_relationship_constraints",
-    "migration_repeatability"
+    "migration_repeatability",
+    "immutable_rc_artifact_build",
+    "api_linux_amd64_artifact",
+    "frontend_deployable_artifact",
+    "artifact_manifest_attestation",
+    "github_ci_exact_source_5c69d160"
   ],
   "failed_gates": [
     {
-      "gate": "exact_head_github_ci",
-      "root_cause": "Candidate has not been pushed or represented by an exact-head CI run.",
-      "status": "NOT_RUN"
+      "gate": "deployed_runtime_linkage",
+      "root_cause": "The CI build is attestable to source commit 5c69d160 and linux/amd64, but linkage to the currently deployed Production Test runtime remains unproven.",
+      "status": "PARTIAL"
     },
     {
       "gate": "source_build_provenance",
@@ -49,9 +54,9 @@
       "status": "PARTIAL"
     },
     {
-      "gate": "release_artifact_provenance",
-      "root_cause": "Immutable API/frontend RC artifacts were not built for this candidate HEAD; deployed runtime/source linkage remains unproven.",
-      "status": "NOT_RUN"
+      "gate": "current_backup_readiness",
+      "root_cause": "Historical database/globals/runtime recovery artifacts are verified, but a release-specific current Production Test backup preflight was not performed under this read-only authorization.",
+      "status": "PARTIAL"
     },
     {
       "gate": "rollback_compatibility",
@@ -59,6 +64,17 @@
       "status": "RESTORE_REQUIRED"
     }
   ],
-  "release_decision": "NO_GO_SOURCE_ARTIFACT_PROVENANCE_AND_ROLLBACK_GATES_OPEN",
-  "next_executable_action": "Establish immutable API/frontend build-to-source provenance and preserve a release-specific rollback artifact/restore plan before owner deployment approval."
+  "artifact_attestation": {
+    "workflow_run": "40275897940",
+    "workflow_url": "https://github.com/TamAn-care/Tam_An_Care/actions/runs/40275897940",
+    "artifact_name": "rbac-rc-artifacts-5c69d160644521b480b3426a99c56f4cff72b33f",
+    "artifact_zip_sha256": "fb002952a23e08317f2cbd2a63a3c9ea739fb0b8244916637beb45153487c9b4",
+    "api_image_id": "sha256:7b3096c9bb4e1e317dafdedd6a9ddf11046d1f634300b8c7639b5c53fa571819",
+    "target_platform": "linux/amd64",
+    "production_deployment": "NOT_PERFORMED",
+    "production_migration": "NOT_PERFORMED",
+    "secrets": "NOT_INCLUDED"
+  },
+  "release_decision": "NO_GO_RUNTIME_LINKAGE_CURRENT_BACKUP_AND_ROLLBACK_GATES_OPEN",
+  "next_executable_action": "Perform one authorized read-only Production Test runtime/current-backup linkage preflight and owner review of the exact private artifact manifest, then separately approve any controlled deployment and migration."
 }
