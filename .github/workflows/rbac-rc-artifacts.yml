@@ -1,0 +1,123 @@
+name: RBAC RC immutable artifacts (no deploy)
+
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'web/**'
+      - 'database/**'
+      - 'package-lock.json'
+      - 'api/package-lock.json'
+      - 'frontend/package-lock.json'
+      - '.github/workflows/rbac-rc-artifacts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rbac-rc-artifacts-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-attest:
+    name: Build and attest immutable RC artifacts
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Verify source identity and build frontend
+        working-directory: frontend
+        run: |
+          set -Eeuo pipefail
+          test "$(git -C .. rev-parse HEAD)" = "$SOURCE_SHA"
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+
+      - name: Build API linux/amd64 image without registry publication
+        run: |
+          set -Eeuo pipefail
+          docker build --platform linux/amd64 --file api/Dockerfile --tag taman-care-rbac-api:"$SOURCE_SHA" api
+          docker image inspect taman-care-rbac-api:"$SOURCE_SHA" --format 'API_IMAGE_ID={{.Id}}' | tee "$RUNNER_TEMP/api-image-id.txt"
+          docker save taman-care-rbac-api:"$SOURCE_SHA" -o "$RUNNER_TEMP/api-image.tar"
+          sha256sum "$RUNNER_TEMP/api-image.tar" > "$RUNNER_TEMP/api-image.tar.sha256"
+
+      - name: Package frontend deployable artifact
+        run: |
+          set -Eeuo pipefail
+          test -s frontend/dist/index.html
+          tar --sort=name --mtime='UTC 1970-01-01' --owner=0 --group=0 --numeric-owner \
+            -czf "$RUNNER_TEMP/frontend-dist.tar.gz" -C frontend dist
+          sha256sum "$RUNNER_TEMP/frontend-dist.tar.gz" > "$RUNNER_TEMP/frontend-dist.tar.gz.sha256"
+
+      - name: Write immutable release manifest
+        run: |
+          set -Eeuo pipefail
+          api_lock_sha="$(sha256sum api/package-lock.json | awk '{print $1}')"
+          frontend_lock_sha="$(sha256sum frontend/package-lock.json | awk '{print $1}')"
+          api_archive_sha="$(awk '{print $1}' "$RUNNER_TEMP/api-image.tar.sha256")"
+          frontend_archive_sha="$(awk '{print $1}' "$RUNNER_TEMP/frontend-dist.tar.gz.sha256")"
+          api_image_id="$(sed -n 's/^API_IMAGE_ID=//p' "$RUNNER_TEMP/api-image-id.txt")"
+          test -n "$api_image_id"
+          cat > "$RUNNER_TEMP/rbac-rc-release-manifest.json" <<EOF
+          {
+            "release": "rbac-guardian-staff-v52-67-46",
+            "source_commit": "$SOURCE_SHA",
+            "workflow_run_id": "$GITHUB_RUN_ID",
+            "workflow_run_attempt": "$GITHUB_RUN_ATTEMPT",
+            "target_platform": "linux/amd64",
+            "dependency_lockfiles": {
+              "api/package-lock.json": "$api_lock_sha",
+              "frontend/package-lock.json": "$frontend_lock_sha"
+            },
+            "api": {
+              "image_id": "$api_image_id",
+              "docker_save_sha256": "$api_archive_sha",
+              "artifact_file": "api-image.tar"
+            },
+            "frontend": {
+              "deployable_bundle_sha256": "$frontend_archive_sha",
+              "artifact_file": "frontend-dist.tar.gz"
+            },
+            "runtime_provenance": "SOURCE_BUILD_ATTESTED; DEPLOYED_RUNTIME_LINK_UNPROVEN",
+            "production_deployment": "NOT_PERFORMED",
+            "production_migration": "NOT_PERFORMED",
+            "secrets": "NOT_INCLUDED"
+          }
+          EOF
+          jq . "$RUNNER_TEMP/rbac-rc-release-manifest.json" > "$RUNNER_TEMP/rbac-rc-release-manifest.normalized.json"
+
+      - name: Upload private CI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: rbac-rc-artifacts-${{ github.event.pull_request.head.sha || github.sha }}
+          if-no-files-found: error
+          retention-days: 14
+          path: |
+            ${{ runner.temp }}/api-image.tar
+            ${{ runner.temp }}/api-image.tar.sha256
+            ${{ runner.temp }}/frontend-dist.tar.gz
+            ${{ runner.temp }}/frontend-dist.tar.gz.sha256
+            ${{ runner.temp }}/rbac-rc-release-manifest.normalized.json
+
+      - name: Attestation summary
+        if: always()
+        run: |
+          echo "SOURCE_COMMIT=$SOURCE_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "TARGET_PLATFORM=linux/amd64" >> "$GITHUB_STEP_SUMMARY"
+          echo "PRODUCTION_DEPLOYMENT=NOT_PERFORMED" >> "$GITHUB_STEP_SUMMARY"
+          echo "PRODUCTION_MIGRATION=NOT_PERFORMED" >> "$GITHUB_STEP_SUMMARY"
