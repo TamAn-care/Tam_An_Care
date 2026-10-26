@@ -113,8 +113,7 @@ test "$(psql_safe -d "${rollback_db}" -XAtqc "select count(*) from rollback_fixt
 test "$(psql_safe -d "${rollback_db}" -XAtqc "select count(*) from rollback_fixture.staff_actors")" = 1
 test "$(psql_safe -d "${rollback_db}" -XAtqc "select to_regclass('rollback_fixture.guardian_resident_relationships') is null")" = t
 
-cp "${baseline_dump}" "${corrupt_dump}"
-truncate -s -1 "${corrupt_dump}"
+head -c 1 "${baseline_dump}" > "${corrupt_dump}"
 if pg_restore --list "${corrupt_dump}" >/dev/null 2>&1; then
   echo 'corrupt archive unexpectedly validated' >&2
   exit 1
