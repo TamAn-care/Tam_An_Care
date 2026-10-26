@@ -73,7 +73,7 @@ baseline_dump="${work_dir}/baseline.dump"
 globals_dump="${work_dir}/globals.sql"
 corrupt_dump="${work_dir}/baseline-corrupt.dump"
 
-pg_dump -X --format=custom --schema=rollback_fixture --file="${baseline_dump}"
+pg_dump --format=custom --schema=rollback_fixture --file="${baseline_dump}"
 pg_restore --list "${baseline_dump}" >/dev/null
 pg_dumpall --globals-only --no-role-passwords > "${globals_dump}"
 test -s "${globals_dump}"
