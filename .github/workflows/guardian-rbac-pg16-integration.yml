@@ -62,6 +62,9 @@ jobs:
       - name: Build API
         working-directory: api
         run: npm run build
+      - name: Emit complete API modules for isolated tests
+        working-directory: api
+        run: npx tsc --project tsconfig.json --incremental false
       - name: Run executable RBAC and scope regressions
         working-directory: api
         run: >-
