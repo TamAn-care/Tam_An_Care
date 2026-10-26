@@ -27,10 +27,15 @@ async function invoke({ authorization, rows = [{ actor_id: 'staff-ci-1', actor_r
   path = '/api/residents', spoof = {} } = {}) {
   let queryCount = 0;
   let nextCount = 0;
-  const db = { query: async (_sql, params) => {
+  const db = { query: async (sql, params) => {
     queryCount++;
-    assert.deepEqual(params, ['session-ci-1', 'staff-ci-1', 'CAREGIVER']);
-    return { rows };
+    if (/auth_sessions/.test(sql)) {
+      assert.deepEqual(params, ['session-ci-1', 'staff-ci-1', 'CAREGIVER']);
+      return { rows };
+    }
+    assert.match(sql, /staff_actors/);
+    assert.deepEqual(params, ['staff-ci-1', 'CAREGIVER']);
+    return { rows: rows.length === 0 ? [] : [{ actor_id: 'staff-ci-1' }] };
   }};
   const middleware = new ProductionAuthMiddleware(db);
   const req = {
@@ -60,7 +65,7 @@ test('AUTH-MW01 active staff session passes and sets server-derived actor header
     spoof: { 'x-actor-id': 'forged', 'x-actor-role': 'SUPERVISOR' } });
   assert.equal(r.error, undefined);
   assert.equal(r.nextCount, 1);
-  assert.equal(r.queryCount, 1);
+  assert.equal(r.queryCount, 2);
   assert.equal(r.req.headers['x-actor-id'], 'staff-ci-1');
   assert.equal(r.req.headers['x-actor-role'], 'CAREGIVER');
   assert.equal(r.req.headers['x-auth-session-id'], 'session-ci-1');
