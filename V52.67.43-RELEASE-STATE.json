@@ -1,0 +1,50 @@
+{
+  "checkpoint": "V52.67.43",
+  "repository": "/Users/anhha/TamAnCare-canonical",
+  "baseline_commit": "5b4bfe371ca373c7b1f5b6333976af490662cda3",
+  "integration_branch": "integration/rbac-guardian-staff-v52-67-43",
+  "integration_head": "cd858cd4f46bf615ec22cc4c812f9518c5d6da6e",
+  "source_branches": {
+    "guardian": "origin/feature/guardian-resident-scope-auth-20261012",
+    "staff_rbac": "origin/feature/staff-rbac-system-20261012",
+    "resident_scope_fix": "origin/fix/staff-resident-care-view-scope-20261012"
+  },
+  "affected_files": [
+    "api/src/security/production-auth.middleware.ts",
+    "api/src/resident-access-scope/resident-access-scope.service.ts",
+    "api/src/residents/resident.controller.ts",
+    "api/test/guardian-auth-middleware.test.cjs",
+    "frontend/src/auth/session.ts",
+    "frontend/src/api/client.ts"
+  ],
+  "valid_pass_gates": [
+    "api_build",
+    "api_type_emission",
+    "focused_staff_guardian_tests_45_cases",
+    "guardian_staff_matrix_22_cases",
+    "guardian_evidence_sha_gate",
+    "frontend_build"
+  ],
+  "failed_gates": [
+    {
+      "gate": "guardian_identity_relationship_scope",
+      "root_cause": "Guardian health-report authorization returns before relationship validation; resident_access_assignments only models CAREGIVER/NURSE staff grants.",
+      "evidence": [
+        "api/src/health-reports/health-report.service.ts",
+        "database/schema.sql"
+      ],
+      "required_decision": "Define authoritative guardian principal-to-resident relationship contract and migration before implementation."
+    },
+    {
+      "gate": "professional_access_regression",
+      "root_cause": "No executable isolated coverage was found for medical vital-sign scope or psychology/social-work assessment scope on the integrated candidate.",
+      "required_decision": "Implement and test those routes only after the resident-scope contract is defined."
+    },
+    {
+      "gate": "exact_head_github_ci",
+      "root_cause": "The candidate exists only locally; no exact-head CI run or draft PR was created."
+    }
+  ],
+  "release_decision": "NO_GO_GUARDIAN_SCOPE_CONTRACT_REQUIRED",
+  "next_executable_action": "System Owner approves the guardian identity/relationship data contract; then implement one relationship-scoped authorization path and its isolated negative tests."
+}
