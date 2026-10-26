@@ -4155,12 +4155,12 @@ CREATE TABLE resident_access_assignments (
 
   actor_role TEXT NOT NULL
     CHECK (
-      actor_role IN ('CAREGIVER','NURSE')
+      actor_role IN ('CAREGIVER','NURSE','PSYCHOLOGIST','SOCIAL_WORKER')
     ),
 
   access_scope TEXT NOT NULL
     CHECK (
-      access_scope IN ('DIRECT_CARE','CLINICAL_CARE')
+      access_scope IN ('DIRECT_CARE','CLINICAL_CARE','PSYCHOSOCIAL_CARE')
     ),
 
   status TEXT NOT NULL
@@ -4193,6 +4193,11 @@ CREATE TABLE resident_access_assignments (
       (
         actor_role='NURSE'
         AND access_scope='CLINICAL_CARE'
+      )
+      OR
+      (
+        actor_role IN ('PSYCHOLOGIST','SOCIAL_WORKER')
+        AND access_scope='PSYCHOSOCIAL_CARE'
       )
     ),
 
@@ -4240,6 +4245,86 @@ ON resident_access_assignments (
   actor_id
 );
 
+CREATE TABLE guardian_principals (
+  guardian_principal_id TEXT PRIMARY KEY,
+  status TEXT NOT NULL DEFAULT 'ACTIVE'
+    CHECK (status IN ('ACTIVE', 'REVOKED', 'INACTIVE')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE guardian_sessions (
+  session_id TEXT PRIMARY KEY,
+  guardian_principal_id TEXT NOT NULL
+    REFERENCES guardian_principals(guardian_principal_id)
+    ON DELETE CASCADE,
+  issued_at TIMESTAMPTZ NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL,
+  revoked_at TIMESTAMPTZ,
+  revoked_reason TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT guardian_sessions_expiry_check
+    CHECK (expires_at > issued_at),
+  CONSTRAINT guardian_sessions_revocation_check
+    CHECK (
+      (revoked_at IS NULL AND revoked_reason IS NULL)
+      OR revoked_at IS NOT NULL
+    )
+);
+
+CREATE INDEX idx_guardian_sessions_active
+  ON guardian_sessions(guardian_principal_id, expires_at)
+  WHERE revoked_at IS NULL;
+
+CREATE TABLE guardian_resident_relationships (
+  relationship_id TEXT PRIMARY KEY,
+  guardian_principal_id TEXT NOT NULL
+    REFERENCES guardian_principals(guardian_principal_id),
+  resident_id TEXT NOT NULL
+    REFERENCES residents(resident_id),
+  status TEXT NOT NULL
+    CHECK (status IN ('ACTIVE', 'REVOKED', 'EXPIRED')),
+  effective_from TIMESTAMPTZ NOT NULL,
+  effective_until TIMESTAMPTZ,
+  permissions TEXT[] NOT NULL
+    DEFAULT ARRAY['health_report:view']::TEXT[],
+  granted_by TEXT NOT NULL,
+  granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  revoked_by TEXT,
+  revoked_at TIMESTAMPTZ,
+  revocation_reason TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT guardian_relationship_interval_check
+    CHECK (
+      effective_until IS NULL
+      OR effective_until > effective_from
+    ),
+  CONSTRAINT guardian_relationship_status_check
+    CHECK (
+      (status = 'ACTIVE' AND revoked_at IS NULL)
+      OR (status IN ('REVOKED', 'EXPIRED'))
+    ),
+  CONSTRAINT guardian_relationship_permission_check
+    CHECK (cardinality(permissions) > 0)
+);
+
+CREATE UNIQUE INDEX uq_guardian_active_relationship
+  ON guardian_resident_relationships(
+    guardian_principal_id,
+    resident_id
+  )
+  WHERE status = 'ACTIVE';
+
+CREATE INDEX idx_guardian_relationship_lookup
+  ON guardian_resident_relationships(
+    guardian_principal_id,
+    resident_id,
+    status,
+    effective_from,
+    effective_until
+  );
+
 -- ============================================================
 -- STEP 8F.C1 — CANONICAL HUMAN ACTOR REGISTRY
 -- staff_actors
@@ -4259,7 +4344,10 @@ CREATE TABLE staff_actors (
         'CAREGIVER',
         'NURSE',
         'SUPERVISOR',
-        'CARE_MANAGER'
+        'CARE_MANAGER',
+        'MEDICAL_HEAD',
+        'PSYCHOLOGIST',
+        'SOCIAL_WORKER'
       )
     ),
 
@@ -5127,4 +5215,3 @@ VALUES
   ('ops-wet-family-visit', 'FAMILY_VISIT_ASSIST', 'Đón tiếp thân nhân & Hỗ trợ thăm gặp', 'PSYCHOSOCIAL', 'lần', 1, TRUE, FALSE, TRUE),
   ('ops-wet-other-incidental', 'OTHER_INCIDENTAL', 'Khác (Diễn giải chi tiết tại phần Ghi chú)', 'OTHER', 'lần', 1, TRUE, FALSE, TRUE)
 ON CONFLICT (code) DO NOTHING;
-

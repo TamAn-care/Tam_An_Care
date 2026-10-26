@@ -19,6 +19,15 @@ import {
   DatabaseService,
 } from '../database/database.service';
 
+import {
+  GuardianAccessService,
+} from '../guardian-access/guardian-access.service';
+
+import {
+  ResidentAccessScopeService,
+  ResidentAccessHumanRole,
+} from '../resident-access-scope/resident-access-scope.service';
+
 export type HealthReportActorRole =
   | 'CAREGIVER'
   | 'NURSE'
@@ -195,6 +204,8 @@ export class HealthReportService {
 
   constructor(
     private readonly db: DatabaseService,
+    private readonly guardianAccess: GuardianAccessService,
+    private readonly residentAccessScope: ResidentAccessScopeService,
   ) {}
 
   private stableSerialize(
@@ -244,6 +255,7 @@ export class HealthReportService {
   private async authorize(
     actor: HealthReportActor,
     allowed: HealthReportActorRole[],
+    residentId?: string,
   ): Promise<void> {
     if (!actor.actorId || !actor.actorRole) {
       throw new UnauthorizedException(
@@ -257,8 +269,41 @@ export class HealthReportService {
       );
     }
 
-    // Family guardians are authorized for their resident views
-    if (actor.actorRole === 'GUARDIAN' || actor.actorRole === 'FAMILY') {
+    if (actor.actorRole === 'GUARDIAN') {
+      if (
+        !residentId ||
+        !await this.guardianAccess.canViewResidentHealthReport(
+          actor.actorId,
+          residentId,
+        )
+      ) {
+        throw new ForbiddenException(
+          'Active Guardian resident relationship is required',
+        );
+      }
+      return;
+    }
+
+    const scopedProfessionalRoles: HealthReportActorRole[] = [
+      'CAREGIVER',
+      'NURSE',
+      'PSYCHOLOGIST',
+      'SOCIAL_WORKER',
+    ];
+
+    if (scopedProfessionalRoles.includes(actor.actorRole)) {
+      if (
+        !residentId ||
+        !await this.residentAccessScope.canAccessResident(
+          actor.actorId,
+          actor.actorRole as ResidentAccessHumanRole,
+          residentId,
+        )
+      ) {
+        throw new ForbiddenException(
+          'Active resident assignment is required',
+        );
+      }
       return;
     }
 
@@ -299,7 +344,9 @@ export class HealthReportService {
       if (e instanceof ForbiddenException || e instanceof UnauthorizedException) {
         throw e;
       }
-      // Log connection error and proceed in local dev
+      throw new UnauthorizedException(
+        'Canonical actor verification is unavailable',
+      );
     }
   }
 
@@ -380,13 +427,20 @@ export class HealthReportService {
         'CARE_MANAGER',
         'SUPERVISOR',
         'GUARDIAN',
+        'SOCIAL_WORKER',
+        'PSYCHOLOGIST',
         'FAMILY',
         'RECEPTIONIST',
         'ACCOUNTANT',
-        'SOCIAL_WORKER',
-        'PSYCHOLOGIST',
       ],
+      residentId,
     );
+
+    if (actor.actorRole === 'GUARDIAN' && !residentId) {
+      throw new ForbiddenException(
+        'Guardian list access requires a resident scope',
+      );
+    }
 
     try {
       const result =
@@ -416,18 +470,21 @@ export class HealthReportService {
         return result.rows;
       }
     } catch {
-      // Fallback
+      throw new UnauthorizedException(
+        'Health report data is unavailable',
+      );
     }
 
-    return [
-      await this.getReport('health-report-3416fcc0-08ef-43d6-8378-c4edd18c3f51'),
-    ];
+    return [];
   }
 
   async detail(
     actor: HealthReportActor,
     healthReportId: string,
   ): Promise<Record<string, unknown>> {
+    const report =
+      await this.getReport(healthReportId);
+
     await this.authorize(
       actor,
       [
@@ -435,11 +492,12 @@ export class HealthReportService {
         'NURSE',
         'CARE_MANAGER',
         'SUPERVISOR',
+        'GUARDIAN',
+        'SOCIAL_WORKER',
+        'PSYCHOLOGIST',
       ],
+      report.resident_id,
     );
-
-    const report =
-      await this.getReport(healthReportId);
 
     const snapshots =
       await this.db.query(
@@ -491,6 +549,7 @@ export class HealthReportService {
       [
         'NURSE',
       ],
+      input.residentId,
     );
 
     const start =
@@ -764,6 +823,9 @@ export class HealthReportService {
     actor: HealthReportActor,
     healthReportId: string,
   ): Promise<Record<string, unknown>> {
+    const report =
+      await this.getReport(healthReportId);
+
     await this.authorize(
       actor,
       [
@@ -771,10 +833,8 @@ export class HealthReportService {
         'CARE_MANAGER',
         'SUPERVISOR',
       ],
+      report.resident_id,
     );
-
-    const report =
-      await this.getReport(healthReportId);
 
     if (
       report.status !== 'DRAFT' &&
@@ -993,6 +1053,9 @@ export class HealthReportService {
     actor: HealthReportActor,
     healthReportId: string,
   ): Promise<HealthReportRow> {
+    const report =
+      await this.getReport(healthReportId);
+
     await this.authorize(
       actor,
       [
@@ -1000,10 +1063,8 @@ export class HealthReportService {
         'CARE_MANAGER',
         'SUPERVISOR',
       ],
+      report.resident_id,
     );
-
-    const report =
-      await this.getReport(healthReportId);
 
     if (report.status !== 'GENERATED') {
       throw new BadRequestException(
@@ -1173,6 +1234,9 @@ export class HealthReportService {
     healthReportId: string,
     input: DeliveryInput,
   ): Promise<Record<string, unknown>> {
+    const report =
+      await this.getReport(healthReportId);
+
     await this.authorize(
       actor,
       [
@@ -1180,10 +1244,8 @@ export class HealthReportService {
         'CARE_MANAGER',
         'SUPERVISOR',
       ],
+      report.resident_id,
     );
-
-    const report =
-      await this.getReport(healthReportId);
 
     if (
       report.status !== 'APPROVED' &&
@@ -1384,6 +1446,9 @@ export class HealthReportService {
     actor: HealthReportActor,
     healthReportId: string,
   ): Promise<Buffer> {
+    const report =
+      await this.getReport(healthReportId);
+
     await this.authorize(
       actor,
       [
@@ -1398,12 +1463,8 @@ export class HealthReportService {
         'SOCIAL_WORKER',
         'PSYCHOLOGIST',
       ],
+      report.resident_id,
     );
-
-    const report =
-      await this.getReport(
-        healthReportId,
-      );
 
     let snapshot:
       | {

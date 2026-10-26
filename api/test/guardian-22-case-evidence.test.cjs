@@ -103,7 +103,9 @@ function staffClaims(overrides = {}) {
 // ---------------------------------------------------------------------------
 function makeMiddleware({ rows = [{ actor_id: 'ci-staff-001', actor_role: 'CAREGIVER' }] } = {}) {
   const db = {
-    query: async (_sql, _params) => ({ rows }),
+    query: async (sql) => ({
+      rows: /guardian_sessions/.test(sql) ? [] : rows,
+    }),
   };
   return new ProductionAuthMiddleware(db);
 }

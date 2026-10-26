@@ -24,11 +24,15 @@ function claims(overrides = {}) {
 }
 
 async function invoke({ authorization, rows = [{ actor_id: 'staff-ci-1', actor_role: 'CAREGIVER' }],
-  path = '/api/residents', spoof = {} } = {}) {
+  guardianRows = [], path = '/api/residents', spoof = {} } = {}) {
   let queryCount = 0;
   let nextCount = 0;
   const db = { query: async (sql, params) => {
     queryCount++;
+    if (/guardian_sessions/.test(sql)) {
+      assert.deepEqual(params, ['session-ci-1', 'staff-ci-1']);
+      return { rows: guardianRows };
+    }
     if (/auth_sessions/.test(sql)) {
       assert.deepEqual(params, ['session-ci-1', 'staff-ci-1', 'CAREGIVER']);
       return { rows };
@@ -76,7 +80,6 @@ for (const [id, value] of [
   ['AUTH-MW03 malformed token', 'Bearer malformed'],
   ['AUTH-MW04 expired token', 'Bearer ' + token(claims({ exp: now() - 100 }))],
   ['AUTH-MW05 invalid signature', 'Bearer ' + token(claims(), 'wrong-ci-only-signing-key-000000000')],
-  ['AUTH-MW06 guardian role rejected for staff middleware', 'Bearer ' + token(claims({ role: 'GUARDIAN' }))],
   ['AUTH-MW07 unknown staff role rejected', 'Bearer ' + token(claims({ role: 'ADMINISTRATOR' }))],
   ['AUTH-MW08 not-before in future rejected', 'Bearer ' + token(claims({ nbf: now() + 3600 }))],
   ['AUTH-MW09 missing session claim rejected', 'Bearer ' + token(claims({ jti: '' }))],
@@ -88,6 +91,25 @@ for (const [id, value] of [
     assert.equal(r.queryCount, 0, 'must reject before database lookup');
   });
 }
+
+test('AUTH-MW06 guardian role requires an active guardian session', async () => {
+  const r = await invoke({ authorization: 'Bearer ' + token(claims({ role: 'GUARDIAN' })) });
+  assert.ok(r.error);
+  assert.equal(r.nextCount, 0);
+  assert.equal(r.queryCount, 1);
+});
+
+test('AUTH-MW12 active guardian session passes without staff lookup', async () => {
+  const r = await invoke({
+    authorization: 'Bearer ' + token(claims({ role: 'GUARDIAN' })),
+    guardianRows: [{ guardian_principal_id: 'staff-ci-1' }],
+  });
+  assert.equal(r.error, undefined);
+  assert.equal(r.nextCount, 1);
+  assert.equal(r.queryCount, 1);
+  assert.equal(r.req.headers['x-actor-id'], 'staff-ci-1');
+  assert.equal(r.req.headers['x-actor-role'], 'GUARDIAN');
+});
 
 test('AUTH-MW10 inactive/revoked session denied using injected memory DB', async () => {
   const r = await invoke({ authorization: 'Bearer ' + token(claims()), rows: [] });

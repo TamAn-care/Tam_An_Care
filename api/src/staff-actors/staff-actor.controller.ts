@@ -20,7 +20,10 @@ type StaffRole =
   | 'CAREGIVER'
   | 'NURSE'
   | 'SUPERVISOR'
-  | 'CARE_MANAGER';
+  | 'CARE_MANAGER'
+  | 'MEDICAL_HEAD'
+  | 'PSYCHOLOGIST'
+  | 'SOCIAL_WORKER';
 
 type StaffStatus =
   | 'ACTIVE'
@@ -302,6 +305,9 @@ export class StaffActorController {
       'CAREGIVER',
       'NURSE',
       'CARE_MANAGER',
+      'MEDICAL_HEAD',
+      'PSYCHOLOGIST',
+      'SOCIAL_WORKER',
     ] as const;
 
     if (
@@ -309,11 +315,14 @@ export class StaffActorController {
         targetRole as
           | 'CAREGIVER'
           | 'NURSE'
-          | 'CARE_MANAGER',
+          | 'CARE_MANAGER'
+          | 'MEDICAL_HEAD'
+          | 'PSYCHOLOGIST'
+          | 'SOCIAL_WORKER',
       )
     ) {
       throw new BadRequestException(
-        'primaryOperationalRole must be CAREGIVER, NURSE, or CARE_MANAGER',
+        'primaryOperationalRole must be a supported professional staff role',
       );
     }
 
@@ -326,7 +335,10 @@ export class StaffActorController {
             targetRole as
               | 'CAREGIVER'
               | 'NURSE'
-              | 'CARE_MANAGER',
+              | 'CARE_MANAGER'
+              | 'MEDICAL_HEAD'
+              | 'PSYCHOLOGIST'
+              | 'SOCIAL_WORKER',
           employmentReference:
             body.employmentReference == null
               ? null

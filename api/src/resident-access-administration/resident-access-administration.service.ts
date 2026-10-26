@@ -201,6 +201,13 @@ export class ResidentAccessAdministrationService {
       (
         actorRole === 'NURSE' &&
         accessScope === 'CLINICAL_CARE'
+      ) ||
+      (
+        (
+          actorRole === 'PSYCHOLOGIST' ||
+          actorRole === 'SOCIAL_WORKER'
+        ) &&
+        accessScope === 'PSYCHOSOCIAL_CARE'
       );
 
     if (!validPair) {

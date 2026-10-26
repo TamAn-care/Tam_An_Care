@@ -10,7 +10,10 @@ export type StaffActorRole =
   | 'CAREGIVER'
   | 'NURSE'
   | 'SUPERVISOR'
-  | 'CARE_MANAGER';
+  | 'CARE_MANAGER'
+  | 'MEDICAL_HEAD'
+  | 'PSYCHOLOGIST'
+  | 'SOCIAL_WORKER';
 
 export type StaffActorStatus =
   | 'ACTIVE'
@@ -36,7 +39,10 @@ export interface CreateStaffActorInput {
   primaryOperationalRole:
     | 'CAREGIVER'
     | 'NURSE'
-    | 'CARE_MANAGER';
+    | 'CARE_MANAGER'
+    | 'MEDICAL_HEAD'
+    | 'PSYCHOLOGIST'
+    | 'SOCIAL_WORKER';
   employmentReference: string | null;
 }
 

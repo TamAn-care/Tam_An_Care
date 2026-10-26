@@ -20,7 +20,10 @@ type ActorRole =
   | 'SUPERVISOR'
   | 'MEDICAL_HEAD'
   | 'ADMIN'
-  | 'NUTRITIONIST';
+  | 'NUTRITIONIST'
+  | 'GUARDIAN'
+  | 'PSYCHOLOGIST'
+  | 'SOCIAL_WORKER';
 
 interface JwtPayload {
   sub?: unknown;
@@ -56,6 +59,9 @@ const VALID_ROLES =
     'MEDICAL_HEAD',
     'ADMIN',
     'NUTRITIONIST',
+    'GUARDIAN',
+    'PSYCHOLOGIST',
+    'SOCIAL_WORKER',
   ]);
 
 function decode(
@@ -307,29 +313,40 @@ export class ProductionAuthMiddleware
     const sessionId =
       payload.jti as string;
 
-    const session =
-      await this.db.query<{
-        actor_id: string;
-        actor_role: string;
-      }>(
-        `
-        SELECT
-          actor_id,
-          actor_role
-        FROM auth_sessions
-        WHERE session_id = $1
-          AND actor_id = $2
-          AND actor_role = $3
-          AND revoked_at IS NULL
-          AND expires_at > now()
-        LIMIT 1
-        `,
-        [
-          sessionId,
-          actorId,
-          actorRole,
-        ],
-      );
+    const session = actorRole === 'GUARDIAN'
+      ? await this.db.query(
+          `
+          SELECT gs.guardian_principal_id AS actor_id
+          FROM guardian_sessions gs
+          JOIN guardian_principals gp
+            ON gp.guardian_principal_id = gs.guardian_principal_id
+          WHERE gs.session_id = $1
+            AND gs.guardian_principal_id = $2
+            AND gp.status = 'ACTIVE'
+            AND gs.revoked_at IS NULL
+            AND gs.expires_at > now()
+          LIMIT 1
+          `,
+          [sessionId, actorId],
+        )
+      : await this.db.query<{
+          actor_id: string;
+          actor_role: string;
+        }>(
+          `
+          SELECT
+            actor_id,
+            actor_role
+          FROM auth_sessions
+          WHERE session_id = $1
+            AND actor_id = $2
+            AND actor_role = $3
+            AND revoked_at IS NULL
+            AND expires_at > now()
+          LIMIT 1
+          `,
+          [sessionId, actorId, actorRole],
+        );
 
     if (
       session.rows.length !== 1
@@ -337,6 +354,23 @@ export class ProductionAuthMiddleware
       throw new UnauthorizedException(
         'Authentication session is not active',
       );
+    }
+
+    if (actorRole === 'GUARDIAN') {
+      req.headers[
+        'x-actor-id'
+      ] = actorId;
+
+      req.headers[
+        'x-actor-role'
+      ] = actorRole;
+
+      req.headers[
+        'x-auth-session-id'
+      ] = sessionId;
+
+      next();
+      return;
     }
 
     // Revalidate the canonical staff identity on EVERY authenticated request.

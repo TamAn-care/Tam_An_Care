@@ -6,13 +6,13 @@ const assert = require('node:assert/strict');
 const { ResidentAccessScopeService } =
   require('../dist/resident-access-scope/resident-access-scope.service.js');
 
-function harness({ validStaff = true, rowCount = 1 } = {}) {
+function harness({ validStaff = true, rowCount = 1, role = 'SUPERVISOR' } = {}) {
   let queries = 0;
   const db = { query: async () => { queries++; return { rowCount, rows: [] }; } };
   const staff = {
     resolveActiveActorWithRole: async () =>
       validStaff ? { actor_id: 'staff-ci-1', status: 'ACTIVE',
-        primary_operational_role: 'SUPERVISOR' } : null
+        primary_operational_role: role } : null
   };
   return {
     service: new ResidentAccessScopeService(db, staff),
@@ -83,4 +83,18 @@ test('SCOPE10 sqlPredicate for caregiver requires active assignment and actor', 
   assert.match(predicate.sql, /raa\.status\s*=\s*'ACTIVE'/);
   assert.match(predicate.sql, /staff_actors/);
   assert.deepEqual(predicate.params, ['staff-ci-1', 'CAREGIVER', 'DIRECT_CARE']);
+});
+
+test('SCOPE11 psychologist requires an active psychosocial assignment', async () => {
+  const h = harness({ role: 'PSYCHOLOGIST' });
+  assert.equal(await h.service.canAccessResident('staff-ci-1', 'PSYCHOLOGIST', 'resident-ci-A'), true);
+  const predicate = h.service.sqlPredicate('r', 'staff-ci-1', 'PSYCHOLOGIST');
+  assert.match(predicate.sql, /resident_access_assignments/);
+  assert.deepEqual(predicate.params, ['staff-ci-1', 'PSYCHOLOGIST', 'PSYCHOSOCIAL_CARE']);
+});
+
+test('SCOPE12 social worker is denied when psychosocial assignment is absent', async () => {
+  const h = harness({ role: 'SOCIAL_WORKER', rowCount: 0 });
+  assert.equal(await h.service.canAccessResident('staff-ci-1', 'SOCIAL_WORKER', 'resident-ci-A'), false);
+  assert.equal(h.queryCount(), 1);
 });
