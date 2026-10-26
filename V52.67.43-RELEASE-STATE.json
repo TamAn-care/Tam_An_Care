@@ -3,7 +3,8 @@
   "repository": "/Users/anhha/TamAnCare-rbac-v52-67-43",
   "baseline_commit": "5b4bfe371ca373c7b1f5b6333976af490662cda3",
   "integration_branch": "integration/rbac-guardian-staff-v52-67-43",
-  "integration_head": "5c69d160644521b480b3426a99c56f4cff72b33f",
+  "integration_head": "d5ed6ed4bb13bc432db4772b4b2d6c850925f7a3",
+  "release_source_commit": "5c69d160644521b480b3426a99c56f4cff72b33f",
   "source_branches": {
     "guardian": "origin/feature/guardian-resident-scope-auth-20261012",
     "staff_rbac": "origin/feature/staff-rbac-system-20261012",
