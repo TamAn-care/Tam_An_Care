@@ -70,7 +70,9 @@ import { ResidentLifecycleModule } from './resident-lifecycle/resident-lifecycle
 import { ResidentLeaveModule } from './resident-leave/resident-leave.module';
 import { WorkforceModule } from './workforce/workforce.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { GuardianAccessModule } from './guardian-access/guardian-access.module';
 @Module({imports:[
+    GuardianAccessModule,
     NotificationsModule,
     WorkforceModule,
     ResidentLeaveModule,

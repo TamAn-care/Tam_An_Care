@@ -1,0 +1,87 @@
+name: Guardian RBAC PostgreSQL 16 Integration (no deploy)
+
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'database/**'
+      - 'scripts/ci/guardian-migration-pg16.sh'
+      - '.github/workflows/guardian-rbac-pg16-integration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-rbac-pg16-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  pg16-integration:
+    name: PostgreSQL 16 migration and RBAC acceptance
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ci_runner
+          POSTGRES_PASSWORD: ci_runner_synthetic_only
+          POSTGRES_DB: taman_care_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci_runner -d taman_care_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGHOST: 127.0.0.1
+      PGPORT: '5432'
+      PGUSER: ci_runner
+      PGPASSWORD: ci_runner_synthetic_only
+      PGDATABASE: taman_care_ci
+      NODE_ENV: test
+      JWT_SECRET: ci-only-not-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Verify PostgreSQL major version
+        run: test "$(psql -XAtqc 'SHOW server_version_num' | cut -c1-2)" = "16"
+      - name: Run clean, upgrade, integrity and repeatability migration gates
+        run: bash scripts/ci/guardian-migration-pg16.sh
+      - name: Run synthetic backup, restore and rollback acceptance
+        run: bash scripts/ci/guardian-rollback-pg16.sh
+      - name: Install API dependencies
+        working-directory: api
+        run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
+      - name: Build API
+        working-directory: api
+        run: npm run build
+      - name: Emit complete API modules for isolated tests
+        working-directory: api
+        run: npx tsc --project tsconfig.json --incremental false
+      - name: Run executable RBAC and scope regressions
+        working-directory: api
+        run: >-
+          node --test
+          test/guardian-22-case-evidence.test.cjs
+          test/guardian-access.test.cjs
+          test/guardian-auth-middleware.test.cjs
+          test/resident-access-scope.test.cjs
+          test/resident-controller-authorization.test.cjs
+          test/staff-rbac-controller.isolated.test.cjs
+          test/staff-session-revocation-security.test.cjs
+      - name: CI evidence
+        if: always()
+        run: |
+          echo "PG16_GITHUB_SERVICE=${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "PRODUCTION_DEPLOYMENT=NOT_CONFIGURED" >> "$GITHUB_STEP_SUMMARY"
+          echo "PRODUCTION_MIGRATION=NOT_PERFORMED" >> "$GITHUB_STEP_SUMMARY"
+          echo "DEMO_SEED_CREATED=NO" >> "$GITHUB_STEP_SUMMARY"

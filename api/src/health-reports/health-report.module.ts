@@ -14,9 +14,19 @@ import {
   HealthReportService,
 } from './health-report.service';
 
+import {
+  GuardianAccessModule,
+} from '../guardian-access/guardian-access.module';
+
+import {
+  ResidentAccessScopeModule,
+} from '../resident-access-scope/resident-access-scope.module';
+
 @Module({
   imports: [
     DatabaseModule,
+    GuardianAccessModule,
+    ResidentAccessScopeModule,
   ],
   controllers: [
     HealthReportController,

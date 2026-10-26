@@ -13,7 +13,9 @@ import {
 export type ResidentAccessHumanRole =
   | 'CAREGIVER'
   | 'NURSE'
-  | 'SUPERVISOR';
+  | 'SUPERVISOR'
+  | 'PSYCHOLOGIST'
+  | 'SOCIAL_WORKER';
 
 export type ResidentScopeSql = {
   sql: string;
@@ -36,6 +38,7 @@ export class ResidentAccessScopeService {
   ):
     | 'DIRECT_CARE'
     | 'CLINICAL_CARE'
+    | 'PSYCHOSOCIAL_CARE'
     | null
   {
     if (actorRole === 'CAREGIVER') {
@@ -44,6 +47,13 @@ export class ResidentAccessScopeService {
 
     if (actorRole === 'NURSE') {
       return 'CLINICAL_CARE';
+    }
+
+    if (
+      actorRole === 'PSYCHOLOGIST' ||
+      actorRole === 'SOCIAL_WORKER'
+    ) {
+      return 'PSYCHOSOCIAL_CARE';
     }
 
     return null;
@@ -71,6 +81,10 @@ export class ResidentAccessScopeService {
           actorRole,
         );
 
+    if (!canonicalActor) {
+      return false;
+    }
+
     const isSupervisoryRole =
       actorRole === 'SUPERVISOR' ||
       (actorRole as string) === 'ADMIN' ||
@@ -94,7 +108,7 @@ export class ResidentAccessScopeService {
           ],
         );
 
-      return result.rowCount === 1 || true;
+      return result.rowCount === 1;
     }
 
     const accessScope =

@@ -1,0 +1,171 @@
+name: Guardian Auth Verification
+
+on:
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'docs/guardian-auth/**'
+      - 'scripts/guardian-ci/**'
+      - '.github/workflows/guardian-auth-verification.yml'
+  push:
+    branches:
+      - feature/guardian-resident-scope-auth-20261012
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - 'docs/guardian-auth/**'
+      - 'scripts/guardian-ci/**'
+      - '.github/workflows/guardian-auth-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-auth-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-api:
+    name: API locked build + 22-case evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
+      - name: Build NestJS API
+        run: npm run build
+      - name: Force complete TypeScript emission for isolated security tests
+        run: npx tsc --project tsconfig.json --incremental false
+      - name: Verify compiled auth test targets exist (fail closed)
+        run: |
+          set -euo pipefail
+          for file in dist/security/production-auth.middleware.js dist/resident-access-scope/resident-access-scope.service.js dist/residents/resident.controller.js; do
+            if [[ ! -f "$file" ]]; then
+              echo "::error::Compiled test target missing: $file"
+              find dist -maxdepth 5 -type f -name '*.js' | head -80 || true
+              exit 1
+            fi
+          done
+      - name: Staff authentication middleware regression (isolated)
+        run: node --test test/guardian-auth-middleware.test.cjs
+      - name: Resident scope regression (isolated)
+        run: node --test test/resident-access-scope.test.cjs
+      - name: Resident controller server-side authorization (isolated)
+        run: node --test test/resident-controller-authorization.test.cjs
+      - name: Guardian 22-case executable evidence suite (STAFF01-STAFF10 + GUARD01-GUARD12)
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node --test test/guardian-22-case-evidence.test.cjs
+      - name: Verify evidence file contains all 22 passed cases
+        run: |
+          set -euo pipefail
+          test -s test-results/guardian-isolated-results.json
+          python3 - <<'PYEOF'
+          import json, sys
+          data = json.load(open('test-results/guardian-isolated-results.json'))
+          passed = [t for t in data.get('tests', []) if t.get('status') == 'passed']
+          print(f"Passed: {len(passed)}/22")
+          if len(passed) < 22:
+              sys.exit(1)
+          PYEOF
+      - uses: actions/upload-artifact@v4
+        with:
+          name: guardian-22-case-evidence-${{ github.sha }}
+          path: api/test-results/guardian-isolated-results.json
+          retention-days: 30
+          if-no-files-found: error
+
+  build-frontend:
+    name: Frontend locked build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Build Vite frontend
+        run: npm run build
+
+  auth-release-gate:
+    name: Guardian 22-case release gate (fail closed)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build-api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Download executable evidence artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: guardian-22-case-evidence-${{ github.sha }}
+          path: api/test-results/
+      - name: Validate acceptance matrix and executable test evidence
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: python3 scripts/guardian-ci/evidence_release_gate.py
+
+  automation-summary:
+    name: Automated Guardian CI readiness report
+    if: always()
+    needs:
+      - build-api
+      - build-frontend
+      - auth-release-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Publish consolidated CI result
+        shell: bash
+        env:
+          API_RESULT: ${{ needs.build-api.result }}
+          FRONTEND_RESULT: ${{ needs.build-frontend.result }}
+          RELEASE_GATE_RESULT: ${{ needs.auth-release-gate.result }}
+        run: |
+          set -euo pipefail
+          if [[ "$API_RESULT" == "success" && "$FRONTEND_RESULT" == "success" && "$RELEASE_GATE_RESULT" == "success" ]]; then
+            DECISION="TECHNICAL_ACCEPTANCE_GATES_PASSED — awaiting human deployment approval"
+          else
+            DECISION="NO_GO"
+          fi
+          {
+            echo '## Tâm An Care — Guardian CI automation'
+            echo
+            echo "| Check | Outcome |"
+            echo "|---|---|"
+            echo "| API build + 22-case evidence (STAFF01-STAFF10, GUARD01-GUARD12) | $API_RESULT |"
+            echo "| Frontend build | $FRONTEND_RESULT |"
+            echo "| Evidence release gate | $RELEASE_GATE_RESULT |"
+            echo
+            echo "### Release decision: $DECISION"
+            echo
+            echo 'A build PASS alone is insufficient. All 22 cases must have executed'
+            echo 'and production deployment requires separate human approval.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          printf 'AUTOMATION_SUMMARY=RECORDED\n'
+          printf 'RELEASE_DECISION=%s\n' "$DECISION"
