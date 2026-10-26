@@ -15,10 +15,10 @@ type Identity = { actorId?: string; actorRole?: string };
 type Client = { query: (sql: string, params?: any[]) => Promise<any> };
 
 const MEALS = new Set(['BREAKFAST','MORNING_SNACK','LUNCH','AFTERNOON_SNACK','DINNER','EVENING_SNACK']);
-const MANAGEMENT = new Set(['SUPERVISOR', 'CARE_MANAGER']);
 const DISPATCHERS = new Set(['NUTRITIONIST', 'SUPERVISOR', 'CARE_MANAGER']);
-const HYGIENE_WRITERS = new Set(['NURSE', 'SUPERVISOR', 'CARE_MANAGER']);
+const HYGIENE_WRITERS = new Set(['NUTRITIONIST']);
 const SAMPLE_WRITERS = new Set(['NUTRITIONIST', 'SUPERVISOR', 'CARE_MANAGER']);
+const MANAGERS = new Set(['SUPERVISOR', 'CARE_MANAGER']);
 
 @Injectable()
 export class NutritionOperationsService {
@@ -108,8 +108,39 @@ export class NutritionOperationsService {
     });
   }
 
-  async acknowledge(_identity: Identity, _dispatchId: string) {
-    throw new ForbiddenException('Receiving role and handover acknowledgement require approved business rules');
+  async acknowledge(identity: Identity, dispatchId: string, body: any) {
+    const actor = await this.actor(identity, new Set(['CAREGIVER']));
+    const receivedPortions = Number(body?.receivedPortions);
+    const floor = String(body?.floor ?? '').trim();
+    const notes = String(body?.notes ?? '').trim();
+    if (!dispatchId || !floor || !Number.isSafeInteger(receivedPortions) || receivedPortions < 0 || notes.length > 2000) {
+      throw new BadRequestException('Dispatch, floor, received portions and notes are required');
+    }
+    return this.db.withTransaction(async client => {
+      const current = await client.query('SELECT * FROM nutrition_tray_dispatches WHERE dispatch_id=$1 FOR UPDATE', [dispatchId]);
+      if (!current.rowCount) throw new NotFoundException('Tray dispatch not found');
+      const dispatch = current.rows[0];
+      const assignment = await client.query(
+        `SELECT 1 FROM nutrition_caregiver_floor_assignments
+         WHERE actor_id=$1 AND resident_id=$2 AND floor=$3 AND active=true`,
+        [actor.actorId, dispatch.resident_id, floor],
+      );
+      if (!assignment.rowCount) throw new ForbiddenException('Caregiver is not assigned to this resident floor');
+      if (dispatch.status === 'RECEIVED') throw new ConflictException('Tray receipt already recorded');
+      if (receivedPortions > Number(dispatch.portions)) throw new ConflictException('Received quantity cannot exceed dispatch quantity');
+      const discrepancy = Number(dispatch.portions) - receivedPortions;
+      const updated = await client.query(
+        `UPDATE nutrition_tray_dispatches SET status='RECEIVED' WHERE dispatch_id=$1 RETURNING *`, [dispatchId],
+      );
+      await client.query(
+        `INSERT INTO nutrition_tray_handover_events
+         (event_id,dispatch_id,event_type,actor_id,actor_role,destination_floor,portions,discrepancy_portions,notes)
+         VALUES($1,$2,'HANDOVER_ACKNOWLEDGED',$3,$4,$5,$6,$7,$8)`,
+        [randomUUID(), dispatchId, actor.actorId, actor.actorRole, floor, receivedPortions, discrepancy, notes],
+      );
+      await this.audit(client, 'TRAY_DISPATCH', dispatchId, dispatch.resident_id, 'HANDOVER_ACKNOWLEDGED', actor, { ...updated.rows[0], discrepancy, notes });
+      return updated.rows[0];
+    });
   }
 
   async listDispatches(identity: Identity, date: string) {
@@ -152,6 +183,28 @@ export class NutritionOperationsService {
       `SELECT * FROM nutrition_hygiene_records WHERE ($1::text IS NULL OR resident_id=$1) ORDER BY recorded_at DESC`, [residentId ?? null],
     );
     return { items: q.rows };
+  }
+
+  async inspectHygiene(identity: Identity, body: any) {
+    const actor = await this.actor(identity, MANAGERS);
+    const recordId = String(body?.recordId ?? '').trim();
+    const finding = String(body?.finding ?? '').trim();
+    const decision = String(body?.decision ?? '').trim().toUpperCase();
+    if (!recordId || !finding || !['CONFIRMED','NONCONFORMITY'].includes(decision)) {
+      throw new BadRequestException('Record, finding and inspection decision are required');
+    }
+    return this.db.withTransaction(async client => {
+      const record = await client.query('SELECT * FROM nutrition_hygiene_records WHERE record_id=$1 FOR SHARE', [recordId]);
+      if (!record.rowCount) throw new NotFoundException('Hygiene record not found');
+      const q = await client.query(
+        `INSERT INTO nutrition_hygiene_inspections
+         (inspection_id,record_id,resident_id,inspector_id,inspector_role,finding,decision)
+         VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        [randomUUID(), recordId, record.rows[0].resident_id, actor.actorId, actor.actorRole, finding, decision],
+      );
+      await this.audit(client, 'HYGIENE_RECORD', recordId, record.rows[0].resident_id, 'MANAGER_INSPECTION', actor, q.rows[0]);
+      return q.rows[0];
+    });
   }
 
   async collectSample(identity: Identity, body: any) {
@@ -207,5 +260,24 @@ export class NutritionOperationsService {
       `SELECT * FROM nutrition_food_samples WHERE ($1::text IS NULL OR resident_id=$1) ORDER BY collected_at DESC`, [residentId ?? null],
     );
     return { items: q.rows };
+  }
+
+  async inspectSample(identity: Identity, body: any) {
+    const actor = await this.actor(identity, MANAGERS);
+    const sampleId = String(body?.sampleId ?? '').trim();
+    const finding = String(body?.finding ?? '').trim();
+    if (!sampleId || !finding) throw new BadRequestException('Sample and finding are required');
+    return this.db.withTransaction(async client => {
+      const sample = await client.query('SELECT * FROM nutrition_food_samples WHERE sample_id=$1 FOR SHARE', [sampleId]);
+      if (!sample.rowCount) throw new NotFoundException('Food sample not found');
+      const q = await client.query(
+        `INSERT INTO nutrition_sample_inspections
+         (inspection_id,sample_id,resident_id,inspector_id,inspector_role,finding)
+         VALUES($1,$2,$3,$4,$5,$6) RETURNING *`,
+        [randomUUID(), sampleId, sample.rows[0].resident_id, actor.actorId, actor.actorRole, finding],
+      );
+      await this.audit(client, 'FOOD_SAMPLE', sampleId, sample.rows[0].resident_id, 'MANAGER_INSPECTION', actor, q.rows[0]);
+      return q.rows[0];
+    });
   }
 }

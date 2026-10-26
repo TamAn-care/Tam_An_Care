@@ -13,9 +13,9 @@ mutated.
   collection/disposal actions through transactions.
 - Food-sample disposal is rejected before the server-computed 24-hour
   retention deadline and records are never automatically deleted.
-- Tray acknowledgement is deliberately disabled until the receiving role,
-  state transition, duplicate acknowledgement, and quantity rules are
-  approved.
+- Approved contract closure adds floor-assignment-checked caregiver receipt,
+  duplicate-receipt protection, separate manager hygiene inspection, and
+  manager sample inspection records.
 
 ## Isolated evidence
 
@@ -30,11 +30,9 @@ The existing M6 meal-registration suite remains the baseline for durable
 registration, scope, diet enforcement, concurrency, and signed-session
 coverage. No production database, image, volume, or backup was changed.
 
-## Remaining decisions
+## Remaining scope
 
-The exact receiving role/state machine for tray handover, the canonical
-hygiene checklist vocabulary, and the food-sample evidence/disposal policy
-remain recorded in `docs/M6-BUSINESS-DECISIONS-REQUIRED.md`. Until approved,
-the unresolved acknowledgement action stays deny-by-default. The existing
-Nutrition UI still contains mock operational paths and therefore is not
-release-complete for these new records.
+The pre-existing inventory/dispatch mock model remains separate from the
+resident-linked durable operations model. The new Nutrition operations panel
+uses the durable API for approved dispatch, receipt, hygiene, inspection, and
+sample actions. Production deployment remains out of scope for this branch.

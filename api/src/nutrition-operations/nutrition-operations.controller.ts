@@ -16,8 +16,8 @@ export class NutritionOperationsController {
   }
 
   @Post('tray-dispatches/:id/acknowledge')
-  acknowledge(@Headers('x-actor-id') actorId: string, @Headers('x-actor-role') actorRole: string, @Param('id') id: string) {
-    return this.service.acknowledge({ actorId, actorRole }, id);
+  acknowledge(@Headers('x-actor-id') actorId: string, @Headers('x-actor-role') actorRole: string, @Param('id') id: string, @Body() body: any) {
+    return this.service.acknowledge({ actorId, actorRole }, id, body);
   }
 
   @Get('hygiene-records')
@@ -28,6 +28,11 @@ export class NutritionOperationsController {
   @Post('hygiene-records')
   recordHygiene(@Headers('x-actor-id') actorId: string, @Headers('x-actor-role') actorRole: string, @Body() body: any) {
     return this.service.recordHygiene({ actorId, actorRole }, body);
+  }
+
+  @Post('hygiene-records/inspect')
+  inspectHygiene(@Headers('x-actor-id') actorId: string, @Headers('x-actor-role') actorRole: string, @Body() body: any) {
+    return this.service.inspectHygiene({ actorId, actorRole }, body);
   }
 
   @Get('food-samples')
@@ -43,5 +48,10 @@ export class NutritionOperationsController {
   @Post('food-samples/:id/dispose')
   disposeSample(@Headers('x-actor-id') actorId: string, @Headers('x-actor-role') actorRole: string, @Param('id') id: string) {
     return this.service.disposeSample({ actorId, actorRole }, id);
+  }
+
+  @Post('food-samples/inspect')
+  inspectSample(@Headers('x-actor-id') actorId: string, @Headers('x-actor-role') actorRole: string, @Body() body: any) {
+    return this.service.inspectSample({ actorId, actorRole }, body);
   }
 }

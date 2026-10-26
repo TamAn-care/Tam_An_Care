@@ -32,6 +32,7 @@ import {
 } from '../../api/kitchen-operations';
 import { createWorkEvent } from '../../api/operational-work';
 import { KitchenQuickAction1Touch } from './KitchenQuickAction1Touch';
+import { NutritionDurableOperationsPanel } from './NutritionDurableOperationsPanel';
 
 export default function KitchenOperationsPage() {
   const { actor } = useActor();
@@ -516,6 +517,7 @@ export default function KitchenOperationsPage() {
 
   return (
     <div className="page-container" style={{ padding: '1.25rem 1.5rem', maxWidth: '1440px', margin: '0 auto' }}>
+      <NutritionDurableOperationsPanel actor={actor} />
 
 
       {/* Navigation Block Cards */}
