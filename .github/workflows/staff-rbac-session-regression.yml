@@ -1,0 +1,37 @@
+name: Staff RBAC Session Regression
+on:
+  pull_request:
+    paths:
+      - 'api/src/security/production-auth.middleware.ts'
+      - 'api/test/staff-session-revocation-security.test.cjs'
+      - '.github/workflows/staff-rbac-session-regression.yml'
+  push:
+    branches:
+      - feature/staff-rbac-system-20261012
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-auth:
+    name: Staff session canonical validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - run: node --test test/staff-session-revocation-security.test.cjs
+      - name: SHA-scoped evidence
+        if: always()
+        run: |
+          echo "STAFF_RBAC_COMMIT=${GITHUB_SHA}" >> "${GITHUB_STEP_SUMMARY}"
+          echo "RELEASE_DECISION=NO_GO" >> "${GITHUB_STEP_SUMMARY}"
