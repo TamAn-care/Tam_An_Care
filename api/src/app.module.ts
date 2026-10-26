@@ -64,6 +64,7 @@ import { ObservabilityModule } from './observability/observability.module';
 import { OperationalWorkModule } from './operational-work/operational-work.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { KitchenOperationsModule } from './kitchen-operations/kitchen-operations.module';
+import { NutritionOperationsModule } from './nutrition-operations/nutrition-operations.module';
 import { ResidentCostModule } from './resident-cost/resident-cost.module';
 import { AccommodationModule } from './accommodation/accommodation.module';
 import { ResidentLifecycleModule } from './resident-lifecycle/resident-lifecycle.module';
@@ -80,6 +81,7 @@ import { GuardianAccessModule } from './guardian-access/guardian-access.module';
     AccommodationModule,
     ResidentCostModule,
     KitchenOperationsModule,
+    NutritionOperationsModule,
     ObservabilityModule,
     OperationalWorkModule,
     InventoryModule,
