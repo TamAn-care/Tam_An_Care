@@ -1,0 +1,114 @@
+name: Guardian Auth — Build Verification
+
+on:
+  push:
+    branches:
+      - feature/guardian-resident-scope-auth-20261012
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - '.github/workflows/guardian-auth-ci.yml'
+      - 'docs/guardian-auth/**'
+  pull_request:
+    paths:
+      - 'api/**'
+      - 'frontend/**'
+      - '.github/workflows/guardian-auth-ci.yml'
+      - 'docs/guardian-auth/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardian-auth-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-build:
+    name: API clean build (no DB, no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: api
+    env:
+      CI: 'true'
+      NODE_ENV: test
+    steps:
+      - name: Check out exact GitHub revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
+      - name: Compile API from source
+        run: npm run build
+      - name: Force complete TypeScript emission for security regression tests
+        run: npx tsc --project tsconfig.json --incremental false
+      - name: Verify compiled staff authentication middleware (isolated mocks)
+        run: node --test test/guardian-auth-middleware.test.cjs
+      - name: Verify resident scope rejects unauthorized supervisor and cross-role access
+        run: node --test test/resident-access-scope.test.cjs
+      - name: Resident controller server-side authorization (isolated)
+        run: node --test test/resident-controller-authorization.test.cjs
+      - name: Guardian 22-case executable evidence suite (STAFF01-STAFF10 + GUARD01-GUARD12)
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: node --test test/guardian-22-case-evidence.test.cjs
+      - name: Assert critical compiled artifacts exist
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            security/production-auth.middleware.js \
+            staff-actors/staff-actor.service.js \
+            residents/resident.controller.js \
+            resident-access-scope/resident-access-scope.service.js; do
+            test -s "dist/$file"
+            sha256sum "dist/$file"
+          done
+      - name: Record source revision
+        shell: bash
+        run: |
+          printf 'SOURCE_COMMIT=%s\n' "$GITHUB_SHA"
+          printf 'STATUS=AUTH_REGRESSION_AND_BUILD_PASS\n'
+          printf 'PRODUCTION_GO_NO_GO=NO_GO\n'
+
+  frontend-build:
+    name: Frontend clean build (no DB, no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      CI: 'true'
+      NODE_ENV: test
+    steps:
+      - name: Check out exact GitHub revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --include=dev --ignore-scripts --no-audit --no-fund
+      - name: Compile frontend
+        run: npm run build
+      - name: Record source revision
+        shell: bash
+        run: |
+          printf 'SOURCE_COMMIT=%s\n' "$GITHUB_SHA"
+          printf 'STATUS=FRONTEND_BUILD_PASS\n'
+          printf 'PRODUCTION_GO_NO_GO=NO_GO\n'

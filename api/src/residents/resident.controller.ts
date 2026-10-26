@@ -1,5 +1,7 @@
 import {
   Body,
+  ForbiddenException,
+  UnauthorizedException,
   Controller,
   Get,
   Headers,
@@ -8,11 +10,13 @@ import {
   Query,
 } from '@nestjs/common';
 import { ResidentService } from './resident.service';
+import { ResidentAccessScopeService } from '../resident-access-scope/resident-access-scope.service';
 
 @Controller('api/residents')
 export class ResidentController {
   constructor(
     private readonly residentService: ResidentService,
+    private readonly residentAccessScope: ResidentAccessScopeService,
   ) {}
 
 
@@ -47,13 +51,17 @@ export class ResidentController {
   }
 
   @Get()
-  listResidents(
+  async listResidents(
+    @Headers('x-actor-id') actorId: string | undefined,
+    @Headers('x-actor-role') actorRole: string | undefined,
     @Query('limit')
     limitRaw?: string,
 
     @Query('offset')
     offsetRaw?: string,
   ) {
+    // Until a fully scoped listing is implemented, prevent cross-resident listing.
+    await this.residentService.authorizeSupervisor(actorId, actorRole);
     if (
       limitRaw === undefined &&
       offsetRaw === undefined
@@ -94,9 +102,23 @@ export class ResidentController {
   }
 
   @Get(':residentId')
-  getResident(
+  async getResident(
+    @Headers('x-actor-id') actorId: string | undefined,
+    @Headers('x-actor-role') actorRole: string | undefined,
     @Param('residentId') residentId: string,
   ) {
+    if (!actorId || !actorRole) {
+      throw new UnauthorizedException('Actor context is required');
+    }
+    if (!['CAREGIVER', 'NURSE', 'SUPERVISOR'].includes(actorRole)) {
+      throw new ForbiddenException('Resident access role is not authorized');
+    }
+    const authorized = await this.residentAccessScope.canAccessResident(
+      actorId, actorRole as 'CAREGIVER' | 'NURSE' | 'SUPERVISOR', residentId,
+    );
+    if (!authorized) {
+      throw new ForbiddenException('Resident access denied');
+    }
     return this.residentService.getById(residentId);
   }
 }
