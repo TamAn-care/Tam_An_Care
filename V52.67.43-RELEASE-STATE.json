@@ -1,50 +1,53 @@
 {
-  "checkpoint": "V52.67.43",
-  "repository": "/Users/anhha/TamAnCare-canonical",
+  "checkpoint": "V52.67.44",
+  "repository": "/Users/anhha/TamAnCare-rbac-v52-67-43",
   "baseline_commit": "5b4bfe371ca373c7b1f5b6333976af490662cda3",
   "integration_branch": "integration/rbac-guardian-staff-v52-67-43",
-  "integration_head": "cd858cd4f46bf615ec22cc4c812f9518c5d6da6e",
+  "integration_head": "251431b04753764ce6085fc6a5c007e14386d05b",
   "source_branches": {
     "guardian": "origin/feature/guardian-resident-scope-auth-20261012",
     "staff_rbac": "origin/feature/staff-rbac-system-20261012",
     "resident_scope_fix": "origin/fix/staff-resident-care-view-scope-20261012"
   },
   "affected_files": [
+    "api/src/guardian-access/guardian-access.service.ts",
     "api/src/security/production-auth.middleware.ts",
+    "api/src/health-reports/health-report.service.ts",
     "api/src/resident-access-scope/resident-access-scope.service.ts",
-    "api/src/residents/resident.controller.ts",
+    "database/migrations/20261026_001_guardian_identity_relationships.sql",
+    "database/schema.sql",
+    "api/test/guardian-access.test.cjs",
     "api/test/guardian-auth-middleware.test.cjs",
-    "frontend/src/auth/session.ts",
-    "frontend/src/api/client.ts"
+    "api/test/guardian-22-case-evidence.test.cjs",
+    "api/test/resident-access-scope.test.cjs"
   ],
   "valid_pass_gates": [
-    "api_build",
-    "api_type_emission",
-    "focused_staff_guardian_tests_45_cases",
-    "guardian_staff_matrix_22_cases",
-    "guardian_evidence_sha_gate",
-    "frontend_build"
+    "api_typecheck",
+    "focused_security_tests_50_cases",
+    "staff_matrix_10_cases",
+    "guardian_matrix_22_cases",
+    "guardian_scope_negative_tests",
+    "professional_scope_unit_tests",
+    "frontend_build",
+    "git_diff_check"
   ],
   "failed_gates": [
     {
-      "gate": "guardian_identity_relationship_scope",
-      "root_cause": "Guardian health-report authorization returns before relationship validation; resident_access_assignments only models CAREGIVER/NURSE staff grants.",
-      "evidence": [
-        "api/src/health-reports/health-report.service.ts",
-        "database/schema.sql"
-      ],
-      "required_decision": "Define authoritative guardian principal-to-resident relationship contract and migration before implementation."
-    },
-    {
-      "gate": "professional_access_regression",
-      "root_cause": "No executable isolated coverage was found for medical vital-sign scope or psychology/social-work assessment scope on the integrated candidate.",
-      "required_decision": "Implement and test those routes only after the resident-scope contract is defined."
+      "gate": "isolated_postgresql_16_migration_tests",
+      "root_cause": "Docker socket access is denied and local psql/postgres/initdb tools are unavailable.",
+      "status": "NOT_RUN"
     },
     {
       "gate": "exact_head_github_ci",
-      "root_cause": "The candidate exists only locally; no exact-head CI run or draft PR was created."
+      "root_cause": "Candidate has not been pushed or represented by an exact-head CI run.",
+      "status": "NOT_RUN"
+    },
+    {
+      "gate": "source_build_provenance",
+      "root_cause": "Current local baseline and historical PR base identities are not cryptographically reconciled.",
+      "status": "PARTIAL"
     }
   ],
-  "release_decision": "NO_GO_GUARDIAN_SCOPE_CONTRACT_REQUIRED",
-  "next_executable_action": "System Owner approves the guardian identity/relationship data contract; then implement one relationship-scoped authorization path and its isolated negative tests."
+  "release_decision": "NO_GO_POSTGRESQL_AND_EXACT_HEAD_CI_GATES_OPEN",
+  "next_executable_action": "Provide approved disposable PostgreSQL 16/Docker access, run clean-upgrade-idempotency-rollback migration tests, then push this exact HEAD for required CI if deployment triggers remain excluded."
 }
