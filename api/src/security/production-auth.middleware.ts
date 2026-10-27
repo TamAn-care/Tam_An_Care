@@ -12,6 +12,7 @@ import {
 import {
   DatabaseService,
 } from '../database/database.service';
+import { publishVerifiedFinanceIdentity } from './verified-finance-identity';
 
 type ActorRole =
   | 'CAREGIVER'
@@ -23,7 +24,8 @@ type ActorRole =
   | 'NUTRITIONIST'
   | 'GUARDIAN'
   | 'PSYCHOLOGIST'
-  | 'SOCIAL_WORKER';
+  | 'SOCIAL_WORKER'
+  | 'ACCOUNTANT';
 
 interface JwtPayload {
   sub?: unknown;
@@ -62,6 +64,7 @@ const VALID_ROLES =
     'GUARDIAN',
     'PSYCHOLOGIST',
     'SOCIAL_WORKER',
+    'ACCOUNTANT',
   ]);
 
 function decode(
@@ -369,6 +372,8 @@ export class ProductionAuthMiddleware
         'x-auth-session-id'
       ] = sessionId;
 
+      publishVerifiedFinanceIdentity(req, { actorId, actorRole, sessionId });
+
       next();
       return;
     }
@@ -407,6 +412,8 @@ export class ProductionAuthMiddleware
     req.headers[
       'x-auth-session-id'
     ] = sessionId;
+
+    publishVerifiedFinanceIdentity(req, { actorId, actorRole, sessionId });
 
     next();
   }

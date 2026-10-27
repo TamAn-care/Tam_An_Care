@@ -45,12 +45,23 @@ import {
 } from '../features/system-status/SystemStatusPage';
 
 const AccommodationPage = lazy(() => import('../features/accommodation/AccommodationPage'));
+const FinanceReadRoute = lazy(() => import('../features/finance/FinanceReadRoute'));
 
 export const router =
   createBrowserRouter([
     {
       element: <AppShell />,
       children: [
+        {
+          path: '/finance-read',
+          element: (
+            <RequireActor>
+              <RequireRole route="finance-read">
+                <FinanceReadRoute />
+              </RequireRole>
+            </RequireActor>
+          ),
+        },
         {
           path: '/',
           element: (

@@ -96,12 +96,12 @@ export interface ContractAppendix {
   healthStatusAtAdmission: string;
   roomType: string;
   bedCode: string;
-  baseMonthlyFee: number;
+  baseMonthlyFee: number | null;
   baseMonthlyFeeText: string;
   additionalServices: AppendixServiceItem[];
-  discount: number;
+  discount: number | null;
   discountReason: string;
-  totalMonthlyFee: number;
+  totalMonthlyFee: number | null;
   totalMonthlyFeeText: string;
 }
 
@@ -115,7 +115,7 @@ export interface ServiceContract {
   partyA: ContractPartyA;
   partyB: ContractPartyB;
   appendix: ContractAppendix;
-  depositAmount: number;
+  depositAmount: number | null;
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -134,135 +134,19 @@ export const DEFAULT_PARTY_B: ContractPartyB = {
   centerAddress: 'Khu Phố Đông 8, Khu đô thị Vinhomes Ocean Park 2, Xã Nghĩa Trụ, Tỉnh Hưng Yên',
 };
 
-export const DEFAULT_APPENDIX_SERVICES: AppendixServiceItem[] = [
-  { stt: 1, name: 'Hỗ trợ tắm gội', fee: 500000, note: 'Hỗ trợ tắm rửa sinh hoạt hàng ngày', selected: false },
-  { stt: 2, name: 'Hỗ trợ nâng đỡ, di chuyển', fee: 800000, note: 'Hỗ trợ xoay trở, nâng đỡ di chuyển chống loét', selected: false },
-  { stt: 3, name: 'Hỗ trợ xúc ăn', fee: 600000, note: 'Hỗ trợ bón cháo/cơm theo bữa', selected: false },
-  { stt: 4, name: 'Hỗ trợ vệ sinh', fee: 700000, note: 'Thay tã bỉm & vệ sinh bài tiết', selected: false },
-  { stt: 5, name: 'Hỗ trợ ăn qua sonde', fee: 1200000, note: 'Bơm thức ăn dinh dưỡng qua ống Sonde 6 bữa/ngày', selected: false },
-  { stt: 6, name: 'Chăm sóc NCT bị lẫn tuổi già', fee: 1500000, note: 'Theo dõi đặc biệt người sa sút trí tuệ, hay quên', selected: false },
-  { stt: 7, name: 'Chăm sóc hỗ trợ tập luyện, xoa bóp, vật lý trị liệu, phục hồi chức năng chuyên sâu sử dụng công nghệ AI', fee: 2000000, note: 'Trị liệu phục hồi chức năng cao cấp', selected: false },
-  { stt: 8, name: 'Chăm sóc các ổ loét', fee: 1000000, note: 'Rửa, thay băng & điều trị ổ loét tì đè', selected: false },
-  { stt: 9, name: 'Chăm sóc người đặt sonde bàng quang', fee: 800000, note: 'Vệ sinh & theo dõi sonde dẫn lưu nước tiểu', selected: false },
-  { stt: 10, name: 'Chăm sóc người đặt nội khí quản', fee: 2500000, note: 'Chăm sóc chuyên sâu đường thở', selected: false },
-  { stt: 11, name: 'Thay băng, rửa vết thương', fee: 500000, note: 'Thay băng y tế định kỳ theo chỉ định', selected: false },
-  { stt: 12, name: 'Chi phí nhân viên đi cùng đưa đón đi Bệnh viện, hoặc đưa đón theo yêu cầu GD NCT(Chi phí xe: theo nhà cung cấp (TT gọi hộ)', fee: 300000, note: 'Đưa đón khám chữa bệnh ngoài Trung tâm', selected: false },
-];
+// Service prices are supplied by the approved server-side contract terms.
+// Never preload an unverified price catalogue into a new draft.
 
-export const MOCK_SERVICE_CONTRACTS: ServiceContract[] = [
-  {
-    contractId: 'ctr-demo-001',
-    contractCode: '001/2026/HĐDV-TA',
-    residentId: 'res-demo-001',
-    status: 'ACTIVE',
-    signedDate: '2026-01-15',
-    effectiveDate: '2026-01-15',
-    partyA: {
-      residentName: 'Nguyễn Văn An',
-      residentBirthYear: '1944',
-      residentCccd: '001044001234',
-      residentAddress: 'Số 15 Phố Huế, Quận Hoàn Kiếm, Hà Nội',
-      relative1Name: 'Nguyễn Văn Bình',
-      relative1BirthYear: '1972',
-      relative1Cccd: '001072005678',
-      relative1Address: 'Số 15 Phố Huế, Quận Hoàn Kiếm, Hà Nội',
-      relative1Relationship: 'Con trai trưởng',
-      relative2Name: 'Trần Thị Cúc',
-      relative2BirthYear: '1975',
-      relative2Cccd: '001075009876',
-      relative2Address: 'Số 15 Phố Huế, Quận Hoàn Kiếm, Hà Nội',
-      relative2Relationship: 'Con dâu',
-      phone1: '0912.345.678',
-      phone2: '0988.765.432',
-    },
-    partyB: DEFAULT_PARTY_B,
-    appendix: {
-      healthStatusAtAdmission: 'Tỉnh táo, minh mẫn, cao huyết áp nhẹ đã kiểm soát bằng thuốc, tự di chuyển nhẹ nhàng.',
-      roomType: 'Phòng 101 (Phòng Đôi)',
-      bedCode: '101-2',
-      baseMonthlyFee: 12000000,
-      baseMonthlyFeeText: 'Mười hai triệu đồng',
-      additionalServices: [
-        { ...DEFAULT_APPENDIX_SERVICES[0], selected: true },
-        { ...DEFAULT_APPENDIX_SERVICES[6], selected: true },
-      ],
-      discount: 600000,
-      discountReason: 'Ưu đãi đóng phí 6 tháng',
-      totalMonthlyFee: 13900000,
-      totalMonthlyFeeText: 'Mười ba triệu chín trăm ngàn đồng',
-    },
-    depositAmount: 20000000,
-    notes: 'Hợp đồng lưu trú dài hạn 12 tháng.',
-    createdAt: '2026-01-15T08:00:00Z',
-    updatedAt: '2026-01-15T08:00:00Z',
-  },
-  {
-    contractId: 'ctr-demo-002',
-    contractCode: '002/2026/HĐDV-TA',
-    residentId: 'res-demo-002',
-    status: 'ACTIVE',
-    signedDate: '2026-02-01',
-    effectiveDate: '2026-02-01',
-    partyA: {
-      residentName: 'Trần Thị Bình',
-      residentBirthYear: '1948',
-      residentCccd: '001048002345',
-      residentAddress: 'Số 88 Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
-      relative1Name: 'Trần Văn Dũng',
-      relative1BirthYear: '1976',
-      relative1Cccd: '001076008765',
-      relative1Address: 'Số 88 Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
-      relative1Relationship: 'Con trai',
-      relative2Name: 'Phạm Thị Hoa',
-      relative2BirthYear: '1978',
-      relative2Cccd: '001078004321',
-      relative2Address: 'Số 88 Hàng Bài, Quận Hoàn Kiếm, Hà Nội',
-      relative2Relationship: 'Con gái',
-      phone1: '0903.112.233',
-      phone2: '0915.445.566',
-    },
-    partyB: DEFAULT_PARTY_B,
-    appendix: {
-      healthStatusAtAdmission: 'Sa sút trí tuệ nhẹ tuổi già, cần hỗ trợ xoay trở & tắm rửa hàng ngày.',
-      roomType: 'Phòng 102 (Phòng 6 Giường)',
-      bedCode: '102-1',
-      baseMonthlyFee: 10000000,
-      baseMonthlyFeeText: 'Mười triệu đồng',
-      additionalServices: [
-        { ...DEFAULT_APPENDIX_SERVICES[0], selected: true },
-        { ...DEFAULT_APPENDIX_SERVICES[1], selected: true },
-        { ...DEFAULT_APPENDIX_SERVICES[5], selected: true },
-      ],
-      discount: 0,
-      discountReason: '',
-      totalMonthlyFee: 12800000,
-      totalMonthlyFeeText: 'Mười hai triệu tám trăm ngàn đồng',
-    },
-    depositAmount: 20000000,
-    notes: 'Gia đình yêu cầu chế độ chăm sóc đặc biệt sa sút trí tuệ.',
-    createdAt: '2026-02-01T09:30:00Z',
-    updatedAt: '2026-02-01T09:30:00Z',
-  },
-];
 
-const LS_CONTRACTS_KEY = 'taman_service_contracts_v1';
 
-export function getStoredServiceContracts(): ServiceContract[] {
-  try {
-    const raw = localStorage.getItem(LS_CONTRACTS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {}
-  return MOCK_SERVICE_CONTRACTS;
-}
-
-export function saveStoredServiceContracts(items: ServiceContract[]) {
-  try {
-    localStorage.setItem(LS_CONTRACTS_KEY, JSON.stringify(items));
-  } catch {}
-}
+/**
+ * Contracts are exclusively server-authoritative.
+ * No browser persistence, offline fallback or automatic
+ * migration of legacy records is permitted.
+ *
+ * Legacy contract JSON remains in the separately verified
+ * backup and requires an approved controlled import.
+ */
 
 export function generateAutoContractCode(existingContracts: ServiceContract[]): string {
   const currentYear = new Date().getFullYear();
@@ -284,71 +168,97 @@ export function generateAutoContractCode(existingContracts: ServiceContract[]): 
 }
 
 
+/**
+ * Contract data is server-authoritative. Existing localStorage is deliberately
+ * preserved as a non-authoritative recovery source: NEVER auto-upload it,
+ * delete it, or silently merge it into signed contracts.
+ */
 export async function listServiceContracts(
-  actor?: HumanActorSession | null,
+ actor?: HumanActorSession | null,
 ): Promise<ServiceContract[]> {
-  try {
-    const res = await apiRequest<ServiceContract[]>('/api/service-contracts', { actor });
-    if (res && res.length > 0) return res;
-  } catch (error) {
-    console.warn('[TamAnCare API] Offline mode active for listServiceContracts:', error);
-  }
-  return getStoredServiceContracts();
+ const items=await apiRequest<ServiceContract[]>('/api/service-contracts',{actor});
+ if(!Array.isArray(items))throw new Error('CONTRACT_SERVER_RESPONSE_INVALID');
+ return items;
 }
 
 export async function getServiceContract(
-  contractId: string,
-  _actor?: HumanActorSession | null,
-): Promise<ServiceContract | null> {
-  const items = getStoredServiceContracts();
-  const found = items.find(c => c.contractId === contractId);
-  return found || null;
+ contractId:string,
+ actor?:HumanActorSession | null,
+):Promise<ServiceContract | null> {
+ if(!/^[A-Za-z0-9_-]{1,160}$/.test(contractId))throw new Error('CONTRACT_ID_INVALID');
+ try {
+  return await apiRequest<ServiceContract>(
+   `/api/service-contracts/${encodeURIComponent(contractId)}`,{actor});
+ } catch(error) {
+  // No browser fallback: distinguish offline/error from a genuine null.
+  throw error;
+ }
 }
 
 export async function saveServiceContract(
-  actor: HumanActorSession,
-  contract: ServiceContract,
-): Promise<ServiceContract> {
-  const items = getStoredServiceContracts();
-  const idx = items.findIndex(c => c.contractId === contract.contractId);
-  const now = new Date().toISOString();
-
-  let updatedContract: ServiceContract;
-  if (idx >= 0) {
-    updatedContract = { ...contract, updatedAt: now };
-    items[idx] = updatedContract;
-  } else {
-    updatedContract = { ...contract, createdAt: now, updatedAt: now };
-    items.unshift(updatedContract);
-  }
-
-  saveStoredServiceContracts(items);
-
-  try {
-    await apiRequest('/api/service-contracts', {
-      method: 'POST',
-      actor,
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(updatedContract),
-    });
-  } catch {}
-
-  return updatedContract;
+ actor:HumanActorSession,
+ contract:ServiceContract,
+):Promise<ServiceContract> {
+ if(contract.status!=='DRAFT')throw new Error('CONTRACT_SIGNED_EDIT_REQUIRES_AMENDMENT');
+ if(!contract.contractId||!contract.residentId||!contract.contractCode)
+  throw new Error('CONTRACT_DRAFT_REQUIRED_FIELDS');
+ const result=await apiRequest<{contractId:string;status:string;version:number}>(
+  '/api/service-contract-drafts',{
+    method:'POST',actor,headers:{'content-type':'application/json'},
+    body:JSON.stringify({
+      contractId:contract.contractId,contractCode:contract.contractCode,
+      residentId:contract.residentId,payload:contract,
+    }),
+  });
+ if(result?.status!=='DRAFT'||result.contractId!==contract.contractId)
+  throw new Error('CONTRACT_SERVER_SAVE_NOT_CONFIRMED');
+ return {...contract,status:'DRAFT'};
 }
 
 export async function deleteServiceContract(
-  actor: HumanActorSession,
-  contractId: string,
-): Promise<void> {
-  const items = getStoredServiceContracts().filter(c => c.contractId !== contractId);
-  saveStoredServiceContracts(items);
+ _actor:HumanActorSession,
+ _contractId:string,
+):Promise<void>{
+ // No server DELETE endpoint: fail closed instead of deleting browser state.
+ throw new Error('CONTRACT_DELETION_REQUIRES_CONTROLLED_ARCHIVE');
+}
 
-  try {
-    await apiRequest(`/api/service-contracts/${encodeURIComponent(contractId)}`, {
-      method: 'DELETE',
-      actor,
-    });
-  } catch {}
+/** Server-only versioned amendment; never updates the signed version or localStorage. */
+export async function proposeServiceContractAmendment(
+ actor:HumanActorSession,contractId:string,expectedVersion:number,
+ effectiveDate:string,changeReason:string,proposedContract:ServiceContract,
+):Promise<{contractId:string;version:number;status:'DRAFT';affectsCurrentBilling:false}>{
+ if(!contractId||!Number.isSafeInteger(expectedVersion)||expectedVersion<1)
+  throw new Error('CONTRACT_AMENDMENT_IDENTIFIER_INVALID');
+ return apiRequest(
+  `/api/service-contract-drafts/${encodeURIComponent(contractId)}/amendments`,{
+   method:'POST',actor,headers:{'content-type':'application/json'},
+   body:JSON.stringify({expectedVersion,effectiveDate,changeReason,payload:proposedContract}),
+  });
+}
+
+/** Records staff review of paper/external signature evidence, not legal e-signing. */
+export async function verifyServiceContractSignature(
+ actor:HumanActorSession,contractId:string,version:number,
+ evidence:{documentSha256:string;documentReference:string;
+ signingMethod:'SIGNED_PAPER_ARCHIVED'|'EXTERNAL_VERIFIED';signedAt:string},
+):Promise<{signatureEvidenceRecorded:boolean;signedContractActivated:false}>{
+ return apiRequest(
+  `/api/service-contract-signoff/${encodeURIComponent(contractId)}/versions/${version}/verify-signature`,{
+   method:'POST',actor,headers:{'content-type':'application/json'},
+   body:JSON.stringify(evidence),
+  });
+}
+
+/** Separate approver reviews canonical admission, care level and room/bed. */
+export async function approveServiceContractVersion(
+ actor:HumanActorSession,contractId:string,version:number,approvalReason:string,
+):Promise<{status:'ACTIVE';approvedMonthlyVnd:string}>{
+ return apiRequest(
+  `/api/service-contract-signoff/${encodeURIComponent(contractId)}/versions/${version}/approve`,{
+   method:'POST',actor,headers:{'content-type':'application/json'},
+   body:JSON.stringify({approvalReason}),
+  });
 }
 
 export function numberToVietnameseText(num: number): string {

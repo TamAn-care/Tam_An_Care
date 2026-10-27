@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {assessFinanceDocumentRead:check}=require('../../api/dist/finance-billing/finance-v381820-document-read-policy.js');
+const actor={actorId:'staff1',actorRole:'FINANCE_REVIEWER',sessionId:'active1',serverVerified:true,sessionActive:true};
+const doc={documentId:'document1',kind:'PAYROLL',preparedBy:'staff2',staffActorId:'staff3',state:'APPROVED'};
+assert.equal(check(actor,doc,['FINANCE_REVIEWER'],[]).authorized,false);
+assert.equal(check(actor,doc,['FINANCE_REVIEWER'],['DIRECTOR']).authorized,false);
+assert.equal(check({...actor,actorRole:'DIRECTOR'},doc,['DIRECTOR'],['DIRECTOR']).authorized,true);
+assert.equal(check({...actor,actorRole:'DIRECTOR',sessionActive:false},doc,['DIRECTOR'],['DIRECTOR']).authorized,false);
+assert.equal(check({...actor,actorRole:'DIRECTOR',serverVerified:false},doc,['DIRECTOR'],['DIRECTOR']).authorized,false);
+assert.equal(check(actor,{...doc,kind:'OPERATING_EXPENSE'},['FINANCE_REVIEWER'],[]).authorized,true);
+assert.equal(check(actor,doc,[],['FINANCE_REVIEWER']).authorized,false);
+console.log('TAMANCARE_FINANCE_V381820_DOCUMENT_READ_POLICY_PASS');

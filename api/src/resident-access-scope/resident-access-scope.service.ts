@@ -12,6 +12,7 @@ import {
 
 export type ResidentAccessHumanRole =
   | 'CAREGIVER'
+  | 'GUARDIAN'
   | 'NURSE'
   | 'SUPERVISOR'
   | 'PSYCHOLOGIST'
