@@ -1,0 +1,30 @@
+name: Periodic Report Labels (NO DEPLOY)
+on:
+  push:
+    branches:
+      - fix/periodic-report-labels-20261012
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  frontend-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - name: Validate guarded runtime patch syntax
+        run: python3 -m py_compile scripts/patch-periodic-report-labels-runtime.py
+      - name: Verify exact health-report UI labels
+        run: |
+          grep -Fq "label: 'Báo cáo định kỳ Sức khoẻ'" frontend/src/components/navigation/AppNavigation.tsx
+          grep -Fq "title: 'Báo cáo định kỳ Sức khoẻ'" frontend/src/features/mobile-launcher/MobileLauncherPage.tsx
+          grep -Fq "title: 'Báo cáo định kỳ Sức khoẻ'" frontend/src/app/page-meta.ts

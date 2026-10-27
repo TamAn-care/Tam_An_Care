@@ -26,7 +26,7 @@ export const MODULE_NAV_ITEMS: NavItem[] = [
   {
     key: 'health-reports',
     to: '/health-reports',
-    label: 'Báo Cáo Định Kỳ',
+    label: 'Báo cáo định kỳ Sức khoẻ',
     icon: '📄',
     category: 'Lâm Sàng & Chăm Sóc',
     gradient: 'linear-gradient(135deg, #0284c7, #0369a1)',
