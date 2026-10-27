@@ -72,8 +72,24 @@ import { ResidentLeaveModule } from './resident-leave/resident-leave.module';
 import { WorkforceModule } from './workforce/workforce.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { GuardianAccessModule } from './guardian-access/guardian-access.module';
+import { PaperRecordModule } from './paper-records/paper-record.module';
+import { ResidentAccessScopeModule } from './resident-access-scope/resident-access-scope.module';
+import { FinanceReadController } from './finance-billing/finance-read.controller';
+import { FinanceWriteController } from './finance-billing/finance-write.controller';
+import { CanonicalServiceContractsController } from './finance-billing/canonical-service-contracts.controller';
+import { CanonicalContractDraftController } from './finance-billing/canonical-contract-draft.controller';
+import { ContractSignoffController } from './finance-billing/contract-signoff.controller';
+import { ServicePricingController } from './finance-billing/service-pricing.controller';
+import { ServiceMappingController } from './finance-billing/service-mapping.controller';
+import { GeneralFinanceWorkflowController } from './finance-billing/general-finance-workflow.controller';
+import { FinanceBillingService } from './finance-billing/finance-billing.service';
+import { FamilyMealBillingService } from './finance-billing/family-meal-billing.service';
+import { MonthlyOperatingResultService } from './finance-billing/monthly-operating-result.service';
+import { GeneralFinanceWorkflowService } from './finance-billing/general-finance-workflow.service';
 @Module({imports:[
     GuardianAccessModule,
+    PaperRecordModule,
+    ResidentAccessScopeModule,
     NotificationsModule,
     WorkforceModule,
     ResidentLeaveModule,
@@ -109,5 +125,5 @@ import { GuardianAccessModule } from './guardian-access/guardian-access.module';
     ReopenAuthorizationModule,
   NutritionHydrationModule,
   ActivityRehabilitationModule,
-],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService]})
+],controllers:[HealthController,AiEngineController,AiGovernanceController,EarlyWarningController,CareActionController,FinanceReadController,FinanceWriteController,CanonicalServiceContractsController,CanonicalContractDraftController,ContractSignoffController,ServicePricingController,ServiceMappingController,GeneralFinanceWorkflowController],providers:[AiEngineService,AiGatewayService,EarlyWarningService,CareActionRepository,CareActionService,FinanceBillingService,FamilyMealBillingService,MonthlyOperatingResultService,GeneralFinanceWorkflowService]})
 export class AppModule {}

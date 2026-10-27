@@ -8,7 +8,6 @@ import {
   ContractStatus,
   CONTRACT_STATUS_LABEL,
   DEFAULT_PARTY_B,
-  DEFAULT_APPENDIX_SERVICES,
   listServiceContracts,
   saveServiceContract,
   deleteServiceContract,
@@ -16,6 +15,18 @@ import {
   generateAutoContractCode,
   formatDateDDMMYYYY,
 } from '../../api/service-contracts';
+
+const formatVnd = (value: number | null | undefined) =>
+  value == null ? 'Chưa xác minh' : `${value.toLocaleString('vi-VN')} đ`;
+
+const calculateMonthlyFee = (base: number | null, discount: number | null, services: ServiceContract['appendix']['additionalServices']) => {
+  const selectedFees = services.filter((service) => service.selected).map((service) => service.fee);
+  if (base == null || discount == null || !Number.isSafeInteger(base) || base < 0 ||
+      !Number.isSafeInteger(discount) || discount < 0 ||
+      selectedFees.some((fee) => !Number.isSafeInteger(fee) || fee < 0)) return null;
+  const total = base + selectedFees.reduce((sum, fee) => sum + fee, 0) - discount;
+  return Number.isSafeInteger(total) && total >= 0 ? total : null;
+};
 
 export function ServiceContractsPage() {
   const { actor } = useActor();
@@ -53,7 +64,7 @@ export function ServiceContractsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['service-contracts'] });
       setEditingContract(null);
-      alert('✅ Đã lưu Hợp đồng dịch vụ thành công!');
+      alert('Đã lưu bản NHÁP lên server. Hợp đồng chưa được ký, chưa được phê duyệt hoặc kích hoạt.');
     },
     onError: (err: any) => {
       alert(err.message || 'Không thể lưu hợp đồng');
@@ -101,8 +112,8 @@ export function ServiceContractsPage() {
       contractCode: autoCode,
       residentId: '',
       status: 'DRAFT',
-      signedDate: new Date().toISOString().split('T')[0],
-      effectiveDate: new Date().toISOString().split('T')[0],
+      signedDate: '',
+      effectiveDate: '',
       partyA: {
         residentName: '',
         residentBirthYear: '',
@@ -129,17 +140,17 @@ export function ServiceContractsPage() {
       partyB: DEFAULT_PARTY_B,
       appendix: {
         healthStatusAtAdmission: '',
-        roomType: 'Phòng Đôi',
+        roomType: '',
         bedCode: '',
-        baseMonthlyFee: 12000000,
-        baseMonthlyFeeText: 'Mười hai triệu đồng',
-        additionalServices: DEFAULT_APPENDIX_SERVICES.map(s => ({ ...s })),
-        discount: 0,
+        baseMonthlyFee: null,
+        baseMonthlyFeeText: '',
+        additionalServices: [],
+        discount: null,
         discountReason: '',
-        totalMonthlyFee: 12000000,
-        totalMonthlyFeeText: 'Mười hai triệu đồng',
+        totalMonthlyFee: null,
+        totalMonthlyFeeText: '',
       },
-      depositAmount: 20000000,
+      depositAmount: null,
       notes: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -164,7 +175,7 @@ export function ServiceContractsPage() {
           ...prev.partyA,
           residentName: res.displayName,
           residentBirthYear: birthYear,
-          residentCccd: `CCCD-${res.residentCode}`,
+          residentCccd: prev.partyA.residentCccd,
         },
         appendix: {
           ...prev.appendix,
@@ -191,8 +202,8 @@ export function ServiceContractsPage() {
           hasSecondResident: true,
           resident2Name: res.displayName,
           resident2BirthYear: birthYear,
-          resident2Cccd: `CCCD-${res.residentCode}`,
-          resident2Address: prev.partyA.residentAddress || 'Hà Nội',
+          resident2Cccd: prev.partyA.resident2Cccd || '',
+          resident2Address: prev.partyA.resident2Address || '',
         },
       };
     });
@@ -202,23 +213,10 @@ export function ServiceContractsPage() {
     triggerPrint();
   };
 
-  const handleSignContract = (contract: ServiceContract) => {
-    const today = new Date().toISOString().split('T')[0];
-    const updatedContract: ServiceContract = {
-      ...contract,
-      status: 'ACTIVE',
-      signedDate: contract.signedDate || today,
-      effectiveDate: contract.effectiveDate || today,
-      updatedAt: new Date().toISOString(),
-    };
-    saveMutation.mutate(updatedContract, {
-      onSuccess: () => {
-        alert(`🎉 Hợp đồng ${contract.contractCode} đã ký kết thành công và chuyển sang trạng thái "Đang hiệu lực"!`);
-        if (viewingContract?.contractId === contract.contractId) {
-          setViewingContract(updatedContract);
-        }
-      },
-    });
+  const handleSignContract = (_contract: ServiceContract) => {
+    // Signing/approval is exclusively a backend-controlled, evidence-backed flow.
+    // NEVER mark ACTIVE in the browser or silently turn an unsigned draft into a contract.
+    alert('Không thể tự kích hoạt hợp đồng từ trình duyệt. Cần xác minh văn bản đã ký, hồ sơ lưu trữ và phê duyệt độc lập trên backend trước khi có hiệu lực.');
   };
 
   return (
@@ -228,12 +226,18 @@ export function ServiceContractsPage() {
         <button
           type="button"
           onClick={handleCreateNew}
+          disabled={!contractsQuery.isSuccess || !residentsQuery.isSuccess}
           className="btn btn-primary"
           style={{ padding: '0.65rem 1.25rem', fontSize: '0.9rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.4rem' }}
         >
           <span>➕</span> Soạn Hợp Đồng Mới
         </button>
       </div>
+      {(contractsQuery.isError || residentsQuery.isError) && (
+        <div role="alert" style={{ marginBottom: '1rem', padding: '0.85rem 1rem', border: '1px solid #fecaca', borderRadius: '0.5rem', background: '#fef2f2', color: '#991b1b' }}>
+          Không tải được danh sách hợp đồng hoặc hồ sơ cư dân từ máy chủ. Tạm khóa tạo hợp đồng để tránh sinh mã trùng hoặc lưu sai thông tin.
+        </div>
+      )}
 
       {/* KPI Cards */}
       <div className="kpi-grid" style={{ marginBottom: '1.5rem' }}>
@@ -303,7 +307,11 @@ export function ServiceContractsPage() {
           <span>📋 Danh Sách Hợp Đồng Dịch Vụ Dưỡng Lão ({filteredContracts.length})</span>
         </div>
 
-        {filteredContracts.length === 0 ? (
+        {contractsQuery.isPending ? (
+          <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>Đang tải danh sách hợp đồng từ máy chủ…</div>
+        ) : contractsQuery.isError ? (
+          <div role="alert" style={{ padding: '3rem 1rem', textAlign: 'center', color: '#991b1b' }}>Không thể xác minh danh sách hợp đồng. Vui lòng thử lại sau khi kết nối máy chủ được khôi phục.</div>
+        ) : filteredContracts.length === 0 ? (
           <div style={{ padding: '3rem 1rem', textAlign: 'center', color: '#64748b' }}>
             Không tìm thấy Hợp đồng dịch vụ nào phù hợp.
           </div>
@@ -342,7 +350,7 @@ export function ServiceContractsPage() {
                         <td style={{ padding: '0.75rem 1rem' }}>
                           <div>{c.appendix.roomType} (Giường {c.appendix.bedCode || '—'})</div>
                           <div style={{ fontWeight: 700, color: '#b45309', fontSize: '0.8rem' }}>
-                            {c.appendix.totalMonthlyFee.toLocaleString()} đ/tháng
+                            {formatVnd(c.appendix.totalMonthlyFee)}{c.appendix.totalMonthlyFee == null ? '' : '/tháng'}
                           </div>
                         </td>
                         <td style={{ padding: '0.75rem 1rem', fontSize: '0.8rem', color: '#475569' }}>
@@ -435,7 +443,7 @@ export function ServiceContractsPage() {
                     <div className="mobile-card-row">
                       <span className="mobile-card-label">Vị trí & Phí:</span>
                       <span className="mobile-card-value" style={{ color: '#b45309', fontWeight: 700 }}>
-                        {c.appendix.roomType} ({c.appendix.totalMonthlyFee.toLocaleString()} đ/th)
+                        {c.appendix.roomType} ({formatVnd(c.appendix.totalMonthlyFee)}{c.appendix.totalMonthlyFee == null ? '' : '/th'})
                       </span>
                     </div>
 
@@ -784,17 +792,22 @@ export function ServiceContractsPage() {
                     <label className="form-label">Phí chăm sóc cơ bản (VNĐ/tháng)</label>
                     <input
                       type="number"
+                      min="0"
+                      step="1"
                       className="form-input"
-                      value={editingContract.appendix.baseMonthlyFee}
+                      value={editingContract.appendix.baseMonthlyFee ?? ''}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value, 10) || 0;
-                        const text = numberToVietnameseText(val);
+                        const val = e.target.value === '' ? null : Number(e.target.value);
+                        const text = val == null ? '' : numberToVietnameseText(val);
+                        const total = calculateMonthlyFee(val, editingContract.appendix.discount, editingContract.appendix.additionalServices);
                         setEditingContract({
                           ...editingContract,
                           appendix: {
                             ...editingContract.appendix,
                             baseMonthlyFee: val,
                             baseMonthlyFeeText: text,
+                            totalMonthlyFee: total,
+                            totalMonthlyFeeText: total == null ? '' : numberToVietnameseText(total),
                           },
                         });
                       }}
@@ -803,11 +816,15 @@ export function ServiceContractsPage() {
                 </div>
 
                 <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#334155', marginBottom: '0.4rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.25rem' }}>
-                  <span>Danh mục dịch vụ chăm sóc bổ sung (Giá tiền tự do điều chỉnh):</span>
-                  <span style={{ fontSize: '0.75rem', color: '#166534', fontWeight: 600 }}>💡 Ô nhập giá tự do thay đổi</span>
+                  <span>Danh mục dịch vụ chăm sóc bổ sung:</span>
                 </div>
 
                 <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.375rem', padding: '0.5rem', maxHeight: '280px', overflowY: 'auto', marginBottom: '0.75rem' }}>
+                  {editingContract.appendix.additionalServices.length === 0 && (
+                    <div style={{ padding: '0.75rem', color: '#92400e' }}>
+                      Chưa có danh mục dịch vụ và biểu phí được xác minh từ nguồn chính thức. Không có khoản dịch vụ bổ sung nào được tự thêm vào bản nháp.
+                    </div>
+                  )}
                   {editingContract.appendix.additionalServices.map((srv, idx) => (
                     <div key={srv.stt} className="contract-service-item">
                       <input
@@ -817,15 +834,14 @@ export function ServiceContractsPage() {
                           const updated = [...editingContract.appendix.additionalServices];
                           updated[idx].selected = e.target.checked;
                           // Recalculate total
-                          const addTotal = updated.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0);
-                          const newTotal = editingContract.appendix.baseMonthlyFee + addTotal - editingContract.appendix.discount;
+                          const newTotal = calculateMonthlyFee(editingContract.appendix.baseMonthlyFee, editingContract.appendix.discount, updated);
                           setEditingContract({
                             ...editingContract,
                             appendix: {
                               ...editingContract.appendix,
                               additionalServices: updated,
                               totalMonthlyFee: newTotal,
-                              totalMonthlyFeeText: numberToVietnameseText(newTotal),
+                              totalMonthlyFeeText: newTotal == null ? '' : numberToVietnameseText(newTotal),
                             },
                           });
                         }}
@@ -837,22 +853,23 @@ export function ServiceContractsPage() {
                         <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Đơn giá:</span>
                         <input
                           type="number"
+                          min="0"
+                          step="1"
                           className="form-input"
                           style={{ width: '110px', padding: '0.2rem 0.4rem', fontSize: '0.8rem', fontWeight: 700, color: srv.selected ? '#166534' : '#334155', textAlign: 'right' }}
-                          value={srv.fee}
+                          value={srv.fee ?? ''}
                           onChange={(e) => {
-                            const newFee = parseInt(e.target.value, 10) || 0;
+                            const newFee = e.target.value === '' ? 0 : Number(e.target.value);
                             const updated = [...editingContract.appendix.additionalServices];
                             updated[idx].fee = newFee;
-                            const addTotal = updated.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0);
-                            const newTotal = editingContract.appendix.baseMonthlyFee + addTotal - editingContract.appendix.discount;
+                            const newTotal = calculateMonthlyFee(editingContract.appendix.baseMonthlyFee, editingContract.appendix.discount, updated);
                             setEditingContract({
                               ...editingContract,
                               appendix: {
                                 ...editingContract.appendix,
                                 additionalServices: updated,
                                 totalMonthlyFee: newTotal,
-                                totalMonthlyFeeText: numberToVietnameseText(newTotal),
+                                totalMonthlyFeeText: newTotal == null ? '' : numberToVietnameseText(newTotal),
                               },
                             });
                           }}
@@ -865,22 +882,23 @@ export function ServiceContractsPage() {
 
                 <div className="contract-form-grid-discount">
                   <div>
-                    <label className="form-label">Mức giảm trừ / Ưu đãi (VNĐ)</label>
+                    <label className="form-label">Mức giảm trừ / Ưu đãi (VNĐ, để trống nếu chưa xác minh)</label>
                     <input
                       type="number"
+                      min="0"
+                      step="1"
                       className="form-input"
-                      value={editingContract.appendix.discount}
+                      value={editingContract.appendix.discount ?? ''}
                       onChange={(e) => {
-                        const disc = parseInt(e.target.value, 10) || 0;
-                        const addTotal = editingContract.appendix.additionalServices.filter(s => s.selected).reduce((sum, s) => sum + s.fee, 0);
-                        const newTotal = editingContract.appendix.baseMonthlyFee + addTotal - disc;
+                        const disc = e.target.value === '' ? null : Number(e.target.value);
+                        const newTotal = calculateMonthlyFee(editingContract.appendix.baseMonthlyFee, disc, editingContract.appendix.additionalServices);
                         setEditingContract({
                           ...editingContract,
                           appendix: {
                             ...editingContract.appendix,
                             discount: disc,
                             totalMonthlyFee: newTotal,
-                            totalMonthlyFeeText: numberToVietnameseText(newTotal),
+                            totalMonthlyFeeText: newTotal == null ? '' : numberToVietnameseText(newTotal),
                           },
                         });
                       }}
@@ -889,9 +907,9 @@ export function ServiceContractsPage() {
                   <div>
                     <label className="form-label">TỔNG PHÍ THÁNG (ĐÃ TỰ ĐỘNG TÍNH & ĐỌC BẰNG CHỮ):</label>
                     <div style={{ fontWeight: 800, color: '#166534', fontSize: '0.95rem', paddingTop: '0.2rem' }}>
-                      {editingContract.appendix.totalMonthlyFee.toLocaleString()} VNĐ/tháng <br />
+                      {formatVnd(editingContract.appendix.totalMonthlyFee)}{editingContract.appendix.totalMonthlyFee == null ? '' : ' VNĐ/tháng'} <br />
                       <span style={{ fontStyle: 'italic', fontWeight: 600, color: '#64748b', fontSize: '0.82rem' }}>
-                        ({editingContract.appendix.totalMonthlyFeeText})
+                        ({editingContract.appendix.totalMonthlyFeeText || 'Chưa đủ thông tin để tính'})
                       </span>
                     </div>
                   </div>
@@ -1200,8 +1218,8 @@ export function ServiceContractsPage() {
 
               <div style={{ fontWeight: 'bold', marginTop: '12px' }}>1. Phí dịch vụ chăm sóc cơ bản:</div>
               <div>• Loại phòng đăng ký: <b>{viewingContract.appendix.roomType}</b> (Mã giường: <b>{viewingContract.appendix.bedCode || '—'}</b>).</div>
-              <div>• Mức phí cơ bản: <b>{viewingContract.appendix.baseMonthlyFee.toLocaleString()} VNĐ/tháng</b>.</div>
-              <div>• <i>(Bằng chữ: {viewingContract.appendix.baseMonthlyFeeText || numberToVietnameseText(viewingContract.appendix.baseMonthlyFee)})</i></div>
+              <div>• Mức phí cơ bản: <b>{formatVnd(viewingContract.appendix.baseMonthlyFee)}{viewingContract.appendix.baseMonthlyFee == null ? '' : ' VNĐ/tháng'}</b>.</div>
+              <div>• <i>(Bằng chữ: {viewingContract.appendix.baseMonthlyFeeText || 'Chưa xác minh'})</i></div>
 
               <div style={{ fontWeight: 'bold', marginTop: '12px', marginBottom: '6px' }}>
                 2. Dịch vụ chăm sóc bổ sung (theo yêu cầu của Bên A):
@@ -1245,13 +1263,13 @@ export function ServiceContractsPage() {
               </div>
 
               <div style={{ marginTop: '8px' }}>
-                <b>3. Ưu đãi:</b> {viewingContract.appendix.discountReason || 'Theo chính sách ưu đãi của Trung tâm'} (Giảm {viewingContract.appendix.discount.toLocaleString()} VNĐ)
+                <b>3. Ưu đãi:</b> {viewingContract.appendix.discountReason || 'Chưa xác minh'} (Giảm {formatVnd(viewingContract.appendix.discount)})
               </div>
               <div style={{ marginTop: '4px', fontSize: '13pt' }}>
-                <b>Tổng phí dịch vụ: (1+2):</b> <b style={{ color: '#166534' }}>{viewingContract.appendix.totalMonthlyFee.toLocaleString()} VNĐ/tháng</b>
+                <b>Tổng phí dịch vụ: (1+2):</b> <b style={{ color: '#166534' }}>{formatVnd(viewingContract.appendix.totalMonthlyFee)}{viewingContract.appendix.totalMonthlyFee == null ? '' : ' VNĐ/tháng'}</b>
               </div>
               <div style={{ fontStyle: 'italic', marginTop: '2px' }}>
-                (Bằng chữ: <b>{viewingContract.appendix.totalMonthlyFeeText || numberToVietnameseText(viewingContract.appendix.totalMonthlyFee)}</b>)
+                (Bằng chữ: <b>{viewingContract.appendix.totalMonthlyFeeText || 'Chưa xác minh'}</b>)
               </div>
 
               {/* APPENDIX CLAUSES 3 & 4 */}

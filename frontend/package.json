@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "test:e2e:finance": "playwright test --config=playwright.finance.config.ts",
+    "preview": "vite preview",
+    "prebuild": "node scripts/check-api-base.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.101.4",
@@ -15,7 +17,7 @@
     "react-router-dom": "7.18.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.52.0",
+    "@playwright/test": "^1.64.1",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
     "@vitejs/plugin-react": "^4.7.0",

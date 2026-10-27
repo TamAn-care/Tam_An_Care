@@ -1,0 +1,170 @@
+import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
+import {
+  calculateMonthlyOperatingResult,
+  type MonthlyLedgerEntry,
+  type MonthlyResult,
+} from './monthly-operating-result';
+
+const REQUIRED_LEDGER_COLUMNS = [
+  'finance_entry_id',
+  'entry_type',
+  'recognition_date',
+  'amount_vnd',
+  'status',
+  'source_mode',
+  'source_domain',
+  'source_entity_type',
+  'source_entity_id',
+] as const;
+
+// A real month-close attestation and reconciliation proof must be independently
+// implemented/verified before any monetary result may be called READY.
+import { verifyIndependentMonthlyClose } from './monthly-close-evidence';
+import { classifyV43 } from './finance-v381843-canonical-entry-types';
+
+export type MonthlyOperatingResultRead = MonthlyResult & {
+  source: 'POSTGRESQL';
+  ledgerSchemaReady: boolean;
+  missingColumns: string[];
+  updatedAt: string;
+};
+
+/**
+ * READ-ONLY canonical finance_entries adapter.
+ *
+ * This service never derives revenue from invoices, receipts or allocations.
+ * It does not mutate schema/data and does not auto-seed any business row.
+ *
+ * Until Production Test metadata proves the canonical ledger has the explicit
+ * fields below, the result fails closed as CHUA_DU_DU_LIEU.
+ */
+@Injectable()
+export class MonthlyOperatingResultService {
+  constructor(private readonly db: DatabaseService) {}
+
+  private validateMonth(month: string): void {
+    if (
+      typeof month !== 'string' ||
+      !/^\d{4}-(0[1-9]|1[0-2])$/.test(month) ||
+      Number(month.slice(0, 4)) < 1900
+    ) {
+      throw new Error('MONTHLY_FINANCE_INVALID_MONTH');
+    }
+  }
+
+  async read(month: string): Promise<MonthlyOperatingResultRead> {
+    this.validateMonth(month);
+
+    const metadata = await this.db.query<{ column_name: string }>(
+      `SELECT column_name
+         FROM information_schema.columns
+        WHERE table_schema='public'
+          AND table_name='finance_entries'
+          AND column_name = ANY($1::text[])
+        ORDER BY column_name`,
+      [[...REQUIRED_LEDGER_COLUMNS]],
+    );
+
+    const present = new Set(metadata.rows.map((row) => row.column_name));
+    const missingColumns = REQUIRED_LEDGER_COLUMNS.filter(
+      (column) => !present.has(column),
+    );
+
+    if (missingColumns.length > 0) {
+      const result = calculateMonthlyOperatingResult({
+        month,
+        entries: [],
+        ledgerCoverageComplete: false,
+        reconciliationComplete: false,
+      });
+      return {
+        source: 'POSTGRESQL',
+        ledgerSchemaReady: false,
+        missingColumns: [...missingColumns],
+        ...result,
+        updatedAt: new Date().toISOString(),
+      };
+    }
+
+    const start = month + '-01';
+    const rows = await this.db.query<{
+      finance_entry_id: string;
+      entry_type: string;
+      recognition_date: string;
+      amount_vnd: string;
+      status: string;
+      source_mode: string;
+      source_domain: string | null;
+      source_entity_type: string | null;
+      source_entity_id: string | null;
+    }>(
+      `SELECT finance_entry_id,
+              entry_type,
+              recognition_date::text AS recognition_date,
+              amount_vnd::text AS amount_vnd,
+              status,
+              source_mode,
+              source_domain,
+              source_entity_type,
+              source_entity_id
+         FROM public.finance_entries
+        WHERE recognition_date >= $1::date
+          AND recognition_date < ($1::date + INTERVAL '1 month')
+          AND status NOT IN ('DRAFT','VOID')
+        ORDER BY recognition_date, finance_entry_id
+        LIMIT 10001`,
+      [start],
+    );
+
+    const entries: MonthlyLedgerEntry[] = rows.rows.map((row) => {
+      // Database entry_type is strictly the seven canonical ledger classes.
+      // EXPENSE is a reporting group, NOT a valid persisted ledger type.
+      // Reject legacy/unknown types instead of silently counting them.
+      const classification = classifyV43(row.entry_type);
+      if (!classification.valid || !classification.canonicalKind) {
+        throw new Error('MONTHLY_FINANCE_UNKNOWN_LEDGER_KIND');
+      }
+      return {
+        entryId: row.finance_entry_id,
+        kind: classification.canonicalKind,
+        recognitionDate: row.recognition_date,
+        amountVnd: row.amount_vnd,
+        posted: row.status === 'POSTED',
+        // Row posting alone cannot prove an independently reconciled source.
+        sourceVerified: false,
+      };
+    });
+
+    const rowsBounded = rows.rows.length <= 10000;
+    const reconciliationComplete = rows.rows.every(
+      (row) =>
+        row.status === 'POSTED' &&
+        row.source_mode === 'SYSTEM' &&
+        Boolean(row.source_domain && row.source_entity_type && row.source_entity_id),
+    );
+
+    // Not yet connected to a verified immutable snapshot + signed approval
+    // repository. Never synthesize attestation from query results.
+    const attestation = verifyIndependentMonthlyClose(month, null, {
+      entryCount: rows.rows.length, snapshotDigest: '',
+    });
+    const result = calculateMonthlyOperatingResult({
+      month,
+      entries,
+      ledgerCoverageComplete: rowsBounded && attestation.verified,
+      reconciliationComplete: reconciliationComplete && attestation.verified,
+    });
+    for (const reason of attestation.reasons) {
+      if (!result.reasons.includes(reason)) result.reasons.push(reason);
+    }
+
+    return {
+      source: 'POSTGRESQL',
+      ledgerSchemaReady: true,
+      missingColumns: [],
+      ...result,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+}
