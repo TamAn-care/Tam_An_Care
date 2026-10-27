@@ -24,55 +24,41 @@ export interface NotificationItem {
 
 const LS_NOTIFICATIONS_KEY = 'taman_inapp_notifications_v1';
 
-const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
-  {
-    id: 'NOTIF-001',
-    type: 'ASSIGNMENT',
-    title: '🛡️ Phân Công Chăm Sóc Mới',
-    message: 'Ban Giám đốc vừa cập nhật phân công phụ trách cư dân cụ Nguyễn Văn An (Phòng 101-G01) cho bạn.',
-    timestamp: new Date(Date.now() - 10 * 60000).toISOString(),
-    isRead: false,
-    targetUrl: '/staff-access',
-  },
-  {
-    id: 'NOTIF-002',
-    type: 'MEDICAL_ALERT',
-    title: '🩺 Cảnh Báo Sinh Hiệu Y Khoa',
-    message: 'Cụ Trần Thị Bình sốt nhẹ 37.8°C lúc 10:00 ca sáng. Nhân viên y tế đã ghi nhận phiếu theo dõi.',
-    timestamp: new Date(Date.now() - 45 * 60000).toISOString(),
-    isRead: false,
-    targetUrl: '/residents',
-  },
-  {
-    id: 'NOTIF-003',
-    type: 'KITCHEN_ALERT',
-    title: '🥗 Lưu Mẫu Thức Ăn HACCP 24H (Tự động)',
-    message: 'Tự động kiểm tra: Mẫu lưu thức ăn Bữa Trưa (SMP-8821) tại tủ mát số 01 đã đủ 24h. Vui lòng hủy mẫu an toàn.',
-    timestamp: new Date(Date.now() - 2 * 3600000).toISOString(),
-    isRead: false,
-    targetUrl: '/kitchen',
-  },
-  {
-    id: 'NOTIF-004',
-    type: 'WORKFORCE_ALERT',
-    title: '⏰ Biên Bản Bàn Giao Ca Trực',
-    message: 'Nhân viên y tế Trần Thị Bích đã nộp biên bản bàn giao ca sáng. Vui lòng kiểm tra & xác nhận.',
-    timestamp: new Date(Date.now() - 4 * 3600000).toISOString(),
-    isRead: true,
-    targetUrl: '/workforce',
-  },
+// Legacy sample items shipped by previous frontend versions.
+// Match ID AND original content to avoid deleting genuine notifications that reused an ID.
+const LEGACY_DEMO_SIGNATURES: ReadonlyArray<readonly [string, string]> = [
+  ['NOTIF-001', 'Ban Giám đốc vừa cập nhật phân công phụ trách cư dân cụ Nguyễn Văn An (Phòng 101-G01) cho bạn.'],
+  ['NOTIF-002', 'Cụ Trần Thị Bình sốt nhẹ 37.8°C lúc 10:00 ca sáng. Nhân viên y tế đã ghi nhận phiếu theo dõi.'],
+  ['NOTIF-003', 'Tự động kiểm tra: Mẫu lưu thức ăn Bữa Trưa (SMP-8821) tại tủ mát số 01 đã đủ 24h. Vui lòng hủy mẫu an toàn.'],
+  ['NOTIF-004', 'Nhân viên y tế Trần Thị Bích đã nộp biên bản bàn giao ca sáng. Vui lòng kiểm tra & xác nhận.'],
 ];
+
+export function removeLegacyDemoNotifications(items: NotificationItem[]): NotificationItem[] {
+  return items.filter((item) => !LEGACY_DEMO_SIGNATURES.some(
+    ([id, message]) => item.id === id && item.message === message,
+  ));
+}
 
 export function getLocalNotifications(): NotificationItem[] {
   try {
     const raw = localStorage.getItem(LS_NOTIFICATIONS_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch {}
-  saveLocalNotifications(DEFAULT_NOTIFICATIONS);
-  return DEFAULT_NOTIFICATIONS;
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    const items = parsed.filter(
+      (item): item is NotificationItem =>
+        item !== null &&
+        typeof item === 'object' &&
+        typeof item.id === 'string' &&
+        typeof item.message === 'string' &&
+        typeof item.title === 'string',
+    );
+    const clean = removeLegacyDemoNotifications(items);
+    if (clean.length !== parsed.length) saveLocalNotifications(clean);
+    return clean;
+  } catch {
+    return [];
+  }
 }
 
 export function saveLocalNotifications(items: NotificationItem[]) {
