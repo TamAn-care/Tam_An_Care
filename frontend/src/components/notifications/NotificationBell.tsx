@@ -44,9 +44,15 @@ export function NotificationBell() {
 
   const refreshNotifications = async () => {
     try {
-      const resData = await listResidents(actor);
-      if (resData && resData.length > 0) {
-        checkAndPublishResidentBirthdayNotifications(resData.map((r) => r.resident));
+      // Resident-wide listing is intentionally restricted by the API to
+      // supervisory roles. Background notification polling must not call it
+      // for ordinary staff, because a correct 401 would otherwise clear a
+      // valid session and break unrelated workflows.
+      if (isDirectorOrManager) {
+        const resData = await listResidents(actor);
+        if (resData && resData.length > 0) {
+          checkAndPublishResidentBirthdayNotifications(resData.map((r) => r.resident));
+        }
       }
     } catch {}
     setNotifications(getLocalNotifications());
